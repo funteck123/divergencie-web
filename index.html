@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>DivergenCIE Coaching | Don't Be Basic</title>
+  <meta name="description" content="Cambridge & CollegeBoard certified coaching. Top UK and global university admissions. Don't be basic."/>
+  <link rel="canonical" href="https://divergencie.co.uk/"/>
+  <meta property="og:title" content="DivergenCIE Coaching | Don't Be Basic"/>
+  <meta property="og:description" content="Cambridge Assessment & CollegeBoard certified. Expert coaching for Oxford, Cambridge, LSE, Imperial & beyond."/>
+  <meta property="og:url" content="https://divergencie.co.uk/"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+
+  <!-- Satoshi Font -->
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lottie Player -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 1 — NAV
+══════════════════════════════════════════════════════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+
+    <!-- Logo -->
+    <a href="/" class="nav-logo">
+      <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#results">Results</a>
+      <a href="#services">Services</a>
+      <a href="#testimonials">Stories</a>
+      <a href="#faq">FAQ</a>
+    </div>
+
+    <!-- Desktop CTA -->
+    <a href="#start" class="nav-cta nav-cta-desktop">Get Started</a>
+
+    <!-- Mobile hamburger -->
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu">
+    <a href="#about">About</a>
+    <a href="#results">Results</a>
+    <a href="#services">Services</a>
+    <a href="#testimonials">Stories</a>
+    <a href="#faq">FAQ</a>
+    <a href="#start" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 2 — HERO
+══════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div id="hero-bg"></div>
+  <div id="hero-overlay"></div>
+
+  <div id="hero-content">
+    <p class="hero-eyebrow">divergencie.co.uk</p>
+    <h1 class="hero-h1">
+      Don't Be<br>
+      <span class="accent">Basic.</span>
+    </h1>
+    <p class="hero-sub">Oxford &amp; Cambridge-coached &nbsp;·&nbsp; Results that speak louder</p>
+    <div class="hero-btns">
+      <a href="#start" class="btn-gold">
+        <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
+        Start Your Journey
+      </a>
+      <a href="#results" class="btn-ghost">See Our Results</a>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="hero-scroll">
+    <span class="hero-scroll-label">Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 3 — RESULTS TICKER BAR
+══════════════════════════════════════════════════════════ -->
+<div id="results-bar">
+  <div class="results-bar-inner">
+
+    <!-- Static label -->
+    <div class="results-label">
+      <span class="results-year">2025–26</span>
+      <span class="results-tag">Results</span>
+    </div>
+
+    <!-- Scrolling ticker -->
+    <div class="ticker-viewport">
+      <div class="ticker-track" id="ticker-track">
+
+        <!-- Set A -->
+        <div class="ticker-item">
+          <span class="ticker-num">4</span>
+          <span class="ticker-uni">Oxford</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">3</span>
+          <span class="ticker-uni">Cambridge</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">9</span>
+          <span class="ticker-uni">LSE</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">11</span>
+          <span class="ticker-uni">Imperial</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">14</span>
+          <span class="ticker-uni">UCL</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">8</span>
+          <span class="ticker-uni">Durham</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">7</span>
+          <span class="ticker-uni">Warwick</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">5</span>
+          <span class="ticker-uni">Edinburgh</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">6</span>
+          <span class="ticker-uni">King's College</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">3</span>
+          <span class="ticker-uni">St Andrews</span>
+        </div>
+        <div class="ticker-sep">✦</div>
+
+        <!-- Set B (duplicate for seamless loop) -->
+        <div class="ticker-item">
+          <span class="ticker-num">4</span>
+          <span class="ticker-uni">Oxford</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">3</span>
+          <span class="ticker-uni">Cambridge</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">9</span>
+          <span class="ticker-uni">LSE</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">11</span>
+          <span class="ticker-uni">Imperial</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">14</span>
+          <span class="ticker-uni">UCL</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">8</span>
+          <span class="ticker-uni">Durham</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">7</span>
+          <span class="ticker-uni">Warwick</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">5</span>
+          <span class="ticker-uni">Edinburgh</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">6</span>
+          <span class="ticker-uni">King's College</span>
+        </div>
+        <div class="ticker-item">
+          <span class="ticker-num">3</span>
+          <span class="ticker-uni">St Andrews</span>
+        </div>
+        <div class="ticker-sep">✦</div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 4 — STATS "THEY CAN'T REFUSE"
+══════════════════════════════════════════════════════════ -->
+<section id="stats">
+  <div class="stats-container">
+
+    <!-- Heading -->
+    <div class="stats-heading" data-anim>
+      <p class="section-label">Make universities an offer</p>
+      <h2 class="stats-title">They&nbsp;can't&nbsp;refuse.</h2>
+    </div>
+
+    <!-- Top row — big headline numbers -->
+    <div class="stats-grid-top" data-anim>
+      <div class="stat-card stat-card--large">
+        <span class="stat-num" data-target="70" data-suffix="+">0+</span>
+        <span class="stat-desc">Students placed at<br>Top 10 UK universities</span>
+      </div>
+      <div class="stat-card stat-card--large">
+        <span class="stat-num" data-target="40" data-suffix="+">0+</span>
+        <span class="stat-desc">Countries our<br>students come from</span>
+      </div>
+      <div class="stat-card stat-card--large">
+        <span class="stat-num" data-target="98" data-suffix="%">0%</span>
+        <span class="stat-desc">Of students placed<br>at their first choice</span>
+      </div>
+      <div class="stat-card stat-card--large">
+        <span class="stat-num" data-target="10" data-suffix="+">0+</span>
+        <span class="stat-desc">Years of admissions<br>expertise</span>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="stats-divider"></div>
+
+    <!-- Bottom row — secondary stats -->
+    <div class="stats-grid-bottom" data-anim>
+      <div class="stat-card stat-card--small">
+        <span class="stat-num stat-num--sm" data-target="0" data-suffix="x">0x</span>
+        <span class="stat-desc stat-desc--sm">Recycled essays.<br><em>Ever.</em></span>
+      </div>
+      <div class="stat-card stat-card--small">
+        <span class="stat-num stat-num--sm" data-target="0" data-suffix="%">0%</span>
+        <span class="stat-desc stat-desc--sm">Generic advice.<br><em>Zero tolerance.</em></span>
+      </div>
+      <div class="stat-card stat-card--small">
+        <span class="stat-num stat-num--sm" data-target="100" data-suffix="%">0%</span>
+        <span class="stat-desc stat-desc--sm">Bespoke strategy,<br>every student.</span>
+      </div>
+      <div class="stat-card stat-card--small stat-card--gold">
+        <span class="stat-num stat-num--sm" data-target="1" data-suffix="st">0</span>
+        <span class="stat-desc stat-desc--sm">Cambridge &amp; CollegeBoard<br>certified coaches.</span>
+      </div>
+    </div>
+
+    <!-- Accreditation strip -->
+    <div class="stats-accreditation" data-anim>
+      <span class="accred-label">Certified by</span>
+      <div class="accred-logos">
+        <span class="accred-item">
+          <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+          Cambridge Assessment International Education
+        </span>
+        <span class="accred-dot">·</span>
+        <span class="accred-item">
+          <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+          CollegeBoard
+        </span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 5 — DIVERGENCIE GOES GLOBAL
+══════════════════════════════════════════════════════════ -->
+<section id="global">
+  <div class="global-top">
+    <p class="section-label">Worldwide reach</p>
+    <h2 class="global-title">DivergenCIE<br>Goes <span class="text-gold">Global.</span></h2>
+    <p class="global-sub">Students from 40+ countries. One standard: exceptional.</p>
+  </div>
+
+  <!-- SVG World Map with animated pulse dots -->
+  <div class="global-map-wrap">
+    <svg class="global-map-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" aria-label="World map showing DivergenCIE student locations">
+
+      <!-- Simplified world landmass paths -->
+      <!-- North America -->
+      <path class="landmass" d="M80,80 L200,70 L230,90 L240,130 L220,160 L200,180 L180,200 L160,220 L130,230 L100,220 L80,200 L60,170 L55,140 L65,110 Z"/>
+      <!-- Central America -->
+      <path class="landmass" d="M150,230 L175,225 L185,245 L170,260 L150,255 Z"/>
+      <!-- South America -->
+      <path class="landmass" d="M160,270 L220,255 L250,270 L260,310 L255,360 L230,400 L200,420 L175,410 L155,380 L145,340 L140,300 L145,275 Z"/>
+      <!-- Europe -->
+      <path class="landmass" d="M430,60 L500,55 L520,70 L510,100 L490,115 L460,120 L435,110 L420,90 Z"/>
+      <!-- UK -->
+      <path class="landmass" d="M415,65 L430,60 L435,75 L425,85 L412,80 Z"/>
+      <!-- Africa -->
+      <path class="landmass" d="M440,130 L510,120 L540,135 L550,180 L545,240 L525,300 L500,340 L470,350 L445,330 L425,280 L420,220 L425,170 L430,140 Z"/>
+      <!-- Asia -->
+      <path class="landmass" d="M520,55 L700,50 L750,65 L770,90 L760,130 L730,155 L690,165 L640,160 L590,150 L555,140 L530,120 L515,95 L515,70 Z"/>
+      <!-- South Asia / India -->
+      <path class="landmass" d="M615,155 L650,150 L665,175 L655,210 L635,225 L615,210 L605,185 Z"/>
+      <!-- SE Asia -->
+      <path class="landmass" d="M700,155 L740,145 L760,165 L755,195 L730,200 L705,185 Z"/>
+      <!-- Australia -->
+      <path class="landmass" d="M730,280 L820,270 L855,290 L860,340 L840,375 L800,385 L760,375 L730,345 L720,310 Z"/>
+      <!-- Japan -->
+      <path class="landmass" d="M780,90 L800,85 L810,100 L800,115 L782,110 Z"/>
+
+      <!-- Glow pulse dots — student origin cities -->
+      <!-- London (HQ) -->
+      <g class="map-dot map-dot--hq" transform="translate(428,72)">
+        <circle class="dot-pulse-ring" r="14"/>
+        <circle class="dot-pulse-ring dot-pulse-ring--2" r="14"/>
+        <circle class="dot-core" r="5"/>
+        <text class="dot-label" x="8" y="4">London HQ</text>
+      </g>
+      <!-- Dubai -->
+      <g class="map-dot" transform="translate(572,142)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Dubai</text>
+      </g>
+      <!-- Singapore -->
+      <g class="map-dot" transform="translate(718,188)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Singapore</text>
+      </g>
+      <!-- Lagos -->
+      <g class="map-dot" transform="translate(452,218)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Lagos</text>
+      </g>
+      <!-- New York -->
+      <g class="map-dot" transform="translate(185,118)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">New York</text>
+      </g>
+      <!-- Mumbai -->
+      <g class="map-dot" transform="translate(617,168)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Mumbai</text>
+      </g>
+      <!-- Nairobi -->
+      <g class="map-dot" transform="translate(518,248)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Nairobi</text>
+      </g>
+      <!-- Sydney -->
+      <g class="map-dot" transform="translate(820,340)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Sydney</text>
+      </g>
+      <!-- Toronto -->
+      <g class="map-dot" transform="translate(168,105)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">Toronto</text>
+      </g>
+      <!-- Hong Kong -->
+      <g class="map-dot" transform="translate(738,148)">
+        <circle class="dot-pulse-ring" r="10"/>
+        <circle class="dot-core" r="3.5"/>
+        <text class="dot-label" x="7" y="4">HK</text>
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- Bottom tagline -->
+  <div class="global-footer" data-anim>
+    <p class="global-look">Look around.</p>
+    <p class="global-look-sub">There's a DivergenCIE scholar (and a mentor) near you.</p>
+    <a href="#start" class="btn-gold" style="margin-top:1.8rem;display:inline-flex;">
+      <i data-lucide="globe" style="width:15px;height:15px;"></i>
+      Find Your Coach
+    </a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 6 — "ARE YOU?" PERSONALITY SECTION
+══════════════════════════════════════════════════════════ -->
+<section id="about">
+  <div class="areyou-container">
+
+    <!-- Left col: headline + traits -->
+    <div class="areyou-left" data-anim>
+      <p class="section-label">We're a bunch of oddballs</p>
+      <h2 class="areyou-title">Are<br>you?</h2>
+      <p class="areyou-body">
+        We don't believe in cookie-cutter applications. We find what makes
+        you genuinely <em>different</em> — and build a strategy around it.
+        If any of these sound like you, we should talk.
+      </p>
+
+      <ul class="areyou-traits">
+        <li class="areyou-trait">
+          <span class="trait-icon"><i data-lucide="fingerprint"></i></span>
+          <div>
+            <span class="trait-title">Personalised</span>
+            <span class="trait-desc">No two students. No two strategies.</span>
+          </div>
+        </li>
+        <li class="areyou-trait">
+          <span class="trait-icon"><i data-lucide="git-branch"></i></span>
+          <div>
+            <span class="trait-title">Process-Driven</span>
+            <span class="trait-desc">Structure that creates freedom, not restriction.</span>
+          </div>
+        </li>
+        <li class="areyou-trait">
+          <span class="trait-icon"><i data-lucide="trophy"></i></span>
+          <div>
+            <span class="trait-title">Excellence-Oriented</span>
+            <span class="trait-desc">We only work with students ready to do the work.</span>
+          </div>
+        </li>
+        <li class="areyou-trait">
+          <span class="trait-icon"><i data-lucide="zap"></i></span>
+          <div>
+            <span class="trait-title">Divergent Thinkers</span>
+            <span class="trait-desc">The best applications don't follow the template.</span>
+          </div>
+        </li>
+      </ul>
+
+      <a href="#start" class="btn-gold" style="margin-top:2.5rem;display:inline-flex;">
+        <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
+        Sounds Like Me
+      </a>
+    </div>
+
+    <!-- Right col: card stack -->
+    <div class="areyou-right" data-anim>
+      <div class="areyou-card areyou-card--back"></div>
+      <div class="areyou-card areyou-card--mid"></div>
+      <div class="areyou-card areyou-card--front">
+        <div class="acard-label">Your profile</div>
+        <div class="acard-quote">
+          "I know I'm capable of more. I just need someone who actually gets it."
+        </div>
+        <div class="acard-divider"></div>
+        <div class="acard-tags">
+          <span class="acard-tag">Ambitious</span>
+          <span class="acard-tag">Curious</span>
+          <span class="acard-tag">Under-advised</span>
+          <span class="acard-tag acard-tag--gold">DivergenCIE material</span>
+        </div>
+        <div class="acard-bottom">
+          <div class="acard-stat">
+            <span class="acard-stat-num">98%</span>
+            <span class="acard-stat-label">First choice<br>placement</span>
+          </div>
+          <div class="acard-stat">
+            <span class="acard-stat-num">40+</span>
+            <span class="acard-stat-label">Countries<br>represented</span>
+          </div>
+          <div class="acard-stat">
+            <span class="acard-stat-num">0x</span>
+            <span class="acard-stat-label">Recycled<br>essays</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTIONS 7–15 APPENDED BELOW BY SUBSEQUENT AGENTS
+══════════════════════════════════════════════════════════ -->
+
+<!-- Global Scripts -->
+<script src="js/main.js"></script>
+</body>
+</html>
