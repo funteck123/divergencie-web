@@ -15,12 +15,39 @@
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <!-- Theme Engine (inline to avoid path issues) -->
+  <script>
+    (function(){
+      var s=localStorage.getItem('dc-theme');
+      if(s==='dark') document.documentElement.classList.add('dark');
+    })();
+    document.addEventListener('DOMContentLoaded',function(){
+      var btns=document.querySelectorAll('.theme-toggle');
+      function isDark(){ return document.documentElement.classList.contains('dark'); }
+      function setTheme(dark){
+        if(dark){ document.documentElement.classList.add('dark'); localStorage.setItem('dc-theme','dark'); }
+        else { document.documentElement.classList.remove('dark'); localStorage.setItem('dc-theme','light'); }
+        updateIcons();
+      }
+      function updateIcons(){
+        btns.forEach(function(btn){
+          var sun=btn.querySelector('.theme-icon-sun');
+          var moon=btn.querySelector('.theme-icon-moon');
+          if(sun&&moon){ sun.style.display=isDark()?'block':'none'; moon.style.display=isDark()?'none':'block'; }
+        });
+      }
+      btns.forEach(function(btn){ btn.addEventListener('click',function(){ setTheme(!isDark()); }); });
+      updateIcons();
+    });
+  </script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Lottie Player -->
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <!-- Global Styles -->
   <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="stylesheet" href="css/shared.css"/>
 </head>
 <body>
 
@@ -31,38 +58,48 @@
   <div class="nav-inner">
 
     <!-- Logo -->
-    <a href="/" class="nav-logo">
+    <a href="index.html" class="nav-logo">
       <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
       <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
 
     <!-- Desktop links -->
     <div class="nav-links">
-      <a href="#about">About</a>
+      <a href="about.html">About</a>
       <a href="#results">Results</a>
-      <a href="#services">Services</a>
-      <a href="#testimonials">Stories</a>
-      <a href="#faq">FAQ</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="mock.html">Free Mock</a>
+      <a href="contact.html">Contact</a>
     </div>
 
-    <!-- Desktop CTA -->
-    <a href="#start" class="nav-cta nav-cta-desktop">Get Started</a>
+    <!-- Desktop CTA + Theme Toggle -->
+    <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="theme-toggle" aria-label="Toggle light/dark mode">
+        <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
+    </div>
 
-    <!-- Mobile hamburger -->
-    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
+    <!-- Mobile controls -->
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
 
   </div>
 
   <!-- Mobile menu -->
   <div id="mobile-menu">
-    <a href="#about">About</a>
+    <a href="about.html">About</a>
     <a href="#results">Results</a>
-    <a href="#services">Services</a>
-    <a href="#testimonials">Stories</a>
-    <a href="#faq">FAQ</a>
-    <a href="#start" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
+    <a href="services.html">Services</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="mock.html">Free Mock</a>
+    <a href="contact.html">Contact</a>
+    <a href="contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
 
@@ -81,11 +118,11 @@
     </h1>
     <p class="hero-sub">Oxford &amp; Cambridge-coached &nbsp;·&nbsp; Results that speak louder</p>
     <div class="hero-btns">
-      <a href="#start" class="btn-gold">
-        <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
+      <a href="contact.html" class="btn-gold hero-btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         Start Your Journey
       </a>
-      <a href="#results" class="btn-ghost">See Our Results</a>
+      <a href="#results" class="btn-ghost hero-btn-secondary">See Our Results</a>
     </div>
   </div>
 
@@ -386,7 +423,7 @@
   <div class="global-footer" data-anim>
     <p class="global-look">Look around.</p>
     <p class="global-look-sub">There's a DivergenCIE scholar (and a mentor) near you.</p>
-    <a href="#start" class="btn-gold" style="margin-top:1.8rem;display:inline-flex;">
+    <a href="contact.html" class="btn-gold" style="margin-top:1.8rem;display:inline-flex;">
       <i data-lucide="globe" style="width:15px;height:15px;"></i>
       Find Your Coach
     </a>
@@ -440,7 +477,7 @@
         </li>
       </ul>
 
-      <a href="#start" class="btn-gold" style="margin-top:2.5rem;display:inline-flex;">
+      <a href="services.html" class="btn-gold" style="margin-top:2.5rem;display:inline-flex;">
         <i data-lucide="arrow-right" style="width:15px;height:15px;"></i>
         Sounds Like Me
       </a>
@@ -513,7 +550,7 @@
           <span class="svc-subject">English</span>
           <span class="svc-subject">+ more</span>
         </div>
-        <a href="#start" class="svc-cta">
+        <a href="services.html" class="svc-cta">
           Enrol Now <i data-lucide="arrow-right"></i>
         </a>
       </div>
@@ -531,7 +568,7 @@
           <span class="svc-subject">ACT Science</span>
           <span class="svc-subject">IB HL/SL</span>
         </div>
-        <a href="#start" class="svc-cta">
+        <a href="services.html" class="svc-cta">
           Enrol Now <i data-lucide="arrow-right"></i>
         </a>
       </div>
@@ -548,7 +585,7 @@
           <span class="svc-subject">Speaking Drills</span>
           <span class="svc-subject">Writing Tasks</span>
         </div>
-        <a href="#start" class="svc-cta">
+        <a href="services.html" class="svc-cta">
           Enrol Now <i data-lucide="arrow-right"></i>
         </a>
       </div>
@@ -557,8 +594,8 @@
 
     <div class="services-bottom" data-anim>
       <p class="services-bottom-text">Not sure which programme fits? <strong>We'll tell you in 15 minutes.</strong></p>
-      <a href="#start" class="btn-gold">
-        <i data-lucide="message-circle" style="width:15px;height:15px;"></i>
+      <a href="contact.html" class="btn-gold">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Book a Free Call
       </a>
     </div>
@@ -839,57 +876,44 @@
       <p class="social-sub">Results, revision tips, behind-the-scenes chaos — all on the gram.</p>
     </div>
 
-    <!-- Mocked Instagram grid -->
-    <div class="ig-grid">
-      <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" class="ig-tile ig-tile--wide" aria-label="Instagram post">
-        <div class="ig-tile-bg ig-bg-1"></div>
-        <div class="ig-tile-overlay">
-          <i data-lucide="instagram" class="ig-icon"></i>
-          <span class="ig-tag">#ResultsDrop</span>
-        </div>
+    <!-- Instagram grid with real photos -->
+    <!-- Real Instagram embeds -->
+    <!-- IG_EMBEDS_ENABLED: false — swap to true and restore blockquotes to re-enable live embeds -->
+    <div class="ig-grid-dummy">
+      <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" class="ig-dummy-tile ig-dummy-tile--wide">
+        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80&fit=crop" alt="Graduation celebration" class="ig-dummy-photo"/>
+        <div class="ig-dummy-overlay"><svg class="ig-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span class="ig-dummy-tag">#ResultsDrop 🏆</span></div>
       </a>
-      <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" class="ig-tile" aria-label="Instagram post">
-        <div class="ig-tile-bg ig-bg-2"></div>
-        <div class="ig-tile-overlay">
-          <i data-lucide="instagram" class="ig-icon"></i>
-          <span class="ig-tag">#AStarAlert</span>
-        </div>
+      <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" class="ig-dummy-tile">
+        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80&fit=crop" alt="Student studying" class="ig-dummy-photo"/>
+        <div class="ig-dummy-overlay"><svg class="ig-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span class="ig-dummy-tag">#RevisionMode 📚</span></div>
       </a>
-      <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" class="ig-tile" aria-label="Instagram post">
-        <div class="ig-tile-bg ig-bg-3"></div>
-        <div class="ig-tile-overlay">
-          <i data-lucide="instagram" class="ig-icon"></i>
-          <span class="ig-tag">#RevisionMode</span>
-        </div>
+      <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" class="ig-dummy-tile">
+        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80&fit=crop" alt="Library books" class="ig-dummy-photo"/>
+        <div class="ig-dummy-overlay"><svg class="ig-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span class="ig-dummy-tag">#AStarAlert ⭐</span></div>
       </a>
-      <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" class="ig-tile" aria-label="Instagram post">
-        <div class="ig-tile-bg ig-bg-4"></div>
-        <div class="ig-tile-overlay">
-          <i data-lucide="instagram" class="ig-icon"></i>
-          <span class="ig-tag">#DivergenCIE</span>
-        </div>
+      <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" class="ig-dummy-tile">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&q=80&fit=crop" alt="Student writing" class="ig-dummy-photo"/>
+        <div class="ig-dummy-overlay"><svg class="ig-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span class="ig-dummy-tag">#DivergenCIE 🎓</span></div>
       </a>
-      <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" class="ig-tile ig-tile--tall" aria-label="Instagram post">
-        <div class="ig-tile-bg ig-bg-5"></div>
-        <div class="ig-tile-overlay">
-          <i data-lucide="instagram" class="ig-icon"></i>
-          <span class="ig-tag">#TopperVibes</span>
-        </div>
+      <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" class="ig-dummy-tile ig-dummy-tile--tall">
+        <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=800&q=80&fit=crop" alt="Graduates throwing caps" class="ig-dummy-photo"/>
+        <div class="ig-dummy-overlay"><svg class="ig-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span class="ig-dummy-tag">#TopperVibes 🌍</span></div>
       </a>
     </div>
 
-    <!-- Social CTA buttons -->
+    <!-- Social CTA buttons — improved design -->
     <div class="social-cta-row">
-      <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" class="social-cta-btn social-cta-ig">
-        <i data-lucide="instagram"></i>
-        <span>@divergencie</span>
+      <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" class="social-cta-btn social-cta-ig">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span>@divergencie_coaching</span>
       </a>
-      <a href="https://linkedin.com/company/divergencie" target="_blank" rel="noopener" class="social-cta-btn social-cta-li">
-        <i data-lucide="linkedin"></i>
+      <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener" class="social-cta-btn social-cta-li">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
         <span>DivergenCIE Coaching</span>
       </a>
-      <a href="https://wa.me/divergencie" target="_blank" rel="noopener" class="social-cta-btn social-cta-wa">
-        <i data-lucide="message-circle"></i>
+      <a href="https://wa.me/919650675507" target="_blank" rel="noopener" class="social-cta-btn social-cta-wa">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span>WhatsApp Us</span>
       </a>
     </div>
@@ -1002,8 +1026,8 @@
       <p class="footer-cta-sub">We Know You Can.</p>
     </div>
     <div class="footer-cta-btns">
-      <a href="#enrol" class="btn-gold footer-cta-btn">Enrol Now</a>
-      <a href="#mock" class="btn-outline-white footer-cta-btn">Try Free Mock</a>
+      <a href="contact.html" class="btn-gold footer-cta-btn">Enrol Now</a>
+      <a href="mock.html" class="btn-outline-white footer-cta-btn">Try Free Mock</a>
     </div>
   </div>
 </section>
@@ -1018,17 +1042,17 @@
       <p class="footer-tagline">World &amp; Country Toppers.<br>Prestige. Results.</p>
       <p class="footer-domain">divergencie.co.uk</p>
       <div class="footer-social">
-        <a href="https://instagram.com/divergencie" target="_blank" rel="noopener" aria-label="Instagram">
-          <i data-lucide="instagram"></i>
+        <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
-        <a href="https://linkedin.com/company/divergencie" target="_blank" rel="noopener" aria-label="LinkedIn">
-          <i data-lucide="linkedin"></i>
+        <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
         </a>
         <a href="https://wa.me/divergencie" target="_blank" rel="noopener" aria-label="WhatsApp">
-          <i data-lucide="message-circle"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </a>
         <a href="https://google.com" target="_blank" rel="noopener" aria-label="Google Reviews">
-          <i data-lucide="star"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </a>
       </div>
     </div>
@@ -1037,12 +1061,12 @@
     <div class="footer-col">
       <h4 class="footer-col-title">Quick Links</h4>
       <ul class="footer-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Pricing</a></li>
-        <li><a href="#">Careers</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="careers.html">Careers</a></li>
+        <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>
 
@@ -1050,13 +1074,13 @@
     <div class="footer-col">
       <h4 class="footer-col-title">Services</h4>
       <ul class="footer-links">
-        <li><a href="#">IGCSE Coaching</a></li>
-        <li><a href="#">A Level Coaching</a></li>
-        <li><a href="#">AP Coaching</a></li>
-        <li><a href="#">IB Coaching</a></li>
-        <li><a href="#">SAT Prep</a></li>
-        <li><a href="#">IELTS / TOEFL</a></li>
-        <li><a href="#">Free Mock Simulator</a></li>
+        <li><a href="services/igcse.html">IGCSE Coaching</a></li>
+        <li><a href="services/a-level.html">A Level Coaching</a></li>
+        <li><a href="services/ap.html">AP Coaching</a></li>
+        <li><a href="services/ib.html">IB Coaching</a></li>
+        <li><a href="services/sat-act.html">SAT Prep</a></li>
+        <li><a href="services/ielts-toefl.html">IELTS / TOEFL</a></li>
+        <li><a href="mock.html">Free Mock Simulator</a></li>
       </ul>
     </div>
 
@@ -1065,19 +1089,19 @@
       <h4 class="footer-col-title">Contact &amp; Social</h4>
       <ul class="footer-contact">
         <li>
-          <i data-lucide="message-circle" class="footer-contact-icon"></i>
-          <a href="https://wa.me/divergencie" target="_blank" rel="noopener">WhatsApp Us</a>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <a href="https://wa.me/919650675507" target="_blank" rel="noopener">WhatsApp Us</a>
         </li>
         <li>
-          <i data-lucide="instagram" class="footer-contact-icon"></i>
-          <a href="https://instagram.com/divergencie" target="_blank" rel="noopener">@divergencie</a>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener">@divergencie_coaching</a>
         </li>
         <li>
-          <i data-lucide="linkedin" class="footer-contact-icon"></i>
-          <a href="https://linkedin.com/company/divergencie" target="_blank" rel="noopener">DivergenCIE</a>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener">DivergenCIE Coaching</a>
         </li>
         <li>
-          <i data-lucide="map-pin" class="footer-contact-icon"></i>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span>UK &middot; MY &middot; IN &middot; KSA &middot; PK</span>
         </li>
       </ul>

@@ -27,7 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ── Lucide icons ── */
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  function initLucide() { if (typeof lucide !== 'undefined') lucide.createIcons(); }
+  initLucide();
+  // Re-run after Instagram embed.js may have mutated DOM
+  setTimeout(initLucide, 800);
+  setTimeout(initLucide, 2000);
 
   /* ── Intersection Observer for scroll animations ── */
   const animEls = document.querySelectorAll('[data-anim]');

@@ -1,0 +1,349 @@
+/* ============================================================
+   DivergenCIE Coaching — Inner Pages CSS
+   Load order: shared.css → inner.css
+   Used by: about, services, pricing, resources, careers, contact
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── INNER BODY ── */
+body { font-family: 'Inter', sans-serif; }
+
+/* ── PAGE HERO (inner) ── */
+.inner-hero {
+  padding: 9rem 2rem 5rem;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+html.dark .inner-hero { background: #0a0f1a; }
+.inner-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 60% 0%, rgba(232,168,50,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+.inner-hero-label {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1rem;
+  display: block;
+}
+.inner-hero h1 {
+  font-family: 'Satoshi', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900; letter-spacing: -0.03em;
+  color: #ffffff; line-height: 1.08;
+  margin-bottom: 1.1rem;
+}
+.inner-hero h1 span { color: var(--gold); }
+.inner-hero p {
+  font-size: 1.05rem; color: rgba(255,255,255,0.65);
+  max-width: 580px; margin: 0 auto 2rem; line-height: 1.65;
+}
+.inner-hero-breadcrumb {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.5rem; font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 1.5rem;
+}
+.inner-hero-breadcrumb a { color: rgba(255,255,255,0.4); transition: color 0.2s; }
+.inner-hero-breadcrumb a:hover { color: var(--gold); }
+.inner-hero-breadcrumb span { color: rgba(255,255,255,0.25); }
+
+/* ── INNER SECTION ── */
+.inner-section {
+  padding: 5rem 2rem;
+  max-width: 1200px; margin: 0 auto;
+}
+.inner-section--wide { max-width: 1400px; }
+.inner-section--narrow { max-width: 860px; }
+.inner-section--alt { background: var(--bg-secondary); }
+.inner-section--alt .inner-section { background: transparent; }
+
+.section-wrap-alt {
+  background: var(--bg-secondary);
+  padding: 5rem 2rem;
+}
+.section-wrap-alt .inner-section {
+  padding: 0; margin: 0 auto;
+}
+
+/* Section header */
+.inner-section-head {
+  margin-bottom: 3rem;
+}
+.inner-section-head--center { text-align: center; }
+.inner-section-head h2 {
+  font-family: 'Satoshi', sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 900; letter-spacing: -0.03em;
+  color: var(--text-primary); line-height: 1.12;
+  margin-bottom: 0.75rem;
+}
+.inner-section-head h2 span { color: var(--gold); }
+.inner-section-head p {
+  font-size: 1rem; color: var(--text-muted);
+  max-width: 600px; line-height: 1.7;
+}
+.inner-section-head--center p { margin: 0 auto; }
+
+/* ── ABOUT: STORY SPLIT ── */
+.about-story {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.about-story-img {
+  position: relative;
+}
+.about-story-img-main {
+  width: 100%; aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.about-story-img-accent {
+  position: absolute;
+  bottom: -1.5rem; right: -1.5rem;
+  width: 48%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 4px solid var(--bg-primary);
+  box-shadow: var(--shadow);
+}
+.about-story-gold-bar {
+  width: 40px; height: 4px;
+  background: var(--gold);
+  margin-bottom: 1.5rem;
+}
+.about-story-text h2 {
+  font-family: 'Satoshi', sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 900; letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem; line-height: 1.12;
+}
+.about-story-text h2 span { color: var(--gold); }
+.about-story-text p {
+  font-size: 0.95rem; color: var(--text-muted);
+  line-height: 1.75; margin-bottom: 1rem;
+}
+.about-story-stats {
+  display: flex; gap: 2.5rem;
+  margin-top: 2rem; padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.about-story-stat-val {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 2rem; font-weight: 900;
+  letter-spacing: -0.03em; color: var(--gold);
+  line-height: 1;
+}
+.about-story-stat-label {
+  font-size: 0.75rem; font-weight: 600;
+  color: var(--text-muted); margin-top: 0.3rem;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+
+/* ── MISSION / VISION CARDS ── */
+.mv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.mv-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+.mv-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--gold);
+}
+.mv-card-icon {
+  width: 44px; height: 44px;
+  background: var(--gold-pale);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1.25rem;
+  color: var(--gold);
+}
+.mv-card-icon svg { width: 22px; height: 22px; }
+.mv-card h3 {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 1.05rem; font-weight: 800;
+  letter-spacing: -0.02em; color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+.mv-card p {
+  font-size: 0.88rem; color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ── TEACHER CARDS ── */
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.teacher-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  transition: box-shadow 0.22s, transform 0.22s;
+}
+.teacher-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+}
+.teacher-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 3px solid var(--gold-pale);
+  background: var(--bg-secondary);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 1.5rem; font-weight: 900;
+  color: var(--gold);
+}
+.teacher-avatar img {
+  width: 100%; height: 100%;
+  border-radius: 50%; object-fit: cover;
+}
+.teacher-name {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 1rem; font-weight: 800;
+  letter-spacing: -0.02em; color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+.teacher-subject {
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 0.6rem;
+}
+.teacher-qual {
+  font-size: 0.8rem; color: var(--text-muted);
+  line-height: 1.5;
+}
+.teacher-badge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  background: var(--gold-pale); color: var(--gold);
+  border-radius: 100px;
+}
+
+/* ── TOPPERS STRIP ── */
+.toppers-strip {
+  background: var(--navy);
+  padding: 4rem 2rem;
+  text-align: center;
+}
+html.dark .toppers-strip { background: #0a0f1a; border-top: 1px solid var(--border); }
+.toppers-strip h2 {
+  font-family: 'Satoshi', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 900; letter-spacing: -0.03em;
+  color: #fff; margin-bottom: 0.75rem;
+}
+.toppers-strip h2 span { color: var(--gold); }
+.toppers-strip p {
+  color: rgba(255,255,255,0.55); font-size: 0.95rem;
+  max-width: 560px; margin: 0 auto 2.5rem; line-height: 1.65;
+}
+.toppers-grid {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; gap: 1rem;
+  max-width: 900px; margin: 0 auto;
+}
+.topper-pill {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  padding: 0.6rem 1.25rem;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.topper-pill-flag { font-size: 1.1rem; }
+.topper-pill-name {
+  font-size: 0.8rem; font-weight: 700;
+  color: #fff; letter-spacing: 0.02em;
+}
+.topper-pill-score {
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.05em;
+}
+
+/* ── ACCREDITATIONS ── */
+.accred-section {
+  padding: 3.5rem 2rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.accred-label {
+  font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 1.75rem;
+}
+.accred-logos {
+  display: flex; align-items: center;
+  justify-content: center; gap: 3rem;
+  flex-wrap: wrap;
+}
+.accred-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.5rem;
+}
+.accred-logo-badge {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1.75rem;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.04em; color: var(--text-primary);
+}
+.accred-sub {
+  font-size: 0.68rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+/* ── INNER NAV OVERRIDES ── */
+/* Inner pages: nav links use root-relative hrefs */
+#nav.inner-nav .nav-links a { color: var(--text-muted); }
+#nav.inner-nav.scrolled .nav-links a { color: var(--text-muted); }
+#nav.inner-nav { background: var(--navy); }
+html.dark #nav.inner-nav { background: #0a0f1a; }
+#nav.inner-nav .nav-logo-text { color: #fff; }
+#nav.inner-nav.scrolled {
+  background: rgba(26,60,94,0.96);
+}
+html.dark #nav.inner-nav.scrolled { background: rgba(10,10,10,0.96); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .about-story { grid-template-columns: 1fr; gap: 2.5rem; }
+  .about-story-img-accent { display: none; }
+  .mv-grid { grid-template-columns: repeat(2, 1fr); }
+  .teachers-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .mv-grid { grid-template-columns: 1fr; }
+  .teachers-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-story-stats { gap: 1.5rem; flex-wrap: wrap; }
+  .inner-section { padding: 3.5rem 1.25rem; }
+  .inner-hero { padding: 7rem 1.25rem 3.5rem; }
+}

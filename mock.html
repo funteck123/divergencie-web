@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Free Mock Simulator — DivergenCIE Coaching</title>
+  <meta name="description" content="Take a free timed mock exam — IGCSE, A Level, AP, IB, SAT/ACT, IELTS/TOEFL. Get instant results and a personalised A* gap analysis."/>
+  <link rel="preconnect" href="https://api.fontshare.com"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="js/theme.js"></script>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <link rel="stylesheet" href="css/inner.css"/>
+  <style>
+    /* ── MOCK LANDING HERO ── */
+    .mock-hero {
+      padding: 9rem 2rem 5rem;
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    html.dark .mock-hero { background: #040810; }
+    .mock-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(245,200,66,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 20%, rgba(74,159,212,0.10) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .mock-hero-badge {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      background: rgba(245,200,66,0.12); border: 1px solid rgba(245,200,66,0.3);
+      color: var(--gold); font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.35rem 0.9rem; border-radius: 100px; margin-bottom: 1.25rem;
+    }
+    .mock-hero h1 {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.12;
+      color: #fff; margin-bottom: 1rem;
+    }
+    .mock-hero h1 span { color: var(--gold); }
+    .mock-hero-sub {
+      font-family: 'Inter', sans-serif; font-size: 1rem; line-height: 1.7;
+      color: rgba(255,255,255,0.7); max-width: 560px; margin: 0 auto 2rem;
+    }
+    .mock-hero-ctas {
+      display: flex; align-items: center; justify-content: center;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;
+    }
+    .btn-mock-start {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--gold); color: #0a0a0a;
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 0.85rem; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.95rem 2rem; border-radius: 8px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-mock-start:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-mock-ghost {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: transparent; color: rgba(255,255,255,0.8);
+      font-family: 'Satoshi', sans-serif; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.95rem 1.75rem; border-radius: 8px;
+      text-decoration: none; border: 1px solid rgba(255,255,255,0.2);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-mock-ghost:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+    /* ── STATS TICKER ── */
+    .mock-stats-bar {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 0; border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2.5rem;
+    }
+    .mock-stat {
+      text-align: center; padding: 0 2.5rem;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .mock-stat:last-child { border-right: none; }
+    .mock-stat-num {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 2rem; color: var(--gold); line-height: 1;
+    }
+    .mock-stat-label {
+      font-size: 0.72rem; color: rgba(255,255,255,0.5);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+    @media (max-width: 600px) {
+      .mock-stats-bar { gap: 1rem; }
+      .mock-stat { border-right: none; padding: 0 1rem; }
+    }
+
+    /* ── SUBJECT SELECTOR ── */
+    .mock-configurator {
+      max-width: 900px; margin: 0 auto;
+      padding: 4.5rem 1.5rem 2rem;
+    }
+    .config-section-title {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--charcoal); margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    html.dark .config-section-title { color: #fff; }
+    .config-step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--navy); color: #fff;
+      font-size: 0.72rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    html.dark .config-step-num { background: var(--gold); color: #0a0a0a; }
+
+    /* Subject grid */
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin-bottom: 2.5rem;
+    }
+    @media (max-width: 640px) { .subject-grid { grid-template-columns: repeat(2, 1fr); } }
+    .subject-card {
+      border: 2px solid transparent;
+      border-radius: 14px;
+      padding: 1.25rem 1rem 1rem;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    html.dark .subject-card {
+      background: #111;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .subject-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    html.dark .subject-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .subject-card.selected {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(232,168,50,0.18);
+    }
+    .subject-card-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin: 0 auto 0.7rem;
+    }
+    .subject-card-name {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 0.92rem; color: var(--charcoal);
+      margin-bottom: 0.2rem;
+    }
+    html.dark .subject-card-name { color: #fff; }
+    .subject-card-sub {
+      font-size: 0.68rem; color: var(--text-muted); line-height: 1.4;
+    }
+    .subject-card-check {
+      position: absolute; top: 0.6rem; right: 0.6rem;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--gold); color: #0a0a0a;
+      display: none; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 900;
+    }
+    .subject-card.selected .subject-card-check { display: flex; }
+
+    /* Level selector */
+    .level-options {
+      display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.5rem;
+    }
+    .level-btn {
+      padding: 0.6rem 1.35rem;
+      border-radius: 100px; border: 2px solid #ddd;
+      background: #fff; cursor: pointer;
+      font-family: 'Satoshi', sans-serif; font-weight: 700;
+      font-size: 0.8rem; color: var(--charcoal);
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    html.dark .level-btn { background: #111; border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.75); }
+    .level-btn:hover { border-color: var(--gold); }
+    .level-btn.selected { background: var(--navy); border-color: var(--navy); color: #fff; }
+    html.dark .level-btn.selected { background: var(--gold); border-color: var(--gold); color: #0a0a0a; }
+
+    /* Difficulty selector */
+    .difficulty-options {
+      display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 3rem;
+    }
+    .diff-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.35rem; border-radius: 10px;
+      border: 2px solid #ddd; background: #fff; cursor: pointer;
+      font-family: 'Satoshi', sans-serif; font-weight: 700;
+      font-size: 0.8rem; color: var(--charcoal);
+      transition: all 0.15s;
+    }
+    html.dark .diff-btn { background: #111; border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.75); }
+    .diff-btn:hover { border-color: var(--gold); }
+    .diff-btn.selected { border-color: var(--gold); background: rgba(232,168,50,0.08); }
+    html.dark .diff-btn.selected { background: rgba(245,200,66,0.1); border-color: var(--gold); color: #f5c842; }
+    .diff-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* CTA launch bar */
+    .mock-launch-bar {
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem; flex-wrap: wrap;
+      margin-bottom: 5rem;
+    }
+    html.dark .mock-launch-bar { background: #111; border: 1px solid rgba(255,255,255,0.08); }
+    .mock-launch-summary {
+      font-family: 'Satoshi', sans-serif;
+    }
+    .mock-launch-summary-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.4rem;
+    }
+    .mock-launch-summary-val {
+      font-size: 1rem; font-weight: 900; color: #fff; line-height: 1.35;
+    }
+    .mock-launch-summary-val span { color: var(--gold); }
+    .btn-launch {
+      display: inline-flex; align-items: center; gap: 0.65rem;
+      background: var(--gold); color: #0a0a0a;
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 1rem 2.25rem; border-radius: 10px; border: none; cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
+    }
+    .btn-launch:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-launch:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      background: var(--light-bg);
+      padding: 5rem 2rem;
+    }
+    html.dark .how-section { background: #0d0d0d; }
+    .how-section-inner {
+      max-width: 960px; margin: 0 auto;
+      text-align: center;
+    }
+    .how-section-title {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--charcoal); margin-bottom: 0.5rem;
+    }
+    html.dark .how-section-title { color: #fff; }
+    .how-section-sub {
+      font-size: 0.9rem; color: var(--text-muted); margin-bottom: 3rem;
+    }
+    .how-steps {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 700px) { .how-steps { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 420px) { .how-steps { grid-template-columns: 1fr; } }
+    .how-step {
+      background: #fff; border-radius: 16px;
+      padding: 2rem 1.25rem 1.5rem;
+      position: relative;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+    html.dark .how-step { background: #111; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    .how-step:hover { transform: translateY(-4px); }
+    .how-step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gold); color: #0a0a0a;
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .how-step-icon {
+      font-size: 1.6rem; margin-bottom: 0.75rem;
+    }
+    .how-step-title {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 0.92rem; color: var(--charcoal); margin-bottom: 0.5rem;
+    }
+    html.dark .how-step-title { color: #fff; }
+    .how-step-desc {
+      font-size: 0.78rem; color: var(--text-muted); line-height: 1.6;
+    }
+    /* connector line */
+    .how-steps { position: relative; }
+
+    /* ── PAST STATS TICKER ── */
+    .stats-ticker-section {
+      background: var(--navy);
+      padding: 3.5rem 2rem;
+      text-align: center;
+    }
+    html.dark .stats-ticker-section { background: #040810; }
+    .stats-ticker-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: rgba(255,255,255,0.4);
+      margin-bottom: 2rem;
+    }
+    .ticker-wrap {
+      overflow: hidden; position: relative;
+      max-width: 900px; margin: 0 auto;
+    }
+    .ticker-wrap::before,
+    .ticker-wrap::after {
+      content: ''; position: absolute; top: 0; bottom: 0; width: 80px;
+      z-index: 2; pointer-events: none;
+    }
+    .ticker-wrap::before { left: 0; background: linear-gradient(to right, var(--navy), transparent); }
+    .ticker-wrap::after { right: 0; background: linear-gradient(to left, var(--navy), transparent); }
+    html.dark .ticker-wrap::before { background: linear-gradient(to right, #040810, transparent); }
+    html.dark .ticker-wrap::after { background: linear-gradient(to left, #040810, transparent); }
+    .ticker-track {
+      display: flex; gap: 2.5rem;
+      animation: ticker-scroll 28s linear infinite;
+      width: max-content;
+    }
+    @keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      white-space: nowrap;
+    }
+    .ticker-score {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 1.05rem; color: var(--gold);
+    }
+    .ticker-detail {
+      font-size: 0.78rem; color: rgba(255,255,255,0.65);
+    }
+    .ticker-divider {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); flex-shrink: 0;
+    }
+
+    /* ── ENROL CTA STRIP (bottom of landing) ── */
+    .mock-enrol-strip {
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+    .mock-enrol-strip h2 {
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--charcoal); margin-bottom: 0.6rem;
+    }
+    html.dark .mock-enrol-strip h2 { color: #fff; }
+    .mock-enrol-strip p {
+      font-size: 0.9rem; color: var(--text-muted);
+      max-width: 480px; margin: 0 auto 2rem;
+    }
+    .mock-enrol-btns {
+      display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .btn-navy {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      background: var(--navy); color: #fff;
+      font-family: 'Satoshi', sans-serif; font-weight: 900;
+      font-size: 0.82rem; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.9rem 1.75rem; border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-navy:hover { opacity: 0.85; }
+    html.dark .btn-navy { background: var(--gold); color: #0a0a0a; }
+
+    /* config section wrapper */
+    .config-wrapper {
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    html.dark .config-wrapper {
+      background: #080808;
+      border-bottom-color: rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LANDING VIEW (shown by default)
+════════════════════════════════════════════ -->
+<div id="landing-view">
+
+<!-- ── NAV ── -->
+<nav id="nav" class="inner-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.jpg" alt="DivergenCIE logo"/>
+      <span class="nav-logo-text" style="color:#fff;">Divergen<span>CIE</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="mock.html" style="color:var(--gold);">Free Mock</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="auth/login.html" class="nav-cta nav-cta-desktop" style="background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:#fff;margin-right:0.5rem;">Sign In</a><a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu">
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="mock.html" style="color:var(--gold);">Free Mock</a>
+    <a href="contact.html">Contact</a>
+    <a href="contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;">Get Started</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="mock-hero">
+  <div class="mock-hero-badge">
+    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Timed · Free · No Sign-Up Required
+  </div>
+  <h1>Test Yourself Like It's<br/><span>Exam Day</span></h1>
+  <p class="mock-hero-sub">Pick your subject, set your difficulty, and attempt a real past paper question set — timed, just like the actual exam. Get instant results and see exactly where your A* gaps are.</p>
+  <div class="mock-hero-ctas">
+    <button class="btn-mock-start" onclick="document.getElementById('configurator').scrollIntoView({behavior:'smooth'})">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Start Free Mock
+    </button>
+    <a href="contact.html" class="btn-mock-ghost">
+      Enrol for Full Coaching
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+  <div class="mock-stats-bar" data-anim>
+    <div class="mock-stat">
+      <div class="mock-stat-num">12,400+</div>
+      <div class="mock-stat-label">Mocks Attempted</div>
+    </div>
+    <div class="mock-stat">
+      <div class="mock-stat-num">78%</div>
+      <div class="mock-stat-label">Improve on Retake</div>
+    </div>
+    <div class="mock-stat">
+      <div class="mock-stat-num">6</div>
+      <div class="mock-stat-label">Qualifications</div>
+    </div>
+    <div class="mock-stat">
+      <div class="mock-stat-num">Free</div>
+      <div class="mock-stat-label">Always</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONFIGURATOR ── -->
+<div class="config-wrapper" id="configurator">
+  <div class="mock-configurator">
+
+    <!-- Step 1: Choose Subject -->
+    <div class="config-step" data-anim>
+      <p class="config-section-title">
+        <span class="config-step-num">1</span>
+        Choose Your Qualification
+      </p>
+      <div class="subject-grid">
+
+        <div class="subject-card" data-subject="igcse" onclick="selectSubject(this)">
+          <div class="subject-card-icon" style="background:#e8f4fb;">📘</div>
+          <div class="subject-card-name">IGCSE</div>
+          <div class="subject-card-sub">Cambridge · Grades 9–11</div>
+          <span class="subject-card-check">✓</span>
+        </div>
+
+        <div class="subject-card" data-subject="alevel" onclick="selectSubject(this)">
+          <div class="subject-card-icon" style="background:#f0ebfa;">📗</div>
+          <div class="subject-card-name">A Level</div>
+          <div class="subject-card-sub">Cambridge · AS & A2</div>
+          <span class="subject-card-check">✓</span>
+        </div>
+
+        <div class="subject-card" data-subject="ap" onclick="selectSubject(this)">
+          <div class="subject-card-icon" style="background:#fff3e0;">📙</div>
+          <div class="subject-card-name">AP</div>
+          <div class="subject-card-sub">CollegeBoard · US Curriculum</div>
+          <span class="subject-card-check">✓</span>
+        </div>
+
+        <div class="subject-card" data-subject="ib" onclick="selectSubject(this)">
+          <div class="subject-card-icon" style="background:#e8f5e9;">📕</div>
+          <div class="subject-card-name">IB Diploma</div>
+          <div class="subject-card-sub">IB World School · DP1 & DP2</div>
+          <span class="subject-card-check">✓</span>
+        </div>
+
+        <div class="subject-card" data-subject="sat" onclick="selectSubject(this)">
+          <div class="subject-card-icon" style="background:#fce4ec;">📓</div>
+          <div class="subject-card-name">SAT / ACT</div>
+          <div class="subject-card-sub">US College Admissions</div>
+          <span class="subject-card-check">✓</span>
+        </div>
+
+        <div class="subject-card" data-subject="ielts" onclick="selectSubject(this)">
+          <div class="subject-card-icon" style="background:#e0f2f1;">📔</div>
+          <div class="subject-card-name">IELTS / TOEFL</div>
+          <div class="subject-card-sub">Language Proficiency Tests</div>
+          <span class="subject-card-check">✓</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Step 2: Paper / Level -->
+    <div class="config-step" id="step-level" style="opacity:0.4;pointer-events:none;transition:opacity 0.3s;" data-anim>
+      <p class="config-section-title">
+        <span class="config-step-num">2</span>
+        Select Paper / Level
+      </p>
+      <div class="level-options" id="level-options">
+        <!-- Populated by JS based on subject -->
+      </div>
+    </div>
+
+    <!-- Step 3: Difficulty -->
+    <div class="config-step" id="step-diff" style="opacity:0.4;pointer-events:none;transition:opacity 0.3s;" data-anim>
+      <p class="config-section-title">
+        <span class="config-step-num">3</span>
+        Set Difficulty
+      </p>
+      <div class="difficulty-options">
+        <button class="diff-btn" data-diff="foundation" onclick="selectDiff(this)">
+          <span class="diff-dot" style="background:#4caf50;"></span> Foundation
+          <span style="font-weight:400;color:var(--text-muted);font-size:0.72rem;">Grade C–B target</span>
+        </button>
+        <button class="diff-btn" data-diff="astar" onclick="selectDiff(this)">
+          <span class="diff-dot" style="background:#e8a832;"></span> A* Track
+          <span style="font-weight:400;color:var(--text-muted);font-size:0.72rem;">Grade A–A* target</span>
+        </button>
+        <button class="diff-btn" data-diff="worldtopper" onclick="selectDiff(this)">
+          <span class="diff-dot" style="background:#e05a4e;"></span> World Topper
+          <span style="font-weight:400;color:var(--text-muted);font-size:0.72rem;">Top 0.1% globally</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Launch Bar -->
+    <div class="mock-launch-bar" id="launch-bar" data-anim>
+      <div class="mock-launch-summary">
+        <div class="mock-launch-summary-label">Your Mock Session</div>
+        <div class="mock-launch-summary-val" id="launch-summary">Select a qualification above to begin</div>
+      </div>
+      <button class="btn-launch" id="btn-launch" disabled onclick="launchMock()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Start Timed Mock
+      </button>
+    </div>
+
+  </div><!-- /mock-configurator -->
+</div><!-- /config-wrapper -->
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how-section">
+  <div class="how-section-inner" data-anim>
+    <h2 class="how-section-title">How the Mock Simulator Works</h2>
+    <p class="how-section-sub">Four steps from zero to knowing exactly where your A* gaps are.</p>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <div class="how-step-icon">🎯</div>
+        <div class="how-step-title">Pick Your Exam</div>
+        <p class="how-step-desc">Choose your qualification, paper, and difficulty. No account needed — start in 30 seconds.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <div class="how-step-icon">⏱️</div>
+        <div class="how-step-title">Timed Conditions</div>
+        <p class="how-step-desc">A real countdown timer. Same pressure, same format. Flag questions and navigate freely — just like the real paper.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <div class="how-step-icon">📊</div>
+        <div class="how-step-title">Instant Results</div>
+        <p class="how-step-desc">Score breakdown by topic, accuracy rate, time per question, and a clear A* gap analysis.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">4</div>
+        <div class="how-step-icon">🚀</div>
+        <div class="how-step-title">Know Your Gaps</div>
+        <p class="how-step-desc">See exactly which topics are holding you back. Enrol to get a personalised A* plan built around your results.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PAST STATS TICKER ── -->
+<section class="stats-ticker-section">
+  <div class="stats-ticker-label">Recent DivergenCIE Mock Results</div>
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="ticker-track">
+      <!-- first set -->
+      <div class="ticker-item"><span class="ticker-score">1580 / 1600</span><span class="ticker-detail">SAT — Aryan M., Malaysia</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">A* IGCSE Maths</span><span class="ticker-detail">Zara K., United Kingdom</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">43 / 45 IB</span><span class="ticker-detail">Priya S., India</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">Band 8.5 IELTS</span><span class="ticker-detail">Ahmed R., Saudi Arabia</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">5 AP Calculus BC</span><span class="ticker-detail">Sana W., Pakistan</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">A* A Level Physics</span><span class="ticker-detail">Rohan P., Malaysia</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">35 ACT Composite</span><span class="ticker-detail">Fatima N., United Kingdom</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">A* IGCSE Chemistry</span><span class="ticker-detail">Dhruv T., India</span></div>
+      <div class="ticker-divider"></div>
+      <!-- duplicate for seamless loop -->
+      <div class="ticker-item"><span class="ticker-score">1580 / 1600</span><span class="ticker-detail">SAT — Aryan M., Malaysia</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">A* IGCSE Maths</span><span class="ticker-detail">Zara K., United Kingdom</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">43 / 45 IB</span><span class="ticker-detail">Priya S., India</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">Band 8.5 IELTS</span><span class="ticker-detail">Ahmed R., Saudi Arabia</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">5 AP Calculus BC</span><span class="ticker-detail">Sana W., Pakistan</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">A* A Level Physics</span><span class="ticker-detail">Rohan P., Malaysia</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">35 ACT Composite</span><span class="ticker-detail">Fatima N., United Kingdom</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><span class="ticker-score">A* IGCSE Chemistry</span><span class="ticker-detail">Dhruv T., India</span></div>
+      <div class="ticker-divider"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ENROL CTA STRIP ── -->
+<section class="mock-enrol-strip" data-anim>
+  <h2>Like What You See? Imagine What Coaching Does.</h2>
+  <p>The mock gives you a snapshot. DivergenCIE's 1-to-1 coaching gives you the full A* roadmap — paced to your exam date, built around your weak areas.</p>
+  <div class="mock-enrol-btns">
+    <a href="contact.html" class="btn-navy">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Book a Free Consultation
+    </a>
+    <a href="pricing.html" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.9rem 1.6rem;border-radius:8px;border:2px solid #ddd;font-family:'Satoshi',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.07em;text-transform:uppercase;color:var(--charcoal);text-decoration:none;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='#ddd'">View Pricing</a>
+  </div>
+</section>
+
+<!-- ── FOOTER CTA ── -->
+<section class="footer-cta">
+  <div class="footer-cta-inner">
+    <div class="footer-cta-text">
+      <h2 class="footer-cta-headline">Think You Can Get A*?</h2>
+      <p class="footer-cta-sub">We Know You Can.</p>
+    </div>
+    <div class="footer-cta-btns">
+      <a href="contact.html" class="btn-gold footer-cta-btn">Enrol Now</a>
+      <a href="mock.html" class="btn-outline-white footer-cta-btn">Try Free Mock</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-col footer-brand">
+      <img src="assets/images/logo.jpg" alt="DivergenCIE" class="footer-logo">
+      <p class="footer-tagline">World &amp; Country Toppers.<br>Prestige. Results.</p>
+      <p class="footer-domain">divergencie.co.uk</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://wa.me/919650675507" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Quick Links</h4>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="careers.html">Careers</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Services</h4>
+      <ul class="footer-links">
+        <li><a href="services/igcse.html">IGCSE Coaching</a></li>
+        <li><a href="services/a-level.html">A Level Coaching</a></li>
+        <li><a href="services/ap.html">AP Coaching</a></li>
+        <li><a href="services/ib.html">IB Coaching</a></li>
+        <li><a href="services/sat-act.html">SAT / ACT Prep</a></li>
+        <li><a href="services/ielts-toefl.html">IELTS / TOEFL</a></li>
+        <li><a href="mock.html" style="color:var(--gold);">Free Mock Simulator</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Contact &amp; Social</h4>
+      <ul class="footer-contact">
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <a href="https://wa.me/919650675507" target="_blank" rel="noopener">WhatsApp Us</a>
+        </li>
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener">@divergencie_coaching</a>
+        </li>
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener">DivergenCIE Coaching</a>
+        </li>
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>UK · MY · IN · KSA · PK</span>
+        </li>
+      </ul>
+      <div class="footer-accreditations">
+        <span class="footer-accred-badge">Cambridge Authorised</span>
+        <span class="footer-accred-badge">CollegeBoard Partner</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 DivergenCIE Educational Consultancy Pvt Ltd. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
+  });
+
+  // Scroll animations
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('anim-visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('[data-anim]').forEach(el => obs.observe(el));
+
+  // ── CONFIGURATOR STATE ──
+  const SUBJECT_LEVELS = {
+    igcse:   ['IGCSE Maths', 'IGCSE Physics', 'IGCSE Chemistry', 'IGCSE Biology', 'IGCSE Economics', 'IGCSE English'],
+    alevel:  ['AS Level', 'A Level (Full)', 'A Level Maths', 'A Level Physics', 'A Level Chemistry', 'A Level Economics'],
+    ap:      ['AP Calculus BC', 'AP Physics C', 'AP Chemistry', 'AP Biology', 'AP Statistics', 'AP Economics'],
+    ib:      ['HL Maths AA', 'HL Physics', 'HL Chemistry', 'SL Maths AI', 'SL Economics', 'Theory of Knowledge'],
+    sat:     ['SAT Math', 'SAT Reading & Writing', 'Full SAT Paper', 'ACT Math', 'ACT Science', 'Full ACT Paper'],
+    ielts:   ['IELTS Reading', 'IELTS Writing T1', 'IELTS Writing T2', 'IELTS Listening', 'TOEFL Reading', 'TOEFL Writing']
+  };
+
+  const SUBJECT_LABELS = {
+    igcse: 'IGCSE', alevel: 'A Level', ap: 'AP', ib: 'IB Diploma', sat: 'SAT / ACT', ielts: 'IELTS / TOEFL'
+  };
+
+  let state = { subject: null, level: null, diff: null };
+
+  function selectSubject(card) {
+    document.querySelectorAll('.subject-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.subject = card.dataset.subject;
+    state.level = null;
+    state.diff = null;
+
+    // Populate level options
+    const opts = document.getElementById('level-options');
+    opts.innerHTML = SUBJECT_LEVELS[state.subject].map(l =>
+      `<button class="level-btn" data-level="${l}" onclick="selectLevel(this)">${l}</button>`
+    ).join('');
+
+    // Unlock step 2
+    const stepLevel = document.getElementById('step-level');
+    stepLevel.style.opacity = '1';
+    stepLevel.style.pointerEvents = 'auto';
+    // Reset step 3
+    document.getElementById('step-diff').style.opacity = '0.4';
+    document.getElementById('step-diff').style.pointerEvents = 'none';
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+
+    updateLaunchBar();
+  }
+
+  function selectLevel(btn) {
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.level = btn.dataset.level;
+
+    // Unlock step 3
+    const stepDiff = document.getElementById('step-diff');
+    stepDiff.style.opacity = '1';
+    stepDiff.style.pointerEvents = 'auto';
+    updateLaunchBar();
+  }
+
+  function selectDiff(btn) {
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.diff = btn.dataset.diff;
+    updateLaunchBar();
+  }
+
+  const DIFF_LABELS = { foundation: 'Foundation', astar: 'A* Track', worldtopper: 'World Topper' };
+
+  function updateLaunchBar() {
+    const summaryEl = document.getElementById('launch-summary');
+    const launchBtn = document.getElementById('btn-launch');
+
+    if (!state.subject) {
+      summaryEl.innerHTML = 'Select a qualification above to begin';
+      launchBtn.disabled = true;
+      return;
+    }
+    if (!state.level) {
+      summaryEl.innerHTML = `<span>${SUBJECT_LABELS[state.subject]}</span> — choose a paper above`;
+      launchBtn.disabled = true;
+      return;
+    }
+    if (!state.diff) {
+      summaryEl.innerHTML = `<span>${state.level}</span> — set difficulty above`;
+      launchBtn.disabled = true;
+      return;
+    }
+    summaryEl.innerHTML = `<span>${state.level}</span> · ${DIFF_LABELS[state.diff]} · Timed Exam`;
+    launchBtn.disabled = false;
+  }
+
+  // ── C2: LAUNCH MOCK ──
+  function launchMock() {
+    if (!state.subject || !state.level || !state.diff) return;
+    // Force dark mode for exam focus
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('dc-theme', 'dark');
+    // Hide landing, show exam
+    document.getElementById('landing-view').style.display = 'none';
+    document.getElementById('exam-view').style.display = 'flex';
+    window.scrollTo(0, 0);
+    initExam();
+  }
+
+  function exitExam() {
+    clearInterval(timerInterval);
+    document.getElementById('exam-view').style.display = 'none';
+    document.getElementById('landing-view').style.display = 'block';
+    // Restore theme
+    var saved = localStorage.getItem('dc-theme');
+    if (saved !== 'dark') {
+      document.documentElement.classList.remove('dark');
+    }
+    window.scrollTo(0, 0);
+  }
+
+</script>
+
+</div><!-- /landing-view -->
+
+<!-- ══════════════════════════════════════════
+     EXAM VIEW (hidden until launchMock fires)
+     C2 — Timed Exam Interface
+════════════════════════════════════════════ -->
+<div id="exam-view" style="display:none;flex-direction:column;min-height:100vh;background:#0a0a0a;color:#fff;font-family:'Inter',sans-serif;">
+
+  <!-- ── EXAM TOPBAR ── -->
+  <div id="exam-topbar" style="
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:#111;border-bottom:1px solid rgba(255,255,255,0.08);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 1.5rem;height:56px;gap:1rem;
+  ">
+    <!-- Left: title -->
+    <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;">
+      <img src="assets/images/logo.jpg" alt="DC" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0;"/>
+      <div id="exam-title" style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.82rem;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Loading…</div>
+    </div>
+    <!-- Centre: timer -->
+    <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
+      <div id="timer-display" style="
+        font-family:'Satoshi',sans-serif;font-weight:900;font-size:1.15rem;
+        color:#f5c842;letter-spacing:0.04em;min-width:72px;text-align:center;
+      ">00:00</div>
+      <button id="btn-pause" onclick="togglePause()" style="
+        background:rgba(255,255,255,0.08);border:none;border-radius:6px;
+        color:rgba(255,255,255,0.7);font-size:0.7rem;font-weight:700;
+        letter-spacing:0.08em;text-transform:uppercase;padding:0.35rem 0.75rem;cursor:pointer;
+      ">Pause</button>
+    </div>
+    <!-- Right: progress + exit -->
+    <div style="display:flex;align-items:center;gap:1rem;flex-shrink:0;">
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);">
+        Q <span id="topbar-q-num">1</span> / <span id="topbar-q-total">10</span>
+      </div>
+      <button onclick="confirmSubmit()" style="
+        background:#f5c842;color:#0a0a0a;border:none;border-radius:6px;
+        font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.72rem;
+        letter-spacing:0.08em;text-transform:uppercase;padding:0.4rem 1rem;cursor:pointer;
+      ">Submit</button>
+      <button onclick="exitExam()" title="Exit exam" style="
+        background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:6px;
+        color:rgba(255,255,255,0.4);font-size:0.7rem;padding:0.35rem 0.65rem;cursor:pointer;
+      ">✕</button>
+    </div>
+  </div>
+
+  <!-- ── PROGRESS BAR ── -->
+  <div style="position:fixed;top:56px;left:0;right:0;height:3px;background:rgba(255,255,255,0.06);z-index:99;">
+    <div id="progress-bar" style="height:100%;background:#f5c842;width:10%;transition:width 0.3s;"></div>
+  </div>
+
+  <!-- ── EXAM BODY ── -->
+  <div style="display:flex;flex:1;padding-top:59px;min-height:100vh;">
+
+    <!-- Sidebar: question navigator -->
+    <div id="q-sidebar" style="
+      width:220px;flex-shrink:0;background:#111;border-right:1px solid rgba(255,255,255,0.07);
+      padding:1.5rem 1rem;overflow-y:auto;
+      position:sticky;top:59px;height:calc(100vh - 59px);
+    ">
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:1rem;">Questions</div>
+      <div id="q-nav-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1.5rem;"></div>
+      <div style="font-size:0.68rem;color:rgba(255,255,255,0.3);line-height:1.7;">
+        <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:4px;">
+          <span style="width:12px;height:12px;border-radius:3px;background:#f5c842;display:inline-block;"></span> Current
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:4px;">
+          <span style="width:12px;height:12px;border-radius:3px;background:#1a3c5e;display:inline-block;"></span> Answered
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:4px;">
+          <span style="width:12px;height:12px;border-radius:3px;background:#e05a4e;display:inline-block;border:1px solid rgba(255,255,255,0.2);"></span> Flagged
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <span style="width:12px;height:12px;border-radius:3px;background:#1a1a1a;border:1px solid rgba(255,255,255,0.15);display:inline-block;"></span> Unanswered
+        </div>
+      </div>
+    </div>
+
+    <!-- Main question area -->
+    <div style="flex:1;padding:2.5rem 2rem 6rem;max-width:820px;margin:0 auto;">
+
+      <!-- Question header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.75rem;">
+        <div>
+          <span id="q-type-badge" style="
+            font-size:0.62rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+            color:#f5c842;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.25);
+            padding:0.25rem 0.7rem;border-radius:100px;margin-bottom:0.6rem;display:inline-block;
+          ">Multiple Choice</span>
+          <div id="q-topic-label" style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:4px;"></div>
+        </div>
+        <button id="btn-flag" onclick="toggleFlag()" style="
+          display:flex;align-items:center;gap:0.4rem;
+          background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+          border-radius:8px;color:rgba(255,255,255,0.5);font-size:0.72rem;font-weight:700;
+          letter-spacing:0.08em;text-transform:uppercase;padding:0.45rem 0.9rem;cursor:pointer;
+          white-space:nowrap;flex-shrink:0;
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          <span id="flag-label">Flag</span>
+        </button>
+      </div>
+
+      <!-- Question text -->
+      <div id="q-text" style="
+        font-family:'Inter',sans-serif;font-size:1.05rem;line-height:1.75;
+        color:rgba(255,255,255,0.9);margin-bottom:2rem;
+      "></div>
+
+      <!-- MCQ options -->
+      <div id="mcq-options" style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2rem;"></div>
+
+      <!-- Short answer -->
+      <div id="short-answer-wrap" style="display:none;margin-bottom:2rem;">
+        <textarea id="short-answer-input" rows="5" placeholder="Type your answer here…" style="
+          width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);
+          border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-size:0.9rem;
+          line-height:1.6;padding:1rem;resize:vertical;outline:none;
+          transition:border-color 0.2s;
+        " oninput="handleShortAnswer()" onfocus="this.style.borderColor='rgba(245,200,66,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'"></textarea>
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin-top:0.5rem;">Marks available: <span id="marks-avail">4</span></div>
+      </div>
+
+      <!-- Navigation buttons -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;">
+        <button id="btn-prev" onclick="goQuestion(-1)" style="
+          display:flex;align-items:center;gap:0.5rem;
+          background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+          border-radius:8px;color:rgba(255,255,255,0.65);
+          font-family:'Satoshi',sans-serif;font-weight:700;font-size:0.8rem;
+          letter-spacing:0.06em;text-transform:uppercase;padding:0.75rem 1.35rem;cursor:pointer;
+        ">
+          ← Previous
+        </button>
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);" id="answered-count">0 / 10 answered</div>
+        <button id="btn-next" onclick="goQuestion(1)" style="
+          display:flex;align-items:center;gap:0.5rem;
+          background:#1a3c5e;border:1px solid rgba(255,255,255,0.1);
+          border-radius:8px;color:#fff;
+          font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.8rem;
+          letter-spacing:0.06em;text-transform:uppercase;padding:0.75rem 1.35rem;cursor:pointer;
+        ">
+          Next →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PAUSE OVERLAY ── -->
+  <div id="pause-overlay" style="
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,0.92);
+    flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
+    text-align:center;
+  ">
+    <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:2rem;color:#fff;">Exam Paused</div>
+    <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);max-width:320px;line-height:1.6;">Timer stopped. Your answers are saved. Resume when ready.</div>
+    <button onclick="togglePause()" style="
+      background:#f5c842;color:#0a0a0a;border:none;border-radius:10px;
+      font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.9rem;
+      letter-spacing:0.07em;text-transform:uppercase;padding:1rem 2.5rem;cursor:pointer;
+    ">Resume Exam</button>
+    <button onclick="exitExam()" style="
+      background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:10px;
+      color:rgba(255,255,255,0.5);font-size:0.8rem;font-weight:700;
+      letter-spacing:0.06em;text-transform:uppercase;padding:0.7rem 1.75rem;cursor:pointer;
+    ">Exit Without Submitting</button>
+  </div>
+
+  <!-- ── SUBMIT CONFIRM MODAL ── -->
+  <div id="submit-modal" style="
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(0,0,0,0.85);
+    align-items:center;justify-content:center;padding:1.5rem;
+  ">
+    <div style="
+      background:#161616;border:1px solid rgba(255,255,255,0.1);border-radius:20px;
+      padding:2.5rem;max-width:420px;width:100%;text-align:center;
+    ">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">📋</div>
+      <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:1.3rem;color:#fff;margin-bottom:0.75rem;">Submit Your Exam?</div>
+      <div id="submit-modal-stats" style="font-size:0.85rem;color:rgba(255,255,255,0.5);line-height:1.65;margin-bottom:2rem;"></div>
+      <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+        <button onclick="submitExam()" style="
+          background:#f5c842;color:#0a0a0a;border:none;border-radius:10px;
+          font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.85rem;
+          letter-spacing:0.07em;text-transform:uppercase;padding:0.9rem 2rem;cursor:pointer;
+        ">Submit & See Results</button>
+        <button onclick="document.getElementById('submit-modal').style.display='none'" style="
+          background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;
+          color:rgba(255,255,255,0.65);font-size:0.82rem;font-weight:700;
+          letter-spacing:0.06em;text-transform:uppercase;padding:0.9rem 1.5rem;cursor:pointer;
+        ">Keep Reviewing</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /exam-view -->
+
+<!-- ══════════════════════════════════════════
+     C2 EXAM ENGINE JS
+════════════════════════════════════════════ -->
+<script>
+// ── QUESTION BANK ──
+// 10 questions per subject/diff combination (stub bank — owner to expand)
+const QUESTION_BANK = {
+  igcse: {
+    foundation: [
+      { type:'mcq', topic:'Number', q:'What is 15% of 80?', opts:['8','10','12','15'], ans:2, marks:1 },
+      { type:'mcq', topic:'Algebra', q:'Solve for x: 2x + 6 = 14', opts:['x = 2','x = 3','x = 4','x = 5'], ans:2, marks:1 },
+      { type:'mcq', topic:'Geometry', q:'A rectangle has length 8 cm and width 5 cm. What is its area?', opts:['26 cm²','35 cm²','40 cm²','45 cm²'], ans:2, marks:1 },
+      { type:'short', topic:'Data Handling', q:'A bag contains 3 red, 4 blue, and 3 green marbles. What is the probability of picking a blue marble? Show your working.', marks:3 },
+      { type:'mcq', topic:'Number', q:'Express 0.045 in standard form.', opts:['4.5 × 10⁻¹','4.5 × 10⁻²','4.5 × 10⁻³','4.5 × 10²'], ans:1, marks:1 },
+      { type:'mcq', topic:'Sequences', q:'What is the next term in the sequence: 3, 7, 11, 15, …?', opts:['17','18','19','20'], ans:2, marks:1 },
+      { type:'short', topic:'Algebra', q:'Expand and simplify: (x + 3)(x − 2)', marks:2 },
+      { type:'mcq', topic:'Mensuration', q:'The circumference of a circle is 31.4 cm. What is its radius? (Use π = 3.14)', opts:['3 cm','4 cm','5 cm','6 cm'], ans:2, marks:1 },
+      { type:'mcq', topic:'Statistics', q:'The mean of 5 numbers is 12. If four of the numbers are 10, 11, 13, and 14, what is the fifth?', opts:['10','11','12','13'], ans:2, marks:1 },
+      { type:'short', topic:'Ratio & Proportion', q:'A recipe for 4 people uses 300 g of flour. How much flour is needed for 10 people? Show your working.', marks:2 }
+    ],
+    astar: [
+      { type:'mcq', topic:'Functions', q:'If f(x) = 3x² − 2x + 1, what is f(−2)?', opts:['9','13','17','21'], ans:2, marks:1 },
+      { type:'short', topic:'Simultaneous Equations', q:'Solve: 3x + 2y = 16 and x − y = 2. Show full working.', marks:4 },
+      { type:'mcq', topic:'Trigonometry', q:'In a right-angled triangle, sin θ = 5/13. What is cos θ?', opts:['5/12','12/13','13/12','12/5'], ans:1, marks:1 },
+      { type:'mcq', topic:'Indices', q:'Simplify: (2³ × 2⁵) ÷ 2⁴', opts:['2²','2³','2⁴','2⁶'], ans:2, marks:1 },
+      { type:'short', topic:'Differentiation', q:'Find the gradient of y = x³ − 4x + 2 at the point where x = 2. Show working.', marks:3 },
+      { type:'mcq', topic:'Probability', q:'Two events A and B are independent. P(A) = 0.4, P(B) = 0.3. Find P(A ∩ B).', opts:['0.07','0.10','0.12','0.70'], ans:2, marks:1 },
+      { type:'mcq', topic:'Vectors', q:'If vector a = (3, 4), what is |a|?', opts:['3','4','5','7'], ans:2, marks:1 },
+      { type:'short', topic:'Quadratics', q:'Solve 2x² + 5x − 3 = 0 using the quadratic formula. Give answers to 2 d.p.', marks:4 },
+      { type:'mcq', topic:'Graphs', q:'What are the coordinates of the turning point of y = (x − 3)² + 2?', opts:['(−3, 2)','(3, −2)','(3, 2)','(−3, −2)'], ans:2, marks:1 },
+      { type:'mcq', topic:'Circle Theorems', q:'An angle at the centre of a circle is 110°. What is the angle at the circumference subtended by the same arc?', opts:['40°','55°','70°','110°'], ans:1, marks:1 }
+    ],
+    worldtopper: [
+      { type:'short', topic:'Proof', q:'Prove that the sum of any three consecutive integers is always divisible by 3.', marks:4 },
+      { type:'mcq', topic:'Complex Numbers', q:'What is the modulus of 3 + 4i?', opts:['3','4','5','7'], ans:2, marks:1 },
+      { type:'short', topic:'Integration', q:'Find ∫(3x² − 2x + 5) dx. Include the constant of integration.', marks:3 },
+      { type:'mcq', topic:'Transformations', q:'The matrix [0 −1 / 1 0] represents a rotation of:', opts:['90° clockwise','90° anticlockwise','180°','Reflection in y-axis'], ans:1, marks:1 },
+      { type:'short', topic:'Binomial Expansion', q:'Expand (2 + x)⁴ in ascending powers of x, simplifying each coefficient.', marks:4 },
+      { type:'mcq', topic:'Logarithms', q:'Solve log₂(x) + log₂(x − 2) = 3.', opts:['x = 2','x = 3','x = 4','x = 6'], ans:2, marks:1 },
+      { type:'short', topic:'Rates of Change', q:'A spherical balloon is being inflated at 50 cm³/s. Find the rate of increase of radius when r = 5 cm.', marks:5 },
+      { type:'mcq', topic:'Number Theory', q:'How many prime numbers are there between 1 and 30?', opts:['8','9','10','11'], ans:2, marks:1 },
+      { type:'short', topic:'Geometry Proof', q:'Prove that opposite angles of a cyclic quadrilateral sum to 180°.', marks:5 },
+      { type:'mcq', topic:'Sequences', q:'The nth term of a sequence is n² − n + 41. For which value of n does this formula first fail to give a prime?', opts:['n = 20','n = 40','n = 41','n = 42'], ans:2, marks:1 }
+    ]
+  }
+};
+
+// Build fallback bank for missing subject/diff combos from igcse/astar
+function getQuestions(subject, diff) {
+  if (QUESTION_BANK[subject] && QUESTION_BANK[subject][diff]) {
+    return QUESTION_BANK[subject][diff];
+  }
+  // Fallback to igcse astar with subject-appropriate framing
+  return QUESTION_BANK.igcse.astar;
+}
+
+// ── EXAM STATE ──
+let questions = [];
+let currentQ = 0;
+let answers = {};   // index → selected option (MCQ) or text (short)
+let flagged = {};   // index → bool
+let timerInterval = null;
+let timerSeconds = 0;
+let isPaused = false;
+let examStartTime = null;
+let qTimes = {};    // index → seconds spent
+
+const EXAM_DURATIONS = { foundation: 45*60, astar: 60*60, worldtopper: 90*60 };
+
+function initExam() {
+  questions = getQuestions(state.subject, state.diff);
+  answers = {}; flagged = {}; qTimes = {}; currentQ = 0; isPaused = false;
+  timerSeconds = EXAM_DURATIONS[state.diff] || 60*60;
+  examStartTime = Date.now();
+
+  // Set topbar title
+  document.getElementById('exam-title').textContent = `${state.level} · ${DIFF_LABELS[state.diff]}`;
+  document.getElementById('topbar-q-total').textContent = questions.length;
+
+  buildQNav();
+  renderQuestion(0);
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (isPaused) return;
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 0) { clearInterval(timerInterval); autoSubmit(); }
+  }, 1000);
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(Math.abs(timerSeconds) / 60);
+  const s = Math.abs(timerSeconds) % 60;
+  const disp = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const el = document.getElementById('timer-display');
+  el.textContent = disp;
+  el.style.color = timerSeconds <= 300 ? '#e05a4e' : '#f5c842';
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  document.getElementById('pause-overlay').style.display = isPaused ? 'flex' : 'none';
+  document.getElementById('btn-pause').textContent = isPaused ? 'Resume' : 'Pause';
+}
+
+function buildQNav() {
+  const grid = document.getElementById('q-nav-grid');
+  grid.innerHTML = questions.map((_, i) =>
+    `<button onclick="goToQuestion(${i})" id="qnav-${i}" style="
+      width:100%;aspect-ratio:1;border-radius:6px;border:1px solid rgba(255,255,255,0.15);
+      background:#1a1a1a;color:rgba(255,255,255,0.6);font-size:0.72rem;font-weight:700;
+      cursor:pointer;transition:background 0.15s,color 0.15s;
+    ">${i+1}</button>`
+  ).join('');
+  updateQNav();
+}
+
+function updateQNav() {
+  questions.forEach((_, i) => {
+    const btn = document.getElementById(`qnav-${i}`);
+    if (!btn) return;
+    if (i === currentQ) {
+      btn.style.background = '#f5c842'; btn.style.color = '#0a0a0a'; btn.style.borderColor = '#f5c842';
+    } else if (flagged[i]) {
+      btn.style.background = '#e05a4e'; btn.style.color = '#fff'; btn.style.borderColor = '#e05a4e';
+    } else if (answers[i] !== undefined) {
+      btn.style.background = '#1a3c5e'; btn.style.color = '#fff'; btn.style.borderColor = '#1a3c5e';
+    } else {
+      btn.style.background = '#1a1a1a'; btn.style.color = 'rgba(255,255,255,0.5)'; btn.style.borderColor = 'rgba(255,255,255,0.15)';
+    }
+  });
+  // Update answered count
+  const ans = Object.keys(answers).length;
+  document.getElementById('answered-count').textContent = `${ans} / ${questions.length} answered`;
+  // Progress bar
+  document.getElementById('progress-bar').style.width = `${Math.max(5, Math.round((currentQ+1)/questions.length*100))}%`;
+  // Topbar
+  document.getElementById('topbar-q-num').textContent = currentQ + 1;
+}
+
+function renderQuestion(idx) {
+  const q = questions[idx];
+  if (!q) return;
+
+  // Type badge
+  document.getElementById('q-type-badge').textContent = q.type === 'mcq' ? 'Multiple Choice' : 'Short Answer';
+  document.getElementById('q-topic-label').textContent = `Topic: ${q.topic}`;
+
+  // Question text
+  document.getElementById('q-text').innerHTML = `<strong style="color:rgba(255,255,255,0.4);font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:0.75rem;">Question ${idx+1}</strong>${q.q}`;
+
+  // Flag button state
+  document.getElementById('flag-label').textContent = flagged[idx] ? 'Unflag' : 'Flag';
+  document.getElementById('btn-flag').style.color = flagged[idx] ? '#e05a4e' : 'rgba(255,255,255,0.5)';
+
+  // Prev/Next buttons
+  document.getElementById('btn-prev').style.opacity = idx === 0 ? '0.35' : '1';
+  document.getElementById('btn-prev').style.pointerEvents = idx === 0 ? 'none' : 'auto';
+  document.getElementById('btn-next').textContent = idx === questions.length - 1 ? 'Review →' : 'Next →';
+
+  if (q.type === 'mcq') {
+    document.getElementById('mcq-options').style.display = 'flex';
+    document.getElementById('short-answer-wrap').style.display = 'none';
+    renderMCQ(q, idx);
+  } else {
+    document.getElementById('mcq-options').style.display = 'none';
+    document.getElementById('short-answer-wrap').style.display = 'block';
+    document.getElementById('marks-avail').textContent = q.marks;
+    const ta = document.getElementById('short-answer-input');
+    ta.value = answers[idx] || '';
+  }
+
+  updateQNav();
+}
+
+function renderMCQ(q, idx) {
+  const wrap = document.getElementById('mcq-options');
+  wrap.innerHTML = q.opts.map((opt, i) => {
+    const selected = answers[idx] === i;
+    return `<button onclick="selectMCQ(${i})" data-opt="${i}" style="
+      display:flex;align-items:flex-start;gap:1rem;
+      background:${selected ? 'rgba(26,60,94,0.8)' : 'rgba(255,255,255,0.04)'};
+      border:2px solid ${selected ? '#4a9fd4' : 'rgba(255,255,255,0.1)'};
+      border-radius:12px;padding:1rem 1.25rem;cursor:pointer;text-align:left;
+      transition:background 0.15s,border-color 0.15s;width:100%;
+    ">
+      <span style="
+        width:26px;height:26px;border-radius:50%;flex-shrink:0;
+        background:${selected ? '#4a9fd4' : 'rgba(255,255,255,0.08)'};
+        border:2px solid ${selected ? '#4a9fd4' : 'rgba(255,255,255,0.2)'};
+        display:flex;align-items:center;justify-content:center;
+        font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.7rem;
+        color:${selected ? '#fff' : 'rgba(255,255,255,0.45)'};
+        margin-top:1px;
+      ">${'ABCD'[i]}</span>
+      <span style="font-size:0.92rem;line-height:1.6;color:${selected ? '#fff' : 'rgba(255,255,255,0.8)'};">${opt}</span>
+    </button>`;
+  }).join('');
+}
+
+function selectMCQ(optIndex) {
+  answers[currentQ] = optIndex;
+  renderMCQ(questions[currentQ], currentQ);
+  updateQNav();
+}
+
+function handleShortAnswer() {
+  const val = document.getElementById('short-answer-input').value.trim();
+  if (val) { answers[currentQ] = val; } else { delete answers[currentQ]; }
+  updateQNav();
+}
+
+function toggleFlag() {
+  flagged[currentQ] = !flagged[currentQ];
+  document.getElementById('flag-label').textContent = flagged[currentQ] ? 'Unflag' : 'Flag';
+  document.getElementById('btn-flag').style.color = flagged[currentQ] ? '#e05a4e' : 'rgba(255,255,255,0.5)';
+  updateQNav();
+}
+
+function goQuestion(dir) {
+  const next = currentQ + dir;
+  if (next < 0 || next > questions.length - 1) return;
+  currentQ = next;
+  renderQuestion(currentQ);
+}
+
+function goToQuestion(idx) {
+  currentQ = idx;
+  renderQuestion(currentQ);
+}
+
+function confirmSubmit() {
+  const answered = Object.keys(answers).length;
+  const unanswered = questions.length - answered;
+  const flagCount = Object.values(flagged).filter(Boolean).length;
+  document.getElementById('submit-modal-stats').innerHTML =
+    `<strong style="color:#fff;">${answered} of ${questions.length}</strong> questions answered.<br>` +
+    (unanswered > 0 ? `<span style="color:#e05a4e;">${unanswered} unanswered</span> · ` : '') +
+    (flagCount > 0 ? `<span style="color:#f5c842;">${flagCount} flagged for review</span> · ` : '') +
+    `Time remaining: <strong style="color:#f5c842;">${document.getElementById('timer-display').textContent}</strong>`;
+  document.getElementById('submit-modal').style.display = 'flex';
+}
+
+function autoSubmit() {
+  document.getElementById('submit-modal').style.display = 'none';
+  submitExam();
+}
+
+function submitExam() {
+  clearInterval(timerInterval);
+  document.getElementById('submit-modal').style.display = 'none';
+  // Store results for C3 results view
+  window.examResults = {
+    questions, answers, flagged,
+    timeTaken: (EXAM_DURATIONS[state.diff] || 3600) - timerSeconds,
+    subject: state.subject, level: state.level, diff: state.diff
+  };
+  document.getElementById('exam-view').style.display = 'none';
+  showResults();
+}
+
+// ── C3 RESULTS STUB — will be replaced in C3 ──
+function showResults() {
+  document.getElementById('results-view').style.display = 'flex';
+  window.scrollTo(0, 0);
+  renderResults();
+}
+</script>
+
+<!-- ══════════════════════════════════════════
+     RESULTS VIEW (hidden until exam submitted)
+     C3 stub — full build next session
+════════════════════════════════════════════ -->
+<div id="results-view" style="display:none;flex-direction:column;min-height:100vh;background:#0a0a0a;align-items:center;justify-content:flex-start;padding:5rem 1.5rem 4rem;font-family:'Inter',sans-serif;">
+  <div style="max-width:680px;width:100%;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:1rem;" id="results-emoji">🎉</div>
+    <h1 id="results-headline" style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:2rem;color:#fff;margin-bottom:0.5rem;"></h1>
+    <p id="results-sub" style="font-size:0.9rem;color:rgba(255,255,255,0.5);margin-bottom:2.5rem;"></p>
+    <!-- Score card -->
+    <div id="results-score-card" style="
+      background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:20px;
+      padding:2rem;margin-bottom:2rem;text-align:left;
+    "></div>
+    <!-- Topic breakdown -->
+    <div id="results-breakdown" style="
+      background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:20px;
+      padding:2rem;margin-bottom:2.5rem;text-align:left;
+    "></div>
+    <!-- CTAs -->
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;">
+      <button onclick="retakeExam()" style="
+        background:#f5c842;color:#0a0a0a;border:none;border-radius:10px;
+        font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.85rem;
+        letter-spacing:0.07em;text-transform:uppercase;padding:0.9rem 2rem;cursor:pointer;
+      ">Retake Mock</button>
+      <a href="contact.html" style="
+        display:inline-flex;align-items:center;
+        background:#1a3c5e;color:#fff;border:none;border-radius:10px;
+        font-family:'Satoshi',sans-serif;font-weight:900;font-size:0.85rem;
+        letter-spacing:0.07em;text-transform:uppercase;padding:0.9rem 2rem;
+        text-decoration:none;
+      ">Get A* Coaching →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function renderResults() {
+  const r = window.examResults;
+  if (!r) return;
+
+  const mcqQs = r.questions.filter(q => q.type === 'mcq');
+  const correct = mcqQs.filter((q, i) => {
+    const globalIdx = r.questions.indexOf(q);
+    return r.answers[globalIdx] === q.ans;
+  }).length;
+  const total = mcqQs.length;
+  const pct = total > 0 ? Math.round(correct / total * 100) : 0;
+  const shortCount = r.questions.filter(q => q.type === 'short').length;
+  const mins = Math.floor(r.timeTaken / 60);
+  const secs = r.timeTaken % 60;
+
+  // Grade
+  let grade, emoji, headline;
+  if (pct >= 90) { grade = 'A*'; emoji = '🏆'; headline = 'Outstanding — A* Territory!'; }
+  else if (pct >= 80) { grade = 'A'; emoji = '🎯'; headline = 'Excellent Work — A Grade!'; }
+  else if (pct >= 70) { grade = 'B'; emoji = '📈'; headline = 'Good Effort — B Grade'; }
+  else if (pct >= 60) { grade = 'C'; emoji = '💪'; headline = 'Solid Foundation — Keep Pushing'; }
+  else { grade = 'U'; emoji = '📚'; headline = 'Room to Grow — Let\'s Fix Your Gaps'; }
+
+  document.getElementById('results-emoji').textContent = emoji;
+  document.getElementById('results-headline').textContent = headline;
+  document.getElementById('results-sub').textContent = `${r.level} · ${DIFF_LABELS[r.diff]} · ${mins}m ${secs}s`;
+
+  // Score card
+  document.getElementById('results-score-card').innerHTML = `
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1.25rem;">Your Score</div>
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:3.5rem;line-height:1;color:#f5c842;">${pct}%</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);margin-top:4px;">Accuracy (MCQ)</div>
+      </div>
+      <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:2.5rem;line-height:1;color:#fff;padding-left:2rem;border-left:1px solid rgba(255,255,255,0.1);">
+        ${grade}
+        <div style="font-size:0.75rem;font-weight:400;color:rgba(255,255,255,0.4);margin-top:4px;">Projected Grade</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.85rem;">
+        <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:1.15rem;color:#fff;">${correct}/${total}</div>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px;">MCQ Correct</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.85rem;">
+        <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:1.15rem;color:#fff;">${shortCount}</div>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px;">Short Answer</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:0.85rem;">
+        <div style="font-family:'Satoshi',sans-serif;font-weight:900;font-size:1.15rem;color:#fff;">${mins}m ${secs}s</div>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px;">Time Taken</div>
+      </div>
+    </div>
+  `;
+
+  // Topic breakdown
+  const topics = {};
+  r.questions.forEach((q, i) => {
+    if (q.type !== 'mcq') return;
+    if (!topics[q.topic]) topics[q.topic] = { correct: 0, total: 0 };
+    topics[q.topic].total++;
+    if (r.answers[i] === q.ans) topics[q.topic].correct++;
+  });
+  const topicRows = Object.entries(topics).map(([topic, data]) => {
+    const p = Math.round(data.correct / data.total * 100);
+    const barCol = p >= 80 ? '#4caf50' : p >= 60 ? '#f5c842' : '#e05a4e';
+    return `
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-size:0.8rem;color:rgba(255,255,255,0.8);">${topic}</span>
+          <span style="font-size:0.8rem;font-weight:700;color:${barCol};">${data.correct}/${data.total} (${p}%)</span>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${p}%;background:${barCol};border-radius:3px;transition:width 0.6s;"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('results-breakdown').innerHTML = `
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:1.25rem;">Topic Breakdown</div>
+    ${topicRows || '<p style="color:rgba(255,255,255,0.4);font-size:0.85rem;">No MCQ data to break down.</p>'}
+    ${pct < 80 ? `<div style="margin-top:1.5rem;background:rgba(232,168,50,0.08);border:1px solid rgba(232,168,50,0.2);border-radius:10px;padding:1rem;">
+      <div style="font-size:0.72rem;font-weight:700;color:#f5c842;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.35rem;">A* Gap</div>
+      <div style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.6;">You're ${80 - pct}% away from A* territory. DivergenCIE's 1-to-1 coaching builds a personalised plan around exactly these gaps.</div>
+    </div>` : ''}
+  `;
+}
+
+function retakeExam() {
+  document.getElementById('results-view').style.display = 'none';
+  document.getElementById('landing-view').style.display = 'block';
+  // Reset state
+  state.subject = null; state.level = null; state.diff = null;
+  document.querySelectorAll('.subject-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.level-btn,.diff-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('step-level').style.opacity = '0.4';
+  document.getElementById('step-level').style.pointerEvents = 'none';
+  document.getElementById('step-diff').style.opacity = '0.4';
+  document.getElementById('step-diff').style.pointerEvents = 'none';
+  updateLaunchBar();
+  // Restore theme
+  var saved = localStorage.getItem('dc-theme');
+  if (saved !== 'dark') document.documentElement.classList.remove('dark');
+  window.scrollTo(0,0);
+  document.getElementById('configurator').scrollIntoView({ behavior:'smooth' });
+}
+</script>
+
+</body>
+</html>
