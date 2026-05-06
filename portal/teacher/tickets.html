@@ -99,20 +99,20 @@
   </style>
 </head>
 <body>
-<div class="portal-shell">
-
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <a href="../../index.html">
-        <img src="../../assets/images/logo.jpg" alt="DivergenCIE" style="height:36px;border-radius:8px"/>
-      </a>
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Teacher Portal</div>
+      </div>
     </div>
     <div class="sidebar-role">
-      <div class="role-avatar" style="background:var(--navy);color:#fff;font-weight:900;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:0.95rem">RS</div>
+      <div style="width:34px;height:34px;border-radius:50%;background:#4caf50;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">MS</div>
       <div>
-        <div style="font-size:0.78rem;font-weight:800;color:var(--text-primary)">Riya Sharma</div>
-        <span class="role-badge role-teacher">Teacher</span>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Ms. Sarah Khan</div>
+        <div class="role-badge role-teacher">Teacher</div>
       </div>
     </div>
     <nav class="sidebar-nav">
@@ -124,18 +124,15 @@
         <a href="attendance.html" class="sidebar-nav-item">
           <svg data-lucide="clipboard-check"></svg> Attendance
         </a>
-        <a href="timesheet.html" class="sidebar-nav-item">
-          <svg data-lucide="clock"></svg> Timesheet
-        </a>
         <a href="payment-claims.html" class="sidebar-nav-item">
           <svg data-lucide="banknote"></svg> Payment Claims
         </a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Support</div>
         <a href="tickets.html" class="sidebar-nav-item active">
           <svg data-lucide="inbox"></svg> My Tickets
         </a>
-      </div>
-      <div class="sidebar-nav-section">
-        <div class="sidebar-nav-label">Help</div>
         <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item">
           <svg data-lucide="message-circle"></svg> WhatsApp DC
         </a>
@@ -144,16 +141,16 @@
         </a>
       </div>
     </nav>
-    <div class="sidebar-footer" style="padding:1rem 1.25rem;border-top:1px solid var(--border-subtle)">
-      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-        <svg class="theme-icon-sun" data-lucide="sun"></svg>
-        <svg class="theme-icon-moon" data-lucide="moon"></svg>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
         <span id="theme-label">Light Mode</span>
       </button>
     </div>
   </aside>
 
-  <!-- Main -->
+  <!-- ── MAIN ── -->
   <main class="portal-main">
     <div class="portal-topbar">
       <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">

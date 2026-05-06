@@ -209,9 +209,9 @@
       </div>
       <div class="portal-topbar-right">
         <button class="topbar-bell"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
-        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
-          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
-          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
         </button>
       </div>
     </header>
@@ -375,22 +375,7 @@
     alert('Notes download: owner must link each recording to its GCR notes PDF.');
   }
 
-  // Theme toggle
-  var themeBtn = document.getElementById('portal-theme-toggle');
-  if (themeBtn) {
-    function syncIcons() {
-      var isDark = document.documentElement.classList.contains('dark');
-      var s = themeBtn.querySelector('.icon-light'), m = themeBtn.querySelector('.icon-dark');
-      if (s) s.style.display = isDark ? 'none' : 'block';
-      if (m) m.style.display = isDark ? 'block' : 'none';
-    }
-    syncIcons();
-    themeBtn.addEventListener('click', function() {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-      syncIcons();
-    });
-  }
+
 
   renderGrid();
 </script>

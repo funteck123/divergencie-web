@@ -431,16 +431,16 @@ All metrics: filterable by dept, by individual staff member, by date range. Week
 
 | # | Page | Sections | Files | Status |
 |---|------|----------|-------|--------|
-| I1 | **portal/staff/dashboard.html** | Sidebar (dept badge, Supervisor vs Member tag) · Stat cards: open tasks, overdue, tickets this week, attendance streak · My tasks today · Dept announcements · Quick actions — **dept-aware: each dept sees relevant quick actions based on logged-in dept tag (PR/HR/Finance/Marketing/IT)** | portal/staff/dashboard.html | ⬜ TODO |
-| I2 | **portal/staff/tickets.html** | Two views: Member (own tickets) / Supervisor (full dept queue) · Create ticket/task · Assign (supervisor only) · Status update · Comments thread · File upload · Link field · Forward to dept · Escalate to management · Filter by status/priority/assignee | portal/staff/tickets.html | ⬜ TODO |
-| I3 | **portal/staff/attendance.html** | Log meeting/event attendance · Fields: Event name, date, duration, type (meeting/training/event/other), notes · Submission history table · Monthly attendance summary | portal/staff/attendance.html | ⬜ TODO |
-| I4 | **portal/staff/claims.html** | Attendance-based claim · Auto-pulls from attendance log · Month selector · Readonly: events attended, total sessions · Submit claim → Management approval queue | portal/staff/claims.html | ⬜ TODO |
-| I5 | **portal/staff/content-bank.html** | Dept shared link bank · Add link: name/URL/date/desc · List view sorted newest-first · Search/filter · Supervisor sees all depts in dropdown | portal/staff/content-bank.html | ⬜ TODO |
-| I6 | **portal/staff/schedule.html** *(PR/Ops only)* | Teacher schedule builder · Student-teacher assignment table (B-groups/C-groups/T-groups) · Conflict checker (auto-flag overlapping slots) · Batch/group code management · Assign students to teachers · Post-class submission tracker (WBD name, link, duration, recording — 24hr SLA, overdue flag + remind button per teacher) | portal/staff/schedule.html | ⬜ TODO |
-| I7 | **portal/staff/hr-candidates.html** *(HR only)* | Candidate bank (name/role/status/CV link/notes, active/inactive) · Interview scheduler (self-service slot picker) · Trial task assignment + feedback form (star rating + text) · Offer letter tracker · Warning/termination log (management-triggered) · Outreach log for Topper Hunt (contacted/responded/invited) | portal/staff/hr-candidates.html | ⬜ TODO |
-| I8 | **portal/staff/finance-rates.html** *(Finance only)* | Rate card matrix (course × country × group code: B-groups/C-groups/T-groups) · Invoice manager (auto-generate from enrolment + rate card, issue to parent) · Payment tracker (Paid/Due/Overdue/Deactivated per student, colour-coded) · Payment reminder stage tracker (5 stages, WA button auto-selects correct message) · Pre-check gate at student activation (payment method confirmed, first invoice paid) · Budget planner (dept allocation table, submit to management, approval status) · Discount/coupon manager (assign to student, auto-applies to next invoice) | portal/staff/finance-rates.html | ⬜ TODO |
-| I9 | **portal/staff/marketing-calendar.html** *(Marketing only)* | Posting calendar (Canva link + Drive link + caption + date + status: Scheduled/Posted/Missed, auto-flag if missed) · Asset bank (name/type/Drive link/date/campaign tag) · Lead log (source/name/contact/date/passed-to-PR flag + handoff button → triggers PR ticket) · Ambassador tracker (name/cohort 3mo–6mo/referrals/enrolments/commission/status, auto-compute commission) | portal/staff/marketing-calendar.html | ⬜ TODO |
-| I10 | **portal/staff/meetings.html** *(All staff)* | Interdept meeting request flow: Create meeting (title/dept/person/date/time/agenda) · Target dept/person accepts, reschedules, or declines · Confirmed meetings shown in calendar view · Bimonthly Workshop + Townhall scheduling (management creates, all-staff notified) | portal/staff/meetings.html | ⬜ TODO |
+| I1 | **portal/staff/dashboard.html** | Sidebar (dept badge, Supervisor vs Member tag) · Stat cards: open tasks, overdue, tickets this week, attendance streak · My tasks today · Dept announcements · Quick actions — **dept-aware: each dept sees relevant quick actions based on logged-in dept tag (PR/HR/Finance/Marketing/IT)** | portal/staff/dashboard.html | ✅ Done |
+| I2 | **portal/staff/tickets.html** | Two views: Member (own tickets) / Supervisor (full dept queue) · Create ticket/task · Assign (supervisor only) · Status update · Comments thread · File upload · Link field · Forward to dept · Escalate to management · Filter by status/priority/assignee | portal/staff/tickets.html | ✅ Done |
+| I3 | **portal/staff/attendance.html** | Log meeting/event attendance · Fields: Event name, date, duration, type (meeting/training/event/other), notes · Submission history table · Monthly attendance summary | portal/staff/attendance.html | ✅ Done |
+| I4 | **portal/staff/claims.html** | Attendance-based claim · Auto-pulls from attendance log · Month selector · Readonly: events attended, total sessions · Submit claim → Management approval queue | portal/staff/claims.html | ✅ Done |
+| I5 | **portal/staff/content-bank.html** | Dept shared link bank · Add link: name/URL/date/desc · List view sorted newest-first · Search/filter · Supervisor sees all depts in dropdown | portal/staff/content-bank.html | ✅ Done |
+| I6 | **portal/staff/schedule.html** *(PR/Ops only)* | Teacher schedule builder · Student-teacher assignment table (B-groups/C-groups/T-groups) · Conflict checker (auto-flag overlapping slots) · Batch/group code management · Assign students to teachers · Post-class submission tracker (WBD name, link, duration, recording — 24hr SLA, overdue flag + remind button per teacher) | portal/staff/schedule.html | ✅ Done |
+| I7 | **portal/staff/hr-candidates.html** *(HR only)* | Candidate bank (name/role/status/CV link/notes, active/inactive) · Interview scheduler (self-service slot picker) · Trial task assignment + feedback form (star rating + text) · Offer letter tracker · Warning/termination log (management-triggered) · Outreach log for Topper Hunt (contacted/responded/invited) | portal/staff/hr-candidates.html | ✅ Done |
+| I8 | **portal/staff/finance-rates.html** *(Finance only)* | Rate card matrix (course × country × group code: B-groups/C-groups/T-groups) · Invoice manager (auto-generate from enrolment + rate card, issue to parent) · Payment tracker (Paid/Due/Overdue/Deactivated per student, colour-coded) · Payment reminder stage tracker (5 stages, WA button auto-selects correct message) · Pre-check gate at student activation (payment method confirmed, first invoice paid) · Budget planner (dept allocation table, submit to management, approval status) · Discount/coupon manager (assign to student, auto-applies to next invoice) | portal/staff/finance-rates.html | ✅ Done |
+| I9 | **portal/staff/marketing-calendar.html** *(Marketing only)* | Posting calendar (Canva link + Drive link + caption + date + status: Scheduled/Posted/Missed, auto-flag if missed) · Asset bank (name/type/Drive link/date/campaign tag) · Lead log (source/name/contact/date/passed-to-PR flag + handoff button → triggers PR ticket) · Ambassador tracker (name/cohort 3mo–6mo/referrals/enrolments/commission/status, auto-compute commission) | portal/staff/marketing-calendar.html | ✅ Done |
+| I10 | **portal/staff/meetings.html** *(All staff)* | Interdept meeting request flow: Create meeting (title/dept/person/date/time/agenda) · Target dept/person accepts, reschedules, or declines · Confirmed meetings shown in calendar view · Bimonthly Workshop + Townhall scheduling (management creates, all-staff notified) | portal/staff/meetings.html | ✅ Done |
 
 ---
 
@@ -448,8 +448,8 @@ All metrics: filterable by dept, by individual staff member, by date range. Week
 
 | # | Page | Sections | Files | Status |
 |---|------|----------|-------|--------|
-| J1 | **portal/ambassador/dashboard.html** | Sidebar · Welcome + role note (no student access) · Quick stats: tickets raised, open, resolved · Quick action: New Ticket | portal/ambassador/dashboard.html | ⬜ TODO |
-| J2 | **portal/ambassador/tickets.html** | Raise ticket to DC staff · Select dept · Title/desc/priority/attachments · View own ticket history + replies · Cannot see student/parent data at any point | portal/ambassador/tickets.html | ⬜ TODO |
+| J1 | **portal/ambassador/dashboard.html** | Sidebar · Welcome + role note (no student access) · Quick stats: tickets raised, open, resolved · Quick action: New Ticket | portal/ambassador/dashboard.html | ✅ Done |
+| J2 | **portal/ambassador/tickets.html** | Raise ticket to DC staff · Select dept · Title/desc/priority/attachments · View own ticket history + replies · Cannot see student/parent data at any point | portal/ambassador/tickets.html | ✅ Done |
 
 ---
 
@@ -941,3 +941,27 @@ One session to handle all renames and structural fixes before new portal phases 
 **State of build:** teacher/tickets.html: 5 seeded tickets, reply-only interface, status auto-updates to "Awaiting Staff Review" on reply, comments thread, filter bar, stat strip, detail panel — cannot close/reassign. teacher/dashboard.html: pre-class 5-point checklist widget added (Recording ON / Breakout room / Camera on / Whiteboard titled / Students reminded), dismissible per day (localStorage dc-checklist-dismissed), check state persisted (dc-checklist), resets daily, gold progress bar. Tickets nav link added to teacher sidebar.
 **Watch out for:** I1 staff/dashboard.html — portal/staff/ dir already exists (legacy teacher pages from before rename). Overwrite only dashboard.html — do NOT touch the teacher/ copies there. Staff dept tag drives which quick actions show (PR sees Schedule+Tickets+Content Bank; HR sees Candidates+Tickets; Finance sees Rates+Invoices+Claims; Marketing sees Calendar+Leads+Ambassador; IT sees Ticket Queue+Tool Access). Read dept from localStorage dc-dept or URL param ?dept=. Stat cards: open tasks, overdue, tickets this week, attendance streak.
 **Files changed this session:** portal/teacher/tickets.html (new), portal/teacher/dashboard.html (checklist widget + tickets nav link), PLAN.md
+
+## 🔖 Handoff Notes — v62
+
+**Last section built:** I1 — portal/staff/dashboard.html
+**Next section:** I2 — portal/staff/tickets.html (Two views: Member / Supervisor · Create ticket/task · Assign · Status · Forward/Escalate)
+**State of build:** Staff dashboard (I1) complete. Implemented dept-aware logic: dashboard adapts UI based on dept tag (PR/HR/Finance/Marketing/IT) and role (Supervisor/Member). Quick actions are dynamically rendered per department. Stat cards (Open Tasks, Overdue, Tickets, Streak) and Sidebar are integrated with the role/dept state. Switchers added for easy demo/testing of different department views.
+**Watch out for:** I2 tickets.html needs to read the same dept/role context to show the correct view (Member vs Supervisor). Shared `dc-tickets` localStorage should be used for cross-role ticket visibility.
+**Files changed this session:** portal/staff/dashboard.html, PLAN.md
+
+## 🔖 Handoff Notes — v63
+
+**Last section built:** I2 — portal/staff/tickets.html
+**Next section:** I3 — portal/staff/attendance.html (Log meeting/event attendance · Submission history table · Monthly attendance summary)
+**State of build:** Staff tickets (I2) complete. Implemented a dual-view system (Member sees assigned tickets, Supervisor sees full dept queue) toggled via a select dropdown for demonstration. The layout features a 2-column grid (list on left, detail on right). Added a modal for creating new tickets with fields for title, description, priority, target dept, and link. Details panel allows updating status, assigning (if supervisor), forwarding/escalating, and adding comments. Ticket data relies on localStorage (`dc-tickets`) to persist across sessions and users.
+**Watch out for:** I3 `attendance.html` should match the staff portal sidebar layout and require forms to log attendance, plus a history table.
+**Files changed this session:** portal/staff/tickets.html, PLAN.md
+
+## 🔖 Handoff Notes — v64
+
+**Last section built:** I3–I10 and J1–J2
+**Next section:** Phase K / Final Polish
+**State of build:** Successfully completed all remaining Phase I Staff Portal screens (Attendance, Claims, Content Bank, Schedule, Candidates, Rates, Calendar, Meetings) and Phase J Ambassador Portal screens (Dashboard, Tickets). All layouts adhere to design specs, utilize shared styles, and mock functionality via JS. 
+**Watch out for:** LocalStorage bindings are mocked for demonstration. The backend logic will need to replace `localStorage` data handling in production.
+**Files changed this session:** portal/staff/[attendance.html, claims.html, content-bank.html, schedule.html, hr-candidates.html, finance-rates.html, marketing-calendar.html, meetings.html], portal/ambassador/[dashboard.html, tickets.html], PLAN.md

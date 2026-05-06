@@ -83,12 +83,12 @@
         <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
         <a href="users.html" class="sidebar-nav-item"><svg data-lucide="users"></svg> Users</a>
         <a href="metrics.html" class="sidebar-nav-item active"><svg data-lucide="bar-chart-2"></svg> Metrics</a>
+        <a href="budget.html" class="sidebar-nav-item"><svg data-lucide="pie-chart"></svg> Budget</a>
         <a href="claims.html" class="sidebar-nav-item"><svg data-lucide="banknote"></svg> Claims</a>
         <a href="tickets.html" class="sidebar-nav-item"><svg data-lucide="ticket"></svg> Tickets</a>
       </div>
       <div class="sidebar-nav-section">
-        <div class="sidebar-nav-label">Help</div>
-        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+        <div class="sidebar-nav-label">System</div>
         <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
       </div>
     </nav>
@@ -122,7 +122,7 @@
           <label>Department</label>
           <select id="dept-filter" onchange="applyFilters()">
             <option value="all">All Departments</option>
-            <option value="PR">PR / Teaching</option>
+            <option value="PR">PR</option>
             <option value="HR">HR</option>
             <option value="Finance">Finance</option>
             <option value="Marketing">Marketing</option>
@@ -162,6 +162,7 @@
         <div class="cat-tab" onclick="setCategory('activity',this)">⚡ Activity</div>
         <div class="cat-tab" onclick="setCategory('workload',this)">📦 Workload</div>
         <div class="cat-tab" onclick="setCategory('quality',this)">⭐ Quality</div>
+        <div class="cat-tab" onclick="setCategory('feedback',this)">💬 Feedback</div>
       </div>
 
       <!-- Metric cards (rendered by JS per category) -->
@@ -206,7 +207,7 @@ const WEEKS4 = ['W1','W2','W3','W4'];
 
 const STAFF = [
   {name:'Riya Sharma',  dept:'PR',        role:'Teacher'},
-  {name:'Aryan Patel',  dept:'PR',        role:'Teacher (Sup)'},
+  {name:'Aryan Patel',  dept:'PR',        role:'Teacher'},
   {name:'Sana Rizvi',   dept:'PR',        role:'Teacher'},
   {name:'Meera Joshi',  dept:'HR',        role:'Staff (Sup)'},
   {name:'James Lee',    dept:'IT',        role:'Staff'},
@@ -379,6 +380,7 @@ const CAT_CONFIG = {
     drillData:(s)=>{
       const n=getN(), labs=getWeekLabels();
       return `<div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">BUDGET UTILISATION % — WEEKLY</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.5rem">Base Currency: INR | Operations: GBP</div>
         ${sparkline(s.budgetUsed.slice(-n),'#e8a832','fin')}
         <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>`;
     }
@@ -467,6 +469,20 @@ const CAT_CONFIG = {
         <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
       </div>`;
     }
+  },
+  feedback: {
+    title: 'User Feedback',
+    metrics: [],
+    tableHeaders: ['Date', 'Category', 'Item', 'Rating', 'Comment'],
+    tableRow: (f) => {
+      const date = new Date(f.timestamp).toLocaleDateString();
+      const stars = '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating);
+      return `<td><span style="font-size:0.75rem;color:var(--text-muted)">${date}</span></td>
+              <td><span class="role-badge" style="font-size:0.68rem;background:var(--bg-secondary)">${f.category}</span></td>
+              <td style="font-weight:600;color:var(--text-primary)">${f.item || '—'}</td>
+              <td style="color:var(--gold);font-size:1.1rem;letter-spacing:1px;">${stars}</td>
+              <td style="font-size:0.78rem;color:var(--text-muted);line-height:1.4;max-width:350px;">${f.comment}</td>`;
+    }
   }
 };
 
@@ -518,7 +534,11 @@ function renderCharts(){
   const sf = filteredStaff();
   const n = getN();
   const labs = getWeekLabels();
-  document.getElementById('chart-title').textContent = cfg.title + ' — Weekly Trend';
+  let titleHTML = cfg.title + ' — Weekly Trend';
+  if (currentCat === 'financial') {
+    titleHTML += ' <span style="font-size:0.7rem;color:var(--text-muted);font-weight:500;margin-left:0.5rem">(Base: INR | Operations: GBP)</span>';
+  }
+  document.getElementById('chart-title').innerHTML = titleHTML;
   const wrap = document.getElementById('charts-wrap');
   // Multi-line chart: one sparkline per staff member
   if(!sf.length){ wrap.innerHTML='<p style="color:var(--text-muted);font-size:0.82rem">No staff match current filters.</p>'; return; }
@@ -533,9 +553,19 @@ function renderCharts(){
 
 function renderTable(){
   const cfg = CAT_CONFIG[currentCat];
-  const sf = filteredStaff();
-  document.getElementById('table-title').textContent = 'Staff Breakdown — ' + cfg.title;
+  document.getElementById('table-title').textContent = (currentCat === 'feedback' ? 'Recent Feedback Submission' : 'Staff Breakdown — ') + cfg.title;
   document.getElementById('staff-thead').innerHTML = `<tr>${cfg.tableHeaders.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+  
+  if (currentCat === 'feedback') {
+    const feedbacks = JSON.parse(localStorage.getItem('dc_global_feedbacks') || '[]');
+    const sorted = feedbacks.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    document.getElementById('staff-tbody').innerHTML = sorted.length
+      ? sorted.map(f => `<tr>${cfg.tableRow(f)}</tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No feedback received yet.</td></tr>';
+    return;
+  }
+
+  const sf = filteredStaff();
   document.getElementById('staff-tbody').innerHTML = sf.length
     ? sf.map(s=>`<tr>${cfg.tableRow(s)}</tr>`).join('')
     : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No staff match current filters.</td></tr>';
@@ -573,8 +603,16 @@ function applyFilters(){
 }
 
 function render(){
-  renderMetricCards();
-  renderCharts();
+  const metricGrid = document.getElementById('metric-grid');
+  const chartsWrap = document.getElementById('charts-wrap');
+  
+  if (currentCat === 'feedback') {
+    metricGrid.innerHTML = '';
+    document.getElementById('charts-wrap').innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem;padding:1rem;">Feedback data is only available in the breakdown table below.</p>';
+  } else {
+    renderMetricCards();
+    renderCharts();
+  }
   renderTable();
   lucide.createIcons();
 }

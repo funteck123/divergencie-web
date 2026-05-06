@@ -19,6 +19,7 @@
   <script src="js/theme.js"></script>
 
   <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css"/>
   <link rel="stylesheet" href="css/shared.css"/>
   <link rel="stylesheet" href="css/inner.css"/>
 
@@ -485,27 +486,28 @@
 <body>
 
 <!-- ── NAV ── -->
-<nav id="nav" class="inner-nav">
+<nav id="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
-      <img src="assets/images/logo.jpg" alt="DivergenCIE logo"/>
-      <span class="nav-logo-text" style="color:#fff;">Divergen<span>CIE</span></span>
+      <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
     <div class="nav-links">
       <a href="about.html">About</a>
-      <a href="services.html" style="color:var(--gold);">Services</a>
+      <a href="index.html#results">Results</a>
+      <a href="services.html">Services</a>
       <a href="pricing.html">Pricing</a>
       <a href="mock.html">Free Mock</a>
+      <a href="careers.html">Careers</a>
       <a href="contact.html">Contact</a>
     </div>
-    <div class="nav-right">
-      <button class="theme-toggle" aria-label="Toggle theme">
+    <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="theme-toggle" aria-label="Toggle light/dark mode">
         <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <a href="auth/login.html" class="nav-cta nav-cta-desktop" style="background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:#fff;margin-right:0.5rem;">Sign In</a><a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <a href="auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
+      <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -513,11 +515,14 @@
   </div>
   <div id="mobile-menu">
     <a href="about.html">About</a>
+    <a href="index.html#results">Results</a>
     <a href="services.html">Services</a>
     <a href="pricing.html">Pricing</a>
     <a href="mock.html">Free Mock</a>
+    <a href="careers.html">Careers</a>
     <a href="contact.html">Contact</a>
-    <a href="contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;">Get Started</a>
+    <a href="auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
+    <a href="contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
 
@@ -527,7 +532,7 @@
     <p class="svc-hero-breadcrumb">
       <a href="index.html">Home</a>
       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      Services
+      <span class="inner-hero-current">Services</span>
     </p>
     <h1>Every Subject.<br>Every <span>Exam Board.</span><br>One Coaching Partner.</h1>
     <p class="svc-hero-sub">From IGCSE to university applications — we coach the full academic journey for students in the UK, Malaysia, India, Saudi Arabia, and beyond.</p>
@@ -552,9 +557,10 @@
 </div>
 
 <!-- ── EXAM PREP CARDS ── -->
-<section class="svc-grid-section">
-  <p class="svc-section-label" data-anim="fade-up">Exam Preparation</p>
-  <h2 class="svc-section-title" data-anim="fade-up">Choose Your Qualification</h2>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Exam Preparation</p>
+    <h2>Choose Your <span>Qualification</span></h2>
+  </div>
 
   <div class="svc-cards" id="cards-grid">
 
@@ -712,9 +718,10 @@
 <hr class="svc-divider"/>
 
 <!-- ── ADMISSIONS SECTION ── -->
-<section class="svc-grid-section" style="padding-top:0;">
-  <p class="svc-section-label" data-anim="fade-up">Beyond Exams</p>
-  <h2 class="svc-section-title" data-anim="fade-up">Admissions &amp; Career Support</h2>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Beyond Exams</p>
+    <h2>Admissions &amp; <span>Career Support</span></h2>
+  </div>
 
   <div class="svc-cards svc-cards-wide">
 

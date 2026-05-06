@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign In — DivergenCIE Coaching</title>
+  <title>Portal Login — DivergenCIE Coaching</title>
   <meta name="description" content="Sign in to your DivergenCIE student, parent, teacher, staff, ambassador or management portal."/>
   <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -341,7 +341,7 @@
         <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
       </div>
 
-      <button class="btn-login" id="loginBtn" type="button">Sign In</button>
+      <button class="btn-login" id="loginBtn" type="button">Portal Login</button>
 
       <div class="divider">or continue with</div>
 
@@ -448,7 +448,7 @@
         window.location.href = dest;
       } else {
         loginBtn.classList.remove('loading');
-        loginBtn.textContent = 'Sign In';
+        loginBtn.textContent = 'Portal Login';
         formError.textContent = 'Incorrect email or password. (Demo: use password "demo")';
         formError.classList.add('visible');
       }

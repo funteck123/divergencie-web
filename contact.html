@@ -11,6 +11,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="js/theme.js"></script>
+  <link rel="stylesheet" href="css/styles.css"/>
   <link rel="stylesheet" href="css/shared.css"/>
   <link rel="stylesheet" href="css/inner.css"/>
   <style>
@@ -78,7 +79,7 @@
     }
     .social-link-pill {
       display: inline-flex; align-items: center; gap: 0.5rem;
-      background: var(--bg-2); border: 1px solid var(--border);
+      background: var(--dark-2); border: 1px solid var(--border);
       border-radius: 40px; padding: 0.55rem 1rem;
       text-decoration: none;
       font-family: 'Inter', sans-serif; font-size: 0.82rem;
@@ -101,7 +102,7 @@
     @media (max-width: 480px) { .regions-grid { grid-template-columns: 1fr; max-width: 360px; } }
 
     .region-card {
-      background: var(--bg-2);
+      background: var(--dark-2);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 1.25rem 1.25rem 1rem;
@@ -133,7 +134,7 @@
 
     /* Enquiry form */
     .enq-form-wrap {
-      background: var(--bg-2);
+      background: var(--dark-2);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 2.25rem;
@@ -146,7 +147,7 @@
       color: var(--text-muted);
     }
     .form-input-c, .form-select-c, .form-textarea-c {
-      background: var(--bg-1);
+      background: var(--dark-1);
       border: 1.5px solid var(--border);
       border-radius: 8px;
       padding: 0.7rem 0.9rem;
@@ -181,52 +182,57 @@
     }
     .map-placeholder {
       width: 100%; height: 320px;
-      background: linear-gradient(135deg, var(--bg-2) 0%, var(--bg-3,#d5e8f0) 100%);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #111 0%, #1a2a3a 100%);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 14px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 0.75rem;
     }
-    html.dark .map-placeholder { background: linear-gradient(135deg, #111 0%, #1a2a3a 100%); }
     .map-placeholder-icon { font-size: 2.5rem; }
     .map-placeholder-text {
       font-family: 'Inter', sans-serif; font-size: 0.85rem;
-      color: var(--text-muted); text-align: center; line-height: 1.6;
+      color: rgba(255,255,255,0.7); text-align: center; line-height: 1.6;
     }
     .map-placeholder-note {
-      font-size: 0.75rem; color: var(--text-muted);
+      font-size: 0.75rem; color: rgba(255,255,255,0.7);
       font-family: 'Inter', sans-serif;
-      background: var(--bg-2); padding: 0.4rem 0.9rem;
-      border-radius: 20px; border: 1px solid var(--border);
+      background: #1a1a1a; padding: 0.4rem 0.9rem;
+      border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
     }
-    html.dark .map-placeholder-note { background: #1a1a1a; }
+    .map-wrap iframe { width: 100%; height: 320px; border-radius: 14px; }
+    html:not(.dark) .map-wrap iframe { filter: invert(90%) hue-rotate(180deg); }
+    
+    @media (max-width: 780px) {
+      .map-placeholder, .map-wrap iframe { height: 450px; }
+    }
   </style>
 </head>
 <body>
 
 <!-- ── NAV ── -->
-<nav id="nav" class="inner-nav">
+<nav id="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
-      <img src="assets/images/logo.jpg" alt="DivergenCIE logo"/>
-      <span class="nav-logo-text" style="color:#fff;">Divergen<span>CIE</span></span>
+      <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
     <div class="nav-links">
       <a href="about.html">About</a>
+      <a href="index.html#results">Results</a>
       <a href="services.html">Services</a>
       <a href="pricing.html">Pricing</a>
       <a href="mock.html">Free Mock</a>
-      <a href="contact.html" style="color:var(--gold);">Contact</a>
+      <a href="careers.html">Careers</a>
+      <a href="contact.html">Contact</a>
     </div>
-    <div class="nav-right">
-      <button class="theme-toggle" aria-label="Toggle theme">
+    <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="theme-toggle" aria-label="Toggle light/dark mode">
         <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <a href="auth/login.html" class="nav-cta nav-cta-desktop" style="background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:#fff;margin-right:0.5rem;">Sign In</a><a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <a href="auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
+      <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -234,11 +240,14 @@
   </div>
   <div id="mobile-menu">
     <a href="about.html">About</a>
+    <a href="index.html#results">Results</a>
     <a href="services.html">Services</a>
     <a href="pricing.html">Pricing</a>
     <a href="mock.html">Free Mock</a>
+    <a href="careers.html">Careers</a>
     <a href="contact.html">Contact</a>
-    <a href="contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;">Get Started</a>
+    <a href="auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
+    <a href="contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
 
@@ -423,10 +432,10 @@
 </section>
 
 <!-- ── REGIONAL CONTACTS ── -->
-<section style="padding:3rem 0 5rem; background:var(--bg-2);">
+<section style="padding:3rem 0 5rem; background:var(--dark-2);">
   <div style="text-align:center;margin-bottom:2.5rem;padding:0 1.5rem;">
     <p class="section-label" data-anim>Where We Operate</p>
-    <h2 class="section-heading" data-anim>Find Us in Your Region</h2>
+    <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-0.02em;margin-top:0.5rem;" data-anim>Find Us in Your Region</h2>
   </div>
 
   <div class="regions-grid" data-anim>
@@ -504,7 +513,7 @@
 <section style="padding:4rem 0 5rem;">
   <div style="text-align:center;margin-bottom:2rem;padding:0 1.5rem;">
     <p class="section-label" data-anim>Globally Remote</p>
-    <h2 class="section-heading" data-anim>100% Online — Worldwide</h2>
+    <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-0.02em;margin-top:0.5rem;" data-anim>100% Online — Worldwide</h2>
   </div>
   <div class="map-wrap" data-anim>
     <!-- Owner: replace this placeholder with a real Google Maps embed iframe -->

@@ -7,7 +7,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* ── INNER BODY ── */
-body { font-family: 'Inter', sans-serif; }
+/* Nav uses Satoshi (from shared.css body rule). Inter is scoped to content only. */
+.inner-hero, .inner-section, .inner-section-head,
+.section-wrap, .section-wrap-alt {
+  font-family: 'Inter', sans-serif;
+}
 
 /* ── PAGE HERO (inner) ── */
 .inner-hero {
@@ -32,15 +36,15 @@ html.dark .inner-hero { background: #0a0f1a; }
 }
 .inner-hero h1 {
   font-family: 'Satoshi', sans-serif;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 900; letter-spacing: -0.03em;
-  color: #ffffff; line-height: 1.08;
-  margin-bottom: 1.1rem;
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 900; letter-spacing: -0.04em;
+  color: #ffffff; line-height: 1.02;
+  margin-bottom: 1.25rem;
 }
 .inner-hero h1 span { color: var(--gold); }
 .inner-hero p {
-  font-size: 1.05rem; color: rgba(255,255,255,0.65);
-  max-width: 580px; margin: 0 auto 2rem; line-height: 1.65;
+  font-size: clamp(1rem, 1.2vw, 1.15rem); color: rgba(255,255,255,0.65);
+  max-width: 680px; margin: 0 auto 2rem; line-height: 1.6;
 }
 .inner-hero-breadcrumb {
   display: flex; align-items: center; justify-content: center;
@@ -51,6 +55,7 @@ html.dark .inner-hero { background: #0a0f1a; }
 .inner-hero-breadcrumb a { color: rgba(255,255,255,0.4); transition: color 0.2s; }
 .inner-hero-breadcrumb a:hover { color: var(--gold); }
 .inner-hero-breadcrumb span { color: rgba(255,255,255,0.25); }
+.inner-hero-current { color: rgba(255,255,255,0.65); }
 
 /* ── INNER SECTION ── */
 .inner-section {
@@ -294,9 +299,9 @@ html.dark .toppers-strip { background: #0a0f1a; border-top: 1px solid var(--bord
   border-top: 1px solid var(--border);
 }
 .accred-label {
-  font-size: 0.65rem; font-weight: 700;
+  font-size: 0.65rem; font-weight: 800;
   letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--text-muted); margin-bottom: 1.75rem;
+  color: var(--text-primary); margin-bottom: 1.75rem;
 }
 .accred-logos {
   display: flex; align-items: center;
@@ -321,17 +326,7 @@ html.dark .toppers-strip { background: #0a0f1a; border-top: 1px solid var(--bord
   text-transform: uppercase; letter-spacing: 0.1em;
 }
 
-/* ── INNER NAV OVERRIDES ── */
-/* Inner pages: nav links use root-relative hrefs */
-#nav.inner-nav .nav-links a { color: var(--text-muted); }
-#nav.inner-nav.scrolled .nav-links a { color: var(--text-muted); }
-#nav.inner-nav { background: var(--navy); }
-html.dark #nav.inner-nav { background: #0a0f1a; }
-#nav.inner-nav .nav-logo-text { color: #fff; }
-#nav.inner-nav.scrolled {
-  background: rgba(26,60,94,0.96);
-}
-html.dark #nav.inner-nav.scrolled { background: rgba(10,10,10,0.96); }
+/* ── INNER NAV OVERRIDES (Handled in shared.css) ── */
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {

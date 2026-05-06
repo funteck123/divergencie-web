@@ -197,9 +197,9 @@
         <span class="portal-page-title">Child Progress</span>
       </div>
       <div class="portal-topbar-right">
-        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
-          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
-          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
         </button>
       </div>
     </header>
@@ -557,21 +557,7 @@ function downloadReport() {
 lucide.createIcons();
 switchChild(0);
 
-// Theme toggle
-const themeBtn = document.getElementById('portal-theme-toggle');
-if (themeBtn) {
-  function syncThemeIcons() {
-    const isDark = document.documentElement.classList.contains('dark');
-    themeBtn.querySelector('.icon-light').style.display = isDark ? 'none' : 'block';
-    themeBtn.querySelector('.icon-dark').style.display = isDark ? 'block' : 'none';
-  }
-  syncThemeIcons();
-  themeBtn.addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    syncThemeIcons();
-  });
-}
+
 </script>
 </body>
 </html>

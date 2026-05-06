@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AP Coaching — DivergenCIE</title>
-  <meta name="description" content="Expert SAT & ACT prep for top US college admissions. Proven score improvements of 150–300 points. Personalised 1-to-1 coaching., personalised sessions online. Enrol with DivergenCIE today."/>
+  <title>IELTS & TOEFL Prep — DivergenCIE</title>
+  <meta name="description" content="Expert IELTS & TOEFL preparation. Cambridge & British Council trained tutors, Band 8.0+ track record, personalised sessions online. Enrol with DivergenCIE today."/>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://api.fontshare.com"/>
@@ -24,13 +24,13 @@
 
   <style>
     /* ── Page-specific styles ── */
-    .igcse-hero {
+    .ielts-hero {
       background: var(--navy);
       padding: 7rem 2rem 4rem;
       position: relative;
       overflow: hidden;
     }
-    .igcse-hero::before {
+    .ielts-hero::before {
       content: '';
       position: absolute;
       inset: 0;
@@ -38,9 +38,9 @@
                   radial-gradient(ellipse 40% 80% at 10% 80%, rgba(74,159,212,0.10) 0%, transparent 60%);
       pointer-events: none;
     }
-    html.dark .igcse-hero { background: #0d0d0d; }
+    html.dark .ielts-hero { background: #0d0d0d; }
 
-    .igcse-hero-inner {
+    .ielts-hero-inner {
       max-width: 900px;
       margin: 0 auto;
       position: relative;
@@ -90,7 +90,7 @@
       border: 1px solid rgba(74,159,212,0.25);
     }
 
-    .igcse-hero h1 {
+    .ielts-hero h1 {
       font-family: 'Satoshi', sans-serif;
       font-weight: 900;
       font-size: clamp(2.2rem, 5vw, 3.5rem);
@@ -616,27 +616,28 @@
 <body>
 
 <!-- ── NAV ── -->
-<nav id="nav" class="inner-nav">
+<nav id="nav">
   <div class="nav-inner">
     <a href="../index.html" class="nav-logo">
-      <img src="../assets/images/logo.jpg" alt="DivergenCIE logo"/>
-      <span class="nav-logo-text" style="color:#fff;">Divergen<span>CIE</span></span>
+      <img src="../assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
     <div class="nav-links">
       <a href="../about.html">About</a>
-      <a href="../services.html" style="color:var(--gold);">Services</a>
+      <a href="../index.html#results">Results</a>
+      <a href="../services.html">Services</a>
       <a href="../pricing.html">Pricing</a>
       <a href="../mock.html">Free Mock</a>
+      <a href="../careers.html">Careers</a>
       <a href="../contact.html">Contact</a>
     </div>
-    <div class="nav-right">
-      <button class="theme-toggle" aria-label="Toggle theme">
+    <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="theme-toggle" aria-label="Toggle light/dark mode">
         <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <a href="../auth/login.html" class="nav-cta nav-cta-desktop" style="background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:#fff;margin-right:0.5rem;">Sign In</a><a href="../contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <a href="../auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
+      <a href="../contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -644,17 +645,20 @@
   </div>
   <div id="mobile-menu">
     <a href="../about.html">About</a>
+    <a href="../index.html#results">Results</a>
     <a href="../services.html">Services</a>
     <a href="../pricing.html">Pricing</a>
     <a href="../mock.html">Free Mock</a>
+    <a href="../careers.html">Careers</a>
     <a href="../contact.html">Contact</a>
-    <a href="../contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;">Get Started</a>
+    <a href="../auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
+    <a href="../contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
 
 <!-- ── HERO ── -->
-<section class="igcse-hero">
-  <div class="igcse-hero-inner">
+<section class="ielts-hero">
+  <div class="ielts-hero-inner">
     <nav class="breadcrumb" aria-label="Breadcrumb">
       <a href="../index.html">Home</a>
       <span>›</span>
@@ -664,9 +668,9 @@
     </nav>
 
     <div class="hero-badge-row">
-      <span class="hero-badge hero-badge--cb" style="background:rgba(0,56,147,0.15);border-color:rgba(0,56,147,0.4);color:#003893;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        British Council &amp; ETS
+      <span class="hero-badge hero-badge--cb" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4);color:#fff;font-weight:700">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        British Council &amp; ETS Trained
       </span>
       <span class="hero-badge hero-badge--level">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 20h20M6 20V10M10 20V4M14 20V10M18 20v-6"/></svg>
@@ -675,7 +679,7 @@
     </div>
 
     <h1>IELTS &amp; TOEFL Prep Built for<br/><em>University &amp; Visa Success</em></h1>
-    <p class="hero-sub">Personalised one-to-one online sessions across all IGCSE subjects. Our Cambridge-trained tutors have produced multiple World and Country Toppers — your A* is the plan, not the hope.</p>
+    <p class="hero-sub">Master the Band 8.5+ journey with our expert tutors. Personalised one-to-one online sessions designed to help you achieve the scores required for Oxford, Cambridge, and Ivy League universities.</p>
 
     <div class="hero-cta-row">
       <a href="../contact.html" class="btn-gold-hero">
@@ -690,16 +694,16 @@
 
     <div class="hero-stats">
       <div class="hero-stat-item">
-        <div class="hero-stat-num">40+</div>
+        <div class="hero-stat-num">1.5+</div>
         <div class="hero-stat-label">Avg Band Gain</div>
       </div>
       <div class="hero-stat-item">
         <div class="hero-stat-num">98%</div>
-        <div class="hero-stat-label">A*–B Rate</div>
+        <div class="hero-stat-label">Success Rate</div>
       </div>
       <div class="hero-stat-item">
-        <div class="hero-stat-num">25+</div>
-        <div class="hero-stat-label">IGCSE Subjects</div>
+        <div class="hero-stat-num">Band 8+</div>
+        <div class="hero-stat-label">Target Range</div>
       </div>
       <div class="hero-stat-item">
         <div class="hero-stat-num">5+</div>
@@ -712,9 +716,9 @@
 <!-- ── SUBJECTS ── -->
 <section class="subjects-section">
   <div class="section-inner">
-    <p class="section-eyebrow" data-anim>Subjects Offered</p>
-    <h2 class="section-heading" data-anim>Every IGCSE Subject.<br/>One Expert Team.</h2>
-    <p class="section-sub" data-anim>We cover the full Cambridge IGCSE syllabus. Whether you need intensive support in one subject or a full-programme coach, we have specialist tutors for every paper.</p>
+    <p class="section-eyebrow" data-anim>Test Preparation</p>
+    <h2 class="section-heading" data-anim>IELTS & TOEFL Prep.<br/>One Expert Team.</h2>
+    <p class="section-sub" data-anim>We cover the full spectrum of English proficiency tests. Whether you need academic IELTS for university offers or general training for visas, we have specialist tutors for every module.</p>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem;" data-anim>
         <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:1.5rem;">
@@ -752,8 +756,8 @@
 <section class="included-section">
   <div class="section-inner">
     <p class="section-eyebrow text-center" data-anim>What You Get</p>
-    <h2 class="section-heading text-center" data-anim>Everything to Hit A*</h2>
-    <p class="section-sub text-center" data-anim>No textbook dumping. Every session is personalised, tracked, and optimised for your exact IELTS/TOEFL syllabus and exam date.</p>
+    <h2 class="section-heading text-center" data-anim>Everything to Hit Your Target</h2>
+    <p class="section-sub text-center" data-anim>No textbook dumping. Every session is personalised, tracked, and optimised for your exact test format and exam date.</p>
 
     <div class="included-grid">
       <div class="included-card" data-anim>
@@ -776,8 +780,8 @@
         <div class="included-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <h3>A* Progress Tracker</h3>
-        <p>Chapter-by-chapter A* checklist. Monthly score analytics, weak-area reports, and a clear roadmap to your target grade — visible in your student portal.</p>
+        <h3>Band 9.0 Progress Tracker</h3>
+        <p>Section-by-section progress checklist. Monthly mock analytics, weak-area reports, and a clear roadmap to your target band — visible in your student portal.</p>
       </div>
 
       <div class="included-card" data-anim>

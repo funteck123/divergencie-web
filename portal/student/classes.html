@@ -273,9 +273,9 @@
       </div>
       <div class="portal-topbar-right">
         <button class="topbar-bell" aria-label="Notifications"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
-        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
-          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
-          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
         </button>
       </div>
     </header>
@@ -733,10 +733,41 @@
   lucide.createIcons();
 
   // Timezone display
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.getElementById('tz-name').textContent = tz.replace(/_/g,' ');
-  } catch(e) {}
+  const TZ_OFFSETS = { '8': 8, '5.5': 5.5, '3': 3, '1': 1, '5': 5 };
+  const tzSwitcher = document.getElementById('tz-switcher');
+  const tzNameEl = document.getElementById('tz-name');
+
+  function updateTimezoneDisplay() {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      tzNameEl.textContent = tz.replace(/_/g,' ');
+      // Set switcher to match local if possible
+      const localOffset = -(new Date().getTimezoneOffset() / 60);
+      for(let val in TZ_OFFSETS) {
+        if(TZ_OFFSETS[val] === localOffset) {
+          tzSwitcher.value = val;
+          break;
+        }
+      }
+    } catch(e) {
+      console.error("TZ Error", e);
+    }
+  }
+  updateTimezoneDisplay();
+
+  tzSwitcher.addEventListener('change', function() {
+    const selectedOffset = this.value;
+    const labels = {
+      '8': 'MY / SGP time',
+      '5.5': 'India time',
+      '3': 'KSA time',
+      '1': 'UK time',
+      '5': 'PK time'
+    };
+    tzNameEl.textContent = labels[selectedOffset];
+    // In a real app, this would shift the calendar hours. 
+    // For the demo, we'll just update the label to show it's "working".
+  });
 
   // Week nav (cosmetic — labels only, no real date engine needed for demo)
   const WEEKS = [
@@ -780,22 +811,7 @@
     setTimeout(function(){ closeModal('reschedule-modal'); }, 2800);
   }
 
-  // Theme toggle
-  const themeBtn = document.getElementById('portal-theme-toggle');
-  if (themeBtn) {
-    function syncIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const s = themeBtn.querySelector('.icon-light'); const m = themeBtn.querySelector('.icon-dark');
-      if (s) s.style.display = isDark ? 'none' : 'block';
-      if (m) m.style.display = isDark ? 'block' : 'none';
-    }
-    syncIcons();
-    themeBtn.addEventListener('click', function() {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-      syncIcons();
-    });
-  }
+
 </script>
 </body>
 </html>

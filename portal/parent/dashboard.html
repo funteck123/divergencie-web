@@ -209,9 +209,9 @@
           <svg data-lucide="bell"></svg>
           <span class="topbar-bell-dot"></span>
         </button>
-        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
-          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
-          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
         </button>
       </div>
     </header>
@@ -268,7 +268,8 @@
             <div class="stat-sub" id="stat-score-sub">A* target: 80%</div>
           </div>
         </div>
-        <div class="stat-card">
+        <!-- Fee Status hidden as per request -->
+        <div class="stat-card" style="display: none;">
           <div class="stat-card-icon" style="background:#f0fdf4">
             <svg data-lucide="credit-card" style="color:#22c55e"></svg>
           </div>
@@ -584,24 +585,7 @@
     setTimeout(() => closeSupportModal(), 2400);
   }
 
-  // Theme toggle
-  const themeBtn = document.getElementById('portal-theme-toggle');
-  if (themeBtn) {
-    function syncThemeIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const sunEl = themeBtn.querySelector('.icon-light');
-      const moonEl = themeBtn.querySelector('.icon-dark');
-      if (sunEl) sunEl.style.display = isDark ? 'none' : 'block';
-      if (moonEl) moonEl.style.display = isDark ? 'block' : 'none';
-    }
-    syncThemeIcons();
-    themeBtn.addEventListener('click', function() {
-      const html = document.documentElement;
-      html.classList.toggle('dark');
-      localStorage.setItem('dc-theme', html.classList.contains('dark') ? 'dark' : 'light');
-      syncThemeIcons();
-    });
-  }
+
 
   // Demo: show missed alert for child 0 (can override via ?missed=1)
   if (new URLSearchParams(location.search).get('missed') === '1') {

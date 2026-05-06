@@ -11,6 +11,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="js/theme.js"></script>
+  <link rel="stylesheet" href="css/styles.css"/>
   <link rel="stylesheet" href="css/shared.css"/>
   <link rel="stylesheet" href="css/inner.css"/>
   <style>
@@ -161,17 +162,19 @@
 <body>
 
 <!-- ── NAV ── -->
-<nav id="nav" class="inner-nav">
+<nav id="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
       <img src="assets/images/logo.jpg" alt="DivergenCIE logo"/>
-      <span class="nav-logo-text" style="color:#fff;">Divergen<span>CIE</span></span>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
     <div class="nav-links">
       <a href="about.html">About</a>
+      <a href="index.html#results">Results</a>
       <a href="services.html">Services</a>
       <a href="pricing.html">Pricing</a>
       <a href="mock.html">Free Mock</a>
+      <a href="careers.html">Careers</a>
       <a href="contact.html">Contact</a>
     </div>
     <div class="nav-right">
@@ -179,7 +182,8 @@
         <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <a href="auth/login.html" class="nav-cta nav-cta-desktop" style="background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:#fff;margin-right:0.5rem;">Sign In</a><a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
+      <a href="auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
+      <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
     </div>
     <div style="display:flex;align-items:center;gap:0.5rem;">
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
@@ -189,11 +193,14 @@
   </div>
   <div id="mobile-menu">
     <a href="about.html">About</a>
+    <a href="index.html#results">Results</a>
     <a href="services.html">Services</a>
     <a href="pricing.html">Pricing</a>
     <a href="mock.html">Free Mock</a>
+    <a href="careers.html">Careers</a>
     <a href="contact.html">Contact</a>
-    <a href="contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;">Get Started</a>
+    <a href="auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
+    <a href="contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
 
@@ -203,7 +210,7 @@
   <div class="inner-hero-breadcrumb">
     <a href="index.html">Home</a>
     <span>›</span>
-    <span style="color:rgba(255,255,255,0.65);">Resources</span>
+    <span class="inner-hero-current">Resources</span>
   </div>
   <h1>Everything You Need<br/><span>to Get A*</span></h1>
   <p>Free notes, past papers, predicted papers and study guides — curated by our tutors across every exam board. Enrolled students get full access in the portal.</p>
@@ -211,9 +218,9 @@
 
 <!-- ── FREE RESOURCES GRID ── -->
 <section style="padding:5rem 0 3rem;">
-  <div style="text-align:center;margin-bottom:3rem;padding:0 1.5rem;">
-    <p class="section-label" data-anim>Study Materials</p>
-    <h2 class="section-heading" data-anim>Free &amp; Enrolled<br/>Resources</h2>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Study Materials</p>
+    <h2>Free &amp; Enrolled<br/><span>Resources</span></h2>
   </div>
 
   <div class="res-grid" data-anim>
@@ -313,10 +320,10 @@
 
 <!-- ── BLOG TEASER ── -->
 <section style="padding:5rem 0;">
-  <div style="text-align:center;margin-bottom:3rem;padding:0 1.5rem;">
-    <p class="section-label" data-anim>Blog</p>
-    <h2 class="section-heading" data-anim>Study Smarter —<br/>Our Latest Guides</h2>
-    <p style="font-size:0.88rem;color:var(--text-muted);font-family:'Inter',sans-serif;margin-top:0.75rem;" data-anim>Full blog launching soon. Subscribe via WhatsApp to get guides first.</p>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Blog</p>
+    <h2>Study Smarter —<br/><span>Our Latest Guides</span></h2>
+    <p>Full blog launching soon. Subscribe via WhatsApp to get guides first.</p>
   </div>
 
   <div class="blog-grid" data-anim>
@@ -464,16 +471,5 @@
   animEls.forEach(el => obs.observe(el));
 </script>
 
-</body>
-</html>
-<script>
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
-document.getElementById('hamburger').addEventListener('click', () => { document.getElementById('mobile-menu').classList.toggle('open'); });
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('anim-visible'); obs.unobserve(e.target); } });
-}, { threshold: 0.1 });
-document.querySelectorAll('[data-anim]').forEach(el => obs.observe(el));
-</script>
 </body>
 </html>

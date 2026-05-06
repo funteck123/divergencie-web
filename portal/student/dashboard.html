@@ -241,9 +241,9 @@
           <svg data-lucide="bell"></svg>
           <span class="topbar-bell-dot"></span>
         </button>
-        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
-          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
-          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
         </button>
       </div>
     </header>
@@ -531,24 +531,7 @@
     document.getElementById('avatar-initials').textContent = nameParam.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
   }
 
-  // Theme icon toggle
-  const themeBtn = document.getElementById('portal-theme-toggle');
-  if (themeBtn) {
-    function syncThemeIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const sunEl = themeBtn.querySelector('.icon-light');
-      const moonEl = themeBtn.querySelector('.icon-dark');
-      if (sunEl) sunEl.style.display = isDark ? 'none' : 'block';
-      if (moonEl) moonEl.style.display = isDark ? 'block' : 'none';
-    }
-    syncThemeIcons();
-    themeBtn.addEventListener('click', function() {
-      const html = document.documentElement;
-      html.classList.toggle('dark');
-      localStorage.setItem('dc-theme', html.classList.contains('dark') ? 'dark' : 'light');
-      syncThemeIcons();
-    });
-  }
+
 </script>
 </body>
 </html>

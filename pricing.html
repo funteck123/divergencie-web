@@ -14,6 +14,7 @@
   <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="js/theme.js"></script>
 
+  <link rel="stylesheet" href="css/styles.css"/>
   <link rel="stylesheet" href="css/shared.css"/>
   <link rel="stylesheet" href="css/inner.css"/>
 
@@ -23,7 +24,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 0 1.5rem;
     }
@@ -232,27 +233,28 @@
 <body>
 
 <!-- ── NAV ── -->
-<nav id="nav" class="inner-nav">
+<nav id="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">
-      <img src="assets/images/logo.jpg" alt="DivergenCIE logo"/>
-      <span class="nav-logo-text" style="color:#fff;">Divergen<span>CIE</span></span>
+      <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
     <div class="nav-links">
       <a href="about.html">About</a>
+      <a href="index.html#results">Results</a>
       <a href="services.html">Services</a>
-      <a href="pricing.html" style="color:var(--gold);">Pricing</a>
+      <a href="pricing.html">Pricing</a>
       <a href="mock.html">Free Mock</a>
+      <a href="careers.html">Careers</a>
       <a href="contact.html">Contact</a>
     </div>
-    <div class="nav-right">
-      <button class="theme-toggle" aria-label="Toggle theme">
+    <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="theme-toggle" aria-label="Toggle light/dark mode">
         <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <a href="auth/login.html" class="nav-cta nav-cta-desktop" style="background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:#fff;margin-right:0.5rem;">Sign In</a><a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
-    </div>
-    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <a href="auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
+      <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
@@ -260,11 +262,14 @@
   </div>
   <div id="mobile-menu">
     <a href="about.html">About</a>
+    <a href="index.html#results">Results</a>
     <a href="services.html">Services</a>
-    <a href="pricing.html" style="color:var(--gold);">Pricing</a>
+    <a href="pricing.html">Pricing</a>
     <a href="mock.html">Free Mock</a>
+    <a href="careers.html">Careers</a>
     <a href="contact.html">Contact</a>
-    <a href="contact.html" style="margin-top:0.5rem;padding:0.75rem 1.25rem;background:var(--gold);color:#0a0a0a;font-weight:700;font-size:0.8rem;letter-spacing:0.07em;text-transform:uppercase;text-align:center;">Get Started</a>
+    <a href="auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
+    <a href="contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
 
@@ -274,7 +279,7 @@
   <div class="inner-hero-breadcrumb">
     <a href="index.html">Home</a>
     <span>›</span>
-    <span style="color:rgba(255,255,255,0.65);">Pricing</span>
+    <span class="inner-hero-current">Pricing</span>
   </div>
   <h1>Simple, Transparent<br/><span>Pricing</span></h1>
   <p>Three tiers. No hidden fees. Pay in your local currency. Every plan includes live 1-to-1 sessions, recordings, past papers, and direct teacher access.</p>
@@ -282,10 +287,10 @@
 
 <!-- ── PRICING CARDS ── -->
 <section style="padding:5rem 0 3rem;">
-  <div style="text-align:center;margin-bottom:3rem;padding:0 1.5rem;">
-    <p class="section-label" data-anim>Choose Your Plan</p>
-    <h2 class="section-heading" data-anim>Pick the Intensity That<br/>Matches Your Target</h2>
-    <p style="max-width:560px;margin:1rem auto 0;font-size:0.95rem;color:var(--text-muted);font-family:'Inter',sans-serif;" data-anim>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Choose Your Plan</p>
+    <h2>Pick the Intensity That<br/><span>Matches Your Target</span></h2>
+    <p>
       Not sure which tier is right? <a href="https://wa.me/919650675507" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;">WhatsApp us</a> — we'll match you to a plan based on your exam timeline and target grade.
     </p>
   </div>
@@ -297,7 +302,7 @@
       <div class="pricing-tier">Tier 1</div>
       <div class="pricing-name">Foundations</div>
       <div class="pricing-tagline">For students building their base and targeting B–A grades.</div>
-      <div class="pricing-price">Contact Us <span>/ mo</span></div>
+      <div class="pricing-price" style="font-size:1.85rem;margin:0.5rem 0 1rem;">Contact Us</div>
       <div class="pricing-note">2 live sessions per week · ~8 sessions/month</div>
       <hr class="pricing-divider"/>
       <ul class="pricing-features">
@@ -315,12 +320,12 @@
     </div>
 
     <!-- A* TRACK (featured) -->
-    <div class="pricing-card pricing-card--featured" style="position:relative;">
+    <div class="pricing-card pricing-card--featured">
       <div class="pricing-badge">Most Popular</div>
       <div class="pricing-tier">Tier 2</div>
       <div class="pricing-name">A* Track</div>
       <div class="pricing-tagline">For students targeting A* and top university offers.</div>
-      <div class="pricing-price">Contact Us <span>/ mo</span></div>
+      <div class="pricing-price" style="font-size:1.85rem;margin:0.5rem 0 1rem;">Contact Us</div>
       <div class="pricing-note">3 live sessions per week · ~12 sessions/month</div>
       <hr class="pricing-divider"/>
       <ul class="pricing-features">
@@ -342,7 +347,7 @@
       <div class="pricing-tier">Tier 3</div>
       <div class="pricing-name">World Topper</div>
       <div class="pricing-tagline">For students chasing World / Country Topper rankings.</div>
-      <div class="pricing-price">Contact Us <span>/ mo</span></div>
+      <div class="pricing-price" style="font-size:1.85rem;margin:0.5rem 0 1rem;">Contact Us</div>
       <div class="pricing-note">Daily sessions + extras · maximum intensity</div>
       <hr class="pricing-divider"/>
       <ul class="pricing-features">
@@ -369,12 +374,10 @@
 
 <!-- ── PAYMENT METHODS ── -->
 <section style="padding:4rem 0;background:var(--bg-2);">
-  <div style="text-align:center;margin-bottom:2rem;padding:0 1.5rem;">
-    <p class="section-label" data-anim>Pay Your Way</p>
-    <h2 class="section-heading" data-anim>Local Payment Methods,<br/>Every Region</h2>
-    <p style="max-width:520px;margin:1rem auto 0;font-size:0.9rem;color:var(--text-muted);font-family:'Inter',sans-serif;" data-anim>
-      No international transfer headaches. Pay in your local currency through your preferred gateway.
-    </p>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Pay Your Way</p>
+    <h2>Local Payment Methods,<br/><span>Every Region</span></h2>
+    <p>No international transfer headaches. Pay in your local currency through your preferred gateway.</p>
   </div>
 
   <div class="payment-grid" data-anim>
@@ -413,9 +416,9 @@
 
 <!-- ── FAQ ── -->
 <section style="padding:5rem 0;">
-  <div style="text-align:center;margin-bottom:2.5rem;padding:0 1.5rem;">
-    <p class="section-label" data-anim>FAQ</p>
-    <h2 class="section-heading" data-anim>Pricing Questions,<br/>Answered</h2>
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">FAQ</p>
+    <h2>Pricing Questions,<br/><span>Answered</span></h2>
   </div>
 
   <div class="pricing-faq" data-anim>
@@ -561,34 +564,17 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('anim-visible'); obs.unobserve(e.target); } });
   }, { threshold: 0.1 });
   animEls.forEach(el => obs.observe(el));
+
+  // Pricing FAQ
+  document.querySelectorAll('.pfaq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.pfaq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
 </script>
 
-</body>
-</html>
-<script>
-// Nav scroll
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 40);
-});
-// Mobile menu
-document.getElementById('hamburger').addEventListener('click', () => {
-  document.getElementById('mobile-menu').classList.toggle('open');
-});
-// Scroll animations
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('anim-visible'); obs.unobserve(e.target); } });
-}, { threshold: 0.1 });
-document.querySelectorAll('[data-anim]').forEach(el => obs.observe(el));
-// Pricing FAQ
-document.querySelectorAll('.pfaq-q').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const item = btn.parentElement;
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.pfaq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  });
-});
-</script>
 </body>
 </html>

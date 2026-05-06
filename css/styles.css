@@ -15,8 +15,8 @@
   --dark-4:       #dddddd;
   --text:         #1a1a1a;
   --text-primary: #1a1a1a;
-  --text-muted:   #666666;
-  --text-dim:     #999999;
+  --text-muted:   #444444;
+  --text-dim:     #777777;
   --radius:       0px;
   --transition:   0.22s ease;
 }
@@ -109,57 +109,34 @@ img { display: block; max-width: 100%; }
   to   { opacity: 1; }
 }
 
-/* ============================================================
-   SECTION 1 — NAV (homepage overrides — shared.css has base)
-   ============================================================ */
+/* ── NAV POSITION ── */
 #nav {
   position: fixed; top: 0; left: 0; right: 0;
   z-index: 999;
+  background: transparent;
   transition: background 0.3s, box-shadow 0.3s;
 }
-/* Transparent nav — always white text (over hero image) */
-#nav .nav-links a { color: rgba(255,255,255,0.75); }
-#nav .nav-links a:hover { color: var(--gold); }
-#nav .nav-logo-text { color: #ffffff; }
-#nav .nav-hamburger span { background: #ffffff; }
-#nav .theme-toggle { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.25); }
-#nav .theme-toggle:hover { color: var(--gold); border-color: var(--gold); }
 
-/* Scrolled state */
-#nav.scrolled {
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.1);
-}
-#nav.scrolled .nav-links a { color: #5c5248; }
-#nav.scrolled .nav-links a:hover { color: var(--gold); }
-#nav.scrolled .nav-logo-text { color: #1a1a1a; }
-#nav.scrolled .nav-hamburger span { background: #1a1a1a; }
-#nav.scrolled .theme-toggle { color: #666; border-color: rgba(0,0,0,0.15); }
-
-html.dark #nav.scrolled {
-  background: rgba(10,10,10,0.94);
-  box-shadow: 0 1px 0 var(--gold-pale);
-}
-html.dark #nav.scrolled .nav-links a { color: rgba(255,255,255,0.6); }
-html.dark #nav.scrolled .nav-logo-text { color: #ffffff; }
-html.dark #nav.scrolled .nav-hamburger span { background: #ffffff; }
-html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+/* ── NAV ELEMENTS ── */
 .nav-inner {
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 2.5rem;
   max-width: 1400px; margin: 0 auto;
+  gap: 2rem;
 }
 .nav-logo {
   display: flex; align-items: center; gap: 0.6rem;
   font-weight: 900; font-size: 1.1rem; letter-spacing: -0.02em;
+  flex-shrink: 0; text-decoration: none;
 }
 .nav-logo img {
   width: 36px; height: 36px;
-  object-fit: contain; border-radius: 8px;
+  object-fit: contain; border-radius: 8px; flex-shrink: 0;
 }
-.nav-logo-text { font-weight: 900; font-size: 1.05rem; letter-spacing: -0.02em; }
+.nav-logo-text {
+  font-weight: 900; font-size: 1.05rem; letter-spacing: -0.02em;
+  white-space: nowrap;
+}
 .nav-logo-text span { color: var(--gold); }
 .nav-links {
   display: flex; align-items: center; gap: 2rem;
@@ -167,16 +144,18 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
 .nav-links a {
   font-size: 0.8rem; font-weight: 600;
   letter-spacing: 0.07em; text-transform: uppercase;
-  color: var(--text-muted);
   transition: color var(--transition);
 }
 .nav-links a:hover { color: var(--gold); }
+.nav-right {
+  display: flex; align-items: center; gap: 0.75rem;
+}
 .nav-cta {
-  background: var(--gold); color: var(--dark);
+  background: var(--gold); color: #0a0a0a;
   font-weight: 700; font-size: 0.78rem;
   letter-spacing: 0.07em; text-transform: uppercase;
   padding: 0.6rem 1.5rem; border: 2px solid var(--gold);
-  cursor: pointer;
+  cursor: pointer; display: inline-block; text-decoration: none;
   transition: background var(--transition), color var(--transition);
 }
 .nav-cta:hover { background: transparent; color: var(--gold); }
@@ -186,14 +165,15 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
 }
 .nav-hamburger span {
   display: block; width: 22px; height: 2px;
-  background: var(--text); border-radius: 1px;
+  background: #ffffff; border-radius: 1px;
   transition: transform 0.3s, opacity 0.3s;
 }
 #mobile-menu {
   display: none; flex-direction: column;
-  background: var(--dark-2); padding: 1.5rem 2rem; gap: 1rem;
-  border-top: 1px solid var(--gold-pale);
+  background: #111; padding: 1.5rem 2rem; gap: 1rem;
+  border-top: 1px solid rgba(232,168,50,0.12);
 }
+html:not(.dark) #mobile-menu { background: #f0f0f0; }
 #mobile-menu.open { display: flex; }
 #mobile-menu a {
   font-size: 0.9rem; font-weight: 600;
@@ -204,9 +184,57 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
 }
 #mobile-menu a:hover { color: var(--gold); }
 
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50%; cursor: pointer;
+  color: rgba(255,255,255,0.75);
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+  flex-shrink: 0;
+}
+.theme-toggle:hover { color: var(--gold); border-color: var(--gold); }
+.theme-toggle svg { width: 16px; height: 16px; }
+.theme-icon-sun { display: none; }
+.theme-icon-moon { display: block; }
+
+/* ── TRANSPARENT STATE (default — over dark hero) ── */
+#nav .nav-links a         { color: rgba(255,255,255,0.75); }
+#nav .nav-links a:hover   { color: var(--gold); }
+#nav .nav-logo-text       { color: #ffffff; }
+#nav .nav-hamburger span  { background: #ffffff; }
+#nav .theme-toggle        { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.25); }
+#nav .theme-toggle:hover  { color: var(--gold); border-color: var(--gold); }
+
+/* ── SCROLLED STATE ── */
+#nav.scrolled {
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+#nav.scrolled .nav-links a    { color: #5c5248; }
+#nav.scrolled .nav-links a:hover { color: var(--gold); }
+#nav.scrolled .nav-logo-text  { color: #1a1a1a; }
+#nav.scrolled .nav-hamburger span { background: #1a1a1a; }
+#nav.scrolled .theme-toggle   { color: #666; border-color: rgba(0,0,0,0.15); background: transparent; }
+
+html.dark #nav.scrolled {
+  background: rgba(10,10,10,0.94);
+  box-shadow: 0 1px 0 rgba(245,200,66,0.12);
+}
+html.dark #nav.scrolled .nav-links a    { color: rgba(255,255,255,0.6); }
+html.dark #nav.scrolled .nav-logo-text  { color: #ffffff; }
+html.dark #nav.scrolled .nav-hamburger span { background: #ffffff; }
+html.dark #nav.scrolled .theme-toggle   { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.2); }
+
 @media (max-width: 768px) {
   .nav-links, .nav-cta-desktop { display: none; }
   .nav-hamburger { display: flex; }
+  .nav-inner { padding: 0.8rem 1.25rem; gap: 1rem; }
+  .nav-right { gap: 0.6rem; }
 }
 
 /* ============================================================
@@ -518,10 +546,11 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
 }
 .accred-label {
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-primary);
+  opacity: 0.65;
 }
 .accred-logos {
   display: flex;
@@ -534,12 +563,13 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
   align-items: center;
   gap: 0.35rem;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
-  color: rgba(255,255,255,0.55);
+  color: var(--text-primary);
+  opacity: 0.85;
 }
 .accred-item i { color: var(--gold); }
-.accred-dot { color: rgba(255,255,255,0.2); }
+.accred-dot { color: var(--text-dim); }
 
 /* ── Scroll animation ── */
 [data-anim] {
@@ -556,7 +586,7 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
    SECTION 5 — DIVERGENCIE GOES GLOBAL
    ============================================================ */
 #global {
-  background: var(--dark-2);
+  background: #0d0d0d !important; /* Always dark for map depth */
   padding: 6rem 2rem 5rem;
   overflow: hidden;
   position: relative;
@@ -597,14 +627,17 @@ html.dark #nav.scrolled .theme-toggle { color: rgba(255,255,255,0.6); border-col
   margin: 0 auto;
   position: relative;
 }
+@media (max-width: 768px) {
+  .global-map-wrap { transform: scale(1.4); transform-origin: center; margin: 3rem 0; }
+}
 .global-map-svg {
   width: 100%;
   height: auto;
   display: block;
 }
 .landmass {
-  fill: rgba(255,255,255,0.07);
-  stroke: rgba(245,200,66,0.15);
+  fill: rgba(255,255,255,0.08);
+  stroke: rgba(245,200,66,0.2);
   stroke-width: 0.8;
   transition: fill 0.3s;
 }
@@ -2090,10 +2123,14 @@ html:not(.dark) #results-bar { background: #f0f0f0; border-color: rgba(232,168,5
 html:not(.dark) .ticker-item { border-right-color: rgba(0,0,0,0.07); }
 html:not(.dark) .ticker-uni { color: #666666; }
 
-/* Global map section */
-html:not(.dark) #global { background: #f0f0f0; }
-html:not(.dark) .global-map-svg .landmass { fill: rgba(0,0,0,0.07); stroke: rgba(232,168,50,0.2); }
-html:not(.dark) .global-footer { border-top-color: rgba(232,168,50,0.15); }
+/* Global map section — Force dark background for map as requested */
+html:not(.dark) #global { background: #0d0d0d; }
+html:not(.dark) .global-title { color: #ffffff; }
+html:not(.dark) .global-sub { color: rgba(255,255,255,0.6); }
+html:not(.dark) .global-map-svg .landmass { fill: rgba(255,255,255,0.08); stroke: rgba(245,200,66,0.2); }
+html:not(.dark) .global-footer { border-top-color: rgba(255,255,255,0.1); }
+html:not(.dark) .global-look { color: #ffffff; }
+html:not(.dark) .global-look-sub { color: rgba(255,255,255,0.5); }
 
 /* About/AreYou section */
 html:not(.dark) #about { background: #ffffff; }

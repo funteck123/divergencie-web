@@ -155,9 +155,7 @@
       padding: 0.55rem 1.2rem; border-radius: 8px; cursor: pointer;
     }
 
-    /* theme icon show/hide */
-    html:not(.dark) .icon-dark { display: none !important; }
-    html.dark .icon-light { display: none !important; }
+
 
     @media (max-width: 900px) {
       .two-col { grid-template-columns: 1fr !important; }
@@ -219,9 +217,9 @@
       </div>
       <div class="portal-topbar-right">
         <button class="topbar-bell"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
-        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
-          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
-          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px"></svg>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
         </button>
       </div>
     </header>

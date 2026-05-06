@@ -6,6 +6,23 @@
 
 (function () {
   'use strict';
+  
+  /* ── TIMEZONE DISPLAY ── */
+  function initTimezone() {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const displayStr = tz.replace(/_/g, ' ');
+      
+      // Update both potential ID targets (different portals use different IDs)
+      const targets = ['tz-name', 'tz-display'];
+      targets.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = displayStr;
+      });
+    } catch (e) {
+      console.warn('Timezone detection failed:', e);
+    }
+  }
 
   /* ── SIDEBAR TOGGLE (mobile) ── */
   function initSidebar() {
@@ -207,6 +224,128 @@
     });
   }
 
+  /* ── GLOBAL FEEDBACK WIDGET ── */
+  function initGlobalFeedback() {
+    if (document.getElementById('dc-feedback-widget')) return;
+
+    // Inject Floating Button
+    var btn = document.createElement('button');
+    btn.id = 'dc-feedback-widget';
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> <span>Feedback</span>';
+    btn.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--gold);color:#0a0a0a;border:none;border-radius:30px;padding:12px 20px;font-family:"Satoshi",sans-serif;font-weight:800;font-size:0.9rem;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);cursor:pointer;z-index:9999;transition:transform 0.2s;';
+    btn.onmouseover = function(){ btn.style.transform = 'scale(1.05)'; };
+    btn.onmouseout = function(){ btn.style.transform = 'scale(1)'; };
+    document.body.appendChild(btn);
+
+    // Inject Modal
+    var modalHTML = `
+    <div class="portal-modal-overlay" id="feedback-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+      <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:16px;width:90%;max-width:440px;padding:1.5rem;position:relative;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+        <button data-modal-close style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;color:var(--text-muted);cursor:pointer;">✕</button>
+        <h3 style="font-family:'Satoshi',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text-primary);margin-bottom:0.5rem;margin-top:0;">Provide Feedback</h3>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1.25rem;">Help us improve your experience by sharing feedback on classes, assignments, or exams.</p>
+        
+        <form id="feedback-form">
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.4rem;">What is this regarding?</label>
+            <select required style="width:100%;padding:0.65rem 0.9rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);font-size:0.88rem;outline:none;">
+              <option value="" disabled selected>Select category...</option>
+              <option value="Class">Class / Lesson</option>
+              <option value="Assignment">Assignment</option>
+              <option value="Exam">Exam / Mock Test</option>
+              <option value="Notes">Study Notes / Curriculum</option>
+              <option value="Ticket">Support Ticket</option>
+              <option value="General">General Improvement</option>
+            </select>
+          </div>
+          
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.4rem;">Specific Item (Optional)</label>
+            <input type="text" placeholder="e.g. IGCSE Maths, Week 3 Assignment..." style="width:100%;padding:0.65rem 0.9rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);font-size:0.88rem;outline:none;" />
+          </div>
+
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.4rem;">Rating</label>
+            <div style="display:flex;gap:0.5rem;font-size:1.5rem;cursor:pointer;color:var(--text-muted);" id="feedback-stars">
+              <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+            </div>
+            <input type="hidden" id="feedback-rating" required />
+          </div>
+
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.4rem;">Your Feedback</label>
+            <textarea required placeholder="What went well? What could be improved?" style="width:100%;padding:0.65rem 0.9rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);font-size:0.88rem;outline:none;min-height:80px;resize:vertical;"></textarea>
+          </div>
+
+          <button type="submit" id="feedback-submit-btn" style="width:100%;background:var(--gold);color:#0a0a0a;border:none;border-radius:8px;padding:0.85rem;font-family:'Satoshi',sans-serif;font-weight:800;font-size:0.9rem;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s;">Submit Feedback</button>
+        </form>
+      </div>
+    </div>
+    `;
+    var modalContainer = document.createElement('div');
+    modalContainer.innerHTML = modalHTML;
+    document.body.appendChild(modalContainer.firstElementChild);
+
+    var modal = document.getElementById('feedback-modal');
+    
+    // Wire open/close
+    btn.addEventListener('click', function(){ 
+      modal.style.display = 'flex'; 
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Star rating logic
+    var stars = modal.querySelectorAll('#feedback-stars span');
+    var ratingInput = document.getElementById('feedback-rating');
+    stars.forEach(function(s){
+      s.addEventListener('click', function(){
+        var val = parseInt(s.getAttribute('data-val'));
+        ratingInput.value = val;
+        stars.forEach(function(st, idx){
+          st.style.color = idx < val ? 'var(--gold)' : 'var(--text-muted)';
+        });
+      });
+    });
+
+    // Form submission
+    document.getElementById('feedback-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      
+      // Collect data
+      const category = e.target.querySelector('select').value;
+      const item = e.target.querySelector('input[type="text"]').value;
+      const rating = document.getElementById('feedback-rating').value;
+      const comment = e.target.querySelector('textarea').value;
+      const timestamp = new Date().toISOString();
+
+      const feedbackData = { category, item, rating, comment, timestamp };
+      
+      // Save to localStorage
+      let feedbacks = JSON.parse(localStorage.getItem('dc_global_feedbacks') || '[]');
+      feedbacks.push(feedbackData);
+      localStorage.setItem('dc_global_feedbacks', JSON.stringify(feedbacks));
+
+      var submitBtn = document.getElementById('feedback-submit-btn');
+      var originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Feedback Sent! ✓';
+      submitBtn.style.background = '#22c55e';
+      submitBtn.style.color = '#fff';
+      submitBtn.disabled = true;
+
+      setTimeout(function(){
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = 'var(--gold)';
+        submitBtn.style.color = '#0a0a0a';
+        submitBtn.disabled = false;
+        e.target.reset();
+        stars.forEach(function(st){ st.style.color = 'var(--text-muted)'; });
+        ratingInput.value = '';
+      }, 1500);
+    });
+  }
+
   /* ── CONFIRM BUTTONS ── */
   // data-confirm="Are you sure?" on any button shows native confirm before proceeding
   function initConfirm() {
@@ -229,6 +368,7 @@
     initBell();
     initAlerts();
     initConfirm();
+    initGlobalFeedback();
   });
 
   // Expose helpers for page-level scripts

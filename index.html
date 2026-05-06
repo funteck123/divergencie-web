@@ -16,31 +16,8 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' }</script>
-  <!-- Theme Engine (inline to avoid path issues) -->
-  <script>
-    (function(){
-      var s=localStorage.getItem('dc-theme');
-      if(s==='dark') document.documentElement.classList.add('dark');
-    })();
-    document.addEventListener('DOMContentLoaded',function(){
-      var btns=document.querySelectorAll('.theme-toggle');
-      function isDark(){ return document.documentElement.classList.contains('dark'); }
-      function setTheme(dark){
-        if(dark){ document.documentElement.classList.add('dark'); localStorage.setItem('dc-theme','dark'); }
-        else { document.documentElement.classList.remove('dark'); localStorage.setItem('dc-theme','light'); }
-        updateIcons();
-      }
-      function updateIcons(){
-        btns.forEach(function(btn){
-          var sun=btn.querySelector('.theme-icon-sun');
-          var moon=btn.querySelector('.theme-icon-moon');
-          if(sun&&moon){ sun.style.display=isDark()?'block':'none'; moon.style.display=isDark()?'none':'block'; }
-        });
-      }
-      btns.forEach(function(btn){ btn.addEventListener('click',function(){ setTheme(!isDark()); }); });
-      updateIcons();
-    });
-  </script>
+  <!-- Theme Engine -->
+  <script src="js/theme.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Lottie Player -->
@@ -56,51 +33,40 @@
 ══════════════════════════════════════════════════════════ -->
 <nav id="nav">
   <div class="nav-inner">
-
-    <!-- Logo -->
     <a href="index.html" class="nav-logo">
       <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
       <span class="nav-logo-text">Divergen<span>CIE</span></span>
     </a>
-
-    <!-- Desktop links -->
     <div class="nav-links">
       <a href="about.html">About</a>
-      <a href="#results">Results</a>
+      <a href="index.html#results">Results</a>
       <a href="services.html">Services</a>
       <a href="pricing.html">Pricing</a>
       <a href="mock.html">Free Mock</a>
       <a href="careers.html">Careers</a>
       <a href="contact.html">Contact</a>
     </div>
-
-    <!-- Desktop CTA + Theme Toggle -->
     <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
       <button class="theme-toggle" aria-label="Toggle light/dark mode">
         <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
+      <a href="auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
       <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
-    </div>
-
-    <!-- Mobile controls -->
-    <div style="display:flex;align-items:center;gap:0.5rem;">
       <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
     </div>
-
   </div>
-
-  <!-- Mobile menu -->
   <div id="mobile-menu">
     <a href="about.html">About</a>
-    <a href="#results">Results</a>
+    <a href="index.html#results">Results</a>
     <a href="services.html">Services</a>
     <a href="pricing.html">Pricing</a>
     <a href="mock.html">Free Mock</a>
     <a href="careers.html">Careers</a>
     <a href="contact.html">Contact</a>
+    <a href="auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
     <a href="contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
   </div>
 </nav>
@@ -118,7 +84,7 @@
       Don't Be<br>
       <span class="accent">Basic.</span>
     </h1>
-    <p class="hero-sub">Oxford &amp; Cambridge-coached &nbsp;·&nbsp; Results that speak louder</p>
+    <p class="hero-sub">Oxford &amp; Cambridge-coached &nbsp;·&nbsp; Let us help you achieve A*!</p>
     <div class="hero-btns">
       <a href="contact.html" class="btn-gold hero-btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

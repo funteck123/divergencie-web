@@ -110,8 +110,7 @@
         <a href="tickets.html" class="sidebar-nav-item active"><svg data-lucide="ticket"></svg> Tickets</a>
       </div>
       <div class="sidebar-nav-section">
-        <div class="sidebar-nav-label">Help</div>
-        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+        <div class="sidebar-nav-label">System</div>
         <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
       </div>
     </nav>
@@ -413,6 +412,7 @@ function renderList(){
         <select class="assign-select" onchange="setStatus('${t.id}',this.value)">
           ${['Open','In Progress','Pending Reply','Resolved','Closed'].map(s=>`<option${t.status===s?' selected':''}>${s}</option>`).join('')}
         </select>
+        <button class="action-btn" onclick="openForwardModal('${t.id}')"><svg data-lucide="forward" style="width:12px;height:12px;display:inline;margin-right:2px"></svg> Forward</button>
         ${!t.escalated?`<button class="action-btn red" onclick="escalate('${t.id}')">Escalate</button>`:'<button class="action-btn" style="opacity:.5;cursor:default">Escalated</button>'}
         <button class="action-btn green" onclick="closeTicket('${t.id}')">Close</button>
         <button class="action-btn" onclick="selectTicket('${t.id}')">View Thread</button>
@@ -443,8 +443,20 @@ function selectTicket(id){
     <textarea class="reply-area" id="reply-text" rows="2" placeholder="Add management reply…"></textarea>
     <div style="display:flex;gap:0.6rem;margin-top:0.6rem;flex-wrap:wrap">
       <button class="portal-btn portal-btn-primary" style="font-size:0.78rem" onclick="postReply('${t.id}')">Post Reply</button>
+      <button class="action-btn" onclick="openForwardModal('${t.id}')"><svg data-lucide="forward" style="width:12px;height:12px;display:inline;margin-right:2px"></svg> Forward to Staff</button>
       <button class="action-btn" onclick="markInterdept('${t.id}')">${t.interdept?'Remove Interdept':'Mark Interdept'}</button>
       <button class="action-btn green" onclick="closeTicket('${t.id}')">Close Ticket</button>
+    </div>
+    <div id="forward-area-${t.id}" style="display:none;margin-top:0.75rem;padding:0.75rem;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;">
+      <div style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:0.4rem;text-transform:uppercase">Forward Ticket to Staff</div>
+      <div style="display:flex;gap:0.5rem">
+        <select id="forward-staff-${t.id}" class="assign-select" style="flex:1">
+          <option value="">Select staff/teacher…</option>
+          ${STAFF_LIST.map(s=>`<option value="${s}">${s}</option>`).join('')}
+        </select>
+        <button class="portal-btn portal-btn-primary" style="font-size:0.72rem;padding:0.35rem 0.75rem" onclick="confirmForward('${t.id}')">Confirm Forward</button>
+      </div>
+      <div style="margin-top:0.4rem;font-size:0.65rem;color:var(--text-muted)">Staff will be notified and this ticket will appear in their 'My Tickets' view.</div>
     </div>`;
   const panel = document.getElementById('detail-panel');
   panel.classList.add('open');
@@ -485,6 +497,27 @@ function postReply(id){
     t.comments.push({who:'Management',text,date:new Date().toISOString().slice(0,10)});
     t.status='Pending Reply';
     save(); selectTicket(id); renderStats();
+  }
+}
+
+function openForwardModal(id){
+  const area = document.getElementById('forward-area-'+id);
+  if(area) area.style.display = area.style.display === 'none' ? 'block' : 'none';
+}
+
+function confirmForward(id){
+  const staff = document.getElementById('forward-staff-'+id).value;
+  if(!staff) return;
+  const t = tickets.find(x=>x.id===id);
+  if(t){
+    t.assignee = staff;
+    t.status = 'In Progress';
+    t.comments = t.comments || [];
+    t.comments.push({who:'Management', text:`Ticket forwarded to ${staff} for review and reply.`, date:new Date().toISOString().slice(0,10)});
+    save();
+    alert(`Ticket ${id} forwarded to ${staff}`);
+    render();
+    if(selectedId===id) selectTicket(id);
   }
 }
 
