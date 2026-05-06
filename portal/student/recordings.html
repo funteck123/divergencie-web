@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recordings — DivergenCIE Student Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Recording card */
+    .rec-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .rec-card:hover { border-color: var(--gold); box-shadow: 0 4px 18px rgba(0,0,0,0.07); }
+
+    /* Thumbnail */
+    .rec-thumb {
+      position: relative; width: 100%; padding-bottom: 52%;
+      background: var(--bg-secondary); overflow: hidden; flex-shrink: 0;
+    }
+    .rec-thumb-inner {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.4rem;
+    }
+    .rec-play-circle {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--gold); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: transform 0.15s, filter 0.15s;
+    }
+    .rec-play-circle:hover { transform: scale(1.1); filter: brightness(1.1); }
+    .rec-play-circle svg { width: 20px; height: 20px; color: #fff; margin-left: 2px; }
+    .rec-thumb-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; }
+    .rec-subject-bar {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    }
+    .coming-soon-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.45);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    .coming-soon-badge {
+      background: var(--gold); color: #fff; font-size: 0.68rem;
+      font-weight: 900; padding: 3px 10px; border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+    .coming-soon-sub { font-size: 0.65rem; color: rgba(255,255,255,0.8); }
+
+    /* Card body */
+    .rec-body { padding: 1rem 1.1rem; flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+    .rec-topic { font-size: 0.85rem; font-weight: 800; color: var(--text-primary); line-height: 1.3; }
+    .rec-meta { font-size: 0.72rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.3rem; }
+    .rec-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: var(--bg-secondary); border-radius: 20px;
+      padding: 2px 7px; font-size: 0.65rem; color: var(--text-muted); font-weight: 600;
+    }
+    .rec-chip svg { width: 9px; height: 9px; }
+    .rec-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+    .watch-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--gold); color: #fff; border: none;
+      border-radius: 7px; padding: 5px 12px;
+      font-size: 0.73rem; font-weight: 800;
+      cursor: pointer; font-family: 'Satoshi', sans-serif;
+      transition: filter 0.15s; text-decoration: none;
+    }
+    .watch-btn:hover { filter: brightness(1.08); }
+    .watch-btn svg { width: 12px; height: 12px; }
+    .notes-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--bg-secondary); color: var(--text-primary);
+      border: 1px solid var(--border); border-radius: 7px; padding: 5px 10px;
+      font-size: 0.72rem; font-weight: 700; cursor: pointer;
+      font-family: 'Satoshi', sans-serif; transition: border-color 0.15s;
+      text-decoration: none;
+    }
+    .notes-btn:hover { border-color: var(--gold); }
+    .notes-btn svg { width: 11px; height: 11px; }
+
+    /* Grid */
+    .rec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.1rem;
+    }
+
+    /* Filter tabs row */
+    .filter-row {
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+      margin-bottom: 1.4rem;
+    }
+    .filter-pill {
+      padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+      border: 1px solid var(--border); background: var(--bg-primary);
+      color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+      font-family: 'Satoshi', sans-serif;
+    }
+    .filter-pill:hover { border-color: var(--gold); color: var(--gold); }
+    .filter-pill.active { background: var(--gold); border-color: var(--gold); color: #fff; }
+
+    /* Player modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      z-index: 500; display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .player-box {
+      background: #000; border-radius: 14px; overflow: hidden;
+      max-width: 760px; width: 100%; position: relative;
+    }
+    .player-close {
+      position: absolute; top: 0.75rem; right: 0.75rem; z-index: 10;
+      background: rgba(0,0,0,0.6); border: none; color: #fff;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem;
+    }
+    .player-stub {
+      width: 100%; padding-bottom: 56.25%; position: relative;
+      background: #111;
+    }
+    .player-stub-inner {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .player-stub-inner svg { width: 48px; height: 48px; color: var(--gold); opacity: 0.7; }
+    .player-stub-inner p { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-align: center; max-width: 300px; line-height: 1.5; }
+    .player-info {
+      padding: 0.85rem 1.2rem; background: #0a0a0a;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+    .player-title { font-size: 0.85rem; font-weight: 800; color: #fff; }
+    .player-meta { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--text-muted); font-size: 0.82rem;
+    }
+    .empty-state svg { width: 36px; height: 36px; margin: 0 auto 0.75rem; opacity: 0.4; }
+
+    /* Search */
+    .search-input {
+      padding: 0.5rem 0.9rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-primary);
+      color: var(--text-primary); font-size: 0.8rem; font-family: 'Satoshi', sans-serif;
+      outline: none; width: 220px; transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--gold); }
+  </style>
+</head>
+<body>
+<div class="portal-root">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Student Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Alex Student</div>
+        <div class="role-badge role-student">Student</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="classes.html" class="sidebar-nav-item"><svg data-lucide="calendar"></svg> My Classes</a>
+        <a href="assignments.html" class="sidebar-nav-item"><svg data-lucide="clipboard-list"></svg> Assignments</a>
+        <a href="recordings.html" class="sidebar-nav-item active"><svg data-lucide="play-circle"></svg> Recordings</a>
+        <a href="progress.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> My Progress</a>
+        <a href="curriculum.html" class="sidebar-nav-item"><svg data-lucide="book-open"></svg> Curriculum</a>
+        <a href="support.html" class="sidebar-nav-item"><svg data-lucide="life-buoy"></svg> Support</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Resources</div>
+        <a href="../../mock.html" class="sidebar-nav-item"><svg data-lucide="timer"></svg> Free Mock</a>
+        <a href="../../resources.html" class="sidebar-nav-item"><svg data-lucide="folder-open"></svg> Materials</a>
+      </div>
+    </nav>
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle"><svg data-lucide="menu"></svg></button>
+        <span class="portal-page-title">Recordings</span>
+      </div>
+      <div class="portal-topbar-right">
+        <button class="topbar-bell"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
+        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="padding:1.75rem 2rem;max-width:1200px;width:100%">
+
+      <!-- UJM notice -->
+      <div style="background:#FFF8E7;border:1px solid #f5c842;border-radius:10px;padding:0.7rem 1rem;margin-bottom:1.3rem;font-size:0.78rem;color:#856404;display:flex;align-items:center;gap:0.6rem">
+        <svg data-lucide="info" style="width:15px;height:15px;flex-shrink:0"></svg>
+        Recordings are uploaded within <strong>24 hours</strong> of class completion. The most recent class may show "Processing".
+      </div>
+
+      <!-- Filter row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.1rem">
+        <div class="filter-row" style="margin-bottom:0">
+          <button class="filter-pill active" data-subject="all">All</button>
+          <button class="filter-pill" data-subject="math">IGCSE Maths</button>
+          <button class="filter-pill" data-subject="chem">A Level Chemistry</button>
+          <button class="filter-pill" data-subject="phys">IGCSE Physics</button>
+          <button class="filter-pill" data-subject="bio">A Level Biology</button>
+        </div>
+        <input type="text" class="search-input" id="rec-search" placeholder="Search topic…" />
+      </div>
+
+      <!-- Grid -->
+      <div class="rec-grid" id="rec-grid"></div>
+      <div id="rec-empty" class="empty-state" style="display:none">
+        <svg data-lucide="video-off"></svg>
+        No recordings match your filter.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Player modal -->
+<div class="modal-overlay" id="player-modal">
+  <div class="player-box" style="max-width:760px;width:100%">
+    <button class="player-close" onclick="closePlayer()">✕</button>
+    <div class="player-stub">
+      <div class="player-stub-inner">
+        <svg data-lucide="play-circle"></svg>
+        <p>Recording player placeholder.<br>Owner: replace with real Zoom/YouTube embed URL in the recording data array.</p>
+      </div>
+    </div>
+    <div class="player-info">
+      <div>
+        <div class="player-title" id="player-title">—</div>
+        <div class="player-meta" id="player-meta">—</div>
+      </div>
+      <a id="player-notes-link" href="#" class="notes-btn" style="color:#fff;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.08)">
+        <svg data-lucide="download" style="width:11px;height:11px"></svg> Download Notes
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+
+  // ── Recording data ──
+  var RECS = [
+    // coming-soon = true → most recent, not yet uploaded
+    { subject:'math', color:'#4a9fd4', date:'6 May 2026',  topic:'Quadratics — Problem Set',        teacher:'Mr. Aryan Shah',   duration:'60 min',  comingSoon: true },
+    { subject:'chem', color:'#f5c842', date:'5 May 2026',  topic:'Equilibrium — Le Chatelier',      teacher:'Ms. Priya Nair',   duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'phys', color:'#e05a4e', date:'5 May 2026',  topic:'Forces — Chapter 5 Walkthrough',  teacher:'Ms. Lena Osei',    duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'bio',  color:'#6b7280', date:'4 May 2026',  topic:'Cell Division — Mitosis & Meiosis',teacher:'Dr. Nadia Hussain',duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'chem', color:'#f5c842', date:'3 May 2026',  topic:'Equilibrium — Kc & Kp Calculations',teacher:'Ms. Priya Nair', duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'math', color:'#4a9fd4', date:'2 May 2026',  topic:'Quadratics — Completing the Square',teacher:'Mr. Aryan Shah', duration:'60 min',  comingSoon: false, url:'#' },
+    { subject:'bio',  color:'#6b7280', date:'2 May 2026',  topic:'DNA & Protein Synthesis',          teacher:'Dr. Nadia Hussain',duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'phys', color:'#e05a4e', date:'30 Apr 2026', topic:'Waves — Diffraction & Interference',teacher:'Ms. Lena Osei',  duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'math', color:'#4a9fd4', date:'28 Apr 2026', topic:'Quadratics — Discriminant',        teacher:'Mr. Aryan Shah',  duration:'60 min',  comingSoon: false, url:'#' },
+    { subject:'chem', color:'#f5c842', date:'27 Apr 2026', topic:'Bonding — Ionic & Covalent',       teacher:'Ms. Priya Nair',  duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'bio',  color:'#6b7280', date:'25 Apr 2026', topic:'Genetics — Mendelian Inheritance', teacher:'Dr. Nadia Hussain',duration:'90 min',  comingSoon: false, url:'#' },
+    { subject:'phys', color:'#e05a4e', date:'24 Apr 2026', topic:'Electricity — Circuits & Resistance',teacher:'Ms. Lena Osei', duration:'90 min',  comingSoon: false, url:'#' },
+  ];
+
+  var currentFilter = 'all';
+  var currentSearch = '';
+
+  function subjectLabel(s) {
+    return {math:'IGCSE Maths', chem:'A Level Chemistry', phys:'IGCSE Physics', bio:'A Level Biology'}[s] || s;
+  }
+
+  function renderGrid() {
+    var grid = document.getElementById('rec-grid');
+    var empty = document.getElementById('rec-empty');
+    var filtered = RECS.filter(function(r) {
+      var matchSubj = currentFilter === 'all' || r.subject === currentFilter;
+      var matchSearch = !currentSearch || r.topic.toLowerCase().includes(currentSearch.toLowerCase()) || r.teacher.toLowerCase().includes(currentSearch.toLowerCase());
+      return matchSubj && matchSearch;
+    });
+    grid.innerHTML = '';
+    if (!filtered.length) { empty.style.display = 'block'; lucide.createIcons(); return; }
+    empty.style.display = 'none';
+    filtered.forEach(function(r, i) {
+      var card = document.createElement('div');
+      card.className = 'rec-card';
+      var thumbInner = r.comingSoon
+        ? '<div class="coming-soon-overlay"><span class="coming-soon-badge">⏳ Processing</span><span class="coming-soon-sub">Usually ready within 24 hrs</span></div>'
+        : '<div class="rec-play-circle" onclick="openPlayer(\'' + r.topic.replace(/'/g,"\\'") + '\',\'' + r.teacher + ' · ' + r.date + '\')"><svg data-lucide="play"></svg></div><div class="rec-thumb-label">Click to watch</div>';
+      card.innerHTML =
+        '<div class="rec-thumb">' +
+          '<div class="rec-subject-bar" style="background:' + r.color + '"></div>' +
+          '<div class="rec-thumb-inner">' + thumbInner + '</div>' +
+        '</div>' +
+        '<div class="rec-body">' +
+          '<div class="rec-topic">' + r.topic + '</div>' +
+          '<div class="rec-meta">' +
+            '<span class="rec-chip"><svg data-lucide="user"></svg> ' + r.teacher + '</span>' +
+            '<span class="rec-chip"><svg data-lucide="calendar"></svg> ' + r.date + '</span>' +
+            '<span class="rec-chip"><svg data-lucide="clock"></svg> ' + r.duration + '</span>' +
+            '<span class="rec-chip" style="color:' + r.color + ';background:transparent;padding-left:0">' + subjectLabel(r.subject) + '</span>' +
+          '</div>' +
+          '<div class="rec-actions">' +
+            (r.comingSoon
+              ? '<span style="font-size:0.72rem;color:var(--text-muted);align-self:center">Available soon</span>'
+              : '<button class="watch-btn" onclick="openPlayer(\'' + r.topic.replace(/'/g,"\\'") + '\',\'' + r.teacher + ' · ' + r.date + '\')"><svg data-lucide="play"></svg> Watch</button>'
+            ) +
+            '<a href="#" class="notes-btn" onclick="notesStub(event)"><svg data-lucide="download"></svg> Notes</a>' +
+          '</div>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+    lucide.createIcons();
+  }
+
+  // Filter pills
+  document.querySelectorAll('.filter-pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-pill').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.subject;
+      renderGrid();
+    });
+  });
+
+  // Search
+  document.getElementById('rec-search').addEventListener('input', function() {
+    currentSearch = this.value;
+    renderGrid();
+  });
+
+  // Player modal
+  function openPlayer(title, meta) {
+    document.getElementById('player-title').textContent = title;
+    document.getElementById('player-meta').textContent = meta;
+    document.getElementById('player-modal').classList.add('open');
+    lucide.createIcons();
+  }
+  function closePlayer() { document.getElementById('player-modal').classList.remove('open'); }
+  document.getElementById('player-modal').addEventListener('click', function(e){ if(e.target===this) closePlayer(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePlayer(); });
+
+  function notesStub(e) {
+    e.preventDefault();
+    alert('Notes download: owner must link each recording to its GCR notes PDF.');
+  }
+
+  // Theme toggle
+  var themeBtn = document.getElementById('portal-theme-toggle');
+  if (themeBtn) {
+    function syncIcons() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var s = themeBtn.querySelector('.icon-light'), m = themeBtn.querySelector('.icon-dark');
+      if (s) s.style.display = isDark ? 'none' : 'block';
+      if (m) m.style.display = isDark ? 'block' : 'none';
+    }
+    syncIcons();
+    themeBtn.addEventListener('click', function() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      syncIcons();
+    });
+  }
+
+  renderGrid();
+</script>
+</body>
+</html>

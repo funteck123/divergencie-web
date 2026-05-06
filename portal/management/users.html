@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Users — DivergenCIE Management</title>
+  <link rel="stylesheet" href="../../css/shared.css"/>
+  <link rel="stylesheet" href="../../css/portal.css"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <script>tailwind={config:{darkMode:'class'}}</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/theme.js"></script>
+  <style>
+    /* Role filter tabs */
+    .role-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+    .role-tab { padding:0.35rem 0.9rem; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-muted); cursor:pointer; transition:all .18s; }
+    .role-tab.active, .role-tab:hover { background:var(--gold); color:#fff; border-color:var(--gold); }
+    /* User table */
+    .users-table { width:100%; border-collapse:collapse; font-size:0.83rem; }
+    .users-table th { text-align:left; padding:0.6rem 0.85rem; font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; border-bottom:1.5px solid var(--border); background:var(--bg-secondary); }
+    .users-table td { padding:0.7rem 0.85rem; border-bottom:1px solid var(--border-subtle); vertical-align:middle; color:var(--text-primary); }
+    .users-table tr:hover td { background:var(--bg-secondary); }
+    .user-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.75rem; color:#fff; flex-shrink:0; }
+    .user-name-cell { display:flex; align-items:center; gap:0.65rem; }
+    .user-name { font-weight:700; color:var(--text-primary); }
+    .user-email { font-size:0.72rem; color:var(--text-muted); }
+    /* Status toggle */
+    .toggle-wrap { display:flex; align-items:center; gap:0.4rem; }
+    .toggle { position:relative; width:36px; height:20px; cursor:pointer; }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; border-radius:20px; background:#ccc; transition:.2s; }
+    .toggle-slider:before { content:''; position:absolute; width:14px; height:14px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s; }
+    .toggle input:checked + .toggle-slider { background:var(--gold); }
+    .toggle input:checked + .toggle-slider:before { transform:translateX(16px); }
+    /* Action btn */
+    .action-btn { padding:0.3rem 0.7rem; border-radius:7px; font-size:0.72rem; font-weight:700; border:1.5px solid var(--border); background:transparent; color:var(--text-primary); cursor:pointer; transition:all .15s; }
+    .action-btn:hover { background:var(--gold); color:#fff; border-color:var(--gold); }
+    .action-btn.danger:hover { background:var(--coral); border-color:var(--coral); }
+    /* Add user panel */
+    .add-panel { background:var(--bg-secondary); border:1.5px solid var(--border); border-radius:14px; padding:1.5rem; }
+    .add-panel h3 { font-size:0.95rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; margin-bottom:0.85rem; }
+    .form-row.full { grid-template-columns:1fr; }
+    .add-panel label { font-size:0.7rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:0.25rem; text-transform:uppercase; }
+    .add-panel input, .add-panel select { width:100%; padding:0.55rem 0.75rem; border-radius:8px; border:1.5px solid var(--border); background:var(--bg-primary); color:var(--text-primary); font-family:'Satoshi',sans-serif; font-size:0.85rem; box-sizing:border-box; outline:none; }
+    .add-panel input:focus, .add-panel select:focus { border-color:var(--gold); }
+    /* Invite box */
+    .invite-box { display:flex; gap:0.5rem; margin-top:0.6rem; }
+    .invite-link-input { flex:1; padding:0.5rem 0.75rem; border-radius:8px; border:1.5px solid var(--border); background:var(--bg-primary); color:var(--text-primary); font-size:0.78rem; font-family:'Satoshi',sans-serif; }
+    /* Search */
+    .search-bar { position:relative; margin-bottom:1rem; }
+    .search-bar input { width:100%; padding:0.6rem 0.9rem 0.6rem 2.5rem; border-radius:10px; border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-primary); font-family:'Satoshi',sans-serif; font-size:0.85rem; box-sizing:border-box; outline:none; }
+    .search-bar input:focus { border-color:var(--gold); }
+    .search-icon { position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none; }
+    /* Sup badge */
+    .sup-badge { padding:0.18rem 0.55rem; border-radius:20px; font-size:0.65rem; font-weight:800; background:#fef3c7; color:#92400e; }
+    html.dark .sup-badge { background:#451a03; color:#fbbf24; }
+    /* Empty state */
+    .empty-row td { text-align:center; padding:2rem; color:var(--text-muted); font-size:0.82rem; }
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:1000; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:var(--bg-primary); border-radius:16px; padding:1.75rem; max-width:400px; width:90%; position:relative; }
+    .modal-box h3 { font-size:1rem; font-weight:800; margin-bottom:1rem; color:var(--text-primary); }
+    @media(max-width:700px){ .form-row{grid-template-columns:1fr;} .users-table th:nth-child(3),.users-table td:nth-child(3){ display:none; } }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo"/>
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Management Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AD</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Management</div>
+        <div class="role-badge role-management">Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="users.html" class="sidebar-nav-item active"><svg data-lucide="users"></svg> Users</a>
+        <a href="metrics.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> Metrics</a>
+        <a href="claims.html" class="sidebar-nav-item"><svg data-lucide="banknote"></svg> Claims</a>
+        <a href="tickets.html" class="sidebar-nav-item"><svg data-lucide="ticket"></svg> Tickets</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Help</div>
+        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><svg data-lucide="menu" style="width:20px;height:20px"></svg></button>
+      <div class="topbar-title">Users</div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-left:auto">
+        <button class="portal-btn portal-btn-primary" style="font-size:0.8rem;padding:0.4rem 1rem" onclick="openAddPanel()">
+          <svg data-lucide="user-plus" style="width:14px;height:14px"></svg> Add User
+        </button>
+        <button class="topbar-icon-btn" id="portal-theme-toggle"><svg data-lucide="sun" class="icon-sun" style="width:16px;height:16px"></svg><svg data-lucide="moon" class="icon-moon" style="width:16px;height:16px"></svg></button>
+      </div>
+    </div>
+
+    <div class="portal-content">
+
+      <!-- Stat strip -->
+      <div class="stats-grid" style="margin-bottom:1.5rem">
+        <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="stat-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Students</div><div class="stat-value" id="stat-students">—</div></div>
+        <div class="stat-card"><div class="stat-label">Parents</div><div class="stat-value" id="stat-parents">—</div></div>
+        <div class="stat-card"><div class="stat-label">Staff & Teachers</div><div class="stat-value" id="stat-staff">—</div></div>
+      </div>
+
+      <!-- Add User Panel (hidden by default) -->
+      <div class="add-panel" id="add-panel" style="display:none;margin-bottom:1.5rem">
+        <h3>➕ Add New User</h3>
+        <div class="form-row">
+          <div><label>Full Name</label><input id="new-name" type="text" placeholder="e.g. Priya Sharma"/></div>
+          <div><label>Email</label><input id="new-email" type="email" placeholder="priya@email.com"/></div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label>Role</label>
+            <select id="new-role" onchange="updateRoleFields()">
+              <option value="student">Student</option>
+              <option value="parent">Parent</option>
+              <option value="teacher">Teacher</option>
+              <option value="staff">Staff</option>
+              <option value="ambassador">Ambassador</option>
+              <option value="management">Management</option>
+            </select>
+          </div>
+          <div id="dept-field">
+            <label>Department <span style="color:var(--text-muted);font-weight:400">(staff only)</span></label>
+            <select id="new-dept">
+              <option value="">— N/A —</option>
+              <option value="PR">PR / Teaching</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="IT">IT</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row" id="supervisor-row">
+          <div>
+            <label>Tag as Supervisor / HOD?</label>
+            <select id="new-supervisor">
+              <option value="no">No — Member</option>
+              <option value="yes">Yes — Supervisor / HOD</option>
+            </select>
+          </div>
+          <div id="subject-field">
+            <label>Subject <span style="color:var(--text-muted);font-weight:400">(students/teachers)</span></label>
+            <input id="new-subject" type="text" placeholder="e.g. IGCSE Maths, A Level Chem"/>
+          </div>
+        </div>
+        <div class="form-row full">
+          <div>
+            <label>Generate Invite Link</label>
+            <div class="invite-box">
+              <input class="invite-link-input" id="invite-link-display" readonly placeholder="Click Generate →" />
+              <button class="portal-btn portal-btn-primary" style="font-size:0.78rem;white-space:nowrap" onclick="generateInvite()">Generate</button>
+              <button class="portal-btn portal-btn-outline" style="font-size:0.78rem" onclick="copyInvite()" title="Copy link">
+                <svg data-lucide="copy" style="width:13px;height:13px"></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+          <button class="portal-btn portal-btn-primary" onclick="addUser()">Add User</button>
+          <button class="portal-btn portal-btn-outline" onclick="closeAddPanel()">Cancel</button>
+        </div>
+        <div id="add-success" style="display:none;margin-top:0.75rem;padding:0.65rem 0.9rem;background:#f0fdf4;border-radius:9px;color:#166534;font-weight:700;font-size:0.83rem">✅ User added and invite link sent.</div>
+      </div>
+
+      <!-- User table -->
+      <div class="portal-card" style="padding:0;overflow:hidden">
+        <div style="padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div style="font-size:0.95rem;font-weight:800;color:var(--text-primary);flex:1">All Users</div>
+          <div class="search-bar" style="margin:0;width:220px">
+            <svg data-lucide="search" class="search-icon" style="width:15px;height:15px"></svg>
+            <input type="text" id="search-input" placeholder="Search name or email…" oninput="filterTable()"/>
+          </div>
+        </div>
+        <div style="padding:1rem 1.25rem 0.5rem">
+          <div class="role-tabs" id="role-tabs">
+            <div class="role-tab active" onclick="setTab('all',this)">All</div>
+            <div class="role-tab" onclick="setTab('student',this)">Students</div>
+            <div class="role-tab" onclick="setTab('parent',this)">Parents</div>
+            <div class="role-tab" onclick="setTab('teacher',this)">Teachers</div>
+            <div class="role-tab" onclick="setTab('staff',this)">Staff</div>
+            <div class="role-tab" onclick="setTab('ambassador',this)">Ambassadors</div>
+            <div class="role-tab" onclick="setTab('management',this)">Management</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="users-table" id="users-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Dept / Subject</th>
+                <th>Supervisor</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /portal-content -->
+  </main>
+</div>
+
+<!-- Deactivate confirm modal -->
+<div class="modal-overlay" id="deact-modal">
+  <div class="modal-box">
+    <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;cursor:pointer;color:var(--text-muted)"><svg data-lucide="x" style="width:16px;height:16px"></svg></button>
+    <h3>Deactivate User?</h3>
+    <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:1.2rem">This user will lose portal access. You can reactivate at any time.</p>
+    <div style="display:flex;gap:0.75rem">
+      <button class="portal-btn portal-btn-primary" style="background:var(--coral);border-color:var(--coral)" onclick="confirmDeact()">Deactivate</button>
+      <button class="portal-btn portal-btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  // ── DATA ──
+  const ROLE_COLORS = {
+    student:'#4a9fd4', parent:'#e8a832', teacher:'#4caf50',
+    staff:'#f97316', ambassador:'#ec4899', management:'#7c3aed'
+  };
+  const ROLE_LABELS = {
+    student:'Student', parent:'Parent', teacher:'Teacher',
+    staff:'Staff', ambassador:'Ambassador', management:'Management'
+  };
+
+  const SEED_USERS = [
+    {id:'U001',name:'Aanya Sharma',email:'aanya@example.com',role:'student',dept:'',subject:'IGCSE Maths, A Level Chem',supervisor:false,active:true},
+    {id:'U002',name:'Rohan Sharma',email:'rohan@example.com',role:'student',dept:'',subject:'IGCSE Physics, A Level Bio',supervisor:false,active:true},
+    {id:'U003',name:'Fatimah Al-Rashid',email:'fatimah@example.com',role:'student',dept:'',subject:'IGCSE Maths',supervisor:false,active:true},
+    {id:'U004',name:'Arjun Mehta',email:'arjun@example.com',role:'student',dept:'',subject:'A Level Chem, A Level Bio',supervisor:false,active:false},
+    {id:'U005',name:'Priya Kapoor',email:'priya.k@example.com',role:'parent',dept:'',subject:'',supervisor:false,active:true},
+    {id:'U006',name:'Ramesh Sharma',email:'ramesh@example.com',role:'parent',dept:'',subject:'',supervisor:false,active:true},
+    {id:'U007',name:'Riya Sharma',email:'riya@divergencie.co.uk',role:'teacher',dept:'PR',subject:'IGCSE Maths, Physics',supervisor:false,active:true},
+    {id:'U008',name:'Aryan Patel',email:'aryan@divergencie.co.uk',role:'teacher',dept:'PR',subject:'A Level Maths, Chem',supervisor:true,active:true},
+    {id:'U009',name:'Sana Rizvi',email:'sana@divergencie.co.uk',role:'teacher',dept:'PR',subject:'SAT, IELTS',supervisor:false,active:true},
+    {id:'U010',name:'Meera Joshi',email:'meera@divergencie.co.uk',role:'staff',dept:'HR',subject:'',supervisor:true,active:true},
+    {id:'U011',name:'James Lee',email:'james@divergencie.co.uk',role:'staff',dept:'IT',subject:'',supervisor:false,active:true},
+    {id:'U012',name:'Zara Khan',email:'zara@divergencie.co.uk',role:'staff',dept:'Marketing',subject:'',supervisor:true,active:true},
+    {id:'U013',name:'Tom Okafor',email:'tom@divergencie.co.uk',role:'staff',dept:'Finance',subject:'',supervisor:false,active:true},
+    {id:'U014',name:'Layla Hassan',email:'layla@example.com',role:'ambassador',dept:'',subject:'',supervisor:false,active:true},
+    {id:'U015',name:'Dev Patel',email:'dev@example.com',role:'ambassador',dept:'',subject:'',supervisor:false,active:true},
+    {id:'U016',name:'Admin User',email:'admin@divergencie.co.uk',role:'management',dept:'',subject:'',supervisor:false,active:true},
+  ];
+
+  let users = JSON.parse(localStorage.getItem('dc-users') || 'null') || SEED_USERS;
+  let currentTab = 'all';
+  let pendingDeactId = null;
+
+  function saveUsers(){ localStorage.setItem('dc-users', JSON.stringify(users)); }
+
+  function initStats(){
+    document.getElementById('stat-total').textContent = users.length;
+    document.getElementById('stat-students').textContent = users.filter(u=>u.role==='student').length;
+    document.getElementById('stat-parents').textContent = users.filter(u=>u.role==='parent').length;
+    document.getElementById('stat-staff').textContent = users.filter(u=>u.role==='teacher'||u.role==='staff').length;
+  }
+
+  function initials(name){ return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+  function renderTable(){
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const tbody = document.getElementById('users-tbody');
+    const filtered = users.filter(u=>{
+      const matchTab = currentTab==='all' || u.role===currentTab;
+      const matchSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+      return matchTab && matchSearch;
+    });
+    if(!filtered.length){
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No users found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(u=>`
+      <tr data-id="${u.id}">
+        <td>
+          <div class="user-name-cell">
+            <div class="user-avatar" style="background:${ROLE_COLORS[u.role]}">${initials(u.name)}</div>
+            <div>
+              <div class="user-name">${u.name}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="role-badge" style="background:${ROLE_COLORS[u.role]}22;color:${ROLE_COLORS[u.role]};border:1px solid ${ROLE_COLORS[u.role]}44">${ROLE_LABELS[u.role]}</span></td>
+        <td style="color:var(--text-muted);font-size:0.78rem">${u.dept ? '<strong>'+u.dept+'</strong>' : ''}${u.subject ? ' · '+u.subject : ''}</td>
+        <td>${u.supervisor ? '<span class="sup-badge">Supervisor</span>' : '<span style="color:var(--text-muted);font-size:0.75rem">Member</span>'}</td>
+        <td>
+          <label class="toggle">
+            <input type="checkbox" ${u.active?'checked':''} onchange="toggleActive('${u.id}',this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </td>
+        <td>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+            <button class="action-btn" onclick="toggleSupervisor('${u.id}')">${u.supervisor?'Demote':'Make Sup'}</button>
+            <button class="action-btn danger" onclick="promptDeact('${u.id}')" ${u.active?'':'style="opacity:.5;pointer-events:none"'}>Deactivate</button>
+          </div>
+        </td>
+      </tr>`).join('');
+    lucide.createIcons();
+  }
+
+  function setTab(tab, el){
+    currentTab = tab;
+    document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+  }
+
+  function filterTable(){ renderTable(); }
+
+  function toggleActive(id, val){
+    const u = users.find(u=>u.id===id);
+    if(u){ u.active = val; saveUsers(); initStats(); }
+  }
+
+  function toggleSupervisor(id){
+    const u = users.find(u=>u.id===id);
+    if(u){ u.supervisor = !u.supervisor; saveUsers(); renderTable(); }
+  }
+
+  function promptDeact(id){
+    pendingDeactId = id;
+    document.getElementById('deact-modal').classList.add('open');
+  }
+  function confirmDeact(){
+    if(pendingDeactId){
+      const u = users.find(u=>u.id===pendingDeactId);
+      if(u){ u.active=false; saveUsers(); initStats(); renderTable(); }
+    }
+    closeModal();
+  }
+  function closeModal(){ document.getElementById('deact-modal').classList.remove('open'); pendingDeactId=null; }
+
+  // Add user panel
+  function openAddPanel(){
+    document.getElementById('add-panel').style.display='block';
+    document.getElementById('add-success').style.display='none';
+    document.getElementById('invite-link-display').value='';
+  }
+  function closeAddPanel(){ document.getElementById('add-panel').style.display='none'; }
+
+  function updateRoleFields(){
+    const role = document.getElementById('new-role').value;
+    const showDept = ['staff','teacher'].includes(role);
+    const showSup = ['staff','teacher'].includes(role);
+    document.getElementById('dept-field').style.opacity = showDept?'1':'0.4';
+    document.getElementById('supervisor-row').style.opacity = showSup?'1':'0.4';
+  }
+
+  function generateInvite(){
+    const role = document.getElementById('new-role').value;
+    const email = document.getElementById('new-email').value || 'user';
+    const token = btoa(email+':'+role+':'+Date.now()).slice(0,16);
+    document.getElementById('invite-link-display').value = `https://divergencie.co.uk/auth/invite?token=${token}&role=${role}`;
+  }
+
+  function copyInvite(){
+    const el = document.getElementById('invite-link-display');
+    if(!el.value){ alert('Generate a link first.'); return; }
+    navigator.clipboard.writeText(el.value).then(()=>{ el.select(); });
+  }
+
+  function addUser(){
+    const name = document.getElementById('new-name').value.trim();
+    const email = document.getElementById('new-email').value.trim();
+    const role = document.getElementById('new-role').value;
+    const dept = document.getElementById('new-dept').value;
+    const subject = document.getElementById('new-subject').value.trim();
+    const supervisor = document.getElementById('new-supervisor').value === 'yes';
+    if(!name||!email){ alert('Name and email are required.'); return; }
+    const id = 'U' + String(users.length+1).padStart(3,'0');
+    users.unshift({id,name,email,role,dept,subject,supervisor,active:true});
+    saveUsers(); initStats(); renderTable();
+    document.getElementById('add-success').style.display='block';
+    document.getElementById('new-name').value='';
+    document.getElementById('new-email').value='';
+    document.getElementById('new-subject').value='';
+    document.getElementById('invite-link-display').value='';
+    setTimeout(closeAddPanel,2500);
+  }
+
+  // Sidebar
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if(toggle){ toggle.addEventListener('click',()=>{ sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }); }
+  if(overlay){ overlay.addEventListener('click',()=>{ sidebar.classList.remove('open'); overlay.classList.remove('active'); }); }
+
+  // Theme
+  const tt = document.getElementById('portal-theme-toggle');
+  if(tt){ tt.addEventListener('click',()=>{ const d=document.documentElement; d.classList.toggle('dark'); localStorage.setItem('dc-theme',d.classList.contains('dark')?'dark':'light'); }); }
+
+  // Init
+  initStats();
+  renderTable();
+  lucide.createIcons();
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign In — DivergenCIE Coaching</title>
-  <meta name="description" content="Sign in to your DivergenCIE student, parent, staff or admin portal."/>
+  <meta name="description" content="Sign in to your DivergenCIE student, parent, teacher, staff, ambassador or management portal."/>
   <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -380,8 +380,10 @@
   const ROLE_MAP = {
     // Staff / admin detect by domain keywords
     'staff': 'Staff Portal',
-    'admin': 'Admin Portal',
-    'teacher': 'Staff Portal',
+    'admin': 'Management Portal',
+    'management': 'Management Portal',
+    'teacher': 'Teacher Portal',
+    'ambassador': 'Ambassador Portal',
     'tutor': 'Staff Portal',
     'hr': 'Staff Portal',
     // Parent pattern
@@ -414,8 +416,10 @@
 
   function getPortalUrl(email) {
     const role = detectRole(email);
-    if (role === 'Admin Portal') return '../portal/admin/dashboard.html';
+    if (role === 'Management Portal') return '../portal/management/dashboard.html';
     if (role === 'Staff Portal') return '../portal/staff/dashboard.html';
+    if (role === 'Teacher Portal') return '../portal/teacher/dashboard.html';
+    if (role === 'Ambassador Portal') return '../portal/ambassador/dashboard.html';
     if (role === 'Parent Portal') return '../portal/parent/dashboard.html';
     return '../portal/student/dashboard.html';
   }

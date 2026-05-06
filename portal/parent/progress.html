@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Child Progress — DivergenCIE Parent Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Chart */
+    .chart-wrap { position: relative; width: 100%; overflow: hidden; }
+    .chart-svg { width: 100%; display: block; }
+    .chart-tooltip {
+      position: absolute; background: var(--bg-primary);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 700;
+      color: var(--text-primary); pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1); display: none;
+      white-space: nowrap; z-index: 10;
+    }
+
+    /* Section card */
+    .section-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.3rem 1.4rem; margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .section-title svg { width: 14px; height: 14px; color: var(--gold); }
+
+    /* Child selector */
+    .child-selector {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.75rem 1.1rem; margin-bottom: 1.5rem;
+    }
+    .child-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gold); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .child-selector select {
+      background: transparent; border: none; outline: none;
+      font-family: 'Satoshi', sans-serif; font-weight: 700;
+      font-size: 0.9rem; color: var(--text-primary); cursor: pointer; flex: 1;
+    }
+    .child-selector select option { background: var(--bg-primary); }
+    .child-selector-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Subject cards */
+    .subj-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 1rem;
+    }
+    .subj-card:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .subj-card-head {
+      padding: 1rem 1.2rem 0.85rem;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .subj-accent { width: 100%; height: 3px; }
+    .subj-badge {
+      font-size: 0.68rem; font-weight: 900; padding: 3px 9px;
+      border-radius: 20px; letter-spacing: 0.04em;
+    }
+    .badge-astar { background: #d4f5e2; color: #1a7a42; }
+    .badge-ontrack { background: #d5e8f0; color: #1a3c5e; }
+    .badge-gap { background: #fef3cd; color: #856404; }
+    .badge-priority { background: #fee2e2; color: #991b1b; }
+    .subj-chapters { padding: 0 1.2rem 1rem; display: none; border-top: 1px solid var(--border-subtle); }
+    .subj-chapters.open { display: block; }
+    .ch-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+    }
+    .ch-row:last-child { border-bottom: none; }
+    .ch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .ch-name { flex: 1; color: var(--text-primary); font-weight: 600; }
+    .ch-pct { font-size: 0.75rem; font-weight: 800; }
+    .ch-pct.green { color: #22c55e; }
+    .ch-pct.amber { color: #f59e0b; }
+    .ch-pct.red { color: var(--coral); }
+
+    /* Progress bars */
+    .prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+    .prog-subject { font-size: 0.82rem; font-weight: 700; color: var(--text-primary); }
+    .prog-pct { font-size: 0.8rem; font-weight: 800; color: var(--gold); }
+    .prog-bar-track { height: 8px; border-radius: 4px; background: var(--bg-tertiary); overflow: hidden; margin-bottom: 0.25rem; }
+    .prog-bar-fill { height: 100%; border-radius: 4px; background: var(--gold); }
+    .prog-bar-fill.green { background: #22c55e; }
+    .prog-bar-fill.red { background: var(--coral); }
+
+    /* Attendance table */
+    .att-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .att-table th { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .att-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); font-weight: 600; }
+    .att-table tr:last-child td { border-bottom: none; }
+    .att-pct { font-weight: 900; }
+    .att-pct.green { color: #22c55e; }
+    .att-pct.amber { color: #f59e0b; }
+    .att-pct.red { color: var(--coral); }
+
+    /* Teacher comment card */
+    .comment-card {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 0.75rem;
+    }
+    .comment-card:last-child { margin-bottom: 0; }
+    .comment-subject { font-size: 0.78rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+    .comment-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .comment-text { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    .comment-meta { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.4rem; }
+
+    /* A* gap callout */
+    .astar-callout {
+      background: #fff8e7; border: 1px solid #f5c84255;
+      border-left: 3px solid var(--gold); border-radius: 10px;
+      padding: 0.85rem 1rem; margin-bottom: 1.25rem;
+      font-size: 0.82rem; color: #7a5800;
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    html.dark .astar-callout { background: #2a1f00; color: #f5c842; border-color: #f5c84255; }
+    .astar-callout svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold); margin-top: 1px; }
+
+    /* Download btn */
+    .btn-download {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--gold); color: #fff; border: none;
+      border-radius: 9px; padding: 0.6rem 1.2rem;
+      font-family: 'Satoshi', sans-serif; font-size: 0.85rem;
+      font-weight: 800; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-download:hover { opacity: 0.88; }
+    .btn-download svg { width: 15px; height: 15px; }
+
+    /* Legend */
+    .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.72rem; color: var(--text-muted); }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; }
+    .legend-line { width: 20px; height: 3px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Parent Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#4a9fd4;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">PG</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Parent / Guardian</div>
+        <div class="role-badge role-parent">Parent</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="progress.html" class="sidebar-nav-item active"><svg data-lucide="bar-chart-2"></svg> Child Progress</a>
+        <a href="fees.html" class="sidebar-nav-item"><svg data-lucide="credit-card"></svg> Fees &amp; Payments</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Support</div>
+        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+      </div>
+    </nav>
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle" aria-label="Toggle menu"><svg data-lucide="menu"></svg></button>
+        <span class="portal-page-title">Child Progress</span>
+      </div>
+      <div class="portal-topbar-right">
+        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="padding:1.75rem 2rem;max-width:1200px;width:100%">
+
+      <!-- Child selector -->
+      <div class="child-selector">
+        <div class="child-avatar" id="child-avatar">AS</div>
+        <div style="flex:1">
+          <div class="child-selector-label">Viewing progress for</div>
+          <select id="child-select" onchange="switchChild(this.value)">
+            <option value="0">Aanya Sharma — IGCSE Maths, A Level Chem</option>
+            <option value="1">Rohan Sharma — IGCSE Physics, A Level Bio</option>
+          </select>
+        </div>
+        <svg data-lucide="chevron-down" style="width:16px;height:16px;color:var(--text-muted);flex-shrink:0"></svg>
+      </div>
+
+      <!-- A* gap callout -->
+      <div class="astar-callout" id="astar-callout">
+        <svg data-lucide="target"></svg>
+        <div>
+          <strong>A* Gap Analysis:</strong> <span id="astar-text">Aanya's overall average is 74%. She needs +6% to reach A* (80%) and +16% for World Topper (90%). A Level Chemistry (83%) is already at A* level. Focus: IGCSE Maths and A Level Biology.</span>
+        </div>
+      </div>
+
+      <!-- Monthly score trend -->
+      <div class="section-card">
+        <div class="section-title">
+          <svg data-lucide="trending-up"></svg> Monthly Score Trend
+          <button class="btn-download" onclick="downloadReport()" style="margin-left:auto;font-size:0.72rem;padding:0.4rem 0.9rem">
+            <svg data-lucide="download"></svg> Download Report
+          </button>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-line" style="background:#e8a832"></div> <span id="legend-child-name">Aanya</span></div>
+          <div class="legend-item"><div class="legend-line" style="background:#9bb8d4"></div> DC Average</div>
+          <div class="legend-item"><div class="legend-line" style="background:#22c55e;opacity:0.5;border-top:2px dashed #22c55e;height:0"></div> A* Target (80%)</div>
+        </div>
+        <div class="chart-wrap" id="chart-wrap">
+          <svg class="chart-svg" id="trend-svg" viewBox="0 0 700 220" preserveAspectRatio="none" style="height:220px"></svg>
+          <div class="chart-tooltip" id="chart-tooltip"></div>
+        </div>
+      </div>
+
+      <!-- Subject performance -->
+      <div class="section-card">
+        <div class="section-title"><svg data-lucide="book-open"></svg> Subject Performance</div>
+        <div id="subject-cards"></div>
+      </div>
+
+      <!-- Attendance breakdown -->
+      <div class="section-card">
+        <div class="section-title"><svg data-lucide="user-check"></svg> Attendance Breakdown</div>
+        <table class="att-table" id="att-table">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Attended</th>
+              <th>Total</th>
+              <th>Rate</th>
+            </tr>
+          </thead>
+          <tbody id="att-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Teacher comments -->
+      <div class="section-card">
+        <div class="section-title"><svg data-lucide="message-square"></svg> Teacher Comments — May 2025</div>
+        <div id="teacher-comments"></div>
+        <div style="margin-top:0.75rem;font-size:0.72rem;color:var(--text-muted)">
+          <svg data-lucide="info" style="width:11px;height:11px;display:inline;margin-right:3px;color:var(--gold)"></svg>
+          Comments are added by teachers at the end of each month. Next update: 31 May 2025.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+// ── Data ──
+const CHILDREN = [
+  {
+    name: 'Aanya Sharma', initials: 'AS', firstName: 'Aanya',
+    avg: 74, astarText: "Aanya's overall average is 74%. She needs +6% to reach A* (80%) and +16% for World Topper (90%). A Level Chemistry (83%) is already at A* level. Focus: IGCSE Maths and A Level Biology.",
+    scores:   [62, 65, 68, 71, 70, 74, 73, 74],
+    dcScores: [68, 69, 71, 72, 73, 74, 75, 75],
+    subjects: [
+      { name:'IGCSE Maths', pct:71, color:'#4a9fd4', badge:'badge-ontrack',
+        chapters:[
+          {name:'Number & Algebra',pct:82},{name:'Geometry & Measures',pct:74},
+          {name:'Statistics & Probability',pct:68},{name:'Sequences',pct:65}]},
+      { name:'A Level Chemistry', pct:83, color:'#e8a832', badge:'badge-astar',
+        chapters:[
+          {name:'Atomic Structure',pct:90},{name:'Bonding',pct:88},
+          {name:'Energetics',pct:81},{name:'Kinetics',pct:79}]},
+      { name:'IGCSE Physics', pct:78, color:'#e05a4e', badge:'badge-ontrack',
+        chapters:[
+          {name:'Motion & Forces',pct:82},{name:'Waves',pct:75},
+          {name:'Electricity',pct:73},{name:'Nuclear Physics',pct:80}]},
+      { name:'A Level Biology', pct:63, color:'#8b5cf6', badge:'badge-priority',
+        chapters:[
+          {name:'Cell Biology',pct:70},{name:'Genetics',pct:60},
+          {name:'Ecology',pct:58},{name:'Physiology',pct:65}]}
+    ],
+    attendance: [
+      {month:'Oct 2024',att:9,total:10},{month:'Nov 2024',att:10,total:10},
+      {month:'Dec 2024',att:8,total:9},{month:'Jan 2025',att:9,total:10},
+      {month:'Feb 2025',att:5,total:5},{month:'Mar 2025',att:8,total:9},
+      {month:'Apr 2025',att:7,total:8},{month:'May 2025',att:4,total:4}
+    ],
+    comments: [
+      {subject:'IGCSE Maths',color:'#4a9fd4',teacher:'Ms Priya Nair',
+       text:'Aanya has shown consistent effort this month. Her algebra scores have improved. I\'d like to see her attempt more timed past paper questions to build exam speed before May mocks.'},
+      {subject:'A Level Chemistry',color:'#e8a832',teacher:'Mr Arjun Mehta',
+       text:'Excellent progress in Atomic Structure and Bonding. Aanya is comfortably on track for A*. Recommend starting past paper practice for Energetics — minor gaps in enthalpy cycle questions.'},
+      {subject:'IGCSE Physics',color:'#e05a4e',teacher:'Mr Daniel Osei',
+       text:'Good engagement in class. Wave optics was a challenging topic but Aanya handled it well. Continue practising Electricity circuit problems for stronger marks.'},
+      {subject:'A Level Biology',color:'#8b5cf6',teacher:'Ms Sara Ali',
+       text:'Genetics and Ecology need more attention. Aanya should revisit the inheritance topic notes and attempt at least 3 past paper questions on genetic crosses before our next session.'}
+    ]
+  },
+  {
+    name: 'Rohan Sharma', initials: 'RS', firstName: 'Rohan',
+    avg: 69, astarText: "Rohan's overall average is 69%. He needs +11% to reach A* (80%) and +21% for World Topper (90%). Focus areas: IGCSE Maths (58%) and A Level Chemistry (80% — close to A*).",
+    scores:   [58, 61, 63, 65, 67, 68, 69, 69],
+    dcScores: [68, 69, 71, 72, 73, 74, 75, 75],
+    subjects: [
+      { name:'IGCSE Physics', pct:69, color:'#e05a4e', badge:'badge-ontrack',
+        chapters:[
+          {name:'Motion & Forces',pct:75},{name:'Waves',pct:65},
+          {name:'Electricity',pct:68},{name:'Nuclear Physics',pct:70}]},
+      { name:'A Level Biology', pct:72, color:'#8b5cf6', badge:'badge-ontrack',
+        chapters:[
+          {name:'Cell Biology',pct:78},{name:'Genetics',pct:68},
+          {name:'Ecology',pct:72},{name:'Physiology',pct:70}]},
+      { name:'IGCSE Maths', pct:58, color:'#4a9fd4', badge:'badge-gap',
+        chapters:[
+          {name:'Number & Algebra',pct:62},{name:'Geometry & Measures',pct:55},
+          {name:'Statistics & Probability',pct:58},{name:'Sequences',pct:55}]},
+      { name:'A Level Chemistry', pct:80, color:'#e8a832', badge:'badge-astar',
+        chapters:[
+          {name:'Atomic Structure',pct:85},{name:'Bonding',pct:82},
+          {name:'Energetics',pct:76},{name:'Kinetics',pct:78}]}
+    ],
+    attendance: [
+      {month:'Oct 2024',att:8,total:10},{month:'Nov 2024',att:9,total:10},
+      {month:'Dec 2024',att:7,total:9},{month:'Jan 2025',att:8,total:10},
+      {month:'Feb 2025',att:4,total:5},{month:'Mar 2025',att:7,total:9},
+      {month:'Apr 2025',att:6,total:8},{month:'May 2025',att:3,total:4}
+    ],
+    comments: [
+      {subject:'IGCSE Physics',color:'#e05a4e',teacher:'Mr Daniel Osei',
+       text:'Rohan is making steady progress. Waves topic needs revision — I\'ve shared extra notes. Good participation in class discussions. Encourage him to review the electricity chapter before next week.'},
+      {subject:'A Level Biology',color:'#8b5cf6',teacher:'Ms Sara Ali',
+       text:'Solid understanding of Cell Biology. Genetics needs focused revision. Recommend the past paper booklet for inheritance questions. Rohan engages well in class and asks good questions.'},
+      {subject:'IGCSE Maths',color:'#4a9fd4',teacher:'Ms Priya Nair',
+       text:'Maths is the priority area this term. Rohan needs to increase his practice frequency — aim for one past paper per week. Geometry and Sequences are the weakest topics. Happy to address doubts in next class.'},
+      {subject:'A Level Chemistry',color:'#e8a832',teacher:'Mr Arjun Mehta',
+       text:'Great improvement this month — Rohan hit 80% in the May mock which is A* territory. Energetics and Kinetics need a final push. On track for a strong exam result if momentum continues.'}
+    ]
+  }
+];
+
+const MONTHS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
+
+let activeChild = 0;
+
+function switchChild(idx) {
+  activeChild = parseInt(idx);
+  const c = CHILDREN[activeChild];
+  document.getElementById('child-avatar').textContent = c.initials;
+  document.getElementById('legend-child-name').textContent = c.firstName;
+  document.getElementById('astar-text').textContent = c.astarText;
+  renderChart(c);
+  renderSubjects(c);
+  renderAttendance(c);
+  renderComments(c);
+  lucide.createIcons();
+}
+
+// ── Chart ──
+function renderChart(c) {
+  const svg = document.getElementById('trend-svg');
+  const W = 700, H = 220;
+  const PAD = { t: 20, b: 36, l: 36, r: 16 };
+  const n = MONTHS.length;
+  const minY = 40, maxY = 100;
+  const xPos = i => PAD.l + i * (W - PAD.l - PAD.r) / (n - 1);
+  const yPos = v => PAD.t + (maxY - v) / (maxY - minY) * (H - PAD.t - PAD.b);
+
+  // Grid
+  let grid = '';
+  [50,60,70,80,90,100].forEach(v => {
+    const y = yPos(v);
+    grid += `<line x1="${PAD.l}" y1="${y}" x2="${W-PAD.r}" y2="${y}" stroke="var(--border)" stroke-width="1" stroke-dasharray="${v===80?'6,3':'3,3'}" opacity="${v===80?0.9:0.5}"/>`;
+    grid += `<text x="${PAD.l-6}" y="${y+4}" font-size="9" fill="var(--text-muted)" text-anchor="end">${v}%</text>`;
+  });
+  let xlabels = MONTHS.map((m,i) => `<text x="${xPos(i)}" y="${H-6}" font-size="9" fill="var(--text-muted)" text-anchor="middle">${m}</text>`).join('');
+
+  // A* dashed line
+  const astarY = yPos(80);
+  const astarLine = `<line x1="${PAD.l}" y1="${astarY}" x2="${W-PAD.r}" y2="${astarY}" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5,3" opacity="0.7"/>
+    <text x="${W-PAD.r+4}" y="${astarY+4}" font-size="9" fill="#22c55e" font-weight="700">A*</text>`;
+
+  const mkArea = (scores, col) => {
+    const pts = scores.map((v,i) => `${xPos(i)},${yPos(v)}`).join(' ');
+    const area = `M${xPos(0)},${yPos(scores[0])} ` + scores.map((v,i)=>`L${xPos(i)},${yPos(v)}`).join(' ') +
+      ` L${xPos(n-1)},${H-PAD.b} L${xPos(0)},${H-PAD.b} Z`;
+    return { pts, area };
+  };
+
+  const dc = mkArea(c.dcScores, '#9bb8d4');
+  const my = mkArea(c.scores, '#e8a832');
+  const uid = 'g' + activeChild;
+  const dots = c.scores.map((v,i) =>
+    `<circle class="chart-dot" cx="${xPos(i)}" cy="${yPos(v)}" r="5" fill="#e8a832" stroke="#fff" stroke-width="2" style="cursor:pointer" data-v="${v}" data-m="${MONTHS[i]}"/>`
+  ).join('');
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="${uid}my" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e8a832" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#e8a832" stop-opacity="0.02"/>
+      </linearGradient>
+      <linearGradient id="${uid}dc" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#9bb8d4" stop-opacity="0.16"/>
+        <stop offset="100%" stop-color="#9bb8d4" stop-opacity="0.01"/>
+      </linearGradient>
+    </defs>
+    ${grid}${xlabels}${astarLine}
+    <path d="${dc.area}" fill="url(#${uid}dc)"/>
+    <polyline points="${dc.pts}" fill="none" stroke="#9bb8d4" stroke-width="2" stroke-linejoin="round"/>
+    <path d="${my.area}" fill="url(#${uid}my)"/>
+    <polyline points="${my.pts}" fill="none" stroke="#e8a832" stroke-width="2.5" stroke-linejoin="round"/>
+    ${dots}
+  `;
+
+  // Tooltips
+  const tooltip = document.getElementById('chart-tooltip');
+  const wrap = document.getElementById('chart-wrap');
+  svg.querySelectorAll('.chart-dot').forEach(dot => {
+    dot.addEventListener('mouseenter', () => {
+      const rect = wrap.getBoundingClientRect();
+      const cx = parseFloat(dot.getAttribute('cx'));
+      const cy = parseFloat(dot.getAttribute('cy'));
+      const scaleX = wrap.offsetWidth / W;
+      const scaleY = wrap.offsetHeight / H;
+      tooltip.textContent = `${dot.dataset.m}: ${dot.dataset.v}%`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (cx * scaleX - 30) + 'px';
+      tooltip.style.top = (cy * scaleY - 36) + 'px';
+    });
+    dot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  });
+}
+
+// ── Subjects ──
+function pctClass(p) { return p >= 80 ? 'green' : p >= 65 ? 'amber' : 'red'; }
+function dotCol(p) { return p >= 80 ? '#22c55e' : p >= 65 ? '#f59e0b' : '#e05a4e'; }
+function badgeLabel(b) {
+  return {badge_astar:'A* ✓', badge_ontrack:'On Track', badge_gap:'Needs Attention', badge_priority:'Priority'}[b.replace('-','_')] || b;
+}
+
+function renderSubjects(c) {
+  const el = document.getElementById('subject-cards');
+  el.innerHTML = c.subjects.map((s, i) => `
+    <div class="subj-card">
+      <div class="subj-accent" style="background:${s.color}"></div>
+      <div class="subj-card-head" onclick="toggleChapters(${i})">
+        <div>
+          <div style="font-size:0.92rem;font-weight:800;color:var(--text-primary)">${s.name}</div>
+          <div style="margin-top:0.25rem">
+            <div class="prog-bar-track" style="width:200px;max-width:60vw">
+              <div class="prog-bar-fill ${s.pct>=80?'green':s.pct<65?'red':''}" style="width:${s.pct}%"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.6rem">
+          <span class="subj-badge ${s.badge}">${s.pct}% — ${badgeLabel(s.badge)}</span>
+          <svg data-lucide="chevron-down" id="chevron-${i}" style="width:16px;height:16px;color:var(--text-muted);transition:transform 0.2s"></svg>
+        </div>
+      </div>
+      <div class="subj-chapters" id="chapters-${i}">
+        <div style="padding-top:0.75rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:0.4rem">Chapter Breakdown</div>
+        ${s.chapters.map(ch => `
+          <div class="ch-row">
+            <div class="ch-dot" style="background:${dotCol(ch.pct)}"></div>
+            <div class="ch-name">${ch.name}</div>
+            <div class="ch-pct ${pctClass(ch.pct)}">${ch.pct}%</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleChapters(i) {
+  const el = document.getElementById('chapters-' + i);
+  const ch = document.getElementById('chevron-' + i);
+  el.classList.toggle('open');
+  ch.style.transform = el.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+// ── Attendance ──
+function renderAttendance(c) {
+  const tbody = document.getElementById('att-body');
+  tbody.innerHTML = c.attendance.map(row => {
+    const pct = Math.round(row.att / row.total * 100);
+    const cls = pct >= 90 ? 'green' : pct >= 75 ? 'amber' : 'red';
+    return `<tr>
+      <td>${row.month}</td>
+      <td>${row.att}</td>
+      <td>${row.total}</td>
+      <td><span class="att-pct ${cls}">${pct}%</span></td>
+    </tr>`;
+  }).join('');
+  // Totals row
+  const totAtt = c.attendance.reduce((s,r)=>s+r.att,0);
+  const totTotal = c.attendance.reduce((s,r)=>s+r.total,0);
+  const totPct = Math.round(totAtt/totTotal*100);
+  const totCls = totPct>=90?'green':totPct>=75?'amber':'red';
+  tbody.innerHTML += `<tr style="background:var(--bg-secondary);font-weight:900">
+    <td>Overall</td><td>${totAtt}</td><td>${totTotal}</td>
+    <td><span class="att-pct ${totCls}">${totPct}%</span></td>
+  </tr>`;
+}
+
+// ── Comments ──
+function renderComments(c) {
+  document.getElementById('teacher-comments').innerHTML = c.comments.map(cm => `
+    <div class="comment-card">
+      <div class="comment-subject">
+        <div class="comment-dot" style="background:${cm.color}"></div>
+        ${cm.subject}
+        <span style="font-size:0.68rem;color:var(--text-muted);font-weight:500;margin-left:auto">${cm.teacher}</span>
+      </div>
+      <div class="comment-text">${cm.text}</div>
+      <div class="comment-meta">May 2025 · Monthly report</div>
+    </div>`).join('');
+}
+
+// ── Download ──
+function downloadReport() {
+  const c = CHILDREN[activeChild];
+  alert(`📄 Downloading ${c.firstName}'s May 2025 progress report…\n\n(In production, this would generate a PDF via the DC admin system.)`);
+}
+
+// ── Init ──
+lucide.createIcons();
+switchChild(0);
+
+// Theme toggle
+const themeBtn = document.getElementById('portal-theme-toggle');
+if (themeBtn) {
+  function syncThemeIcons() {
+    const isDark = document.documentElement.classList.contains('dark');
+    themeBtn.querySelector('.icon-light').style.display = isDark ? 'none' : 'block';
+    themeBtn.querySelector('.icon-dark').style.display = isDark ? 'block' : 'none';
+  }
+  syncThemeIcons();
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    syncThemeIcons();
+  });
+}
+</script>
+</body>
+</html>

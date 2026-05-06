@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignments — DivergenCIE Student Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Assignment card */
+    .assign-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.1rem 1.3rem;
+      margin-bottom: 0.85rem; transition: border-color 0.2s;
+    }
+    .assign-card:hover { border-color: var(--gold); }
+    .assign-card-top { display: flex; align-items: flex-start; gap: 0.85rem; }
+    .assign-subject-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .assign-title { font-size: 0.88rem; font-weight: 800; color: var(--text-primary); line-height: 1.3; }
+    .assign-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; line-height: 1.5; }
+    .assign-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; align-items: center; }
+    .meta-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: var(--bg-secondary); border-radius: 20px;
+      padding: 2px 8px; font-size: 0.68rem; color: var(--text-muted); font-weight: 600;
+    }
+    .meta-chip svg { width: 10px; height: 10px; }
+    .due-badge { font-size: 0.68rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+    .due-today  { background: #FFE0DE; color: #b03028; }
+    .due-soon   { background: #FFF3CD; color: #856404; }
+    .due-ok     { background: #D5ECD4; color: #2D6A2D; }
+    .due-late   { background: #FFE0DE; color: #b03028; }
+    .submit-btn {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
+      background: var(--gold); color: #fff; border: none; border-radius: 7px;
+      padding: 5px 13px; font-size: 0.74rem; font-weight: 800;
+      cursor: pointer; font-family: 'Satoshi', sans-serif;
+      transition: filter 0.15s; white-space: nowrap;
+    }
+    .submit-btn:hover { filter: brightness(1.08); }
+    .submit-btn svg { width: 12px; height: 12px; }
+    .submitted-tag {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
+      background: #D5ECD4; color: #2D6A2D; border-radius: 7px;
+      padding: 5px 11px; font-size: 0.72rem; font-weight: 800;
+    }
+    html.dark .submitted-tag { background: rgba(45,106,45,0.3); color: #6ee88a; }
+
+    /* History table */
+    .hist-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .hist-table th {
+      font-size: 0.7rem; font-weight: 800; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.6rem 0.9rem; text-align: left;
+      background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+    }
+    .hist-table td {
+      font-size: 0.78rem; padding: 0.65rem 0.9rem;
+      border-bottom: 1px solid var(--border-subtle); color: var(--text-primary);
+    }
+    .hist-table tr:last-child td { border-bottom: none; }
+    .hist-badge { font-size: 0.67rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+    .st-submitted { background: #D5ECD4; color: #2D6A2D; }
+    .st-graded    { background: #d5e8f0; color: #1a6fa0; }
+    .st-late      { background: #FFE0DE; color: #b03028; }
+    html.dark .st-submitted { background: rgba(45,106,45,0.3); color: #6ee88a; }
+    html.dark .st-graded    { background: rgba(26,111,160,0.3); color: #7ec8f0; }
+    html.dark .st-late      { background: rgba(176,48,40,0.3); color: #f08078; }
+
+    /* Past paper checklist */
+    .pp-subject-section { margin-bottom: 1.25rem; }
+    .pp-subject-heading {
+      font-size: 0.82rem; font-weight: 900; color: var(--text-primary);
+      padding: 0.5rem 0.8rem; background: var(--bg-secondary);
+      border-radius: 8px; margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .pp-subject-heading svg { width: 14px; height: 14px; color: var(--gold); }
+    .pp-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0.8rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-primary);
+      margin-bottom: 0.4rem; cursor: pointer; transition: border-color 0.15s;
+      font-size: 0.8rem; color: var(--text-primary);
+    }
+    .pp-row:hover { border-color: var(--gold); }
+    .pp-row.done { opacity: 0.6; }
+    .pp-row.done .pp-label { text-decoration: line-through; color: var(--text-muted); }
+    .pp-check {
+      width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0;
+      border: 2px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; transition: background 0.15s, border-color 0.15s;
+    }
+    .pp-row.done .pp-check { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .pp-year { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; margin-left: auto; }
+    .pp-score-input {
+      width: 52px; font-size: 0.72rem; padding: 2px 5px; border-radius: 5px;
+      border: 1px solid var(--border); background: var(--bg-secondary);
+      color: var(--text-primary); text-align: center; font-family: 'Satoshi', sans-serif;
+    }
+
+    /* Submit modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 500; display: none; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-primary); border-radius: 16px; padding: 1.75rem;
+      max-width: 460px; width: 100%; border: 1px solid var(--border); position: relative;
+    }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1.1rem; }
+    .modal-title { font-size: 1rem; font-weight: 900; margin-bottom: 0.25rem; color: var(--text-primary); }
+    .modal-sub { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .form-field { margin-bottom: 0.9rem; }
+    .form-label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 0.52rem 0.8rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-secondary);
+      color: var(--text-primary); font-size: 0.82rem; font-family: 'Satoshi', sans-serif;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--gold); }
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 10px;
+      padding: 1.2rem; text-align: center; cursor: pointer;
+      transition: border-color 0.2s; background: var(--bg-secondary);
+    }
+    .upload-zone:hover { border-color: var(--gold); }
+    .upload-zone svg { width: 22px; height: 22px; color: var(--text-muted); margin: 0 auto 6px; }
+    .upload-zone p { font-size: 0.75rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="portal-root">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Student Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Alex Student</div>
+        <div class="role-badge role-student">Student</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="classes.html" class="sidebar-nav-item"><svg data-lucide="calendar"></svg> My Classes</a>
+        <a href="assignments.html" class="sidebar-nav-item active"><svg data-lucide="clipboard-list"></svg> Assignments</a>
+        <a href="recordings.html" class="sidebar-nav-item"><svg data-lucide="play-circle"></svg> Recordings</a>
+        <a href="progress.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> My Progress</a>
+        <a href="curriculum.html" class="sidebar-nav-item"><svg data-lucide="book-open"></svg> Curriculum</a>
+        <a href="support.html" class="sidebar-nav-item"><svg data-lucide="life-buoy"></svg> Support</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Resources</div>
+        <a href="../../mock.html" class="sidebar-nav-item"><svg data-lucide="timer"></svg> Free Mock</a>
+        <a href="../../resources.html" class="sidebar-nav-item"><svg data-lucide="folder-open"></svg> Materials</a>
+      </div>
+    </nav>
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle"><svg data-lucide="menu"></svg></button>
+        <span class="portal-page-title">Assignments</span>
+      </div>
+      <div class="portal-topbar-right">
+        <button class="topbar-bell"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
+        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="padding:1.75rem 2rem;max-width:1100px;width:100%">
+
+      <!-- Tabs -->
+      <div class="portal-tabs" style="margin-bottom:1.5rem">
+        <button class="portal-tab active" data-tab="active">Active <span class="tab-count" style="background:var(--coral);color:#fff;font-size:0.62rem;font-weight:800;border-radius:20px;padding:1px 6px;margin-left:4px">4</span></button>
+        <button class="portal-tab" data-tab="history">Submission History</button>
+        <button class="portal-tab" data-tab="pastpapers">Past Paper Checklist</button>
+      </div>
+
+      <!-- ── TAB: ACTIVE ── -->
+      <div id="tab-active">
+
+        <div class="assign-card">
+          <div class="assign-card-top">
+            <div class="assign-subject-dot" style="background:#4a9fd4"></div>
+            <div style="flex:1">
+              <div class="assign-title">IGCSE Mathematics — Past Paper 2023 P2</div>
+              <div class="assign-desc">Complete Paper 2 in full. Self-mark using the mark scheme and note your score. Submit via Google Classroom.</div>
+            </div>
+          </div>
+          <div class="assign-meta">
+            <span class="meta-chip"><svg data-lucide="calendar"></svg> Due: Today, 6 May</span>
+            <span class="meta-chip"><svg data-lucide="clock"></svg> ~90 min</span>
+            <span class="due-badge due-today">Due Today</span>
+            <button class="submit-btn" onclick="openSubmit('IGCSE Maths — Past Paper 2023 P2')"><svg data-lucide="upload"></svg> Submit</button>
+          </div>
+        </div>
+
+        <div class="assign-card">
+          <div class="assign-card-top">
+            <div class="assign-subject-dot" style="background:#f5c842"></div>
+            <div style="flex:1">
+              <div class="assign-title">A Level Chemistry — Equilibrium Questions (Ch.7)</div>
+              <div class="assign-desc">Complete questions 1–5 from the Chapter 7 worksheet. Show all working. Submit a photo or PDF via GCR.</div>
+            </div>
+          </div>
+          <div class="assign-meta">
+            <span class="meta-chip"><svg data-lucide="calendar"></svg> Due: Thu 8 May</span>
+            <span class="meta-chip"><svg data-lucide="clock"></svg> ~45 min</span>
+            <span class="due-badge due-soon">Due Thu</span>
+            <button class="submit-btn" onclick="openSubmit('A Level Chemistry — Equilibrium Ch.7')"><svg data-lucide="upload"></svg> Submit</button>
+          </div>
+        </div>
+
+        <div class="assign-card">
+          <div class="assign-card-top">
+            <div class="assign-subject-dot" style="background:#e05a4e"></div>
+            <div style="flex:1">
+              <div class="assign-title">IGCSE Physics — Forces MCQ Set</div>
+              <div class="assign-desc">30 multiple-choice questions on Forces and Motion. Self-mark using the answer key in GCR. Record your score below.</div>
+            </div>
+          </div>
+          <div class="assign-meta">
+            <span class="meta-chip"><svg data-lucide="calendar"></svg> Due: Fri 9 May</span>
+            <span class="meta-chip"><svg data-lucide="clock"></svg> ~30 min</span>
+            <span class="due-badge due-ok">Due Fri</span>
+            <button class="submit-btn" onclick="openSubmit('IGCSE Physics — Forces MCQ Set')"><svg data-lucide="upload"></svg> Submit</button>
+          </div>
+        </div>
+
+        <div class="assign-card">
+          <div class="assign-card-top">
+            <div class="assign-subject-dot" style="background:#6b7280"></div>
+            <div style="flex:1">
+              <div class="assign-title">A Level Biology — DNA & Protein Synthesis Notes</div>
+              <div class="assign-desc">Write a one-page summary of Chapter 6 covering transcription and translation. Include labelled diagrams.</div>
+            </div>
+          </div>
+          <div class="assign-meta">
+            <span class="meta-chip"><svg data-lucide="calendar"></svg> Due: Mon 12 May</span>
+            <span class="meta-chip"><svg data-lucide="clock"></svg> ~60 min</span>
+            <span class="due-badge due-ok">Due Mon</span>
+            <button class="submit-btn" onclick="openSubmit('A Level Biology — DNA & Protein Synthesis Notes')"><svg data-lucide="upload"></svg> Submit</button>
+          </div>
+        </div>
+
+        <!-- Already submitted -->
+        <div style="font-size:0.78rem;font-weight:800;color:var(--text-muted);margin:1.25rem 0 0.65rem;letter-spacing:0.03em;text-transform:uppercase">Recently Submitted</div>
+
+        <div class="assign-card" style="opacity:0.7">
+          <div class="assign-card-top">
+            <div class="assign-subject-dot" style="background:#4a9fd4"></div>
+            <div style="flex:1">
+              <div class="assign-title">IGCSE Mathematics — Algebra Problem Set</div>
+              <div class="assign-desc">Submitted via GCR on 3 May 2026.</div>
+            </div>
+          </div>
+          <div class="assign-meta">
+            <span class="meta-chip"><svg data-lucide="check-circle"></svg> Submitted 3 May</span>
+            <span class="submitted-tag">✓ Submitted</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── TAB: HISTORY ── -->
+      <div id="tab-history" style="display:none">
+        <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <div style="padding:1rem 1.4rem;font-size:0.9rem;font-weight:900;color:var(--text-primary);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem">
+            <svg data-lucide="history" style="width:16px;height:16px;color:var(--gold)"></svg> All Submissions
+          </div>
+          <div style="overflow-x:auto">
+            <table class="hist-table">
+              <thead>
+                <tr>
+                  <th>Submitted</th>
+                  <th>Subject</th>
+                  <th>Assignment</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">3 May 2026</td>
+                  <td>IGCSE Maths</td>
+                  <td>Algebra Problem Set</td>
+                  <td>—</td>
+                  <td><span class="hist-badge st-submitted">Submitted</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">30 Apr 2026</td>
+                  <td>A Level Chemistry</td>
+                  <td>Bonding MCQ Set</td>
+                  <td><strong>88%</strong></td>
+                  <td><span class="hist-badge st-graded">Graded</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">29 Apr 2026</td>
+                  <td>IGCSE Physics</td>
+                  <td>Waves Past Paper 2022 P1</td>
+                  <td><strong>74%</strong></td>
+                  <td><span class="hist-badge st-graded">Graded</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">26 Apr 2026</td>
+                  <td>A Level Biology</td>
+                  <td>Cell Division Summary</td>
+                  <td>—</td>
+                  <td><span class="hist-badge st-submitted">Submitted</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">24 Apr 2026</td>
+                  <td>IGCSE Maths</td>
+                  <td>Trigonometry Problem Set</td>
+                  <td><strong>92%</strong></td>
+                  <td><span class="hist-badge st-graded">Graded</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">21 Apr 2026</td>
+                  <td>A Level Chemistry</td>
+                  <td>Equilibrium Worksheet</td>
+                  <td style="color:var(--coral)"><strong>61%</strong></td>
+                  <td><span class="hist-badge st-late">Late</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">18 Apr 2026</td>
+                  <td>IGCSE Physics</td>
+                  <td>Energy Conversion Notes</td>
+                  <td><strong>79%</strong></td>
+                  <td><span class="hist-badge st-graded">Graded</span></td>
+                </tr>
+                <tr>
+                  <td style="color:var(--text-muted);font-size:0.72rem">15 Apr 2026</td>
+                  <td>A Level Biology</td>
+                  <td>Genetics Problem Set</td>
+                  <td><strong>85%</strong></td>
+                  <td><span class="hist-badge st-graded">Graded</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB: PAST PAPERS ── -->
+      <div id="tab-pastpapers" style="display:none">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1.1rem;display:flex;align-items:center;gap:0.5rem">
+          <svg data-lucide="info" style="width:13px;height:13px;flex-shrink:0"></svg>
+          Tick off each past paper as you complete it. Your progress is saved in your browser.
+        </div>
+
+        <!-- IGCSE Maths -->
+        <div class="pp-subject-section">
+          <div class="pp-subject-heading"><svg data-lucide="book"></svg> IGCSE Mathematics</div>
+          <div id="pp-math"></div>
+        </div>
+
+        <!-- A Level Chemistry -->
+        <div class="pp-subject-section">
+          <div class="pp-subject-heading"><svg data-lucide="flask-conical"></svg> A Level Chemistry</div>
+          <div id="pp-chem"></div>
+        </div>
+
+        <!-- IGCSE Physics -->
+        <div class="pp-subject-section">
+          <div class="pp-subject-heading"><svg data-lucide="zap"></svg> IGCSE Physics</div>
+          <div id="pp-phys"></div>
+        </div>
+
+        <!-- A Level Biology -->
+        <div class="pp-subject-section">
+          <div class="pp-subject-heading"><svg data-lucide="leaf"></svg> A Level Biology</div>
+          <div id="pp-bio"></div>
+        </div>
+
+        <!-- Overall progress -->
+        <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:12px;padding:1rem 1.3rem;margin-top:0.5rem">
+          <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary);margin-bottom:0.6rem">Overall Past Paper Coverage</div>
+          <div style="background:var(--bg-secondary);border-radius:99px;height:8px;overflow:hidden">
+            <div id="overall-bar" style="height:100%;border-radius:99px;background:var(--gold);transition:width 0.5s ease;width:0%"></div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:5px"><span id="overall-count">0</span> of <span id="overall-total">0</span> papers attempted</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Submit modal -->
+<div class="modal-overlay" id="submit-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">Submit Assignment</div>
+    <div class="modal-sub" id="submit-modal-sub">—</div>
+    <div class="form-field">
+      <label class="form-label">Submission method</label>
+      <select class="form-select" id="submit-method">
+        <option>Google Classroom (GCR) — already submitted there</option>
+        <option>Upload file here</option>
+        <option>Paste Google Doc link</option>
+      </select>
+    </div>
+    <div class="form-field" id="upload-field">
+      <label class="form-label">Upload file (PDF / image)</label>
+      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+        <svg data-lucide="upload-cloud" style="display:block"></svg>
+        <p>Click to select file · PDF, JPG, PNG accepted</p>
+        <p id="file-name" style="margin-top:4px;font-weight:700;color:var(--text-primary)"></p>
+      </div>
+      <input type="file" id="file-input" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="document.getElementById('file-name').textContent=this.files[0]?.name||''" />
+    </div>
+    <div class="form-field">
+      <label class="form-label">Your score (if self-marked)</label>
+      <input type="text" class="form-input" placeholder="e.g. 78 / 100 or 78%" />
+    </div>
+    <div class="form-field">
+      <label class="form-label">Notes for teacher (optional)</label>
+      <textarea class="form-textarea" placeholder="Any questions or comments…" style="min-height:60px"></textarea>
+    </div>
+    <div style="display:flex;gap:0.75rem">
+      <button class="portal-btn portal-btn-primary" onclick="submitAssignment()">Confirm Submission</button>
+      <button class="portal-btn portal-btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+    <div id="submit-success" style="display:none;margin-top:0.75rem;font-size:0.78rem;color:#2D6A2D;background:#D5ECD4;border-radius:8px;padding:0.65rem 0.9rem">
+      ✅ Submission recorded! Your teacher will review it soon.
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+
+  // ── Tabs ──
+  document.querySelectorAll('.portal-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.portal-tab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      ['active','history','pastpapers'].forEach(function(id){
+        document.getElementById('tab-'+id).style.display = btn.dataset.tab === id ? 'block' : 'none';
+      });
+      if (btn.dataset.tab === 'pastpapers') renderPP();
+      lucide.createIcons();
+    });
+  });
+
+  // ── Past paper data ──
+  var PP_DATA = {
+    math: [
+      {id:'math-2023-p1', label:'2023 Paper 1'}, {id:'math-2023-p2', label:'2023 Paper 2'},
+      {id:'math-2022-p1', label:'2022 Paper 1'}, {id:'math-2022-p2', label:'2022 Paper 2'},
+      {id:'math-2021-p1', label:'2021 Paper 1'}, {id:'math-2021-p2', label:'2021 Paper 2'},
+      {id:'math-2020-p1', label:'2020 Paper 1'}, {id:'math-2020-p2', label:'2020 Paper 2'},
+    ],
+    chem: [
+      {id:'chem-2023-p1', label:'2023 Paper 1'}, {id:'chem-2023-p2', label:'2023 Paper 2'}, {id:'chem-2023-p3', label:'2023 Paper 3'},
+      {id:'chem-2022-p1', label:'2022 Paper 1'}, {id:'chem-2022-p2', label:'2022 Paper 2'}, {id:'chem-2022-p3', label:'2022 Paper 3'},
+      {id:'chem-2021-p1', label:'2021 Paper 1'}, {id:'chem-2021-p2', label:'2021 Paper 2'},
+    ],
+    phys: [
+      {id:'phys-2023-p1', label:'2023 Paper 1'}, {id:'phys-2023-p2', label:'2023 Paper 2'},
+      {id:'phys-2022-p1', label:'2022 Paper 1'}, {id:'phys-2022-p2', label:'2022 Paper 2'},
+      {id:'phys-2021-p1', label:'2021 Paper 1'}, {id:'phys-2021-p2', label:'2021 Paper 2'},
+    ],
+    bio: [
+      {id:'bio-2023-p1', label:'2023 Paper 1'}, {id:'bio-2023-p2', label:'2023 Paper 2'}, {id:'bio-2023-p3', label:'2023 Paper 3'},
+      {id:'bio-2022-p1', label:'2022 Paper 1'}, {id:'bio-2022-p2', label:'2022 Paper 2'},
+      {id:'bio-2021-p1', label:'2021 Paper 1'}, {id:'bio-2021-p2', label:'2021 Paper 2'},
+    ]
+  };
+  var PP_CONTAINERS = {math:'pp-math', chem:'pp-chem', phys:'pp-phys', bio:'pp-bio'};
+
+  function ppKey(id) { return 'dc-pp-' + id; }
+  function ppDone(id) { return localStorage.getItem(ppKey(id)) === '1'; }
+  function togglePP(id) {
+    localStorage.setItem(ppKey(id), ppDone(id) ? '0' : '1');
+    renderPP();
+  }
+
+  function renderPP() {
+    var total = 0, done = 0;
+    Object.keys(PP_DATA).forEach(function(subj) {
+      var container = document.getElementById(PP_CONTAINERS[subj]);
+      if (!container) return;
+      container.innerHTML = '';
+      PP_DATA[subj].forEach(function(pp) {
+        total++;
+        var isDone = ppDone(pp.id);
+        if (isDone) done++;
+        var row = document.createElement('div');
+        row.className = 'pp-row' + (isDone ? ' done' : '');
+        row.onclick = function() { togglePP(pp.id); };
+        row.innerHTML =
+          '<div class="pp-check">' + (isDone ? '✓' : '') + '</div>' +
+          '<span class="pp-label">' + pp.label + '</span>' +
+          '<input class="pp-score-input" type="text" placeholder="Score %" onclick="event.stopPropagation()" ' +
+            'value="' + (localStorage.getItem('dc-pp-score-'+pp.id)||'') + '" ' +
+            'onchange="localStorage.setItem(\'dc-pp-score-'+pp.id+'\',this.value)" />';
+        container.appendChild(row);
+      });
+    });
+    var pct = total ? Math.round(done/total*100) : 0;
+    var bar = document.getElementById('overall-bar');
+    if (bar) bar.style.width = pct + '%';
+    var cnt = document.getElementById('overall-count');
+    var tot = document.getElementById('overall-total');
+    if (cnt) cnt.textContent = done;
+    if (tot) tot.textContent = total;
+  }
+
+  // ── Submit modal ──
+  function openSubmit(name) {
+    document.getElementById('submit-modal-sub').textContent = name;
+    document.getElementById('submit-success').style.display = 'none';
+    document.getElementById('file-name').textContent = '';
+    document.getElementById('submit-modal').classList.add('open');
+  }
+  function closeModal() { document.getElementById('submit-modal').classList.remove('open'); }
+  function submitAssignment() {
+    document.getElementById('submit-success').style.display = 'block';
+    setTimeout(function(){ closeModal(); }, 2500);
+  }
+  document.getElementById('submit-modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+  // ── Theme toggle ──
+  var themeBtn = document.getElementById('portal-theme-toggle');
+  if (themeBtn) {
+    function syncIcons() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var s = themeBtn.querySelector('.icon-light'), m = themeBtn.querySelector('.icon-dark');
+      if (s) s.style.display = isDark ? 'none' : 'block';
+      if (m) m.style.display = isDark ? 'block' : 'none';
+    }
+    syncIcons();
+    themeBtn.addEventListener('click', function() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      syncIcons();
+    });
+  }
+</script>
+</body>
+</html>

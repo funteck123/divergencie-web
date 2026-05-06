@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Progress — DivergenCIE Student Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* ── Chart ── */
+    .chart-wrap { position: relative; width: 100%; overflow: hidden; }
+    .chart-svg { width: 100%; display: block; }
+    .chart-tooltip {
+      position: absolute; background: var(--bg-primary);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.4rem 0.75rem; font-size: 0.75rem; font-weight: 700;
+      color: var(--text-primary); pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1); display: none;
+      white-space: nowrap; z-index: 10;
+    }
+
+    /* ── Subject card ── */
+    .subj-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .subj-card:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .subj-card-head {
+      padding: 1rem 1.2rem 0.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .subj-accent { width: 100%; height: 3px; }
+    .subj-badge {
+      font-size: 0.68rem; font-weight: 900; padding: 3px 9px;
+      border-radius: 20px; letter-spacing: 0.04em;
+    }
+    .badge-astar { background: #d4f5e2; color: #1a7a42; }
+    .badge-ontrack { background: #d5e8f0; color: #1a3c5e; }
+    .badge-gap { background: #fef3cd; color: #856404; }
+    .subj-chapters { padding: 0 1.2rem 1rem; display: none; }
+    .subj-chapters.open { display: block; }
+    .chapter-row {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.35rem 0; border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.78rem; color: var(--text-primary);
+    }
+    .chapter-row:last-child { border-bottom: none; }
+    .chapter-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .chapter-score {
+      margin-left: auto; font-weight: 800; font-size: 0.78rem;
+    }
+
+    /* ── Progress bar ── */
+    .pbar-track {
+      height: 8px; border-radius: 20px;
+      background: var(--bg-tertiary); overflow: hidden; flex: 1;
+    }
+    .pbar-fill { height: 100%; border-radius: 20px; transition: width 0.6s ease; }
+
+    /* ── Gap callout ── */
+    .gap-callout {
+      border-radius: 12px; padding: 1rem 1.2rem;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .gap-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* ── Doubt tracker ── */
+    .doubt-table { width: 100%; border-collapse: collapse; }
+    .doubt-table th {
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted);
+      padding: 0.6rem 0.8rem; text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .doubt-table td {
+      font-size: 0.8rem; padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-primary); vertical-align: top;
+    }
+    .doubt-table tr:last-child td { border-bottom: none; }
+    .doubt-table tr:hover td { background: var(--bg-secondary); }
+    .status-open {
+      display: inline-block; font-size: 0.68rem; font-weight: 900;
+      padding: 2px 8px; border-radius: 20px;
+      background: #fef3cd; color: #856404;
+    }
+    .status-resolved {
+      display: inline-block; font-size: 0.68rem; font-weight: 900;
+      padding: 2px 8px; border-radius: 20px;
+      background: #d4f5e2; color: #1a7a42;
+    }
+
+    /* ── Stat summary cards ── */
+    .summary-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1rem 1.2rem;
+    }
+    .summary-val { font-size: 1.6rem; font-weight: 900; color: var(--text-primary); }
+    .summary-lbl { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-top: 0.2rem; }
+    .summary-delta {
+      font-size: 0.72rem; font-weight: 700; margin-top: 0.3rem;
+      display: flex; align-items: center; gap: 0.25rem;
+    }
+    .delta-up { color: #1a7a42; }
+    .delta-dn { color: var(--coral); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: none; align-items: center; justify-content: center; z-index: 200;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-primary); border-radius: 16px;
+      padding: 1.6rem; width: 100%; max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-title { font-size: 1rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1rem; }
+    .form-field { margin-bottom: 0.85rem; }
+    .form-field label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .form-field select, .form-field input, .form-field textarea {
+      width: 100%; padding: 0.55rem 0.8rem;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 8px; font-family: 'Satoshi', sans-serif;
+      font-size: 0.82rem; color: var(--text-primary);
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-field select:focus, .form-field input:focus, .form-field textarea:focus {
+      border-color: var(--gold);
+    }
+    .form-field textarea { resize: vertical; min-height: 72px; }
+    .btn-gold-sm {
+      background: var(--gold); color: #fff; font-weight: 900;
+      font-size: 0.82rem; padding: 0.55rem 1.2rem; border-radius: 8px;
+      border: none; cursor: pointer; transition: filter 0.15s;
+    }
+    .btn-gold-sm:hover { filter: brightness(1.08); }
+    .btn-ghost-sm {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); font-weight: 700; font-size: 0.82rem;
+      padding: 0.55rem 1.2rem; border-radius: 8px; cursor: pointer;
+    }
+
+    /* theme icon show/hide */
+    html:not(.dark) .icon-dark { display: none !important; }
+    html.dark .icon-light { display: none !important; }
+
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr !important; }
+      .four-col { grid-template-columns: 1fr 1fr !important; }
+    }
+    @media (max-width: 600px) {
+      .four-col { grid-template-columns: 1fr !important; }
+      .doubt-table th:nth-child(3), .doubt-table td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="portal-root">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Student Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Alex Student</div>
+        <div class="role-badge role-student">Student</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="classes.html" class="sidebar-nav-item"><svg data-lucide="calendar"></svg> My Classes</a>
+        <a href="assignments.html" class="sidebar-nav-item"><svg data-lucide="clipboard-list"></svg> Assignments</a>
+        <a href="recordings.html" class="sidebar-nav-item"><svg data-lucide="play-circle"></svg> Recordings</a>
+        <a href="progress.html" class="sidebar-nav-item active"><svg data-lucide="bar-chart-2"></svg> My Progress</a>
+        <a href="curriculum.html" class="sidebar-nav-item"><svg data-lucide="book-open"></svg> Curriculum</a>
+        <a href="support.html" class="sidebar-nav-item"><svg data-lucide="life-buoy"></svg> Support</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Resources</div>
+        <a href="../../mock.html" class="sidebar-nav-item"><svg data-lucide="timer"></svg> Free Mock</a>
+        <a href="../../resources.html" class="sidebar-nav-item"><svg data-lucide="folder-open"></svg> Materials</a>
+      </div>
+    </nav>
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle"><svg data-lucide="menu"></svg></button>
+        <span class="portal-page-title">My Progress</span>
+      </div>
+      <div class="portal-topbar-right">
+        <button class="topbar-bell"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
+        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px"></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="padding:1.75rem 2rem;max-width:1200px;width:100%">
+
+      <!-- ── Summary stat cards ── -->
+      <div class="four-col" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem">
+        <div class="summary-card">
+          <div class="summary-val" id="stat-avg">74%</div>
+          <div class="summary-lbl">Overall Avg Score</div>
+          <div class="summary-delta delta-up"><svg data-lucide="trending-up" style="width:12px;height:12px"></svg> +6% vs last month</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-val">91%</div>
+          <div class="summary-lbl">Attendance Rate</div>
+          <div class="summary-delta delta-up"><svg data-lucide="trending-up" style="width:12px;height:12px"></svg> On track</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-val">18<span style="font-size:1rem">/24</span></div>
+          <div class="summary-lbl">Chapters Completed</div>
+          <div class="summary-delta" style="color:var(--text-muted)">75% completion</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-val" id="stat-doubts">4</div>
+          <div class="summary-lbl">Open Doubts</div>
+          <div class="summary-delta delta-dn"><svg data-lucide="alert-circle" style="width:12px;height:12px"></svg> Needs attention</div>
+        </div>
+      </div>
+
+      <!-- ── A* Gap callout ── -->
+      <div class="gap-callout" id="gap-callout" style="background:#FFF8E7;border:1px solid #f5c842;margin-bottom:1.75rem">
+        <div class="gap-icon" style="background:#f5c842">
+          <svg data-lucide="target" style="width:18px;height:18px;color:#fff"></svg>
+        </div>
+        <div>
+          <div style="font-size:0.85rem;font-weight:900;color:#856404;margin-bottom:0.2rem">A* Gap Analysis — You need 6% more to hit A* across all subjects</div>
+          <div style="font-size:0.78rem;color:#856404">A* threshold: <strong>80%</strong> · World Topper threshold: <strong>90%</strong> · Your average: <strong>74%</strong>. Focus on IGCSE Maths and A Level Biology to close the gap fastest.</div>
+        </div>
+      </div>
+
+      <!-- ── Monthly Score Chart ── -->
+      <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.5rem;margin-bottom:1.75rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.5rem">
+          <div>
+            <div style="font-size:0.95rem;font-weight:900;color:var(--text-primary)">Monthly Score Trend</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.15rem">Average mock/assignment score across all subjects</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;font-size:0.75rem;font-weight:700;color:var(--text-muted)">
+            <span style="display:flex;align-items:center;gap:0.35rem"><span style="width:20px;height:3px;background:var(--gold);border-radius:2px;display:inline-block"></span>Your Score</span>
+            <span style="display:flex;align-items:center;gap:0.35rem"><span style="width:20px;height:3px;background:#9bb8d4;border-radius:2px;display:inline-block"></span>DC Average</span>
+            <span style="display:flex;align-items:center;gap:0.35rem"><span style="width:20px;height:3px;background:#d4f5e2;border-radius:2px;display:inline-block;border-top:2px dashed #1a7a42"></span>A* Line</span>
+          </div>
+        </div>
+        <div class="chart-wrap" id="chart-wrap">
+          <svg class="chart-svg" id="trend-svg" viewBox="0 0 700 220" preserveAspectRatio="none" style="height:220px"></svg>
+          <div class="chart-tooltip" id="chart-tooltip"></div>
+        </div>
+      </div>
+
+      <!-- ── Subject Performance ── -->
+      <div style="margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:0.95rem;font-weight:900;color:var(--text-primary)">Subject Performance</div>
+        <span style="font-size:0.75rem;color:var(--text-muted)">Click a card to expand chapters</span>
+      </div>
+      <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.75rem" id="subj-grid">
+
+        <!-- IGCSE Maths -->
+        <div class="subj-card">
+          <div class="subj-accent" style="background:linear-gradient(90deg,#4a9fd4,#1a3c5e)"></div>
+          <div class="subj-card-head" onclick="toggleChapters('maths')">
+            <div>
+              <div style="font-size:0.88rem;font-weight:900;color:var(--text-primary)">IGCSE Mathematics</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem">0580 · 6 chapters · 4 completed</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="subj-badge badge-gap">71% — Gap</span>
+              <svg data-lucide="chevron-down" id="chevron-maths" style="width:16px;height:16px;color:var(--text-muted);transition:transform 0.2s"></svg>
+            </div>
+          </div>
+          <div style="padding:0 1.2rem 0.8rem">
+            <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.35rem">
+              <div class="pbar-track"><div class="pbar-fill" style="width:71%;background:linear-gradient(90deg,#4a9fd4,#1a3c5e)"></div></div>
+              <span style="font-size:0.78rem;font-weight:800;color:var(--text-primary);white-space:nowrap">71%</span>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text-muted)">Need <strong style="color:#856404">+9%</strong> to reach A* (80%)</div>
+          </div>
+          <div class="subj-chapters" id="chapters-maths">
+            <div class="chapter-row"><div class="chapter-dot" style="background:#4a9fd4"></div><span>Number & Algebra</span><span class="chapter-score" style="color:#1a7a42">88%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#4a9fd4"></div><span>Geometry & Trigonometry</span><span class="chapter-score" style="color:#856404">65%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#4a9fd4"></div><span>Statistics & Probability</span><span class="chapter-score" style="color:#856404">72%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#4a9fd4"></div><span>Functions & Graphs</span><span class="chapter-score" style="color:#1a7a42">81%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:var(--border)"></div><span style="color:var(--text-muted)">Vectors & Transformation</span><span class="chapter-score" style="color:var(--text-muted)">–</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:var(--border)"></div><span style="color:var(--text-muted)">Calculus Intro</span><span class="chapter-score" style="color:var(--text-muted)">–</span></div>
+          </div>
+        </div>
+
+        <!-- A Level Chemistry -->
+        <div class="subj-card">
+          <div class="subj-accent" style="background:linear-gradient(90deg,#e8a832,#c9a030)"></div>
+          <div class="subj-card-head" onclick="toggleChapters('chem')">
+            <div>
+              <div style="font-size:0.88rem;font-weight:900;color:var(--text-primary)">A Level Chemistry</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem">9701 · 6 chapters · 5 completed</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="subj-badge badge-astar">83% — A*</span>
+              <svg data-lucide="chevron-down" id="chevron-chem" style="width:16px;height:16px;color:var(--text-muted);transition:transform 0.2s"></svg>
+            </div>
+          </div>
+          <div style="padding:0 1.2rem 0.8rem">
+            <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.35rem">
+              <div class="pbar-track"><div class="pbar-fill" style="width:83%;background:linear-gradient(90deg,#e8a832,#c9a030)"></div></div>
+              <span style="font-size:0.78rem;font-weight:800;color:var(--text-primary);white-space:nowrap">83%</span>
+            </div>
+            <div style="font-size:0.7rem;color:#1a7a42">✓ A* threshold reached · Need <strong>+7%</strong> for World Topper</div>
+          </div>
+          <div class="subj-chapters" id="chapters-chem">
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e8a832"></div><span>Atomic Structure</span><span class="chapter-score" style="color:#1a7a42">91%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e8a832"></div><span>Chemical Bonding</span><span class="chapter-score" style="color:#1a7a42">85%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e8a832"></div><span>Energetics & Thermodynamics</span><span class="chapter-score" style="color:#1a7a42">80%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e8a832"></div><span>Reaction Kinetics</span><span class="chapter-score" style="color:#856404">77%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e8a832"></div><span>Organic Chemistry</span><span class="chapter-score" style="color:#1a7a42">82%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:var(--border)"></div><span style="color:var(--text-muted)">Electrochemistry</span><span class="chapter-score" style="color:var(--text-muted)">–</span></div>
+          </div>
+        </div>
+
+        <!-- IGCSE Physics -->
+        <div class="subj-card">
+          <div class="subj-accent" style="background:linear-gradient(90deg,#e05a4e,#c0392b)"></div>
+          <div class="subj-card-head" onclick="toggleChapters('phys')">
+            <div>
+              <div style="font-size:0.88rem;font-weight:900;color:var(--text-primary)">IGCSE Physics</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem">0625 · 6 chapters · 5 completed</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="subj-badge badge-ontrack">78% — On Track</span>
+              <svg data-lucide="chevron-down" id="chevron-phys" style="width:16px;height:16px;color:var(--text-muted);transition:transform 0.2s"></svg>
+            </div>
+          </div>
+          <div style="padding:0 1.2rem 0.8rem">
+            <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.35rem">
+              <div class="pbar-track"><div class="pbar-fill" style="width:78%;background:linear-gradient(90deg,#e05a4e,#c0392b)"></div></div>
+              <span style="font-size:0.78rem;font-weight:800;color:var(--text-primary);white-space:nowrap">78%</span>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text-muted)">Need <strong style="color:#856404">+2%</strong> to reach A* (80%)</div>
+          </div>
+          <div class="subj-chapters" id="chapters-phys">
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e05a4e"></div><span>Motion & Forces</span><span class="chapter-score" style="color:#1a7a42">84%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e05a4e"></div><span>Energy & Electricity</span><span class="chapter-score" style="color:#1a7a42">80%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e05a4e"></div><span>Waves & Sound</span><span class="chapter-score" style="color:#856404">74%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e05a4e"></div><span>Light & Optics</span><span class="chapter-score" style="color:#856404">71%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#e05a4e"></div><span>Thermal Physics</span><span class="chapter-score" style="color:#1a7a42">82%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:var(--border)"></div><span style="color:var(--text-muted)">Nuclear & Radioactivity</span><span class="chapter-score" style="color:var(--text-muted)">–</span></div>
+          </div>
+        </div>
+
+        <!-- A Level Biology -->
+        <div class="subj-card">
+          <div class="subj-accent" style="background:linear-gradient(90deg,#2ecc71,#1a7a42)"></div>
+          <div class="subj-card-head" onclick="toggleChapters('bio')">
+            <div>
+              <div style="font-size:0.88rem;font-weight:900;color:var(--text-primary)">A Level Biology</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem">9700 · 6 chapters · 4 completed</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="subj-badge badge-gap">63% — Gap</span>
+              <svg data-lucide="chevron-down" id="chevron-bio" style="width:16px;height:16px;color:var(--text-muted);transition:transform 0.2s"></svg>
+            </div>
+          </div>
+          <div style="padding:0 1.2rem 0.8rem">
+            <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.35rem">
+              <div class="pbar-track"><div class="pbar-fill" style="width:63%;background:linear-gradient(90deg,#2ecc71,#1a7a42)"></div></div>
+              <span style="font-size:0.78rem;font-weight:800;color:var(--text-primary);white-space:nowrap">63%</span>
+            </div>
+            <div style="font-size:0.7rem;color:var(--coral)">⚠ Need <strong>+17%</strong> to reach A* — highest priority subject</div>
+          </div>
+          <div class="subj-chapters" id="chapters-bio">
+            <div class="chapter-row"><div class="chapter-dot" style="background:#2ecc71"></div><span>Cell Biology</span><span class="chapter-score" style="color:#856404">71%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#2ecc71"></div><span>Biological Molecules</span><span class="chapter-score" style="color:#856404">65%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#2ecc71"></div><span>Enzymes & Transport</span><span class="chapter-score" style="color:var(--coral)">58%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:#2ecc71"></div><span>Genetics & Inheritance</span><span class="chapter-score" style="color:var(--coral)">57%</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:var(--border)"></div><span style="color:var(--text-muted)">Ecology & Environment</span><span class="chapter-score" style="color:var(--text-muted)">–</span></div>
+            <div class="chapter-row"><div class="chapter-dot" style="background:var(--border)"></div><span style="color:var(--text-muted)">Homeostasis</span><span class="chapter-score" style="color:var(--text-muted)">–</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Doubt Tracker ── -->
+      <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:3rem">
+        <div style="padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.6rem">
+          <div>
+            <div style="font-size:0.95rem;font-weight:900;color:var(--text-primary)">Doubt Tracker</div>
+            <div style="font-size:0.73rem;color:var(--text-muted);margin-top:0.15rem">Log doubts by chapter · assigned to your teacher</div>
+          </div>
+          <button class="btn-gold-sm" onclick="openDoubtModal()">
+            <svg data-lucide="plus" style="width:13px;height:13px;display:inline;margin-right:4px;vertical-align:-2px"></svg>
+            Log a Doubt
+          </button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="doubt-table" id="doubt-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>Chapter</th>
+                <th>Doubt</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="doubt-tbody">
+              <!-- populated by JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="doubt-empty" style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.82rem;display:none">
+          No doubts logged yet. Use the button above to log your first one.
+        </div>
+      </div>
+
+    </div><!-- /padding wrapper -->
+  </div><!-- /portal-main -->
+</div><!-- /portal-root -->
+
+<!-- ── Doubt Modal ── -->
+<div class="modal-overlay" id="doubt-modal">
+  <div class="modal-box">
+    <div class="modal-title">Log a Doubt</div>
+    <div id="doubt-form-wrap">
+      <div class="form-field">
+        <label>Subject</label>
+        <select id="d-subject">
+          <option value="IGCSE Mathematics">IGCSE Mathematics</option>
+          <option value="A Level Chemistry">A Level Chemistry</option>
+          <option value="IGCSE Physics">IGCSE Physics</option>
+          <option value="A Level Biology">A Level Biology</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Chapter</label>
+        <input type="text" id="d-chapter" placeholder="e.g. Geometry & Trigonometry" />
+      </div>
+      <div class="form-field">
+        <label>Doubt Description</label>
+        <textarea id="d-doubt" placeholder="Describe the specific concept or question you're stuck on…"></textarea>
+      </div>
+      <div style="display:flex;gap:0.6rem;justify-content:flex-end;margin-top:0.5rem">
+        <button class="btn-ghost-sm" onclick="closeDoubtModal()">Cancel</button>
+        <button class="btn-gold-sm" onclick="submitDoubt()">Submit Doubt</button>
+      </div>
+    </div>
+    <div id="doubt-success" style="display:none;text-align:center;padding:1rem 0">
+      <div style="font-size:2rem;margin-bottom:0.5rem">✅</div>
+      <div style="font-size:0.9rem;font-weight:900;color:var(--text-primary)">Doubt logged!</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.3rem">Your teacher will address this in the next session.</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+// ── Data ──
+const MONTHS = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
+const MY_SCORES = [58, 62, 65, 68, 70, 72, 74, 74];
+const DC_AVG    = [64, 65, 66, 67, 68, 69, 70, 71];
+const ASTAR_LINE = 80;
+
+// ── SVG Chart ──
+function buildChart() {
+  const svg = document.getElementById('trend-svg');
+  const W = 700, H = 220, PAD = { t:18, r:24, b:38, l:42 };
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+  const n = MY_SCORES.length;
+  const minV = 40, maxV = 100;
+
+  function xPos(i) { return PAD.l + (i / (n-1)) * cW; }
+  function yPos(v) { return PAD.t + cH - ((v - minV) / (maxV - minV)) * cH; }
+
+  // grid lines + y labels
+  let grid = '';
+  [50,60,70,80,90,100].forEach(v => {
+    const y = yPos(v);
+    grid += `<line x1="${PAD.l}" y1="${y}" x2="${W-PAD.r}" y2="${y}" stroke="currentColor" stroke-opacity="0.08" stroke-width="1"/>`;
+    grid += `<text x="${PAD.l - 7}" y="${y+4}" text-anchor="end" font-size="10" fill="currentColor" opacity="0.45">${v}</text>`;
+  });
+
+  // A* dashed line
+  const aY = yPos(ASTAR_LINE);
+  grid += `<line x1="${PAD.l}" y1="${aY}" x2="${W-PAD.r}" y2="${aY}" stroke="#1a7a42" stroke-dasharray="5,4" stroke-width="1.5" opacity="0.6"/>`;
+  grid += `<text x="${W-PAD.r+4}" y="${aY+4}" font-size="9" fill="#1a7a42" opacity="0.8" font-weight="800">A*</text>`;
+
+  // x labels
+  let xlabels = '';
+  MONTHS.forEach((m, i) => {
+    xlabels += `<text x="${xPos(i)}" y="${H - PAD.b + 16}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.5">${m}</text>`;
+  });
+
+  // DC avg area
+  let dcPts = DC_AVG.map((v,i) => `${xPos(i)},${yPos(v)}`).join(' ');
+  let dcArea = `M${xPos(0)},${yPos(DC_AVG[0])} ` + DC_AVG.map((v,i) => `L${xPos(i)},${yPos(v)}`).join(' ') +
+    ` L${xPos(n-1)},${H-PAD.b} L${xPos(0)},${H-PAD.b} Z`;
+
+  // My score line
+  let myPts = MY_SCORES.map((v,i) => `${xPos(i)},${yPos(v)}`).join(' ');
+  let myArea = `M${xPos(0)},${yPos(MY_SCORES[0])} ` + MY_SCORES.map((v,i) => `L${xPos(i)},${yPos(v)}`).join(' ') +
+    ` L${xPos(n-1)},${H-PAD.b} L${xPos(0)},${H-PAD.b} Z`;
+
+  // dots (interactive)
+  let dots = MY_SCORES.map((v,i) =>
+    `<circle class="chart-dot" cx="${xPos(i)}" cy="${yPos(v)}" r="5" fill="#e8a832" stroke="#fff" stroke-width="2" style="cursor:pointer" data-i="${i}" data-v="${v}" data-m="${MONTHS[i]}"/>`
+  ).join('');
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="myGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e8a832" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="#e8a832" stop-opacity="0.02"/>
+      </linearGradient>
+      <linearGradient id="dcGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#9bb8d4" stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#9bb8d4" stop-opacity="0.01"/>
+      </linearGradient>
+    </defs>
+    ${grid}
+    ${xlabels}
+    <path d="${dcArea}" fill="url(#dcGrad)"/>
+    <polyline points="${dcPts}" fill="none" stroke="#9bb8d4" stroke-width="2" stroke-linejoin="round"/>
+    <path d="${myArea}" fill="url(#myGrad)"/>
+    <polyline points="${myPts}" fill="none" stroke="#e8a832" stroke-width="2.5" stroke-linejoin="round"/>
+    ${dots}
+  `;
+
+  // tooltip
+  const tooltip = document.getElementById('chart-tooltip');
+  const wrap = document.getElementById('chart-wrap');
+  svg.querySelectorAll('.chart-dot').forEach(dot => {
+    dot.addEventListener('mouseenter', e => {
+      const rect = wrap.getBoundingClientRect();
+      const cx = parseFloat(dot.getAttribute('cx'));
+      const cy = parseFloat(dot.getAttribute('cy'));
+      const svgW = svg.viewBox.baseVal.width;
+      const svgH = svg.viewBox.baseVal.height;
+      const scaleX = wrap.offsetWidth / svgW;
+      const scaleY = wrap.offsetHeight / svgH;
+      tooltip.textContent = `${dot.dataset.m}: ${dot.dataset.v}%`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (cx * scaleX - 30) + 'px';
+      tooltip.style.top = (cy * scaleY - 36) + 'px';
+    });
+    dot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+  });
+}
+
+// ── Chapter toggle ──
+function toggleChapters(id) {
+  const el = document.getElementById('chapters-' + id);
+  const ch = document.getElementById('chevron-' + id);
+  el.classList.toggle('open');
+  ch.style.transform = el.classList.contains('open') ? 'rotate(180deg)' : '';
+}
+
+// ── Doubt Tracker ──
+const DOUBT_KEY = 'dc-doubts';
+
+function getDoubts() {
+  try { return JSON.parse(localStorage.getItem(DOUBT_KEY)) || []; } catch { return []; }
+}
+
+function saveDoubts(arr) {
+  localStorage.setItem(DOUBT_KEY, JSON.stringify(arr));
+}
+
+const SEED_DOUBTS = [
+  { date:'2026-04-28', subject:'IGCSE Mathematics', chapter:'Geometry & Trigonometry', doubt:'How do I find the angle of depression when given two different heights?', status:'Open' },
+  { date:'2026-04-25', subject:'A Level Biology', chapter:'Enzymes & Transport', doubt:'Confused about active vs. facilitated diffusion diagrams in Paper 2.', status:'Open' },
+  { date:'2026-04-20', subject:'IGCSE Physics', chapter:'Waves & Sound', doubt:'Why does frequency not change when a wave changes medium?', status:'Resolved' },
+  { date:'2026-04-15', subject:'A Level Chemistry', chapter:'Reaction Kinetics', doubt:'Collision theory — why does surface area affect rate?', status:'Resolved' },
+  { date:'2026-05-01', subject:'A Level Biology', chapter:'Genetics & Inheritance', doubt:'Dihybrid cross — when do I use the 9:3:3:1 ratio vs others?', status:'Open' },
+  { date:'2026-05-03', subject:'IGCSE Mathematics', chapter:'Functions & Graphs', doubt:'Composite functions — order of application keeps confusing me.', status:'Open' },
+];
+
+function initDoubts() {
+  if (!localStorage.getItem(DOUBT_KEY)) saveDoubts(SEED_DOUBTS);
+  renderDoubts();
+}
+
+function renderDoubts() {
+  const doubts = getDoubts();
+  const tbody = document.getElementById('doubt-tbody');
+  const empty = document.getElementById('doubt-empty');
+  const openCount = doubts.filter(d => d.status === 'Open').length;
+  document.getElementById('stat-doubts').textContent = openCount;
+
+  if (!doubts.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = doubts.slice().reverse().map(d => `
+    <tr>
+      <td style="white-space:nowrap;color:var(--text-muted)">${d.date}</td>
+      <td style="font-weight:700">${d.subject}</td>
+      <td style="color:var(--text-muted)">${d.chapter}</td>
+      <td>${d.doubt}</td>
+      <td><span class="${d.status === 'Open' ? 'status-open' : 'status-resolved'}">${d.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+function openDoubtModal() {
+  document.getElementById('doubt-modal').classList.add('open');
+  document.getElementById('doubt-form-wrap').style.display = '';
+  document.getElementById('doubt-success').style.display = 'none';
+  document.getElementById('d-chapter').value = '';
+  document.getElementById('d-doubt').value = '';
+}
+
+function closeDoubtModal() {
+  document.getElementById('doubt-modal').classList.remove('open');
+}
+
+function submitDoubt() {
+  const subj = document.getElementById('d-subject').value;
+  const chap = document.getElementById('d-chapter').value.trim();
+  const doubt = document.getElementById('d-doubt').value.trim();
+  if (!chap || !doubt) { alert('Please fill in chapter and doubt description.'); return; }
+  const today = new Date().toISOString().slice(0,10);
+  const arr = getDoubts();
+  arr.push({ date: today, subject: subj, chapter: chap, doubt, status: 'Open' });
+  saveDoubts(arr);
+  renderDoubts();
+  document.getElementById('doubt-form-wrap').style.display = 'none';
+  document.getElementById('doubt-success').style.display = '';
+  setTimeout(closeDoubtModal, 2200);
+}
+
+// ── Escape to close modal ──
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDoubtModal(); });
+document.getElementById('doubt-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDoubtModal(); });
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  buildChart();
+  initDoubts();
+});
+</script>
+</body>
+</html>

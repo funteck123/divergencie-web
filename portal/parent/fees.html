@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fees &amp; Payments — DivergenCIE Parent Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Tabs */
+    .tab-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+    .tab-btn {
+      padding: 0.55rem 1.1rem; border: none; background: none; cursor: pointer;
+      font-family: 'Satoshi', sans-serif; font-size: 0.85rem; font-weight: 700;
+      color: var(--text-muted); border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Section card */
+    .section-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.3rem 1.4rem; margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .section-title svg { width: 14px; height: 14px; color: var(--gold); }
+
+    /* Invoice card */
+    .invoice-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.2rem; background: var(--bg-primary);
+      border: 1px solid var(--border); border-radius: 12px;
+      margin-bottom: 0.75rem; transition: border-color 0.2s;
+    }
+    .invoice-card:last-child { margin-bottom: 0; }
+    .invoice-card:hover { border-color: var(--gold); }
+    .invoice-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .invoice-icon svg { width: 18px; height: 18px; }
+    .invoice-info { flex: 1; min-width: 0; }
+    .invoice-id { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .invoice-month { font-size: 0.9rem; font-weight: 800; color: var(--text-primary); }
+    .invoice-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .invoice-amount { font-size: 1.05rem; font-weight: 900; color: var(--text-primary); flex-shrink: 0; text-align: right; }
+    .invoice-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; flex-shrink: 0; }
+
+    /* Status badges */
+    .badge-paid { background: #d4f5e2; color: #1a7a42; font-size: 0.68rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+    .badge-due { background: #fff8e7; color: #7a5800; font-size: 0.68rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+    .badge-overdue { background: #fee2e2; color: #991b1b; font-size: 0.68rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+    html.dark .badge-paid { background: rgba(34,197,94,0.15); color: #4ade80; }
+    html.dark .badge-due { background: rgba(245,200,66,0.12); color: #f5c842; }
+    html.dark .badge-overdue { background: rgba(239,68,68,0.15); color: #f87171; }
+
+    /* Buttons */
+    .btn-pay {
+      background: var(--gold); color: #fff; border: none;
+      border-radius: 8px; padding: 0.42rem 1rem;
+      font-family: 'Satoshi', sans-serif; font-size: 0.78rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.2s; white-space: nowrap;
+    }
+    .btn-pay:hover { opacity: 0.88; }
+    .btn-receipt {
+      background: var(--bg-secondary); color: var(--text-muted);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.38rem 0.85rem; font-family: 'Satoshi', sans-serif;
+      font-size: 0.75rem; font-weight: 700; cursor: pointer;
+      transition: border-color 0.2s; display: flex; align-items: center; gap: 0.3rem; white-space: nowrap;
+    }
+    .btn-receipt:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-receipt svg { width: 12px; height: 12px; }
+
+    /* Summary strip */
+    .summary-strip {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .summary-cell {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.9rem 1rem; text-align: center;
+    }
+    .summary-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .summary-value { font-size: 1.3rem; font-weight: 900; color: var(--text-primary); }
+
+    /* Payment guide */
+    .region-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .region-card {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.1rem 1.2rem;
+      transition: border-color 0.2s;
+    }
+    .region-card:hover { border-color: var(--gold); }
+    .region-flag { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .region-name { font-size: 0.88rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.2rem; }
+    .region-currency { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.75rem; }
+    .region-gateways { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+    .gateway-pill {
+      font-size: 0.7rem; font-weight: 800; padding: 3px 10px;
+      border-radius: 20px; background: var(--bg-primary);
+      border: 1px solid var(--border); color: var(--text-primary);
+    }
+    .region-steps { font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; }
+    .region-steps strong { color: var(--text-primary); }
+
+    /* WhatsApp strip */
+    .wa-strip {
+      display: flex; align-items: center; gap: 0.9rem;
+      background: #f0fdf4; border: 1px solid #bbf7d055;
+      border-left: 3px solid #22c55e; border-radius: 10px;
+      padding: 0.85rem 1.1rem; margin-top: 1.25rem;
+    }
+    html.dark .wa-strip { background: #052e16; border-color: #22c55e44; }
+    .wa-strip svg { width: 18px; height: 18px; color: #22c55e; flex-shrink: 0; }
+    .wa-strip-text { font-size: 0.82rem; color: var(--text-primary); }
+    .wa-strip-text a { color: #22c55e; font-weight: 800; text-decoration: none; }
+
+    /* Payment modal */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 1000;
+      align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: var(--bg-primary); border-radius: 16px;
+      padding: 1.75rem; max-width: 460px; width: 90%;
+      max-height: 90vh; overflow-y: auto; position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+    }
+    .modal-close svg { width: 18px; height: 18px; }
+    .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.3rem; }
+    .form-select, .form-input {
+      width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-secondary);
+      color: var(--text-primary); font-family: 'Satoshi', sans-serif;
+      font-size: 0.85rem; box-sizing: border-box;
+    }
+
+    /* Gateway display */
+    .gateway-display {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem; margin: 0.75rem 0;
+    }
+    .gateway-name { font-size: 0.9rem; font-weight: 900; color: var(--text-primary); margin-bottom: 0.35rem; }
+    .gateway-instructions { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+
+    @media (max-width: 600px) {
+      .summary-strip { grid-template-columns: 1fr 1fr; }
+      .invoice-card { flex-wrap: wrap; }
+      .invoice-actions { flex-direction: row; align-items: center; width: 100%; justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Parent Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#4a9fd4;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">PG</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Parent / Guardian</div>
+        <div class="role-badge role-parent">Parent</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="progress.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> Child Progress</a>
+        <a href="fees.html" class="sidebar-nav-item active"><svg data-lucide="credit-card"></svg> Fees &amp; Payments</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Support</div>
+        <a href="dashboard.html#support-modal" class="sidebar-nav-item" style="margin-bottom:0.25rem">
+            <svg data-lucide="ticket"></svg> Raise a Ticket
+          </a>
+          <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+      </div>
+    </nav>
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle" aria-label="Toggle menu"><svg data-lucide="menu"></svg></button>
+        <span class="portal-page-title">Fees &amp; Payments</span>
+      </div>
+      <div class="portal-topbar-right">
+        <button id="portal-theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="icon-light" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="icon-dark" style="width:15px;height:15px;display:none"></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="padding:1.75rem 2rem;max-width:1100px;width:100%">
+
+      <!-- Summary -->
+      <div class="summary-strip">
+        <div class="summary-cell">
+          <div class="summary-label">Total Paid (2024–25)</div>
+          <div class="summary-value" style="color:#22c55e">RM 3,400</div>
+        </div>
+        <div class="summary-cell">
+          <div class="summary-label">Amount Due</div>
+          <div class="summary-value" style="color:var(--coral)">RM 850</div>
+        </div>
+        <div class="summary-cell">
+          <div class="summary-label">Next Invoice</div>
+          <div class="summary-value" style="font-size:0.95rem">1 Jun 2025</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('invoices', this)">Invoices</button>
+        <button class="tab-btn" onclick="switchTab('guide', this)">Payment Guide</button>
+      </div>
+
+      <!-- ── INVOICES TAB ── -->
+      <div class="tab-panel active" id="tab-invoices">
+
+        <!-- Overdue / Due -->
+        <div class="section-card">
+          <div class="section-title"><svg data-lucide="alert-circle"></svg> Outstanding</div>
+
+          <div class="invoice-card" style="border-color:var(--coral)">
+            <div class="invoice-icon" style="background:#fee2e2">
+              <svg data-lucide="file-text" style="color:var(--coral)"></svg>
+            </div>
+            <div class="invoice-info">
+              <div class="invoice-id">INV-2025-04</div>
+              <div class="invoice-month">April 2025</div>
+              <div class="invoice-meta">Due 1 May 2025 · IGCSE Maths + A Level Chemistry</div>
+            </div>
+            <div class="invoice-amount">RM 850</div>
+            <div class="invoice-actions">
+              <span class="badge-overdue">Overdue</span>
+              <button class="btn-pay" onclick="openPayModal('INV-2025-04','April 2025','RM 850')">Pay Now</button>
+            </div>
+          </div>
+
+          <div class="invoice-card" style="border-color:#f59e0b55">
+            <div class="invoice-icon" style="background:#fff8e7">
+              <svg data-lucide="file-text" style="color:#f59e0b"></svg>
+            </div>
+            <div class="invoice-info">
+              <div class="invoice-id">INV-2025-05</div>
+              <div class="invoice-month">May 2025</div>
+              <div class="invoice-meta">Due 1 Jun 2025 · IGCSE Maths + A Level Chemistry</div>
+            </div>
+            <div class="invoice-amount">RM 850</div>
+            <div class="invoice-actions">
+              <span class="badge-due">Due Soon</span>
+              <button class="btn-pay" onclick="openPayModal('INV-2025-05','May 2025','RM 850')">Pay Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paid history -->
+        <div class="section-card">
+          <div class="section-title"><svg data-lucide="check-circle"></svg> Payment History</div>
+
+          <div id="paid-invoices">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+
+        <div class="wa-strip">
+          <svg data-lucide="message-circle"></svg>
+          <div class="wa-strip-text">
+            <strong>Payment queries?</strong> WhatsApp us directly for receipts, disputes, or fee adjustments. &nbsp;<a href="https://wa.me/919650675507" target="_blank">Chat with DC →</a>
+          </div>
+        </div>
+
+      </div><!-- /invoices tab -->
+
+      <!-- ── PAYMENT GUIDE TAB ── -->
+      <div class="tab-panel" id="tab-guide">
+        <div class="section-card">
+          <div class="section-title"><svg data-lucide="globe"></svg> How to Pay — By Region</div>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.6">DivergenCIE accepts payments from 6 regions. Find your region below for the recommended gateway and step-by-step instructions. All payments should reference your Invoice ID.</p>
+
+          <div class="region-grid" id="region-grid"><!-- rendered by JS --></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title"><svg data-lucide="info"></svg> Important Notes</div>
+          <ul style="font-size:0.8rem;color:var(--text-muted);line-height:1.9;padding-left:1.2rem;margin:0">
+            <li>Always include your <strong style="color:var(--text-primary)">Invoice ID</strong> in the payment reference/remarks field.</li>
+            <li>Payments are confirmed within <strong style="color:var(--text-primary)">1–2 business days</strong>. Your invoice status will update automatically.</li>
+            <li>For <strong style="color:var(--text-primary)">Wise / PayPal</strong> international transfers, use the account details provided by DC admin via WhatsApp.</li>
+            <li>Receipts are emailed within 24 hours of payment confirmation. Contact DC if not received.</li>
+            <li>Pricing shown is placeholder — DC admin will confirm your exact fee via WhatsApp before your first invoice.</li>
+          </ul>
+        </div>
+
+        <div class="wa-strip">
+          <svg data-lucide="message-circle"></svg>
+          <div class="wa-strip-text">
+            <strong>Need help paying?</strong> Our team is available 9 AM–9 PM (MY/IN/KSA) to assist. &nbsp;<a href="https://wa.me/919650675507" target="_blank">WhatsApp us →</a>
+          </div>
+        </div>
+      </div><!-- /guide tab -->
+
+    </div>
+  </div>
+</div>
+
+<!-- ── PAYMENT MODAL ── -->
+<div class="modal-backdrop" id="pay-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePayModal()"><svg data-lucide="x"></svg></button>
+    <h3 style="font-size:1rem;font-weight:800;color:var(--text-primary);margin-bottom:0.25rem">Pay Invoice</h3>
+    <p id="modal-inv-label" style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1.1rem"></p>
+
+    <div style="display:flex;flex-direction:column;gap:0.85rem">
+      <div>
+        <label class="form-label">Your Region</label>
+        <select class="form-select" id="modal-region" onchange="updateGateway()">
+          <option value="">— Select your region —</option>
+          <option value="MY">🇲🇾 Malaysia</option>
+          <option value="IN">🇮🇳 India</option>
+          <option value="KSA">🇸🇦 Saudi Arabia</option>
+          <option value="UK">🇬🇧 United Kingdom</option>
+          <option value="PK">🇵🇰 Pakistan</option>
+          <option value="INTL">🌐 International</option>
+        </select>
+      </div>
+
+      <div id="gateway-display" style="display:none">
+        <div class="gateway-display">
+          <div class="gateway-name" id="gw-name"></div>
+          <div class="gateway-instructions" id="gw-instructions"></div>
+        </div>
+      </div>
+
+      <div id="modal-ref-row" style="display:none">
+        <label class="form-label">Payment Reference / Screenshot (optional)</label>
+        <input class="form-input" id="modal-ref" type="text" placeholder="e.g. Transaction ID or UTR number" />
+      </div>
+
+      <div id="modal-submit-row" style="display:none">
+        <button class="btn-pay" style="width:100%;padding:0.65rem;font-size:0.9rem" onclick="confirmPayment()">
+          Mark as Paid &amp; Notify DC
+        </button>
+        <p style="font-size:0.68rem;color:var(--text-muted);margin-top:0.5rem;text-align:center">DC admin will verify and confirm your payment within 1–2 business days.</p>
+      </div>
+
+      <div id="modal-success" style="display:none;text-align:center;padding:1rem;background:#f0fdf4;border-radius:9px;color:#166534;font-weight:700;font-size:0.85rem">
+        ✅ Payment notification sent! We'll confirm within 1–2 business days.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+// ── Paid invoices data ──
+const PAID = [
+  { id:'INV-2025-03', month:'March 2025',   amount:'RM 850', date:'1 Mar 2025',  subjects:'IGCSE Maths + A Level Chemistry' },
+  { id:'INV-2025-02', month:'February 2025', amount:'RM 850', date:'1 Feb 2025',  subjects:'IGCSE Maths + A Level Chemistry' },
+  { id:'INV-2025-01', month:'January 2025',  amount:'RM 850', date:'2 Jan 2025',  subjects:'IGCSE Maths + A Level Chemistry' },
+  { id:'INV-2024-12', month:'December 2024', amount:'RM 850', date:'1 Dec 2024',  subjects:'IGCSE Maths + A Level Chemistry' },
+];
+
+function renderPaidInvoices() {
+  document.getElementById('paid-invoices').innerHTML = PAID.map(inv => `
+    <div class="invoice-card">
+      <div class="invoice-icon" style="background:#f0fdf4">
+        <svg data-lucide="check-circle" style="color:#22c55e"></svg>
+      </div>
+      <div class="invoice-info">
+        <div class="invoice-id">${inv.id}</div>
+        <div class="invoice-month">${inv.month}</div>
+        <div class="invoice-meta">Paid ${inv.date} · ${inv.subjects}</div>
+      </div>
+      <div class="invoice-amount">${inv.amount}</div>
+      <div class="invoice-actions">
+        <span class="badge-paid">Paid</span>
+        <button class="btn-receipt" onclick="downloadReceipt('${inv.id}')">
+          <svg data-lucide="download"></svg> Receipt
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Region data ──
+const REGIONS = [
+  { flag:'🇲🇾', name:'Malaysia', currency:'MYR — Malaysian Ringgit',
+    gateways:['FPX','DuitNow','TNG eWallet'],
+    steps:'<strong>1.</strong> DC admin sends you a payment link or bank account details.<br><strong>2.</strong> Pay via FPX (online banking) or DuitNow QR through your banking app.<br><strong>3.</strong> Include Invoice ID in the remarks field.<br><strong>4.</strong> Screenshot and WhatsApp to DC.',
+    gwName:'FPX / DuitNow (Malaysia)',
+    gwInstructions:'Transfer to the DC bank account provided by admin via WhatsApp. Use <strong>FPX</strong> through your online banking portal or <strong>DuitNow QR</strong> via any Malaysian banking app (Maybank2u, CIMB Clicks, RHB Now, etc.). Always include your Invoice ID in the reference.' },
+  { flag:'🇮🇳', name:'India', currency:'INR — Indian Rupee',
+    gateways:['Razorpay','UPI','NEFT'],
+    steps:'<strong>1.</strong> DC admin shares a Razorpay payment link or UPI ID.<br><strong>2.</strong> Pay via UPI (GPay, PhonePe, Paytm) or Razorpay checkout.<br><strong>3.</strong> Include Invoice ID in UPI remarks.<br><strong>4.</strong> Share transaction ID with DC.',
+    gwName:'Razorpay / UPI (India)',
+    gwInstructions:'Use the <strong>UPI ID</strong> or Razorpay link shared by DC admin. Pay from any UPI app: GPay, PhonePe, Paytm, or BHIM. For bank transfers, use NEFT with IFSC details provided. Always add Invoice ID in the remarks.' },
+  { flag:'🇸🇦', name:'Saudi Arabia', currency:'SAR — Saudi Riyal',
+    gateways:['Al Rajhi','STC Pay','Mada'],
+    steps:'<strong>1.</strong> DC admin provides Al Rajhi IBAN or STC Pay number.<br><strong>2.</strong> Transfer via Al Rajhi app or STC Pay.<br><strong>3.</strong> Include Invoice ID in transfer notes.<br><strong>4.</strong> Share confirmation to DC WhatsApp.',
+    gwName:'Al Rajhi / STC Pay (Saudi Arabia)',
+    gwInstructions:'Transfer via <strong>Al Rajhi Bank</strong> (IBAN transfer) or <strong>STC Pay</strong> mobile wallet. Account details are shared by DC admin upon enrolment. Include Invoice ID in the transfer description.' },
+  { flag:'🇬🇧', name:'United Kingdom', currency:'GBP — British Pound',
+    gateways:['Stripe','Bank Transfer'],
+    steps:'<strong>1.</strong> DC admin sends a Stripe payment link via email.<br><strong>2.</strong> Pay securely by card (Visa/Mastercard/Amex) via Stripe checkout.<br><strong>3.</strong> A receipt is emailed automatically by Stripe.<br><strong>4.</strong> Forward Stripe receipt to DC for records.',
+    gwName:'Stripe (United Kingdom)',
+    gwInstructions:'DC admin will email you a <strong>Stripe checkout link</strong>. Pay by debit or credit card — Visa, Mastercard, or Amex. Stripe sends an automatic receipt. For bank transfers, use the UK sort code and account number provided by admin.' },
+  { flag:'🇵🇰', name:'Pakistan', currency:'PKR — Pakistani Rupee',
+    gateways:['EasyPaisa','JazzCash','Bank Transfer'],
+    steps:'<strong>1.</strong> DC admin shares EasyPaisa or JazzCash mobile wallet number.<br><strong>2.</strong> Send payment from your EasyPaisa/JazzCash app.<br><strong>3.</strong> Include Invoice ID in the description.<br><strong>4.</strong> Screenshot and WhatsApp to DC.',
+    gwName:'EasyPaisa / JazzCash (Pakistan)',
+    gwInstructions:'Transfer to the <strong>EasyPaisa</strong> or <strong>JazzCash</strong> number shared by DC admin. Open your wallet app, select Send Money, enter the number and amount, and include Invoice ID in the message field.' },
+  { flag:'🌐', name:'International', currency:'USD / EUR / GBP',
+    gateways:['Wise','PayPal'],
+    steps:'<strong>1.</strong> DC admin shares Wise account details (email or account number) via WhatsApp.<br><strong>2.</strong> Send payment via Wise (low fees, mid-market rate).<br><strong>3.</strong> Include Invoice ID in the transfer reference.<br><strong>4.</strong> Share transfer confirmation to DC.',
+    gwName:'Wise / PayPal (International)',
+    gwInstructions:'Use <strong>Wise</strong> (recommended — best exchange rates) to send to the DC account email. Alternatively, PayPal Friends & Family can be used. Always include your Invoice ID in the reference. DC admin provides account details via WhatsApp.' },
+];
+
+function renderRegions() {
+  document.getElementById('region-grid').innerHTML = REGIONS.map(r => `
+    <div class="region-card">
+      <div class="region-flag">${r.flag}</div>
+      <div class="region-name">${r.name}</div>
+      <div class="region-currency">${r.currency}</div>
+      <div class="region-gateways">${r.gateways.map(g=>`<span class="gateway-pill">${g}</span>`).join('')}</div>
+      <div class="region-steps">${r.steps}</div>
+    </div>`).join('');
+}
+
+// ── Modal ──
+let currentInv = {};
+function openPayModal(id, month, amount) {
+  currentInv = { id, month, amount };
+  document.getElementById('modal-inv-label').textContent = `${id} · ${month} · ${amount}`;
+  document.getElementById('modal-region').value = '';
+  document.getElementById('gateway-display').style.display = 'none';
+  document.getElementById('modal-ref-row').style.display = 'none';
+  document.getElementById('modal-submit-row').style.display = 'none';
+  document.getElementById('modal-success').style.display = 'none';
+  document.getElementById('pay-modal').style.display = 'flex';
+  lucide.createIcons();
+}
+function closePayModal() {
+  document.getElementById('pay-modal').style.display = 'none';
+}
+function updateGateway() {
+  const val = document.getElementById('modal-region').value;
+  if (!val) { document.getElementById('gateway-display').style.display = 'none'; return; }
+  const r = REGIONS.find(r => {
+    const map = { MY:'Malaysia', IN:'India', KSA:'Saudi Arabia', UK:'United Kingdom', PK:'Pakistan', INTL:'International' };
+    return r.name === map[val];
+  });
+  if (r) {
+    document.getElementById('gw-name').textContent = r.gwName;
+    document.getElementById('gw-instructions').innerHTML = r.gwInstructions;
+    document.getElementById('gateway-display').style.display = 'block';
+    document.getElementById('modal-ref-row').style.display = 'block';
+    document.getElementById('modal-submit-row').style.display = 'block';
+  }
+}
+function confirmPayment() {
+  document.getElementById('modal-submit-row').style.display = 'none';
+  document.getElementById('modal-success').style.display = 'block';
+  setTimeout(() => closePayModal(), 2800);
+}
+
+// ── Receipt stub ──
+function downloadReceipt(id) {
+  alert(`📄 Downloading receipt for ${id}…\n\n(In production, DC admin system generates a PDF receipt.)`);
+}
+
+// ── Tabs ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Theme toggle ──
+const themeBtn = document.getElementById('portal-theme-toggle');
+if (themeBtn) {
+  function syncThemeIcons() {
+    const isDark = document.documentElement.classList.contains('dark');
+    themeBtn.querySelector('.icon-light').style.display = isDark ? 'none' : 'block';
+    themeBtn.querySelector('.icon-dark').style.display = isDark ? 'block' : 'none';
+  }
+  syncThemeIcons();
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('dc-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    syncThemeIcons();
+  });
+}
+
+// ── Init ──
+lucide.createIcons();
+renderPaidInvoices();
+renderRegions();
+lucide.createIcons();
+</script>
+</body>
+</html>

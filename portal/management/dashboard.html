@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Management Dashboard — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
+    .stat-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.2rem 1.3rem;
+      display: flex; align-items: flex-start; gap: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { border-color: var(--gold); box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+    .stat-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stat-icon svg { width: 18px; height: 18px; }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+    .stat-value { font-size: 1.55rem; font-weight: 900; color: var(--text-primary); line-height: 1.1; }
+    .stat-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    .section-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.3rem 1.4rem; margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .section-title svg { width: 14px; height: 14px; }
+
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+    /* Table */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .data-table th { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); padding: 0 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--bg-secondary); }
+
+    /* Badges */
+    .badge { font-size: 0.65rem; font-weight: 700; border-radius: 5px; padding: 2px 7px; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
+    .badge-student { background: #e3f2fd; color: #1565c0; }
+    html.dark .badge-student { background: #162033; color: #90caf9; }
+    .badge-parent { background: #f3e5f5; color: #6a1b9a; }
+    html.dark .badge-parent { background: #2a1040; color: #ce93d8; }
+    .badge-staff { background: #e8f5e9; color: #2e7d32; }
+    html.dark .badge-staff { background: #1b3d1f; color: #81c784; }
+    .badge-admin { background: #ede7f6; color: #4527a0; }
+    html.dark .badge-admin { background: #1a1035; color: #b39ddb; }
+    .badge-open { background: #fce4ec; color: #c62828; }
+    html.dark .badge-open { background: #2d0a13; color: #ef9a9a; }
+    .badge-progress { background: #fff3cd; color: #856404; }
+    html.dark .badge-progress { background: #2a1f00; color: #ffc107; }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    html.dark .badge-pending { background: #2a1f00; color: #ffc107; }
+    .badge-approved { background: #e8f5e9; color: #2e7d32; }
+    html.dark .badge-approved { background: #1b3d1f; color: #81c784; }
+    .badge-paid { background: #e3f2fd; color: #1565c0; }
+    html.dark .badge-paid { background: #162033; color: #90caf9; }
+    .badge-new { background: #fff8e7; color: #a67c00; border: 1px solid #f5c84255; }
+    html.dark .badge-new { background: #2a1f00; color: #ffd54f; border-color: #ffd54f33; }
+
+    /* Action buttons */
+    .action-btn {
+      font-size: 0.68rem; font-weight: 700; border-radius: 6px;
+      padding: 3px 9px; border: 1px solid var(--border);
+      background: var(--bg-secondary); color: var(--text-primary);
+      cursor: pointer; white-space: nowrap; transition: all 0.15s;
+    }
+    .action-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .action-btn.approve { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a755; }
+    html.dark .action-btn.approve { background: #1b3d1f; color: #81c784; border-color: #81c78455; }
+    .action-btn.approve:hover { background: #2e7d32; color: #fff; }
+    .action-btn.reject { background: #fce4ec; color: #c62828; border-color: #ef9a9a55; }
+    html.dark .action-btn.reject { background: #2d0a13; color: #ef9a9a; border-color: #ef9a9a55; }
+    .action-btn.reject:hover { background: #c62828; color: #fff; }
+    .action-btn.resolve { background: #e3f2fd; color: #1565c0; border-color: #90caf955; }
+    html.dark .action-btn.resolve { background: #162033; color: #90caf9; border-color: #90caf955; }
+    .action-btn.resolve:hover { background: #1565c0; color: #fff; }
+
+    /* Enrolment trend chart */
+    .chart-wrap { position: relative; height: 110px; margin-top: 0.5rem; }
+    .chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
+
+    /* Quick actions */
+    .qa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+    @media (max-width: 600px) { .qa-grid { grid-template-columns: repeat(2, 1fr); } }
+    .qa-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.4rem; padding: 0.9rem 0.5rem;
+      border-radius: 12px; border: 1px solid var(--border);
+      background: var(--bg-primary); text-decoration: none;
+      color: var(--text-primary); font-size: 0.73rem; font-weight: 700;
+      text-align: center; transition: border-color 0.2s, transform 0.15s; cursor: pointer;
+    }
+    .qa-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .qa-btn svg { width: 20px; height: 20px; color: var(--gold); }
+
+    /* Activity feed */
+    .activity-item { display: flex; gap: 0.85rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border-subtle); }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .activity-text { font-size: 0.82rem; color: var(--text-primary); line-height: 1.4; }
+    .activity-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    /* Alert */
+    .alert-strip {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: #fff8e7; border: 1px solid #f5c84255; border-radius: 10px;
+      padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: #7a5c00;
+    }
+    html.dark .alert-strip { background: #2a1f00; border-color: #f5c84233; color: #ffd54f; }
+    .alert-strip svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* Pill btn */
+    .pill-btn {
+      font-size: 0.68rem; font-weight: 700; border-radius: 6px;
+      padding: 3px 9px; border: 1px solid var(--border);
+      background: var(--bg-secondary); color: var(--text-primary);
+      text-decoration: none; cursor: pointer; white-space: nowrap;
+      transition: border-color 0.15s;
+    }
+    .pill-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Summary number highlight */
+    .highlight-gold { color: var(--gold); font-weight: 900; }
+  </style>
+</head>
+<body>
+  <div class="portal-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="portal-sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+        <div>
+          <div class="sidebar-brand">Divergen<span>CIE</span></div>
+          <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Management Portal</div>
+        </div>
+      </div>
+
+      <div class="sidebar-role">
+        <div style="width:34px;height:34px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AD</div>
+        <div>
+          <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Management</div>
+          <div class="role-badge role-management">Management</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-label">Main</div>
+          <a href="dashboard.html" class="sidebar-nav-item active">
+            <svg data-lucide="layout-dashboard"></svg> Dashboard
+          </a>
+          <a href="users.html" class="sidebar-nav-item">
+            <svg data-lucide="users"></svg> Users
+          </a>
+          <a href="metrics.html" class="sidebar-nav-item">
+            <svg data-lucide="bar-chart-2"></svg> Metrics
+          </a>
+          <a href="claims.html" class="sidebar-nav-item">
+            <svg data-lucide="banknote"></svg> Claims
+          </a>
+          <a href="tickets.html" class="sidebar-nav-item">
+            <svg data-lucide="ticket"></svg> Tickets
+          </a>
+          <a href="#" class="sidebar-nav-item" onclick="alert('Reports module — coming in next build');return false;">
+            <svg data-lucide="bar-chart-2"></svg> Reports
+          </a>
+        </div>
+        <div class="sidebar-nav-section">
+          <div class="sidebar-nav-label">Help</div>
+          <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item">
+            <svg data-lucide="message-circle"></svg> WhatsApp DC
+          </a>
+          <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)">
+            <svg data-lucide="log-out"></svg> Sign Out
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+          <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+          <span id="theme-label">Light Mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="portal-main">
+
+      <!-- Topbar -->
+      <div class="portal-topbar">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+          <svg data-lucide="menu" style="width:20px;height:20px"></svg>
+        </button>
+        <div class="topbar-title">Management Dashboard</div>
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-left:auto">
+          <div style="font-size:0.75rem;color:var(--text-muted);font-weight:600" id="live-time"></div>
+          <button class="topbar-icon-btn" id="portal-theme-toggle" aria-label="Toggle theme">
+            <svg data-lucide="sun" class="icon-sun" style="width:16px;height:16px"></svg>
+            <svg data-lucide="moon" class="icon-moon" style="width:16px;height:16px"></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="portal-content">
+
+        <!-- Pending claims alert -->
+        <div class="alert-strip" id="claims-alert">
+          <svg data-lucide="alert-triangle"></svg>
+          <span><strong>2 payment claims</strong> awaiting approval · <a href="#claims-section" style="color:inherit;font-weight:700;text-decoration:underline">Review below ↓</a></span>
+          <button onclick="document.getElementById('claims-alert').style.display='none'" style="margin-left:auto;background:none;border:none;cursor:pointer;color:inherit;font-size:1rem;line-height:1">×</button>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#e3f2fd">
+              <svg data-lucide="users" style="color:#1565c0"></svg>
+            </div>
+            <div>
+              <div class="stat-label">Total Students</div>
+              <div class="stat-value" id="stat-students">—</div>
+              <div class="stat-sub">Active enrolments</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#e8f5e9">
+              <svg data-lucide="user-check" style="color:#2e7d32"></svg>
+            </div>
+            <div>
+              <div class="stat-label">Active Staff</div>
+              <div class="stat-value" id="stat-staff">—</div>
+              <div class="stat-sub">Teaching + ops</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fce4ec">
+              <svg data-lucide="ticket" style="color:#c62828"></svg>
+            </div>
+            <div>
+              <div class="stat-label">Open Tickets</div>
+              <div class="stat-value" id="stat-tickets">—</div>
+              <div class="stat-sub">Unresolved</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fff8e7">
+              <svg data-lucide="banknote" style="color:#a67c00"></svg>
+            </div>
+            <div>
+              <div class="stat-label">Pending Claims</div>
+              <div class="stat-value" id="stat-claims">—</div>
+              <div class="stat-sub">Awaiting approval</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="qa-grid">
+          <a href="users.html" class="qa-btn">
+            <svg data-lucide="user-plus"></svg>
+            Add User
+          </a>
+          <button class="qa-btn" onclick="alert('Invite link generated: https://divergencie.co.uk/enrol?ref=DC2025\n\nCopy and share with student.')">
+            <svg data-lucide="link"></svg>
+            Invite Link
+          </button>
+          <button class="qa-btn" onclick="alert('Reports module — coming in next build')">
+            <svg data-lucide="download"></svg>
+            Export Report
+          </button>
+          <a href="https://wa.me/919650675507" target="_blank" class="qa-btn">
+            <svg data-lucide="message-circle"></svg>
+            WhatsApp DC
+          </a>
+        </div>
+
+        <!-- Enrolment trend + Activity feed -->
+        <div class="main-grid">
+
+          <!-- Enrolment trend -->
+          <div class="section-card">
+            <div class="section-title">
+              <svg data-lucide="trending-up" style="color:var(--gold)"></svg>
+              Enrolment Trend — 2025
+            </div>
+            <div style="display:flex;gap:1.5rem;margin-bottom:0.75rem">
+              <div><span style="font-size:1.4rem;font-weight:900;color:var(--text-primary)">38</span> <span style="font-size:0.72rem;color:var(--text-muted)">total enrolled</span></div>
+              <div><span style="font-size:1.4rem;font-weight:900;color:#4caf50">+6</span> <span style="font-size:0.72rem;color:var(--text-muted)">this month</span></div>
+            </div>
+            <div class="chart-wrap">
+              <svg viewBox="0 0 420 100" preserveAspectRatio="none" id="trend-chart">
+                <!-- drawn by JS -->
+              </svg>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--text-muted);margin-top:0.35rem;padding:0 4px">
+              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span>
+            </div>
+          </div>
+
+          <!-- Recent activity -->
+          <div class="section-card">
+            <div class="section-title">
+              <svg data-lucide="activity" style="color:var(--gold)"></svg>
+              Recent Activity
+            </div>
+            <div id="activity-feed">
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#4caf50"></div>
+                <div>
+                  <div class="activity-text">New enrolment — <strong>Riya Sharma</strong> (IGCSE Maths + Physics)</div>
+                  <div class="activity-time">2 hours ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--gold)"></div>
+                <div>
+                  <div class="activity-text">Payment claim submitted by <strong>Ms. Sarah Khan</strong> — May 2025 (£180)</div>
+                  <div class="activity-time">5 hours ago</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#e05a4e"></div>
+                <div>
+                  <div class="activity-text">Support ticket <strong>TK-019</strong> opened — Reschedule request (Arjun Mehta)</div>
+                  <div class="activity-time">Yesterday, 4:12 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#4a9fd4"></div>
+                <div>
+                  <div class="activity-text">New enrolment — <strong>Fatimah Al-Rashid</strong> (A Level Chem + Bio)</div>
+                  <div class="activity-time">Yesterday, 1:30 PM</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#4caf50"></div>
+                <div>
+                  <div class="activity-text">Payment claim approved for <strong>Mr. Aryan Patel</strong> — April 2025 (£160)</div>
+                  <div class="activity-time">2 days ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Enrolments -->
+        <div class="section-card">
+          <div class="section-title" style="justify-content:space-between">
+            <span style="display:flex;align-items:center;gap:0.5rem">
+              <svg data-lucide="user-plus" style="color:var(--gold);width:14px;height:14px"></svg>
+              Recent Enrolments
+            </span>
+            <a href="users.html" style="font-size:0.72rem;font-weight:700;color:var(--gold);text-decoration:none">View All →</a>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Subjects</th>
+                <th>Region</th>
+                <th>Enrolled</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="enrolments-table">
+              <tr>
+                <td><strong>Riya Sharma</strong><br><span style="font-size:0.7rem;color:var(--text-muted)">riya@example.com</span></td>
+                <td>IGCSE Maths, IGCSE Physics</td>
+                <td>🇮🇳 India</td>
+                <td>6 May 2025</td>
+                <td><span class="badge badge-new">New</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fatimah Al-Rashid</strong><br><span style="font-size:0.7rem;color:var(--text-muted)">fatimah@example.com</span></td>
+                <td>A Level Chemistry, A Level Biology</td>
+                <td>🇸🇦 KSA</td>
+                <td>5 May 2025</td>
+                <td><span class="badge badge-new">New</span></td>
+              </tr>
+              <tr>
+                <td><strong>Arjun Mehta</strong><br><span style="font-size:0.7rem;color:var(--text-muted)">arjun@example.com</span></td>
+                <td>IGCSE Maths, A Level Chem</td>
+                <td>🇲🇾 Malaysia</td>
+                <td>28 Apr 2025</td>
+                <td><span class="badge badge-approved">Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>Priya Nair</strong><br><span style="font-size:0.7rem;color:var(--text-muted)">priya@example.com</span></td>
+                <td>AP Calculus BC, AP Physics C</td>
+                <td>🇬🇧 UK</td>
+                <td>20 Apr 2025</td>
+                <td><span class="badge badge-approved">Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>Rohan Sharma</strong><br><span style="font-size:0.7rem;color:var(--text-muted)">rohan@example.com</span></td>
+                <td>IGCSE Physics, A Level Biology</td>
+                <td>🇮🇳 India</td>
+                <td>15 Apr 2025</td>
+                <td><span class="badge badge-approved">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pending Claims + Open Tickets -->
+        <div class="main-grid" id="claims-section">
+
+          <!-- Pending Payment Claims -->
+          <div class="section-card">
+            <div class="section-title">
+              <svg data-lucide="banknote" style="color:var(--gold)"></svg>
+              Pending Payment Claims
+            </div>
+            <div id="claims-list">
+              <div class="activity-item" style="flex-direction:column;gap:0.6rem;align-items:stretch">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <div style="font-size:0.86rem;font-weight:800;color:var(--text-primary)">Ms. Sarah Khan</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem">May 2025 · 18h · 12 sessions</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:1rem;font-weight:900;color:var(--gold)">£180</div>
+                    <span class="badge badge-pending">Pending</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:0.5rem">
+                  <button class="action-btn approve" onclick="approveClaim(this,'Ms. Sarah Khan')">✓ Approve</button>
+                  <button class="action-btn reject" onclick="rejectClaim(this,'Ms. Sarah Khan')">✕ Reject</button>
+                  <button class="action-btn" onclick="alert('Notes: Regular sessions only. Whiteboard links all verified.')">View Notes</button>
+                </div>
+              </div>
+              <div class="activity-item" style="flex-direction:column;gap:0.6rem;align-items:stretch">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <div style="font-size:0.86rem;font-weight:800;color:var(--text-primary)">Mr. Aryan Patel</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.1rem">May 2025 · 16h · 10 sessions</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:1rem;font-weight:900;color:var(--gold)">£160</div>
+                    <span class="badge badge-pending">Pending</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:0.5rem">
+                  <button class="action-btn approve" onclick="approveClaim(this,'Mr. Aryan Patel')">✓ Approve</button>
+                  <button class="action-btn reject" onclick="rejectClaim(this,'Mr. Aryan Patel')">✕ Reject</button>
+                  <button class="action-btn" onclick="alert('Notes: 2 rescheduled sessions included.')">View Notes</button>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-subtle)">
+              Total pending payout: <span class="highlight-gold">£340</span>
+            </div>
+          </div>
+
+          <!-- Open Support Tickets -->
+          <div class="section-card">
+            <div class="section-title">
+              <svg data-lucide="ticket" style="color:var(--gold)"></svg>
+              Open Support Tickets
+            </div>
+            <div id="tickets-list">
+              <div class="activity-item" style="flex-direction:column;gap:0.5rem;align-items:stretch">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <span style="font-size:0.68rem;font-weight:700;color:var(--text-muted)">TK-019</span>
+                    <span class="badge badge-open" style="margin-left:0.4rem">Open</span>
+                    <div style="font-size:0.84rem;font-weight:700;color:var(--text-primary);margin-top:0.25rem">Reschedule request — Arjun Mehta</div>
+                    <div style="font-size:0.7rem;color:var(--text-muted)">IGCSE Maths · Yesterday 4:12 PM</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:0.5rem">
+                  <button class="action-btn resolve" onclick="resolveTicket(this,'TK-019')">✓ Resolve</button>
+                  <button class="action-btn" onclick="alert('Assigned to: Ms. Sarah Khan')">Assign</button>
+                </div>
+              </div>
+              <div class="activity-item" style="flex-direction:column;gap:0.5rem;align-items:stretch">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <span style="font-size:0.68rem;font-weight:700;color:var(--text-muted)">TK-018</span>
+                    <span class="badge badge-progress" style="margin-left:0.4rem">In Progress</span>
+                    <div style="font-size:0.84rem;font-weight:700;color:var(--text-primary);margin-top:0.25rem">Recording not uploaded — Priya Nair</div>
+                    <div style="font-size:0.7rem;color:var(--text-muted)">A Level Chem · 4 May 2025</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:0.5rem">
+                  <button class="action-btn resolve" onclick="resolveTicket(this,'TK-018')">✓ Resolve</button>
+                  <button class="action-btn" onclick="alert('Assigned to: Mr. Aryan Patel')">Reassign</button>
+                </div>
+              </div>
+              <div class="activity-item" style="flex-direction:column;gap:0.5rem;align-items:stretch">
+                <div>
+                  <span style="font-size:0.68rem;font-weight:700;color:var(--text-muted)">TK-017</span>
+                  <span class="badge badge-open" style="margin-left:0.4rem">Open</span>
+                  <div style="font-size:0.84rem;font-weight:700;color:var(--text-primary);margin-top:0.25rem">Fee payment query — Fatimah Al-Rashid</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted)">Payment / KSA Al Rajhi · 3 May 2025</div>
+                </div>
+                <div style="display:flex;gap:0.5rem">
+                  <button class="action-btn resolve" onclick="resolveTicket(this,'TK-017')">✓ Resolve</button>
+                  <button class="action-btn" onclick="alert('Assigned to: Admin')">Assign</button>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-subtle)">
+              Total open: <span class="highlight-gold" id="open-ticket-count">3</span> · In Progress: <span class="highlight-gold">1</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /portal-content -->
+    </main>
+  </div><!-- /portal-layout -->
+
+  <!-- Sidebar overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../../js/portal.js"></script>
+  <script>
+    // Live clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('live-time').textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+    updateClock(); setInterval(updateClock, 60000);
+
+    // Stat cards — pull from localStorage where possible, else seed
+    function loadStats() {
+      const claims = JSON.parse(localStorage.getItem('dc-staff-claims') || '[]');
+      const pendingClaims = claims.filter(c => c.status === 'pending').length;
+      const tickets = JSON.parse(localStorage.getItem('dc-tickets') || '[]');
+      const openTickets = tickets.filter(t => t.status === 'open' || t.status === 'in-progress').length;
+      document.getElementById('stat-students').textContent = '38';
+      document.getElementById('stat-staff').textContent = '7';
+      document.getElementById('stat-tickets').textContent = openTickets || '3';
+      document.getElementById('stat-claims').textContent = pendingClaims || '2';
+    }
+    loadStats();
+
+    // Enrolment trend chart
+    (function drawChart() {
+      const data = [18, 22, 26, 32, 38]; // Jan–May
+      const W = 420, H = 100, PAD = 10;
+      const maxV = Math.max(...data);
+      const xs = data.map((_, i) => PAD + (i / (data.length - 1)) * (W - PAD * 2));
+      const ys = data.map(v => H - PAD - ((v / maxV) * (H - PAD * 2)));
+      const svg = document.getElementById('trend-chart');
+
+      // Area fill
+      const areaPoints = xs.map((x, i) => `${x},${ys[i]}`).join(' ');
+      const area = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      const fill = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      fill.setAttribute('points', `${xs[0]},${H} ` + areaPoints + ` ${xs[xs.length-1]},${H}`);
+      fill.setAttribute('fill', 'rgba(245,200,66,0.12)');
+      svg.appendChild(fill);
+
+      // Line
+      area.setAttribute('points', areaPoints);
+      area.setAttribute('fill', 'none');
+      area.setAttribute('stroke', '#f5c842');
+      area.setAttribute('stroke-width', '2.5');
+      area.setAttribute('stroke-linejoin', 'round');
+      svg.appendChild(area);
+
+      // Dots + labels
+      data.forEach((v, i) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', xs[i]); circle.setAttribute('cy', ys[i]);
+        circle.setAttribute('r', '4'); circle.setAttribute('fill', '#f5c842');
+        svg.appendChild(circle);
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', xs[i]); label.setAttribute('y', ys[i] - 8);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '9'); label.setAttribute('font-weight', '700');
+        label.setAttribute('fill', '#888');
+        label.textContent = v;
+        svg.appendChild(label);
+      });
+    })();
+
+    // Approve claim
+    function approveClaim(btn, name) {
+      const row = btn.closest('.activity-item');
+      const badge = row.querySelector('.badge');
+      badge.className = 'badge badge-approved'; badge.textContent = 'Approved';
+      btn.parentElement.innerHTML = '<span style="font-size:0.75rem;color:#2e7d32;font-weight:700">✓ Approved — payment will be processed</span>';
+      addActivity(`Payment claim approved for <strong>${name}</strong>`, '#4caf50');
+    }
+
+    // Reject claim
+    function rejectClaim(btn, name) {
+      const reason = prompt(`Rejection reason for ${name}'s claim:`);
+      if (reason === null) return;
+      const row = btn.closest('.activity-item');
+      const badge = row.querySelector('.badge');
+      badge.className = 'badge badge-open'; badge.textContent = 'Rejected';
+      btn.parentElement.innerHTML = `<span style="font-size:0.75rem;color:#c62828;font-weight:700">✕ Rejected — staff will be notified</span>`;
+      addActivity(`Claim rejected for <strong>${name}</strong> — ${reason || 'No reason given'}`, '#e05a4e');
+    }
+
+    // Resolve ticket
+    function resolveTicket(btn, id) {
+      const row = btn.closest('.activity-item');
+      const badge = row.querySelector('.badge');
+      badge.className = 'badge badge-approved'; badge.textContent = 'Resolved';
+      btn.parentElement.innerHTML = '<span style="font-size:0.75rem;color:#2e7d32;font-weight:700">✓ Resolved</span>';
+      const count = document.getElementById('open-ticket-count');
+      count.textContent = Math.max(0, parseInt(count.textContent) - 1);
+      addActivity(`Ticket <strong>${id}</strong> marked resolved`, '#4caf50');
+    }
+
+    // Add activity item
+    function addActivity(text, dotColor) {
+      const feed = document.getElementById('activity-feed');
+      const item = document.createElement('div');
+      item.className = 'activity-item';
+      item.innerHTML = `
+        <div class="activity-dot" style="background:${dotColor}"></div>
+        <div>
+          <div class="activity-text">${text}</div>
+          <div class="activity-time">Just now</div>
+        </div>`;
+      feed.insertBefore(item, feed.firstChild);
+    }
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -12,7 +12,7 @@
 
 ## 🤖 AGENT PERSONA
 
-You are **Cleo** — Senior Frontend Engineer at DivergenCIE. You ship production-quality HTML/CSS/JS with zero bloat, communicate in one-line confirmations, and treat every token as a cost to the business.
+You are **Cleo** — Senior Frontend Engineer at DivergenCIE. You ship production-quality HTML/CSS/JS with zero bloat, communicate in one-line confirmations, and treat every token as a cost to the business. Caveman style in all responses: short words, no filler, telegram syntax.
 
 ---
 
@@ -56,11 +56,12 @@ You will receive two files each session:
 3. Build **only one page or module per session.** Respect file separation: use `css/styles.css`/`js/main.js` for the Homepage, `css/inner.css`/`js/inner.js` for public inner pages, and `css/portal.css`/`js/portal.js` for the dashboard system to prevent code bloat.
 4. **Global Components:** When building inner pages or portals, use a "Source of Truth" for Nav and Footers. If you update the Navigation in `about.html`, ensure the same change is applied to all existing `PHASE B` pages to maintain consistency.
 5. **Universal Theme Support:** Every page defaults to **light mode**. When building any section, you MUST apply both light and dark styles using Tailwind `dark:` variants (e.g., `class="bg-white dark:bg-gray-900 text-charcoal dark:text-white"`). Every page `<head>` must include `<script>tailwind.config = { darkMode: 'class' }</script>` immediately after the Tailwind CDN script. Include `<script src="/js/theme.js"></script>` in every page `<head>` so the Sun/Moon toggle works and theme persists via `localStorage`.
-6. Before ZIPping, update `PLAN.md` with a `## 🔖 Handoff Notes` block (see format below)
-7. **ZIP immediately:** `cd /home/claude && zip -r divergencie-v[N].zip divergencie/`
-8. Present ZIP to user - ensure this
-9. Verify the build (check mobile responsiveness, 404 links, and JS console errors). Once confirmed working, mark section ✅ Done.
-10. **STOP** — wait for user to say "continue"
+6. Before ZIPping, update `PLAN.md` with a `## 🔖 Handoff Notes` block (see format below). **Handoff Notes must be informative but short — max 4–6 lines total. No padding or filler sentences.**
+7. **ZIP integrity:** Before ZIPping, run `unzip -l divergencie-v[N-1].zip | wc -l` on the source ZIP and confirm new ZIP has ≥ same file count — never ZIP from a partial extract.
+8. **ZIP immediately:** `cd /home/claude && zip -r divergencie-v[N].zip divergencie/`
+9. Present ZIP to user - ensure this
+10. Verify the build (check mobile responsiveness, 404 links, and JS console errors). Once confirmed working, mark section ✅ Done.
+11. **STOP** — wait for user to say "continue"
 
 ### 🚨 PLAN.md INTEGRITY RULES — NON-NEGOTIABLE
 - **NEVER edit `PLAN.md` unless explicitly instructed by the user.** The only permitted write to `PLAN.md` per session is appending a new `🔖 Handoff Notes` block at the bottom.
@@ -96,6 +97,7 @@ Token budget is limited. One section per ZIP. Never skip ahead.
 
 **Every token counts. Quality over quantity — always.**
 
+- **Caveman rule:** Strip all filler. No "I will now", "please note", "as you can see". Short words win. Write like telegram. Subject → verb → object. "Build nav" not "I am going to proceed to build the navigation component". Every word earns its place or gets cut.
 - **No preamble.** Don't explain what you're about to do — just do it.
 - **No summaries.** Don't recap what you just built — the ZIP speaks for itself.
 - **No filler.** Cut phrases like "Great!", "Certainly!", "As you can see…"
@@ -165,44 +167,60 @@ Inter:     https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&d
 ```
 divergencie/
 ├── index.html                  ✅ homepage
-├── about.html                  ⬜
-├── services.html               ⬜ (hub page — links to per-subject pages)
+├── about.html                  ✅ done
+├── services.html               ✅ done
 ├── services/
-│   ├── igcse.html              ⬜
-│   ├── a-level.html            ⬜
-│   ├── ap.html                 ⬜
-│   ├── ib.html                 ⬜
-│   ├── sat-act.html            ⬜
-│   └── ielts-toefl.html        ⬜
-├── pricing.html                ⬜
-├── mock.html                   ⬜ (Free Mock Simulator — timed past paper UI)
-├── resources.html              ⬜
-├── careers.html                ⬜
-├── contact.html                ⬜
+│   ├── igcse.html              ✅ done
+│   ├── a-level.html            ✅ done
+│   ├── ap.html                 ✅ done
+│   ├── ib.html                 ✅ done
+│   ├── sat-act.html            ✅ done
+│   └── ielts-toefl.html        ✅ done
+├── pricing.html                ✅ done
+├── mock.html                   ✅ done
+├── resources.html              ✅ done
+├── careers.html                ✅ done
+├── contact.html                ✅ done
 ├── auth/
-│   ├── login.html              ⬜
-│   └── forgot-password.html    ⬜
+│   ├── login.html              ✅ done
+│   └── forgot-password.html    ✅ done
 ├── portal/
 │   ├── student/
-│   │   ├── dashboard.html      ⬜
-│   │   ├── classes.html        ⬜
-│   │   ├── assignments.html    ⬜
-│   │   ├── recordings.html     ⬜
-│   │   ├── progress.html       ⬜
-│   │   ├── curriculum.html     ⬜
-│   │   └── support.html        ⬜
+│   │   ├── dashboard.html      ✅ done
+│   │   ├── classes.html        ✅ done
+│   │   ├── assignments.html    ✅ done
+│   │   ├── recordings.html     ✅ done
+│   │   ├── progress.html       ✅ done
+│   │   ├── curriculum.html     ✅ done
+│   │   └── support.html        ✅ done (needs ticket routing update — Phase I)
 │   ├── parent/
+│   │   ├── dashboard.html      ✅ done
+│   │   ├── progress.html       ✅ done
+│   │   └── fees.html           ✅ done (needs ticket routing update — Phase I)
+│   ├── teacher/                ← renamed from portal/staff/ (G1–G4 pages moved here)
+│   │   ├── dashboard.html      ✅ done (was staff/dashboard — rename + amend)
+│   │   ├── attendance.html     ✅ done (was staff/attendance — rename + amend)
+│   │   ├── timesheet.html      ✅ done (was staff/timesheet — rename + amend)
+│   │   └── payment-claims.html ✅ done (was staff/payment-claims — rename + amend)
+│   ├── staff/                  ← NEW — separate from teacher
+│   │   ├── dashboard.html      ⬜ (dept-aware quick actions per PR/HR/Finance/Marketing/IT tag)
+│   │   ├── tickets.html        ⬜ (create + view + assign + interdept + escalate)
+│   │   ├── attendance.html     ⬜ (meeting/event log — not class hours)
+│   │   ├── claims.html         ⬜ (attendance-based claim, not hour-based)
+│   │   ├── content-bank.html   ⬜ (dept shared links bank)
+│   │   ├── schedule.html       ⬜ (PR/Ops only — teacher schedule, conflict checker, post-class tracker)
+│   │   ├── hr-candidates.html  ⬜ (HR only — candidate bank, interviews, offers, warnings)
+│   │   ├── finance-rates.html  ⬜ (Finance only — rate cards, invoices, payment tracker, budget)
+│   │   ├── marketing-calendar.html ⬜ (Marketing only — posting calendar, asset bank, leads, ambassador)
+│   │   └── meetings.html       ⬜ (All staff — interdept meeting request flow)
+│   ├── ambassador/             ← NEW
 │   │   ├── dashboard.html      ⬜
-│   │   ├── progress.html       ⬜
-│   │   └── fees.html           ⬜
-│   ├── staff/
-│   │   ├── dashboard.html      ⬜
-│   │   ├── attendance.html     ⬜
-│   │   ├── timesheet.html      ⬜
-│   │   └── payment-claims.html ⬜
-│   └── admin/
-│       ├── dashboard.html      ⬜
-│       └── users.html          ⬜
+│   │   └── tickets.html        ⬜ (raise tickets to DC staff only)
+│   ├── management/             ← renamed from portal/admin/
+│   │   ├── dashboard.html      ✅ done (was admin/dashboard — rename + amend)
+│   │   ├── users.html          ⬜
+│   │   ├── metrics.html        ⬜ (per-staff + per-dept performance metrics, weekly graphs)
+│   │   └── tickets.html        ⬜ (all tickets across all roles)
 ├── PLAN.md
 ├── README.md
 ├── assets/
@@ -210,10 +228,13 @@ divergencie/
 │   └── fonts/
 ├── css/
 │   ├── styles.css              ✅ homepage styles
-│   ├── shared.css               ⬜ shared dark/light-mode page styles
+│   ├── shared.css              ✅ done
+│   ├── inner.css               ✅ done
+│   └── portal.css              ✅ done
 └── js/
     ├── main.js                 ✅ homepage JS
-    ├── theme.js                ⬜ shared page JS (nav, mobile, theme toggle)
+    ├── theme.js                ✅ done
+    └── portal.js               ✅ done
 ```
 
 ---
@@ -261,14 +282,14 @@ Next: build inner pages, mock simulator, then portals — one per session.
 | B2 | **services.html** | Hub page · Subject grid cards (IGCSE, A Level, AP, IB, SAT, IELTS, Career Counselling, Uni Applications) · Each card links to sub-page · Sticky filter tabs | services.html | ✅ Done |
 | B3 | **services/igcse.html** | Hero · Subjects list · What's included · Pricing CTA · Teacher bio · FAQ accordion · Enrol CTA | services/igcse.html | ✅ Done |
 | B4 | **services/a-level.html** | Same structure as IGCSE · A Level specific content | services/a-level.html | ✅ Done |
-| B5 | **services/ap.html** | AP-specific content · CollegeBoard badge | services/ap.html | ⬜ TODO |
-| B6 | **services/ib.html** | IB-specific content | services/ib.html | ⬜ TODO |
-| B7 | **services/sat-act.html** | SAT/ACT prep content | services/sat-act.html | ⬜ TODO |
-| B8 | **services/ielts-toefl.html** | IELTS/TOEFL content | services/ielts-toefl.html | ⬜ TODO |
-| B9 | **pricing.html** | 3 package tiers (World Topper / A* / Foundations) · Pricing table · Payment methods by country (MY FPX, IN Razorpay, KSA, UK Stripe, PK EasyPaisa, Intl Wise) · FAQ | pricing.html | ⬜ TODO |
-| B10 | **resources.html** | Free Notes · Past Paper Books (Topical + Yearly) · Predicted Papers · AP Practice · IELTS/SAT Prep · Blog teaser | resources.html | ⬜ TODO |
-| B11 | **careers.html** | Open roles (TA, SM, HR, IT, Accounts) · Role cards with JD summary · Application form · Ambassador/Intern programme | careers.html | ⬜ TODO |
-| B12 | **contact.html** | WhatsApp QR + link · General enquiry form · Social links · Regional contact info · Map embed placeholder | contact.html | ⬜ TODO |
+| B5 | **services/ap.html** | AP-specific content · CollegeBoard badge | services/ap.html | ✅ Done |
+| B6 | **services/ib.html** | IB-specific content | services/ib.html | ✅ Done |
+| B7 | **services/sat-act.html** | SAT/ACT prep content | services/sat-act.html | ✅ Done |
+| B8 | **services/ielts-toefl.html** | IELTS/TOEFL content | services/ielts-toefl.html | ✅ Done |
+| B9 | **pricing.html** | 3 package tiers (World Topper / A* / Foundations) · Pricing table · Payment methods by country (MY FPX, IN Razorpay, KSA, UK Stripe, PK EasyPaisa, Intl Wise) · FAQ | pricing.html | ✅ Done |
+| B10 | **resources.html** | Free Notes · Past Paper Books (Topical + Yearly) · Predicted Papers · AP Practice · IELTS/SAT Prep · Blog teaser | resources.html | ✅ Done |
+| B11 | **careers.html** | Open roles (TA, SM, HR, IT, Accounts) · Role cards with JD summary · Application form · Ambassador/Intern programme | careers.html | ✅ Done |
+| B12 | **contact.html** | WhatsApp QR + link · General enquiry form · Social links · Regional contact info · Map embed placeholder | contact.html | ✅ Done |
 
 ---
 
@@ -276,9 +297,9 @@ Next: build inner pages, mock simulator, then portals — one per session.
 
 | # | Page | Sections | Files | Status |
 |---|------|----------|-------|--------|
-| C1 | **mock.html — Landing & Subject Selector** | Hero · Subject selector grid (IGCSE/A Level/AP/IB/SAT/IELTS) · Exam level/paper selector · Difficulty options · "Start Timed Mock" CTA · How it works steps · Past stats ticker | mock.html | ⬜ TODO |
-| C2 | **mock.html — Timed Exam Interface** | Full-screen exam UI · Live countdown timer (top bar) · Question number nav sidebar · MCQ + short answer question types · Flag for review button · Progress bar · Pause/Resume · Dark mode only for focus · Submit confirmation modal | mock.html (exam view) | ⬜ TODO |
-| C3 | **mock.html — Results & Profile Stats** | Score breakdown by topic · Accuracy % · Time-per-question analytics · Weak area highlights · Comparison vs DivergenCIE average · Enrol Now upsell CTA · Share result button · Retake button | mock.html (results view) | ⬜ TODO |
+| C1 | **mock.html — Landing & Subject Selector** | Hero · Subject selector grid (IGCSE/A Level/AP/IB/SAT/IELTS) · Exam level/paper selector · Difficulty options · "Start Timed Mock" CTA · How it works steps · Past stats ticker | mock.html | ✅ Done |
+| C2 | **mock.html — Timed Exam Interface** | Full-screen exam UI · Live countdown timer (top bar) · Question number nav sidebar · MCQ + short answer question types · Flag for review button · Progress bar · Pause/Resume · Dark mode only for focus · Submit confirmation modal | mock.html (exam view) | ✅ Done |
+| C3 | **mock.html — Results & Profile Stats** | Score breakdown by topic · Accuracy % · Time-per-question analytics · Weak area highlights · Comparison vs DivergenCIE average · Enrol Now upsell CTA · Share result button · Retake button | mock.html (results view) | ✅ Done |
 
 ---
 
@@ -286,52 +307,171 @@ Next: build inner pages, mock simulator, then portals — one per session.
 
 | # | Page | Sections | Files | Status |
 |---|------|----------|-------|--------|
-| D1 | **auth/login.html** | Logo · Email + password form · Google OAuth button · Forgot password link · Role auto-detection on login · Dark/light split layout | auth/login.html | ⬜ TODO |
-| D2 | **auth/forgot-password.html** | Email entry · Confirmation state · Back to login | auth/forgot-password.html | ⬜ TODO |
+| D1 | **auth/login.html** | Logo · Email + password form · Google OAuth button · Forgot password link · Role auto-detection on login · Dark/light split layout | auth/login.html | ✅ Done |
+| D2 | **auth/forgot-password.html** | Email entry · Confirmation state · Back to login | auth/forgot-password.html | ✅ Done |
 
 ---
 
-### PHASE E — Student Portal
+---
 
-| # | Page | Sections (per UJM Student Journey) | Files | Status |
-|---|------|-------------------------------------|-------|--------|
-| E1 | **portal/student/dashboard.html** | Sidebar nav · Welcome banner · Upcoming classes widget · Assignment due dates · Progress snapshot (mini chart) · Announcements feed · Quick links (Zoom, GCR, WhatsApp) | portal/student/dashboard.html **Role Simulation:** Assume a "Student" role is active. Use `localStorage` or a URL parameter (`?role=student`) to simulate different portal views during this phase so logic in `portal.js` can be tested. | ⬜ TODO |
-| E2 | **portal/student/classes.html** | Weekly calendar view · Class cards (subject, teacher, Zoom link) · Attendance record table · Missed class tracker · Reschedule request button · Timezone display toggle | portal/student/classes.html | ⬜ TODO |
-| E3 | **portal/student/assignments.html** | Active assignments list · Submit button · Submission history · Past paper checklist (tick off by subject/year) | portal/student/assignments.html | ⬜ TODO |
-| E4 | **portal/student/recordings.html** | Subject filter tabs · Recording cards (date, topic, teacher) · Embedded YouTube/Zoom player · Download notes button | portal/student/recordings.html | ⬜ TODO |
-| E5 | **portal/student/progress.html** | Monthly score line chart (Chart.js or inline SVG) · Subject performance bars · A* gap analysis · Chapter checklist completion % · Doubt tracker log | portal/student/progress.html | ⬜ TODO |
-| E6 | **portal/student/curriculum.html** | Subject tabs · Chapter-by-chapter syllabus · Mark chapter complete toggle · A* checklist milestones · Doubt logger per chapter | portal/student/curriculum.html | ⬜ TODO |
-| E7 | **portal/student/support.html** | Open/closed tickets list · New ticket form (category: reschedule / tech / add-drop / other) · Status badges · WhatsApp fallback link | portal/student/support.html | ⬜ TODO |
+## 🏛️ ROLE ARCHITECTURE (confirmed by user — do not alter without explicit instruction)
+
+### Portals & Roles
+
+| Portal | Role | Access level |
+|--------|------|-------------|
+| `portal/management/` | Management | Highest — all portals, all tickets, all metrics, revenue, approve claims |
+| `portal/staff/` | Staff (all dept roles) | Own dept tickets/tasks, interdept forward, escalate to mgmt, content bank, claims |
+| `portal/teacher/` | Teacher | Own schedule, timesheet, hour-based claims, reply to tickets only (cannot close) |
+| `portal/ambassador/` | Ambassador | Raise tickets to DC staff only — no student data access |
+| `portal/parent/` | Parent | Child progress, fees, raise tickets routed to dept |
+| `portal/student/` | Student | Classes, progress, assignments, recordings, raise tickets routed to dept |
+
+### Staff Department Structure
+
+Depts: **PR** (Teaching Assistant is a role within PR, not a separate dept) · **HR** · **Finance** · **Marketing** · **IT**
+
+Every dept has:
+- **Members** — see only their own assigned tickets/tasks
+- **Supervisor / HOD** — same portal as member + extra: see all dept tickets, assign tasks to members, view dept metrics. Tag assigned by Management per dept.
+- All staff role names (Intern, Ambassador, etc.) are just role labels — same portal rules apply based on member/supervisor tag, not role name. General Intern = Staff portal, member-level access.
+
+### Ticket / Task System (universal — all tasks are tickets)
+
+**Ticket attributes:** Title · Department · Assignee · Creator · Deadline · Priority (Low/Medium/High/Urgent) · Status (Open/In Progress/Pending Reply/Resolved/Closed) · Comments thread · File attachments · Links · Created date · Last updated
+
+**Routing rules:**
+- **Student/Parent** → raise ticket, select dept (PR, IT, Finance, HR, Marketing) → staff in that dept sees it → PR/TA role can forward to Teacher for comment → Teacher replies → Staff reads and closes
+- IT/Marketing **cannot** see student/parent tickets unless explicitly forwarded to their dept
+- **Staff** → create internal ticket/task, assign to member in own dept, forward interdept, or escalate to Management
+- **Ambassador** → can only raise tickets to DC staff (any dept) — zero access to student data
+- **Management** → sees all tickets across all roles, can create/assign/close any ticket
+
+**Supervisor extras:** Full dept ticket queue visibility · assign tasks to members · view per-member task completion
+
+### Dept Content Bank (per dept)
+
+Shared link repository visible to all dept members. Fields: Name · URL · Date added · Description. Any member can add. Supervisor + Management can view all dept banks.
+
+### Claims
+
+| Role | Claim type |
+|------|-----------|
+| Teacher | Hour-based timesheet (existing G1–G4 flow, unchanged) |
+| Staff | Meeting/event attendance log → attendance-based claim |
+| Management | Approves all claims |
+
+### Management Metrics (per staff + per dept, weekly trend graphs)
+
+| Category | Metrics |
+|----------|---------|
+| **Productivity** | Task/ticket completion %, deadline hit rate, avg resolution time, tickets open vs closed |
+| **Attendance** | Meeting/event attendance rate per staff, attendance trend over time |
+| **Financial** | Budget spent per dept (weekly/monthly), claims submitted vs approved, total payout |
+| **Activity** | Staff activity score (tickets touched, comments, files uploaded), tickets created vs resolved |
+| **Workload** | Open task count per member, overdue tasks, avg tasks per member |
+| **Quality** | Tickets re-opened after close, escalation rate to management |
+
+All metrics: filterable by dept, by individual staff member, by date range. Weekly change graphs (line charts) for every metric. Management dashboard = overview; drill-down to dept page or staff profile.
 
 ---
 
-### PHASE F — Parent Portal
+### PHASE E — Student Portal ✅ ALL DONE
+
+| # | Page | Status |
+|---|------|--------|
+| E1 | portal/student/dashboard.html | ✅ Done |
+| E2 | portal/student/classes.html | ✅ Done |
+| E3 | portal/student/assignments.html | ✅ Done |
+| E4 | portal/student/recordings.html | ✅ Done |
+| E5 | portal/student/progress.html | ✅ Done |
+| E6 | portal/student/curriculum.html | ✅ Done |
+| E7 | portal/student/support.html | ✅ Done — ticket routing to be updated in Phase I |
+
+---
+
+### PHASE F — Parent Portal ✅ ALL DONE
+
+| # | Page | Status |
+|---|------|--------|
+| F1 | portal/parent/dashboard.html | ✅ Done |
+| F2 | portal/parent/progress.html | ✅ Done |
+| F3 | portal/parent/fees.html | ✅ Done — ticket routing to be updated in Phase I |
+
+---
+
+### PHASE G — Teacher Portal (renamed from Staff Portal)
+
+**Action required before building new phases:** Move + rename `portal/staff/` → `portal/teacher/`. Update all internal nav links, paths, and sidebar branding. Teacher portal is hour-based (unchanged flow). Reply-only on tickets.
+
+| # | Page | Sections | Status |
+|---|------|----------|--------|
+| G1 | **portal/teacher/dashboard.html** | Rename + amend: change sidebar label "Staff Portal" → "Teacher Portal", role badge → role-teacher, remove payment-claims nav item if not applicable, add ticket reply nav item | ✅ Done (needs rename pass) |
+| G2 | **portal/teacher/attendance.html** | Unchanged — class attendance submission | ✅ Done (needs rename pass) |
+| G3 | **portal/teacher/timesheet.html** | Unchanged — hour log | ✅ Done (needs rename pass) |
+| G4 | **portal/teacher/payment-claims.html** | Unchanged — hour-based claim | ✅ Done (needs rename pass) |
+| G5 | **portal/teacher/tickets.html** | Ticket reply interface — teacher sees tickets forwarded to them by PR/TA staff · Can add comments/replies · Cannot close or reassign · Status shows "Awaiting Staff Review" after reply · **Also add pre-class checklist widget to portal/teacher/dashboard.html**: 5-point reminder strip (Recording ON · Breakout room created · Camera on · Whiteboard titled DC-[date]-[subject] · Students reminded) — dismissible per session, auto-resets next class | ✅ Done |
+
+---
+
+### PHASE H — Management Portal (renamed from Admin Portal)
+
+**Action required:** Rename `portal/admin/` → `portal/management/`. Update sidebar, role badge, branding.
+
+| # | Page | Sections | Status |
+|---|------|----------|--------|
+| H1 | **portal/management/dashboard.html** | Rename + amend: update sidebar label, role badge purple, nav = Dashboard/Users/Metrics/Tickets/Claims | ✅ Done (needs rename pass) |
+| H2 | **portal/management/users.html** | User table (all roles) · Role filter · Add user form · Supervisor assignment per dept · Invite link generator · Deactivate toggle · Search | ✅ Done |
+| H3 | **portal/management/metrics.html** | Per-dept + per-staff performance dashboard · All metric categories (productivity/attendance/financial/activity/workload/quality) · Weekly trend line graphs per metric · Dept filter · Staff drill-down · Date range selector | ✅ Done |
+| H4 | **portal/management/tickets.html** | All tickets across all roles · Filter by role/dept/status/priority · Assign · Close · Escalation queue · Interdept view | ✅ Done |
+
+---
+
+### PHASE I — Staff Portal (NEW — separate from Teacher)
 
 | # | Page | Sections | Files | Status |
 |---|------|----------|-------|--------|
-| F1 | **portal/parent/dashboard.html** | Sidebar · Child selector (if multiple) · Attendance summary widget · Progress snapshot · Fee status · Upcoming classes read-only | portal/parent/dashboard.html | ⬜ TODO |
-| F2 | **portal/parent/progress.html** | Monthly report · Scores by subject · Attendance % · Teacher comments placeholder · Download report button | portal/parent/progress.html | ⬜ TODO |
-| F3 | **portal/parent/fees.html** | Invoice list · Pay Now button · Payment method selector by country · Payment guides (FPX/DuitNow, Razorpay/UPI, Stripe, EasyPaisa, Al Rajhi, Wise) · Receipt download | portal/parent/fees.html | ⬜ TODO |
+| I1 | **portal/staff/dashboard.html** | Sidebar (dept badge, Supervisor vs Member tag) · Stat cards: open tasks, overdue, tickets this week, attendance streak · My tasks today · Dept announcements · Quick actions — **dept-aware: each dept sees relevant quick actions based on logged-in dept tag (PR/HR/Finance/Marketing/IT)** | portal/staff/dashboard.html | ⬜ TODO |
+| I2 | **portal/staff/tickets.html** | Two views: Member (own tickets) / Supervisor (full dept queue) · Create ticket/task · Assign (supervisor only) · Status update · Comments thread · File upload · Link field · Forward to dept · Escalate to management · Filter by status/priority/assignee | portal/staff/tickets.html | ⬜ TODO |
+| I3 | **portal/staff/attendance.html** | Log meeting/event attendance · Fields: Event name, date, duration, type (meeting/training/event/other), notes · Submission history table · Monthly attendance summary | portal/staff/attendance.html | ⬜ TODO |
+| I4 | **portal/staff/claims.html** | Attendance-based claim · Auto-pulls from attendance log · Month selector · Readonly: events attended, total sessions · Submit claim → Management approval queue | portal/staff/claims.html | ⬜ TODO |
+| I5 | **portal/staff/content-bank.html** | Dept shared link bank · Add link: name/URL/date/desc · List view sorted newest-first · Search/filter · Supervisor sees all depts in dropdown | portal/staff/content-bank.html | ⬜ TODO |
+| I6 | **portal/staff/schedule.html** *(PR/Ops only)* | Teacher schedule builder · Student-teacher assignment table (B-groups/C-groups/T-groups) · Conflict checker (auto-flag overlapping slots) · Batch/group code management · Assign students to teachers · Post-class submission tracker (WBD name, link, duration, recording — 24hr SLA, overdue flag + remind button per teacher) | portal/staff/schedule.html | ⬜ TODO |
+| I7 | **portal/staff/hr-candidates.html** *(HR only)* | Candidate bank (name/role/status/CV link/notes, active/inactive) · Interview scheduler (self-service slot picker) · Trial task assignment + feedback form (star rating + text) · Offer letter tracker · Warning/termination log (management-triggered) · Outreach log for Topper Hunt (contacted/responded/invited) | portal/staff/hr-candidates.html | ⬜ TODO |
+| I8 | **portal/staff/finance-rates.html** *(Finance only)* | Rate card matrix (course × country × group code: B-groups/C-groups/T-groups) · Invoice manager (auto-generate from enrolment + rate card, issue to parent) · Payment tracker (Paid/Due/Overdue/Deactivated per student, colour-coded) · Payment reminder stage tracker (5 stages, WA button auto-selects correct message) · Pre-check gate at student activation (payment method confirmed, first invoice paid) · Budget planner (dept allocation table, submit to management, approval status) · Discount/coupon manager (assign to student, auto-applies to next invoice) | portal/staff/finance-rates.html | ⬜ TODO |
+| I9 | **portal/staff/marketing-calendar.html** *(Marketing only)* | Posting calendar (Canva link + Drive link + caption + date + status: Scheduled/Posted/Missed, auto-flag if missed) · Asset bank (name/type/Drive link/date/campaign tag) · Lead log (source/name/contact/date/passed-to-PR flag + handoff button → triggers PR ticket) · Ambassador tracker (name/cohort 3mo–6mo/referrals/enrolments/commission/status, auto-compute commission) | portal/staff/marketing-calendar.html | ⬜ TODO |
+| I10 | **portal/staff/meetings.html** *(All staff)* | Interdept meeting request flow: Create meeting (title/dept/person/date/time/agenda) · Target dept/person accepts, reschedules, or declines · Confirmed meetings shown in calendar view · Bimonthly Workshop + Townhall scheduling (management creates, all-staff notified) | portal/staff/meetings.html | ⬜ TODO |
 
 ---
 
-### PHASE G — Staff Portal
+### PHASE J — Ambassador Portal (NEW)
 
 | # | Page | Sections | Files | Status |
 |---|------|----------|-------|--------|
-| G1 | **portal/staff/dashboard.html** | Sidebar · Today's classes · Pending attendance submissions · Open support tickets · Payment claim status | portal/staff/dashboard.html | ⬜ TODO |
-| G2 | **portal/staff/attendance.html** | Attendance submission form · Student list selector · Duration field · Whiteboard name + link · Attendance date · Format validation · Submission history table | portal/staff/attendance.html | ⬜ TODO |
-| G3 | **portal/staff/timesheet.html** | Log session hours form · Monthly summary table · Hours total · Link to payment claim | portal/staff/timesheet.html | ⬜ TODO |
-| G4 | **portal/staff/payment-claims.html** | Submit claim form · Claim history · Status badges (Pending/Approved/Paid) | portal/staff/payment-claims.html | ⬜ TODO |
+| J1 | **portal/ambassador/dashboard.html** | Sidebar · Welcome + role note (no student access) · Quick stats: tickets raised, open, resolved · Quick action: New Ticket | portal/ambassador/dashboard.html | ⬜ TODO |
+| J2 | **portal/ambassador/tickets.html** | Raise ticket to DC staff · Select dept · Title/desc/priority/attachments · View own ticket history + replies · Cannot see student/parent data at any point | portal/ambassador/tickets.html | ⬜ TODO |
 
 ---
 
-### PHASE H — Admin Portal
+### PHASE K — Rename & Amendment Pass
 
-| # | Page | Sections | Files | Status |
-|---|------|----------|-------|--------|
-| H1 | **portal/admin/dashboard.html** | Live stat cards (enrolments, revenue, active classes, open tickets) · Enrolment trend mini chart · Recent activity feed · Quick actions | portal/admin/dashboard.html | ⬜ TODO |
-| H2 | **portal/admin/users.html** | User table (all roles) · Role filter · Add user form · Invite link generator · Deactivate toggle · Search | portal/admin/users.html | ⬜ TODO |
+One session to handle all renames and structural fixes before new portal phases launch.
+
+| # | Task | Files | Status |
+|---|------|-------|--------|
+| K1 | Move `portal/staff/*` → `portal/teacher/*` · Update all paths, nav links, sidebar labels, role badges · "Staff Portal" → "Teacher Portal" throughout | portal/teacher/dashboard,attendance,timesheet,payment-claims | ✅ Done |
+| K2 | Move `portal/admin/*` → `portal/management/*` · Update sidebar, role badge, nav items to match Phase H spec | portal/management/dashboard | ✅ Done |
+| K3 | Update `portal/student/support.html` · Ticket routing: student selects dept when raising ticket · Remove hardcoded "WhatsApp DC" as primary — ticket system is primary | portal/student/support.html | ✅ Done |
+| K4 | Update `portal/parent/fees.html` + `dashboard.html` · Add ticket raise option routed to Finance/HR as appropriate | portal/parent/ | ✅ Done |
+| K5 | Update `auth/login.html` role routing · Add routes for: teacher / staff / ambassador / management portals | auth/login.html | ✅ Done |
+
+**Build order going forward: I1–I5 → I6–I10 → J1–J2**
+
+- K1–K5 ✅ Done
+- H1–H3 ✅ Done
+- H4 ✅ Done (file existed from prior session, PLAN.md updated)
+- G5 ✅ Done
+- Next: I1 (staff/dashboard.html) → I2–I5 → I6 (PR schedule) → I7 (HR candidates) → I8 (Finance rates) → I9 (Marketing calendar) → I10 (Meetings) → J1–J2 (Ambassador portal)
 
 ---
 
@@ -622,3 +762,182 @@ Next: build inner pages, mock simulator, then portals — one per session.
 **State of build:** auth/ directory created. login.html: dark/light split layout (left panel — brand, stats, testimonial; right panel — email/password form, role auto-detection strip, Google OAuth stub, show/hide password toggle, remember me, loading state, demo auth stub: password "demo" routes to portal by detected role). forgot-password.html: centered card, email input, loading state, success state (shows sent email). Both pages support theme toggle (Sun/Moon), back links, enter-key submit. Sign In nav button added to all inner pages (about, services, pricing, resources, careers, contact, mock) and all services/ sub-pages.
 **Watch out for:** Auth is stub-only — no real backend. In production replace the setTimeout demo block in login.html with a real API call (Firebase Auth, Supabase, Auth0, etc.) and the forgot-password setTimeout with a real password reset endpoint. Google OAuth button shows an alert — wire up your OAuth provider. Role detection is email-keyword based (staff/admin/teacher/tutor/parent → respective portals, else student) — replace with server-side role lookup post-auth. Portal pages (E1+) are all still ⬜ TODO — login currently routes to paths that 404.
 **Files changed this session:** auth/login.html (new), auth/forgot-password.html (new), about.html, services.html, pricing.html, resources.html, careers.html, contact.html, mock.html, services/[all 6].html (Sign In nav button added), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v41
+
+**Last section built:** E1 — portal/student/dashboard.html
+**Next section:** E2 — portal/student/classes.html (Weekly calendar view · Class cards with subject/teacher/Zoom link · Attendance record table · Missed class tracker · Reschedule request button · Timezone display toggle)
+**State of build:** Student dashboard complete. Sections: portal-sidebar (logo, initials avatar, role badge, full nav links: Dashboard/Classes/Assignments/Recordings/Progress/Curriculum/Support/Free Mock/Materials, sign out), sticky topbar (page title, live timezone badge, notification bell with dot, theme toggle Sun/Moon), missed-class alert banner (hidden by default, shown via ?missed=1), welcome banner (personalised name via ?name= param or localStorage, classes-today/assigns-due counts, View Schedule + My Progress CTAs), 4 stat cards (Classes This Week, Attendance Rate, Avg Mock Score, Chapters Done), 2-col responsive grid — left: Today's Classes (2 class cards with coloured dot/subject/teacher/time/Join Zoom button), Assignments Due (3 rows with due-today/due-soon/due-ok badges), Onboarding Checklist (5 items, 3 done, progress bar); right: Progress Snapshot (4 subject bars with A* gap analysis callout), Announcements Feed (3 items with gold/blue/grey left borders), Quick Links 3×2 grid (Zoom/GCR/WhatsApp/Free Mock/Notes/Support). Theme full light/dark. Timezone auto-detected from browser. Role simulation via ?role= URL param.
+**Watch out for:** E2 classes.html — weekly calendar can be a 7-column grid (Mon–Sun) with class pills. Show timezone toggle prominently (UJM pain point: wrong timezone displayed). Attendance table: columns = Date, Subject, Teacher, Status (Present/Absent/Excused). Reschedule button should open a modal or link to support.html with pre-filled category. Use portal.css modal system (data-modal-open attr + DC.portal.openModal()). Load: shared.css → portal.css → theme.js → portal.js in that order — same as dashboard. Paths from portal/student/ to root = ../../.
+**Files changed this session:** portal/student/dashboard.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v42
+
+**Last section built:** E2 — portal/student/classes.html
+**Next section:** E3 — portal/student/assignments.html (Active assignments list · Submit button · Submission history · Past paper checklist tick-off by subject/year)
+**State of build:** classes.html complete. Sections: sidebar (same source-of-truth nav, Classes active), sticky topbar, timezone bar (auto-detects browser tz + manual switcher dropdown: MY/IN/KSA/UK/PK), week nav (prev/next/Today buttons, 5-week stub array), mobile note (cal hidden <900px, text fallback), 11-row weekly calendar grid (8am–6pm, 8 class pills across Mon/Tue/Wed/Thu/Fri — IGCSE Maths/Physics/A Level Chem/Bio, colour-coded: blue=maths, gold=chem, red=phys, grey=bio), click-pill opens class detail modal (subject/teacher/time/date/topic, Join Zoom + Whiteboard + Recording links), class list cards (8 cards with colour bar, subject/teacher/time/topic chips + Join Zoom button), missed class tracker (2 missed entries with Reschedule button each), reschedule modal (reason select + preferred window + notes + submit → success message + auto-close 2.8s), attendance table (10 rows: Date/Subject/Teacher/Status with present/absent/excused badges). Light/dark full support.
+**Watch out for:** E3 assignments.html — active assignments: show card list with subject, description, due date badge, Submit CTA (opens modal or links to GCR). Submission history: table (Date Submitted, Subject, Assignment, Status: Submitted/Graded/Late). Past paper checklist: grouped by subject, each past paper year is a checkbox row student can tick off — store tick state in localStorage key `dc-pp-{subject}-{year}`. Use portal.css tabs to switch between Active / History / Past Papers views.
+**Files changed this session:** portal/student/classes.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v43
+
+**Last section built:** E3 — portal/student/assignments.html
+**Next section:** E4 — portal/student/recordings.html (Subject filter tabs · Recording cards date/topic/teacher · Embedded YouTube/Zoom player · Download notes button)
+**State of build:** assignments.html complete. 3 portal tabs: (1) Active — 4 assignment cards (IGCSE Maths/A Level Chem/IGCSE Physics/A Level Bio) with coloured dot, title, description, due-date chip, time-estimate chip, due badge (today/soon/ok), Submit button; 1 recently-submitted card (greyed, ✓ Submitted tag). Submit opens modal: submission method select (GCR/upload/Google Doc link), file upload zone (click to select PDF/image, filename previews), score field, teacher notes, confirm → success message + auto-close. (2) Submission History — table: Date/Subject/Assignment/Score/Status with Submitted/Graded/Late badges (8 rows of stub data). (3) Past Paper Checklist — 4 subjects (IGCSE Maths 8 papers, A Level Chem 8, IGCSE Physics 6, A Level Bio 7), each paper is a clickable tick row with inline score input; tick state + scores persisted in localStorage (keys: dc-pp-{id}, dc-pp-score-{id}); overall progress bar at bottom showing done/total count. Light/dark full support.
+**Watch out for:** E4 recordings.html — filter tabs by subject (All / IGCSE Maths / A Level Chem / IGCSE Physics / A Level Biology). Recording cards: date, topic, teacher, duration, thumbnail placeholder (grey box with play icon), "Watch" button (opens inline player modal or links to YouTube/Zoom recording URL stub), "Download Notes" button (links to GCR or shows alert stub). UJM note: "Recording not uploaded promptly" pain point — show a "Coming Soon" badge on the most recent class (today/yesterday) to set expectations. Use inner.css/shared.css — same portal shell as other pages.
+**Files changed this session:** portal/student/assignments.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v44
+
+**Last section built:** E4 — portal/student/recordings.html
+**Next section:** E5 — portal/student/progress.html (Monthly score line chart · Subject performance bars · A* gap analysis · Chapter checklist completion % · Doubt tracker log)
+**State of build:** recordings.html complete. Filter pills (All/IGCSE Maths/A Level Chemistry/IGCSE Physics/A Level Biology) + live search input (filters by topic or teacher name). 12-card responsive grid (auto-fill minmax 280px): each card has coloured subject bar, thumbnail area with gold play circle ("Click to watch"), topic, teacher/date/duration chips, subject label, Watch button + Download Notes button. Most recent card (6 May, Quadratics Problem Set) has "Processing" coming-soon overlay per UJM pain point. Watch opens player modal (stub — dark player box with placeholder message + title/meta strip + Download Notes link). Notes btn shows alert stub. Filter + search both re-render grid live. UJM notice bar at top ("recordings uploaded within 24 hours"). Light/dark full support. Recording data in JS array — owner replaces url:'#' with real Zoom/YouTube URLs.
+**Watch out for:** E5 progress.html — use inline SVG for the monthly score line chart (no external chart lib needed — draw polyline/circles on a fixed viewBox). Subject performance bars reuse same pattern as dashboard snapshot but with more detail (show chapter breakdown expandable). A* gap section: show target score (80% for A*, 90%+ for World Topper) vs current avg per subject with delta. Doubt tracker: simple log table — columns: Date, Subject, Chapter, Doubt description, Status (Open/Resolved). Add "Log a Doubt" button that opens a modal. Store doubt log in localStorage key dc-doubts as JSON array.
+**Files changed this session:** portal/student/recordings.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v45
+
+**Last section built:** E5 — portal/student/progress.html
+**Next section:** E6 — portal/student/curriculum.html (Subject tabs · Chapter-by-chapter syllabus · Mark chapter complete toggle · A* checklist milestones · Doubt logger per chapter)
+**State of build:** progress.html complete. Sections: 4 summary stat cards (Overall Avg 74% / Attendance 91% / Chapters 18/24 / Open Doubts 4 — live from localStorage), A* gap callout (gold banner, computed delta vs 80% A* threshold and 90% World Topper), Monthly Score Trend chart (inline SVG polyline — my scores vs DC average vs A* dashed line, 8 months Oct–May, interactive dot tooltips), Subject Performance 2×2 grid (IGCSE Maths 71% gap / A Level Chem 83% A* ✓ / IGCSE Physics 78% close / A Level Bio 63% priority — each card expandable to per-chapter breakdown with score colour coding: green ≥80%, amber 60–79%, red <60%), Doubt Tracker table (seeded with 6 real-style doubts, Open/Resolved badges, Log a Doubt modal → form → success toast → auto-close 2.2s, all state persisted in localStorage key dc-doubts). Light/dark full support.
+**Watch out for:** E6 curriculum.html — tabs per subject, each tab shows chapter list as rows with: chapter name, A* checklist milestone marker, and a "Mark Complete" toggle (store state in localStorage key dc-curriculum-{subject}-{chapter}). Chapter complete % feeds a progress bar at the top of each tab. Doubt logger per chapter is a small inline "Log Doubt" icon button on each chapter row — opens the same doubt modal pre-filled with subject+chapter. Reuse the dc-doubts localStorage array from progress.html so doubt counts stay in sync across pages.
+**Files changed this session:** portal/student/progress.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v46
+
+**Last section built:** E6 — portal/student/curriculum.html
+**Next section:** E7 — portal/student/support.html (Open/closed tickets list · New ticket form: category reschedule/tech/add-drop/other · Status badges · WhatsApp fallback link)
+**State of build:** curriculum.html complete. Subject tabs (4 subjects, each shows completion % in tab label, active tab gold). Progress bar updates live as chapters are ticked. Chapter list grouped into named sections per subject; each row has: checkbox (mark complete, localStorage key dc-curriculum-{id}), chapter number circle, title (click to expand topic list), milestone badge (Core/A* Milestone/World Topper), ? doubt button (opens modal pre-filled with subject+chapter, appends to dc-doubts localStorage array shared with progress.html). Topics expand inline below each row. Demo completions seeded on first load (17 chapters across 4 subjects). Full IGCSE Maths/Chem/Physics/Biology syllabi (6–7 chapters each, grouped into 2–3 sections). Light/dark full support.
+**Watch out for:** E7 support.html — use portal tabs: "My Tickets" (list) and "New Ticket" (form). Ticket list: show stub tickets with category badges and Open/In Progress/Resolved status. New ticket form: fields = Category (select: Reschedule / Technical Issue / Add or Drop Subject / Payment Query / Other), Subject (text), Description (textarea), Preferred Contact (WhatsApp/Email). On submit: show success → add ticket to list (localStorage dc-tickets). WhatsApp fallback strip at bottom: "Need urgent help? WhatsApp us directly" with wa.me/919650675507 link. This is the last student portal page (E7 of E1–E7); after this, next phase is F1 — parent portal.
+**Files changed this session:** portal/student/curriculum.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v47
+
+**Last section built:** E7 — portal/student/support.html
+**Next section:** F1 — portal/parent/dashboard.html (Sidebar · Child selector if multiple · Attendance summary widget · Progress snapshot · Fee status · Upcoming classes read-only)
+**State of build:** support.html complete. Student portal E1–E7 now fully done. Two tabs: "My Tickets" (open count badge) + "+ New Ticket". Ticket list: 4 seeded tickets (TK-001 Resolved/TK-002 In Progress/TK-003 Open/TK-004 Open) — each card shows ID, category chip, urgency badge, subject, date, contact preference, description, staff reply block if resolved. New Ticket form: Category select (Reschedule/Technical/Add-Drop/Payment/Recording Missing/Other), Subject, Description, Preferred Contact, Priority — on submit adds to dc-tickets localStorage, shows success state, redirects to My Tickets. WhatsApp fallback strip on both tabs (wa.me/919650675507). Light/dark full support.
+**Watch out for:** F1 parent/dashboard.html — create portal/parent/ subdirectory. Parent portal sidebar must show role-badge role-parent (not student). Nav links differ from student: Dashboard / Child Progress / Fees (no Curriculum, no Recordings, no Assignments). Child selector: show a dropdown at top of dashboard if multiple children (stub with 2 child names). Stat cards: Attendance Rate, Avg Score, Fee Status (Paid/Due), Next Class. Progress snapshot: read-only subject bars (same data as student progress). Upcoming classes: read-only list (no Join Zoom button — parent view only). Load order: shared.css → portal.css → theme.js → portal.js. Paths from portal/parent/ to root = ../../.
+**Files changed this session:** portal/student/support.html (new), PLAN.md
+---
+
+## 🔖 Handoff Notes — v48
+
+**Last section built:** F1 — portal/parent/dashboard.html
+**Next section:** F2 — portal/parent/progress.html (Monthly report · Scores by subject · Attendance % · Teacher comments placeholder · Download report button)
+**State of build:** dashboard.html complete. Parent portal directory created. Sidebar: role-badge role-parent (sky-blue avatar), nav = Dashboard / Child Progress / Fees / Raise a Ticket / WhatsApp DC (no student-only links). Child selector dropdown (2 stub children: Aanya Sharma — IGCSE Maths/A Level Chem; Rohan Sharma — IGCSE Physics/A Level Bio) with live avatar + stat card updates on switch. Stat cards: Attendance Rate, Avg Score, Fee Status (Paid=green/Due=red), Next Class. 2-col grid: (L) progress snapshot — 4 subject bars (gold default, green ≥80%, red for priority) + last-updated note; (R) upcoming classes read-only list (5 classes, no Join Zoom — parent view only, timezone note at bottom). Quick actions: Full Report / Pay Fees / WhatsApp DC. Announcements: 2 seeded notices. Support modal: inline ticket form (category/subject/desc/contact), saves to localStorage dc-parent-tickets, 2.4s auto-close success. Alert banner: auto-shown for child with fee due (Rohan); can force via ?missed=1. portal.css patched: shorthand role aliases added (.role-student, .role-parent, .role-staff, .role-admin). Light/dark full support.
+**Watch out for:** F2 progress.html — pull same subject bars but expand to per-chapter breakdown (collapsible). Add monthly score trend (reuse inline SVG polyline approach from student progress.html). Attendance % section: show monthly breakdown table (Month / Classes Attended / Total / %). Teacher comments section: stub cards per subject (placeholder text — "Teacher comment for May will appear here"). Download report button: triggers window.print() or generates a stub PDF alert. Paths from portal/parent/ to root = ../../.
+**Files changed this session:** portal/parent/dashboard.html (new), css/portal.css (role alias patch), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v48 (F2)
+
+**Last section built:** F2 — portal/parent/progress.html
+**Next section:** F3 — portal/parent/fees.html (Invoice list · Pay Now button · Payment method selector by country · Payment guides: FPX/DuitNow, Razorpay/UPI, Stripe, EasyPaisa, Al Rajhi, Wise · Receipt download)
+**State of build:** progress.html complete. Child selector (same 2-child stub as dashboard, switches all sections live). A* gap callout (gold banner, child-specific text). Monthly Score Trend: inline SVG polyline chart — child score / DC average / A* dashed line (80%), 8 months Oct–May, interactive dot tooltips. Subject Performance: 4 expandable subject cards per child (colour bar, score bar, badge: A*/On Track/Needs Attention/Priority), click-to-expand chapter breakdown (4 chapters each, colour-coded green/amber/red). Attendance: monthly table (8 months + Overall totals row), colour-coded % badges. Teacher Comments: 4 subject comment cards per child (subject, teacher, month note, stub comment text). Download Report button → window.alert stub. Light/dark full support.
+**Watch out for:** F3 fees.html — two tabs: "Invoices" and "Payment Guide". Invoices tab: list of invoice cards (Invoice #, Month, Amount, Status: Paid/Due/Overdue, Due Date). Each Paid invoice has Download Receipt button (stub alert). Each Due/Overdue invoice has Pay Now button (opens payment modal). Payment modal: region dropdown (Malaysia/India/Saudi Arabia/UK/Pakistan/International) → shows relevant gateway (FPX/DuitNow, Razorpay/UPI, Stripe, Al Rajhi, EasyPaisa, Wise) with logo placeholder and payment instructions. Payment Guide tab: static guide per region — how to pay, which gateway, step-by-step. WhatsApp fallback strip for payment queries. Paths from portal/parent/ to root = ../../.
+**Files changed this session:** portal/parent/progress.html (new), PLAN.md
+
+---
+
+## 🔖 Handoff Notes — v49
+
+**Last section built:** F3 — portal/parent/fees.html
+**Next section:** G1 — portal/staff/dashboard.html (Sidebar · Today's classes · Pending attendance submissions · Open support tickets · Payment claim status)
+**State of build:** fees.html complete. Parent portal F1–F3 now fully done. Summary strip: Total Paid / Amount Due / Next Invoice. Two tabs: Invoices + Payment Guide. Invoices tab: 2 outstanding cards (INV-2025-04 Overdue/red border + INV-2025-05 Due Soon/amber) each with Pay Now button; 4 paid history cards with Download Receipt stub. Pay Now opens modal: region dropdown (MY/IN/KSA/UK/PK/INTL) → renders gateway name + step-by-step instructions (6 regions: FPX/DuitNow, Razorpay/UPI, Al Rajhi/STC, Stripe, EasyPaisa/JazzCash, Wise/PayPal) → optional ref field → Mark as Paid → success state → auto-close 2.8s. Payment Guide tab: 6 region cards (flag, currency, gateway pills, step-by-step), important notes card, WhatsApp strip on both tabs. Light/dark full support.
+**Watch out for:** G1 portal/staff/dashboard.html — create portal/staff/ subdirectory. Staff sidebar: role-badge role-staff (green avatar), nav = Dashboard / Attendance / Timesheet / Payment Claims. Stat cards: Today's Classes (count), Pending Attendance (count), Open Tickets (assigned to me), Claim Status (last claim: Pending/Approved/Paid). Today's classes: list of class pills with time/subject/student name/Join Zoom + Whiteboard links. Pending attendance: list of unsubmitted sessions (date/subject/student) with Submit button linking to attendance.html. Open tickets: list of assigned student support tickets. Load order: shared.css → portal.css → theme.js → portal.js. Paths from portal/staff/ to root = ../../.
+**Files changed this session:** portal/parent/fees.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v49 (G1)
+
+**Last section built:** G1 — portal/staff/dashboard.html
+**Next section:** G2 — portal/staff/attendance.html (Attendance submission form · Student list selector · Duration field · Whiteboard name + link · Attendance date · Format validation · Submission history table)
+**State of build:** dashboard.html complete. portal/staff/ subdirectory created. Sidebar: role-badge role-staff (green #4caf50 avatar), nav = Dashboard / Attendance / Timesheet / Payment Claims / WhatsApp DC / Sign Out. Claim status strip at top: Last Claim (April Approved £640) / Amount / Pending Attendance count / Open Tickets count / Submit May Claim CTA. 4 stat cards: Today's Classes (3) / Pending Attendance (2) / Open Tickets (3) / Claim Status (April Approved). Quick actions 4-col: Submit Attendance / Log Session / Submit Claim / WhatsApp DC. Two-col grid: Today's Classes (3 sessions with Join Zoom + Whiteboard pill buttons) + Pending Attendance (2 unsubmitted with Submit → attendance.html). Open tickets full-width (3 tickets: TK-011 Open / TK-014 In Progress / TK-017 Open). WA fallback strip. Light/dark full support.
+**Watch out for:** G2 attendance.html — two tabs: Submit Attendance (form) + History (table). Form: Student select (5 stubs), Subject select (by student), Date, Start/End Time, Duration (auto-computed), Whiteboard Name (format hint DC-[date]-[subject]), Whiteboard Link (validate https://), Recording Link (optional URL), Notes. On submit: validate → success → add to dc-staff-attendance localStorage → redirect to History tab. History tab: table (Date/Student/Subject/Duration/Whiteboard/Status: Submitted/Pending Review). Paths ../../.
+**Files changed this session:** portal/staff/dashboard.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v50 (G2)
+
+**Last section built:** G2 — portal/staff/attendance.html
+**Next section:** G3 — portal/staff/timesheet.html (Log session hours form · Monthly summary table · Hours total · Link to payment claim)
+**State of build:** attendance.html complete. Two tabs: Submit Attendance + History. Pending alert banner shows count of unsubmitted sessions (status: 'review'). Form: Student select (5 stubs: Priya/Rohan/Aanya/Arjun/Fatimah) → Subject select auto-populated from STUDENT_SUBJECTS map. Fields: Date, Start Time, End Time (duration auto-computed in minutes and displayed read-only), Whiteboard Name (format hint DC-[date]-[subject]), Whiteboard Link (validates https://), Recording Link (optional), Notes. On submit: full validation → success state (check icon, session detail string, Submit Another button) → record pushed to dc-staff-attendance localStorage (status: 'review'). History tab: table sorted newest-first (Date/Student/Subject/Duration/Whiteboard link/Recording link/Status badge: Submitted=green, Pending Review=amber). 5 seeded records on first visit. updatePendingAlert() recalculates banner count. Light/dark full support.
+**Watch out for:** G3 timesheet.html — two tabs: "Log Session" (form) + "Monthly Summary" (table). Log Session form: Student (select), Subject (select by student, same STUDENT_SUBJECTS map), Date, Start Time, End Time (duration auto-computed), Session Type (Regular / Rescheduled / Trial), Notes. On submit: save to dc-staff-timesheet localStorage. Monthly Summary tab: group records by month (current month default, month selector dropdown). Show table (Date/Student/Subject/Duration/Type) + totals row (total hours for month). Hours total prominently displayed (e.g., "18h 30min this month"). CTA button: "Submit Payment Claim →" links to payment-claims.html. Paths ../../.
+**Files changed this session:** portal/staff/attendance.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v51 (G3)
+
+**Last section built:** G3 — portal/staff/timesheet.html
+**Next section:** G4 — portal/staff/payment-claims.html (Submit claim form · Claim history · Status badges: Pending/Approved/Paid)
+**State of build:** timesheet.html complete. Two tabs: Log Session + Monthly Summary. Log Session form: Student select (5 stubs) → Subject auto-populated, Date, Session Type (Regular/Rescheduled/Trial), Start/End Time (duration auto-computed), Notes. On submit: validate → success state (check icon, session detail, Log Another + View Summary buttons) → save to dc-staff-timesheet localStorage. Monthly Summary tab: month selector dropdown (built from distinct months in data + current month). Hours strip: Total Hours (h min format) / Regular / Rescheduled / Trial — all computed live. Table: Date/Student/Subject/Duration/Type badge/Notes, totals row (gold, Monthly Total + session count). 10 seeded records (May + April 2025). Empty state if no sessions for selected month. Claim CTA strip at bottom → payment-claims.html. Light/dark full support.
+**Watch out for:** G4 payment-claims.html — two tabs: "Submit Claim" + "Claim History". Submit Claim: auto-populate from dc-staff-timesheet for selected month (show total hours and session count as readonly summary). Fields: Month (select), Total Hours (readonly, computed from timesheet), Bank/Payment Details (text — stub: "Barclays ****1234"), Notes/invoice ref (textarea). On submit: save to dc-staff-claims localStorage, show success. Claim History tab: table of past claims (Month / Hours / Amount / Status: Pending/Approved/Paid). Status badges colour-coded. 3 seeded claims (April Approved/March Paid/Feb Paid). Amount computed at £10/hr stub rate. Paths ../../.
+**Files changed this session:** portal/staff/timesheet.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v52 (G4)
+
+**Last section built:** G4 — portal/staff/payment-claims.html
+**Next section:** H1 — portal/admin/dashboard.html (Phase H — Admin Portal begins)
+**State of build:** payment-claims.html complete. Staff portal G1–G4 now fully done. Two tabs: Submit Claim + Claim History. Submit tab: timesheet pull strip (auto-reads dc-staff-timesheet localStorage → shows month/sessions/total hours for selected month). Month selector built from distinct timesheet months. Readonly fields: Total Hours (from timesheet), Claim Amount (computed at £10/hr stub). Editable: Bank Details (pre-filled Barclays ****1234), Notes/Invoice ref. Guard banners: already-claimed warning (disables submit if month already submitted), no-timesheet warning (disables submit if no sessions). On submit: save to dc-staff-claims localStorage (status: pending) → success state with detail string → View Claim History button. Claim History tab: claim cards (ID/month/sessions/hours/notes/amount/status badge: Pending=amber/Approved=green/Paid=blue). 3 seeded claims (April Approved £180/March Paid £160/Feb Paid £140). Totals strip: Total Earned YTD / Total Paid / Pending & Awaiting. WA fallback on both tabs. Light/dark full support.
+**Watch out for:** H1 portal/admin/dashboard.html — create portal/admin/ subdirectory. Admin sidebar: role-badge role-admin (purple avatar), nav = Dashboard / Users / Claims / Tickets / Reports. Stat cards: Total Students (count), Active Staff (count), Open Tickets (count), Pending Claims (count). Sections: Recent enrolments list (5 stub students with subject + date), Pending payment claims (pull from dc-staff-claims or seed — with Approve/Reject actions), Open support tickets (unresolved — with Assign + Resolve actions). Load order: shared.css → portal.css → theme.js → portal.js. Paths from portal/admin/ to root = ../../.
+**Files changed this session:** portal/staff/payment-claims.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v54
+
+**Last section built:** H1 — portal/admin/dashboard.html
+**Next section:** H2 — portal/admin/users.html (User table · Role filter · Add user form · Invite link generator · Deactivate toggle · Search)
+**State of build:** Admin dashboard complete. Sidebar: purple avatar, role-admin badge, nav = Dashboard/Users/Claims/Tickets/Reports/WhatsApp/Sign Out. Stat cards pull from localStorage (dc-staff-claims, dc-tickets) with fallbacks. Enrolment trend inline SVG polyline chart (Jan–May, 5 data points). Recent activity feed. Recent enrolments table (5 stub students). Pending claims (2, with Approve/Reject actions + prompt for reason). Open tickets (3, with Resolve + Assign stubs). Actions update UI + append to activity feed live. Light/dark full support.
+**Watch out for:** H2 users.html — build user table with all roles (student/parent/staff/admin). Role filter tabs. Add user form (name/email/role/subject) with invite link generation. Deactivate toggle (localStorage flag). Search filters table live. Paths from portal/admin/ = ../../.
+**Files changed:** portal/admin/dashboard.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v55
+
+**Last section built:** K1–K5 — Rename & Amendment Pass (all tasks)
+**Next section:** H2 — portal/management/users.html (User table · Role filter · Add user · Supervisor assignment · Invite link · Deactivate toggle · Search)
+**State of build:** K1: portal/staff/ copied to portal/teacher/ — all 4 pages patched (title, sidebar label "Teacher Portal", role badge "Teacher", role-teacher class). K2: portal/admin/dashboard.html moved to portal/management/ — "Management Portal" label, role-management badge, nav links updated (metrics/tickets/claims now real hrefs). K3: student/support.html — dept routing select added (PR/Finance/IT/HR/Marketing), ticket system made primary over WhatsApp. K4: parent/dashboard.html support modal — Finance/PR/HR/IT dept routing added; fees.html — Raise a Ticket sidebar link added. K5: auth/login.html — teacher/management/ambassador portals routed correctly.
+**Watch out for:** Old portal/staff/ and portal/admin/ dirs still exist in ZIP — they are the legacy teacher/admin pages and should remain as-is until user confirms removal (to avoid broken links during transition). portal/staff/ will be repurposed for NEW Staff portal (Phase I) — do NOT delete it. portal/ambassador/ dir does not yet exist — J1–J2 will create it.
+**Files changed this session:** portal/teacher/[all 4].html, portal/management/dashboard.html, portal/student/support.html, portal/parent/dashboard.html, portal/parent/fees.html, auth/login.html, PLAN.md
+
+## 🔖 Handoff Notes — v56
+
+**Last section built:** H2 — portal/management/users.html
+**Next section:** H3 — portal/management/metrics.html (per-dept + per-staff performance · all metric categories · weekly trend line graphs · dept filter · staff drill-down · date range selector)
+**State of build:** users.html complete. Stat strip (total/students/parents/staff+teachers). Add User panel (toggle show/hide): name/email/role/dept/supervisor tag/subject fields; invite link generator (base64 token stub, copy button); saves to dc-users localStorage. Role filter tabs (All/Students/Parents/Teachers/Staff/Ambassadors/Management). Live search (name+email). User table: avatar initials, role badge coloured, dept+subject, supervisor badge, active toggle (enable/disable), Make Supervisor / Deactivate actions. Deactivate confirm modal. 16 seeded users across all roles. Also fixed management/dashboard.html nav duplication (Users/Metrics icons swapped).
+**Watch out for:** Invite link is a stub URL — no real backend. In production replace generateInvite() with a server-side token endpoint. dc-users localStorage is shared across portal pages — if metrics.html or tickets.html need user data, read from same key. Supervisor tag controls dept-level access in the role architecture — management must assign this correctly per dept.
+**Files changed this session:** portal/management/users.html (new), portal/management/dashboard.html (nav fix), PLAN.md
+
+## 🔖 Handoff Notes — v57
+
+**Last section built:** H3 — portal/management/metrics.html
+**Next section:** H4 — portal/management/tickets.html (all tickets across all roles · filter by role/dept/status/priority · assign · close · escalation queue · interdept view)
+**State of build:** metrics.html complete. 6 category tabs: Productivity / Attendance / Financial / Activity / Workload / Quality. Filter bar: dept dropdown (PR/HR/Finance/Marketing/IT), staff member dropdown, date range (4w/8w/3m/6m). Metric cards: per-category KPIs with avg value, delta chip (up/down/flat vs prior half-period), inline sparkline. Weekly trend chart: per-staff sparkline for primary metric, all filtered staff overlaid. Staff breakdown table: per-staff row with mini progress bars, colour-coded (green ≥80%, red <60% or inverted for lower-better metrics), Drill Down button. Drill-down panel: expands below table with detailed sparklines per selected staff member. All data is seeded/deterministic — no real backend needed for prototype.
+**Watch out for:** Metric data is stub (seeded with Math.sin for realistic waves). In production replace DATA object with API calls per category+filter. The `dc-users` localStorage from users.html (H2) is not yet read by metrics — future enhancement: pull staff list from dc-users dynamically. H4 tickets.html should read from `dc-tickets` localStorage (seeded in student/support.html and parent/dashboard.html) plus management-created tickets.
+**Files changed this session:** portal/management/metrics.html (new), PLAN.md
+
+## 🔖 Handoff Notes — v60
+
+**Last section built:** PLAN.md update only — no code changes this session
+**Next section:** H4 — portal/management/tickets.html (all tickets across all roles · filter by role/dept/status/priority · assign · close · escalation queue · interdept view)
+**State of build:** PLAN.md updated: (1) Fixed stale ⬜→✅ for B5–B12, C1–C3, D1–D2, H2–H3, K1–K5. (2) ZIP integrity rule added to Agent Instructions (step 7). (3) Phase I expanded: I6 PR/schedule, I7 HR/candidates, I8 Finance/rates, I9 Marketing/calendar, I10 All-staff/meetings — each dept-specific page mapped to UJM + CSV workflows. (4) G5 now includes pre-class checklist widget on teacher dashboard. (5) File structure updated with I6–I10 paths. (6) Build order corrected: H4 → G5 → I1–I10 → J1–J2.
+**Watch out for:** I6–I10 are dept-specific pages — they are accessed from the staff sidebar only when the logged-in user's dept tag matches (use JS show/hide or separate nav items per dept). I1 dashboard must read dept tag from localStorage dc-role or dc-dept and show relevant quick-action buttons accordingly. H4 must read dc-tickets from student/support.html + parent/dashboard.html localStorage seeds.
+**Files changed this session:** PLAN.md only
+
+## 🔖 Handoff Notes — v61
+
+**Last section built:** G5 — portal/teacher/tickets.html + pre-class checklist widget on teacher/dashboard.html. H4 confirmed done (file existed, PLAN.md updated).
+**Next section:** I1 — portal/staff/dashboard.html (dept-aware quick actions, stat cards, my tasks today, dept announcements)
+**State of build:** teacher/tickets.html: 5 seeded tickets, reply-only interface, status auto-updates to "Awaiting Staff Review" on reply, comments thread, filter bar, stat strip, detail panel — cannot close/reassign. teacher/dashboard.html: pre-class 5-point checklist widget added (Recording ON / Breakout room / Camera on / Whiteboard titled / Students reminded), dismissible per day (localStorage dc-checklist-dismissed), check state persisted (dc-checklist), resets daily, gold progress bar. Tickets nav link added to teacher sidebar.
+**Watch out for:** I1 staff/dashboard.html — portal/staff/ dir already exists (legacy teacher pages from before rename). Overwrite only dashboard.html — do NOT touch the teacher/ copies there. Staff dept tag drives which quick actions show (PR sees Schedule+Tickets+Content Bank; HR sees Candidates+Tickets; Finance sees Rates+Invoices+Claims; Marketing sees Calendar+Leads+Ambassador; IT sees Ticket Queue+Tool Access). Read dept from localStorage dc-dept or URL param ?dept=. Stat cards: open tasks, overdue, tickets this week, attendance streak.
+**Files changed this session:** portal/teacher/tickets.html (new), portal/teacher/dashboard.html (checklist widget + tickets nav link), PLAN.md
