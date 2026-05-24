@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { revalidatePath, cacheLife, cacheTag, revalidateTag } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 async function requireManagementAccess() {
   const session = await auth();
@@ -286,12 +286,10 @@ export async function getManagementTrends() {
   };
 }
 
-async function _getAnnouncementsCached() {
-  "use cache";
-  cacheLife("minutes"); // Announcements can be urgent — revalidate every 2 min
-  cacheTag("announcements");
-  return prisma.announcement.findMany({ orderBy: { createdAt: "desc" }, take: 20 });
-}
+const _getAnnouncementsCached = unstable_cache(
+  async () => prisma.announcement.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
+  ["announcements"], { revalidate: 120 }
+);
 
 export async function getAnnouncements() {
   const session = await auth();
@@ -308,7 +306,6 @@ export async function createAnnouncement(data: {
   await requireManagementAccess();
 
   const ann = await prisma.announcement.create({ data });
-  revalidateTag("announcements"); // Instant cache invalidation on new announcement
   revalidatePath("/portal/management");
   revalidatePath("/portal/student");
   revalidatePath("/portal/teacher");
@@ -320,6 +317,5 @@ export async function deleteAnnouncement(id: string) {
   await requireManagementAccess();
 
   await prisma.announcement.delete({ where: { id } });
-  revalidateTag("announcements");
   revalidatePath("/portal/management");
 }

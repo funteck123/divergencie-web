@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { revalidatePath, cacheLife, cacheTag } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 export async function getStudentProgressStats(studentEmail: string) {
   const session = await auth();
@@ -99,12 +99,10 @@ export async function submitAssignment(assignmentId: string, submission: string)
   return a;
 }
 
-async function _getSyllabusAll() {
-  "use cache";
-  cacheLife("hours"); // Curriculum rarely changes — cache for 1 hour
-  cacheTag("syllabus");
-  return prisma.syllabusItem.findMany({ orderBy: [{ subject: "asc" }, { order: "asc" }] });
-}
+const _getSyllabusAll = unstable_cache(
+  async () => prisma.syllabusItem.findMany({ orderBy: [{ subject: "asc" }, { order: "asc" }] }),
+  ["syllabus-items-all"], { revalidate: 3600 }
+);
 
 export async function getSyllabusItems(subject?: string) {
   const session = await auth();
@@ -126,12 +124,10 @@ export async function getStudentProgress(studentEmail: string) {
   });
 }
 
-async function _getAllRecordingsCached() {
-  "use cache";
-  cacheLife("minutes"); // New recordings appear within minutes of a class
-  cacheTag("recordings");
-  return prisma.recording.findMany({ orderBy: { date: "desc" } });
-}
+const _getAllRecordingsCached = unstable_cache(
+  async () => prisma.recording.findMany({ orderBy: { date: "desc" } }),
+  ["recordings-all"], { revalidate: 300 }
+);
 
 export async function getRecordings(subject?: string, search?: string) {
   const session = await auth();

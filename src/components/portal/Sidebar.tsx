@@ -48,7 +48,6 @@ const MENU_ITEMS: Record<string, any[]> = {
     { label: "Claims", icon: CreditCard, href: "/portal/teacher/claims" },
     { label: "Student Doubts", icon: HelpCircle, href: "/portal/teacher/doubts" },
     { label: "Support", icon: MessageSquare, href: "/portal/teacher/tickets" },
-    { label: "Meetings", icon: Users, href: "/portal/staff/shared/meetings" },
   ],
   management: [
     { label: "Dashboard", icon: LayoutDashboard, href: "/portal/management" },

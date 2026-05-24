@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   // ── Cache Components (Next.js 16 stable caching model) ───────────────────
   // Enables 'use cache', cacheLife, and cacheTag directives.
   // Replaces unstable_cache throughout the app.
-  cacheComponents: true,
+  // cacheComponents: true,
 
   // ── External packages (server-only, skip bundling) ───────────────────────
   serverExternalPackages: ["@prisma/client", "better-sqlite3"],

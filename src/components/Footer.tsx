@@ -1,17 +1,18 @@
-"use client";
+// "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { Camera, Link as LinkIcon, Send, Mail, MapPin, Phone } from "lucide-react";
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  //"use cache";
+  const currentYear = 2026; // new Date().getFullYear();
 
   return (
     <footer className="bg-[var(--navy)] text-white pt-24 pb-12 overflow-hidden relative">
       {/* Background Glow */}
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[var(--gold)] opacity-5 rounded-full blur-[120px] -mr-64 -mb-64"></div>
-      
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
           {/* Brand Col */}

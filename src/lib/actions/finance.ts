@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { revalidatePath, cacheLife, cacheTag } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 async function requireFinanceAccess() {
   const session = await auth();
@@ -64,12 +64,10 @@ export async function getInvoiceStats() {
   return { total, collected, pending: total - collected, overdue };
 }
 
-async function _getRateCardsCached() {
-  "use cache";
-  cacheLife("hours"); // Rate cards change infrequently
-  cacheTag("rate-cards");
-  return prisma.rateCard.findMany({ orderBy: [{ course: "asc" }, { country: "asc" }] });
-}
+const _getRateCardsCached = unstable_cache(
+  async () => prisma.rateCard.findMany({ orderBy: [{ course: "asc" }, { country: "asc" }] }),
+  ["rate-cards"], { revalidate: 3600 }
+);
 export async function getRateCards() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
@@ -90,8 +88,6 @@ export async function upsertRateCard(data: {
   const card = existing
     ? await prisma.rateCard.update({ where: { id: existing.id }, data: { rateGBP: data.rateGBP } })
     : await prisma.rateCard.create({ data });
-  const { revalidateTag } = await import("next/cache");
-  revalidateTag("rate-cards");
   revalidatePath("/portal/staff/finance/rates");
   return card;
 }
