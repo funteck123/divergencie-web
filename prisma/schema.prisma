@@ -1,0 +1,407 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id              String               @id @default(cuid())
+  email           String               @unique
+  name            String
+  role            String
+  dept            String?
+  supervisor      Boolean              @default(false)
+  subGroup        String?
+  subject         String?
+  active          Boolean              @default(true)
+  passwordHash    String?
+  referralCode    String?              @unique
+  createdAt       DateTime             @default(now())
+  phone           String?
+  address         String?
+  bio             String?
+  grade           String?
+  board           String?
+  targetUni       String?
+  hourlyRate      Float?
+  specialization  String?
+  parentId        String?
+  attendances     Attendance[]
+  claims          Claim[]
+  doubts          Doubt[]              @relation("StudentDoubt")
+  meetings        MeetingParticipant[]
+  mockResults     MockResult[]
+  referrals       Referral[]           @relation("Referrer")
+  assignedTickets Ticket[]             @relation("TicketAssignee")
+  ticketsCreated  Ticket[]             @relation("TicketCreator")
+  history         TicketHistory[]
+  messages        TicketMessage[]
+  teacherSessions AcademicSession[]    @relation("TeacherSessions")
+  studentSessions AcademicSession[]    @relation("StudentSessions")
+  parent          User?                @relation("ParentStudent", fields: [parentId], references: [id])
+  students        User[]               @relation("ParentStudent")
+  teacherGroups   Group[]              @relation("TeacherGroups")
+  studentGroups   Group[]              @relation("StudentGroups")
+  assignments     Assignment[]
+  invoices        Invoice[]
+}
+
+model Group {
+  id        String            @id @default(cuid())
+  code      String            @unique
+  subject   String
+  teacherId String
+  teacher   User              @relation("TeacherGroups", fields: [teacherId], references: [id])
+  students  User[]            @relation("StudentGroups")
+  sessions  AcademicSession[]
+  createdAt DateTime          @default(now())
+
+  @@index([teacherId])
+}
+
+model Referral {
+  id         String   @id @default(cuid())
+  code       String
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  referrerId String
+  studentId  String?  @unique
+  referrer   User     @relation("Referrer", fields: [referrerId], references: [id])
+
+  @@index([referrerId])
+}
+
+model Ticket {
+  id             String          @id @default(cuid())
+  displayId      String          @default("PENDING") @unique
+  title          String
+  description    String
+  status         String          @default("OPEN")
+  priority       String          @default("NORMAL")
+  creatorId      String
+  assigneeId     String?
+  department     String?
+  originalDept   String?
+  attachmentLink String?
+  category       String?
+  routingStack   String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  assignee       User?           @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  creator        User            @relation("TicketCreator", fields: [creatorId], references: [id])
+  history        TicketHistory[]
+  messages       TicketMessage[]
+
+  @@index([creatorId])
+  @@index([assigneeId])
+  @@index([department, status])
+  @@index([status, updatedAt])
+}
+
+model TicketCategory {
+  id         String   @id @default(cuid())
+  name       String
+  department String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([name, department])
+}
+
+model TicketMessage {
+  id             String   @id @default(cuid())
+  ticketId       String
+  senderId       String
+  body           String
+  isInternal     Boolean  @default(false)
+  attachmentLink String?
+  createdAt      DateTime @default(now())
+  sender         User     @relation(fields: [senderId], references: [id])
+  ticket         Ticket   @relation(fields: [ticketId], references: [id])
+
+  @@index([ticketId])
+  @@index([senderId])
+}
+
+model TicketHistory {
+  id        String   @id @default(cuid())
+  ticketId  String
+  actorId   String
+  action    String
+  meta      String?
+  createdAt DateTime @default(now())
+  actor     User     @relation(fields: [actorId], references: [id])
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+
+  @@index([ticketId])
+  @@index([actorId])
+}
+
+model Attendance {
+  id        String          @id @default(cuid())
+  sessionId String
+  studentId String
+  status    String          @default("present")
+  duration  Int?
+  notes     String?
+  wbLink    String?
+  markedAt  DateTime        @default(now())
+  student   User            @relation(fields: [studentId], references: [id])
+  session   AcademicSession @relation(fields: [sessionId], references: [id])
+
+  @@index([studentId])
+  @@index([sessionId])
+}
+
+model Claim {
+  id        String   @id @default(cuid())
+  userId    String
+  month     String
+  sessions  Int?
+  hours     Float?
+  amount    Float
+  status    String   @default("pending")
+  notes     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Meeting {
+  id           String               @id @default(cuid())
+  title        String
+  dateTime     DateTime
+  agenda       String?
+  status       String               @default("pending")
+  link         String?
+  dept         String?
+  createdAt    DateTime             @default(now())
+  participants MeetingParticipant[]
+}
+
+model MeetingParticipant {
+  id        String  @id @default(cuid())
+  meetingId String
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  meeting   Meeting @relation(fields: [meetingId], references: [id])
+
+  @@index([userId])
+  @@index([meetingId])
+}
+
+model Candidate {
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  name                 String
+  role                 String
+  status               String    @default("active")
+  cvLink               String?
+  docsLink             String?
+  notes                String?
+  outreach             String?
+  interviewRequestedAt DateTime?
+  createdAt            DateTime  @default(now())
+}
+
+model RateCard {
+  id        String   @id @default(cuid())
+  course    String
+  country   String
+  groupCode String
+  rateGBP   Float
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  studentId     String
+  month         String
+  amount        Float
+  status        String   @default("due")
+  reminderStage Int      @default(0)
+  issuedAt      DateTime @default(now())
+  student       User     @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([status])
+}
+
+model AcademicSession {
+  id          String       @id @default(cuid())
+  subject     String
+  topic       String?
+  startTime   DateTime
+  endTime     DateTime
+  zoomLink    String?
+  status      String       @default("scheduled")
+  teacherId   String
+  studentId   String
+  groupId     String?
+  teacher     User         @relation("TeacherSessions", fields: [teacherId], references: [id])
+  student     User         @relation("StudentSessions", fields: [studentId], references: [id])
+  group       Group?       @relation(fields: [groupId], references: [id])
+  attendances Attendance[]
+
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([startTime])
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime
+  status      String   @default("pending")
+  grade       String?
+  submission  String?
+  studentId   String
+  subject     String
+  student     User     @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+}
+
+model SyllabusItem {
+  id         String            @id @default(cuid())
+  subject    String
+  chapterNum String
+  title      String
+  milestone  String            @default("core")
+  order      Int
+  doubts     Doubt[]
+  progress   StudentProgress[]
+}
+
+model Doubt {
+  id             String       @id @default(cuid())
+  body           String
+  response       String?
+  status         String       @default("pending")
+  createdAt      DateTime     @default(now())
+  studentId      String
+  syllabusItemId String
+  syllabusItem   SyllabusItem @relation(fields: [syllabusItemId], references: [id])
+  student        User         @relation("StudentDoubt", fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@index([syllabusItemId])
+}
+
+model StudentProgress {
+  id             String       @id @default(cuid())
+  studentId      String
+  syllabusItemId String
+  completed      Boolean      @default(false)
+  masteryPct     Int          @default(0)
+  updatedAt      DateTime     @updatedAt
+  syllabusItem   SyllabusItem @relation(fields: [syllabusItemId], references: [id])
+
+  @@unique([studentId, syllabusItemId])
+  @@index([studentId])
+  @@index([syllabusItemId])
+}
+
+model Recording {
+  id        String   @id @default(cuid())
+  title     String
+  subject   String
+  videoUrl  String
+  date      DateTime
+  duration  String
+  category  String
+  createdAt DateTime @default(now())
+}
+
+model MarketingPost {
+  id          String   @id @default(cuid())
+  canvaLink   String?
+  driveLink   String?
+  caption     String?
+  scheduledAt DateTime
+  status      String   @default("scheduled")
+  contentType String?
+  campaignTag String?
+  createdAt   DateTime @default(now())
+}
+
+model Lead {
+  id         String   @id @default(cuid())
+  name       String
+  email      String?
+  phone      String?
+  source     String?
+  status     String   @default("new")
+  notes      String?
+  passedToPR Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model AccessLog {
+  id          String   @id @default(cuid())
+  staffName   String
+  toolName    String
+  credential  String?
+  dateGranted DateTime @default(now())
+  revoked     Boolean  @default(false)
+  notes       String?
+}
+
+model Announcement {
+  id         String    @id @default(cuid())
+  title      String
+  body       String
+  targetRole String    @default("all")
+  targetDept String?
+  priority   String    @default("low")
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime?
+}
+
+model Asset {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  driveLink   String
+  campaignTag String?
+  dept        String
+  createdAt   DateTime @default(now())
+}
+
+model MockResult {
+  id        String   @id @default(cuid())
+  studentId String
+  subject   String
+  level     String
+  diff      String
+  score     Int
+  grade     String
+  timeTaken Int
+  createdAt DateTime @default(now())
+  student   User     @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+}
+
+model TicketPermission {
+  id                  String   @id @default(cuid())
+  department          String   @unique
+  canTargetStudent    Boolean  @default(true)
+  canTargetParent     Boolean  @default(true)
+  canTargetTeacher    Boolean  @default(true)
+  canTargetAmbassador Boolean  @default(true)
+  canTargetCandidate  Boolean  @default(true)
+  isInternalOnly      Boolean  @default(false)
+  canTargetPR         Boolean  @default(true)
+  canTargetIT         Boolean  @default(true)
+  canTargetHR         Boolean  @default(true)
+  canTargetFinance    Boolean  @default(true)
+  canTargetMarketing  Boolean  @default(true)
+  canTargetManagement Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
+}

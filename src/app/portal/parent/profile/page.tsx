@@ -1,0 +1,1 @@
+import { auth } from "@/lib/auth"; import { redirect } from "next/navigation"; import ProfileContent from "@/components/portal/ProfileContent"; export default async function ParentProfilePage() { const session = await auth(); if (!session?.user) redirect("/auth/login"); return <ProfileContent user={session.user} />; }

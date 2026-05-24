@@ -1,0 +1,10 @@
+.env
+.env.local
+.env.production
+node_modules/
+.next/
+dev.db
+*.db-journal
+tsconfig.tsbuildinfo
+build_log*.txt
+redo_db.log

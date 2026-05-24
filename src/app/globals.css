@@ -1,0 +1,106 @@
+/* ─── Fonts (must be first @import rules) ──────────────────────── */
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+/* ─── Dark mode variant (Tailwind v4) ──────────────────────────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Brand tokens — Light mode (default) ─────────────────────── */
+:root {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f4f4f4;
+  --bg-tertiary:   #d5e8f0;
+  --navy:          #1a3c5e;
+  --gold:          #e8a832;
+  --sky:           #4a9fd4;
+  --coral:         #e05a4e;
+  --charcoal:      #5c5248;
+  --text-primary:  #1a1a1a;
+  --text-muted:    #666666;
+  --footer-text:   #888888;
+  --gold-light-bg: #fff8e7;
+  --info-bg:       #d5e8f0;
+  --border-subtle: rgba(0,0,0,0.08);
+
+  --badge-student:    #16a34a;
+  --badge-parent:     #e11d48;
+  --badge-teacher:    #0d9488;
+  --badge-staff:      #2563eb;
+  --badge-ambassador: #d97706;
+  --badge-management: #7c3aed;
+}
+
+/* ─── Brand tokens — Dark mode ─────────────────────────────────── */
+.dark {
+  --bg-primary:    #0a0a0a;
+  --bg-secondary:  #111111;
+  --bg-tertiary:   #1a1a1a;
+  --navy:          #1a3c5e;
+  --gold:          #f5c842;
+  --gold-dim:      #c9a030;
+  --text-primary:  #ffffff;
+  --text-muted:    rgba(255,255,255,0.55);
+  --footer-text:   rgba(255,255,255,0.4);
+  --border-subtle: rgba(255,255,255,0.08);
+  --gold-light-bg: #1a1500;
+  --info-bg:       #0d1a24;
+}
+
+html {
+  font-family: "Satoshi", "Inter", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-right {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-in {
+  animation-duration: 0.7s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in { animation-name: fade-in; }
+.slide-in-from-bottom-4 { animation-name: slide-up; }
+.slide-in-from-bottom-8 { animation-name: slide-up; animation-delay: 0.1s; }
+.slide-in-from-bottom-12 { animation-name: slide-up; animation-delay: 0.2s; }
+.slide-in-from-bottom-16 { animation-name: slide-up; animation-delay: 0.3s; }
+.slide-in-from-right { animation-name: slide-right; }
+
+/* ─── Performance & Accessibility ─────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.perf-mode *,
+.perf-mode {
+  animation: none !important;
+  transition: none !important;
+}
