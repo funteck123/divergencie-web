@@ -71,13 +71,26 @@ export async function getTickets(userId?: string) {
   if (!session?.user) throw new Error("Unauthorized");
 
   return await prisma.ticket.findMany({
-    where: userId ? { OR: [{ creatorId: userId }, { assigneeId: userId }] } : {},
+    where: userId
+      ? {
+          OR: [
+            { creatorId: userId },
+            { assigneeId: userId },
+            { history: { some: { actorId: userId } } },
+          ],
+        }
+      : {},
     orderBy: { createdAt: "desc" },
     take: 100,
     include: {
       creator: { select: { name: true, email: true, role: true } },
       assignee: { select: { name: true, email: true } },
       _count: { select: { messages: true } },
+      history: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        include: { actor: { select: { name: true, role: true, dept: true } } },
+      },
     },
   });
 }

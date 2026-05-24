@@ -18,6 +18,38 @@ interface Ticket {
   creator: { name: string; email: string };
   assignee?: { name: string; email: string } | null;
   _count?: { messages: number };
+  history?: any[];
+}
+
+function formatLatestAction(historyEntry?: any) {
+  if (!historyEntry) return "";
+  const action = historyEntry.action;
+  const actor = historyEntry.actor;
+  if (!actor) return "";
+
+  let actorStr = actor.name;
+  if (actor.role === "staff" && actor.dept) {
+    actorStr = `${actor.dept} Dept`;
+  } else if (actor.role === "management") {
+    actorStr = "Management";
+  } else if (actor.role) {
+    actorStr = actor.role.charAt(0).toUpperCase() + actor.role.slice(1);
+  }
+
+  const actionLabels: Record<string, string> = {
+    CREATED: "Created",
+    ASSIGNED: "Assigned",
+    FORWARDED: "Forwarded",
+    HANDED_BACK: "Handed Back",
+    CLOSED: "Closed",
+    REOPENED: "Reopened",
+    PROCESSING: "Processing",
+    REPLIED: "Replied",
+    REPLIED_AND_RETURNED: "Replied",
+  };
+
+  const actionWord = actionLabels[action] || action;
+  return `${actionWord} by ${actorStr}`;
 }
 
 interface Props {
@@ -82,6 +114,16 @@ export default function TicketList({ tickets, onSelect, selectedId }: Props) {
               }`}>
                 {t.title}
               </h3>
+
+              {t.history && t.history[0] && (
+                <div className={`text-[8px] font-black uppercase tracking-widest mb-3 px-2 py-0.5 rounded w-fit ${
+                  selectedId === t.id 
+                    ? "bg-white/10 text-white/90" 
+                    : "bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-300 border border-purple-100 dark:border-purple-900/20"
+                }`}>
+                  {formatLatestAction(t.history[0])}
+                </div>
+              )}
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">

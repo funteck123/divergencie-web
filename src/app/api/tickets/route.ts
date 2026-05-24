@@ -109,7 +109,11 @@ export async function GET(req: NextRequest) {
       };
     } else {
       where = {
-        OR: [{ creatorId: userId }, { assigneeId: userId }],
+        OR: [
+          { creatorId: userId },
+          { assigneeId: userId },
+          { history: { some: { actorId: userId } } },
+        ],
       };
     }
 
@@ -122,6 +126,11 @@ export async function GET(req: NextRequest) {
         creator: { select: { name: true, email: true, role: true } },
         assignee: { select: { name: true, email: true } },
         _count: { select: { messages: true } },
+        history: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          include: { actor: { select: { name: true, role: true, dept: true } } },
+        },
       },
       orderBy: { updatedAt: "desc" },
       take: 200,
