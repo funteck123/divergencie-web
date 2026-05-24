@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Quick-link cards */
+    .ql-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1.1rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .ql-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    .ql-card svg { width: 22px; height: 22px; color: var(--gold); }
+
+    /* Class card */
+    .class-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s;
+    }
+    .class-card:hover { border-color: var(--gold); }
+    .class-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+    }
+    .class-time { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
+    .class-subject { font-size: 0.9rem; font-weight: 800; color: var(--text-primary); line-height: 1.2; }
+    .class-teacher { font-size: 0.75rem; color: var(--text-muted); }
+    .class-zoom {
+      margin-left: auto; flex-shrink: 0;
+      display: flex; align-items: center; gap: 0.3rem;
+      background: #2D8CFF; color: #fff;
+      border-radius: 6px; padding: 0.3rem 0.7rem;
+      font-size: 0.72rem; font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* Assignment row */
+    .assign-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-primary);
+      margin-bottom: 0.6rem;
+    }
+    .assign-subject { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+    .assign-desc { font-size: 0.72rem; color: var(--text-muted); }
+    .due-badge {
+      font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+    }
+    .due-soon { background: #FFF3CD; color: #856404; }
+    .due-today { background: #FFE0DE; color: var(--coral); }
+    .due-ok { background: #D5ECD4; color: #2D6A2D; }
+
+    /* Progress bar */
+    .prog-bar-wrap { background: var(--bg-secondary); border-radius: 99px; height: 7px; overflow: hidden; }
+    .prog-bar-fill { height: 100%; border-radius: 99px; background: var(--gold); transition: width 0.8s ease; }
+
+    /* Announcement */
+    .announce-item {
+      padding: 0.85rem 1rem;
+      border-left: 3px solid var(--gold);
+      background: var(--bg-secondary);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 0.65rem;
+    }
+    .announce-title { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+    .announce-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .announce-body { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+    /* Progress subject row */
+    .prog-subject-row { margin-bottom: 0.9rem; }
+    .prog-subject-label {
+      display: flex; justify-content: space-between; margin-bottom: 4px;
+      font-size: 0.78rem; font-weight: 700; color: var(--text-primary);
+    }
+    .prog-pct { color: var(--gold); }
+
+    /* Section card */
+    .dash-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.3rem 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .dash-card-title {
+      font-size: 0.9rem; font-weight: 900; color: var(--text-primary);
+      letter-spacing: -0.01em; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .dash-card-title svg { width: 16px; height: 16px; color: var(--gold); }
+
+    /* Onboarding checklist */
+    .check-item {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.5rem 0; border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.8rem; color: var(--text-primary);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-circle {
+      width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900;
+    }
+    .check-done { background: var(--gold); color: #fff; }
+    .check-pending { border: 2px solid var(--border); background: transparent; }
+
+    /* Missed class alert */
+    .missed-alert {
+      background: #FFF3CD; border: 1px solid #FBBF24;
+      border-radius: 10px; padding: 0.75rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1rem; font-size: 0.8rem; color: #856404;
+    }
+    html.dark .missed-alert { background: #2a2100; border-color: var(--gold-dim); color: #f5c842; }
+    .missed-alert svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* Timezone badge */
+    .tz-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2px 10px;
+      font-size: 0.7rem; color: var(--text-muted); font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2col { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="portal-root">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Student Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0" id="avatar-initials">AS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)" id="student-name">Alex Student</div>
+        <div class="role-badge role-student">Student</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item active">
+          <svg data-lucide="layout-dashboard"></svg> Dashboard
+        </a>
+        <a href="classes.html" class="sidebar-nav-item">
+          <svg data-lucide="calendar"></svg> My Classes
+        </a>
+        <a href="assignments.html" class="sidebar-nav-item">
+          <svg data-lucide="clipboard-list"></svg> Assignments
+        </a>
+        <a href="recordings.html" class="sidebar-nav-item">
+          <svg data-lucide="play-circle"></svg> Recordings
+        </a>
+        <a href="progress.html" class="sidebar-nav-item">
+          <svg data-lucide="bar-chart-2"></svg> My Progress
+        </a>
+        <a href="curriculum.html" class="sidebar-nav-item">
+          <svg data-lucide="book-open"></svg> Curriculum
+        </a>
+        <a href="support.html" class="sidebar-nav-item">
+          <svg data-lucide="life-buoy"></svg> Support
+        </a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Resources</div>
+        <a href="../../mock.html" class="sidebar-nav-item">
+          <svg data-lucide="timer"></svg> Mock Solver
+        </a>
+        <a href="../../resources.html" class="sidebar-nav-item">
+          <svg data-lucide="folder-open"></svg> Materials
+        </a>
+      </div>
+    </nav>
+
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)">
+        <svg data-lucide="log-out"></svg> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+
+    <!-- Topbar -->
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle" aria-label="Toggle menu">
+          <svg data-lucide="menu"></svg>
+        </button>
+        <span class="portal-page-title">Dashboard</span>
+        <span class="tz-badge"><svg data-lucide="globe" style="width:11px;height:11px"></svg> <span id="tz-display">Loading…</span></span>
+      </div>
+      <div class="portal-topbar-right">
+        <button class="topbar-bell" aria-label="Notifications">
+          <svg data-lucide="bell"></svg>
+          <span class="topbar-bell-dot"></span>
+        </button>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div style="padding:1.75rem 2rem;max-width:1200px;width:100%">
+
+      <!-- Welcome banner -->
+      <div class="portal-welcome" style="margin-bottom:1.5rem">
+        <div class="portal-welcome-text">
+          <h2>Welcome back, <span class="portal-welcome-gold" id="welcome-name">Alex</span> 👋</h2>
+          <p>You have <strong id="classes-today">2 classes</strong> today and <strong id="assigns-due">3 assignments</strong> due this week. Keep pushing for that A*!</p>
+        </div>
+        <div style="display:flex;gap:0.6rem;margin-top:0.9rem;flex-wrap:wrap">
+          <a href="classes.html" class="portal-btn portal-btn-primary portal-btn-sm">View Schedule</a>
+          <a href="progress.html" class="portal-btn portal-btn-outline portal-btn-sm">My Progress</a>
+        </div>
+      </div>
+
+      <!-- Missed class alert (conditional — shown when missed=true) -->
+      <div class="missed-alert" id="missed-alert" style="display:none">
+        <svg data-lucide="alert-triangle"></svg>
+        <div>You missed <strong>A Level Chemistry</strong> on Mon 5 May. <a href="support.html" style="font-weight:700;text-decoration:underline;color:inherit">Request Reschedule →</a></div>
+        <button onclick="document.getElementById('missed-alert').style.display='none'" style="margin-left:auto;background:none;border:none;cursor:pointer;color:inherit">✕</button>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-grid" style="margin-bottom:1.5rem">
+        <div class="stat-card">
+          <div class="stat-card-label">Classes This Week</div>
+          <div class="stat-card-value">8</div>
+          <div class="stat-card-sub">↑ 2 more than last week</div>
+          <div class="stat-card-icon"><svg data-lucide="calendar-check"></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Attendance Rate</div>
+          <div class="stat-card-value">94%</div>
+          <div class="stat-card-sub">✅ Above target (90%)</div>
+          <div class="stat-card-icon"><svg data-lucide="user-check"></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Avg Mock Score</div>
+          <div class="stat-card-value">76%</div>
+          <div class="stat-card-sub">A* gap: 4% — you're close!</div>
+          <div class="stat-card-icon"><svg data-lucide="target"></svg></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Chapters Done</div>
+          <div class="stat-card-value">18/30</div>
+          <div class="stat-card-sub">60% curriculum complete</div>
+          <div class="stat-card-icon"><svg data-lucide="book-marked"></svg></div>
+        </div>
+      </div>
+
+      <!-- 2-col grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem" class="grid-2col">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+          <!-- Upcoming Classes -->
+          <div class="dash-card">
+            <div class="dash-card-title">
+              <svg data-lucide="calendar"></svg> Today's Classes
+              <a href="classes.html" style="margin-left:auto;font-size:0.72rem;color:var(--gold);font-weight:700;text-decoration:none">See all →</a>
+            </div>
+
+            <div class="class-card">
+              <div class="class-dot" style="background:#4a9fd4"></div>
+              <div style="flex:1">
+                <div class="class-time">09:00 – 10:00 · <span id="tz-class-1">MY time (UTC+8)</span></div>
+                <div class="class-subject">IGCSE Mathematics</div>
+                <div class="class-teacher">Mr. Aryan Shah · Topic: Quadratics</div>
+              </div>
+              <a href="#" class="class-zoom">
+                <svg data-lucide="video" style="width:12px;height:12px"></svg> Join
+              </a>
+            </div>
+
+            <div class="class-card">
+              <div class="class-dot" style="background:#f5c842"></div>
+              <div style="flex:1">
+                <div class="class-time">14:00 – 15:30 · <span id="tz-class-2">MY time (UTC+8)</span></div>
+                <div class="class-subject">A Level Chemistry</div>
+                <div class="class-teacher">Ms. Priya Nair · Topic: Equilibrium</div>
+              </div>
+              <a href="#" class="class-zoom">
+                <svg data-lucide="video" style="width:12px;height:12px"></svg> Join
+              </a>
+            </div>
+
+            <div style="text-align:center;padding:0.4rem 0 0.2rem;font-size:0.72rem;color:var(--text-muted)">
+              Showing today · <a href="classes.html" style="color:var(--gold);font-weight:700;text-decoration:none">Full weekly schedule →</a>
+            </div>
+          </div>
+
+          <!-- Assignments Due -->
+          <div class="dash-card">
+            <div class="dash-card-title">
+              <svg data-lucide="clipboard-list"></svg> Assignments Due
+              <a href="assignments.html" style="margin-left:auto;font-size:0.72rem;color:var(--gold);font-weight:700;text-decoration:none">See all →</a>
+            </div>
+
+            <div class="assign-row">
+              <div>
+                <div class="assign-subject">IGCSE Maths — Past Paper 2023</div>
+                <div class="assign-desc">Complete Paper 2 · Submit via GCR</div>
+              </div>
+              <span class="due-badge due-today">Due Today</span>
+            </div>
+            <div class="assign-row">
+              <div>
+                <div class="assign-subject">A Level Chemistry — Equilibrium Q</div>
+                <div class="assign-desc">Questions 1–5 from Chapter 7 worksheet</div>
+              </div>
+              <span class="due-badge due-soon">Due Thu</span>
+            </div>
+            <div class="assign-row">
+              <div>
+                <div class="assign-subject">IGCSE Physics — Forces MCQ</div>
+                <div class="assign-desc">30 MCQ set · Self-mark with answer key</div>
+              </div>
+              <span class="due-badge due-ok">Due Fri</span>
+            </div>
+          </div>
+
+          <!-- Onboarding Checklist -->
+          <div class="dash-card">
+            <div class="dash-card-title">
+              <svg data-lucide="check-square"></svg> Getting Started Checklist
+            </div>
+            <div class="check-item">
+              <div class="check-circle check-done">✓</div>
+              <span>Set up student account</span>
+            </div>
+            <div class="check-item">
+              <div class="check-circle check-done">✓</div>
+              <span>Join WhatsApp class group</span>
+            </div>
+            <div class="check-item">
+              <div class="check-circle check-done">✓</div>
+              <span>Accept Google Classroom invite</span>
+            </div>
+            <div class="check-item">
+              <div class="check-circle check-pending"></div>
+              <span style="color:var(--text-muted)">Install Zoom & test audio/video</span>
+            </div>
+            <div class="check-item">
+              <div class="check-circle check-pending"></div>
+              <span style="color:var(--text-muted)">Attempt first Free Mock</span>
+            </div>
+            <div style="margin-top:0.75rem">
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:60%"></div></div>
+              <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">3 of 5 complete</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+
+          <!-- Progress Snapshot -->
+          <div class="dash-card">
+            <div class="dash-card-title">
+              <svg data-lucide="bar-chart-2"></svg> Progress Snapshot
+              <a href="progress.html" style="margin-left:auto;font-size:0.72rem;color:var(--gold);font-weight:700;text-decoration:none">Full report →</a>
+            </div>
+
+            <div class="prog-subject-row">
+              <div class="prog-subject-label"><span>IGCSE Mathematics</span><span class="prog-pct">82%</span></div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:82%;background:var(--gold)"></div></div>
+            </div>
+            <div class="prog-subject-row">
+              <div class="prog-subject-label"><span>A Level Chemistry</span><span class="prog-pct">74%</span></div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:74%;background:#4a9fd4"></div></div>
+            </div>
+            <div class="prog-subject-row">
+              <div class="prog-subject-label"><span>IGCSE Physics</span><span class="prog-pct">68%</span></div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:68%;background:var(--coral)"></div></div>
+            </div>
+            <div class="prog-subject-row">
+              <div class="prog-subject-label"><span>A Level Biology</span><span class="prog-pct">79%</span></div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:79%;background:#6b7280"></div></div>
+            </div>
+
+            <div style="margin-top:1rem;padding:0.75rem 1rem;background:var(--bg-secondary);border-radius:10px;font-size:0.78rem">
+              <div style="font-weight:800;color:var(--text-primary);margin-bottom:4px">🎯 A* Gap Analysis</div>
+              <div style="color:var(--text-muted);line-height:1.5">Physics is your biggest gap to A* (12%). Focus on <strong>Forces</strong> and <strong>Electricity</strong> chapters this week.</div>
+              <a href="progress.html" style="display:inline-block;margin-top:0.5rem;font-size:0.72rem;color:var(--gold);font-weight:700;text-decoration:none">See chapter-level breakdown →</a>
+            </div>
+          </div>
+
+          <!-- Announcements Feed -->
+          <div class="dash-card">
+            <div class="dash-card-title">
+              <svg data-lucide="megaphone"></svg> Announcements
+            </div>
+
+            <div class="announce-item">
+              <div class="announce-title">📅 May Mock Test — IGCSE Maths</div>
+              <div class="announce-meta">From: Admin · 3 May 2026</div>
+              <div class="announce-body">Monthly mock test scheduled for Saturday 10 May, 10am–12pm MY time. Please attempt on the portal's Free Mock tool.</div>
+            </div>
+            <div class="announce-item" style="border-left-color:var(--sky-blue,#4a9fd4)">
+              <div class="announce-title">📘 New Notes Uploaded — A Level Chem Ch.7</div>
+              <div class="announce-meta">From: Ms. Priya Nair · 4 May 2026</div>
+              <div class="announce-body">Chapter 7 Equilibrium notes are now available in Resources. Download before Thursday's class.</div>
+            </div>
+            <div class="announce-item" style="border-left-color:#6b7280">
+              <div class="announce-title">🎉 World Topper Shoutout — Aarav M.</div>
+              <div class="announce-meta">From: Admin · 2 May 2026</div>
+              <div class="announce-body">Congratulations to Aarav M. for scoring 99/100 in IGCSE Physics! Keep pushing everyone.</div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="dash-card">
+            <div class="dash-card-title">
+              <svg data-lucide="zap"></svg> Quick Links
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.65rem">
+              <a href="https://zoom.us" target="_blank" rel="noopener" class="ql-card">
+                <svg data-lucide="video"></svg> Zoom
+              </a>
+              <a href="https://classroom.google.com" target="_blank" rel="noopener" class="ql-card">
+                <svg data-lucide="graduation-cap"></svg> GCR
+              </a>
+              <a href="https://wa.me/919650675507" target="_blank" rel="noopener" class="ql-card">
+                <svg data-lucide="message-circle"></svg> WhatsApp
+              </a>
+              <a href="../../mock.html" class="ql-card">
+                <svg data-lucide="timer"></svg> Free Mock
+              </a>
+              <a href="../../resources.html" class="ql-card">
+                <svg data-lucide="folder-open"></svg> Notes
+              </a>
+              <a href="support.html" class="ql-card">
+                <svg data-lucide="life-buoy"></svg> Support
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /portal-main -->
+</div><!-- /portal-root -->
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  // Init icons
+  lucide.createIcons();
+
+  // Timezone display
+  (function() {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const offset = -new Date().getTimezoneOffset() / 60;
+      const sign = offset >= 0 ? '+' : '-';
+      const label = tz.split('/').pop().replace(/_/g,' ') + ' (UTC' + sign + Math.abs(offset) + ')';
+      document.getElementById('tz-display').textContent = label;
+      document.getElementById('tz-class-1').textContent = label;
+      document.getElementById('tz-class-2').textContent = label;
+    } catch(e) {}
+  })();
+
+  // Simulate missed class alert (demo — toggle via URL param ?missed=1)
+  if (new URLSearchParams(location.search).get('missed') === '1') {
+    document.getElementById('missed-alert').style.display = 'flex';
+  }
+
+  // Personalise from localStorage or URL param
+  const role = new URLSearchParams(location.search).get('role') || localStorage.getItem('dc-role') || 'student';
+  const nameParam = new URLSearchParams(location.search).get('name');
+  if (nameParam) {
+    const first = nameParam.split(' ')[0];
+    document.getElementById('student-name').textContent = nameParam;
+    document.getElementById('welcome-name').textContent = first;
+    document.getElementById('avatar-initials').textContent = nameParam.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+  }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Dashboard — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Stat cards */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem; }
+    .stat-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.2rem 1.3rem;
+      display: flex; align-items: flex-start; gap: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { border-color: var(--gold); box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+    .stat-card-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .stat-card-icon svg { width: 18px; height: 18px; }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+    .stat-value { font-size: 1.55rem; font-weight: 900; color: var(--text-primary); line-height: 1.1; }
+    .stat-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+    /* Section card */
+    .section-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.3rem 1.4rem; margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 0.8rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .section-title svg { width: 14px; height: 14px; color: var(--gold); }
+
+    /* Class pills */
+    .class-row {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .class-row:last-child { border-bottom: none; }
+    .class-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+    .class-dot.upcoming { background: #4a9fd4; }
+    .class-info { flex: 1; min-width: 0; }
+    .class-subject { font-size: 0.86rem; font-weight: 800; color: var(--text-primary); }
+    .class-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .class-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .pill-btn {
+      font-size: 0.68rem; font-weight: 700; border-radius: 6px;
+      padding: 3px 9px; border: 1px solid var(--border);
+      background: var(--bg-secondary); color: var(--text-primary);
+      text-decoration: none; cursor: pointer; white-space: nowrap;
+      transition: border-color 0.15s;
+    }
+    .pill-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .pill-btn.zoom { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a755; }
+    html.dark .pill-btn.zoom { background: #1b3d1f; color: #81c784; border-color: #81c78455; }
+    .pill-btn.wb { background: #e3f2fd; color: #1565c0; border-color: #90caf955; }
+    html.dark .pill-btn.wb { background: #162033; color: #90caf9; border-color: #90caf955; }
+
+    /* Attendance pending */
+    .pending-row {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 0.8rem 0; border-bottom: 1px solid var(--border-subtle);
+    }
+    .pending-row:last-child { border-bottom: none; }
+    .pending-info { flex: 1; }
+    .pending-subject { font-size: 0.84rem; font-weight: 700; color: var(--text-primary); }
+    .pending-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .badge {
+      font-size: 0.65rem; font-weight: 700; border-radius: 5px;
+      padding: 2px 7px; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .badge-warning { background: #fff3cd; color: #856404; }
+    html.dark .badge-warning { background: #2a1f00; color: #ffc107; }
+    .badge-open { background: #fce4ec; color: #c62828; }
+    html.dark .badge-open { background: #2d0a13; color: #ef9a9a; }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    html.dark .badge-pending { background: #2a1f00; color: #ffc107; }
+    .badge-approved { background: #e8f5e9; color: #2e7d32; }
+    html.dark .badge-approved { background: #1b3d1f; color: #81c784; }
+    .badge-paid { background: #e3f2fd; color: #1565c0; }
+    html.dark .badge-paid { background: #162033; color: #90caf9; }
+    .badge-resolved { background: #e8f5e9; color: #2e7d32; }
+    html.dark .badge-resolved { background: #1b3d1f; color: #81c784; }
+    .badge-in-progress { background: #e3f2fd; color: #1565c0; }
+    html.dark .badge-in-progress { background: #162033; color: #90caf9; }
+
+    /* Support tickets */
+    .ticket-row {
+      display: flex; align-items: flex-start; gap: 0.9rem;
+      padding: 0.85rem 0; border-bottom: 1px solid var(--border-subtle);
+    }
+    .ticket-row:last-child { border-bottom: none; }
+    .ticket-id { font-size: 0.68rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; margin-top: 2px; }
+    .ticket-info { flex: 1; }
+    .ticket-subject { font-size: 0.84rem; font-weight: 700; color: var(--text-primary); }
+    .ticket-meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    /* Quick actions */
+    .qa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+    .qa-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.4rem; padding: 0.9rem 0.5rem;
+      border-radius: 12px; border: 1px solid var(--border);
+      background: var(--bg-primary); text-decoration: none;
+      color: var(--text-primary); font-size: 0.73rem; font-weight: 700;
+      text-align: center; transition: border-color 0.2s, transform 0.15s; cursor: pointer;
+    }
+    .qa-btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .qa-btn svg { width: 20px; height: 20px; color: var(--gold); }
+
+    /* Claim status strip */
+    .claim-strip {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .claim-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+    .claim-value { font-size: 0.9rem; font-weight: 800; color: var(--text-primary); }
+    .claim-divider { width: 1px; height: 28px; background: var(--border); }
+
+    /* Two-col layout */
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 900px) {
+      .dash-grid { grid-template-columns: 1fr; }
+      .qa-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Submit btn */
+    .submit-btn {
+      font-size: 0.7rem; font-weight: 700; border-radius: 7px;
+      padding: 4px 12px; border: none; cursor: pointer;
+      background: var(--gold); color: #fff; transition: opacity 0.15s;
+      text-decoration: none; display: inline-block;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+
+    /* WA strip */
+    .wa-strip {
+      display: flex; align-items: center; gap: 0.6rem;
+      background: #e8f5e9; border: 1px solid #a5d6a755; border-radius: 10px;
+      padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 600; color: #2e7d32;
+      text-decoration: none; transition: opacity 0.2s; margin-top: 1.25rem;
+    }
+    html.dark .wa-strip { background: #1b3d1f; color: #81c784; border-color: #81c78455; }
+    .wa-strip:hover { opacity: 0.85; }
+    .wa-strip svg { width: 18px; height: 18px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Teacher Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#0d9488;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">SK</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Ms. Sarah Khan</div>
+        <div class="role-badge role-teacher">Teacher</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item active">
+          <svg data-lucide="layout-dashboard"></svg> Dashboard
+        </a>
+        <a href="attendance.html" class="sidebar-nav-item">
+          <svg data-lucide="clipboard-check"></svg> Attendance
+        </a>
+        <a href="payment-claims.html" class="sidebar-nav-item">
+          <svg data-lucide="banknote"></svg> Payment Claims
+        </a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Support</div>
+        <a href="tickets.html" class="sidebar-nav-item">
+          <svg data-lucide="inbox"></svg> My Tickets
+        </a>
+        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item">
+          <svg data-lucide="message-circle"></svg> WhatsApp DC
+        </a>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)">
+          <svg data-lucide="log-out"></svg> Sign Out
+        </a>
+      </div>
+    </nav>
+
+    <!-- Theme toggle -->
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="portal-main">
+
+    <!-- Topbar -->
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <svg data-lucide="menu" style="width:20px;height:20px"></svg>
+      </button>
+      <div>
+        <div class="portal-page-title">Teacher Dashboard</div>
+        <div class="portal-page-sub">Wednesday, 7 May 2025</div>
+      </div>
+    </div>
+
+    <!-- Claim status strip -->
+    <div class="claim-strip">
+      <div>
+        <div class="claim-label">Last Claim</div>
+        <div class="claim-value">April 2025 &nbsp;<span class="badge badge-approved">Approved</span></div>
+      </div>
+      <div class="claim-divider"></div>
+      <div>
+        <div class="claim-label">Amount</div>
+        <div class="claim-value">£ 640.00</div>
+      </div>
+      <div class="claim-divider"></div>
+      <div>
+        <div class="claim-label">Pending Attendance</div>
+        <div class="claim-value" id="strip-pending">2 sessions</div>
+      </div>
+      <div class="claim-divider"></div>
+      <div>
+        <div class="claim-label">Open Tickets</div>
+        <div class="claim-value" id="strip-tickets">3 assigned</div>
+      </div>
+      <div style="margin-left:auto">
+        <a href="payment-claims.html" class="submit-btn">Submit May Claim →</a>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#fff8e7">
+          <svg data-lucide="video" style="color:#f5c842"></svg>
+        </div>
+        <div>
+          <div class="stat-label">Today's Classes</div>
+          <div class="stat-value" id="stat-classes">3</div>
+          <div class="stat-sub">Next: IGCSE Maths @ 4:00 PM</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#fce4ec">
+          <svg data-lucide="clipboard-list" style="color:#e53935"></svg>
+        </div>
+        <div>
+          <div class="stat-label">Pending Attendance</div>
+          <div class="stat-value" id="stat-pending">2</div>
+          <div class="stat-sub">Unsubmitted sessions</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#e3f2fd">
+          <svg data-lucide="ticket" style="color:#1565c0"></svg>
+        </div>
+        <div>
+          <div class="stat-label">Open Tickets</div>
+          <div class="stat-value" id="stat-tickets">3</div>
+          <div class="stat-sub">Assigned to me</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:#e8f5e9">
+          <svg data-lucide="banknote" style="color:#2e7d32"></svg>
+        </div>
+        <div>
+          <div class="stat-label">Claim Status</div>
+          <div class="stat-value" style="font-size:1.1rem;padding-top:4px"><span class="badge badge-approved">April Approved</span></div>
+          <div class="stat-sub">May not yet submitted</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="qa-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <a href="attendance.html" class="qa-btn">
+        <svg data-lucide="clipboard-check"></svg> Submit Attendance
+      </a>
+      <a href="payment-claims.html" class="qa-btn">
+        <svg data-lucide="file-text"></svg> Submit Claim
+      </a>
+      <a href="https://wa.me/919650675507" target="_blank" class="qa-btn">
+        <svg data-lucide="message-circle"></svg> WhatsApp DC
+      </a>
+    </div>
+
+    <!-- Two-col grid -->
+    <div class="dash-grid">
+
+      <!-- Today's classes -->
+      <div class="section-card">
+        <div class="section-title">
+          <svg data-lucide="video"></svg> Today's Classes — Wed 7 May
+        </div>
+        <div id="classes-list">
+          <div class="class-row">
+            <div class="class-dot"></div>
+            <div class="class-info">
+              <div class="class-subject">IGCSE Maths</div>
+              <div class="class-meta">Priya Mehta · 3:00 PM – 4:00 PM BST</div>
+            </div>
+            <div class="class-actions">
+              <a href="#" class="pill-btn zoom">Join Zoom</a>
+              <a href="#" class="pill-btn wb">Whiteboard</a>
+            </div>
+          </div>
+          <div class="class-row">
+            <div class="class-dot upcoming"></div>
+            <div class="class-info">
+              <div class="class-subject">A Level Chemistry</div>
+              <div class="class-meta">Rohan Sharma · 4:30 PM – 5:30 PM BST</div>
+            </div>
+            <div class="class-actions">
+              <a href="#" class="pill-btn zoom">Join Zoom</a>
+              <a href="#" class="pill-btn wb">Whiteboard</a>
+            </div>
+          </div>
+          <div class="class-row">
+            <div class="class-dot upcoming"></div>
+            <div class="class-info">
+              <div class="class-subject">IGCSE Physics</div>
+              <div class="class-meta">Aanya Sharma · 6:00 PM – 7:00 PM BST</div>
+            </div>
+            <div class="class-actions">
+              <a href="#" class="pill-btn zoom">Join Zoom</a>
+              <a href="#" class="pill-btn wb">Whiteboard</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending attendance -->
+      <div class="section-card">
+        <div class="section-title">
+          <svg data-lucide="clipboard-x"></svg> Pending Attendance Submissions
+        </div>
+        <div id="pending-list">
+          <div class="pending-row">
+            <div class="pending-info">
+              <div class="pending-subject">IGCSE Maths — Priya Mehta</div>
+              <div class="pending-meta">Mon 5 May · 3:00 PM · 60 min</div>
+            </div>
+            <span class="badge badge-warning">Unsubmitted</span>
+            <a href="attendance.html" class="submit-btn">Submit</a>
+          </div>
+          <div class="pending-row">
+            <div class="pending-info">
+              <div class="pending-subject">A Level Chemistry — Rohan Sharma</div>
+              <div class="pending-meta">Tue 6 May · 4:30 PM · 60 min</div>
+            </div>
+            <span class="badge badge-warning">Unsubmitted</span>
+            <a href="attendance.html" class="submit-btn">Submit</a>
+          </div>
+        </div>
+        <div style="margin-top:1rem;font-size:0.75rem;color:var(--text-muted)">
+          ⚠️ Unsubmitted sessions delay your monthly pay claim.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Open tickets -->
+    <div class="section-card">
+      <div class="section-title">
+        <svg data-lucide="inbox"></svg> Open Support Tickets — Assigned to Me
+      </div>
+      <div id="ticket-list">
+        <div class="ticket-row">
+          <div class="ticket-id">TK-011</div>
+          <div class="ticket-info">
+            <div class="ticket-subject">Recording Missing — IGCSE Maths (29 Apr)</div>
+            <div class="ticket-meta">Priya Mehta · Raised 1 May 2025 · Priority: High</div>
+          </div>
+          <span class="badge badge-open">Open</span>
+        </div>
+        <div class="ticket-row">
+          <div class="ticket-id">TK-014</div>
+          <div class="ticket-info">
+            <div class="ticket-subject">Reschedule Request — A Level Chemistry</div>
+            <div class="ticket-meta">Rohan Sharma · Raised 3 May 2025 · Priority: Medium</div>
+          </div>
+          <span class="badge badge-in-progress">In Progress</span>
+        </div>
+        <div class="ticket-row">
+          <div class="ticket-id">TK-017</div>
+          <div class="ticket-info">
+            <div class="ticket-subject">Whiteboard Link Not Working — IGCSE Physics</div>
+            <div class="ticket-meta">Aanya Sharma · Raised 5 May 2025 · Priority: Low</div>
+          </div>
+          <span class="badge badge-open">Open</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pre-class checklist -->
+    <div class="section-card" id="checklist-card" style="border-left:4px solid var(--gold)">
+      <div class="section-title" style="justify-content:space-between">
+        <span><svg data-lucide="check-square"></svg> Pre-Class Checklist — Today's Sessions</span>
+        <button onclick="dismissChecklist()" id="checklist-dismiss" style="font-size:0.72rem;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:0.25rem 0.5rem;border-radius:6px;border:1px solid var(--border)">Dismiss for today</button>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem">Complete before each class. Resets daily.</div>
+      <div id="checklist-items" style="display:flex;flex-direction:column;gap:0.6rem">
+        <label class="checklist-row" data-key="rec">
+          <input type="checkbox" onchange="tickCheck(this)" style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer"/>
+          <span class="checklist-label">🔴 Recording is ON in Zoom</span>
+        </label>
+        <label class="checklist-row" data-key="breakout">
+          <input type="checkbox" onchange="tickCheck(this)" style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer"/>
+          <span class="checklist-label">🗂️ Breakout room created</span>
+        </label>
+        <label class="checklist-row" data-key="camera">
+          <input type="checkbox" onchange="tickCheck(this)" style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer"/>
+          <span class="checklist-label">📷 Camera is on</span>
+        </label>
+        <label class="checklist-row" data-key="whiteboard">
+          <input type="checkbox" onchange="tickCheck(this)" style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer"/>
+          <span class="checklist-label">📋 Whiteboard titled <code style="font-size:0.73rem;background:var(--bg-secondary);padding:1px 5px;border-radius:4px">DC-[date]-[subject]</code></span>
+        </label>
+        <label class="checklist-row" data-key="students">
+          <input type="checkbox" onchange="tickCheck(this)" style="accent-color:var(--gold);width:16px;height:16px;cursor:pointer"/>
+          <span class="checklist-label">👋 Students reminded of Zoom link</span>
+        </label>
+      </div>
+      <div style="margin-top:1rem;height:6px;border-radius:99px;background:var(--bg-secondary);overflow:hidden">
+        <div id="checklist-progress" style="height:100%;width:0%;background:var(--gold);border-radius:99px;transition:width .3s"></div>
+      </div>
+      <div id="checklist-count" style="margin-top:0.4rem;font-size:0.72rem;color:var(--text-muted)">0 / 5 done</div>
+    </div>
+    <style>
+      .checklist-row { display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:0.5rem 0.65rem;border-radius:9px;border:1.5px solid var(--border);background:var(--bg-secondary);transition:border-color .15s }
+      .checklist-row:hover { border-color:var(--gold) }
+      .checklist-row input:checked ~ .checklist-label { text-decoration:line-through;color:var(--text-muted) }
+      .checklist-label { font-size:0.84rem;font-weight:600;color:var(--text-primary) }
+    </style>
+
+    <!-- WA fallback -->
+    <a href="https://wa.me/919650675507" target="_blank" class="wa-strip">
+      <svg data-lucide="message-circle"></svg>
+      <span>Need urgent help or have a query? <strong>WhatsApp DivergenCIE directly</strong></span>
+    </a>
+
+  </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  // Pre-class checklist — daily reset
+  (function() {
+    const today = new Date().toDateString();
+    const KEY = 'dc-checklist';
+    let saved = {};
+    try { const raw = localStorage.getItem(KEY); if (raw) { const p = JSON.parse(raw); if (p.date === today) saved = p.checks || {}; } } catch(e){}
+    const card = document.getElementById('checklist-card');
+    // Dismissed?
+    try { const d = localStorage.getItem('dc-checklist-dismissed'); if (d === today && card) card.style.display='none'; } catch(e){}
+    // Restore checks
+    document.querySelectorAll('#checklist-items label').forEach(row => {
+      const k = row.dataset.key;
+      if (saved[k]) row.querySelector('input').checked = true;
+    });
+    updateChecklistProgress();
+  })();
+
+  function tickCheck(el) {
+    const today = new Date().toDateString();
+    const KEY = 'dc-checklist';
+    let saved = {};
+    try { const raw = localStorage.getItem(KEY); if (raw) { const p = JSON.parse(raw); if (p.date === today) saved = p.checks || {}; } } catch(e){}
+    const key = el.closest('label').dataset.key;
+    saved[key] = el.checked;
+    localStorage.setItem(KEY, JSON.stringify({date: today, checks: saved}));
+    updateChecklistProgress();
+  }
+
+  function updateChecklistProgress() {
+    const boxes = document.querySelectorAll('#checklist-items input[type=checkbox]');
+    const done = Array.from(boxes).filter(b=>b.checked).length;
+    const pct = Math.round(done/boxes.length*100);
+    const bar = document.getElementById('checklist-progress');
+    const count = document.getElementById('checklist-count');
+    if (bar) bar.style.width = pct + '%';
+    if (bar) bar.style.background = pct === 100 ? '#2e7d32' : 'var(--gold)';
+    if (count) count.textContent = done + ' / ' + boxes.length + ' done' + (pct===100?' ✅ — Ready to teach!':'');
+  }
+
+  function dismissChecklist() {
+    const today = new Date().toDateString();
+    localStorage.setItem('dc-checklist-dismissed', today);
+    const card = document.getElementById('checklist-card');
+    if (card) card.style.display = 'none';
+  }
+
+  lucide.createIcons();
+
+  // Theme toggle label sync
+  (function() {
+    const btn = document.getElementById('theme-toggle');
+    const label = document.getElementById('theme-label');
+    function updateLabel() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (label) label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+    }
+    updateLabel();
+    if (btn) btn.addEventListener('click', () => setTimeout(updateLabel, 50));
+  })();
+
+  // Sidebar toggle (mobile)
+  (function() {
+    const toggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggle && sidebar) {
+      toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    }
+  })();
+</script>
+</body>
+</html>

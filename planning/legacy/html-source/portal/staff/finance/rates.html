@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Rates — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../../css/shared.css" rel="stylesheet" />
+  <link href="../../../css/portal.css" rel="stylesheet" />
+  <script src="../../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+    .card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; color: var(--text-primary); }
+    th { font-weight: 800; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; }
+    .btn { padding: 0.5rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem; }
+    .btn-gold { background: var(--gold); color: #fff; border-color: var(--gold); }
+    .status-badge { padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.7rem; }
+    .nav-tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
+    .nav-tab { padding: 0.8rem 1rem; cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+    .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:.65rem;color:var(--text-muted);font-weight:500">Staff Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0">JS</div>
+      <div>
+        <div style="font-size:.82rem;font-weight:800;color:var(--text-primary)">Jamie Soh</div>
+        <div class="role-badge role-staff">Staff</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="../dashboard.html" class="sidebar-nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="../tickets.html" class="sidebar-nav-item"><i data-lucide="inbox"></i> Tickets</a>
+      <a href="../pr/attendance.html" class="sidebar-nav-item"><i data-lucide="calendar-check"></i> PR / Ops</a>
+      <a href="claims.html" class="sidebar-nav-item active"><i data-lucide="receipt"></i> Finance</a>
+      <a href="../shared/content-bank.html" class="sidebar-nav-item"><i data-lucide="folder-open"></i> Content Bank</a>
+      <div style="margin-top:auto"></div>
+      <a href="../../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><i data-lucide="log-out"></i> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><i data-lucide="menu"></i></button>
+      <div><div class="portal-page-title">Finance & Invoicing</div></div>
+    </div>
+
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-target="rates-tab">Rate Cards</div>
+      <div class="nav-tab" data-target="invoices-tab">Invoice Manager</div>
+      <div class="nav-tab" data-target="budget-tab">Budget Planner</div>
+    </div>
+
+    <div id="rates-tab" class="tab-content active">
+      <div class="card">
+        <h3 style="font-weight:800;margin-bottom:1rem">Rate Card Matrix</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Group Code</th>
+                <th>UK (£)</th>
+                <th>MY (RM)</th>
+                <th>IN (₹)</th>
+                <th>KSA (SAR)</th>
+                <th>PK (Rs)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>IGCSE Foundations</td>
+                <td>B-Groups</td>
+                <td>150</td>
+                <td>800</td>
+                <td>15000</td>
+                <td>700</td>
+                <td>50000</td>
+                <td><button class="btn" style="padding:0.3rem 0.6rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td>A* Track</td>
+                <td>C-Groups</td>
+                <td>200</td>
+                <td>1100</td>
+                <td>20000</td>
+                <td>950</td>
+                <td>70000</td>
+                <td><button class="btn" style="padding:0.3rem 0.6rem">Edit</button></td>
+              </tr>
+              <tr>
+                <td>World Topper</td>
+                <td>T-Groups</td>
+                <td>350</td>
+                <td>1900</td>
+                <td>35000</td>
+                <td>1650</td>
+                <td>120000</td>
+                <td><button class="btn" style="padding:0.3rem 0.6rem">Edit</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="invoices-tab" class="tab-content">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="font-weight:800">Payment Tracker</h3>
+          <button class="btn btn-gold">+ Generate Invoice</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Invoice #</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Reminders</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rohan Sharma</td>
+                <td>INV-2025-04</td>
+                <td>£200</td>
+                <td><span class="status-badge" style="background:#fce4ec;color:#b71c1c">Overdue (Deactivated)</span></td>
+                <td>
+                  <select class="form-control" style="width:180px;padding:0.2rem;font-size:0.75rem;margin:0;display:inline-block">
+                    <option>1: Bill Due Soon</option>
+                    <option>2: Overdue (Deactivate 3d)</option>
+                    <option selected>3: Account Deactivated</option>
+                    <option>4: Acknowledgment</option>
+                    <option>5: Payment Plan</option>
+                  </select>
+                  <button class="btn" style="padding:0.2rem 0.4rem;background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7" title="Send WhatsApp Message">
+                    <i data-lucide="message-circle" style="width:12px;height:12px"></i>
+                  </button>
+                </td>
+                <td><button class="btn" style="padding:0.3rem 0.6rem">Mark Paid</button></td>
+              </tr>
+              <tr>
+                <td>Aanya Sharma</td>
+                <td>INV-2025-05</td>
+                <td>£150</td>
+                <td><span class="status-badge" style="background:#e8f5e9;color:#2e7d32">Paid</span></td>
+                <td>
+                  <select class="form-control" style="width:180px;padding:0.2rem;font-size:0.75rem;margin:0;display:inline-block">
+                    <option>1: Bill Due Soon</option>
+                    <option>2: Overdue (Deactivate 3d)</option>
+                    <option>3: Account Deactivated</option>
+                    <option selected>4: Acknowledgment</option>
+                    <option>5: Payment Plan</option>
+                  </select>
+                  <button class="btn" style="padding:0.2rem 0.4rem;background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7" title="Send WhatsApp Message">
+                    <i data-lucide="message-circle" style="width:12px;height:12px"></i>
+                  </button>
+                </td>
+                <td><button class="btn" style="padding:0.3rem 0.6rem">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="budget-tab" class="tab-content">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="font-weight:800">Budget Allocation (May 2025)</h3>
+          <button class="btn btn-gold">Submit to Management</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Allocated (£)</th>
+              <th>Spent (£)</th>
+              <th>Remaining (£)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Marketing</td>
+              <td>1500</td>
+              <td>400</td>
+              <td>1100</td>
+              <td><span class="status-badge" style="background:#e8f5e9;color:#2e7d32">On Track</span></td>
+            </tr>
+            <tr>
+              <td>IT</td>
+              <td>500</td>
+              <td>450</td>
+              <td>50</td>
+              <td><span class="status-badge" style="background:#fff3cd;color:#856404">Near Limit</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab, .tab-content').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.target).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

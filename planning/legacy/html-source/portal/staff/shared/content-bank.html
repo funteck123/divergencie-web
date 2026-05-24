@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Bank — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+    .card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+    .form-control { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem; margin-bottom: 1rem; }
+    .submit-btn { padding: 0.6rem 1.2rem; background: var(--gold); color: #fff; font-weight: 700; border-radius: 8px; cursor: pointer; border: none; }
+    .link-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem 0; }
+    .link-title { font-weight: 700; color: var(--text-primary); font-size: 1rem; }
+    .link-desc { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem; }
+    .link-url { color: var(--gold); text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:.65rem;color:var(--text-muted);font-weight:500">Staff Portal</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="tickets.html" class="sidebar-nav-item"><i data-lucide="inbox"></i> Tickets</a>
+      <a href="attendance.html" class="sidebar-nav-item"><i data-lucide="calendar-check"></i> Attendance</a>
+      <a href="claims.html" class="sidebar-nav-item"><i data-lucide="receipt"></i> Claims</a>
+      <a href="content-bank.html" class="sidebar-nav-item active"><i data-lucide="folder-open"></i> Content Bank</a>
+      <a href="meetings.html" class="sidebar-nav-item"><i data-lucide="users"></i> Meetings</a>
+      <div style="margin-top:auto"></div>
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><i data-lucide="log-out"></i> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><i data-lucide="menu"></i></button>
+      <div><div class="portal-page-title">Department Content Bank</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="font-weight:800">Shared Links & Protocols</h3>
+          <input type="text" id="search" placeholder="Search..." class="form-control" style="width:200px;margin:0">
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+          <select id="dept-filter" class="form-control" style="display:none;width:150px;margin:0">
+            <option value="ALL">All Depts</option>
+            <option value="PR">PR / Ops</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="IT">IT</option>
+          </select>
+          <select id="category-filter" class="form-control" style="width:180px;margin:0">
+            <option value="ALL">All Categories</option>
+            <option value="Protocol">Protocols</option>
+            <option value="Guidebook">Guidebooks</option>
+            <option value="Catalogue">Catalogues</option>
+            <option value="Prospectus">Prospectus</option>
+            <option value="General">General Links</option>
+          </select>
+        </div>
+        <div id="links-container"></div>
+      </div>
+
+      <div class="card" style="height:fit-content">
+        <h3 style="font-weight:800;margin-bottom:1rem">Add Content</h3>
+        <form id="add-link-form">
+          <input type="text" id="l-name" class="form-control" placeholder="Title" required>
+          <select id="l-category" class="form-control" required>
+            <option value="General">General Link</option>
+            <option value="Protocol">Step-by-Step Protocol</option>
+            <option value="Guidebook">Guidebook</option>
+            <option value="Catalogue">Catalogue</option>
+            <option value="Prospectus">Prospectus</option>
+          </select>
+          <input type="url" id="l-url" class="form-control" placeholder="URL (Google Docs, Canva, etc.)" required>
+          <textarea id="l-desc" class="form-control" placeholder="Description or Steps..." rows="3"></textarea>
+          <button type="submit" class="submit-btn" style="width:100%">Add to Bank</button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+  
+  let role = localStorage.getItem('dc-role') || 'member';
+  if(role === 'supervisor') document.getElementById('dept-filter').style.display = 'block';
+
+  document.getElementById('add-link-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let bank = JSON.parse(localStorage.getItem('dc-content-bank') || '[]');
+    bank.push({
+      id: Date.now(),
+      name: document.getElementById('l-name').value,
+      category: document.getElementById('l-category').value,
+      url: document.getElementById('l-url').value,
+      desc: document.getElementById('l-desc').value,
+      date: new Date().toISOString().split('T')[0],
+      dept: localStorage.getItem('dc-dept') || 'PR'
+    });
+    localStorage.setItem('dc-content-bank', JSON.stringify(bank));
+    e.target.reset();
+    renderLinks();
+  });
+
+  function renderLinks() {
+    let bank = JSON.parse(localStorage.getItem('dc-content-bank') || '[]');
+    let q = document.getElementById('search').value.toLowerCase();
+    let dFilter = document.getElementById('dept-filter').value;
+    let cFilter = document.getElementById('category-filter').value;
+    let myDept = localStorage.getItem('dc-dept') || 'PR';
+    
+    let filtered = bank.filter(b => {
+      let matchQ = b.name.toLowerCase().includes(q) || b.desc.toLowerCase().includes(q);
+      let matchD = true;
+      let matchC = (cFilter === 'ALL' || b.category === cFilter);
+      if(role === 'supervisor') {
+        if(dFilter !== 'ALL') matchD = b.dept === dFilter;
+      } else {
+        matchD = b.dept === myDept;
+      }
+      return matchQ && matchD && matchC;
+    });
+
+    let html = filtered.reverse().map(b => {
+      let catColor = b.category === 'Protocol' ? '#c62828' : (b.category === 'Guidebook' ? '#2e7d32' : 'var(--gold)');
+      let catBg = b.category === 'Protocol' ? '#fce4ec' : (b.category === 'Guidebook' ? '#e8f5e9' : 'var(--bg-secondary)');
+      return `
+      <div class="link-row">
+        <div>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <div class="link-title">${b.name}</div>
+            <span style="background:${catBg};color:${catColor};padding:2px 6px;border-radius:4px;font-size:0.65rem;font-weight:800;text-transform:uppercase">${b.category || 'General'}</span>
+          </div>
+          <div class="link-desc">${b.desc}</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Added: ${b.date} &middot; Dept: ${b.dept}</div>
+        </div>
+        <a href="${b.url}" target="_blank" class="link-url"><i data-lucide="external-link" style="width:14px;height:14px"></i> Open</a>
+      </div>
+    `}).join('');
+    
+    document.getElementById('links-container').innerHTML = html || '<div style="color:var(--text-muted)">No links found.</div>';
+    lucide.createIcons();
+  }
+
+  document.getElementById('search').addEventListener('input', renderLinks);
+  document.getElementById('dept-filter').addEventListener('change', renderLinks);
+  document.getElementById('category-filter').addEventListener('change', renderLinks);
+  renderLinks();
+</script>
+</body>
+</html>

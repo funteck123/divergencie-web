@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curriculum — DivergenCIE Student Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* ── Subject tabs ── */
+    .subj-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+    .subj-tab {
+      padding: 0.45rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 800;
+      border: 1.5px solid var(--border); background: var(--bg-secondary);
+      color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .subj-tab:hover { border-color: var(--gold); color: var(--text-primary); }
+    .subj-tab.active { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .subj-tab .tab-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .subj-tab.active .tab-dot { background: rgba(255,255,255,0.7); }
+
+    /* ── Progress bar ── */
+    .pbar-track { height: 8px; border-radius: 20px; background: var(--bg-tertiary); overflow: hidden; }
+    .pbar-fill { height: 100%; border-radius: 20px; transition: width 0.5s ease; }
+
+    /* ── Chapter row ── */
+    .chapter-row {
+      display: flex; align-items: center; gap: 0.8rem;
+      padding: 0.75rem 1.1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.15s;
+    }
+    .chapter-row:last-child { border-bottom: none; }
+    .chapter-row:hover { background: var(--bg-secondary); }
+    .chapter-row.completed { opacity: 0.7; }
+
+    /* Custom checkbox */
+    .ch-check {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid var(--border); background: var(--bg-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+    }
+    .ch-check.checked { background: var(--gold); border-color: var(--gold); }
+    .ch-check svg { width: 12px; height: 12px; color: #fff; display: none; }
+    .ch-check.checked svg { display: block; }
+
+    .ch-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; font-weight: 900; color: #fff;
+    }
+    .ch-title {
+      flex: 1; font-size: 0.85rem; font-weight: 700; color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .chapter-row.completed .ch-title { text-decoration: line-through; color: var(--text-muted); }
+    .ch-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; font-weight: 500; }
+
+    /* A* milestone badge */
+    .milestone-badge {
+      font-size: 0.65rem; font-weight: 900; padding: 2px 7px; border-radius: 20px;
+      letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0;
+    }
+    .milestone-core { background: #fef3cd; color: #856404; }
+    .milestone-astar { background: #d4f5e2; color: #1a7a42; }
+    .milestone-topper { background: #e8d5f0; color: #6a2fa0; }
+
+    /* Doubt button */
+    .btn-doubt {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-muted); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: all 0.15s;
+    }
+    .btn-doubt:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-doubt svg { width: 13px; height: 13px; }
+
+    /* Topic panel */
+    .topic-list { padding: 0.5rem 1.1rem 0.75rem 3.8rem; display: none; }
+    .topic-list.open { display: block; }
+    .topic-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.22rem 0; font-size: 0.78rem; color: var(--text-muted);
+    }
+    .topic-bullet { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Section header */
+    .section-header {
+      padding: 0.5rem 1.1rem; font-size: 0.68rem; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted);
+      background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: none; align-items: center; justify-content: center; z-index: 200;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-primary); border-radius: 16px;
+      padding: 1.6rem; width: 100%; max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-title { font-size: 1rem; font-weight: 900; color: var(--text-primary); margin-bottom: 1rem; }
+    .form-field { margin-bottom: 0.85rem; }
+    .form-field label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .form-field select, .form-field input, .form-field textarea {
+      width: 100%; padding: 0.55rem 0.8rem;
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 8px; font-family: 'Satoshi', sans-serif;
+      font-size: 0.82rem; color: var(--text-primary);
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-field select:focus, .form-field input:focus, .form-field textarea:focus { border-color: var(--gold); }
+    .form-field textarea { resize: vertical; min-height: 72px; }
+    .btn-gold-sm {
+      background: var(--gold); color: #fff; font-weight: 900;
+      font-size: 0.82rem; padding: 0.55rem 1.2rem; border-radius: 8px;
+      border: none; cursor: pointer; transition: filter 0.15s;
+    }
+    .btn-gold-sm:hover { filter: brightness(1.08); }
+    .btn-ghost-sm {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); font-weight: 700; font-size: 0.82rem;
+      padding: 0.55rem 1.2rem; border-radius: 8px; cursor: pointer;
+    }
+
+
+
+    @media (max-width: 600px) {
+      .chapter-row { gap: 0.5rem; }
+      .ch-meta { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="portal-root">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Student Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Alex Student</div>
+        <div class="role-badge role-student">Student</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="classes.html" class="sidebar-nav-item"><svg data-lucide="calendar"></svg> My Classes</a>
+        <a href="assignments.html" class="sidebar-nav-item"><svg data-lucide="clipboard-list"></svg> Assignments</a>
+        <a href="recordings.html" class="sidebar-nav-item"><svg data-lucide="play-circle"></svg> Recordings</a>
+        <a href="progress.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> My Progress</a>
+        <a href="curriculum.html" class="sidebar-nav-item active"><svg data-lucide="book-open"></svg> Curriculum</a>
+        <a href="support.html" class="sidebar-nav-item"><svg data-lucide="life-buoy"></svg> Support</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Resources</div>
+        <a href="../../mock.html" class="sidebar-nav-item"><svg data-lucide="timer"></svg> Free Mock</a>
+        <a href="../../resources.html" class="sidebar-nav-item"><svg data-lucide="folder-open"></svg> Materials</a>
+      </div>
+    </nav>
+    <div style="margin-top:auto;padding:1.2rem 1.4rem;border-top:1px solid var(--border-subtle);">
+      <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="portal-main">
+    <header class="portal-topbar">
+      <div class="portal-topbar-left">
+        <button class="portal-hamburger" id="sidebar-toggle"><svg data-lucide="menu"></svg></button>
+        <span class="portal-page-title">Curriculum</span>
+      </div>
+      <div class="portal-topbar-right">
+        <button class="topbar-bell"><svg data-lucide="bell"></svg><span class="topbar-bell-dot"></span></button>
+        <button class="theme-toggle" style="background:none;border:1px solid var(--border);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted)">
+          <svg data-lucide="sun" class="theme-icon-sun" style="width:15px;height:15px"></svg>
+          <svg data-lucide="moon" class="theme-icon-moon" style="width:15px;height:15px;display:none"></svg>
+        </button>
+      </div>
+    </header>
+
+    <div style="padding:1.75rem 2rem;max-width:1100px;width:100%">
+
+      <!-- page intro -->
+      <div style="margin-bottom:1.4rem">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--text-primary);margin-bottom:0.25rem">Your Syllabus Tracker</div>
+        <div style="font-size:0.78rem;color:var(--text-muted)">Mark chapters complete as you finish them. Use <strong style="color:var(--text-primary)">?</strong> to log a doubt directly on any chapter.</div>
+      </div>
+
+      <!-- subject tabs -->
+      <div class="subj-tabs" id="subj-tabs"></div>
+
+      <!-- per-subject panel -->
+      <div id="subj-panel">
+        <!-- progress header -->
+        <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:1rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.4rem">
+            <div style="font-size:0.82rem;font-weight:900;color:var(--text-primary)" id="prog-label">Loading…</div>
+            <div style="font-size:0.78rem;color:var(--text-muted)" id="prog-count"></div>
+          </div>
+          <div class="pbar-track">
+            <div class="pbar-fill" id="prog-bar" style="width:0%;background:var(--gold)"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1.2rem;margin-top:0.7rem;flex-wrap:wrap">
+            <span style="font-size:0.7rem;color:var(--text-muted);display:flex;align-items:center;gap:0.35rem">
+              <span style="width:10px;height:10px;background:#fef3cd;border:1px solid #e8a832;border-radius:3px;display:inline-block"></span> Core (must cover)
+            </span>
+            <span style="font-size:0.7rem;color:var(--text-muted);display:flex;align-items:center;gap:0.35rem">
+              <span style="width:10px;height:10px;background:#d4f5e2;border:1px solid #1a7a42;border-radius:3px;display:inline-block"></span> A* milestone
+            </span>
+            <span style="font-size:0.7rem;color:var(--text-muted);display:flex;align-items:center;gap:0.35rem">
+              <span style="width:10px;height:10px;background:#e8d5f0;border:1px solid #6a2fa0;border-radius:3px;display:inline-block"></span> World Topper
+            </span>
+          </div>
+        </div>
+
+        <!-- chapter list -->
+        <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;overflow:hidden" id="chapter-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Doubt Modal ── -->
+<div class="modal-overlay" id="doubt-modal">
+  <div class="modal-box">
+    <div class="modal-title">Log a Doubt</div>
+    <div id="doubt-form-wrap">
+      <div class="form-field">
+        <label>Subject</label>
+        <select id="d-subject" disabled style="opacity:0.7"></select>
+      </div>
+      <div class="form-field">
+        <label>Chapter</label>
+        <input type="text" id="d-chapter" readonly style="opacity:0.7" />
+      </div>
+      <div class="form-field">
+        <label>Doubt Description</label>
+        <textarea id="d-doubt" placeholder="Describe the concept or question you're stuck on…"></textarea>
+      </div>
+      <div style="display:flex;gap:0.6rem;justify-content:flex-end;margin-top:0.5rem">
+        <button class="btn-ghost-sm" onclick="closeDoubtModal()">Cancel</button>
+        <button class="btn-gold-sm" onclick="submitDoubt()">Submit Doubt</button>
+      </div>
+    </div>
+    <div id="doubt-success" style="display:none;text-align:center;padding:1rem 0">
+      <div style="font-size:2rem;margin-bottom:0.5rem">✅</div>
+      <div style="font-size:0.9rem;font-weight:900;color:var(--text-primary)">Doubt logged!</div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.3rem">Your teacher will address this in the next session.</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+// ── Curriculum data ──
+const SUBJECTS = [
+  {
+    id: 'maths', label: 'IGCSE Mathematics', code: '0580',
+    color: '#4a9fd4', gradient: 'linear-gradient(90deg,#4a9fd4,#1a3c5e)',
+    sections: [
+      {
+        name: 'AS1 — Number & Algebra',
+        chapters: [
+          { id:'m1', title:'Number, Sets & Indices', topics:['Number types & operations','Standard form','Venn diagrams & sets','Laws of indices'], milestone:'core' },
+          { id:'m2', title:'Algebra & Expressions', topics:['Expanding & factorising','Quadratic equations','Simultaneous equations','Inequalities'], milestone:'core' },
+          { id:'m3', title:'Functions & Graphs', topics:['Function notation','Composite & inverse','Graph transformations','Sketching curves'], milestone:'astar' },
+        ]
+      },
+      {
+        name: 'AS2 — Geometry & Measure',
+        chapters: [
+          { id:'m4', title:'Geometry & Trigonometry', topics:['Circle theorems','Pythagoras & trig','Sine & cosine rule','3D geometry'], milestone:'core' },
+          { id:'m5', title:'Vectors & Transformation', topics:['Column vectors','Translation/rotation/reflection','Enlargement','Vector geometry'], milestone:'astar' },
+        ]
+      },
+      {
+        name: 'AS3 — Statistics & Calculus',
+        chapters: [
+          { id:'m6', title:'Statistics & Probability', topics:['Mean/median/mode','Probability trees','Cumulative frequency','Histograms'], milestone:'core' },
+          { id:'m7', title:'Calculus Introduction', topics:['Differentiation basics','Gradient at a point','Turning points','Integration intro'], milestone:'topper' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'chem', label: 'A Level Chemistry', code: '9701',
+    color: '#e8a832', gradient: 'linear-gradient(90deg,#e8a832,#c9a030)',
+    sections: [
+      {
+        name: 'Unit 1 — Physical Chemistry',
+        chapters: [
+          { id:'c1', title:'Atomic Structure & Periodicity', topics:['Electron configuration','Periodic trends','Ionisation energy','Orbital theory'], milestone:'core' },
+          { id:'c2', title:'Chemical Bonding', topics:['Ionic & covalent bonds','Intermolecular forces','VSEPR shapes','Metallic bonding'], milestone:'core' },
+          { id:'c3', title:'Energetics & Thermodynamics', topics:['Enthalpy cycles','Hess\'s law','Born-Haber cycles','Entropy & Gibbs'], milestone:'astar' },
+          { id:'c4', title:'Reaction Kinetics', topics:['Rate equations','Order of reaction','Activation energy','Catalysis'], milestone:'astar' },
+        ]
+      },
+      {
+        name: 'Unit 2 — Organic Chemistry',
+        chapters: [
+          { id:'c5', title:'Organic Chemistry Foundations', topics:['Nomenclature','Isomerism','Functional groups','Reaction mechanisms'], milestone:'core' },
+          { id:'c6', title:'Electrochemistry & Redox', topics:['Electrode potentials','Electrolysis','Redox titrations','Fuel cells'], milestone:'topper' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'phys', label: 'IGCSE Physics', code: '0625',
+    color: '#e05a4e', gradient: 'linear-gradient(90deg,#e05a4e,#c0392b)',
+    sections: [
+      {
+        name: 'Section 1 — Motion & Energy',
+        chapters: [
+          { id:'p1', title:'Motion & Forces', topics:['Speed, velocity, acceleration','Newton\'s laws','Momentum','Projectile motion'], milestone:'core' },
+          { id:'p2', title:'Energy & Electricity', topics:['Work, power, energy','Circuit components','Ohm\'s law','Series & parallel'], milestone:'core' },
+          { id:'p3', title:'Thermal Physics', topics:['Heat transfer','Specific heat capacity','Gas laws','Kinetic theory'], milestone:'astar' },
+        ]
+      },
+      {
+        name: 'Section 2 — Waves & Modern Physics',
+        chapters: [
+          { id:'p4', title:'Waves & Sound', topics:['Transverse & longitudinal','Wave equation','Sound properties','Resonance'], milestone:'core' },
+          { id:'p5', title:'Light & Optics', topics:['Reflection & refraction','Snell\'s law','Lenses','Total internal reflection'], milestone:'astar' },
+          { id:'p6', title:'Nuclear & Radioactivity', topics:['Alpha/beta/gamma','Half-life','Nuclear equations','Safety'], milestone:'topper' },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'bio', label: 'A Level Biology', code: '9700',
+    color: '#2ecc71', gradient: 'linear-gradient(90deg,#2ecc71,#1a7a42)',
+    sections: [
+      {
+        name: 'Unit 1 — Cell Biology & Biochemistry',
+        chapters: [
+          { id:'b1', title:'Cell Biology', topics:['Cell structure','Microscopy','Cell division (mitosis/meiosis)','Cell cycle'], milestone:'core' },
+          { id:'b2', title:'Biological Molecules', topics:['Carbohydrates','Proteins & enzymes','Lipids','Nucleic acids'], milestone:'core' },
+          { id:'b3', title:'Enzymes & Membrane Transport', topics:['Enzyme kinetics','Inhibitors','Diffusion & osmosis','Active transport'], milestone:'astar' },
+        ]
+      },
+      {
+        name: 'Unit 2 — Genetics & Ecology',
+        chapters: [
+          { id:'b4', title:'Genetics & Inheritance', topics:['Mendelian genetics','Dihybrid crosses','Sex linkage','Mutation'], milestone:'astar' },
+          { id:'b5', title:'Ecology & Environment', topics:['Population dynamics','Energy flow','Carbon & nitrogen cycle','Conservation'], milestone:'core' },
+          { id:'b6', title:'Homeostasis & Control', topics:['Nervous system','Hormonal control','Kidney function','Thermoregulation'], milestone:'topper' },
+        ]
+      }
+    ]
+  }
+];
+
+// ── State ──
+const CURRIC_KEY = id => `dc-curriculum-${id}`;
+const DOUBT_KEY = 'dc-doubts';
+let activeSubj = SUBJECTS[0];
+
+function isComplete(chId) {
+  return localStorage.getItem(CURRIC_KEY(chId)) === '1';
+}
+function toggleComplete(chId) {
+  const val = isComplete(chId) ? null : '1';
+  if (val) localStorage.setItem(CURRIC_KEY(chId), val);
+  else localStorage.removeItem(CURRIC_KEY(chId));
+  renderPanel();
+}
+
+function calcProgress(subj) {
+  const all = subj.sections.flatMap(s => s.chapters);
+  const done = all.filter(c => isComplete(c.id)).length;
+  return { done, total: all.length, pct: all.length ? Math.round((done/all.length)*100) : 0 };
+}
+
+// ── Tabs ──
+function renderTabs() {
+  const wrap = document.getElementById('subj-tabs');
+  wrap.innerHTML = SUBJECTS.map(s => {
+    const { pct } = calcProgress(s);
+    return `<button class="subj-tab${s.id === activeSubj.id ? ' active' : ''}" onclick="switchSubj('${s.id}')">
+      <span class="tab-dot" style="background:${s.id === activeSubj.id ? 'rgba(255,255,255,0.7)' : s.color}"></span>
+      ${s.label.split(' ').slice(-1)[0] === 'Mathematics' ? 'IGCSE Maths' : s.label.replace('IGCSE ','').replace('A Level ','')}
+      <span style="font-size:0.68rem;opacity:0.75">${pct}%</span>
+    </button>`;
+  }).join('');
+}
+
+function switchSubj(id) {
+  activeSubj = SUBJECTS.find(s => s.id === id);
+  renderTabs();
+  renderPanel();
+}
+
+// ── Panel ──
+function renderPanel() {
+  const s = activeSubj;
+  const { done, total, pct } = calcProgress(s);
+
+  document.getElementById('prog-label').textContent = `${s.label} — ${pct}% Complete`;
+  document.getElementById('prog-count').textContent = `${done} of ${total} chapters done`;
+  const bar = document.getElementById('prog-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = s.gradient;
+
+  const list = document.getElementById('chapter-list');
+  list.innerHTML = s.sections.map(sec => {
+    const rows = sec.chapters.map((ch, idx) => {
+      const done = isComplete(ch.id);
+      const milestoneHtml = ch.milestone === 'core'
+        ? '<span class="milestone-badge milestone-core">Core</span>'
+        : ch.milestone === 'astar'
+          ? '<span class="milestone-badge milestone-astar">A* Milestone</span>'
+          : '<span class="milestone-badge milestone-topper">World Topper</span>';
+
+      const topics = ch.topics.map(t =>
+        `<div class="topic-item"><span class="topic-bullet" style="background:${s.color}"></span>${t}</div>`
+      ).join('');
+
+      return `
+        <div class="chapter-row${done ? ' completed' : ''}" id="row-${ch.id}">
+          <div class="ch-check${done ? ' checked' : ''}" onclick="toggleComplete('${ch.id}')" title="Mark complete">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="ch-num" style="background:${s.color}">${idx + 1}</div>
+          <div style="flex:1;min-width:0">
+            <div class="ch-title" onclick="toggleTopics('${ch.id}')" style="cursor:pointer">${ch.title}</div>
+            <div class="ch-meta">${ch.topics.length} topics · click to expand</div>
+          </div>
+          ${milestoneHtml}
+          <button class="btn-doubt" onclick="openDoubtModal('${s.label}','${ch.title}')" title="Log a doubt for this chapter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+        </div>
+        <div class="topic-list" id="topics-${ch.id}">${topics}</div>
+      `;
+    }).join('');
+
+    return `<div class="section-header">${sec.name}</div>${rows}`;
+  }).join('');
+
+  lucide.createIcons();
+}
+
+function toggleTopics(chId) {
+  const el = document.getElementById('topics-' + chId);
+  el.classList.toggle('open');
+}
+
+// ── Doubt modal ──
+function openDoubtModal(subject, chapter) {
+  const sel = document.getElementById('d-subject');
+  sel.innerHTML = `<option>${subject}</option>`;
+  document.getElementById('d-chapter').value = chapter;
+  document.getElementById('d-doubt').value = '';
+  document.getElementById('doubt-form-wrap').style.display = '';
+  document.getElementById('doubt-success').style.display = 'none';
+  document.getElementById('doubt-modal').classList.add('open');
+}
+function closeDoubtModal() {
+  document.getElementById('doubt-modal').classList.remove('open');
+}
+function submitDoubt() {
+  const doubt = document.getElementById('d-doubt').value.trim();
+  if (!doubt) { alert('Please describe your doubt.'); return; }
+  const arr = (() => { try { return JSON.parse(localStorage.getItem(DOUBT_KEY)) || []; } catch { return []; } })();
+  arr.push({
+    date: new Date().toISOString().slice(0,10),
+    subject: document.getElementById('d-subject').value,
+    chapter: document.getElementById('d-chapter').value,
+    doubt,
+    status: 'Open'
+  });
+  localStorage.setItem(DOUBT_KEY, JSON.stringify(arr));
+  document.getElementById('doubt-form-wrap').style.display = 'none';
+  document.getElementById('doubt-success').style.display = '';
+  setTimeout(closeDoubtModal, 2200);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDoubtModal(); });
+document.getElementById('doubt-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDoubtModal(); });
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', () => {
+  // Seed some completions for demo if none exist
+  const demoIds = ['m1','m2','m3','m4','c1','c2','c3','c4','c5','p1','p2','p3','p4','b1','b2','b3','b4'];
+  let hasAny = false;
+  SUBJECTS.forEach(s => s.sections.forEach(sec => sec.chapters.forEach(ch => {
+    if (localStorage.getItem(CURRIC_KEY(ch.id))) hasAny = true;
+  })));
+  if (!hasAny) {
+    demoIds.forEach(id => localStorage.setItem(CURRIC_KEY(id), '1'));
+  }
+
+  renderTabs();
+  renderPanel();
+  lucide.createIcons();
+});
+</script>
+</body>
+</html>

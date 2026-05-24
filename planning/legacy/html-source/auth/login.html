@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal Login — DivergenCIE Coaching</title>
+  <meta name="description" content="Sign in to your DivergenCIE student, parent, teacher, staff, ambassador or management portal."/>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <script src="../js/theme.js"></script>
+  <style>
+    :root {
+      --navy:#1a3c5e; --gold:#e8a832; --sky:#4a9fd4; --coral:#e05a4e;
+      --charcoal:#5c5248; --bg:#ffffff; --bg2:#f4f4f4; --text:#1a1a1a;
+      --muted:#666666; --border:rgba(0,0,0,0.1);
+    }
+    html.dark {
+      --bg:#0a0a0a; --bg2:#111111; --text:#ffffff; --muted:rgba(255,255,255,0.55);
+      --border:rgba(255,255,255,0.08); --gold:#f5c842;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ── SPLIT LAYOUT ── */
+    .login-panel-left {
+      display: none;
+      flex: 1;
+      background: var(--navy);
+      position: relative;
+      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 3rem;
+    }
+    html.dark .login-panel-left { background: #0a0f1a; }
+    @media (min-width: 900px) { .login-panel-left { display: flex; } }
+
+    .login-panel-left::before {
+      content:'';
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(232,168,50,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 80%, rgba(74,159,212,0.12) 0%, transparent 55%);
+      pointer-events:none;
+    }
+    .left-brand { position: relative; z-index: 1; text-align: center; }
+    .left-logo-wrap { display:flex; align-items:center; justify-content:center; gap:0.75rem; margin-bottom:3rem; }
+    .left-logo-wrap img { width:44px; height:44px; border-radius:8px; object-fit:cover; }
+    .left-logo-text { font-family:'Satoshi',sans-serif; font-size:1.4rem; font-weight:900; color:#fff; letter-spacing:-0.02em; }
+    .left-logo-text span { color: var(--gold); }
+    .left-headline {
+      font-family:'Satoshi',sans-serif;
+      font-size:clamp(1.8rem, 3vw, 2.6rem);
+      font-weight:900; letter-spacing:-0.03em;
+      color:#ffffff; line-height:1.1;
+      margin-bottom:1.2rem;
+    }
+    .left-headline span { color: var(--gold); }
+    .left-sub { font-size:0.95rem; color:rgba(255,255,255,0.6); line-height:1.65; max-width:380px; margin:0 auto 2.5rem; }
+    .left-stats { display:flex; gap:2rem; justify-content:center; }
+    .left-stat-item { text-align:center; }
+    .left-stat-num { font-family:'Satoshi',sans-serif; font-size:1.8rem; font-weight:900; color:var(--gold); display:block; }
+    .left-stat-lbl { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.12em; color:rgba(255,255,255,0.45); }
+    .left-badges { display:flex; gap:0.6rem; justify-content:center; margin-top:2.5rem; }
+    .left-badge {
+      font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+      padding:0.3rem 0.8rem; border-radius:100px;
+      border:1px solid rgba(255,255,255,0.15);
+      color:rgba(255,255,255,0.55);
+    }
+    .left-testimonial {
+      margin-top:3rem;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px;
+      padding:1.5rem 1.75rem;
+      max-width:400px;
+      text-align:left;
+    }
+    .left-testimonial-text { font-size:0.9rem; color:rgba(255,255,255,0.75); line-height:1.7; margin-bottom:1rem; font-style:italic; }
+    .left-testimonial-author { font-size:0.78rem; font-weight:600; color:var(--gold); }
+    .left-testimonial-role { font-size:0.72rem; color:rgba(255,255,255,0.4); }
+
+    /* ── RIGHT PANEL (form) ── */
+    .login-panel-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      background: var(--bg);
+      position: relative;
+    }
+    html.dark .login-panel-right { background: #111111; }
+
+    /* theme toggle top-right */
+    .login-theme-toggle {
+      position:absolute; top:1.5rem; right:1.5rem;
+      background:transparent; border:1px solid var(--border);
+      border-radius:50%; width:36px; height:36px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; color:var(--muted);
+      transition:border-color 0.2s, color 0.2s;
+    }
+    .login-theme-toggle:hover { border-color:var(--gold); color:var(--gold); }
+    .theme-icon-sun { display:none; }
+    html.dark .login-panel-right .theme-icon-sun { display:block; }
+    html.dark .login-panel-right .theme-icon-moon { display:none; }
+
+    .login-form-wrap { width:100%; max-width:420px; }
+
+    .login-back {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      font-size:0.78rem; color:var(--muted); text-decoration:none;
+      margin-bottom:2.5rem;
+      transition:color 0.2s;
+    }
+    .login-back:hover { color: var(--gold); }
+
+    .login-title {
+      font-family:'Satoshi',sans-serif;
+      font-size:1.9rem; font-weight:900; letter-spacing:-0.03em;
+      color:var(--text); margin-bottom:0.4rem;
+    }
+    .login-subtitle { font-size:0.88rem; color:var(--muted); margin-bottom:2rem; line-height:1.5; }
+
+    /* role detect strip */
+    .role-detect-strip {
+      background:rgba(232,168,50,0.08);
+      border:1px solid rgba(232,168,50,0.2);
+      border-radius:10px;
+      padding:0.75rem 1rem;
+      font-size:0.8rem;
+      color:var(--gold);
+      margin-bottom:1.5rem;
+      display:none;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .role-detect-strip.visible { display:flex; }
+    .role-detect-icon { flex-shrink:0; }
+
+    /* form elements */
+    .form-group { margin-bottom:1.25rem; }
+    .form-label {
+      display:block; font-size:0.78rem; font-weight:600;
+      color:var(--text); margin-bottom:0.45rem; letter-spacing:0.01em;
+    }
+    .form-input {
+      width:100%; padding:0.75rem 1rem;
+      border:1.5px solid var(--border);
+      border-radius:10px;
+      background:var(--bg);
+      color:var(--text);
+      font-size:0.9rem; font-family:'Inter',sans-serif;
+      transition:border-color 0.2s, box-shadow 0.2s;
+      outline:none;
+    }
+    html.dark .form-input { background:#0a0a0a; }
+    .form-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(232,168,50,0.12); }
+    .form-input::placeholder { color:var(--muted); }
+
+    .password-wrap { position:relative; }
+    .password-wrap .form-input { padding-right:3rem; }
+    .password-toggle {
+      position:absolute; right:0.85rem; top:50%; transform:translateY(-50%);
+      background:none; border:none; cursor:pointer; color:var(--muted);
+      padding:0; display:flex; align-items:center;
+      transition:color 0.2s;
+    }
+    .password-toggle:hover { color:var(--gold); }
+
+    .form-row-between {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:1.5rem; font-size:0.8rem;
+    }
+    .remember-wrap { display:flex; align-items:center; gap:0.45rem; color:var(--muted); cursor:pointer; }
+    .remember-wrap input[type=checkbox] { accent-color:var(--gold); width:14px; height:14px; cursor:pointer; }
+    .forgot-link { color:var(--gold); text-decoration:none; font-weight:500; transition:opacity 0.2s; }
+    .forgot-link:hover { opacity:0.75; }
+
+    /* buttons */
+    .btn-login {
+      width:100%; padding:0.85rem;
+      background:var(--gold);
+      color:#0a0a0a;
+      font-family:'Satoshi',sans-serif; font-size:0.9rem; font-weight:700;
+      letter-spacing:0.04em; text-transform:uppercase;
+      border:none; border-radius:10px; cursor:pointer;
+      transition:opacity 0.2s, transform 0.15s;
+      margin-bottom:1rem;
+    }
+    .btn-login:hover { opacity:0.88; transform:translateY(-1px); }
+    .btn-login:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+
+    .divider {
+      display:flex; align-items:center; gap:0.75rem;
+      margin-bottom:1rem; font-size:0.75rem; color:var(--muted);
+    }
+    .divider::before, .divider::after {
+      content:''; flex:1; height:1px; background:var(--border);
+    }
+
+    .btn-google {
+      width:100%; padding:0.8rem;
+      background:var(--bg); color:var(--text);
+      border:1.5px solid var(--border);
+      border-radius:10px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:0.6rem;
+      font-size:0.88rem; font-weight:500; font-family:'Inter',sans-serif;
+      transition:border-color 0.2s, box-shadow 0.2s;
+    }
+    html.dark .btn-google { background:#1a1a1a; }
+    .btn-google:hover { border-color:var(--gold); box-shadow:0 2px 8px rgba(0,0,0,0.08); }
+
+    .login-footer-note {
+      text-align:center; font-size:0.77rem; color:var(--muted); margin-top:2rem;
+    }
+    .login-footer-note a { color:var(--gold); text-decoration:none; font-weight:500; }
+
+    /* error state */
+    .form-error {
+      background:rgba(224,90,78,0.08); border:1px solid rgba(224,90,78,0.25);
+      border-radius:8px; padding:0.6rem 0.9rem;
+      font-size:0.8rem; color:#e05a4e; display:none; margin-bottom:1rem;
+    }
+    .form-error.visible { display:block; }
+
+    /* success / loading */
+    .btn-login.loading { opacity:0.65; pointer-events:none; }
+    .spinner {
+      display:inline-block; width:14px; height:14px;
+      border:2px solid rgba(0,0,0,0.2); border-top-color:#0a0a0a;
+      border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:middle; margin-right:0.4rem;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* mobile: no left panel, full-page form */
+    @media (max-width:899px) {
+      .login-panel-right { min-height:100vh; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LEFT PANEL ── -->
+<div class="login-panel-left">
+  <div class="left-brand">
+    <div class="left-logo-wrap">
+      <img src="../assets/images/logo.jpg" alt="DivergenCIE logo"/>
+      <span class="left-logo-text">Divergen<span>CIE</span></span>
+    </div>
+    <h1 class="left-headline">Your A* Journey<br/>Starts <span>Here.</span></h1>
+    <p class="left-sub">Access your personalised dashboard — track progress, attend classes, submit assignments, and stay ahead of the syllabus.</p>
+    <div class="left-stats">
+      <div class="left-stat-item">
+        <span class="left-stat-num">40+</span>
+        <span class="left-stat-lbl">World Toppers</span>
+      </div>
+      <div class="left-stat-item">
+        <span class="left-stat-num">98%</span>
+        <span class="left-stat-lbl">A*–B Rate</span>
+      </div>
+      <div class="left-stat-item">
+        <span class="left-stat-num">5+</span>
+        <span class="left-stat-lbl">Countries</span>
+      </div>
+    </div>
+    <div class="left-badges">
+      <span class="left-badge">Cambridge Authorised</span>
+      <span class="left-badge">CollegeBoard Partner</span>
+      <span class="left-badge">IB World School</span>
+    </div>
+    <div class="left-testimonial">
+      <p class="left-testimonial-text">"The portal made it so easy to track my past paper scores and see exactly which topics I needed to fix. Went from a 6 to a 9 in IGCSE Maths."</p>
+      <div class="left-testimonial-author">Aanya R.</div>
+      <div class="left-testimonial-role">IGCSE Student · Malaysia · Grade 9</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── RIGHT PANEL (form) ── -->
+<div class="login-panel-right">
+  <button class="login-theme-toggle theme-toggle" aria-label="Toggle theme">
+    <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+
+  <div class="login-form-wrap">
+    <a href="../index.html" class="login-back">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to site
+    </a>
+
+    <h1 class="login-title">Welcome back.</h1>
+    <p class="login-subtitle">Sign in to your DivergenCIE portal.</p>
+
+    <!-- role detection strip (shown after email blur) -->
+    <div class="role-detect-strip" id="roleStrip">
+      <svg class="role-detect-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="roleStripText">Detected role: —</span>
+    </div>
+
+    <!-- error -->
+    <div class="form-error" id="formError">Incorrect email or password. Please try again.</div>
+
+    <!-- Dummy Logins -->
+    <div style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:0.8rem; border-radius:8px; margin-bottom:1.25rem; font-size:0.75rem; color:var(--muted); line-height:1.5;">
+      <strong>Demo Accounts (password: demo)</strong><br>
+      • PR: pr@staff.divergencie.com<br>
+      • HR: hr@staff.divergencie.com<br>
+      • Finance: finance@staff.divergencie.com<br>
+      • Marketing: marketing@staff.divergencie.com<br>
+      • IT: it@staff.divergencie.com<br>
+      • Mgmt: admin@divergencie.com<br>
+      • Student: student@divergencie.com
+    </div>
+
+    <!-- form -->
+    <div>
+      <div class="form-group">
+        <label class="form-label" for="email">Email address</label>
+        <input class="form-input" type="email" id="email" placeholder="you@example.com" autocomplete="email" required/>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="password-wrap">
+          <input class="form-input" type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required/>
+          <button class="password-toggle" type="button" id="pwToggle" aria-label="Show password">
+            <svg id="pwEyeShow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="pwEyeHide" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row-between">
+        <label class="remember-wrap">
+          <input type="checkbox" id="remember"/>
+          Remember me
+        </label>
+        <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="btn-login" id="loginBtn" type="button">Portal Login</button>
+
+      <div class="divider">or continue with</div>
+
+      <button class="btn-google" type="button" id="googleBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5.1l-6.2-5.2C29.4 35.5 26.8 36 24 36c-5.2 0-9.6-3-11.3-7.5l-6.5 5C9.8 40.1 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.2 5.2C41 35.4 44 30.1 44 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+
+    <p class="login-footer-note">
+      Don't have an account? <a href="../contact.html">Contact us to enrol</a>
+    </p>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Password show/hide
+  const pwInput = document.getElementById('password');
+  const pwToggle = document.getElementById('pwToggle');
+  const eyeShow = document.getElementById('pwEyeShow');
+  const eyeHide = document.getElementById('pwEyeHide');
+  let visible = false;
+  pwToggle.addEventListener('click', function () {
+    visible = !visible;
+    pwInput.type = visible ? 'text' : 'password';
+    eyeShow.style.display = visible ? 'none' : 'block';
+    eyeHide.style.display = visible ? 'block' : 'none';
+  });
+
+  // Role auto-detection by email domain / pattern
+  const emailInput = document.getElementById('email');
+  const roleStrip = document.getElementById('roleStrip');
+  const roleStripText = document.getElementById('roleStripText');
+
+  const ROLE_MAP = {
+    // Staff / admin detect by domain keywords
+    'staff': 'Staff Portal',
+    'admin': 'Management Portal',
+    'management': 'Management Portal',
+    'teacher': 'Teacher Portal',
+    'ambassador': 'Ambassador Portal',
+    'tutor': 'Staff Portal',
+    'hr': 'Staff Portal',
+    // Parent pattern
+    'parent': 'Parent Portal',
+    // default → student
+  };
+
+  function detectRole(email) {
+    const lower = email.toLowerCase();
+    for (const [key, label] of Object.entries(ROLE_MAP)) {
+      if (lower.includes(key)) return label;
+    }
+    if (email.includes('@') && email.split('@')[1]) return 'Student Portal';
+    return null;
+  }
+
+  emailInput.addEventListener('blur', function () {
+    const role = detectRole(emailInput.value.trim());
+    if (role) {
+      roleStripText.textContent = 'Detected role: ' + role;
+      roleStrip.classList.add('visible');
+    } else {
+      roleStrip.classList.remove('visible');
+    }
+  });
+
+  // Form submit
+  const loginBtn = document.getElementById('loginBtn');
+  const formError = document.getElementById('formError');
+
+  function getPortalUrl(email) {
+    const role = detectRole(email);
+    const lower = email.toLowerCase();
+    
+    if (role === 'Management Portal') return '../portal/management/dashboard.html';
+    
+    if (role === 'Staff Portal') {
+      let dept = '';
+      if (lower.includes('pr@')) dept = 'PR';
+      else if (lower.includes('hr@')) dept = 'HR';
+      else if (lower.includes('finance@')) dept = 'Finance';
+      else if (lower.includes('marketing@')) dept = 'Marketing';
+      else if (lower.includes('it@')) dept = 'IT';
+      
+      return dept ? `../portal/staff/dashboard.html?dept=${dept}` : '../portal/staff/dashboard.html';
+    }
+    
+    if (role === 'Teacher Portal') return '../portal/teacher/dashboard.html';
+    if (role === 'Ambassador Portal') return '../portal/ambassador/dashboard.html';
+    if (role === 'Parent Portal') return '../portal/parent/dashboard.html';
+    return '../portal/student/dashboard.html';
+  }
+
+  loginBtn.addEventListener('click', function () {
+    const email = emailInput.value.trim();
+    const password = pwInput.value;
+    formError.classList.remove('visible');
+
+    if (!email || !password) {
+      formError.textContent = 'Please enter your email and password.';
+      formError.classList.add('visible');
+      return;
+    }
+
+    // Loading state
+    loginBtn.classList.add('loading');
+    loginBtn.innerHTML = '<span class="spinner"></span>Signing in…';
+
+    // Stub: simulate auth (replace with real backend call)
+    setTimeout(function () {
+      // Demo: any password === 'demo' passes, anything else fails
+      // In production, replace this block with a real API call
+      if (password === 'demo') {
+        const dest = getPortalUrl(email);
+        window.location.href = dest;
+      } else {
+        loginBtn.classList.remove('loading');
+        loginBtn.textContent = 'Portal Login';
+        formError.textContent = 'Incorrect email or password. (Demo: use password "demo")';
+        formError.classList.add('visible');
+      }
+    }, 1200);
+  });
+
+  // Google OAuth stub
+  document.getElementById('googleBtn').addEventListener('click', function () {
+    alert('Google OAuth — connect your backend OAuth provider here (Firebase Auth, Supabase, Auth0, etc.).');
+  });
+
+  // Enter key on inputs
+  [emailInput, pwInput].forEach(function (el) {
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') loginBtn.click();
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Services — DivergenCIE Coaching</title>
+  <meta name="description" content="IGCSE, A Level, AP, IB, SAT/ACT, IELTS/TOEFL coaching and university applications. World & Country Toppers. Cambridge & CollegeBoard authorised."/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://api.fontshare.com"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+
+  <!-- Theme (before render to prevent flash) -->
+  <script src="js/theme.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <link rel="stylesheet" href="css/inner.css"/>
+
+  <style>
+    /* ── SERVICES HUB ── */
+    .svc-hero {
+      padding: 8rem 1.5rem 4rem;
+      background: var(--navy);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .svc-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(232,168,50,0.12) 0%, transparent 65%),
+                  radial-gradient(ellipse at 20% 80%, rgba(74,159,212,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .svc-hero-breadcrumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 1.5rem;
+    }
+    .svc-hero-breadcrumb a { color: rgba(255,255,255,0.45); text-decoration: none; }
+    .svc-hero-breadcrumb a:hover { color: var(--gold); }
+    .svc-hero-breadcrumb svg { opacity: 0.4; }
+    .svc-hero h1 {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .svc-hero h1 span { color: var(--gold); }
+    .svc-hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.65);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .svc-hero-badges {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .svc-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .svc-hero-badge.gold {
+      background: rgba(232,168,50,0.12);
+      border-color: rgba(232,168,50,0.3);
+      color: var(--gold);
+    }
+
+    /* ── FILTER TABS ── */
+    .svc-filter-bar {
+      position: sticky;
+      top: 64px;
+      z-index: 80;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+    }
+    html.dark .svc-filter-bar { background: #111; }
+    .svc-filter-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .svc-filter-inner::-webkit-scrollbar { display: none; }
+    .svc-filter-tab {
+      flex-shrink: 0;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .svc-filter-tab:hover { color: var(--text-primary); }
+    .svc-filter-tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    /* ── GRID ── */
+    .svc-grid-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 6rem;
+    }
+    .svc-section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .svc-section-title {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      color: var(--text-primary);
+      margin-bottom: 2.5rem;
+    }
+    .svc-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* ── CARD ── */
+    .svc-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-decoration: none;
+      transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    html.dark .svc-card { background: #141414; }
+    .svc-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--gold));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .svc-card:hover {
+      border-color: var(--card-accent, var(--gold));
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      transform: translateY(-3px);
+    }
+    .svc-card:hover::before { opacity: 1; }
+    html.dark .svc-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+    .svc-card-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .svc-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .svc-card-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-cam {
+      background: rgba(26,60,94,0.1);
+      color: var(--navy);
+      border: 1px solid rgba(26,60,94,0.2);
+    }
+    html.dark .badge-cam {
+      background: rgba(74,159,212,0.12);
+      color: #4a9fd4;
+      border-color: rgba(74,159,212,0.25);
+    }
+    .badge-cb {
+      background: rgba(42,90,177,0.1);
+      color: #1a5bbf;
+      border: 1px solid rgba(42,90,177,0.2);
+    }
+    html.dark .badge-cb {
+      background: rgba(100,140,230,0.12);
+      color: #7aa4e8;
+      border-color: rgba(100,140,230,0.25);
+    }
+    .badge-ib {
+      background: rgba(13,108,80,0.1);
+      color: #0d6c50;
+      border: 1px solid rgba(13,108,80,0.2);
+    }
+    html.dark .badge-ib {
+      background: rgba(52,199,143,0.1);
+      color: #34c78f;
+      border-color: rgba(52,199,143,0.25);
+    }
+    .badge-intl {
+      background: rgba(232,168,50,0.1);
+      color: #b8820a;
+      border: 1px solid rgba(232,168,50,0.25);
+    }
+    html.dark .badge-intl {
+      background: rgba(245,200,66,0.1);
+      color: var(--gold);
+      border-color: rgba(245,200,66,0.25);
+    }
+    .svc-card-name {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .svc-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .svc-card-subjects {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .svc-subject-chip {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    html.dark .svc-subject-chip { background: #1e1e1e; }
+    .svc-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+    .svc-card-stat {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .svc-card-stat strong {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .svc-card-arrow {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .svc-card:hover .svc-card-arrow {
+      background: var(--card-accent, var(--gold));
+      color: #fff;
+      border-color: var(--card-accent, var(--gold));
+    }
+
+    /* ── COUNSELLING CARDS (full-width pair) ── */
+    .svc-cards-wide {
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+    .svc-card-wide .svc-card-desc { font-size: 0.9rem; }
+
+    /* ── DIVIDER ── */
+    .svc-divider {
+      max-width: 1100px;
+      margin: 0 auto 3.5rem;
+      padding: 0 1.5rem;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── WHY BLOCK ── */
+    .svc-why {
+      background: var(--navy);
+      padding: 5rem 1.5rem;
+    }
+    html.dark .svc-why { background: #111; border-top: 1px solid rgba(255,255,255,0.06); }
+    .svc-why-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    @media (max-width: 768px) { .svc-why-inner { grid-template-columns: 1fr; gap: 2rem; } }
+    .svc-why-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .svc-why-title {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+    .svc-why-body {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .svc-why-points {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+    .svc-why-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .svc-why-point-icon {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(232,168,50,0.15);
+      border: 1px solid rgba(232,168,50,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .svc-why-point-text {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+    }
+    .svc-why-point-text strong { color: #fff; }
+    .svc-why-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .svc-why-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    html.dark .svc-why-stat { background: rgba(255,255,255,0.03); }
+    .svc-why-stat-num {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 900;
+      font-size: 2.2rem;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .svc-why-stat-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.4;
+    }
+
+    /* ── CTA BANNER ── */
+    .svc-cta-strip {
+      background: var(--gold);
+      padding: 3.5rem 1.5rem;
+      text-align: center;
+    }
+    html.dark .svc-cta-strip { background: #c9a030; }
+    .svc-cta-strip h2 {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: #0a0a0a;
+      margin-bottom: 0.5rem;
+    }
+    .svc-cta-strip p { color: rgba(0,0,0,0.6); margin-bottom: 1.75rem; font-size: 0.95rem; }
+    .svc-cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-dark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      background: #0a0a0a;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .btn-dark:hover { background: #1a1a1a; }
+    .btn-outline-dark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.75rem;
+      background: transparent;
+      color: #0a0a0a;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-radius: 4px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline-dark:hover { border-color: #0a0a0a; background: rgba(0,0,0,0.06); }
+
+    /* ── HIDDEN filter state ── */
+    .svc-card[data-hidden="true"] { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.jpg" alt="DivergenCIE logo icon"/>
+      <span class="nav-logo-text">Divergen<span>CIE</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="about.html">About</a>
+      <a href="index.html#results">Results</a>
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="mock.html">Free Mock</a>
+      <a href="careers.html">Careers</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-right" style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="theme-toggle" aria-label="Toggle light/dark mode">
+        <svg class="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="auth/login.html" class="nav-cta" style="background:transparent;color:var(--text-primary);border-color:var(--border);">Portal Login</a>
+      <a href="contact.html" class="nav-cta nav-cta-desktop">Get Started</a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu">
+    <a href="about.html">About</a>
+    <a href="index.html#results">Results</a>
+    <a href="services.html">Services</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="mock.html">Free Mock</a>
+    <a href="careers.html">Careers</a>
+    <a href="contact.html">Contact</a>
+    <a href="auth/login.html" class="btn-ghost" style="margin-top:0.5rem;justify-content:center;">Portal Login</a>
+    <a href="contact.html" class="btn-gold" style="margin-top:0.5rem;justify-content:center;">Get Started</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="svc-hero">
+  <div style="position:relative;z-index:1;">
+    <p class="svc-hero-breadcrumb">
+      <a href="index.html">Home</a>
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <span class="inner-hero-current">Services</span>
+    </p>
+    <h1>Every Subject.<br>Every <span>Exam Board.</span><br>One Coaching Partner.</h1>
+    <p class="svc-hero-sub">From IGCSE to university applications — we coach the full academic journey for students in the UK, Malaysia, India, Saudi Arabia, and beyond.</p>
+    <div class="svc-hero-badges">
+      <span class="svc-hero-badge gold">Cambridge Authorised</span>
+      <span class="svc-hero-badge gold">CollegeBoard Partner</span>
+      <span class="svc-hero-badge">IB Specialists</span>
+      <span class="svc-hero-badge">5 Countries</span>
+      <span class="svc-hero-badge">World &amp; Country Toppers</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── STICKY FILTER TABS ── -->
+<div class="svc-filter-bar">
+  <div class="svc-filter-inner">
+    <button class="svc-filter-tab active" data-filter="all">All Services</button>
+    <button class="svc-filter-tab" data-filter="exams">Exam Prep</button>
+    <button class="svc-filter-tab" data-filter="language">Language Tests</button>
+    <button class="svc-filter-tab" data-filter="admissions">Admissions</button>
+  </div>
+</div>
+
+<!-- ── EXAM PREP CARDS ── -->
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Exam Preparation</p>
+    <h2>Choose Your <span>Qualification</span></h2>
+  </div>
+
+  <div class="svc-cards" id="cards-grid">
+
+    <!-- IGCSE -->
+    <a href="services/igcse.html" class="svc-card" data-category="exams" style="--card-accent:#1a3c5e;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(26,60,94,0.08);">
+          <span>📘</span>
+        </div>
+        <span class="svc-card-badge badge-cam">Cambridge</span>
+      </div>
+      <div class="svc-card-name">IGCSE Coaching</div>
+      <p class="svc-card-desc">Grades 9–10 preparation for Cambridge IGCSE. Structured sessions, past paper drills, and A* strategy for every major subject group.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">Mathematics</span>
+        <span class="svc-subject-chip">Sciences</span>
+        <span class="svc-subject-chip">English</span>
+        <span class="svc-subject-chip">Economics</span>
+        <span class="svc-subject-chip">+ more</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>Cambridge</strong> Authorised Centre</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- A Level -->
+    <a href="services/a-level.html" class="svc-card" data-category="exams" style="--card-accent:#1a3c5e;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(26,60,94,0.08);">
+          <span>🎓</span>
+        </div>
+        <span class="svc-card-badge badge-cam">Cambridge</span>
+      </div>
+      <div class="svc-card-name">A Level Coaching</div>
+      <p class="svc-card-desc">AS and A2 preparation for Cambridge A Levels. University-targeted coaching with Oxford, Cambridge, LSE, and Imperial pathways in focus.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">Mathematics</span>
+        <span class="svc-subject-chip">Further Maths</span>
+        <span class="svc-subject-chip">Physics</span>
+        <span class="svc-subject-chip">Chemistry</span>
+        <span class="svc-subject-chip">+ more</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>UK &amp; Global</strong> University Ready</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- AP -->
+    <a href="services/ap.html" class="svc-card" data-category="exams" style="--card-accent:#1a5bbf;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(42,90,177,0.08);">
+          <span>🇺🇸</span>
+        </div>
+        <span class="svc-card-badge badge-cb">CollegeBoard</span>
+      </div>
+      <div class="svc-card-name">AP Coaching</div>
+      <p class="svc-card-desc">Advanced Placement exam preparation for US college admissions. Score 4–5 strategy, FRQ practice, and CollegeBoard-aligned curriculum.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">AP Calculus</span>
+        <span class="svc-subject-chip">AP Physics</span>
+        <span class="svc-subject-chip">AP Chemistry</span>
+        <span class="svc-subject-chip">AP Statistics</span>
+        <span class="svc-subject-chip">+ more</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>CollegeBoard</strong> Partner</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- IB -->
+    <a href="services/ib.html" class="svc-card" data-category="exams" style="--card-accent:#0d6c50;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(13,108,80,0.08);">
+          <span>🌍</span>
+        </div>
+        <span class="svc-card-badge badge-ib">IB</span>
+      </div>
+      <div class="svc-card-name">IB Diploma Coaching</div>
+      <p class="svc-card-desc">HL and SL support for the International Baccalaureate Diploma Programme. TOK essays, IA guidance, and exam technique across all six groups.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">HL Mathematics</span>
+        <span class="svc-subject-chip">HL Sciences</span>
+        <span class="svc-subject-chip">HL Economics</span>
+        <span class="svc-subject-chip">TOK / EE</span>
+        <span class="svc-subject-chip">+ more</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>IB</strong> Specialist Teachers</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- SAT/ACT -->
+    <a href="services/sat-act.html" class="svc-card" data-category="exams" style="--card-accent:#e8a832;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(232,168,50,0.1);">
+          <span>📊</span>
+        </div>
+        <span class="svc-card-badge badge-cb">CollegeBoard</span>
+      </div>
+      <div class="svc-card-name">SAT / ACT Prep</div>
+      <p class="svc-card-desc">Target 1500+ SAT or 33+ ACT. Full diagnostic, section-by-section strategy, and timed practice under real exam conditions.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">SAT Math</span>
+        <span class="svc-subject-chip">SAT Reading</span>
+        <span class="svc-subject-chip">ACT English</span>
+        <span class="svc-subject-chip">ACT Science</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>US Admissions</strong> Track Record</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- IELTS / TOEFL -->
+    <a href="services/ielts-toefl.html" class="svc-card" data-category="language" style="--card-accent:#4a9fd4;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(74,159,212,0.1);">
+          <span>🗣️</span>
+        </div>
+        <span class="svc-card-badge badge-intl">Language</span>
+      </div>
+      <div class="svc-card-name">IELTS / TOEFL Prep</div>
+      <p class="svc-card-desc">Band 7.5+ IELTS and 105+ TOEFL coaching. Speaking mock tests, Writing Task feedback with examiner-style marking, and Listening strategy.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">IELTS Academic</span>
+        <span class="svc-subject-chip">IELTS General</span>
+        <span class="svc-subject-chip">TOEFL iBT</span>
+        <span class="svc-subject-chip">Speaking Mock</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>University</strong> Visa Ready</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+  </div><!-- /svc-cards -->
+</section>
+
+<hr class="svc-divider"/>
+
+<!-- ── ADMISSIONS SECTION ── -->
+  <div class="inner-section-head inner-section-head--center" data-anim>
+    <p class="section-label">Beyond Exams</p>
+    <h2>Admissions &amp; <span>Career Support</span></h2>
+  </div>
+
+  <div class="svc-cards svc-cards-wide">
+
+    <!-- University Applications -->
+    <a href="contact.html" class="svc-card svc-card-wide" data-category="admissions" style="--card-accent:#e8a832;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(232,168,50,0.1);">
+          <span>🏛️</span>
+        </div>
+        <span class="svc-card-badge badge-intl">Premium</span>
+      </div>
+      <div class="svc-card-name">University Applications</div>
+      <p class="svc-card-desc">End-to-end guidance for UK UCAS, US Common App, and international university admissions. Personal Statement coaching, shortlisting strategy, interview preparation, and deadline management — with a track record of placements at Oxford, Cambridge, LSE, Imperial, UCL, Durham, Warwick, and Edinburgh.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">UCAS</span>
+        <span class="svc-subject-chip">Common App</span>
+        <span class="svc-subject-chip">Personal Statement</span>
+        <span class="svc-subject-chip">Interview Prep</span>
+        <span class="svc-subject-chip">Oxbridge Track</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>Russell Group</strong> &amp; Top-50 Global Placements</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- Career Counselling -->
+    <a href="contact.html" class="svc-card svc-card-wide" data-category="admissions" style="--card-accent:#4a9fd4;" data-anim="fade-up">
+      <div class="svc-card-top">
+        <div class="svc-card-icon" style="background:rgba(74,159,212,0.1);">
+          <span>🧭</span>
+        </div>
+        <span class="svc-card-badge badge-intl">Counselling</span>
+      </div>
+      <div class="svc-card-name">Career Counselling</div>
+      <p class="svc-card-desc">Clarity sessions for students at the crossroads of subject selection, course choices, and career pathways. Psychometric profiling, industry exposure mapping, and a structured roadmap from IGCSE all the way to graduate entry.</p>
+      <div class="svc-card-subjects">
+        <span class="svc-subject-chip">Subject Selection</span>
+        <span class="svc-subject-chip">Course Mapping</span>
+        <span class="svc-subject-chip">Psychometric</span>
+        <span class="svc-subject-chip">Roadmap Planning</span>
+      </div>
+      <div class="svc-card-footer">
+        <span class="svc-card-stat"><strong>1-on-1</strong> Personalised Sessions</span>
+        <span class="svc-card-arrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── WHY DC ── -->
+<section class="svc-why">
+  <div class="svc-why-inner">
+    <div data-anim="fade-up">
+      <p class="svc-why-label">Why DivergenCIE</p>
+      <h2 class="svc-why-title">Not a Tuition Centre.<br>A Results Machine.</h2>
+      <p class="svc-why-body">We don't do group classes with 40 students. Every session is tailored, every chapter tracked, every past paper reviewed. The difference shows in the results.</p>
+      <div class="svc-why-points">
+        <div class="svc-why-point">
+          <div class="svc-why-point-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e8a832" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="svc-why-point-text"><strong>A*-focused curriculum</strong> — every lesson maps to exam mark schemes, not just textbook coverage.</p>
+        </div>
+        <div class="svc-why-point">
+          <div class="svc-why-point-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e8a832" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="svc-why-point-text"><strong>Live Zoom sessions</strong> with MS Whiteboard — recorded, uploaded, and accessible forever in your portal.</p>
+        </div>
+        <div class="svc-why-point">
+          <div class="svc-why-point-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e8a832" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="svc-why-point-text"><strong>Progress tracked per chapter</strong> — doubt logs, A* gap analysis, and monthly score trend reports.</p>
+        </div>
+        <div class="svc-why-point">
+          <div class="svc-why-point-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e8a832" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="svc-why-point-text"><strong>Timezone-aware scheduling</strong> — students in MY, IN, KSA, UK, and PK all served without timezone confusion.</p>
+        </div>
+      </div>
+    </div>
+    <div class="svc-why-stats" data-anim="fade-up">
+      <div class="svc-why-stat">
+        <div class="svc-why-stat-num">97%</div>
+        <div class="svc-why-stat-label">students achieved A* or A in their last session</div>
+      </div>
+      <div class="svc-why-stat">
+        <div class="svc-why-stat-num">12+</div>
+        <div class="svc-why-stat-label">World &amp; Country Toppers produced</div>
+      </div>
+      <div class="svc-why-stat">
+        <div class="svc-why-stat-num">5</div>
+        <div class="svc-why-stat-label">countries served — UK, MY, IN, KSA, PK</div>
+      </div>
+      <div class="svc-why-stat">
+        <div class="svc-why-stat-num">100%</div>
+        <div class="svc-why-stat-label">of university applicants placed at target unis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA STRIP ── -->
+<section class="svc-cta-strip">
+  <h2>Not Sure Which Service You Need?</h2>
+  <p>WhatsApp us — we'll map the right pathway in 10 minutes.</p>
+  <div class="svc-cta-btns">
+    <a href="https://wa.me/919650675507" target="_blank" rel="noopener" class="btn-dark">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      WhatsApp Us
+    </a>
+    <a href="mock.html" class="btn-outline-dark">Try Free Mock First</a>
+  </div>
+</section>
+
+<!-- ── FOOTER CTA ── -->
+<section class="footer-cta">
+  <div class="footer-cta-inner">
+    <div class="footer-cta-text">
+      <h2 class="footer-cta-headline">Think You Can Get A*?</h2>
+      <p class="footer-cta-sub">We Know You Can.</p>
+    </div>
+    <div class="footer-cta-btns">
+      <a href="contact.html" class="btn-gold footer-cta-btn">Enrol Now</a>
+      <a href="mock.html" class="btn-outline-white footer-cta-btn">Try Free Mock</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-col footer-brand">
+      <img src="assets/images/logo.jpg" alt="DivergenCIE" class="footer-logo">
+      <p class="footer-tagline">World &amp; Country Toppers.<br>Prestige. Results.</p>
+      <p class="footer-domain">divergencie.co.uk</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://wa.me/919650675507" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Quick Links</h4>
+      <ul class="footer-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="careers.html">Careers</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Services</h4>
+      <ul class="footer-links">
+        <li><a href="services/igcse.html">IGCSE Coaching</a></li>
+        <li><a href="services/a-level.html">A Level Coaching</a></li>
+        <li><a href="services/ap.html">AP Coaching</a></li>
+        <li><a href="services/ib.html">IB Coaching</a></li>
+        <li><a href="services/sat-act.html">SAT / ACT Prep</a></li>
+        <li><a href="services/ielts-toefl.html">IELTS / TOEFL</a></li>
+        <li><a href="mock.html">Free Mock Simulator</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Contact &amp; Social</h4>
+      <ul class="footer-contact">
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <a href="https://wa.me/919650675507" target="_blank" rel="noopener">WhatsApp Us</a>
+        </li>
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <a href="https://www.instagram.com/divergencie_coaching/" target="_blank" rel="noopener">@divergencie_coaching</a>
+        </li>
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          <a href="https://www.linkedin.com/company/divergencie-coaching/" target="_blank" rel="noopener">DivergenCIE Coaching</a>
+        </li>
+        <li>
+          <svg class="footer-contact-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>UK · MY · IN · KSA · PK</span>
+        </li>
+      </ul>
+      <div class="footer-accreditations">
+        <span class="footer-accred-badge">Cambridge Authorised</span>
+        <span class="footer-accred-badge">CollegeBoard Partner</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 DivergenCIE Educational Consultancy Pvt Ltd. All rights reserved.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<!-- JS -->
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+  // Hamburger
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+
+  // Filter tabs
+  const tabs = document.querySelectorAll('.svc-filter-tab');
+  const cards = document.querySelectorAll('.svc-card');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.filter;
+      cards.forEach(card => {
+        if (filter === 'all' || card.dataset.category === filter) {
+          card.removeAttribute('data-hidden');
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Scroll animations
+  const animEls = document.querySelectorAll('[data-anim]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('anim-visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  animEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

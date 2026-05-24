@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Budget Planning — DivergenCIE Management</title>
+  <link rel="stylesheet" href="../../css/shared.css"/>
+  <link rel="stylesheet" href="../../css/portal.css"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <script>tailwind={config:{darkMode:'class'}}</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/theme.js"></script>
+  <style>
+    .budget-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 768px) {
+      .budget-grid { grid-template-columns: 1fr; }
+    }
+    .budget-card {
+      background: var(--bg-primary);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .budget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.75rem;
+    }
+    .budget-title {
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--gold);
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+    }
+    .input-group-text {
+      background: var(--bg-secondary);
+      border: 1.5px solid var(--border);
+      border-right: none;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px 0 0 8px;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+    .input-group .form-input {
+      border-radius: 0 8px 8px 0;
+    }
+    .btn-submit {
+      background: var(--gold);
+      color: #0a0a0a;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-family: 'Satoshi', sans-serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.5rem;
+      transition: opacity 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+    
+    .budget-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .budget-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1.5px solid var(--border);
+      background: var(--bg-secondary);
+    }
+    .budget-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-planned { background: #e0f2fe; color: #0369a1; }
+    html.dark .status-active { background: #14532d; color: #86efac; }
+    html.dark .status-planned { background: #0c4a6e; color: #7dd3fc; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo"/>
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Management Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AD</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Management</div>
+        <div class="role-badge role-management">Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="users.html" class="sidebar-nav-item"><svg data-lucide="users"></svg> Users</a>
+        <a href="metrics.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> Metrics</a>
+        <a href="budget.html" class="sidebar-nav-item active"><svg data-lucide="pie-chart"></svg> Budget</a>
+        <a href="claims.html" class="sidebar-nav-item"><svg data-lucide="banknote"></svg> Claims</a>
+        <a href="tickets.html" class="sidebar-nav-item"><svg data-lucide="ticket"></svg> Tickets</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Help</div>
+        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><svg data-lucide="menu" style="width:20px;height:20px"></svg></button>
+      <div class="topbar-title">Quarterly Budget Planning</div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-left:auto">
+        <button class="topbar-icon-btn" id="portal-theme-toggle">
+          <svg data-lucide="sun" class="icon-sun" style="width:16px;height:16px"></svg>
+          <svg data-lucide="moon" class="icon-moon" style="width:16px;height:16px"></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="portal-content">
+      
+      <div class="budget-grid">
+        <!-- Budget Input Form -->
+        <div class="budget-card">
+          <div class="budget-header">
+            <h3 class="budget-title">Set Quarterly Budget</h3>
+          </div>
+          <form onsubmit="handleBudgetSubmit(event)">
+            <div class="form-group">
+              <label class="form-label">Quarter</label>
+              <select class="form-select" required>
+                <option value="" disabled selected>Select Quarter</option>
+                <option value="Q1">Q1 (Jan - Mar)</option>
+                <option value="Q2">Q2 (Apr - Jun)</option>
+                <option value="Q3">Q3 (Jul - Sep)</option>
+                <option value="Q4">Q4 (Oct - Dec)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select class="form-select" required>
+                <option value="" disabled selected>Select Department</option>
+                <option value="All">Company-Wide</option>
+                <option value="PR">PR / Teaching</option>
+                <option value="Marketing">Marketing</option>
+                <option value="IT">IT</option>
+                <option value="HR">HR</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Projected Revenue (INR)</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" class="form-input" placeholder="e.g. 5000000" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Allocated Expenditure (GBP)</label>
+              <div class="input-group">
+                <span class="input-group-text">£</span>
+                <input type="number" class="form-input" placeholder="e.g. 15000" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes / Objectives</label>
+              <input type="text" class="form-input" placeholder="Key goals for this budget cycle...">
+            </div>
+            <button type="submit" class="btn-submit">Save Budget Plan</button>
+          </form>
+        </div>
+
+        <!-- Budget Summary -->
+        <div class="budget-card">
+          <div class="budget-header">
+            <h3 class="budget-title">Current Overview (Q2 2026)</h3>
+            <span class="status-badge status-active">Active</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:1.25rem;">
+            <div>
+              <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Total Projected Revenue</div>
+              <div style="font-size:1.8rem;font-weight:900;color:var(--text-primary);">₹ 4,500,000</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;"><span style="color:#22c55e;font-weight:700;">+12%</span> vs Q1 2026</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Total Approved Expenditure</div>
+              <div style="font-size:1.8rem;font-weight:900;color:var(--text-primary);">£ 12,500</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;">Operations & Marketing</div>
+            </div>
+            <div style="margin-top:1rem;padding:1rem;background:var(--bg-secondary);border-radius:8px;border:1px solid var(--border);">
+              <div style="font-size:0.8rem;font-weight:700;color:var(--text-primary);margin-bottom:0.5rem;">Budget Utilisation</div>
+              <div style="height:8px;background:var(--border);border-radius:10px;overflow:hidden;">
+                <div style="width:42%;height:100%;background:var(--gold);"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">
+                <span>42% Used (£5,250)</span>
+                <span>58% Remaining</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Table -->
+      <div class="portal-card" style="padding:0;overflow:hidden">
+        <div style="padding:1.25rem;border-bottom:1px solid var(--border)">
+          <h3 class="budget-title" style="margin:0">Budget Plans History</h3>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="budget-table">
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Department</th>
+                <th>Revenue (INR)</th>
+                <th>Expenditure (GBP)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:700;color:var(--text-primary)">Q2 2026</td>
+                <td>Company-Wide</td>
+                <td>₹ 4,500,000</td>
+                <td>£ 12,500</td>
+                <td><span class="status-badge status-active">Active</span></td>
+                <td><button style="color:var(--gold);font-weight:600;font-size:0.8rem;">Edit</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;color:var(--text-primary)">Q3 2026</td>
+                <td>Marketing</td>
+                <td>₹ 800,000</td>
+                <td>£ 4,000</td>
+                <td><span class="status-badge status-planned">Planned</span></td>
+                <td><button style="color:var(--gold);font-weight:600;font-size:0.8rem;">Edit</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;color:var(--text-primary)">Q1 2026</td>
+                <td>Company-Wide</td>
+                <td>₹ 4,010,000</td>
+                <td>£ 11,200</td>
+                <td><span class="status-badge" style="background:var(--bg-secondary);color:var(--text-muted);">Completed</span></td>
+                <td><button style="color:var(--text-muted);font-weight:600;font-size:0.8rem;">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+
+  // Sidebar + theme
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if(toggle){ toggle.addEventListener('click',()=>{ sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }); }
+  if(overlay){ overlay.addEventListener('click',()=>{ sidebar.classList.remove('open'); overlay.classList.remove('active'); }); }
+  const tt = document.getElementById('portal-theme-toggle');
+  if(tt){ tt.addEventListener('click',()=>{ const d=document.documentElement; d.classList.toggle('dark'); localStorage.setItem('dc-theme',d.classList.contains('dark')?'dark':'light'); }); }
+
+  function handleBudgetSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-submit');
+    const originalText = btn.textContent;
+    btn.textContent = 'Saved Successfully ✓';
+    btn.style.background = '#22c55e';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.background = 'var(--gold)';
+      btn.style.color = '#0a0a0a';
+      e.target.reset();
+    }, 2000);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Claims — DivergenCIE Staff</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    /* Tabs */
+    .tab-bar { display:flex; gap:0.25rem; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:4px; margin-bottom:1.5rem; width:fit-content; }
+    .tab-btn { padding:0.45rem 1.1rem; border-radius:9px; border:none; font-family:'Satoshi',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:background 0.15s,color 0.15s; background:transparent; color:var(--text-muted); }
+    .tab-btn.active { background:var(--bg-primary); color:var(--gold); box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* Summary strip (timesheet pull) */
+    .ts-strip {
+      display:flex; align-items:center; gap:1.25rem;
+      background:var(--bg-secondary); border:1px solid var(--border);
+      border-radius:12px; padding:1rem 1.3rem; margin-bottom:1.25rem;
+      flex-wrap:wrap;
+    }
+    .ts-item { display:flex; flex-direction:column; gap:0.15rem; }
+    .ts-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); }
+    .ts-value { font-size:1.1rem; font-weight:900; color:var(--text-primary); }
+    .ts-divider { width:1px; height:32px; background:var(--border); }
+    .ts-note { font-size:0.75rem; color:var(--text-muted); margin-left:auto; }
+
+    /* Form card */
+    .form-card { background:var(--bg-primary); border:1px solid var(--border); border-radius:14px; padding:1.5rem 1.6rem; max-width:620px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .form-group { display:flex; flex-direction:column; gap:0.35rem; }
+    .form-group.full { grid-column:1/-1; }
+    .form-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); }
+    .form-label .req { color:var(--coral); margin-left:2px; }
+    .form-input,.form-select,.form-textarea { background:var(--bg-secondary); border:1px solid var(--border); border-radius:9px; padding:0.6rem 0.9rem; font-family:'Satoshi',sans-serif; font-size:0.86rem; color:var(--text-primary); outline:none; transition:border-color 0.15s; width:100%; }
+    .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--gold); }
+    .form-input.readonly { opacity:0.65; cursor:not-allowed; }
+    .form-input.error,.form-select.error { border-color:var(--coral); }
+    .form-hint { font-size:0.68rem; color:var(--text-muted); margin-top:0.15rem; }
+    .form-error { font-size:0.68rem; color:var(--coral); margin-top:0.15rem; display:none; }
+    .form-error.show { display:block; }
+    .form-textarea { min-height:72px; resize:vertical; }
+    .form-select { cursor:pointer; }
+
+    /* Amount preview */
+    .amount-preview {
+      background:var(--bg-tertiary); border:1px solid var(--border);
+      border-radius:9px; padding:0.6rem 0.9rem;
+      font-size:1.1rem; font-weight:900; color:var(--gold);
+      min-height:40px; display:flex; align-items:center;
+    }
+
+    /* Warning banner */
+    .warn-banner {
+      display:flex; align-items:flex-start; gap:0.75rem;
+      background:#fff8e7; border:1px solid #f5c84255;
+      border-left:3px solid var(--gold); border-radius:10px;
+      padding:0.8rem 1rem; margin-bottom:1.25rem;
+      font-size:0.8rem; color:#7a5800;
+    }
+    html.dark .warn-banner { background:#2a1f00; color:#f5c842; border-color:#f5c84255; }
+    .warn-banner svg { width:16px; height:16px; flex-shrink:0; color:var(--gold); margin-top:1px; }
+
+    /* Submit btn */
+    .submit-btn-lg { margin-top:1.25rem; padding:0.7rem 1.8rem; background:var(--gold); color:#fff; border:none; border-radius:10px; font-family:'Satoshi',sans-serif; font-size:0.9rem; font-weight:800; cursor:pointer; transition:opacity 0.15s; }
+    .submit-btn-lg:hover { opacity:0.88; }
+    .submit-btn-lg:disabled { opacity:0.4; cursor:not-allowed; }
+
+    /* Success */
+    .success-state { display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2.5rem 1rem; gap:0.75rem; }
+    .success-state.show { display:flex; }
+    .success-icon { width:56px; height:56px; border-radius:50%; background:#e8f5e9; display:flex; align-items:center; justify-content:center; }
+    html.dark .success-icon { background:#1b3d1f; }
+    .success-icon svg { width:26px; height:26px; color:#2e7d32; }
+    .success-title { font-size:1.1rem; font-weight:900; color:var(--text-primary); }
+    .success-sub { font-size:0.82rem; color:var(--text-muted); max-width:340px; }
+
+    /* History */
+    .history-card { background:var(--bg-primary); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+    .history-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.4rem; border-bottom:1px solid var(--border); }
+    .history-title { font-size:0.8rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); }
+
+    /* Claim cards */
+    .claim-card {
+      display:flex; align-items:center; gap:1rem;
+      padding:1.1rem 1.4rem; border-bottom:1px solid var(--border-subtle);
+      flex-wrap:wrap;
+    }
+    .claim-card:last-child { border-bottom:none; }
+    .claim-month { font-size:0.95rem; font-weight:900; color:var(--text-primary); min-width:120px; }
+    .claim-detail { flex:1; display:flex; flex-direction:column; gap:0.2rem; }
+    .claim-meta { font-size:0.72rem; color:var(--text-muted); }
+    .claim-amount { font-size:1.15rem; font-weight:900; color:var(--gold); white-space:nowrap; }
+    .claim-amount.paid { color:#22c55e; }
+    .claim-right { display:flex; flex-direction:column; align-items:flex-end; gap:0.4rem; }
+
+    /* Badges */
+    .badge { font-size:0.65rem; font-weight:700; border-radius:5px; padding:2px 8px; text-transform:uppercase; letter-spacing:0.03em; }
+    .badge-pending { background:#fff3cd; color:#856404; }
+    html.dark .badge-pending { background:#2a1f00; color:#ffc107; }
+    .badge-approved { background:#e8f5e9; color:#2e7d32; }
+    html.dark .badge-approved { background:#1b3d1f; color:#81c784; }
+    .badge-paid { background:#e3f2fd; color:#1565c0; }
+    html.dark .badge-paid { background:#162033; color:#90caf9; }
+
+    /* Summary totals strip */
+    .totals-strip {
+      display:flex; gap:1.5rem; padding:1rem 1.4rem;
+      background:var(--bg-secondary); border-top:1px solid var(--border);
+      flex-wrap:wrap;
+    }
+    .totals-item { display:flex; flex-direction:column; gap:0.15rem; }
+    .totals-label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); }
+    .totals-value { font-size:1rem; font-weight:900; color:var(--text-primary); }
+
+    /* WA strip */
+    .wa-strip { display:flex; align-items:center; gap:0.6rem; background:#e8f5e9; border:1px solid #a5d6a755; border-radius:10px; padding:0.75rem 1rem; font-size:0.8rem; font-weight:600; color:#2e7d32; text-decoration:none; transition:opacity 0.2s; margin-top:1.25rem; }
+    html.dark .wa-strip { background:#1b3d1f; color:#81c784; border-color:#81c78455; }
+    .wa-strip:hover { opacity:0.85; }
+    .wa-strip svg { width:18px; height:18px; flex-shrink:0; }
+
+    @media (max-width:600px) {
+      .form-grid { grid-template-columns:1fr; }
+      .form-group.full { grid-column:1; }
+      .claim-card { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Teacher Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#4caf50;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">MS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Ms. Sarah Khan</div>
+        <div class="role-badge role-teacher">Teacher</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="attendance.html" class="sidebar-nav-item"><svg data-lucide="clipboard-check"></svg> Attendance</a>
+        <a href="payment-claims.html" class="sidebar-nav-item active"><svg data-lucide="banknote"></svg> Payment Claims</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Support</div>
+        <a href="tickets.html" class="sidebar-nav-item">
+          <svg data-lucide="inbox"></svg> My Tickets
+        </a>
+        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item"><svg data-lucide="message-circle"></svg> WhatsApp DC</a>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="portal-main">
+
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <svg data-lucide="menu" style="width:20px;height:20px"></svg>
+      </button>
+      <div>
+        <div class="portal-page-title">Payment Claims</div>
+        <div class="portal-page-sub">Submit monthly claims &amp; track approval status</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="submit">Submit Claim</button>
+      <button class="tab-btn" data-tab="history">Claim History</button>
+    </div>
+
+    <!-- ── TAB: SUBMIT ── -->
+    <div class="tab-panel active" id="tab-submit">
+
+      <!-- Timesheet pull strip -->
+      <div class="ts-strip" id="ts-strip">
+        <div class="ts-item">
+          <div class="ts-label">Month</div>
+          <div class="ts-value" id="pull-month">—</div>
+        </div>
+        <div class="ts-divider"></div>
+        <div class="ts-item">
+          <div class="ts-label">Sessions Logged</div>
+          <div class="ts-value" id="pull-sessions">—</div>
+        </div>
+        <div class="ts-divider"></div>
+        <div class="ts-item">
+          <div class="ts-label">Total Hours</div>
+          <div class="ts-value" id="pull-hours">—</div>
+        </div>
+        <div class="ts-note" id="pull-note">Pulled from your timesheet</div>
+      </div>
+
+      <!-- Warning if already claimed -->
+      <div class="warn-banner" id="already-claimed" style="display:none">
+        <svg data-lucide="alert-triangle"></svg>
+        <span>You have already submitted a claim for this month. View it in <strong>Claim History</strong>.</span>
+      </div>
+
+      <!-- Warning if timesheet empty -->
+      <div class="warn-banner" id="no-timesheet" style="display:none">
+        <svg data-lucide="alert-triangle"></svg>
+        <span>No attendance sessions found for this month. <a href="attendance.html" style="color:var(--gold);font-weight:700">Submit attendance first →</a></span>
+      </div>
+
+      <div class="form-card">
+
+        <!-- Success -->
+        <div class="success-state" id="success-state">
+          <div class="success-icon"><svg data-lucide="check-circle-2"></svg></div>
+          <div class="success-title">Claim Submitted!</div>
+          <div class="success-sub" id="success-detail">Your payment claim has been submitted for review. You'll be notified once it's approved.</div>
+          <button class="submit-btn-lg" id="view-history" style="margin-top:0.5rem">View Claim History →</button>
+        </div>
+
+        <div id="claim-form">
+          <div style="font-size:0.8rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:1.1rem">Claim Details</div>
+          <div class="form-grid">
+
+            <!-- Month select -->
+            <div class="form-group">
+              <label class="form-label">Claim Month <span class="req">*</span></label>
+              <select class="form-select" id="f-month">
+                <option value="">Select month…</option>
+              </select>
+              <div class="form-error" id="err-month">Please select a month.</div>
+            </div>
+
+            <!-- Rate (stub) -->
+            <div class="form-group">
+              <label class="form-label">Hourly Rate</label>
+              <input type="text" class="form-input readonly" value="£ 10.00 / hour (stub)" readonly />
+              <div class="form-hint">Contact DC admin to update your rate.</div>
+            </div>
+
+            <!-- Hours readonly -->
+            <div class="form-group">
+              <label class="form-label">Total Hours (from Timesheet)</label>
+              <input type="text" class="form-input readonly" id="f-hours" readonly placeholder="Select month above" />
+            </div>
+
+            <!-- Amount preview -->
+            <div class="form-group">
+              <label class="form-label">Claim Amount</label>
+              <div class="amount-preview" id="amount-preview">—</div>
+              <div class="form-hint">Computed at £10/hr · Final amount confirmed by admin</div>
+            </div>
+
+            <!-- Bank details -->
+            <div class="form-group full">
+              <label class="form-label">Bank / Payment Details <span class="req">*</span></label>
+              <input type="text" class="form-input" id="f-bank" value="Barclays ****1234" placeholder="Bank name and last 4 digits" />
+              <div class="form-hint">Confirm the account you'd like payment sent to.</div>
+              <div class="form-error" id="err-bank">Please enter your bank details.</div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group full">
+              <label class="form-label">Notes / Invoice Ref <span style="color:var(--text-muted);font-weight:500;text-transform:none">(optional)</span></label>
+              <textarea class="form-textarea" id="f-notes" placeholder="e.g. Invoice #INV-2025-05, any special notes…"></textarea>
+            </div>
+
+          </div>
+          <button class="submit-btn-lg" id="form-submit">Submit Claim</button>
+        </div>
+      </div>
+
+      <a href="https://wa.me/919650675507" target="_blank" class="wa-strip">
+        <svg data-lucide="message-circle"></svg>
+        <span>Questions about your payment? <strong>WhatsApp DivergenCIE directly</strong></span>
+      </a>
+    </div>
+
+    <!-- ── TAB: HISTORY ── -->
+    <div class="tab-panel" id="tab-history">
+      <div class="history-card">
+        <div class="history-header">
+          <div class="history-title">Claim History</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700" id="history-count">—</div>
+        </div>
+
+        <div id="claims-list">
+          <!-- rendered by JS -->
+        </div>
+
+        <div class="totals-strip">
+          <div class="totals-item">
+            <div class="totals-label">Total Earned (YTD)</div>
+            <div class="totals-value" id="total-earned">—</div>
+          </div>
+          <div class="totals-item">
+            <div class="totals-label">Total Paid</div>
+            <div class="totals-value" id="total-paid" style="color:#22c55e">—</div>
+          </div>
+          <div class="totals-item">
+            <div class="totals-label">Pending / Awaiting</div>
+            <div class="totals-value" id="total-pending" style="color:var(--gold)">—</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://wa.me/919650675507" target="_blank" class="wa-strip">
+        <svg data-lucide="message-circle"></svg>
+        <span>Query about a claim? <strong>WhatsApp DivergenCIE directly</strong></span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../js/portal.js"></script>
+<script>
+lucide.createIcons();
+
+// Theme
+(function(){
+  const btn=document.getElementById('theme-toggle'),label=document.getElementById('theme-label');
+  function u(){if(label)label.textContent=document.documentElement.classList.contains('dark')?'Dark Mode':'Light Mode';}
+  u();if(btn)btn.addEventListener('click',()=>setTimeout(u,50));
+})();
+document.getElementById('sidebar-toggle')?.addEventListener('click',()=>document.getElementById('sidebar')?.classList.toggle('open'));
+
+// ── DATA HELPERS ──
+const RATE = 10; // £/hr stub
+
+function getTSRecords(){
+  try{const s=localStorage.getItem('dc-staff-timesheet');return s?JSON.parse(s):[];}catch{return[];}
+}
+
+const SEED_CLAIMS=[
+  {id:'CLM-2025-04',month:'2025-04',monthLabel:'April 2025',sessions:18,hours:18,amount:180,bank:'Barclays ****1234',notes:'',status:'approved',submitted:'2025-05-01T10:00:00Z'},
+  {id:'CLM-2025-03',month:'2025-03',monthLabel:'March 2025',sessions:16,hours:16,amount:160,bank:'Barclays ****1234',notes:'Invoice #INV-2025-03',status:'paid',submitted:'2025-04-02T09:00:00Z'},
+  {id:'CLM-2025-02',month:'2025-02',monthLabel:'February 2025',sessions:14,hours:14,amount:140,bank:'Barclays ****1234',notes:'',status:'paid',submitted:'2025-03-03T09:30:00Z'},
+];
+
+function getClaims(){
+  try{const s=localStorage.getItem('dc-staff-claims');return s?JSON.parse(s):[...SEED_CLAIMS];}catch{return[...SEED_CLAIMS];}
+}
+function saveClaims(c){try{localStorage.setItem('dc-staff-claims',JSON.stringify(c));}catch{}}
+if(!localStorage.getItem('dc-staff-claims')) saveClaims(SEED_CLAIMS);
+
+function fmtMins(m){return`${Math.floor(m/60)}h ${m%60}min`;}
+function fmtMonth(ym){const[y,mo]=ym.split('-');return new Date(+y,+mo-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtGBP(n){return'£ '+n.toFixed(2);}
+
+// ── BUILD MONTH SELECTOR ──
+function buildMonthSel(){
+  const recs=getTSRecords();
+  const months=new Set();
+  recs.forEach(r=>months.add(r.date.slice(0,7)));
+  // Also add current month
+  months.add(new Date().toISOString().slice(0,7));
+  const sorted=[...months].sort((a,b)=>b.localeCompare(a));
+  const sel=document.getElementById('f-month');
+  sel.innerHTML='<option value="">Select month…</option>'+sorted.map(m=>`<option value="${m}">${fmtMonth(m)}</option>`).join('');
+  if(sorted.length) sel.value=sorted[0];
+  updatePull();
+}
+
+function updatePull(){
+  const month=document.getElementById('f-month').value;
+  const alreadyClaimedBanner=document.getElementById('already-claimed');
+  const noTSBanner=document.getElementById('no-timesheet');
+  const submitBtn=document.getElementById('form-submit');
+
+  alreadyClaimedBanner.style.display='none';
+  noTSBanner.style.display='none';
+  if(submitBtn) submitBtn.disabled=false;
+
+  if(!month){
+    document.getElementById('pull-month').textContent='—';
+    document.getElementById('pull-sessions').textContent='—';
+    document.getElementById('pull-hours').textContent='—';
+    document.getElementById('f-hours').value='';
+    document.getElementById('amount-preview').textContent='—';
+    return;
+  }
+
+  // Check already claimed
+  const claims=getClaims();
+  if(claims.find(c=>c.month===month)){
+    alreadyClaimedBanner.style.display='flex';
+    if(submitBtn) submitBtn.disabled=true;
+  }
+
+  const recs=getTSRecords().filter(r=>r.date.startsWith(month));
+  const totalMins=recs.reduce((s,r)=>s+r.duration,0);
+  const totalHrs=totalMins/60;
+
+  document.getElementById('pull-month').textContent=fmtMonth(month);
+  document.getElementById('pull-sessions').textContent=recs.length+' session'+(recs.length!==1?'s':'');
+  document.getElementById('pull-hours').textContent=fmtMins(totalMins);
+  document.getElementById('f-hours').value=fmtMins(totalMins)+' ('+recs.length+' sessions)';
+
+  if(!recs.length){
+    noTSBanner.style.display='flex';
+    if(submitBtn) submitBtn.disabled=true;
+    document.getElementById('amount-preview').textContent='—';
+    return;
+  }
+
+  const amount=totalHrs*RATE;
+  document.getElementById('amount-preview').textContent=fmtGBP(amount);
+}
+
+document.getElementById('f-month').addEventListener('change',updatePull);
+
+// ── TABS ──
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-'+this.dataset.tab).classList.add('active');
+    if(this.dataset.tab==='history') renderHistory();
+  });
+});
+
+// ── RENDER HISTORY ──
+function renderHistory(){
+  const claims=getClaims().sort((a,b)=>b.month.localeCompare(a.month));
+  const list=document.getElementById('claims-list');
+  const countEl=document.getElementById('history-count');
+  if(countEl) countEl.textContent=claims.length+' claim'+(claims.length!==1?'s':'');
+
+  const badgeMap={pending:'badge-pending',approved:'badge-approved',paid:'badge-paid'};
+  const labelMap={pending:'Pending',approved:'Approved',paid:'Paid'};
+
+  list.innerHTML=claims.length?claims.map(c=>`
+    <div class="claim-card">
+      <div>
+        <div class="claim-month">${c.monthLabel||fmtMonth(c.month)}</div>
+        <div class="claim-meta">${c.id} · Submitted ${fmtDate(c.submitted)} · ${c.sessions} sessions · ${fmtMins(c.hours*60)}</div>
+        ${c.notes?`<div class="claim-meta" style="margin-top:0.2rem">${c.notes}</div>`:''}
+      </div>
+      <div class="claim-right">
+        <div class="claim-amount ${c.status==='paid'?'paid':''}">${fmtGBP(c.amount)}</div>
+        <span class="badge ${badgeMap[c.status]||'badge-pending'}">${labelMap[c.status]||c.status}</span>
+      </div>
+    </div>
+  `).join(''):`<div style="padding:2.5rem;text-align:center;color:var(--text-muted);font-size:0.84rem">No claims submitted yet.</div>`;
+
+  // Totals
+  const totalEarned=claims.reduce((s,c)=>s+c.amount,0);
+  const totalPaid=claims.filter(c=>c.status==='paid').reduce((s,c)=>s+c.amount,0);
+  const totalPend=claims.filter(c=>c.status!=='paid').reduce((s,c)=>s+c.amount,0);
+  document.getElementById('total-earned').textContent=fmtGBP(totalEarned);
+  document.getElementById('total-paid').textContent=fmtGBP(totalPaid);
+  document.getElementById('total-pending').textContent=fmtGBP(totalPend);
+}
+
+// ── FORM SUBMIT ──
+function showErr(id,show){
+  document.getElementById(id)?.classList.toggle('show',show);
+  const inp=document.getElementById(id.replace('err-','f-'));
+  inp?.classList.toggle('error',show);
+}
+
+document.getElementById('form-submit').addEventListener('click',function(){
+  document.querySelectorAll('.form-error').forEach(e=>e.classList.remove('show'));
+
+  const month=document.getElementById('f-month').value;
+  const bank=document.getElementById('f-bank').value.trim();
+  const notes=document.getElementById('f-notes').value.trim();
+  let valid=true;
+
+  if(!month){showErr('err-month',true);valid=false;}
+  if(!bank){showErr('err-bank',true);valid=false;}
+  if(!valid) return;
+
+  const recs=getTSRecords().filter(r=>r.date.startsWith(month));
+  const totalMins=recs.reduce((s,r)=>s+r.duration,0);
+  const totalHrs=totalMins/60;
+  const amount=totalHrs*RATE;
+  const claimId='CLM-'+month.replace('-','.')+'-'+Date.now().toString().slice(-4);
+
+  const claim={
+    id:claimId, month, monthLabel:fmtMonth(month),
+    sessions:recs.length, hours:totalHrs, amount,
+    bank, notes, status:'pending',
+    submitted:new Date().toISOString()
+  };
+
+  const claims=getClaims();
+  claims.unshift(claim);
+  saveClaims(claims);
+
+  document.getElementById('claim-form').style.display='none';
+  document.getElementById('success-detail').textContent=
+    `${fmtMonth(month)} · ${fmtMins(totalMins)} · ${fmtGBP(amount)} — submitted for admin review.`;
+  document.getElementById('success-state').classList.add('show');
+  lucide.createIcons();
+});
+
+document.getElementById('view-history').addEventListener('click',function(){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('[data-tab="history"]').classList.add('active');
+  document.getElementById('tab-history').classList.add('active');
+  renderHistory();
+});
+
+// ── INIT ──
+buildMonthSel();
+</script>
+</body>
+</html>

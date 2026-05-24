@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Invoices — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../../css/shared.css" rel="stylesheet" />
+  <link href="../../../css/portal.css" rel="stylesheet" />
+  <script src="../../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+    .invoice-grid { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .invoice-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .form-control { width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-secondary); color: var(--text-primary); font-size: 0.85rem; }
+    .btn-gold { background: var(--gold); color: #fff; padding: 0.7rem 1.2rem; border-radius: 9px; font-weight: 700; border: none; cursor: pointer; width: 100%; transition: opacity 0.2s; }
+    .btn-gold:hover { opacity: 0.9; }
+    .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+    .b-paid { background: #e8f5e9; color: #2e7d32; }
+    .b-unpaid { background: #fce4ec; color: #c62828; }
+    .b-overdue { background: #3b1f1f; color: #fca5a5; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; color: var(--text-primary); }
+    th { font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:.65rem;color:var(--text-muted);font-weight:500">Staff Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0">JS</div>
+      <div>
+        <div style="font-size:.82rem;font-weight:800;color:var(--text-primary)">Jamie Soh</div>
+        <div class="role-badge role-staff">Staff</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="../dashboard.html" class="sidebar-nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="../tickets.html" class="sidebar-nav-item"><i data-lucide="inbox"></i> Tickets</a>
+      <a href="../pr/attendance.html" class="sidebar-nav-item"><i data-lucide="calendar-check"></i> PR / Ops</a>
+      <a href="claims.html" class="sidebar-nav-item active"><i data-lucide="receipt"></i> Finance</a>
+      <a href="../shared/content-bank.html" class="sidebar-nav-item"><i data-lucide="folder-open"></i> Content Bank</a>
+      <div style="margin-top:auto"></div>
+      <a href="../../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><i data-lucide="log-out"></i> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><i data-lucide="menu"></i></button>
+      <div>
+        <div class="portal-page-title">Invoice Management</div>
+        <div class="portal-page-sub">Generate and track student payments</div>
+      </div>
+    </div>
+
+    <div class="invoice-grid">
+      <!-- Create Invoice -->
+      <div class="card">
+        <h3 style="font-weight:800;margin-bottom:1.5rem">Generate Invoice</h3>
+        <form id="invoice-form">
+          <div class="form-group">
+            <label class="form-label">Student</label>
+            <input type="text" id="i-student" class="form-control" placeholder="Search student..." required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Base Amount (USD)</label>
+            <input type="number" id="i-amount" class="form-control" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Scholarship / Discount (%)</label>
+            <input type="number" id="i-discount" class="form-control" value="0" min="0" max="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Due Date</label>
+            <input type="date" id="i-due" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea id="i-desc" class="form-control" rows="2" placeholder="e.g. May Tuition Fees"></textarea>
+          </div>
+          <button type="submit" class="btn-gold">Create Invoice</button>
+        </form>
+      </div>
+
+      <!-- Invoice List -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <h3 style="font-weight:800">Recent Invoices</h3>
+          <div style="display:flex;gap:0.5rem">
+            <select class="form-control" style="font-size:0.75rem;padding:4px 8px">
+              <option>All Statuses</option>
+              <option>Paid</option>
+              <option>Unpaid</option>
+              <option>Overdue</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="invoice-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Amount</th>
+                <th>Due</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+  
+  const STORAGE_KEY = 'dc-finance-invoices';
+  let invoices = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+  function renderInvoices() {
+    const tbody = document.querySelector('#invoice-table tbody');
+    if(invoices.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No invoices found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = invoices.map((inv, idx) => {
+      const finalAmt = inv.amount * (1 - (inv.discount / 100));
+      return `
+        <tr>
+          <td style="font-size:0.65rem;color:var(--text-muted);font-weight:800">${inv.id}</td>
+          <td style="font-weight:700">${inv.student}</td>
+          <td>$${finalAmt.toFixed(2)}</td>
+          <td>${inv.due}</td>
+          <td><span class="status-badge ${inv.status === 'Paid' ? 'b-paid' : 'b-unpaid'}">${inv.status}</span></td>
+          <td>
+            <button onclick="togglePaid(${idx})" style="color:var(--gold);font-weight:700;cursor:pointer;background:none;border:none;font-size:0.75rem">Mark Paid</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('invoice-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = 'INV-' + Math.floor(Math.random() * 90000 + 10000);
+    invoices.unshift({
+      id: id,
+      student: document.getElementById('i-student').value,
+      amount: parseFloat(document.getElementById('i-amount').value),
+      discount: parseFloat(document.getElementById('i-discount').value || 0),
+      due: document.getElementById('i-due').value,
+      desc: document.getElementById('i-desc').value,
+      status: 'Unpaid'
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(invoices));
+    renderInvoices();
+    e.target.reset();
+  });
+
+  function togglePaid(idx) {
+    invoices[idx].status = invoices[idx].status === 'Paid' ? 'Unpaid' : 'Paid';
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(invoices));
+    renderInvoices();
+  }
+
+  renderInvoices();
+</script>
+</body>
+</html>

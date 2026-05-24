@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Tickets — DivergenCIE Teacher Portal</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../css/shared.css" rel="stylesheet" />
+  <link href="../../css/portal.css" rel="stylesheet" />
+  <script src="../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+
+    .tkt-card {
+      background: var(--bg-primary); border: 1.5px solid var(--border);
+      border-radius: 13px; padding: 1.1rem 1.25rem; margin-bottom: 0.75rem;
+      cursor: pointer; transition: box-shadow .15s, border-color .15s;
+    }
+    .tkt-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); }
+    .tkt-card.active { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(232,168,50,.15); }
+    .tkt-header { display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:0.55rem; }
+    .tkt-id { font-size:0.68rem; font-weight:800; color:var(--text-muted); flex-shrink:0; margin-top:0.15rem; }
+    .tkt-title { font-size:0.89rem; font-weight:800; color:var(--text-primary); flex:1; }
+    .tkt-meta { display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center; margin-top:0.35rem; }
+    .tkt-desc { font-size:0.78rem; color:var(--text-muted); margin:0.4rem 0 0; line-height:1.5;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+    /* Badges */
+    .badge { display:inline-flex; align-items:center; padding:0.2rem 0.55rem; border-radius:99px;
+      font-size:0.68rem; font-weight:700; gap:0.3rem; }
+    .b-open { background:#fef9c3; color:#854d0e; }
+    .b-prog { background:#dbeafe; color:#1e40af; }
+    .b-await { background:#f3e8ff; color:#6b21a8; }
+    .b-resolved { background:#dcfce7; color:#166534; }
+    .b-high { background:#fee2e2; color:#991b1b; }
+    .b-med { background:#fef3c7; color:#92400e; }
+    .b-low { background:#f1f5f9; color:#475569; }
+    .b-pr { background:#fff8e7; color:#92400e; }
+    .b-it { background:#e3f2fd; color:#1565c0; }
+    .b-finance { background:#dcfce7; color:#166534; }
+    .b-hr { background:#fce4ec; color:#880e4f; }
+
+    /* Detail panel */
+    .detail-panel { background:var(--bg-primary); border:1.5px solid var(--border); border-radius:14px; padding:1.4rem 1.5rem; }
+    .detail-title { font-size:1.05rem; font-weight:900; color:var(--text-primary); margin-bottom:0.75rem; }
+    .detail-row { display:flex; gap:2rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .detail-field { display:flex; flex-direction:column; gap:0.2rem; }
+    .detail-label { font-size:0.66rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
+    .detail-val { font-size:0.84rem; font-weight:700; color:var(--text-primary); }
+    .detail-desc { font-size:0.83rem; color:var(--text-primary); line-height:1.65; background:var(--bg-secondary);
+      border-radius:9px; padding:0.85rem 1rem; margin:0.75rem 0; }
+    .notice-strip { background:#f3e8ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:0.65rem 1rem;
+      font-size:0.78rem; color:#6b21a8; font-weight:600; margin-bottom:1rem; display:flex; gap:0.5rem; align-items:flex-start; }
+    .notice-strip.dark { background:rgba(139,92,246,.12); border-color:rgba(139,92,246,.3); color:#c4b5fd; }
+
+    /* Comments */
+    .comment { background:var(--bg-secondary); border-radius:10px; padding:0.75rem 1rem; margin-bottom:0.6rem; }
+    .comment-meta { font-size:0.68rem; color:var(--text-muted); font-weight:700; margin-bottom:0.3rem; }
+    .comment-body { font-size:0.82rem; color:var(--text-primary); line-height:1.55; }
+    .comment.mine { background:#fff8e7; border-left:3px solid var(--gold); }
+    .comment.mine .comment-meta { color:#92400e; }
+    html.dark .comment.mine { background:rgba(232,168,50,.08); }
+
+    /* Reply form */
+    .reply-area { width:100%; padding:0.65rem 0.9rem; border-radius:9px; border:1.5px solid var(--border);
+      background:var(--bg-secondary); color:var(--text-primary); font-family:'Satoshi',sans-serif;
+      font-size:0.83rem; resize:vertical; outline:none; box-sizing:border-box; min-height:90px; }
+    .reply-area:focus { border-color:var(--gold); }
+    .btn-reply { background:var(--navy); color:#fff; border:none; padding:0.55rem 1.2rem;
+      border-radius:9px; font-family:'Satoshi',sans-serif; font-size:0.83rem; font-weight:700;
+      cursor:pointer; transition:opacity .15s; }
+    .btn-reply:hover { opacity:.85; }
+    .btn-reply:disabled { opacity:.5; cursor:not-allowed; }
+    .reply-note { font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem; }
+
+    /* Empty state */
+    .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-muted); }
+    .empty-state svg { width:48px; height:48px; margin:0 auto 1rem; opacity:.35; }
+    .empty-state p { font-size:0.88rem; }
+
+    /* Layout */
+    .tickets-layout { display:grid; grid-template-columns:1fr 1.2fr; gap:1.25rem; align-items:start; }
+    @media(max-width:900px) { .tickets-layout { grid-template-columns:1fr; } }
+
+    .filter-bar { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center; }
+    .filter-btn { padding:0.35rem 0.8rem; border-radius:99px; font-size:0.75rem; font-weight:700;
+      border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-muted);
+      cursor:pointer; transition:all .15s; }
+    .filter-btn.active, .filter-btn:hover { border-color:var(--gold); color:var(--gold); background:var(--bg-primary); }
+
+    .stat-strip { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+    .stat-pill { background:var(--bg-primary); border:1.5px solid var(--border); border-radius:10px;
+      padding:0.5rem 1rem; display:flex; align-items:center; gap:0.6rem; }
+    .stat-pill-val { font-size:1.3rem; font-weight:900; color:var(--text-primary); }
+    .stat-pill-label { font-size:0.68rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  </style>
+</head>
+<body>
+  <!-- ── SIDEBAR ── -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Teacher Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#4caf50;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">MS</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Ms. Sarah Khan</div>
+        <div class="role-badge role-teacher">Teacher</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item">
+          <svg data-lucide="layout-dashboard"></svg> Dashboard
+        </a>
+        <a href="attendance.html" class="sidebar-nav-item">
+          <svg data-lucide="clipboard-check"></svg> Attendance
+        </a>
+        <a href="payment-claims.html" class="sidebar-nav-item">
+          <svg data-lucide="banknote"></svg> Payment Claims
+        </a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Support</div>
+        <a href="tickets.html" class="sidebar-nav-item active">
+          <svg data-lucide="inbox"></svg> My Tickets
+        </a>
+        <a href="https://wa.me/919650675507" target="_blank" class="sidebar-nav-item">
+          <svg data-lucide="message-circle"></svg> WhatsApp DC
+        </a>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)">
+          <svg data-lucide="log-out"></svg> Sign Out
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+        <svg data-lucide="menu" style="width:20px;height:20px"></svg>
+      </button>
+      <div>
+        <div class="portal-page-title">My Tickets</div>
+        <div class="portal-page-sub">Tickets forwarded to you for review &amp; reply</div>
+      </div>
+    </div>
+
+    <!-- Notice: reply-only -->
+    <div class="notice-strip" id="role-notice">
+      <svg data-lucide="info" style="width:15px;height:15px;flex-shrink:0;margin-top:1px"></svg>
+      <span>As a teacher, you can <strong>add replies</strong> to tickets forwarded by PR/Staff. You cannot close, reassign, or escalate tickets — staff will handle that after your reply.</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-strip">
+      <div class="stat-pill"><div class="stat-pill-val" id="s-all">0</div><div class="stat-pill-label">Total</div></div>
+      <div class="stat-pill"><div class="stat-pill-val" id="s-open">0</div><div class="stat-pill-label">Open</div></div>
+      <div class="stat-pill"><div class="stat-pill-val" id="s-await">0</div><div class="stat-pill-label">Awaiting Staff</div></div>
+      <div class="stat-pill"><div class="stat-pill-val" id="s-resolved">0</div><div class="stat-pill-label">Resolved</div></div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('open',this)">Open</button>
+      <button class="filter-btn" onclick="setFilter('in_progress',this)">In Progress</button>
+      <button class="filter-btn" onclick="setFilter('await',this)">Awaiting Staff Review</button>
+      <button class="filter-btn" onclick="setFilter('resolved',this)">Resolved</button>
+    </div>
+
+    <div class="tickets-layout">
+      <!-- Ticket list -->
+      <div id="ticket-list"></div>
+
+      <!-- Detail panel -->
+      <div id="detail-panel">
+        <div class="empty-state">
+          <svg data-lucide="inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"></svg>
+          <p>Select a ticket to view details and reply.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WA strip -->
+    <a href="https://wa.me/919650675507" target="_blank" class="wa-strip" style="display:flex;align-items:center;gap:0.6rem;background:#e8f5e9;border-radius:12px;padding:0.9rem 1.2rem;text-decoration:none;color:#2e7d32;font-weight:700;font-size:0.83rem;margin-top:1rem">
+      <svg data-lucide="message-circle" style="width:18px;height:18px;flex-shrink:0"></svg>
+      <span>Need urgent help? <strong>WhatsApp DivergenCIE</strong></span>
+    </a>
+  </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../js/portal.js"></script>
+<script>
+  // ── Seed data ─────────────────────────────────────────────────────────────
+  const TICKETS = [
+    {
+      id:'TK-011', title:'Recording Missing — IGCSE Maths (29 Apr)',
+      student:'Priya Mehta', dept:'PR', priority:'High', status:'Open',
+      date:'2026-05-01', category:'Recording Missing',
+      desc:'The recording for the IGCSE Maths session on 29 April has not been uploaded to the portal. Priya has an upcoming mock exam and needs it urgently.',
+      forwarded:'Forwarded by Aryan Shah (PR) on 1 May',
+      comments:[
+        {author:'Aryan Shah (PR)', mine:false, date:'1 May', text:'Riya, can you check and upload the Zoom recording link? Student has mock on Friday.'}
+      ]
+    },
+    {
+      id:'TK-014', title:'Reschedule Request — A Level Chemistry',
+      student:'Rohan Sharma', dept:'PR', priority:'Medium', status:'In Progress',
+      date:'2026-05-03', category:'Reschedule',
+      desc:'Rohan has a school event on Thursday 8 May and cannot attend the A Level Chemistry session at 4:30 PM. Requesting a reschedule to Saturday morning if possible.',
+      forwarded:'Forwarded by Aryan Shah (PR) on 3 May',
+      comments:[
+        {author:'Aryan Shah (PR)', mine:false, date:'3 May', text:'Riya — can you confirm availability Saturday 9 AM–11 AM? Or suggest alternative window.'},
+        {author:'Riya Sharma (You)', mine:true, date:'4 May', text:'Saturday 9–10 AM works. I\'ll send the Zoom link Friday evening. Whiteboard title: DC-10May-AChem.'}
+      ]
+    },
+    {
+      id:'TK-017', title:'Whiteboard Link Not Working — IGCSE Physics',
+      student:'Aanya Sharma', dept:'IT', priority:'Low', status:'Open',
+      date:'2026-05-05', category:'Technical Issue',
+      desc:'Student is unable to open the whiteboard link shared in the IGCSE Physics class. Getting a 403 error on MS Whiteboard.',
+      forwarded:'Forwarded by James Lee (IT) on 5 May',
+      comments:[
+        {author:'James Lee (IT)', mine:false, date:'5 May', text:'Riya — can you reshare the whiteboard with a new link? The old one may have expired. IT has confirmed no server issue on our end.'}
+      ]
+    },
+    {
+      id:'TK-022', title:'Subject Change — Adding IGCSE Biology',
+      student:'Fatimah Al-Rashid', dept:'PR', priority:'Medium', status:'Awaiting Staff Review',
+      date:'2026-05-02', category:'Add or Drop Subject',
+      desc:'Fatimah would like to add IGCSE Biology starting next week. Please confirm if you can take this session or if it should go to another teacher.',
+      forwarded:'Forwarded by Aryan Shah (PR) on 2 May',
+      comments:[
+        {author:'Aryan Shah (PR)', mine:false, date:'2 May', text:'Can you handle IGCSE Bio for Fatimah? Preferred slot: Mon/Wed 7–8 PM BST.'},
+        {author:'Riya Sharma (You)', mine:true, date:'2 May', text:'Yes, I can take it from next Monday. I\'ll handle Mon/Wed 7–8 PM. Please add her to my schedule and send Zoom details.'},
+        {author:'Aryan Shah (PR)', mine:false, date:'3 May', text:'Confirmed. Adding to schedule. Waiting for management to approve rate card first — will notify you.'}
+      ]
+    },
+    {
+      id:'TK-028', title:'Doubt — Organic Chemistry Mechanisms',
+      student:'Rohan Sharma', dept:'PR', priority:'Low', status:'Resolved',
+      date:'2026-04-28', category:'Doubt Resolution',
+      desc:'Rohan has doubts about nucleophilic substitution mechanisms (SN1 vs SN2) from the A Level Chemistry session on 27 April. Needs a quick 10-min clarification session or written explanation.',
+      forwarded:'Forwarded by Aryan Shah (PR) on 28 Apr',
+      comments:[
+        {author:'Aryan Shah (PR)', mine:false, date:'28 Apr', text:'Riya — Rohan is confused about SN1 vs SN2. Can you add a short explanation or a 10-min slot?'},
+        {author:'Riya Sharma (You)', mine:true, date:'28 Apr', text:'Sent Rohan a voice note explaining the mechanism. Also shared a worked example from Cambridge 9701 Oct/Nov 2022 P2. He confirmed it helped.'},
+        {author:'Aryan Shah (PR)', mine:false, date:'29 Apr', text:'Great, closing this as resolved. Thanks Riya!'}
+      ]
+    }
+  ];
+
+  let activeFilter = 'all';
+  let activeId = null;
+
+  function setFilter(f, el) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderList();
+  }
+
+  function statusBadge(s) {
+    if (s==='Open') return '<span class="badge b-open">Open</span>';
+    if (s==='In Progress') return '<span class="badge b-prog">In Progress</span>';
+    if (s==='Awaiting Staff Review') return '<span class="badge b-await">Awaiting Staff Review</span>';
+    if (s==='Resolved') return '<span class="badge b-resolved">Resolved</span>';
+    return `<span class="badge">${s}</span>`;
+  }
+
+  function priorityBadge(p) {
+    if (p==='High') return '<span class="badge b-high">High</span>';
+    if (p==='Medium') return '<span class="badge b-med">Medium</span>';
+    return '<span class="badge b-low">Low</span>';
+  }
+
+  function deptBadge(d) {
+    if (d==='PR') return '<span class="badge b-pr">PR</span>';
+    if (d==='IT') return '<span class="badge b-it">IT</span>';
+    if (d==='Finance') return '<span class="badge b-finance">Finance</span>';
+    if (d==='HR') return '<span class="badge b-hr">HR</span>';
+    return `<span class="badge">${d}</span>`;
+  }
+
+  function filterMatch(t) {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'open') return t.status === 'Open';
+    if (activeFilter === 'in_progress') return t.status === 'In Progress';
+    if (activeFilter === 'await') return t.status === 'Awaiting Staff Review';
+    if (activeFilter === 'resolved') return t.status === 'Resolved';
+    return true;
+  }
+
+  function renderList() {
+    const filtered = TICKETS.filter(filterMatch);
+    const list = document.getElementById('ticket-list');
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><p>No tickets match this filter.</p></div>';
+      return;
+    }
+    list.innerHTML = filtered.map(t => `
+      <div class="tkt-card${activeId===t.id?' active':''}" onclick="selectTicket('${t.id}')">
+        <div class="tkt-header">
+          <div class="tkt-id">${t.id}</div>
+          <div class="tkt-title">${t.title}</div>
+        </div>
+        <div class="tkt-meta">
+          ${statusBadge(t.status)}
+          ${priorityBadge(t.priority)}
+          ${deptBadge(t.dept)}
+          <span style="font-size:0.7rem;color:var(--text-muted)">${t.student}</span>
+        </div>
+        <div class="tkt-desc">${t.desc}</div>
+      </div>
+    `).join('');
+  }
+
+  function selectTicket(id) {
+    activeId = id;
+    renderList();
+    const t = TICKETS.find(x => x.id === id);
+    if (!t) return;
+    const canReply = t.status !== 'Resolved';
+    const panel = document.getElementById('detail-panel');
+    panel.innerHTML = `
+      <div class="detail-panel">
+        <div class="detail-title">${t.title}</div>
+        <div class="detail-row">
+          <div class="detail-field"><div class="detail-label">ID</div><div class="detail-val">${t.id}</div></div>
+          <div class="detail-field"><div class="detail-label">Status</div><div class="detail-val">${statusBadge(t.status)}</div></div>
+          <div class="detail-field"><div class="detail-label">Priority</div><div class="detail-val">${priorityBadge(t.priority)}</div></div>
+          <div class="detail-field"><div class="detail-label">Dept</div><div class="detail-val">${deptBadge(t.dept)}</div></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-field"><div class="detail-label">Student</div><div class="detail-val">${t.student}</div></div>
+          <div class="detail-field"><div class="detail-label">Category</div><div class="detail-val">${t.category}</div></div>
+          <div class="detail-field"><div class="detail-label">Raised</div><div class="detail-val">${t.date}</div></div>
+        </div>
+        <div style="font-size:0.68rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:0.35rem">Description</div>
+        <div class="detail-desc">${t.desc}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.9rem">📨 ${t.forwarded}</div>
+
+        <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:0.65rem">Comments</div>
+        <div id="comments-wrap">
+          ${t.comments.map(c => `
+            <div class="comment${c.mine?' mine':''}">
+              <div class="comment-meta">${c.author} · ${c.date}</div>
+              <div class="comment-body">${c.text}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        ${canReply ? `
+          <div style="margin-top:1rem">
+            <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:0.5rem">Add Reply</div>
+            <textarea id="reply-box" class="reply-area" placeholder="Type your reply here…"></textarea>
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.6rem;flex-wrap:wrap">
+              <button class="btn-reply" onclick="submitReply('${id}')">Send Reply</button>
+              <div class="reply-note">After your reply, status will change to <strong>Awaiting Staff Review</strong>. Staff will read and close the ticket.</div>
+            </div>
+            <div id="reply-success" style="display:none;margin-top:0.6rem;font-size:0.8rem;color:#166534;font-weight:700;background:#dcfce7;border-radius:8px;padding:0.5rem 0.75rem">✅ Reply sent. Status updated to Awaiting Staff Review.</div>
+          </div>
+        ` : `
+          <div style="margin-top:1rem;font-size:0.8rem;color:var(--text-muted);background:var(--bg-secondary);border-radius:9px;padding:0.65rem 0.9rem">✅ This ticket is resolved. No further action needed.</div>
+        `}
+      </div>
+    `;
+    lucide.createIcons();
+  }
+
+  function submitReply(id) {
+    const box = document.getElementById('reply-box');
+    const text = box ? box.value.trim() : '';
+    if (!text) { box && (box.style.borderColor='var(--coral)'); return; }
+    const t = TICKETS.find(x => x.id === id);
+    if (!t) return;
+    // Add comment
+    t.comments.push({ author:'Riya Sharma (You)', mine:true, date:'Just now', text });
+    t.status = 'Awaiting Staff Review';
+    // Show success
+    const s = document.getElementById('reply-success');
+    if (s) s.style.display = 'block';
+    if (box) { box.value = ''; box.disabled = true; }
+    const btn = document.querySelector('.btn-reply');
+    if (btn) btn.disabled = true;
+    // Refresh comment list
+    const wrap = document.getElementById('comments-wrap');
+    if (wrap) {
+      wrap.innerHTML = t.comments.map(c => `
+        <div class="comment${c.mine?' mine':''}">
+          <div class="comment-meta">${c.author} · ${c.date}</div>
+          <div class="comment-body">${c.text}</div>
+        </div>
+      `).join('');
+    }
+    renderList();
+    updateStats();
+  }
+
+  function updateStats() {
+    document.getElementById('s-all').textContent = TICKETS.length;
+    document.getElementById('s-open').textContent = TICKETS.filter(t=>t.status==='Open').length;
+    document.getElementById('s-await').textContent = TICKETS.filter(t=>t.status==='Awaiting Staff Review').length;
+    document.getElementById('s-resolved').textContent = TICKETS.filter(t=>t.status==='Resolved').length;
+  }
+
+  // Init
+  updateStats();
+  renderList();
+  lucide.createIcons();
+
+  // Sidebar toggle
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  if (toggle && sidebar) toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+  // Theme label
+  (function() {
+    const btn = document.getElementById('theme-toggle');
+    const label = document.getElementById('theme-label');
+    function updateLabel() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (label) label.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+    }
+    updateLabel();
+    if (btn) btn.addEventListener('click', () => setTimeout(updateLabel, 50));
+  })();
+</script>
+</body>
+</html>

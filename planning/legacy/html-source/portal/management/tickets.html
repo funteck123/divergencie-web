@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Tickets — DivergenCIE Management</title>
+  <link rel="stylesheet" href="../../css/shared.css"/>
+  <link rel="stylesheet" href="../../css/portal.css"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <script>tailwind={config:{darkMode:'class'}}</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/theme.js"></script>
+  <style>
+    /* Filter bar */
+    .filter-bar { display:flex; gap:0.65rem; flex-wrap:wrap; align-items:flex-end; margin-bottom:1.25rem; }
+    .filter-group { display:flex; flex-direction:column; gap:0.25rem; }
+    .filter-group label { font-size:0.68rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
+    .filter-group select, .filter-group input { padding:0.42rem 0.75rem; border-radius:9px; border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-primary); font-family:'Satoshi',sans-serif; font-size:0.81rem; outline:none; }
+    .filter-group select:focus, .filter-group input:focus { border-color:var(--gold); }
+    /* Ticket list */
+    .ticket-card { background:var(--bg-primary); border:1.5px solid var(--border); border-radius:13px; padding:1.1rem 1.2rem; margin-bottom:0.75rem; transition:box-shadow .15s; cursor:pointer; }
+    .ticket-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    .ticket-card.selected { border-color:var(--gold); box-shadow:0 0 0 2px rgba(232,168,50,.18); }
+    .ticket-header { display:flex; align-items:flex-start; gap:0.75rem; margin-bottom:0.6rem; }
+    .ticket-id { font-size:0.7rem; font-weight:800; color:var(--text-muted); flex-shrink:0; margin-top:0.15rem; }
+    .ticket-title { font-size:0.88rem; font-weight:800; color:var(--text-primary); flex:1; }
+    .ticket-meta { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; }
+    .ticket-desc { font-size:0.78rem; color:var(--text-muted); margin:0.4rem 0 0.65rem; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .ticket-actions { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border-subtle); }
+    /* Badges */
+    .badge { padding:0.18rem 0.6rem; border-radius:20px; font-size:0.67rem; font-weight:800; display:inline-flex; align-items:center; gap:0.25rem; }
+    .badge-open { background:#dbeafe; color:#1d4ed8; }
+    .badge-progress { background:#fef3c7; color:#92400e; }
+    .badge-pending { background:#f3e8ff; color:#6d28d9; }
+    .badge-resolved { background:#dcfce7; color:#166534; }
+    .badge-closed { background:var(--bg-secondary); color:var(--text-muted); border:1px solid var(--border); }
+    .badge-urgent { background:#fee2e2; color:#991b1b; }
+    .badge-high { background:#ffedd5; color:#9a3412; }
+    .badge-normal { background:var(--bg-secondary); color:var(--text-muted); }
+    .badge-low { background:#f0fdf4; color:#166534; }
+    .badge-role { background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border); }
+    html.dark .badge-open { background:#1e3a5f; color:#93c5fd; }
+    html.dark .badge-progress { background:#451a03; color:#fcd34d; }
+    html.dark .badge-pending { background:#2e1065; color:#c4b5fd; }
+    html.dark .badge-resolved { background:#14532d; color:#86efac; }
+    html.dark .badge-urgent { background:#7f1d1d; color:#fca5a5; }
+    html.dark .badge-high { background:#431407; color:#fdba74; }
+    /* Action buttons */
+    .action-btn { padding:0.3rem 0.75rem; border-radius:8px; font-size:0.73rem; font-weight:700; border:1.5px solid var(--border); background:transparent; color:var(--text-primary); cursor:pointer; font-family:'Satoshi',sans-serif; transition:all .15s; }
+    .action-btn:hover { background:var(--gold); color:#fff; border-color:var(--gold); }
+    .action-btn.green:hover { background:#22c55e; border-color:#22c55e; }
+    .action-btn.red:hover { background:var(--coral); border-color:var(--coral); }
+    .action-btn.active-btn { background:var(--navy); color:#fff; border-color:var(--navy); }
+    html.dark .action-btn.active-btn { background:var(--gold); border-color:var(--gold); }
+    /* Detail panel */
+    .detail-panel { background:var(--bg-secondary); border:1.5px solid var(--border); border-radius:14px; padding:1.4rem; margin-bottom:1.25rem; display:none; }
+    .detail-panel.open { display:block; }
+    .detail-panel h3 { font-size:1rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem; }
+    .detail-row { display:flex; gap:0.5rem; margin-bottom:0.65rem; font-size:0.82rem; }
+    .detail-label { font-weight:700; color:var(--text-muted); min-width:100px; flex-shrink:0; }
+    .detail-val { color:var(--text-primary); flex:1; }
+    .comment-block { background:var(--bg-primary); border-radius:10px; padding:0.85rem 1rem; margin-bottom:0.65rem; border:1px solid var(--border-subtle); }
+    .comment-who { font-size:0.7rem; font-weight:800; color:var(--text-muted); margin-bottom:0.3rem; }
+    .comment-text { font-size:0.82rem; color:var(--text-primary); line-height:1.5; }
+    .reply-area { width:100%; padding:0.6rem 0.8rem; border-radius:9px; border:1.5px solid var(--border); background:var(--bg-primary); color:var(--text-primary); font-family:'Satoshi',sans-serif; font-size:0.83rem; resize:vertical; box-sizing:border-box; outline:none; margin-top:0.5rem; }
+    .reply-area:focus { border-color:var(--gold); }
+    /* Assign select */
+    .assign-select { padding:0.35rem 0.6rem; border-radius:8px; border:1.5px solid var(--border); background:var(--bg-primary); color:var(--text-primary); font-family:'Satoshi',sans-serif; font-size:0.78rem; outline:none; }
+    .assign-select:focus { border-color:var(--gold); }
+    /* Escalation strip */
+    .esc-strip { background:#fff1f2; border:1.5px solid #fecdd3; border-radius:11px; padding:0.75rem 1rem; display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; font-size:0.8rem; }
+    html.dark .esc-strip { background:#4c0519; border-color:#9f1239; }
+    .esc-strip svg { flex-shrink:0; color:#e05a4e; }
+    /* Tabs */
+    .view-tabs { display:flex; gap:0.5rem; margin-bottom:1.25rem; }
+    .view-tab { padding:0.38rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-muted); cursor:pointer; transition:all .18s; }
+    .view-tab.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+    html.dark .view-tab.active { background:var(--gold); border-color:var(--gold); }
+    /* Empty */
+    .empty-state { text-align:center; padding:3rem 1rem; color:var(--text-muted); font-size:0.85rem; }
+    @media(max-width:700px){ .filter-bar{flex-direction:column;} .ticket-actions{flex-direction:column;} }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo"/>
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Management Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AD</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Management</div>
+        <div class="role-badge role-management">Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="users.html" class="sidebar-nav-item"><svg data-lucide="users"></svg> Users</a>
+        <a href="metrics.html" class="sidebar-nav-item"><svg data-lucide="bar-chart-2"></svg> Metrics</a>
+        <a href="claims.html" class="sidebar-nav-item"><svg data-lucide="banknote"></svg> Claims</a>
+        <a href="tickets.html" class="sidebar-nav-item active"><svg data-lucide="ticket"></svg> Tickets</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">System</div>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><svg data-lucide="menu" style="width:20px;height:20px"></svg></button>
+      <div class="topbar-title">All Tickets</div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-left:auto">
+        <button class="portal-btn portal-btn-primary" style="font-size:0.78rem;padding:0.38rem 0.9rem" onclick="openNewTicket()">
+          <svg data-lucide="plus" style="width:13px;height:13px"></svg> New Ticket
+        </button>
+        <button class="topbar-icon-btn" id="portal-theme-toggle">
+          <svg data-lucide="sun" class="icon-sun" style="width:16px;height:16px"></svg>
+          <svg data-lucide="moon" class="icon-moon" style="width:16px;height:16px"></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="portal-content">
+
+      <!-- Stat strip -->
+      <div class="stats-grid" style="margin-bottom:1.25rem">
+        <div class="stat-card"><div class="stat-label">Total Tickets</div><div class="stat-value" id="stat-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Open</div><div class="stat-value" id="stat-open" style="color:var(--gold)">—</div></div>
+        <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-value" id="stat-progress">—</div></div>
+        <div class="stat-card"><div class="stat-label">Escalated</div><div class="stat-value" id="stat-esc" style="color:var(--coral)">—</div></div>
+      </div>
+
+      <!-- Escalation queue -->
+      <div id="esc-strip-wrap"></div>
+
+      <!-- View tabs -->
+      <div class="view-tabs">
+        <div class="view-tab active" onclick="setView('all',this)">All Tickets</div>
+        <div class="view-tab" onclick="setView('escalated',this)">🚨 Escalated</div>
+        <div class="view-tab" onclick="setView('interdept',this)">🔀 Interdept</div>
+        <div class="view-tab" onclick="setView('open',this)">Open Only</div>
+      </div>
+
+      <!-- New ticket form -->
+      <div class="detail-panel" id="new-ticket-panel">
+        <h3>➕ Create New Ticket</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;margin-bottom:0.85rem">
+          <div><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Title</label>
+            <input id="nt-title" type="text" placeholder="Ticket title…" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem;box-sizing:border-box;outline:none"/></div>
+          <div><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Category</label>
+            <select id="nt-cat" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem">
+              <option>Reschedule Request</option><option>Technical Issue</option><option>Add or Drop Subject</option>
+              <option>Payment Query</option><option>Recording Missing</option><option>Internal Task</option><option>Other</option>
+            </select></div>
+          <div><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Department</label>
+            <select id="nt-dept" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem">
+              <option value="PR">PR / Teaching</option><option value="IT">IT</option>
+              <option value="Finance">Finance</option><option value="HR">HR</option><option value="Marketing">Marketing</option>
+            </select></div>
+          <div><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Priority</label>
+            <select id="nt-priority" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem">
+              <option>Normal</option><option>High</option><option>Urgent</option><option>Low</option>
+            </select></div>
+          <div><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Assign To</label>
+            <select id="nt-assign" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem">
+              <option value="">— Unassigned —</option>
+              <option>Riya Sharma</option><option>Aryan Patel</option><option>Sana Rizvi</option>
+              <option>Meera Joshi</option><option>James Lee</option><option>Zara Khan</option><option>Tom Okafor</option>
+            </select></div>
+          <div><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Raised By (Role)</label>
+            <select id="nt-role" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem">
+              <option>Management</option><option>Student</option><option>Parent</option><option>Teacher</option><option>Staff</option><option>Ambassador</option>
+            </select></div>
+        </div>
+        <div style="margin-bottom:0.85rem"><label style="font-size:0.68rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:0.25rem">Description</label>
+          <textarea id="nt-desc" rows="3" placeholder="Describe the issue or task…" style="width:100%;padding:0.5rem 0.75rem;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-primary);color:var(--text-primary);font-family:'Satoshi',sans-serif;font-size:0.83rem;resize:vertical;box-sizing:border-box;outline:none"></textarea></div>
+        <div style="display:flex;gap:0.65rem">
+          <button class="portal-btn portal-btn-primary" onclick="submitNewTicket()">Create Ticket</button>
+          <button class="portal-btn portal-btn-outline" onclick="closeNewTicket()">Cancel</button>
+        </div>
+        <div id="nt-success" style="display:none;margin-top:0.75rem;padding:0.6rem 0.9rem;background:#f0fdf4;border-radius:9px;color:#166534;font-weight:700;font-size:0.82rem">✅ Ticket created.</div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Role</label>
+          <select id="f-role" onchange="applyFilters()">
+            <option value="all">All Roles</option>
+            <option value="Student">Student</option><option value="Parent">Parent</option>
+            <option value="Teacher">Teacher</option><option value="Staff">Staff</option>
+            <option value="Ambassador">Ambassador</option><option value="Management">Management</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Department</label>
+          <select id="f-dept" onchange="applyFilters()">
+            <option value="all">All Depts</option>
+            <option value="PR">PR</option><option value="IT">IT</option>
+            <option value="Finance">Finance</option><option value="HR">HR</option><option value="Marketing">Marketing</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Status</label>
+          <select id="f-status" onchange="applyFilters()">
+            <option value="all">All Statuses</option>
+            <option value="Open">Open</option><option value="In Progress">In Progress</option>
+            <option value="Pending Reply">Pending Reply</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Priority</label>
+          <select id="f-priority" onchange="applyFilters()">
+            <option value="all">All Priorities</option>
+            <option value="Urgent">Urgent</option><option value="High">High</option>
+            <option value="Normal">Normal</option><option value="Low">Low</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Search</label>
+          <input type="text" id="f-search" placeholder="Title or ID…" oninput="applyFilters()" style="width:160px"/>
+        </div>
+        <div class="filter-group" style="margin-left:auto;align-self:flex-end">
+          <button class="action-btn" onclick="resetFilters()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Ticket detail panel -->
+      <div class="detail-panel" id="detail-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+          <h3 style="margin:0" id="dp-title">Ticket Detail</h3>
+          <button onclick="closeDetail()" style="background:none;border:none;cursor:pointer;color:var(--text-muted)"><svg data-lucide="x" style="width:18px;height:18px"></svg></button>
+        </div>
+        <div id="dp-body"></div>
+      </div>
+
+      <!-- Ticket list -->
+      <div id="ticket-list"></div>
+
+    </div>
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+// ── SEED DATA ──
+const SEED = [
+  { id:'TK-001', category:'Reschedule Request', subject:'IGCSE Maths — 28 Apr class',
+    desc:'I have a school exam on 28 April and cannot attend. Please reschedule to 29 April afternoon.',
+    contact:'WhatsApp', priority:'Urgent', status:'Resolved', role:'Student', dept:'PR',
+    assignee:'Riya Sharma', date:'2026-04-25', escalated:false, interdept:false,
+    response:'Rescheduled to 29 Apr 3pm — Zoom link sent via WhatsApp.',
+    comments:[{who:'Riya Sharma (PR)',text:'Rescheduled confirmed.',date:'2026-04-25'}] },
+  { id:'TK-002', category:'Technical Issue', subject:'Zoom audio cutting out',
+    desc:'During A Level Chemistry the audio kept dropping every few minutes across multiple devices.',
+    contact:'Email', priority:'High', status:'In Progress', role:'Student', dept:'IT',
+    assignee:'James Lee', date:'2026-05-02', escalated:false, interdept:true,
+    response:null, comments:[{who:'James Lee (IT)',text:'Investigating — checking Zoom host settings.',date:'2026-05-03'}] },
+  { id:'TK-003', category:'Recording Missing', subject:'IGCSE Physics — 1 May session',
+    desc:'The recording for last Thursday\'s Physics class has not appeared in my Recordings page. It\'s been 3 days.',
+    contact:'WhatsApp', priority:'Normal', status:'Open', role:'Student', dept:'PR',
+    assignee:'', date:'2026-05-04', escalated:false, interdept:false, response:null, comments:[] },
+  { id:'TK-004', category:'Add or Drop Subject', subject:'Add A Level Economics',
+    desc:'I\'d like to add A Level Economics starting next month. Please advise on availability and pricing.',
+    contact:'Either', priority:'Normal', status:'Open', role:'Student', dept:'PR',
+    assignee:'', date:'2026-05-05', escalated:false, interdept:false, response:null, comments:[] },
+  { id:'TK-005', category:'Payment Query', subject:'May invoice not received',
+    desc:'We have not received the May invoice yet. Could you resend to the email on file?',
+    contact:'Email', priority:'Normal', status:'Open', role:'Parent', dept:'Finance',
+    assignee:'Tom Okafor', date:'2026-05-03', escalated:false, interdept:false, response:null, comments:[] },
+  { id:'TK-006', category:'Fee / Payment Query', subject:'FPX payment failed — May fees',
+    desc:'Attempted FPX payment twice but both transactions declined. Balance confirmed available.',
+    contact:'WhatsApp', priority:'Urgent', status:'In Progress', role:'Parent', dept:'Finance',
+    assignee:'Tom Okafor', date:'2026-05-05', escalated:true, interdept:false, response:null,
+    comments:[{who:'Tom Okafor (Finance)',text:'Escalated to management — payment gateway issue suspected.',date:'2026-05-05'}] },
+  { id:'TK-007', category:'Internal Task', subject:'Update teacher onboarding doc',
+    desc:'The onboarding document needs updating to reflect new Zoom host key process.',
+    contact:'Email', priority:'Low', status:'Pending Reply', role:'Staff', dept:'HR',
+    assignee:'Meera Joshi', date:'2026-04-28', escalated:false, interdept:true,
+    response:null, comments:[{who:'Meera Joshi (HR)',text:'Draft sent to Aryan Patel for review.',date:'2026-04-30'}] },
+  { id:'TK-008', category:'Technical Issue', subject:'Portal login not working — ambassador',
+    desc:'Cannot log into the ambassador portal. Password reset email not arriving.',
+    contact:'WhatsApp', priority:'High', status:'Open', role:'Ambassador', dept:'IT',
+    assignee:'James Lee', date:'2026-05-06', escalated:false, interdept:false, response:null, comments:[] },
+];
+
+const STAFF_LIST = ['Riya Sharma','Aryan Patel','Sana Rizvi','Meera Joshi','James Lee','Zara Khan','Tom Okafor'];
+
+let tickets = (()=>{ try{ return JSON.parse(localStorage.getItem('dc-mgmt-tickets'))||null; }catch{return null;} })() || SEED;
+function save(){ localStorage.setItem('dc-mgmt-tickets', JSON.stringify(tickets)); }
+
+let currentView = 'all';
+let selectedId = null;
+
+// ── FILTERS ──
+function getFilters(){
+  return {
+    role: document.getElementById('f-role').value,
+    dept: document.getElementById('f-dept').value,
+    status: document.getElementById('f-status').value,
+    priority: document.getElementById('f-priority').value,
+    search: document.getElementById('f-search').value.toLowerCase(),
+  };
+}
+function resetFilters(){
+  ['f-role','f-dept','f-status','f-priority'].forEach(id=>document.getElementById(id).value='all');
+  document.getElementById('f-search').value='';
+  applyFilters();
+}
+function applyFilters(){ render(); }
+
+function filterTickets(){
+  const f = getFilters();
+  return tickets.filter(t=>{
+    if(currentView==='escalated' && !t.escalated) return false;
+    if(currentView==='interdept' && !t.interdept) return false;
+    if(currentView==='open' && t.status!=='Open') return false;
+    if(f.role!=='all' && t.role!==f.role) return false;
+    if(f.dept!=='all' && t.dept!==f.dept) return false;
+    if(f.status!=='all' && t.status!==f.status) return false;
+    if(f.priority!=='all' && t.priority!==f.priority) return false;
+    if(f.search && !t.subject.toLowerCase().includes(f.search) && !t.id.toLowerCase().includes(f.search)) return false;
+    return true;
+  });
+}
+
+// ── BADGES ──
+function statusBadge(s){
+  const map = {Open:'open','In Progress':'progress','Pending Reply':'pending',Resolved:'resolved',Closed:'closed'};
+  return `<span class="badge badge-${map[s]||'open'}">${s}</span>`;
+}
+function priorityBadge(p){
+  const map = {Urgent:'urgent',High:'high',Normal:'normal',Low:'low'};
+  return `<span class="badge badge-${map[p]||'normal'}">${p}</span>`;
+}
+function roleBadge(r){ return `<span class="badge badge-role">${r}</span>`; }
+
+// ── STATS ──
+function renderStats(){
+  document.getElementById('stat-total').textContent = tickets.length;
+  document.getElementById('stat-open').textContent = tickets.filter(t=>t.status==='Open').length;
+  document.getElementById('stat-progress').textContent = tickets.filter(t=>t.status==='In Progress').length;
+  document.getElementById('stat-esc').textContent = tickets.filter(t=>t.escalated).length;
+  // Escalation strip
+  const escs = tickets.filter(t=>t.escalated && t.status!=='Resolved' && t.status!=='Closed');
+  const wrap = document.getElementById('esc-strip-wrap');
+  wrap.innerHTML = escs.length ? `<div class="esc-strip">
+    <svg data-lucide="alert-triangle" style="width:16px;height:16px"></svg>
+    <span><strong>${escs.length} escalated ticket${escs.length>1?'s':''}</strong> require management attention — ${escs.map(e=>`<strong>${e.id}</strong>`).join(', ')} &nbsp;<a href="#" onclick="setViewByEl('escalated');return false;" style="color:var(--coral);font-weight:700;text-decoration:underline">View escalated →</a></span>
+  </div>` : '';
+}
+
+function setViewByEl(v){
+  currentView=v;
+  document.querySelectorAll('.view-tab').forEach(t=>{
+    t.classList.toggle('active', t.textContent.toLowerCase().includes(v==='all'?'all ticket':v==='escalated'?'escalat':v==='interdept'?'interdept':'open only'));
+  });
+  render();
+}
+
+// ── TICKET LIST ──
+function renderList(){
+  const list = filterTickets();
+  const el = document.getElementById('ticket-list');
+  if(!list.length){
+    el.innerHTML = '<div class="empty-state"><svg data-lucide="inbox" style="width:32px;height:32px;margin:0 auto 0.75rem;display:block;opacity:.4"></svg>No tickets match current filters.</div>';
+    lucide.createIcons(); return;
+  }
+  el.innerHTML = list.map(t=>`
+    <div class="ticket-card${t.id===selectedId?' selected':''}" id="card-${t.id}" onclick="selectTicket('${t.id}')">
+      <div class="ticket-header">
+        <div class="ticket-id">${t.id}</div>
+        <div class="ticket-title">${t.subject}</div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;flex-shrink:0">
+          ${t.escalated?'<span class="badge" style="background:#fee2e2;color:#991b1b">🚨 Escalated</span>':''}
+          ${t.interdept?'<span class="badge" style="background:#ede9fe;color:#5b21b6">🔀 Interdept</span>':''}
+        </div>
+      </div>
+      <div class="ticket-meta">
+        ${statusBadge(t.status)} ${priorityBadge(t.priority)} ${roleBadge(t.role)}
+        <span class="badge badge-role">${t.dept}</span>
+        ${t.assignee?`<span style="font-size:0.7rem;color:var(--text-muted)">→ ${t.assignee}</span>`:'<span style="font-size:0.7rem;color:var(--coral)">Unassigned</span>'}
+        <span style="font-size:0.7rem;color:var(--text-muted);margin-left:auto">${t.date}</span>
+      </div>
+      <div class="ticket-desc">${t.desc}</div>
+      <div class="ticket-actions" onclick="event.stopPropagation()">
+        <select class="assign-select" onchange="assignTicket('${t.id}',this.value)">
+          <option value="">Assign to…</option>
+          ${STAFF_LIST.map(s=>`<option value="${s}"${t.assignee===s?' selected':''}>${s}</option>`).join('')}
+        </select>
+        <select class="assign-select" onchange="setStatus('${t.id}',this.value)">
+          ${['Open','In Progress','Pending Reply','Resolved','Closed'].map(s=>`<option${t.status===s?' selected':''}>${s}</option>`).join('')}
+        </select>
+        <button class="action-btn" onclick="openForwardModal('${t.id}')"><svg data-lucide="forward" style="width:12px;height:12px;display:inline;margin-right:2px"></svg> Forward</button>
+        ${!t.escalated?`<button class="action-btn red" onclick="escalate('${t.id}')">Escalate</button>`:'<button class="action-btn" style="opacity:.5;cursor:default">Escalated</button>'}
+        <button class="action-btn green" onclick="closeTicket('${t.id}')">Close</button>
+        <button class="action-btn" onclick="selectTicket('${t.id}')">View Thread</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── DETAIL PANEL ──
+function selectTicket(id){
+  selectedId = id;
+  const t = tickets.find(x=>x.id===id);
+  if(!t) return;
+  document.getElementById('dp-title').textContent = t.id + ' — ' + t.subject;
+  document.getElementById('dp-body').innerHTML = `
+    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-val">${statusBadge(t.status)}</div></div>
+    <div class="detail-row"><div class="detail-label">Priority</div><div class="detail-val">${priorityBadge(t.priority)}</div></div>
+    <div class="detail-row"><div class="detail-label">Category</div><div class="detail-val">${t.category}</div></div>
+    <div class="detail-row"><div class="detail-label">Raised by</div><div class="detail-val">${roleBadge(t.role)}</div></div>
+    <div class="detail-row"><div class="detail-label">Department</div><div class="detail-val">${t.dept}</div></div>
+    <div class="detail-row"><div class="detail-label">Assignee</div><div class="detail-val">${t.assignee||'<span style="color:var(--coral)">Unassigned</span>'}</div></div>
+    <div class="detail-row"><div class="detail-label">Date</div><div class="detail-val">${t.date}</div></div>
+    <div class="detail-row"><div class="detail-label">Escalated</div><div class="detail-val">${t.escalated?'<span style="color:var(--coral);font-weight:700">Yes</span>':'No'}</div></div>
+    <div class="detail-row"><div class="detail-label">Interdept</div><div class="detail-val">${t.interdept?'<span style="color:#7c3aed;font-weight:700">Yes</span>':'No'}</div></div>
+    <div style="margin:0.85rem 0 0.5rem;font-size:0.75rem;font-weight:800;color:var(--text-muted);text-transform:uppercase">Description</div>
+    <div style="font-size:0.83rem;color:var(--text-primary);line-height:1.6;margin-bottom:1rem">${t.desc}</div>
+    <div style="margin-bottom:0.5rem;font-size:0.75rem;font-weight:800;color:var(--text-muted);text-transform:uppercase">Comments (${(t.comments||[]).length})</div>
+    <div id="comments-list">${(t.comments||[]).map(c=>`<div class="comment-block"><div class="comment-who">${c.who} · ${c.date}</div><div class="comment-text">${c.text}</div></div>`).join('')||'<p style="font-size:0.78rem;color:var(--text-muted)">No comments yet.</p>'}</div>
+    <textarea class="reply-area" id="reply-text" rows="2" placeholder="Add management reply…"></textarea>
+    <div style="display:flex;gap:0.6rem;margin-top:0.6rem;flex-wrap:wrap">
+      <button class="portal-btn portal-btn-primary" style="font-size:0.78rem" onclick="postReply('${t.id}')">Post Reply</button>
+      <button class="action-btn" onclick="openForwardModal('${t.id}')"><svg data-lucide="forward" style="width:12px;height:12px;display:inline;margin-right:2px"></svg> Forward to Staff</button>
+      <button class="action-btn" onclick="markInterdept('${t.id}')">${t.interdept?'Remove Interdept':'Mark Interdept'}</button>
+      <button class="action-btn green" onclick="closeTicket('${t.id}')">Close Ticket</button>
+    </div>
+    <div id="forward-area-${t.id}" style="display:none;margin-top:0.75rem;padding:0.75rem;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;">
+      <div style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:0.4rem;text-transform:uppercase">Forward Ticket to Staff</div>
+      <div style="display:flex;gap:0.5rem">
+        <select id="forward-staff-${t.id}" class="assign-select" style="flex:1">
+          <option value="">Select staff/teacher…</option>
+          ${STAFF_LIST.map(s=>`<option value="${s}">${s}</option>`).join('')}
+        </select>
+        <button class="portal-btn portal-btn-primary" style="font-size:0.72rem;padding:0.35rem 0.75rem" onclick="confirmForward('${t.id}')">Confirm Forward</button>
+      </div>
+      <div style="margin-top:0.4rem;font-size:0.65rem;color:var(--text-muted)">Staff will be notified and this ticket will appear in their 'My Tickets' view.</div>
+    </div>`;
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('open');
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+  renderList();
+  lucide.createIcons();
+}
+
+function closeDetail(){ document.getElementById('detail-panel').classList.remove('open'); selectedId=null; renderList(); }
+
+// ── ACTIONS ──
+function assignTicket(id, name){
+  const t = tickets.find(x=>x.id===id);
+  if(t){ t.assignee=name; if(name && t.status==='Open') t.status='In Progress'; save(); renderStats(); renderList(); }
+}
+function setStatus(id, status){
+  const t = tickets.find(x=>x.id===id);
+  if(t){ t.status=status; save(); renderStats(); renderList(); if(selectedId===id) selectTicket(id); }
+}
+function escalate(id){
+  const t = tickets.find(x=>x.id===id);
+  if(t){ t.escalated=true; t.comments=(t.comments||[]); t.comments.push({who:'Management',text:'Ticket escalated for immediate management attention.',date:new Date().toISOString().slice(0,10)}); save(); renderStats(); renderList(); if(selectedId===id) selectTicket(id); }
+}
+function closeTicket(id){
+  const t = tickets.find(x=>x.id===id);
+  if(t){ t.status='Closed'; save(); renderStats(); renderList(); if(selectedId===id) closeDetail(); }
+}
+function markInterdept(id){
+  const t = tickets.find(x=>x.id===id);
+  if(t){ t.interdept=!t.interdept; save(); if(selectedId===id) selectTicket(id); }
+}
+function postReply(id){
+  const text = document.getElementById('reply-text').value.trim();
+  if(!text) return;
+  const t = tickets.find(x=>x.id===id);
+  if(t){
+    t.comments=(t.comments||[]);
+    t.comments.push({who:'Management',text,date:new Date().toISOString().slice(0,10)});
+    t.status='Pending Reply';
+    save(); selectTicket(id); renderStats();
+  }
+}
+
+function openForwardModal(id){
+  const area = document.getElementById('forward-area-'+id);
+  if(area) area.style.display = area.style.display === 'none' ? 'block' : 'none';
+}
+
+function confirmForward(id){
+  const staff = document.getElementById('forward-staff-'+id).value;
+  if(!staff) return;
+  const t = tickets.find(x=>x.id===id);
+  if(t){
+    t.assignee = staff;
+    t.status = 'In Progress';
+    t.comments = t.comments || [];
+    t.comments.push({who:'Management', text:`Ticket forwarded to ${staff} for review and reply.`, date:new Date().toISOString().slice(0,10)});
+    save();
+    alert(`Ticket ${id} forwarded to ${staff}`);
+    render();
+    if(selectedId===id) selectTicket(id);
+  }
+}
+
+// ── NEW TICKET ──
+function openNewTicket(){ document.getElementById('new-ticket-panel').classList.add('open'); document.getElementById('nt-success').style.display='none'; }
+function closeNewTicket(){ document.getElementById('new-ticket-panel').classList.remove('open'); }
+function submitNewTicket(){
+  const title = document.getElementById('nt-title').value.trim();
+  if(!title){ alert('Title required.'); return; }
+  const id = 'TK-' + String(tickets.length+1).padStart(3,'0');
+  tickets.unshift({
+    id, subject: title,
+    category: document.getElementById('nt-cat').value,
+    dept: document.getElementById('nt-dept').value,
+    priority: document.getElementById('nt-priority').value,
+    assignee: document.getElementById('nt-assign').value,
+    role: document.getElementById('nt-role').value,
+    desc: document.getElementById('nt-desc').value,
+    status:'Open', escalated:false, interdept:false, comments:[],
+    date: new Date().toISOString().slice(0,10), response:null, contact:'Email'
+  });
+  save(); renderStats(); renderList();
+  document.getElementById('nt-title').value='';
+  document.getElementById('nt-desc').value='';
+  document.getElementById('nt-success').style.display='block';
+  setTimeout(closeNewTicket, 2200);
+}
+
+// ── VIEW TABS ──
+function setView(v, el){
+  currentView=v;
+  document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+// ── RENDER ──
+function render(){ renderStats(); renderList(); lucide.createIcons(); }
+
+// Sidebar + theme
+const tog = document.getElementById('sidebar-toggle');
+const sb = document.getElementById('sidebar');
+const ov = document.getElementById('sidebar-overlay');
+if(tog){ tog.addEventListener('click',()=>{ sb.classList.toggle('open'); ov.classList.toggle('active'); }); }
+if(ov){ ov.addEventListener('click',()=>{ sb.classList.remove('open'); ov.classList.remove('active'); }); }
+const tt = document.getElementById('portal-theme-toggle');
+if(tt){ tt.addEventListener('click',()=>{ const d=document.documentElement; d.classList.toggle('dark'); localStorage.setItem('dc-theme',d.classList.contains('dark')?'dark':'light'); }); }
+
+render();
+</script>
+</body>
+</html>

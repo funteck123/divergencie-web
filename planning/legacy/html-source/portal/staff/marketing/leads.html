@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketing Leads — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../../css/shared.css" rel="stylesheet" />
+  <link href="../../../css/portal.css" rel="stylesheet" />
+  <script src="../../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+    .leads-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .leads-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+    .status-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+    .b-hot { background: #fce4ec; color: #c62828; }
+    .b-warm { background: #fff3cd; color: #856404; }
+    .b-cold { background: #e3f2fd; color: #1565c0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-subtle); font-size: 0.82rem; color: var(--text-primary); }
+    th { font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:.65rem;color:var(--text-muted);font-weight:500">Staff Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0">JS</div>
+      <div>
+        <div style="font-size:.82rem;font-weight:800;color:var(--text-primary)">Jamie Soh</div>
+        <div class="role-badge role-staff">Staff</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="../dashboard.html" class="sidebar-nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="../tickets.html" class="sidebar-nav-item"><i data-lucide="inbox"></i> Tickets</a>
+      <a href="calendar.html" class="sidebar-nav-item active"><i data-lucide="trending-up"></i> Marketing</a>
+      <a href="../shared/content-bank.html" class="sidebar-nav-item"><i data-lucide="folder-open"></i> Content Bank</a>
+      <div style="margin-top:auto"></div>
+      <a href="../../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><i data-lucide="log-out"></i> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><i data-lucide="menu"></i></button>
+      <div>
+        <div class="portal-page-title">Leads & Ambassador Performance</div>
+        <div class="portal-page-sub">Track acquisition sources and referral success</div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:1rem;margin-bottom:1.5rem">
+      <div class="card" style="padding:1rem">
+        <div style="font-size:0.65rem;font-weight:800;color:var(--text-muted);text-transform:uppercase">Total Leads</div>
+        <div style="font-size:1.5rem;font-weight:900;color:var(--text-primary)">142</div>
+      </div>
+      <div class="card" style="padding:1rem">
+        <div style="font-size:0.65rem;font-weight:800;color:var(--text-muted);text-transform:uppercase">Conversion Rate</div>
+        <div style="font-size:1.5rem;font-weight:900;color:var(--text-primary)">12.4%</div>
+      </div>
+      <div class="card" style="padding:1rem">
+        <div style="font-size:0.65rem;font-weight:800;color:var(--text-muted);text-transform:uppercase">Active Ambassadors</div>
+        <div style="font-size:1.5rem;font-weight:900;color:var(--text-primary)">8</div>
+      </div>
+      <div class="card" style="padding:1rem">
+        <div style="font-size:0.65rem;font-weight:800;color:var(--text-muted);text-transform:uppercase">Ad ROI</div>
+        <div style="font-size:1.5rem;font-weight:900;color:var(--text-primary)">3.2x</div>
+      </div>
+    </div>
+
+    <div class="leads-grid">
+      <!-- Lead Log -->
+      <div class="card">
+        <h3 style="font-weight:800;margin-bottom:1rem">Lead Handoff Log</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Lead</th>
+                <th>Source</th>
+                <th>Interest</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:700">Aisha Khan</td>
+                <td>Instagram Ad</td>
+                <td><span class="status-badge b-hot">Hot</span></td>
+                <td><button style="color:var(--gold);font-weight:700">Assign to PR</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">Rohan Das</td>
+                <td>Referral (REF-12)</td>
+                <td><span class="status-badge b-warm">Warm</span></td>
+                <td><button style="color:var(--gold);font-weight:700">Assign to PR</button></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">Maya Lee</td>
+                <td>TikTok</td>
+                <td><span class="status-badge b-cold">Cold</span></td>
+                <td><button style="color:var(--gold);font-weight:700">Assign to PR</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Ambassador Tracking -->
+      <div class="card">
+        <h3 style="font-weight:800;margin-bottom:1rem">Ambassador Rankings</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Ambassador</th>
+                <th>Referrals</th>
+                <th>Enrolled</th>
+                <th>Bonus Due</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:700">Kevin Tan</td>
+                <td>14</td>
+                <td>3</td>
+                <td style="color:#2e7d32;font-weight:700">$150.00</td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">Priya S.</td>
+                <td>9</td>
+                <td>1</td>
+                <td style="color:#2e7d32;font-weight:700">$50.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

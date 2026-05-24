@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Attendance — DivergenCIE</title>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <link href="../../../css/shared.css" rel="stylesheet" />
+  <link href="../../../css/portal.css" rel="stylesheet" />
+  <script src="../../../js/theme.js"></script>
+  <style>
+    body { font-family: 'Satoshi', sans-serif; }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .form-control { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-size: 0.9rem; }
+    .form-control:focus { outline: none; border-color: var(--gold); }
+    .submit-btn { display: inline-block; padding: 0.7rem 1.5rem; background: var(--gold); color: #fff; font-weight: 700; border-radius: 8px; cursor: pointer; border: none; }
+    .submit-btn:hover { opacity: 0.9; }
+    .nav-tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+    .nav-tab { padding: 0.8rem 1rem; cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); border-bottom: 2px solid transparent; }
+    .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; color: var(--text-primary); }
+    th { font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo" />
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:.65rem;color:var(--text-muted);font-weight:500">Staff Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0">JS</div>
+      <div>
+        <div style="font-size:.82rem;font-weight:800;color:var(--text-primary)">Jamie Soh</div>
+        <div class="role-badge role-staff">Staff</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="../dashboard.html" class="sidebar-nav-item"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      <a href="../tickets.html" class="sidebar-nav-item"><i data-lucide="inbox"></i> Tickets</a>
+      <a href="attendance.html" class="sidebar-nav-item active"><i data-lucide="calendar-check"></i> Attendance</a>
+      <a href="../finance/claims.html" class="sidebar-nav-item"><i data-lucide="receipt"></i> Claims</a>
+      <a href="../shared/content-bank.html" class="sidebar-nav-item"><i data-lucide="folder-open"></i> Content Bank</a>
+      <a href="../shared/meetings.html" class="sidebar-nav-item"><i data-lucide="users"></i> Meetings</a>
+      <div style="margin-top:auto"></div>
+      <a href="../../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><i data-lucide="log-out"></i> Sign Out</a>
+    </nav>
+  </aside>
+
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><i data-lucide="menu"></i></button>
+      <div>
+        <div class="portal-page-title">Meeting/Event Attendance</div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-target="submit-tab">Log Attendance</div>
+      <div class="nav-tab" data-target="history-tab">History</div>
+    </div>
+
+    <div id="submit-tab" class="tab-content active">
+      <div style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;padding:1.5rem;max-width:600px">
+        <form id="attendance-form">
+          <div class="form-group">
+            <label class="form-label">Event Name</label>
+            <input type="text" id="ev-name" class="form-control" required placeholder="e.g. Weekly All-Hands">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Event Type</label>
+            <select id="ev-type" class="form-control" required>
+              <option value="meeting">Meeting</option>
+              <option value="training">Training</option>
+              <option value="event">Event</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="ev-date" class="form-control" required>
+          </div>
+          <div style="display:flex;gap:1rem">
+            <div class="form-group" style="flex:1">
+              <label class="form-label">Start Time</label>
+              <input type="time" id="ev-start" class="form-control" required>
+            </div>
+            <div class="form-group" style="flex:1">
+              <label class="form-label">End Time</label>
+              <input type="time" id="ev-end" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duration (Hours)</label>
+            <input type="text" id="ev-duration" class="form-control" readonly style="background:var(--bg-secondary)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea id="ev-notes" class="form-control" rows="3" placeholder="Optional notes"></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Submit Attendance</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="history-tab" class="tab-content">
+      <div class="table-container" style="background:var(--bg-primary);border:1px solid var(--border);border-radius:14px;padding:1.5rem">
+        <table id="history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Event Name</th>
+              <th>Type</th>
+              <th>Duration</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="../../../js/portal.js"></script>
+<script>
+  lucide.createIcons();
+  
+  // Tabs
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.target).classList.add('active');
+      if(t.dataset.target === 'history-tab') renderHistory();
+    });
+  });
+
+  // Duration compute
+  const startEl = document.getElementById('ev-start');
+  const endEl = document.getElementById('ev-end');
+  const durEl = document.getElementById('ev-duration');
+  
+  function updateDur() {
+    if(startEl.value && endEl.value) {
+      let [sh,sm] = startEl.value.split(':').map(Number);
+      let [eh,em] = endEl.value.split(':').map(Number);
+      let diff = (eh*60+em) - (sh*60+sm);
+      if(diff > 0) durEl.value = (diff/60).toFixed(2);
+      else durEl.value = '0';
+    }
+  }
+  startEl.addEventListener('change', updateDur);
+  endEl.addEventListener('change', updateDur);
+
+  // Form
+  document.getElementById('attendance-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let att = JSON.parse(localStorage.getItem('dc-staff-attendance') || '[]');
+    att.push({
+      date: document.getElementById('ev-date').value,
+      name: document.getElementById('ev-name').value,
+      type: document.getElementById('ev-type').value,
+      duration: durEl.value,
+      status: 'Submitted'
+    });
+    localStorage.setItem('dc-staff-attendance', JSON.stringify(att));
+    alert('Attendance logged successfully.');
+    e.target.reset();
+  });
+
+  function renderHistory() {
+    const tbody = document.querySelector('#history-table tbody');
+    let att = JSON.parse(localStorage.getItem('dc-staff-attendance') || '[]');
+    if(att.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No attendance records found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = att.reverse().map(a => `
+      <tr>
+        <td>${a.date}</td>
+        <td>${a.name}</td>
+        <td style="text-transform:capitalize">${a.type}</td>
+        <td>${a.duration} hrs</td>
+        <td><span style="background:#e8f5e9;color:#2e7d32;padding:2px 6px;border-radius:4px;font-size:0.7rem;font-weight:bold">${a.status}</span></td>
+      </tr>
+    `).join('');
+  }
+  renderHistory();
+</script>
+</body>
+</html>

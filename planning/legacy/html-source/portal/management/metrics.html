@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Metrics — DivergenCIE Management</title>
+  <link rel="stylesheet" href="../../css/shared.css"/>
+  <link rel="stylesheet" href="../../css/portal.css"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet"/>
+  <script>tailwind={config:{darkMode:'class'}}</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="../../js/theme.js"></script>
+  <style>
+    /* Filter bar */
+    .filter-bar { display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center; margin-bottom:1.5rem; }
+    .filter-bar label { font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; }
+    .filter-bar select { padding:0.45rem 0.8rem; border-radius:9px; border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-primary); font-family:'Satoshi',sans-serif; font-size:0.82rem; outline:none; cursor:pointer; }
+    .filter-bar select:focus { border-color:var(--gold); }
+    /* Category tabs */
+    .cat-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+    .cat-tab { padding:0.38rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:700; border:1.5px solid var(--border); background:var(--bg-secondary); color:var(--text-muted); cursor:pointer; transition:all .18s; }
+    .cat-tab.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+    html.dark .cat-tab.active { background:var(--gold); border-color:var(--gold); }
+    /* Metric grid */
+    .metric-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.1rem; margin-bottom:1.5rem; }
+    .metric-card { background:var(--bg-primary); border:1.5px solid var(--border); border-radius:14px; padding:1.2rem 1.3rem; }
+    .metric-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem; }
+    .metric-card-title { font-size:0.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; }
+    .metric-card-value { font-size:1.7rem; font-weight:900; color:var(--text-primary); line-height:1; }
+    .metric-card-sub { font-size:0.72rem; color:var(--text-muted); margin-top:0.25rem; }
+    .metric-delta { font-size:0.72rem; font-weight:700; padding:0.18rem 0.55rem; border-radius:20px; }
+    .delta-up { background:#dcfce7; color:#166534; }
+    .delta-down { background:#fee2e2; color:#991b1b; }
+    .delta-flat { background:var(--bg-secondary); color:var(--text-muted); }
+    html.dark .delta-up { background:#14532d; color:#86efac; }
+    html.dark .delta-down { background:#7f1d1d; color:#fca5a5; }
+    /* SVG chart */
+    .chart-wrap { margin-top:0.75rem; }
+    .chart-wrap svg { width:100%; height:80px; overflow:visible; }
+    .chart-label { display:flex; justify-content:space-between; font-size:0.62rem; color:var(--text-muted); margin-top:0.2rem; }
+    /* Staff table */
+    .staff-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+    .staff-table th { text-align:left; padding:0.55rem 0.9rem; font-size:0.68rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; border-bottom:1.5px solid var(--border); background:var(--bg-secondary); }
+    .staff-table td { padding:0.65rem 0.9rem; border-bottom:1px solid var(--border-subtle); vertical-align:middle; }
+    .staff-table tr:hover td { background:var(--bg-secondary); }
+    /* Progress bar mini */
+    .mini-bar-wrap { display:flex; align-items:center; gap:0.5rem; }
+    .mini-bar { height:6px; border-radius:10px; background:var(--border); flex:1; overflow:hidden; }
+    .mini-bar-fill { height:100%; border-radius:10px; background:var(--gold); transition:width .4s; }
+    .mini-bar-fill.green { background:#22c55e; }
+    .mini-bar-fill.red { background:var(--coral); }
+    /* Drill-down panel */
+    .drill-panel { background:var(--bg-secondary); border:1.5px solid var(--border); border-radius:14px; padding:1.3rem; margin-top:1.25rem; display:none; }
+    .drill-panel.open { display:block; }
+    .drill-panel h4 { font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem; }
+    /* Section title */
+    .section-title { font-size:0.95rem; font-weight:800; color:var(--text-primary); margin-bottom:1rem; }
+    @media(max-width:700px){ .metric-grid{grid-template-columns:1fr;} .filter-bar{flex-direction:column;align-items:flex-start;} }
+  </style>
+</head>
+<body>
+<div class="portal-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="portal-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <img src="../../assets/images/logo.jpg" alt="DivergenCIE" class="sidebar-logo"/>
+      <div>
+        <div class="sidebar-brand">Divergen<span>CIE</span></div>
+        <div style="font-size:0.65rem;color:var(--text-muted);font-weight:500">Management Portal</div>
+      </div>
+    </div>
+    <div class="sidebar-role">
+      <div style="width:34px;height:34px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff;flex-shrink:0">AD</div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:800;color:var(--text-primary)">Management</div>
+        <div class="role-badge role-management">Management</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">Main</div>
+        <a href="dashboard.html" class="sidebar-nav-item"><svg data-lucide="layout-dashboard"></svg> Dashboard</a>
+        <a href="users.html" class="sidebar-nav-item"><svg data-lucide="users"></svg> Users</a>
+        <a href="metrics.html" class="sidebar-nav-item active"><svg data-lucide="bar-chart-2"></svg> Metrics</a>
+        <a href="budget.html" class="sidebar-nav-item"><svg data-lucide="pie-chart"></svg> Budget</a>
+        <a href="claims.html" class="sidebar-nav-item"><svg data-lucide="banknote"></svg> Claims</a>
+        <a href="tickets.html" class="sidebar-nav-item"><svg data-lucide="ticket"></svg> Tickets</a>
+      </div>
+      <div class="sidebar-nav-section">
+        <div class="sidebar-nav-label">System</div>
+        <a href="../../auth/login.html" class="sidebar-nav-item" style="color:var(--coral)"><svg data-lucide="log-out"></svg> Sign Out</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <svg data-lucide="sun" class="icon-sun" style="width:15px;height:15px"></svg>
+        <svg data-lucide="moon" class="icon-moon" style="width:15px;height:15px"></svg>
+        <span id="theme-label">Light Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <button class="sidebar-toggle" id="sidebar-toggle"><svg data-lucide="menu" style="width:20px;height:20px"></svg></button>
+      <div class="topbar-title">Metrics</div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-left:auto">
+        <button class="topbar-icon-btn" id="portal-theme-toggle">
+          <svg data-lucide="sun" class="icon-sun" style="width:16px;height:16px"></svg>
+          <svg data-lucide="moon" class="icon-moon" style="width:16px;height:16px"></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="portal-content">
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div>
+          <label>Department</label>
+          <select id="dept-filter" onchange="applyFilters()">
+            <option value="all">All Departments</option>
+            <option value="PR">PR</option>
+            <option value="HR">HR</option>
+            <option value="Finance">Finance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="IT">IT</option>
+          </select>
+        </div>
+        <div>
+          <label>Staff Member</label>
+          <select id="staff-filter" onchange="applyFilters()">
+            <option value="all">All Staff</option>
+            <option value="Riya Sharma">Riya Sharma (PR)</option>
+            <option value="Aryan Patel">Aryan Patel (PR)</option>
+            <option value="Sana Rizvi">Sana Rizvi (PR)</option>
+            <option value="Meera Joshi">Meera Joshi (HR)</option>
+            <option value="James Lee">James Lee (IT)</option>
+            <option value="Zara Khan">Zara Khan (Marketing)</option>
+            <option value="Tom Okafor">Tom Okafor (Finance)</option>
+          </select>
+        </div>
+        <div>
+          <label>Date Range</label>
+          <select id="range-filter" onchange="applyFilters()">
+            <option value="4w">Last 4 Weeks</option>
+            <option value="8w">Last 8 Weeks</option>
+            <option value="3m">Last 3 Months</option>
+            <option value="6m">Last 6 Months</option>
+          </select>
+        </div>
+        <div style="margin-left:auto;font-size:0.72rem;color:var(--text-muted);align-self:flex-end;padding-bottom:0.1rem" id="filter-label">Showing: All Departments · All Staff · Last 4 Weeks</div>
+      </div>
+
+      <!-- Category tabs -->
+      <div class="cat-tabs">
+        <div class="cat-tab active" onclick="setCategory('productivity',this)">📋 Productivity</div>
+        <div class="cat-tab" onclick="setCategory('attendance',this)">📅 Attendance</div>
+        <div class="cat-tab" onclick="setCategory('financial',this)">💰 Financial</div>
+        <div class="cat-tab" onclick="setCategory('activity',this)">⚡ Activity</div>
+        <div class="cat-tab" onclick="setCategory('workload',this)">📦 Workload</div>
+        <div class="cat-tab" onclick="setCategory('quality',this)">⭐ Quality</div>
+        <div class="cat-tab" onclick="setCategory('feedback',this)">💬 Feedback</div>
+      </div>
+
+      <!-- Metric cards (rendered by JS per category) -->
+      <div class="metric-grid" id="metric-grid"></div>
+
+      <!-- Weekly trend charts -->
+      <div class="portal-card" style="margin-bottom:1.25rem">
+        <div class="section-title" id="chart-title">Productivity — Weekly Trend</div>
+        <div id="charts-wrap"></div>
+      </div>
+
+      <!-- Staff breakdown table -->
+      <div class="portal-card" style="padding:0;overflow:hidden">
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border)">
+          <div class="section-title" style="margin:0" id="table-title">Staff Breakdown — Productivity</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="staff-table" id="staff-table">
+            <thead id="staff-thead"></thead>
+            <tbody id="staff-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Drill-down panel -->
+      <div class="drill-panel" id="drill-panel">
+        <h4 id="drill-title">Staff Drill-Down</h4>
+        <div id="drill-content"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="../../js/portal.js"></script>
+<script>
+// ── DATA ──
+const WEEKS = ['W1','W2','W3','W4','W5','W6','W7','W8'];
+const WEEKS4 = ['W1','W2','W3','W4'];
+
+const STAFF = [
+  {name:'Riya Sharma',  dept:'PR',        role:'Teacher'},
+  {name:'Aryan Patel',  dept:'PR',        role:'Teacher'},
+  {name:'Sana Rizvi',   dept:'PR',        role:'Teacher'},
+  {name:'Meera Joshi',  dept:'HR',        role:'Staff (Sup)'},
+  {name:'James Lee',    dept:'IT',        role:'Staff'},
+  {name:'Zara Khan',    dept:'Marketing', role:'Staff (Sup)'},
+  {name:'Tom Okafor',   dept:'Finance',   role:'Staff'},
+];
+
+// Seed deterministic metric data per staff member
+function seed(base, variance, n){ return Array.from({length:n},(_,i)=>Math.min(100,Math.max(0,Math.round(base + (Math.sin(i*1.7+base)*variance))))); }
+
+const DATA = {
+  productivity: STAFF.map((s,i)=>({
+    ...s,
+    completion: seed(72+i*3,12,8),
+    deadlineHit: seed(80+i*2,10,8),
+    avgResolution: seed(65+i*4,15,8), // lower=faster (inverted)
+  })),
+  attendance: STAFF.map((s,i)=>({
+    ...s,
+    attendanceRate: seed(88+i*1.5,8,8),
+    sessionsLogged: Array.from({length:8},(_,j)=>Math.round(4+i*0.5+Math.sin(j+i)*1.5)),
+  })),
+  financial: STAFF.map((s,i)=>({
+    ...s,
+    budgetUsed: seed(60+i*5,18,8),
+    claimsSubmitted: Array.from({length:8},()=>Math.round(1+Math.random()*2)),
+    claimsApproved: Array.from({length:8},()=>Math.round(0.8+Math.random()*1.5)),
+  })),
+  activity: STAFF.map((s,i)=>({
+    ...s,
+    ticketsTouched: Array.from({length:8},(_,j)=>Math.round(3+i+Math.sin(j+i)*2)),
+    filesUploaded: Array.from({length:8},(_,j)=>Math.round(1+Math.sin(j)*2+i*0.5)),
+    activityScore: seed(70+i*3,14,8),
+  })),
+  workload: STAFF.map((s,i)=>({
+    ...s,
+    openTasks: Array.from({length:8},(_,j)=>Math.round(2+i+Math.cos(j+i)*2)),
+    overdueTasks: Array.from({length:8},()=>Math.round(Math.random()*3)),
+    avgTasksPerWeek: seed(5+i,6,8),
+  })),
+  quality: STAFF.map((s,i)=>({
+    ...s,
+    reopenRate: seed(8-i,5,8),  // lower=better
+    escalationRate: seed(10-i,6,8), // lower=better
+    satisfactionProxy: seed(82+i*2,10,8),
+  })),
+};
+
+// ── STATE ──
+let currentCat = 'productivity';
+let currentDept = 'all';
+let currentStaff = 'all';
+let currentRange = '4w';
+
+function getWeekLabels(){ return currentRange==='4w'?WEEKS4:WEEKS; }
+function getN(){ return currentRange==='4w'?4:8; }
+
+function filteredStaff(){
+  return DATA[currentCat].filter(s=>{
+    if(currentDept!=='all' && s.dept!==currentDept) return false;
+    if(currentStaff!=='all' && s.name!==currentStaff) return false;
+    return true;
+  });
+}
+
+function avgLast(arr, n){ const sl=arr.slice(-n); return Math.round(sl.reduce((a,b)=>a+b,0)/sl.length); }
+function delta(arr, n){ const half=Math.floor(n/2); const r=arr.slice(-n); const a=r.slice(0,half),b=r.slice(half); const da=Math.round(a.reduce((x,y)=>x+y,0)/a.length), db=Math.round(b.reduce((x,y)=>x+y,0)/b.length); return db-da; }
+
+// ── SVG SPARKLINE ──
+function sparkline(data, color='#e8a832', label=''){
+  const n = data.length;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data);
+  const W=260, H=60, pad=6;
+  const pts = data.map((v,i)=>{
+    const x = pad + (i/(n-1))*(W-pad*2);
+    const y = H - pad - ((v-min)/(max-min||1))*(H-pad*2);
+    return `${x},${y}`;
+  }).join(' ');
+  const areaBot = H-pad;
+  const areaPath = `M${pts.split(' ')[0]} L${pts.split(' ').join(' L')} L${pad+(n-1)/(n-1)*(W-pad*2)},${areaBot} L${pad},${areaBot} Z`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="display:block">
+    <defs><linearGradient id="g${label}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
+    </linearGradient></defs>
+    <path d="${areaPath}" fill="url(#g${label})" />
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${data.map((v,i)=>{
+      const x=pad+(i/(n-1))*(W-pad*2);
+      const y=H-pad-((v-min)/(max-min||1))*(H-pad*2);
+      return `<circle cx="${x}" cy="${y}" r="3" fill="${color}" stroke="#fff" stroke-width="1.5"/>
+              <title>${getWeekLabels()[i]}: ${v}</title>`;
+    }).join('')}
+  </svg>`;
+}
+
+// ── CATEGORIES CONFIG ──
+const CAT_CONFIG = {
+  productivity:{
+    title:'Productivity',
+    metrics:[
+      {key:'completion', label:'Avg Task Completion', suffix:'%', color:'#e8a832', higherBetter:true},
+      {key:'deadlineHit', label:'Deadline Hit Rate', suffix:'%', color:'#4a9fd4', higherBetter:true},
+      {key:'avgResolution', label:'Avg Resolution Time (hrs)', suffix:'h', color:'#e05a4e', higherBetter:false},
+    ],
+    tableHeaders:['Staff','Dept','Completion %','Deadline Hit %','Avg Resolution','Actions'],
+    tableRow:(s)=>{
+      const n=getN();
+      const comp=avgLast(s.completion,n), dead=avgLast(s.deadlineHit,n), res=avgLast(s.avgResolution,n);
+      return `<td>${staffCell(s)}</td>
+        <td><span class="role-badge" style="font-size:0.68rem">${s.dept}</span></td>
+        <td>${miniBar(comp,true)}</td>
+        <td>${miniBar(dead,true)}</td>
+        <td>${miniBar(res,false,100,'h')}</td>
+        <td><button class="action-btn" onclick="drillDown('${s.name}')">Drill Down</button></td>`;
+    },
+    drillData:(s)=>{
+      const n=getN(), labs=getWeekLabels();
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">TASK COMPLETION %</div>${sparkline(s.completion.slice(-n),'#e8a832','comp')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
+        <div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">DEADLINE HIT RATE %</div>${sparkline(s.deadlineHit.slice(-n),'#4a9fd4','dead')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
+      </div>`;
+    }
+  },
+  attendance:{
+    title:'Attendance',
+    metrics:[
+      {key:'attendanceRate', label:'Attendance Rate', suffix:'%', color:'#22c55e', higherBetter:true},
+      {key:'sessionsLogged', label:'Sessions Logged', suffix:'', color:'#4a9fd4', higherBetter:true},
+    ],
+    tableHeaders:['Staff','Dept','Attendance Rate','Sessions Logged','Trend','Actions'],
+    tableRow:(s)=>{
+      const n=getN();
+      const rate=avgLast(s.attendanceRate,n), sess=avgLast(s.sessionsLogged,n);
+      return `<td>${staffCell(s)}</td>
+        <td><span class="role-badge" style="font-size:0.68rem">${s.dept}</span></td>
+        <td>${miniBar(rate,true)}</td>
+        <td style="font-weight:700;color:var(--text-primary)">${sess} <span style="font-size:0.72rem;color:var(--text-muted)">/ wk</span></td>
+        <td style="width:80px">${sparkline(s.attendanceRate.slice(-n),'#22c55e','att'+s.name.replace(/ /,''))}</td>
+        <td><button class="action-btn" onclick="drillDown('${s.name}')">Drill Down</button></td>`;
+    },
+    drillData:(s)=>{
+      const n=getN(), labs=getWeekLabels();
+      return `<div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">ATTENDANCE RATE % — WEEKLY</div>
+        ${sparkline(s.attendanceRate.slice(-n),'#22c55e','attd')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>`;
+    }
+  },
+  financial:{
+    title:'Financial',
+    metrics:[
+      {key:'budgetUsed', label:'Budget Utilisation', suffix:'%', color:'#e8a832', higherBetter:null},
+      {key:'claimsSubmitted', label:'Claims Submitted', suffix:'', color:'#4a9fd4', higherBetter:true},
+      {key:'claimsApproved', label:'Claims Approved', suffix:'', color:'#22c55e', higherBetter:true},
+    ],
+    tableHeaders:['Staff','Dept','Budget Used','Claims Submitted','Claims Approved','Actions'],
+    tableRow:(s)=>{
+      const n=getN();
+      const bud=avgLast(s.budgetUsed,n), sub=s.claimsSubmitted.slice(-n).reduce((a,b)=>a+b,0), app=s.claimsApproved.slice(-n).reduce((a,b)=>a+b,0);
+      return `<td>${staffCell(s)}</td>
+        <td><span class="role-badge" style="font-size:0.68rem">${s.dept}</span></td>
+        <td>${miniBar(bud,null)}</td>
+        <td style="font-weight:700;color:var(--text-primary)">${sub}</td>
+        <td style="font-weight:700;color:#22c55e">${app}</td>
+        <td><button class="action-btn" onclick="drillDown('${s.name}')">Drill Down</button></td>`;
+    },
+    drillData:(s)=>{
+      const n=getN(), labs=getWeekLabels();
+      return `<div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">BUDGET UTILISATION % — WEEKLY</div>
+        <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:0.5rem">Base Currency: INR | Operations: GBP</div>
+        ${sparkline(s.budgetUsed.slice(-n),'#e8a832','fin')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>`;
+    }
+  },
+  activity:{
+    title:'Activity',
+    metrics:[
+      {key:'activityScore', label:'Activity Score', suffix:'', color:'#a855f7', higherBetter:true},
+      {key:'ticketsTouched', label:'Tickets Touched', suffix:'', color:'#4a9fd4', higherBetter:true},
+      {key:'filesUploaded', label:'Files Uploaded', suffix:'', color:'#22c55e', higherBetter:true},
+    ],
+    tableHeaders:['Staff','Dept','Activity Score','Tickets Touched','Files Uploaded','Actions'],
+    tableRow:(s)=>{
+      const n=getN();
+      const act=avgLast(s.activityScore,n), tix=s.ticketsTouched.slice(-n).reduce((a,b)=>a+b,0), fil=s.filesUploaded.slice(-n).reduce((a,b)=>a+b,0);
+      return `<td>${staffCell(s)}</td>
+        <td><span class="role-badge" style="font-size:0.68rem">${s.dept}</span></td>
+        <td>${miniBar(act,true)}</td>
+        <td style="font-weight:700;color:var(--text-primary)">${tix}</td>
+        <td style="font-weight:700;color:var(--text-primary)">${fil}</td>
+        <td><button class="action-btn" onclick="drillDown('${s.name}')">Drill Down</button></td>`;
+    },
+    drillData:(s)=>{
+      const n=getN(), labs=getWeekLabels();
+      return `<div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">ACTIVITY SCORE — WEEKLY</div>
+        ${sparkline(s.activityScore.slice(-n),'#a855f7','act')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>`;
+    }
+  },
+  workload:{
+    title:'Workload',
+    metrics:[
+      {key:'avgTasksPerWeek', label:'Avg Tasks / Week', suffix:'', color:'#f97316', higherBetter:null},
+      {key:'openTasks', label:'Open Tasks', suffix:'', color:'#4a9fd4', higherBetter:false},
+      {key:'overdueTasks', label:'Overdue Tasks', suffix:'', color:'#e05a4e', higherBetter:false},
+    ],
+    tableHeaders:['Staff','Dept','Avg Tasks/Wk','Open Tasks','Overdue','Actions'],
+    tableRow:(s)=>{
+      const n=getN();
+      const avg=avgLast(s.avgTasksPerWeek,n), open=avgLast(s.openTasks,n), over=avgLast(s.overdueTasks,n);
+      return `<td>${staffCell(s)}</td>
+        <td><span class="role-badge" style="font-size:0.68rem">${s.dept}</span></td>
+        <td style="font-weight:700;color:var(--text-primary)">${avg}</td>
+        <td style="font-weight:700;color:var(--text-primary)">${open}</td>
+        <td style="font-weight:700;color:${over>2?'var(--coral)':'var(--text-primary)'}">${over}</td>
+        <td><button class="action-btn" onclick="drillDown('${s.name}')">Drill Down</button></td>`;
+    },
+    drillData:(s)=>{
+      const n=getN(), labs=getWeekLabels();
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">OPEN TASKS — WEEKLY</div>
+        ${sparkline(s.openTasks.slice(-n),'#4a9fd4','wl1')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
+        <div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">OVERDUE TASKS — WEEKLY</div>
+        ${sparkline(s.overdueTasks.slice(-n),'#e05a4e','wl2')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
+      </div>`;
+    }
+  },
+  quality:{
+    title:'Quality',
+    metrics:[
+      {key:'satisfactionProxy', label:'Satisfaction Score', suffix:'%', color:'#22c55e', higherBetter:true},
+      {key:'reopenRate', label:'Ticket Re-open Rate', suffix:'%', color:'#e05a4e', higherBetter:false},
+      {key:'escalationRate', label:'Escalation Rate', suffix:'%', color:'#f97316', higherBetter:false},
+    ],
+    tableHeaders:['Staff','Dept','Satisfaction','Re-open Rate','Escalation Rate','Actions'],
+    tableRow:(s)=>{
+      const n=getN();
+      const sat=avgLast(s.satisfactionProxy,n), reop=avgLast(s.reopenRate,n), esc=avgLast(s.escalationRate,n);
+      return `<td>${staffCell(s)}</td>
+        <td><span class="role-badge" style="font-size:0.68rem">${s.dept}</span></td>
+        <td>${miniBar(sat,true)}</td>
+        <td style="font-weight:700;color:${reop>10?'var(--coral)':'#22c55e'}">${reop}%</td>
+        <td style="font-weight:700;color:${esc>12?'var(--coral)':'var(--text-primary)'}">${esc}%</td>
+        <td><button class="action-btn" onclick="drillDown('${s.name}')">Drill Down</button></td>`;
+    },
+    drillData:(s)=>{
+      const n=getN(), labs=getWeekLabels();
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">SATISFACTION SCORE %</div>
+        ${sparkline(s.satisfactionProxy.slice(-n),'#22c55e','q1')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
+        <div><div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem">RE-OPEN RATE %</div>
+        ${sparkline(s.reopenRate.slice(-n),'#e05a4e','q2')}
+        <div class="chart-label">${labs.map(l=>`<span>${l}</span>`).join('')}</div></div>
+      </div>`;
+    }
+  },
+  feedback: {
+    title: 'User Feedback',
+    metrics: [],
+    tableHeaders: ['Date', 'Category', 'Item', 'Rating', 'Comment'],
+    tableRow: (f) => {
+      const date = new Date(f.timestamp).toLocaleDateString();
+      const stars = '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating);
+      return `<td><span style="font-size:0.75rem;color:var(--text-muted)">${date}</span></td>
+              <td><span class="role-badge" style="font-size:0.68rem;background:var(--bg-secondary)">${f.category}</span></td>
+              <td style="font-weight:600;color:var(--text-primary)">${f.item || '—'}</td>
+              <td style="color:var(--gold);font-size:1.1rem;letter-spacing:1px;">${stars}</td>
+              <td style="font-size:0.78rem;color:var(--text-muted);line-height:1.4;max-width:350px;">${f.comment}</td>`;
+    }
+  }
+};
+
+function staffCell(s){ return `<div style="display:flex;flex-direction:column"><span style="font-weight:700;color:var(--text-primary)">${s.name}</span><span style="font-size:0.7rem;color:var(--text-muted)">${s.role}</span></div>`; }
+
+function miniBar(val, higherBetter, max=100, suffix='%'){
+  const pct = Math.min(100,(val/max)*100);
+  let cls = '';
+  if(higherBetter===true) cls = val>=80?'green':val<60?'red':'';
+  if(higherBetter===false) cls = val<=20?'green':val>40?'red':'';
+  return `<div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-bar-fill ${cls}" style="width:${pct}%"></div></div><span style="font-size:0.75rem;font-weight:700;color:var(--text-primary);white-space:nowrap">${val}${suffix}</span></div>`;
+}
+
+function deltaChip(d, higherBetter=true){
+  if(!d) return '<span class="metric-delta delta-flat">—</span>';
+  const positive = higherBetter ? d>0 : d<0;
+  const cls = d===0?'delta-flat':positive?'delta-up':'delta-down';
+  return `<span class="metric-delta ${cls}">${d>0?'+':''}${d}%</span>`;
+}
+
+// ── RENDER ──
+function renderMetricCards(){
+  const cfg = CAT_CONFIG[currentCat];
+  const sf = filteredStaff();
+  const n = getN();
+  const grid = document.getElementById('metric-grid');
+  grid.innerHTML = cfg.metrics.map(m=>{
+    // aggregate across filtered staff
+    const allVals = sf.flatMap(s=>s[m.key].slice(-n));
+    const avg = Math.round(allVals.reduce((a,b)=>a+b,0)/allVals.length);
+    const d = sf.length ? Math.round(sf.map(s=>delta(s[m.key],n)).reduce((a,b)=>a+b,0)/sf.length) : 0;
+    // overall sparkline: average per week
+    const weekAvg = Array.from({length:n},(_,i)=>Math.round(sf.map(s=>s[m.key].slice(-n)[i]).reduce((a,b)=>a+b,0)/(sf.length||1)));
+    return `<div class="metric-card">
+      <div class="metric-card-header">
+        <div class="metric-card-title">${m.label}</div>
+        ${deltaChip(d, m.higherBetter)}
+      </div>
+      <div class="metric-card-value">${avg}${m.suffix}</div>
+      <div class="metric-card-sub">Avg across ${sf.length} staff · ${getWeekLabels().length}-week window</div>
+      <div class="chart-wrap">${sparkline(weekAvg,m.color,m.key)}</div>
+      <div class="chart-label">${getWeekLabels().map(l=>`<span>${l}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCharts(){
+  const cfg = CAT_CONFIG[currentCat];
+  const sf = filteredStaff();
+  const n = getN();
+  const labs = getWeekLabels();
+  let titleHTML = cfg.title + ' — Weekly Trend';
+  if (currentCat === 'financial') {
+    titleHTML += ' <span style="font-size:0.7rem;color:var(--text-muted);font-weight:500;margin-left:0.5rem">(Base: INR | Operations: GBP)</span>';
+  }
+  document.getElementById('chart-title').innerHTML = titleHTML;
+  const wrap = document.getElementById('charts-wrap');
+  // Multi-line chart: one sparkline per staff member
+  if(!sf.length){ wrap.innerHTML='<p style="color:var(--text-muted);font-size:0.82rem">No staff match current filters.</p>'; return; }
+  const firstMetric = cfg.metrics[0];
+  wrap.innerHTML = `<div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);margin-bottom:0.5rem;text-transform:uppercase">${firstMetric.label}</div>` +
+    sf.map(s=>`<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem">
+      <div style="width:100px;font-size:0.72rem;font-weight:700;color:var(--text-primary);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name.split(' ')[0]}</div>
+      <div style="flex:1">${sparkline(s[firstMetric.key].slice(-n), firstMetric.color, firstMetric.key+s.name)}</div>
+    </div>`).join('') +
+    `<div class="chart-label" style="padding-left:108px">${labs.map(l=>`<span>${l}</span>`).join('')}</div>`;
+}
+
+function renderTable(){
+  const cfg = CAT_CONFIG[currentCat];
+  document.getElementById('table-title').textContent = (currentCat === 'feedback' ? 'Recent Feedback Submission' : 'Staff Breakdown — ') + cfg.title;
+  document.getElementById('staff-thead').innerHTML = `<tr>${cfg.tableHeaders.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+  
+  if (currentCat === 'feedback') {
+    const feedbacks = JSON.parse(localStorage.getItem('dc_global_feedbacks') || '[]');
+    const sorted = feedbacks.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+    document.getElementById('staff-tbody').innerHTML = sorted.length
+      ? sorted.map(f => `<tr>${cfg.tableRow(f)}</tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No feedback received yet.</td></tr>';
+    return;
+  }
+
+  const sf = filteredStaff();
+  document.getElementById('staff-tbody').innerHTML = sf.length
+    ? sf.map(s=>`<tr>${cfg.tableRow(s)}</tr>`).join('')
+    : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No staff match current filters.</td></tr>';
+}
+
+function drillDown(name){
+  const cfg = CAT_CONFIG[currentCat];
+  const s = filteredStaff().find(x=>x.name===name);
+  if(!s) return;
+  const panel = document.getElementById('drill-panel');
+  document.getElementById('drill-title').textContent = name + ' — ' + cfg.title + ' Drill-Down';
+  document.getElementById('drill-content').innerHTML = cfg.drillData(s);
+  panel.classList.add('open');
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function setCategory(cat, el){
+  currentCat = cat;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('drill-panel').classList.remove('open');
+  render();
+}
+
+function applyFilters(){
+  currentDept = document.getElementById('dept-filter').value;
+  currentStaff = document.getElementById('staff-filter').value;
+  currentRange = document.getElementById('range-filter').value;
+  const dLabel = currentDept==='all'?'All Departments':currentDept;
+  const sLabel = currentStaff==='all'?'All Staff':currentStaff.split(' ')[0];
+  const rLabel = {['4w']:'Last 4 Weeks',['8w']:'Last 8 Weeks',['3m']:'Last 3 Months',['6m']:'Last 6 Months'}[currentRange];
+  document.getElementById('filter-label').textContent = `Showing: ${dLabel} · ${sLabel} · ${rLabel}`;
+  document.getElementById('drill-panel').classList.remove('open');
+  render();
+}
+
+function render(){
+  const metricGrid = document.getElementById('metric-grid');
+  const chartsWrap = document.getElementById('charts-wrap');
+  
+  if (currentCat === 'feedback') {
+    metricGrid.innerHTML = '';
+    document.getElementById('charts-wrap').innerHTML = '<p style="color:var(--text-muted);font-size:0.82rem;padding:1rem;">Feedback data is only available in the breakdown table below.</p>';
+  } else {
+    renderMetricCards();
+    renderCharts();
+  }
+  renderTable();
+  lucide.createIcons();
+}
+
+// Sidebar + theme
+const toggle = document.getElementById('sidebar-toggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+if(toggle){ toggle.addEventListener('click',()=>{ sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }); }
+if(overlay){ overlay.addEventListener('click',()=>{ sidebar.classList.remove('open'); overlay.classList.remove('active'); }); }
+const tt = document.getElementById('portal-theme-toggle');
+if(tt){ tt.addEventListener('click',()=>{ const d=document.documentElement; d.classList.toggle('dark'); localStorage.setItem('dc-theme',d.classList.contains('dark')?'dark':'light'); }); }
+
+render();
+</script>
+</body>
+</html>
