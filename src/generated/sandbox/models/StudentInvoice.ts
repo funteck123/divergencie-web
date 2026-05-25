@@ -33,6 +33,7 @@ export type StudentInvoiceAvgAggregateOutputType = {
   inrEquivalent: number | null
   dueAmount: number | null
   reminderStage: number | null
+  serialNo: number | null
 }
 
 export type StudentInvoiceSumAggregateOutputType = {
@@ -42,12 +43,15 @@ export type StudentInvoiceSumAggregateOutputType = {
   inrEquivalent: number | null
   dueAmount: number | null
   reminderStage: number | null
+  serialNo: number | null
 }
 
 export type StudentInvoiceMinAggregateOutputType = {
   id: string | null
   enrollmentId: string | null
   month: string | null
+  billingStart: Date | null
+  billingEnd: Date | null
   feesAmount: number | null
   discountApplied: number | null
   netAmount: number | null
@@ -59,6 +63,9 @@ export type StudentInvoiceMinAggregateOutputType = {
   referenceNo: string | null
   reminderStage: number | null
   invoicePdfUrl: string | null
+  paymentAcknowledgementMsg: string | null
+  paymentReminderMsg: string | null
+  serialNo: number | null
   createdAt: Date | null
 }
 
@@ -66,6 +73,8 @@ export type StudentInvoiceMaxAggregateOutputType = {
   id: string | null
   enrollmentId: string | null
   month: string | null
+  billingStart: Date | null
+  billingEnd: Date | null
   feesAmount: number | null
   discountApplied: number | null
   netAmount: number | null
@@ -77,6 +86,9 @@ export type StudentInvoiceMaxAggregateOutputType = {
   referenceNo: string | null
   reminderStage: number | null
   invoicePdfUrl: string | null
+  paymentAcknowledgementMsg: string | null
+  paymentReminderMsg: string | null
+  serialNo: number | null
   createdAt: Date | null
 }
 
@@ -84,6 +96,8 @@ export type StudentInvoiceCountAggregateOutputType = {
   id: number
   enrollmentId: number
   month: number
+  billingStart: number
+  billingEnd: number
   feesAmount: number
   discountApplied: number
   netAmount: number
@@ -95,6 +109,9 @@ export type StudentInvoiceCountAggregateOutputType = {
   referenceNo: number
   reminderStage: number
   invoicePdfUrl: number
+  paymentAcknowledgementMsg: number
+  paymentReminderMsg: number
+  serialNo: number
   createdAt: number
   _all: number
 }
@@ -107,6 +124,7 @@ export type StudentInvoiceAvgAggregateInputType = {
   inrEquivalent?: true
   dueAmount?: true
   reminderStage?: true
+  serialNo?: true
 }
 
 export type StudentInvoiceSumAggregateInputType = {
@@ -116,12 +134,15 @@ export type StudentInvoiceSumAggregateInputType = {
   inrEquivalent?: true
   dueAmount?: true
   reminderStage?: true
+  serialNo?: true
 }
 
 export type StudentInvoiceMinAggregateInputType = {
   id?: true
   enrollmentId?: true
   month?: true
+  billingStart?: true
+  billingEnd?: true
   feesAmount?: true
   discountApplied?: true
   netAmount?: true
@@ -133,6 +154,9 @@ export type StudentInvoiceMinAggregateInputType = {
   referenceNo?: true
   reminderStage?: true
   invoicePdfUrl?: true
+  paymentAcknowledgementMsg?: true
+  paymentReminderMsg?: true
+  serialNo?: true
   createdAt?: true
 }
 
@@ -140,6 +164,8 @@ export type StudentInvoiceMaxAggregateInputType = {
   id?: true
   enrollmentId?: true
   month?: true
+  billingStart?: true
+  billingEnd?: true
   feesAmount?: true
   discountApplied?: true
   netAmount?: true
@@ -151,6 +177,9 @@ export type StudentInvoiceMaxAggregateInputType = {
   referenceNo?: true
   reminderStage?: true
   invoicePdfUrl?: true
+  paymentAcknowledgementMsg?: true
+  paymentReminderMsg?: true
+  serialNo?: true
   createdAt?: true
 }
 
@@ -158,6 +187,8 @@ export type StudentInvoiceCountAggregateInputType = {
   id?: true
   enrollmentId?: true
   month?: true
+  billingStart?: true
+  billingEnd?: true
   feesAmount?: true
   discountApplied?: true
   netAmount?: true
@@ -169,6 +200,9 @@ export type StudentInvoiceCountAggregateInputType = {
   referenceNo?: true
   reminderStage?: true
   invoicePdfUrl?: true
+  paymentAcknowledgementMsg?: true
+  paymentReminderMsg?: true
+  serialNo?: true
   createdAt?: true
   _all?: true
 }
@@ -263,6 +297,8 @@ export type StudentInvoiceGroupByOutputType = {
   id: string
   enrollmentId: string
   month: string
+  billingStart: Date | null
+  billingEnd: Date | null
   feesAmount: number
   discountApplied: number
   netAmount: number
@@ -274,6 +310,9 @@ export type StudentInvoiceGroupByOutputType = {
   referenceNo: string | null
   reminderStage: number
   invoicePdfUrl: string | null
+  paymentAcknowledgementMsg: string | null
+  paymentReminderMsg: string | null
+  serialNo: number | null
   createdAt: Date
   _count: StudentInvoiceCountAggregateOutputType | null
   _avg: StudentInvoiceAvgAggregateOutputType | null
@@ -304,6 +343,8 @@ export type StudentInvoiceWhereInput = {
   id?: Prisma.StringFilter<"StudentInvoice"> | string
   enrollmentId?: Prisma.StringFilter<"StudentInvoice"> | string
   month?: Prisma.StringFilter<"StudentInvoice"> | string
+  billingStart?: Prisma.DateTimeNullableFilter<"StudentInvoice"> | Date | string | null
+  billingEnd?: Prisma.DateTimeNullableFilter<"StudentInvoice"> | Date | string | null
   feesAmount?: Prisma.FloatFilter<"StudentInvoice"> | number
   discountApplied?: Prisma.FloatFilter<"StudentInvoice"> | number
   netAmount?: Prisma.FloatFilter<"StudentInvoice"> | number
@@ -315,6 +356,9 @@ export type StudentInvoiceWhereInput = {
   referenceNo?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   reminderStage?: Prisma.IntFilter<"StudentInvoice"> | number
   invoicePdfUrl?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  paymentAcknowledgementMsg?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  paymentReminderMsg?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  serialNo?: Prisma.IntNullableFilter<"StudentInvoice"> | number | null
   createdAt?: Prisma.DateTimeFilter<"StudentInvoice"> | Date | string
   enrollment?: Prisma.XOR<Prisma.StudentMonthlyEnrollmentScalarRelationFilter, Prisma.StudentMonthlyEnrollmentWhereInput>
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
@@ -324,6 +368,8 @@ export type StudentInvoiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   enrollmentId?: Prisma.SortOrder
   month?: Prisma.SortOrder
+  billingStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   feesAmount?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -335,6 +381,9 @@ export type StudentInvoiceOrderByWithRelationInput = {
   referenceNo?: Prisma.SortOrderInput | Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
   invoicePdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentAcknowledgementMsg?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentReminderMsg?: Prisma.SortOrderInput | Prisma.SortOrder
+  serialNo?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   enrollment?: Prisma.StudentMonthlyEnrollmentOrderByWithRelationInput
   ledgerEntries?: Prisma.LedgerEntryOrderByRelationAggregateInput
@@ -347,6 +396,8 @@ export type StudentInvoiceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.StudentInvoiceWhereInput | Prisma.StudentInvoiceWhereInput[]
   enrollmentId?: Prisma.StringFilter<"StudentInvoice"> | string
   month?: Prisma.StringFilter<"StudentInvoice"> | string
+  billingStart?: Prisma.DateTimeNullableFilter<"StudentInvoice"> | Date | string | null
+  billingEnd?: Prisma.DateTimeNullableFilter<"StudentInvoice"> | Date | string | null
   feesAmount?: Prisma.FloatFilter<"StudentInvoice"> | number
   discountApplied?: Prisma.FloatFilter<"StudentInvoice"> | number
   netAmount?: Prisma.FloatFilter<"StudentInvoice"> | number
@@ -358,6 +409,9 @@ export type StudentInvoiceWhereUniqueInput = Prisma.AtLeast<{
   referenceNo?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   reminderStage?: Prisma.IntFilter<"StudentInvoice"> | number
   invoicePdfUrl?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  paymentAcknowledgementMsg?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  paymentReminderMsg?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  serialNo?: Prisma.IntNullableFilter<"StudentInvoice"> | number | null
   createdAt?: Prisma.DateTimeFilter<"StudentInvoice"> | Date | string
   enrollment?: Prisma.XOR<Prisma.StudentMonthlyEnrollmentScalarRelationFilter, Prisma.StudentMonthlyEnrollmentWhereInput>
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
@@ -367,6 +421,8 @@ export type StudentInvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   enrollmentId?: Prisma.SortOrder
   month?: Prisma.SortOrder
+  billingStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   feesAmount?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -378,6 +434,9 @@ export type StudentInvoiceOrderByWithAggregationInput = {
   referenceNo?: Prisma.SortOrderInput | Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
   invoicePdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentAcknowledgementMsg?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentReminderMsg?: Prisma.SortOrderInput | Prisma.SortOrder
+  serialNo?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.StudentInvoiceCountOrderByAggregateInput
   _avg?: Prisma.StudentInvoiceAvgOrderByAggregateInput
@@ -393,6 +452,8 @@ export type StudentInvoiceScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"StudentInvoice"> | string
   enrollmentId?: Prisma.StringWithAggregatesFilter<"StudentInvoice"> | string
   month?: Prisma.StringWithAggregatesFilter<"StudentInvoice"> | string
+  billingStart?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentInvoice"> | Date | string | null
+  billingEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentInvoice"> | Date | string | null
   feesAmount?: Prisma.FloatWithAggregatesFilter<"StudentInvoice"> | number
   discountApplied?: Prisma.FloatWithAggregatesFilter<"StudentInvoice"> | number
   netAmount?: Prisma.FloatWithAggregatesFilter<"StudentInvoice"> | number
@@ -404,12 +465,17 @@ export type StudentInvoiceScalarWhereWithAggregatesInput = {
   referenceNo?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
   reminderStage?: Prisma.IntWithAggregatesFilter<"StudentInvoice"> | number
   invoicePdfUrl?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
+  paymentAcknowledgementMsg?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
+  paymentReminderMsg?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
+  serialNo?: Prisma.IntNullableWithAggregatesFilter<"StudentInvoice"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentInvoice"> | Date | string
 }
 
 export type StudentInvoiceCreateInput = {
   id?: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -421,6 +487,9 @@ export type StudentInvoiceCreateInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
   enrollment: Prisma.StudentMonthlyEnrollmentCreateNestedOneWithoutStudentInvoicesInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
@@ -430,6 +499,8 @@ export type StudentInvoiceUncheckedCreateInput = {
   id?: string
   enrollmentId: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -441,6 +512,9 @@ export type StudentInvoiceUncheckedCreateInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutStudentInvoiceInput
 }
@@ -448,6 +522,8 @@ export type StudentInvoiceUncheckedCreateInput = {
 export type StudentInvoiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -459,6 +535,9 @@ export type StudentInvoiceUpdateInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollment?: Prisma.StudentMonthlyEnrollmentUpdateOneRequiredWithoutStudentInvoicesNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
@@ -468,6 +547,8 @@ export type StudentInvoiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enrollmentId?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -479,6 +560,9 @@ export type StudentInvoiceUncheckedUpdateInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutStudentInvoiceNestedInput
 }
@@ -487,6 +571,8 @@ export type StudentInvoiceCreateManyInput = {
   id?: string
   enrollmentId: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -498,12 +584,17 @@ export type StudentInvoiceCreateManyInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
 }
 
 export type StudentInvoiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -515,6 +606,9 @@ export type StudentInvoiceUpdateManyMutationInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -522,6 +616,8 @@ export type StudentInvoiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enrollmentId?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -533,6 +629,9 @@ export type StudentInvoiceUncheckedUpdateManyInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -550,6 +649,8 @@ export type StudentInvoiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   enrollmentId?: Prisma.SortOrder
   month?: Prisma.SortOrder
+  billingStart?: Prisma.SortOrder
+  billingEnd?: Prisma.SortOrder
   feesAmount?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -561,6 +662,9 @@ export type StudentInvoiceCountOrderByAggregateInput = {
   referenceNo?: Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
   invoicePdfUrl?: Prisma.SortOrder
+  paymentAcknowledgementMsg?: Prisma.SortOrder
+  paymentReminderMsg?: Prisma.SortOrder
+  serialNo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -571,12 +675,15 @@ export type StudentInvoiceAvgOrderByAggregateInput = {
   inrEquivalent?: Prisma.SortOrder
   dueAmount?: Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
+  serialNo?: Prisma.SortOrder
 }
 
 export type StudentInvoiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   enrollmentId?: Prisma.SortOrder
   month?: Prisma.SortOrder
+  billingStart?: Prisma.SortOrder
+  billingEnd?: Prisma.SortOrder
   feesAmount?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -588,6 +695,9 @@ export type StudentInvoiceMaxOrderByAggregateInput = {
   referenceNo?: Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
   invoicePdfUrl?: Prisma.SortOrder
+  paymentAcknowledgementMsg?: Prisma.SortOrder
+  paymentReminderMsg?: Prisma.SortOrder
+  serialNo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -595,6 +705,8 @@ export type StudentInvoiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   enrollmentId?: Prisma.SortOrder
   month?: Prisma.SortOrder
+  billingStart?: Prisma.SortOrder
+  billingEnd?: Prisma.SortOrder
   feesAmount?: Prisma.SortOrder
   discountApplied?: Prisma.SortOrder
   netAmount?: Prisma.SortOrder
@@ -606,6 +718,9 @@ export type StudentInvoiceMinOrderByAggregateInput = {
   referenceNo?: Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
   invoicePdfUrl?: Prisma.SortOrder
+  paymentAcknowledgementMsg?: Prisma.SortOrder
+  paymentReminderMsg?: Prisma.SortOrder
+  serialNo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -616,6 +731,7 @@ export type StudentInvoiceSumOrderByAggregateInput = {
   inrEquivalent?: Prisma.SortOrder
   dueAmount?: Prisma.SortOrder
   reminderStage?: Prisma.SortOrder
+  serialNo?: Prisma.SortOrder
 }
 
 export type StudentInvoiceNullableScalarRelationFilter = {
@@ -669,6 +785,14 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput = {
   create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutLedgerEntriesInput, Prisma.StudentInvoiceUncheckedCreateWithoutLedgerEntriesInput>
   connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutLedgerEntriesInput
@@ -688,6 +812,8 @@ export type StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput = {
 export type StudentInvoiceCreateWithoutEnrollmentInput = {
   id?: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -699,6 +825,9 @@ export type StudentInvoiceCreateWithoutEnrollmentInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
 }
@@ -706,6 +835,8 @@ export type StudentInvoiceCreateWithoutEnrollmentInput = {
 export type StudentInvoiceUncheckedCreateWithoutEnrollmentInput = {
   id?: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -717,6 +848,9 @@ export type StudentInvoiceUncheckedCreateWithoutEnrollmentInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutStudentInvoiceInput
 }
@@ -753,6 +887,8 @@ export type StudentInvoiceScalarWhereInput = {
   id?: Prisma.StringFilter<"StudentInvoice"> | string
   enrollmentId?: Prisma.StringFilter<"StudentInvoice"> | string
   month?: Prisma.StringFilter<"StudentInvoice"> | string
+  billingStart?: Prisma.DateTimeNullableFilter<"StudentInvoice"> | Date | string | null
+  billingEnd?: Prisma.DateTimeNullableFilter<"StudentInvoice"> | Date | string | null
   feesAmount?: Prisma.FloatFilter<"StudentInvoice"> | number
   discountApplied?: Prisma.FloatFilter<"StudentInvoice"> | number
   netAmount?: Prisma.FloatFilter<"StudentInvoice"> | number
@@ -764,12 +900,17 @@ export type StudentInvoiceScalarWhereInput = {
   referenceNo?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   reminderStage?: Prisma.IntFilter<"StudentInvoice"> | number
   invoicePdfUrl?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  paymentAcknowledgementMsg?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  paymentReminderMsg?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  serialNo?: Prisma.IntNullableFilter<"StudentInvoice"> | number | null
   createdAt?: Prisma.DateTimeFilter<"StudentInvoice"> | Date | string
 }
 
 export type StudentInvoiceCreateWithoutLedgerEntriesInput = {
   id?: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -781,6 +922,9 @@ export type StudentInvoiceCreateWithoutLedgerEntriesInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
   enrollment: Prisma.StudentMonthlyEnrollmentCreateNestedOneWithoutStudentInvoicesInput
 }
@@ -789,6 +933,8 @@ export type StudentInvoiceUncheckedCreateWithoutLedgerEntriesInput = {
   id?: string
   enrollmentId: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -800,6 +946,9 @@ export type StudentInvoiceUncheckedCreateWithoutLedgerEntriesInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
 }
 
@@ -822,6 +971,8 @@ export type StudentInvoiceUpdateToOneWithWhereWithoutLedgerEntriesInput = {
 export type StudentInvoiceUpdateWithoutLedgerEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -833,6 +984,9 @@ export type StudentInvoiceUpdateWithoutLedgerEntriesInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   enrollment?: Prisma.StudentMonthlyEnrollmentUpdateOneRequiredWithoutStudentInvoicesNestedInput
 }
@@ -841,6 +995,8 @@ export type StudentInvoiceUncheckedUpdateWithoutLedgerEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enrollmentId?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -852,12 +1008,17 @@ export type StudentInvoiceUncheckedUpdateWithoutLedgerEntriesInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentInvoiceCreateManyEnrollmentInput = {
   id?: string
   month: string
+  billingStart?: Date | string | null
+  billingEnd?: Date | string | null
   feesAmount: number
   discountApplied?: number
   netAmount: number
@@ -869,12 +1030,17 @@ export type StudentInvoiceCreateManyEnrollmentInput = {
   referenceNo?: string | null
   reminderStage?: number
   invoicePdfUrl?: string | null
+  paymentAcknowledgementMsg?: string | null
+  paymentReminderMsg?: string | null
+  serialNo?: number | null
   createdAt?: Date | string
 }
 
 export type StudentInvoiceUpdateWithoutEnrollmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -886,6 +1052,9 @@ export type StudentInvoiceUpdateWithoutEnrollmentInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
 }
@@ -893,6 +1062,8 @@ export type StudentInvoiceUpdateWithoutEnrollmentInput = {
 export type StudentInvoiceUncheckedUpdateWithoutEnrollmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -904,6 +1075,9 @@ export type StudentInvoiceUncheckedUpdateWithoutEnrollmentInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutStudentInvoiceNestedInput
 }
@@ -911,6 +1085,8 @@ export type StudentInvoiceUncheckedUpdateWithoutEnrollmentInput = {
 export type StudentInvoiceUncheckedUpdateManyWithoutEnrollmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
+  billingStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   feesAmount?: Prisma.FloatFieldUpdateOperationsInput | number
   discountApplied?: Prisma.FloatFieldUpdateOperationsInput | number
   netAmount?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -922,6 +1098,9 @@ export type StudentInvoiceUncheckedUpdateManyWithoutEnrollmentInput = {
   referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reminderStage?: Prisma.IntFieldUpdateOperationsInput | number
   invoicePdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentAcknowledgementMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentReminderMsg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serialNo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -960,6 +1139,8 @@ export type StudentInvoiceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   id?: boolean
   enrollmentId?: boolean
   month?: boolean
+  billingStart?: boolean
+  billingEnd?: boolean
   feesAmount?: boolean
   discountApplied?: boolean
   netAmount?: boolean
@@ -971,6 +1152,9 @@ export type StudentInvoiceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   referenceNo?: boolean
   reminderStage?: boolean
   invoicePdfUrl?: boolean
+  paymentAcknowledgementMsg?: boolean
+  paymentReminderMsg?: boolean
+  serialNo?: boolean
   createdAt?: boolean
   enrollment?: boolean | Prisma.StudentMonthlyEnrollmentDefaultArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.StudentInvoice$ledgerEntriesArgs<ExtArgs>
@@ -981,6 +1165,8 @@ export type StudentInvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   enrollmentId?: boolean
   month?: boolean
+  billingStart?: boolean
+  billingEnd?: boolean
   feesAmount?: boolean
   discountApplied?: boolean
   netAmount?: boolean
@@ -992,6 +1178,9 @@ export type StudentInvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   referenceNo?: boolean
   reminderStage?: boolean
   invoicePdfUrl?: boolean
+  paymentAcknowledgementMsg?: boolean
+  paymentReminderMsg?: boolean
+  serialNo?: boolean
   createdAt?: boolean
   enrollment?: boolean | Prisma.StudentMonthlyEnrollmentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentInvoice"]>
@@ -1000,6 +1189,8 @@ export type StudentInvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   enrollmentId?: boolean
   month?: boolean
+  billingStart?: boolean
+  billingEnd?: boolean
   feesAmount?: boolean
   discountApplied?: boolean
   netAmount?: boolean
@@ -1011,6 +1202,9 @@ export type StudentInvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   referenceNo?: boolean
   reminderStage?: boolean
   invoicePdfUrl?: boolean
+  paymentAcknowledgementMsg?: boolean
+  paymentReminderMsg?: boolean
+  serialNo?: boolean
   createdAt?: boolean
   enrollment?: boolean | Prisma.StudentMonthlyEnrollmentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentInvoice"]>
@@ -1019,6 +1213,8 @@ export type StudentInvoiceSelectScalar = {
   id?: boolean
   enrollmentId?: boolean
   month?: boolean
+  billingStart?: boolean
+  billingEnd?: boolean
   feesAmount?: boolean
   discountApplied?: boolean
   netAmount?: boolean
@@ -1030,10 +1226,13 @@ export type StudentInvoiceSelectScalar = {
   referenceNo?: boolean
   reminderStage?: boolean
   invoicePdfUrl?: boolean
+  paymentAcknowledgementMsg?: boolean
+  paymentReminderMsg?: boolean
+  serialNo?: boolean
   createdAt?: boolean
 }
 
-export type StudentInvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "enrollmentId" | "month" | "feesAmount" | "discountApplied" | "netAmount" | "inrEquivalent" | "dueAmount" | "paymentDone" | "paymentDate" | "paymentMethod" | "referenceNo" | "reminderStage" | "invoicePdfUrl" | "createdAt", ExtArgs["result"]["studentInvoice"]>
+export type StudentInvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "enrollmentId" | "month" | "billingStart" | "billingEnd" | "feesAmount" | "discountApplied" | "netAmount" | "inrEquivalent" | "dueAmount" | "paymentDone" | "paymentDate" | "paymentMethod" | "referenceNo" | "reminderStage" | "invoicePdfUrl" | "paymentAcknowledgementMsg" | "paymentReminderMsg" | "serialNo" | "createdAt", ExtArgs["result"]["studentInvoice"]>
 export type StudentInvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   enrollment?: boolean | Prisma.StudentMonthlyEnrollmentDefaultArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.StudentInvoice$ledgerEntriesArgs<ExtArgs>
@@ -1056,6 +1255,8 @@ export type $StudentInvoicePayload<ExtArgs extends runtime.Types.Extensions.Inte
     id: string
     enrollmentId: string
     month: string
+    billingStart: Date | null
+    billingEnd: Date | null
     feesAmount: number
     discountApplied: number
     netAmount: number
@@ -1067,6 +1268,9 @@ export type $StudentInvoicePayload<ExtArgs extends runtime.Types.Extensions.Inte
     referenceNo: string | null
     reminderStage: number
     invoicePdfUrl: string | null
+    paymentAcknowledgementMsg: string | null
+    paymentReminderMsg: string | null
+    serialNo: number | null
     createdAt: Date
   }, ExtArgs["result"]["studentInvoice"]>
   composites: {}
@@ -1496,6 +1700,8 @@ export interface StudentInvoiceFieldRefs {
   readonly id: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly enrollmentId: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly month: Prisma.FieldRef<"StudentInvoice", 'String'>
+  readonly billingStart: Prisma.FieldRef<"StudentInvoice", 'DateTime'>
+  readonly billingEnd: Prisma.FieldRef<"StudentInvoice", 'DateTime'>
   readonly feesAmount: Prisma.FieldRef<"StudentInvoice", 'Float'>
   readonly discountApplied: Prisma.FieldRef<"StudentInvoice", 'Float'>
   readonly netAmount: Prisma.FieldRef<"StudentInvoice", 'Float'>
@@ -1507,6 +1713,9 @@ export interface StudentInvoiceFieldRefs {
   readonly referenceNo: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly reminderStage: Prisma.FieldRef<"StudentInvoice", 'Int'>
   readonly invoicePdfUrl: Prisma.FieldRef<"StudentInvoice", 'String'>
+  readonly paymentAcknowledgementMsg: Prisma.FieldRef<"StudentInvoice", 'String'>
+  readonly paymentReminderMsg: Prisma.FieldRef<"StudentInvoice", 'String'>
+  readonly serialNo: Prisma.FieldRef<"StudentInvoice", 'Int'>
   readonly createdAt: Prisma.FieldRef<"StudentInvoice", 'DateTime'>
 }
     

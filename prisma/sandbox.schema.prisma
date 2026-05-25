@@ -74,6 +74,8 @@ model Group {
   id                    String                  @id @default(cuid())
   code                  String                  @unique // Starts with "B" (group) or "C"/"T" (1-on-1)
   subject               String
+  courseLevel           String?                 // GSheet "Course/Class" — e.g. "IGCSE" | "A-Level" | "AS-Level"
+  status                String                  @default("Active") // GSheet "Status" — "Active" | "Inactive"
   teacherId             String
   teacher               User                    @relation("TeacherGroups", fields: [teacherId], references: [id])
   students              User[]                  @relation("StudentGroups")
@@ -145,23 +147,28 @@ model EnrollmentPackageItem {
 }
 
 model StudentInvoice {
-  id                    String                   @id @default(cuid())
-  enrollmentId          String
-  enrollment            StudentMonthlyEnrollment @relation(fields: [enrollmentId], references: [id])
-  month                 String                   // e.g., "Apr_of_2026"
-  feesAmount            Float                    // local currency before discount
-  discountApplied       Float                    @default(0)
-  netAmount             Float                    // local currency after discount
-  inrEquivalent         Float                    // local currency converted to INR
-  dueAmount             Float                    // outstanding due in local currency
-  paymentDone           Boolean                  @default(false)
-  paymentDate           DateTime?
-  paymentMethod         String?
-  referenceNo           String?
-  reminderStage         Int                      @default(0)
-  invoicePdfUrl         String?
-  createdAt             DateTime                 @default(now())
-  ledgerEntries         LedgerEntry[]
+  id                          String                   @id @default(cuid())
+  enrollmentId                String
+  enrollment                  StudentMonthlyEnrollment @relation(fields: [enrollmentId], references: [id])
+  month                       String                   // e.g., "Apr_of_2026"
+  billingStart                DateTime?                // GSheet "Start" col — billing cycle start date
+  billingEnd                  DateTime?                // GSheet "Finish" col — billing cycle end date
+  feesAmount                  Float                    // local currency before discount
+  discountApplied             Float                    @default(0)
+  netAmount                   Float                    // local currency after discount
+  inrEquivalent               Float                    // local currency converted to INR
+  dueAmount                   Float                    // outstanding due in local currency
+  paymentDone                 Boolean                  @default(false)
+  paymentDate                 DateTime?
+  paymentMethod               String?
+  referenceNo                 String?
+  reminderStage               Int                      @default(0)
+  invoicePdfUrl               String?                  // Google Drive PDF link
+  paymentAcknowledgementMsg   String?                  // GSheet auto-generated acknowledgement message
+  paymentReminderMsg          String?                  // WhatsApp deeplink reminder message
+  serialNo                    Int?                     // GSheet S. No. — row serial for traceability
+  createdAt                   DateTime                 @default(now())
+  ledgerEntries               LedgerEntry[]
 }
 
 model ResourceInvoice {
@@ -207,9 +214,14 @@ model Claim {
   month                 String             // e.g. "Apr_of_2026"
   sessions              Int?
   hours                 Float?
-  amount                Float              // total payment in GBP
+  rateApplied           Float?             // GSheet "Rate" col — hourly/unit rate
+  amount                Float              // total payment in local currency (GSheet "Fees")
   status                String             @default("pending") // "pending" | "approved" | "paid" | "rejected"
   notes                 String?
+  notes2                String?            // GSheet "Notes 2" col — secondary notes / INR conversion value
+  startDate             DateTime?          // GSheet "Started" col
+  endDate               DateTime?          // GSheet "Finish" col
+  paymentDate           DateTime?          // GSheet "Date done" col
   createdAt             DateTime           @default(now())
   ledgerEntries         LedgerEntry[]
 
@@ -523,13 +535,24 @@ model Candidate {
   id                   String    @id @default(cuid())
   email                String    @unique
   name                 String
-  role                 String
-  status               String    @default("active")
-  cvLink               String?
+  role                 String    // Interview position / job title
+  status               String    @default("active") // "active" | "inactive"
+  cvLink               String?   // GSheet "LINKS" col — Google Drive CV link
   docsLink             String?
-  notes                String?
+  notes                String?   // GSheet "NOTES" col — interview observations
   outreach             String?
-  interviewRequestedAt DateTime?
+  skills               String?   // GSheet "SKILLS/SUBJECTS" col
+  extraSkills          String?   // GSheet "EXTRA SKILLS/SUBJECTS" col
+  qualifications       String?   // GSheet "QUALIFICATIONS" col
+  expectedRate         String?   // GSheet "RATE" col — expected pay rate
+  timeZone             String?   // GSheet "TIME ZONE" col
+  interviewTime        String?   // GSheet "INTERVIEW TIME" col (e.g. "3:30 PM IST")
+  startDate            DateTime? // GSheet "START DATE" col
+  offerLetterStatus    String?   // GSheet "OFFER LETTER" col (e.g. "Not Done")
+  gcrAccess            String?   // GSheet "GCR ACCESS" col
+  classSchedule        String?   // GSheet "CLASS SCHEDULE" col
+  workFolder           String?   // GSheet "WORK FOLDER" col
+  interviewRequestedAt DateTime? // GSheet "INTERVIEW DATE" col
   createdAt            DateTime  @default(now())
 }
 
@@ -619,16 +642,25 @@ model TeacherProfile {
 }
 
 model StudentProfile {
-  id                       String   @id @default(cuid())
-  userId                   String   @unique
-  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String    @id @default(cuid())
+  userId                   String    @unique
+  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   firstName                String
   lastName                 String
   dob                      DateTime?
-  grade                    String?
-  board                    String?
+  grade                    String?   // "IGCSE" | "AS-Level" | "A-Level"
+  board                    String?   // "Cambridge" | "Pearson" | "AQA"
   targetUni                String?
+  school                   String?   // GSheet "School" col
   paymentMethodPreference  String?
+  whatsappNumber           String?   // GSheet "WhatsApp Number" col
+  parentWhatsappNumber     String?   // GSheet "Parent WhatsApp Number" col
+  timeZone                 String?   // GSheet "Time Zone" col
+  timesheetUrl             String?   // GSheet "Timesheet" — Google Sheets link
+  gcrLink                  String?   // GSheet "GCR" — Google Classroom link
+  scheduleLink             String?   // GSheet "Schedule" col
+  progressTrackerLink      String?   // GSheet "Progress Tracker" col
+  notes                    String?   // GSheet "Notes" col
 }
 
 model ParentProfile {
@@ -649,4 +681,37 @@ model AmbassadorProfile {
   lastName        String
   dob             DateTime?
   bankAccountInfo String?
+}
+
+// Currency exchange rates imported from Currencies sheet
+model CurrencyRate {
+  id        String   @id @default(cuid())
+  currency  String   @unique // "SAR" | "GBP" | "USD" | "INR" | "PKR" | "MYR" | "AED" | "SGD" | "BDT" | "BHD" | "SCR"
+  toINR     Float    // Exchange rate: 1 unit of currency = X INR
+  fromINR   Float    // Reverse: 1 INR = X units of currency
+  updatedAt DateTime @updatedAt
+}
+
+// Message templates imported from Text_Formats sheet
+model MessageTemplate {
+  id            String   @id @default(cuid())
+  name          String   @unique // e.g. "DC Student Payment Acknowledgement"
+  text          String   // Primary message text
+  alternateText String?  // GSheet "ALTERNATE TEXT #1" col
+  use           String?  // GSheet "USE" col — context/trigger for the message
+  date          DateTime? // GSheet "DATE" col
+  createdAt     DateTime @default(now())
+}
+
+// Marketing posts — cloned from production MarketingPost table
+model MarketingPost {
+  id          String    @id @default(cuid())
+  canvaLink   String?
+  driveLink   String?
+  caption     String?
+  scheduledAt DateTime
+  status      String    @default("scheduled") // "scheduled" | "published" | "archived"
+  contentType String?
+  campaignTag String?
+  createdAt   DateTime  @default(now())
 }

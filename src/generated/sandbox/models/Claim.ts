@@ -29,12 +29,14 @@ export type AggregateClaim = {
 export type ClaimAvgAggregateOutputType = {
   sessions: number | null
   hours: number | null
+  rateApplied: number | null
   amount: number | null
 }
 
 export type ClaimSumAggregateOutputType = {
   sessions: number | null
   hours: number | null
+  rateApplied: number | null
   amount: number | null
 }
 
@@ -44,9 +46,14 @@ export type ClaimMinAggregateOutputType = {
   month: string | null
   sessions: number | null
   hours: number | null
+  rateApplied: number | null
   amount: number | null
   status: string | null
   notes: string | null
+  notes2: string | null
+  startDate: Date | null
+  endDate: Date | null
+  paymentDate: Date | null
   createdAt: Date | null
 }
 
@@ -56,9 +63,14 @@ export type ClaimMaxAggregateOutputType = {
   month: string | null
   sessions: number | null
   hours: number | null
+  rateApplied: number | null
   amount: number | null
   status: string | null
   notes: string | null
+  notes2: string | null
+  startDate: Date | null
+  endDate: Date | null
+  paymentDate: Date | null
   createdAt: Date | null
 }
 
@@ -68,9 +80,14 @@ export type ClaimCountAggregateOutputType = {
   month: number
   sessions: number
   hours: number
+  rateApplied: number
   amount: number
   status: number
   notes: number
+  notes2: number
+  startDate: number
+  endDate: number
+  paymentDate: number
   createdAt: number
   _all: number
 }
@@ -79,12 +96,14 @@ export type ClaimCountAggregateOutputType = {
 export type ClaimAvgAggregateInputType = {
   sessions?: true
   hours?: true
+  rateApplied?: true
   amount?: true
 }
 
 export type ClaimSumAggregateInputType = {
   sessions?: true
   hours?: true
+  rateApplied?: true
   amount?: true
 }
 
@@ -94,9 +113,14 @@ export type ClaimMinAggregateInputType = {
   month?: true
   sessions?: true
   hours?: true
+  rateApplied?: true
   amount?: true
   status?: true
   notes?: true
+  notes2?: true
+  startDate?: true
+  endDate?: true
+  paymentDate?: true
   createdAt?: true
 }
 
@@ -106,9 +130,14 @@ export type ClaimMaxAggregateInputType = {
   month?: true
   sessions?: true
   hours?: true
+  rateApplied?: true
   amount?: true
   status?: true
   notes?: true
+  notes2?: true
+  startDate?: true
+  endDate?: true
+  paymentDate?: true
   createdAt?: true
 }
 
@@ -118,9 +147,14 @@ export type ClaimCountAggregateInputType = {
   month?: true
   sessions?: true
   hours?: true
+  rateApplied?: true
   amount?: true
   status?: true
   notes?: true
+  notes2?: true
+  startDate?: true
+  endDate?: true
+  paymentDate?: true
   createdAt?: true
   _all?: true
 }
@@ -217,9 +251,14 @@ export type ClaimGroupByOutputType = {
   month: string
   sessions: number | null
   hours: number | null
+  rateApplied: number | null
   amount: number
   status: string
   notes: string | null
+  notes2: string | null
+  startDate: Date | null
+  endDate: Date | null
+  paymentDate: Date | null
   createdAt: Date
   _count: ClaimCountAggregateOutputType | null
   _avg: ClaimAvgAggregateOutputType | null
@@ -252,9 +291,14 @@ export type ClaimWhereInput = {
   month?: Prisma.StringFilter<"Claim"> | string
   sessions?: Prisma.IntNullableFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableFilter<"Claim"> | number | null
+  rateApplied?: Prisma.FloatNullableFilter<"Claim"> | number | null
   amount?: Prisma.FloatFilter<"Claim"> | number
   status?: Prisma.StringFilter<"Claim"> | string
   notes?: Prisma.StringNullableFilter<"Claim"> | string | null
+  notes2?: Prisma.StringNullableFilter<"Claim"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
+  endDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
+  paymentDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Claim"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
@@ -266,9 +310,14 @@ export type ClaimOrderByWithRelationInput = {
   month?: Prisma.SortOrder
   sessions?: Prisma.SortOrderInput | Prisma.SortOrder
   hours?: Prisma.SortOrderInput | Prisma.SortOrder
+  rateApplied?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes2?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   ledgerEntries?: Prisma.LedgerEntryOrderByRelationAggregateInput
@@ -283,9 +332,14 @@ export type ClaimWhereUniqueInput = Prisma.AtLeast<{
   month?: Prisma.StringFilter<"Claim"> | string
   sessions?: Prisma.IntNullableFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableFilter<"Claim"> | number | null
+  rateApplied?: Prisma.FloatNullableFilter<"Claim"> | number | null
   amount?: Prisma.FloatFilter<"Claim"> | number
   status?: Prisma.StringFilter<"Claim"> | string
   notes?: Prisma.StringNullableFilter<"Claim"> | string | null
+  notes2?: Prisma.StringNullableFilter<"Claim"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
+  endDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
+  paymentDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Claim"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
@@ -297,9 +351,14 @@ export type ClaimOrderByWithAggregationInput = {
   month?: Prisma.SortOrder
   sessions?: Prisma.SortOrderInput | Prisma.SortOrder
   hours?: Prisma.SortOrderInput | Prisma.SortOrder
+  rateApplied?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes2?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ClaimCountOrderByAggregateInput
   _avg?: Prisma.ClaimAvgOrderByAggregateInput
@@ -317,9 +376,14 @@ export type ClaimScalarWhereWithAggregatesInput = {
   month?: Prisma.StringWithAggregatesFilter<"Claim"> | string
   sessions?: Prisma.IntNullableWithAggregatesFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableWithAggregatesFilter<"Claim"> | number | null
+  rateApplied?: Prisma.FloatNullableWithAggregatesFilter<"Claim"> | number | null
   amount?: Prisma.FloatWithAggregatesFilter<"Claim"> | number
   status?: Prisma.StringWithAggregatesFilter<"Claim"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
+  notes2?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
+  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Claim"> | Date | string | null
+  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Claim"> | Date | string | null
+  paymentDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Claim"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Claim"> | Date | string
 }
 
@@ -328,9 +392,14 @@ export type ClaimCreateInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
@@ -342,9 +411,14 @@ export type ClaimUncheckedCreateInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
 }
@@ -354,9 +428,14 @@ export type ClaimUpdateInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
@@ -368,9 +447,14 @@ export type ClaimUncheckedUpdateInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
 }
@@ -381,9 +465,14 @@ export type ClaimCreateManyInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -392,9 +481,14 @@ export type ClaimUpdateManyMutationInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -404,9 +498,14 @@ export type ClaimUncheckedUpdateManyInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -426,15 +525,21 @@ export type ClaimCountOrderByAggregateInput = {
   month?: Prisma.SortOrder
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
+  rateApplied?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  notes2?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  paymentDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ClaimAvgOrderByAggregateInput = {
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
+  rateApplied?: Prisma.SortOrder
   amount?: Prisma.SortOrder
 }
 
@@ -444,9 +549,14 @@ export type ClaimMaxOrderByAggregateInput = {
   month?: Prisma.SortOrder
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
+  rateApplied?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  notes2?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  paymentDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -456,15 +566,21 @@ export type ClaimMinOrderByAggregateInput = {
   month?: Prisma.SortOrder
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
+  rateApplied?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  notes2?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
+  paymentDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ClaimSumOrderByAggregateInput = {
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
+  rateApplied?: Prisma.SortOrder
   amount?: Prisma.SortOrder
 }
 
@@ -515,14 +631,6 @@ export type ClaimUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ClaimScalarWhereInput | Prisma.ClaimScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type ClaimCreateNestedOneWithoutLedgerEntriesInput = {
   create?: Prisma.XOR<Prisma.ClaimCreateWithoutLedgerEntriesInput, Prisma.ClaimUncheckedCreateWithoutLedgerEntriesInput>
   connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutLedgerEntriesInput
@@ -544,9 +652,14 @@ export type ClaimCreateWithoutUserInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
 }
@@ -556,9 +669,14 @@ export type ClaimUncheckedCreateWithoutUserInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
 }
@@ -597,9 +715,14 @@ export type ClaimScalarWhereInput = {
   month?: Prisma.StringFilter<"Claim"> | string
   sessions?: Prisma.IntNullableFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableFilter<"Claim"> | number | null
+  rateApplied?: Prisma.FloatNullableFilter<"Claim"> | number | null
   amount?: Prisma.FloatFilter<"Claim"> | number
   status?: Prisma.StringFilter<"Claim"> | string
   notes?: Prisma.StringNullableFilter<"Claim"> | string | null
+  notes2?: Prisma.StringNullableFilter<"Claim"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
+  endDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
+  paymentDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Claim"> | Date | string
 }
 
@@ -608,9 +731,14 @@ export type ClaimCreateWithoutLedgerEntriesInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
 }
@@ -621,9 +749,14 @@ export type ClaimUncheckedCreateWithoutLedgerEntriesInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -648,9 +781,14 @@ export type ClaimUpdateWithoutLedgerEntriesInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
 }
@@ -661,9 +799,14 @@ export type ClaimUncheckedUpdateWithoutLedgerEntriesInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -672,9 +815,14 @@ export type ClaimCreateManyUserInput = {
   month: string
   sessions?: number | null
   hours?: number | null
+  rateApplied?: number | null
   amount: number
   status?: string
   notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -683,9 +831,14 @@ export type ClaimUpdateWithoutUserInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
 }
@@ -695,9 +848,14 @@ export type ClaimUncheckedUpdateWithoutUserInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
 }
@@ -707,9 +865,14 @@ export type ClaimUncheckedUpdateManyWithoutUserInput = {
   month?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -750,9 +913,14 @@ export type ClaimSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   month?: boolean
   sessions?: boolean
   hours?: boolean
+  rateApplied?: boolean
   amount?: boolean
   status?: boolean
   notes?: boolean
+  notes2?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  paymentDate?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.Claim$ledgerEntriesArgs<ExtArgs>
@@ -765,9 +933,14 @@ export type ClaimSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   month?: boolean
   sessions?: boolean
   hours?: boolean
+  rateApplied?: boolean
   amount?: boolean
   status?: boolean
   notes?: boolean
+  notes2?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  paymentDate?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["claim"]>
@@ -778,9 +951,14 @@ export type ClaimSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   month?: boolean
   sessions?: boolean
   hours?: boolean
+  rateApplied?: boolean
   amount?: boolean
   status?: boolean
   notes?: boolean
+  notes2?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  paymentDate?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["claim"]>
@@ -791,13 +969,18 @@ export type ClaimSelectScalar = {
   month?: boolean
   sessions?: boolean
   hours?: boolean
+  rateApplied?: boolean
   amount?: boolean
   status?: boolean
   notes?: boolean
+  notes2?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  paymentDate?: boolean
   createdAt?: boolean
 }
 
-export type ClaimOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "month" | "sessions" | "hours" | "amount" | "status" | "notes" | "createdAt", ExtArgs["result"]["claim"]>
+export type ClaimOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "month" | "sessions" | "hours" | "rateApplied" | "amount" | "status" | "notes" | "notes2" | "startDate" | "endDate" | "paymentDate" | "createdAt", ExtArgs["result"]["claim"]>
 export type ClaimInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.Claim$ledgerEntriesArgs<ExtArgs>
@@ -822,9 +1005,14 @@ export type $ClaimPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     month: string
     sessions: number | null
     hours: number | null
+    rateApplied: number | null
     amount: number
     status: string
     notes: string | null
+    notes2: string | null
+    startDate: Date | null
+    endDate: Date | null
+    paymentDate: Date | null
     createdAt: Date
   }, ExtArgs["result"]["claim"]>
   composites: {}
@@ -1256,9 +1444,14 @@ export interface ClaimFieldRefs {
   readonly month: Prisma.FieldRef<"Claim", 'String'>
   readonly sessions: Prisma.FieldRef<"Claim", 'Int'>
   readonly hours: Prisma.FieldRef<"Claim", 'Float'>
+  readonly rateApplied: Prisma.FieldRef<"Claim", 'Float'>
   readonly amount: Prisma.FieldRef<"Claim", 'Float'>
   readonly status: Prisma.FieldRef<"Claim", 'String'>
   readonly notes: Prisma.FieldRef<"Claim", 'String'>
+  readonly notes2: Prisma.FieldRef<"Claim", 'String'>
+  readonly startDate: Prisma.FieldRef<"Claim", 'DateTime'>
+  readonly endDate: Prisma.FieldRef<"Claim", 'DateTime'>
+  readonly paymentDate: Prisma.FieldRef<"Claim", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Claim", 'DateTime'>
 }
     

@@ -227,3 +227,18 @@ export type ParentProfile = Prisma.ParentProfileModel
  * 
  */
 export type AmbassadorProfile = Prisma.AmbassadorProfileModel
+/**
+ * Model CurrencyRate
+ * 
+ */
+export type CurrencyRate = Prisma.CurrencyRateModel
+/**
+ * Model MessageTemplate
+ * 
+ */
+export type MessageTemplate = Prisma.MessageTemplateModel
+/**
+ * Model MarketingPost
+ * 
+ */
+export type MarketingPost = Prisma.MarketingPostModel

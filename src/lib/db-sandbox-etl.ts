@@ -85,8 +85,10 @@ export async function runSandboxETL() {
     // Tickets
     "ticketMessage", "ticketHistory", "ticket", "ticketCategory", "ticketPermission",
     // CRM & org
-    "referral", "meetingParticipant", "meeting", "group", "user",
-    "syllabusItem", "mockResult", "candidate", "lead", "announcement", "asset", "accessLog"
+    "referral", "meetingParticipant", "meeting", "marketingPost", "group", "user",
+    "syllabusItem", "mockResult", "candidate", "lead", "announcement", "asset", "accessLog",
+    // Reference tables
+    "currencyRate", "messageTemplate"
   ];
 
   for (const table of tablenames) {
@@ -165,6 +167,9 @@ export async function runSandboxETL() {
 
     const prodMeetingParts = await prisma.meetingParticipant.findMany();
     await tx.meetingParticipant.createMany({ data: prodMeetingParts as any });
+
+    const prodMarketingPosts = await (prisma as any).marketingPost.findMany();
+    await (tx as any).marketingPost.createMany({ data: prodMarketingPosts as any });
 
     const prodCandidates = await prisma.candidate.findMany();
     await (tx as any).candidate.createMany({ data: prodCandidates as any });
@@ -316,13 +321,76 @@ export async function runSandboxETL() {
       }
     }
 
-    // 6. PARSE XLSX — Services, Students, Recruits sheets
+    // 6. PARSE XLSX — all sheets
     const xlsxPath = path.join(process.cwd(), "Data", "DC Database 2026.xlsx");
     if (fs.existsSync(xlsxPath)) {
       console.log("[ETL] Parsing DC Database 2026.xlsx sheets...");
       const wb = XLSX.readFile(xlsxPath, { cellDates: true });
 
-      // --- 6A. Services sheet → Groups + BatchRateCards ---
+      // --- 6A. Currencies sheet → CurrencyRate ---
+      console.log("[ETL] Importing Currencies sheet → CurrencyRate...");
+      const currenciesSheet = wb.Sheets["Currencies"];
+      const currenciesRows = XLSX.utils.sheet_to_json<any>(currenciesSheet, { defval: null });
+      for (const row of currenciesRows) {
+        const currency = row["Currency"]?.toString().trim();
+        const toINR = parseFloat(row["Rate"]) || 1;
+        const fromINR = parseFloat(row["Reverse"]) || 1;
+        if (!currency) continue;
+        await (tx as any).currencyRate.upsert({
+          where: { currency },
+          update: { toINR, fromINR },
+          create: { currency, toINR, fromINR }
+        });
+      }
+
+      // --- 6B. Text_Formats sheet → MessageTemplate ---
+      console.log("[ETL] Importing Text_Formats sheet → MessageTemplate...");
+      const textFormatsSheet = wb.Sheets["Text_Formats"];
+      const textFormatsRows = XLSX.utils.sheet_to_json<any>(textFormatsSheet, { defval: null });
+      for (const row of textFormatsRows) {
+        const name = row["NAME"]?.toString().trim();
+        const text = row["TEXT"]?.toString().trim();
+        if (!name || !text) continue;
+        const alternateText = row["ALTERNATE TEXT #1"]?.toString().trim() || null;
+        const use = row["USE"]?.toString().trim() || null;
+        const dateRaw = row["DATE"];
+        let date: Date | null = null;
+        if (dateRaw instanceof Date) date = dateRaw;
+        else if (typeof dateRaw === "string" && dateRaw.trim()) {
+          const d = new Date(dateRaw); if (!isNaN(d.getTime())) date = d;
+        }
+        await (tx as any).messageTemplate.upsert({
+          where: { name },
+          update: { text, alternateText, use, date },
+          create: { name, text, alternateText, use, date }
+        });
+      }
+
+      // --- 6C. Batches sheet → enrich Group status + courseLevel ---
+      console.log("[ETL] Importing Batches sheet → Group status/courseLevel...");
+      const batchesSheet = wb.Sheets["Batches"];
+      const batchesRows = XLSX.utils.sheet_to_json<any>(batchesSheet, { defval: null });
+      for (const row of batchesRows) {
+        const batchCode = row["Batch"]?.toString().trim();
+        if (!batchCode) continue;
+        const status = row["Status"]?.toString().trim() || null;
+        const courseLevel = row["Course/Class"]?.toString().trim() || null;
+        // Update all groups whose code starts with this batch code
+        const matchingGroups = await tx.group.findMany({
+          where: { code: { startsWith: batchCode + "-" } }
+        });
+        for (const g of matchingGroups) {
+          await tx.group.update({
+            where: { id: g.id },
+            data: {
+              ...(status ? { status } : {}),
+              ...(courseLevel ? { courseLevel } : {})
+            }
+          });
+        }
+      }
+
+      // --- 6D. Services sheet → Groups + BatchRateCards ---
       console.log("[ETL] Importing Services sheet → Groups + BatchRateCards...");
       const servicesSheet = wb.Sheets["Services"];
       const servicesRows = XLSX.utils.sheet_to_json<any>(servicesSheet, { defval: null });
@@ -383,13 +451,22 @@ export async function runSandboxETL() {
 
         const email = row["Email"]?.toString().trim() || null;
         const school = row["School"]?.toString().trim() || null;
-        const phone = row["WhatsApp Number"]?.toString().trim() || null;
+        const whatsappNumber = row["WhatsApp Number"]?.toString().trim() || null;
+        const parentWhatsappNumber = row["Parent WhatsApp Number"]?.toString().trim() || null;
+        const timeZone = row["Time Zone"]?.toString().trim() || null;
         const location = row["Location"]?.toString().trim() || null;
+        const timesheetUrl = row["Timesheet"]?.toString().trim() || null;
+        const gcrRaw = row["GCR"];
+        const gcrLink = typeof gcrRaw === "string" && gcrRaw.startsWith("http") ? gcrRaw.trim() : null;
+        const scheduleRaw = row["Schedule"];
+        const scheduleLink = typeof scheduleRaw === "string" && scheduleRaw.startsWith("http") ? scheduleRaw.trim() : null;
+        const progressRaw = row["Progress Tracker"];
+        const progressTrackerLink = typeof progressRaw === "string" && progressRaw.startsWith("http") ? progressRaw.trim() : null;
+        const notes = row["Notes"]?.toString().trim() || null;
 
         // Try to find the student user in cache
         let user = userCache.get(studentName.toLowerCase());
         if (!user || user.role !== "student") {
-          // Try partial match on first name
           for (const [key, u] of userCache.entries()) {
             if (u.role === "student" && key.startsWith(studentName.split(" ")[0].toLowerCase())) {
               user = u;
@@ -399,25 +476,42 @@ export async function runSandboxETL() {
         }
 
         if (user && user.role === "student") {
-          // Update user email/phone if real data available
-          if (email || phone) {
+          // Update user email/phone
+          if (email || whatsappNumber) {
             await tx.user.update({
               where: { id: user.id },
               data: {
                 ...(email ? { email } : {}),
-                ...(phone ? { phone } : {})
+                ...(whatsappNumber ? { phone: whatsappNumber } : {})
               }
             });
           }
 
-          // Update StudentProfile with real school/location data
-          const profile = await tx.studentProfile.findUnique({ where: { userId: user.id } });
-          if (profile && (school || location)) {
-            await tx.studentProfile.update({
-              where: { userId: user.id },
+          // Upsert StudentProfile with all XLSX fields
+          const existing = await tx.studentProfile.findUnique({ where: { userId: user.id } });
+          const profileData = {
+            school: school || undefined,
+            whatsappNumber: whatsappNumber || undefined,
+            parentWhatsappNumber: parentWhatsappNumber || undefined,
+            timeZone: timeZone || undefined,
+            timesheetUrl: timesheetUrl || undefined,
+            gcrLink: gcrLink || undefined,
+            scheduleLink: scheduleLink || undefined,
+            progressTrackerLink: progressTrackerLink || undefined,
+            notes: notes || undefined,
+            paymentMethodPreference: location || undefined
+          };
+          if (existing) {
+            await tx.studentProfile.update({ where: { userId: user.id }, data: profileData });
+          } else {
+            await tx.studentProfile.create({
               data: {
-                ...(school ? { targetUni: school } : {}),
-                ...(location ? { paymentMethodPreference: location } : {})
+                userId: user.id,
+                firstName: studentName.split(" ")[0],
+                lastName: studentName.split(" ").slice(1).join(" ") || "Student",
+                grade: user.grade || "IGCSE",
+                board: user.board || "Cambridge",
+                ...profileData
               }
             });
           }
@@ -438,35 +532,57 @@ export async function runSandboxETL() {
         const statusRaw = row["STATUS"]?.toString().trim() || "Unavailable";
         const notes = row["NOTES"]?.toString().trim() || null;
         const skills = row["SKILLS/SUBJECTS"]?.toString().trim() || null;
+        const extraSkills = row["EXTRA SKILLS/SUBJECTS"]?.toString().trim() || null;
+        const cvLink = row["LINKS "]?.toString().trim() || row["LINKS"]?.toString().trim() || null;
+        const qualifications = row["QUALIFICATIONS"]?.toString().trim() || null;
+        const timeZone = row["TIME ZONE"]?.toString().trim() || null;
+        const interviewTime = row["INTERVIEW TIME"]?.toString().trim() || null;
+        const offerLetterStatus = row["OFFER LETTER"]?.toString().trim() || null;
+        const expectedRate = row["RATE"] != null ? String(row["RATE"]).trim() : null;
+        const gcrAccess = row["GCR ACCESS"]?.toString().trim() || null;
+        const classSchedule = row["CLASS SCHEDULE"]?.toString().trim() || null;
+        const workFolder = row["WORK FOLDER"]?.toString().trim() || null;
+
         const interviewDateRaw = row["INTERVIEW DATE"];
+        const startDateRaw = row["START DATE"];
 
         const candidateEmail = email ||
           `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.recruit@divergencie.co.uk`;
 
         const status = statusRaw.toLowerCase() === "available" ? "active" : "inactive";
 
-        let interviewDate: Date | null = null;
-        if (interviewDateRaw instanceof Date) {
-          interviewDate = interviewDateRaw;
-        } else if (typeof interviewDateRaw === "string" && interviewDateRaw.trim()) {
-          const d = new Date(interviewDateRaw);
-          if (!isNaN(d.getTime())) interviewDate = d;
-        }
+        const parseDate = (raw: any): Date | null => {
+          if (raw instanceof Date) return raw;
+          if (typeof raw === "string" && raw.trim()) {
+            const d = new Date(raw);
+            return isNaN(d.getTime()) ? null : d;
+          }
+          return null;
+        };
 
-        const notesCombined = [notes, skills ? `Skills: ${skills}` : null]
-          .filter(Boolean).join("\n") || null;
+        const candidateData = {
+          role: position,
+          status,
+          notes,
+          skills,
+          extraSkills,
+          cvLink,
+          qualifications,
+          expectedRate,
+          timeZone,
+          interviewTime,
+          offerLetterStatus,
+          gcrAccess,
+          classSchedule,
+          workFolder,
+          startDate: parseDate(startDateRaw),
+          interviewRequestedAt: parseDate(interviewDateRaw)
+        };
 
         await tx.candidate.upsert({
           where: { email: candidateEmail },
-          update: { status, notes: notesCombined },
-          create: {
-            email: candidateEmail,
-            name,
-            role: position,
-            status,
-            notes: notesCombined,
-            interviewRequestedAt: interviewDate
-          }
+          update: candidateData,
+          create: { email: candidateEmail, name, ...candidateData }
         });
       }
 
@@ -521,9 +637,14 @@ export async function runSandboxETL() {
         const feesRaw = cells[9];
         const inrRaw = cells[10];
         const dueRaw = cells[11];
+        const billingStartRaw = cells[12];   // XLSX col11 "Start"
+        const billingEndRaw = cells[13];     // XLSX col12 "Finish"
         const paymentDoneRaw = cells[14];
         const paymentDateRaw = cells[17];
-        const invoicePdfUrl = cells[19];
+        const paymentAcknowledgementMsg = cells[18] || null;  // XLSX col17
+        const invoicePdfUrl = cells[19] || null;              // XLSX col18
+        const serialNoRaw = cells[20];                        // XLSX col19 "S. No."
+        const paymentReminderMsg = cells[21] || null;         // XLSX col20
 
         // Skip header lines or totals/blank names
         if (!studentName || studentName === "Students" || studentName === "Student Count" || studentName === "Month" || studentName === "Date" || studentName === "") continue;
@@ -534,13 +655,17 @@ export async function runSandboxETL() {
         const inrEquivalent = cleanNumeric(inrRaw);
         const dueAmount = cleanNumeric(dueRaw);
         const paymentDone = paymentDoneRaw === "1" || paymentDoneRaw === "true";
-        let paymentDate: Date | null = null;
-        if (paymentDateRaw && paymentDateRaw.trim() !== "") {
-          const parsedDate = new Date(paymentDateRaw);
-          if (!isNaN(parsedDate.getTime())) {
-            paymentDate = parsedDate;
-          }
-        }
+        const serialNo = serialNoRaw ? Math.round(parseFloat(serialNoRaw)) || null : null;
+
+        const parseCSVDate = (raw: string | null): Date | null => {
+          if (!raw || raw.trim() === "") return null;
+          const d = new Date(raw);
+          return isNaN(d.getTime()) ? null : d;
+        };
+
+        const paymentDate = parseCSVDate(paymentDateRaw);
+        const billingStart = parseCSVDate(billingStartRaw);
+        const billingEnd = parseCSVDate(billingEndRaw);
 
         // A. Match or create Student User record
         const studentKey = `${studentName.toLowerCase()}_student`;
@@ -630,6 +755,8 @@ export async function runSandboxETL() {
           data: {
             enrollmentId: enrollment.id,
             month: currentMonth,
+            billingStart,
+            billingEnd,
             feesAmount,
             discountApplied: discountPct,
             netAmount: feesAmount * (1 - discountPct / 100),
@@ -639,7 +766,10 @@ export async function runSandboxETL() {
             paymentDate,
             paymentMethod: paymentDone ? "SBI Corporate Bank Account" : null,
             referenceNo: paymentDone ? `REF-MIG-${currentMonth.toUpperCase()}-${student.id.substring(0, 4)}` : null,
-            invoicePdfUrl
+            invoicePdfUrl,
+            paymentAcknowledgementMsg,
+            paymentReminderMsg,
+            serialNo
           }
         });
 
@@ -701,15 +831,30 @@ export async function runSandboxETL() {
         const rateRaw = cells[4];
         const feesRaw = cells[5];
         const inrRaw = cells[6];
+        const startedRaw = cells[8];    // XLSX col8 "Started"
+        const finishRaw = cells[9];     // XLSX col9 "Finish"
         const paymentDoneRaw = cells[10];
+        const dateDoneRaw = cells[12];  // XLSX col12 "Date done"
+        const notes2Raw = cells[13];    // XLSX col13 "Notes 2"
 
         if (!staffNameRaw || staffNameRaw.includes("Staff") || staffNameRaw.includes("Count") || staffNameRaw.includes("Total Due") || staffNameRaw.trim() === "") continue;
 
         const cleanStaffName = staffNameRaw.split("(")[0].trim().replace(/ xx$/i, "");
         const hours = parseFloat(hoursRaw) || 0;
+        const rateApplied = cleanNumeric(rateRaw) || null;
         const amount = cleanNumeric(feesRaw);
         const inrAmount = cleanNumeric(inrRaw);
         const paymentDone = paymentDoneRaw === "1" || paymentDoneRaw === "true";
+
+        const parseStaffDate = (raw: string | null): Date | null => {
+          if (!raw || raw.trim() === "") return null;
+          const d = new Date(raw);
+          return isNaN(d.getTime()) ? null : d;
+        };
+        const startDate = parseStaffDate(startedRaw);
+        const endDate = parseStaffDate(finishRaw);
+        const paymentDate = parseStaffDate(dateDoneRaw);
+        const notes2 = notes2Raw && !isNaN(parseFloat(notes2Raw)) ? null : (notes2Raw || null); // col13 is sometimes a numeric INR value, skip those
 
         let staff = userCache.get(cleanStaffName.toLowerCase());
 
@@ -772,9 +917,14 @@ export async function runSandboxETL() {
             userId: staff.id,
             month: currentMonth,
             hours,
+            rateApplied,
             amount,
             status: paymentDone ? "paid" : "pending",
-            notes: notes || "Historical imported contract Timesheet"
+            notes: notes || "Historical imported contract Timesheet",
+            notes2,
+            startDate,
+            endDate,
+            paymentDate
           }
         });
 

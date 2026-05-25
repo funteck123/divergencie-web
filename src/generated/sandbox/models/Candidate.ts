@@ -34,6 +34,17 @@ export type CandidateMinAggregateOutputType = {
   docsLink: string | null
   notes: string | null
   outreach: string | null
+  skills: string | null
+  extraSkills: string | null
+  qualifications: string | null
+  expectedRate: string | null
+  timeZone: string | null
+  interviewTime: string | null
+  startDate: Date | null
+  offerLetterStatus: string | null
+  gcrAccess: string | null
+  classSchedule: string | null
+  workFolder: string | null
   interviewRequestedAt: Date | null
   createdAt: Date | null
 }
@@ -48,6 +59,17 @@ export type CandidateMaxAggregateOutputType = {
   docsLink: string | null
   notes: string | null
   outreach: string | null
+  skills: string | null
+  extraSkills: string | null
+  qualifications: string | null
+  expectedRate: string | null
+  timeZone: string | null
+  interviewTime: string | null
+  startDate: Date | null
+  offerLetterStatus: string | null
+  gcrAccess: string | null
+  classSchedule: string | null
+  workFolder: string | null
   interviewRequestedAt: Date | null
   createdAt: Date | null
 }
@@ -62,6 +84,17 @@ export type CandidateCountAggregateOutputType = {
   docsLink: number
   notes: number
   outreach: number
+  skills: number
+  extraSkills: number
+  qualifications: number
+  expectedRate: number
+  timeZone: number
+  interviewTime: number
+  startDate: number
+  offerLetterStatus: number
+  gcrAccess: number
+  classSchedule: number
+  workFolder: number
   interviewRequestedAt: number
   createdAt: number
   _all: number
@@ -78,6 +111,17 @@ export type CandidateMinAggregateInputType = {
   docsLink?: true
   notes?: true
   outreach?: true
+  skills?: true
+  extraSkills?: true
+  qualifications?: true
+  expectedRate?: true
+  timeZone?: true
+  interviewTime?: true
+  startDate?: true
+  offerLetterStatus?: true
+  gcrAccess?: true
+  classSchedule?: true
+  workFolder?: true
   interviewRequestedAt?: true
   createdAt?: true
 }
@@ -92,6 +136,17 @@ export type CandidateMaxAggregateInputType = {
   docsLink?: true
   notes?: true
   outreach?: true
+  skills?: true
+  extraSkills?: true
+  qualifications?: true
+  expectedRate?: true
+  timeZone?: true
+  interviewTime?: true
+  startDate?: true
+  offerLetterStatus?: true
+  gcrAccess?: true
+  classSchedule?: true
+  workFolder?: true
   interviewRequestedAt?: true
   createdAt?: true
 }
@@ -106,6 +161,17 @@ export type CandidateCountAggregateInputType = {
   docsLink?: true
   notes?: true
   outreach?: true
+  skills?: true
+  extraSkills?: true
+  qualifications?: true
+  expectedRate?: true
+  timeZone?: true
+  interviewTime?: true
+  startDate?: true
+  offerLetterStatus?: true
+  gcrAccess?: true
+  classSchedule?: true
+  workFolder?: true
   interviewRequestedAt?: true
   createdAt?: true
   _all?: true
@@ -193,6 +259,17 @@ export type CandidateGroupByOutputType = {
   docsLink: string | null
   notes: string | null
   outreach: string | null
+  skills: string | null
+  extraSkills: string | null
+  qualifications: string | null
+  expectedRate: string | null
+  timeZone: string | null
+  interviewTime: string | null
+  startDate: Date | null
+  offerLetterStatus: string | null
+  gcrAccess: string | null
+  classSchedule: string | null
+  workFolder: string | null
   interviewRequestedAt: Date | null
   createdAt: Date
   _count: CandidateCountAggregateOutputType | null
@@ -228,6 +305,17 @@ export type CandidateWhereInput = {
   docsLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
   notes?: Prisma.StringNullableFilter<"Candidate"> | string | null
   outreach?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  skills?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  extraSkills?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  qualifications?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  expectedRate?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  timeZone?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  interviewTime?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  offerLetterStatus?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  gcrAccess?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
 }
@@ -242,6 +330,17 @@ export type CandidateOrderByWithRelationInput = {
   docsLink?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   outreach?: Prisma.SortOrderInput | Prisma.SortOrder
+  skills?: Prisma.SortOrderInput | Prisma.SortOrder
+  extraSkills?: Prisma.SortOrderInput | Prisma.SortOrder
+  qualifications?: Prisma.SortOrderInput | Prisma.SortOrder
+  expectedRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  timeZone?: Prisma.SortOrderInput | Prisma.SortOrder
+  interviewTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  offerLetterStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  gcrAccess?: Prisma.SortOrderInput | Prisma.SortOrder
+  classSchedule?: Prisma.SortOrderInput | Prisma.SortOrder
+  workFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -259,6 +358,17 @@ export type CandidateWhereUniqueInput = Prisma.AtLeast<{
   docsLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
   notes?: Prisma.StringNullableFilter<"Candidate"> | string | null
   outreach?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  skills?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  extraSkills?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  qualifications?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  expectedRate?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  timeZone?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  interviewTime?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  offerLetterStatus?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  gcrAccess?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
 }, "id" | "email">
@@ -273,6 +383,17 @@ export type CandidateOrderByWithAggregationInput = {
   docsLink?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   outreach?: Prisma.SortOrderInput | Prisma.SortOrder
+  skills?: Prisma.SortOrderInput | Prisma.SortOrder
+  extraSkills?: Prisma.SortOrderInput | Prisma.SortOrder
+  qualifications?: Prisma.SortOrderInput | Prisma.SortOrder
+  expectedRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  timeZone?: Prisma.SortOrderInput | Prisma.SortOrder
+  interviewTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  startDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  offerLetterStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  gcrAccess?: Prisma.SortOrderInput | Prisma.SortOrder
+  classSchedule?: Prisma.SortOrderInput | Prisma.SortOrder
+  workFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CandidateCountOrderByAggregateInput
@@ -293,6 +414,17 @@ export type CandidateScalarWhereWithAggregatesInput = {
   docsLink?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   outreach?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  skills?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  extraSkills?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  qualifications?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  expectedRate?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  timeZone?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  interviewTime?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  startDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Candidate"> | Date | string | null
+  offerLetterStatus?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  gcrAccess?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  classSchedule?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  workFolder?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Candidate"> | Date | string
 }
@@ -307,6 +439,17 @@ export type CandidateCreateInput = {
   docsLink?: string | null
   notes?: string | null
   outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
   interviewRequestedAt?: Date | string | null
   createdAt?: Date | string
 }
@@ -321,6 +464,17 @@ export type CandidateUncheckedCreateInput = {
   docsLink?: string | null
   notes?: string | null
   outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
   interviewRequestedAt?: Date | string | null
   createdAt?: Date | string
 }
@@ -335,6 +489,17 @@ export type CandidateUpdateInput = {
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -349,6 +514,17 @@ export type CandidateUncheckedUpdateInput = {
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -363,6 +539,17 @@ export type CandidateCreateManyInput = {
   docsLink?: string | null
   notes?: string | null
   outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
   interviewRequestedAt?: Date | string | null
   createdAt?: Date | string
 }
@@ -377,6 +564,17 @@ export type CandidateUpdateManyMutationInput = {
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -391,6 +589,17 @@ export type CandidateUncheckedUpdateManyInput = {
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -405,6 +614,17 @@ export type CandidateCountOrderByAggregateInput = {
   docsLink?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   outreach?: Prisma.SortOrder
+  skills?: Prisma.SortOrder
+  extraSkills?: Prisma.SortOrder
+  qualifications?: Prisma.SortOrder
+  expectedRate?: Prisma.SortOrder
+  timeZone?: Prisma.SortOrder
+  interviewTime?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  offerLetterStatus?: Prisma.SortOrder
+  gcrAccess?: Prisma.SortOrder
+  classSchedule?: Prisma.SortOrder
+  workFolder?: Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -419,6 +639,17 @@ export type CandidateMaxOrderByAggregateInput = {
   docsLink?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   outreach?: Prisma.SortOrder
+  skills?: Prisma.SortOrder
+  extraSkills?: Prisma.SortOrder
+  qualifications?: Prisma.SortOrder
+  expectedRate?: Prisma.SortOrder
+  timeZone?: Prisma.SortOrder
+  interviewTime?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  offerLetterStatus?: Prisma.SortOrder
+  gcrAccess?: Prisma.SortOrder
+  classSchedule?: Prisma.SortOrder
+  workFolder?: Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -433,6 +664,17 @@ export type CandidateMinOrderByAggregateInput = {
   docsLink?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   outreach?: Prisma.SortOrder
+  skills?: Prisma.SortOrder
+  extraSkills?: Prisma.SortOrder
+  qualifications?: Prisma.SortOrder
+  expectedRate?: Prisma.SortOrder
+  timeZone?: Prisma.SortOrder
+  interviewTime?: Prisma.SortOrder
+  startDate?: Prisma.SortOrder
+  offerLetterStatus?: Prisma.SortOrder
+  gcrAccess?: Prisma.SortOrder
+  classSchedule?: Prisma.SortOrder
+  workFolder?: Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -449,6 +691,17 @@ export type CandidateSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   docsLink?: boolean
   notes?: boolean
   outreach?: boolean
+  skills?: boolean
+  extraSkills?: boolean
+  qualifications?: boolean
+  expectedRate?: boolean
+  timeZone?: boolean
+  interviewTime?: boolean
+  startDate?: boolean
+  offerLetterStatus?: boolean
+  gcrAccess?: boolean
+  classSchedule?: boolean
+  workFolder?: boolean
   interviewRequestedAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["candidate"]>
@@ -463,6 +716,17 @@ export type CandidateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   docsLink?: boolean
   notes?: boolean
   outreach?: boolean
+  skills?: boolean
+  extraSkills?: boolean
+  qualifications?: boolean
+  expectedRate?: boolean
+  timeZone?: boolean
+  interviewTime?: boolean
+  startDate?: boolean
+  offerLetterStatus?: boolean
+  gcrAccess?: boolean
+  classSchedule?: boolean
+  workFolder?: boolean
   interviewRequestedAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["candidate"]>
@@ -477,6 +741,17 @@ export type CandidateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   docsLink?: boolean
   notes?: boolean
   outreach?: boolean
+  skills?: boolean
+  extraSkills?: boolean
+  qualifications?: boolean
+  expectedRate?: boolean
+  timeZone?: boolean
+  interviewTime?: boolean
+  startDate?: boolean
+  offerLetterStatus?: boolean
+  gcrAccess?: boolean
+  classSchedule?: boolean
+  workFolder?: boolean
   interviewRequestedAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["candidate"]>
@@ -491,11 +766,22 @@ export type CandidateSelectScalar = {
   docsLink?: boolean
   notes?: boolean
   outreach?: boolean
+  skills?: boolean
+  extraSkills?: boolean
+  qualifications?: boolean
+  expectedRate?: boolean
+  timeZone?: boolean
+  interviewTime?: boolean
+  startDate?: boolean
+  offerLetterStatus?: boolean
+  gcrAccess?: boolean
+  classSchedule?: boolean
+  workFolder?: boolean
   interviewRequestedAt?: boolean
   createdAt?: boolean
 }
 
-export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "role" | "status" | "cvLink" | "docsLink" | "notes" | "outreach" | "interviewRequestedAt" | "createdAt", ExtArgs["result"]["candidate"]>
+export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "role" | "status" | "cvLink" | "docsLink" | "notes" | "outreach" | "skills" | "extraSkills" | "qualifications" | "expectedRate" | "timeZone" | "interviewTime" | "startDate" | "offerLetterStatus" | "gcrAccess" | "classSchedule" | "workFolder" | "interviewRequestedAt" | "createdAt", ExtArgs["result"]["candidate"]>
 
 export type $CandidatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Candidate"
@@ -510,6 +796,17 @@ export type $CandidatePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     docsLink: string | null
     notes: string | null
     outreach: string | null
+    skills: string | null
+    extraSkills: string | null
+    qualifications: string | null
+    expectedRate: string | null
+    timeZone: string | null
+    interviewTime: string | null
+    startDate: Date | null
+    offerLetterStatus: string | null
+    gcrAccess: string | null
+    classSchedule: string | null
+    workFolder: string | null
     interviewRequestedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["candidate"]>
@@ -944,6 +1241,17 @@ export interface CandidateFieldRefs {
   readonly docsLink: Prisma.FieldRef<"Candidate", 'String'>
   readonly notes: Prisma.FieldRef<"Candidate", 'String'>
   readonly outreach: Prisma.FieldRef<"Candidate", 'String'>
+  readonly skills: Prisma.FieldRef<"Candidate", 'String'>
+  readonly extraSkills: Prisma.FieldRef<"Candidate", 'String'>
+  readonly qualifications: Prisma.FieldRef<"Candidate", 'String'>
+  readonly expectedRate: Prisma.FieldRef<"Candidate", 'String'>
+  readonly timeZone: Prisma.FieldRef<"Candidate", 'String'>
+  readonly interviewTime: Prisma.FieldRef<"Candidate", 'String'>
+  readonly startDate: Prisma.FieldRef<"Candidate", 'DateTime'>
+  readonly offerLetterStatus: Prisma.FieldRef<"Candidate", 'String'>
+  readonly gcrAccess: Prisma.FieldRef<"Candidate", 'String'>
+  readonly classSchedule: Prisma.FieldRef<"Candidate", 'String'>
+  readonly workFolder: Prisma.FieldRef<"Candidate", 'String'>
   readonly interviewRequestedAt: Prisma.FieldRef<"Candidate", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Candidate", 'DateTime'>
 }

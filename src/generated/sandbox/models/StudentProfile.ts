@@ -33,7 +33,16 @@ export type StudentProfileMinAggregateOutputType = {
   grade: string | null
   board: string | null
   targetUni: string | null
+  school: string | null
   paymentMethodPreference: string | null
+  whatsappNumber: string | null
+  parentWhatsappNumber: string | null
+  timeZone: string | null
+  timesheetUrl: string | null
+  gcrLink: string | null
+  scheduleLink: string | null
+  progressTrackerLink: string | null
+  notes: string | null
 }
 
 export type StudentProfileMaxAggregateOutputType = {
@@ -45,7 +54,16 @@ export type StudentProfileMaxAggregateOutputType = {
   grade: string | null
   board: string | null
   targetUni: string | null
+  school: string | null
   paymentMethodPreference: string | null
+  whatsappNumber: string | null
+  parentWhatsappNumber: string | null
+  timeZone: string | null
+  timesheetUrl: string | null
+  gcrLink: string | null
+  scheduleLink: string | null
+  progressTrackerLink: string | null
+  notes: string | null
 }
 
 export type StudentProfileCountAggregateOutputType = {
@@ -57,7 +75,16 @@ export type StudentProfileCountAggregateOutputType = {
   grade: number
   board: number
   targetUni: number
+  school: number
   paymentMethodPreference: number
+  whatsappNumber: number
+  parentWhatsappNumber: number
+  timeZone: number
+  timesheetUrl: number
+  gcrLink: number
+  scheduleLink: number
+  progressTrackerLink: number
+  notes: number
   _all: number
 }
 
@@ -71,7 +98,16 @@ export type StudentProfileMinAggregateInputType = {
   grade?: true
   board?: true
   targetUni?: true
+  school?: true
   paymentMethodPreference?: true
+  whatsappNumber?: true
+  parentWhatsappNumber?: true
+  timeZone?: true
+  timesheetUrl?: true
+  gcrLink?: true
+  scheduleLink?: true
+  progressTrackerLink?: true
+  notes?: true
 }
 
 export type StudentProfileMaxAggregateInputType = {
@@ -83,7 +119,16 @@ export type StudentProfileMaxAggregateInputType = {
   grade?: true
   board?: true
   targetUni?: true
+  school?: true
   paymentMethodPreference?: true
+  whatsappNumber?: true
+  parentWhatsappNumber?: true
+  timeZone?: true
+  timesheetUrl?: true
+  gcrLink?: true
+  scheduleLink?: true
+  progressTrackerLink?: true
+  notes?: true
 }
 
 export type StudentProfileCountAggregateInputType = {
@@ -95,7 +140,16 @@ export type StudentProfileCountAggregateInputType = {
   grade?: true
   board?: true
   targetUni?: true
+  school?: true
   paymentMethodPreference?: true
+  whatsappNumber?: true
+  parentWhatsappNumber?: true
+  timeZone?: true
+  timesheetUrl?: true
+  gcrLink?: true
+  scheduleLink?: true
+  progressTrackerLink?: true
+  notes?: true
   _all?: true
 }
 
@@ -180,7 +234,16 @@ export type StudentProfileGroupByOutputType = {
   grade: string | null
   board: string | null
   targetUni: string | null
+  school: string | null
   paymentMethodPreference: string | null
+  whatsappNumber: string | null
+  parentWhatsappNumber: string | null
+  timeZone: string | null
+  timesheetUrl: string | null
+  gcrLink: string | null
+  scheduleLink: string | null
+  progressTrackerLink: string | null
+  notes: string | null
   _count: StudentProfileCountAggregateOutputType | null
   _min: StudentProfileMinAggregateOutputType | null
   _max: StudentProfileMaxAggregateOutputType | null
@@ -213,7 +276,16 @@ export type StudentProfileWhereInput = {
   grade?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   board?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   targetUni?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  school?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   paymentMethodPreference?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  whatsappNumber?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  parentWhatsappNumber?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  timeZone?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  timesheetUrl?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  gcrLink?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  scheduleLink?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  progressTrackerLink?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  notes?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -226,7 +298,16 @@ export type StudentProfileOrderByWithRelationInput = {
   grade?: Prisma.SortOrderInput | Prisma.SortOrder
   board?: Prisma.SortOrderInput | Prisma.SortOrder
   targetUni?: Prisma.SortOrderInput | Prisma.SortOrder
+  school?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMethodPreference?: Prisma.SortOrderInput | Prisma.SortOrder
+  whatsappNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentWhatsappNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  timeZone?: Prisma.SortOrderInput | Prisma.SortOrder
+  timesheetUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  gcrLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  scheduleLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  progressTrackerLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -242,7 +323,16 @@ export type StudentProfileWhereUniqueInput = Prisma.AtLeast<{
   grade?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   board?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   targetUni?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  school?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   paymentMethodPreference?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  whatsappNumber?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  parentWhatsappNumber?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  timeZone?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  timesheetUrl?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  gcrLink?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  scheduleLink?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  progressTrackerLink?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  notes?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
@@ -255,7 +345,16 @@ export type StudentProfileOrderByWithAggregationInput = {
   grade?: Prisma.SortOrderInput | Prisma.SortOrder
   board?: Prisma.SortOrderInput | Prisma.SortOrder
   targetUni?: Prisma.SortOrderInput | Prisma.SortOrder
+  school?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentMethodPreference?: Prisma.SortOrderInput | Prisma.SortOrder
+  whatsappNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentWhatsappNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  timeZone?: Prisma.SortOrderInput | Prisma.SortOrder
+  timesheetUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  gcrLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  scheduleLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  progressTrackerLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.StudentProfileCountOrderByAggregateInput
   _max?: Prisma.StudentProfileMaxOrderByAggregateInput
   _min?: Prisma.StudentProfileMinOrderByAggregateInput
@@ -273,7 +372,16 @@ export type StudentProfileScalarWhereWithAggregatesInput = {
   grade?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
   board?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
   targetUni?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  school?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
   paymentMethodPreference?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  whatsappNumber?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  parentWhatsappNumber?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  timeZone?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  timesheetUrl?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  gcrLink?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  scheduleLink?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  progressTrackerLink?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  notes?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
 }
 
 export type StudentProfileCreateInput = {
@@ -284,7 +392,16 @@ export type StudentProfileCreateInput = {
   grade?: string | null
   board?: string | null
   targetUni?: string | null
+  school?: string | null
   paymentMethodPreference?: string | null
+  whatsappNumber?: string | null
+  parentWhatsappNumber?: string | null
+  timeZone?: string | null
+  timesheetUrl?: string | null
+  gcrLink?: string | null
+  scheduleLink?: string | null
+  progressTrackerLink?: string | null
+  notes?: string | null
   user: Prisma.UserCreateNestedOneWithoutStudentProfileInput
 }
 
@@ -297,7 +414,16 @@ export type StudentProfileUncheckedCreateInput = {
   grade?: string | null
   board?: string | null
   targetUni?: string | null
+  school?: string | null
   paymentMethodPreference?: string | null
+  whatsappNumber?: string | null
+  parentWhatsappNumber?: string | null
+  timeZone?: string | null
+  timesheetUrl?: string | null
+  gcrLink?: string | null
+  scheduleLink?: string | null
+  progressTrackerLink?: string | null
+  notes?: string | null
 }
 
 export type StudentProfileUpdateInput = {
@@ -308,7 +434,16 @@ export type StudentProfileUpdateInput = {
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodPreference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentWhatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  progressTrackerLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutStudentProfileNestedInput
 }
 
@@ -321,7 +456,16 @@ export type StudentProfileUncheckedUpdateInput = {
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodPreference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentWhatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  progressTrackerLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StudentProfileCreateManyInput = {
@@ -333,7 +477,16 @@ export type StudentProfileCreateManyInput = {
   grade?: string | null
   board?: string | null
   targetUni?: string | null
+  school?: string | null
   paymentMethodPreference?: string | null
+  whatsappNumber?: string | null
+  parentWhatsappNumber?: string | null
+  timeZone?: string | null
+  timesheetUrl?: string | null
+  gcrLink?: string | null
+  scheduleLink?: string | null
+  progressTrackerLink?: string | null
+  notes?: string | null
 }
 
 export type StudentProfileUpdateManyMutationInput = {
@@ -344,7 +497,16 @@ export type StudentProfileUpdateManyMutationInput = {
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodPreference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentWhatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  progressTrackerLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StudentProfileUncheckedUpdateManyInput = {
@@ -356,7 +518,16 @@ export type StudentProfileUncheckedUpdateManyInput = {
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodPreference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentWhatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  progressTrackerLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StudentProfileNullableScalarRelationFilter = {
@@ -373,7 +544,16 @@ export type StudentProfileCountOrderByAggregateInput = {
   grade?: Prisma.SortOrder
   board?: Prisma.SortOrder
   targetUni?: Prisma.SortOrder
+  school?: Prisma.SortOrder
   paymentMethodPreference?: Prisma.SortOrder
+  whatsappNumber?: Prisma.SortOrder
+  parentWhatsappNumber?: Prisma.SortOrder
+  timeZone?: Prisma.SortOrder
+  timesheetUrl?: Prisma.SortOrder
+  gcrLink?: Prisma.SortOrder
+  scheduleLink?: Prisma.SortOrder
+  progressTrackerLink?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
 }
 
 export type StudentProfileMaxOrderByAggregateInput = {
@@ -385,7 +565,16 @@ export type StudentProfileMaxOrderByAggregateInput = {
   grade?: Prisma.SortOrder
   board?: Prisma.SortOrder
   targetUni?: Prisma.SortOrder
+  school?: Prisma.SortOrder
   paymentMethodPreference?: Prisma.SortOrder
+  whatsappNumber?: Prisma.SortOrder
+  parentWhatsappNumber?: Prisma.SortOrder
+  timeZone?: Prisma.SortOrder
+  timesheetUrl?: Prisma.SortOrder
+  gcrLink?: Prisma.SortOrder
+  scheduleLink?: Prisma.SortOrder
+  progressTrackerLink?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
 }
 
 export type StudentProfileMinOrderByAggregateInput = {
@@ -397,7 +586,16 @@ export type StudentProfileMinOrderByAggregateInput = {
   grade?: Prisma.SortOrder
   board?: Prisma.SortOrder
   targetUni?: Prisma.SortOrder
+  school?: Prisma.SortOrder
   paymentMethodPreference?: Prisma.SortOrder
+  whatsappNumber?: Prisma.SortOrder
+  parentWhatsappNumber?: Prisma.SortOrder
+  timeZone?: Prisma.SortOrder
+  timesheetUrl?: Prisma.SortOrder
+  gcrLink?: Prisma.SortOrder
+  scheduleLink?: Prisma.SortOrder
+  progressTrackerLink?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
 }
 
 export type StudentProfileCreateNestedOneWithoutUserInput = {
@@ -440,7 +638,16 @@ export type StudentProfileCreateWithoutUserInput = {
   grade?: string | null
   board?: string | null
   targetUni?: string | null
+  school?: string | null
   paymentMethodPreference?: string | null
+  whatsappNumber?: string | null
+  parentWhatsappNumber?: string | null
+  timeZone?: string | null
+  timesheetUrl?: string | null
+  gcrLink?: string | null
+  scheduleLink?: string | null
+  progressTrackerLink?: string | null
+  notes?: string | null
 }
 
 export type StudentProfileUncheckedCreateWithoutUserInput = {
@@ -451,7 +658,16 @@ export type StudentProfileUncheckedCreateWithoutUserInput = {
   grade?: string | null
   board?: string | null
   targetUni?: string | null
+  school?: string | null
   paymentMethodPreference?: string | null
+  whatsappNumber?: string | null
+  parentWhatsappNumber?: string | null
+  timeZone?: string | null
+  timesheetUrl?: string | null
+  gcrLink?: string | null
+  scheduleLink?: string | null
+  progressTrackerLink?: string | null
+  notes?: string | null
 }
 
 export type StudentProfileCreateOrConnectWithoutUserInput = {
@@ -478,7 +694,16 @@ export type StudentProfileUpdateWithoutUserInput = {
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodPreference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentWhatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  progressTrackerLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StudentProfileUncheckedUpdateWithoutUserInput = {
@@ -489,7 +714,16 @@ export type StudentProfileUncheckedUpdateWithoutUserInput = {
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  school?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paymentMethodPreference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentWhatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  progressTrackerLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -503,7 +737,16 @@ export type StudentProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   grade?: boolean
   board?: boolean
   targetUni?: boolean
+  school?: boolean
   paymentMethodPreference?: boolean
+  whatsappNumber?: boolean
+  parentWhatsappNumber?: boolean
+  timeZone?: boolean
+  timesheetUrl?: boolean
+  gcrLink?: boolean
+  scheduleLink?: boolean
+  progressTrackerLink?: boolean
+  notes?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentProfile"]>
 
@@ -516,7 +759,16 @@ export type StudentProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   grade?: boolean
   board?: boolean
   targetUni?: boolean
+  school?: boolean
   paymentMethodPreference?: boolean
+  whatsappNumber?: boolean
+  parentWhatsappNumber?: boolean
+  timeZone?: boolean
+  timesheetUrl?: boolean
+  gcrLink?: boolean
+  scheduleLink?: boolean
+  progressTrackerLink?: boolean
+  notes?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentProfile"]>
 
@@ -529,7 +781,16 @@ export type StudentProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   grade?: boolean
   board?: boolean
   targetUni?: boolean
+  school?: boolean
   paymentMethodPreference?: boolean
+  whatsappNumber?: boolean
+  parentWhatsappNumber?: boolean
+  timeZone?: boolean
+  timesheetUrl?: boolean
+  gcrLink?: boolean
+  scheduleLink?: boolean
+  progressTrackerLink?: boolean
+  notes?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentProfile"]>
 
@@ -542,10 +803,19 @@ export type StudentProfileSelectScalar = {
   grade?: boolean
   board?: boolean
   targetUni?: boolean
+  school?: boolean
   paymentMethodPreference?: boolean
+  whatsappNumber?: boolean
+  parentWhatsappNumber?: boolean
+  timeZone?: boolean
+  timesheetUrl?: boolean
+  gcrLink?: boolean
+  scheduleLink?: boolean
+  progressTrackerLink?: boolean
+  notes?: boolean
 }
 
-export type StudentProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "dob" | "grade" | "board" | "targetUni" | "paymentMethodPreference", ExtArgs["result"]["studentProfile"]>
+export type StudentProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "dob" | "grade" | "board" | "targetUni" | "school" | "paymentMethodPreference" | "whatsappNumber" | "parentWhatsappNumber" | "timeZone" | "timesheetUrl" | "gcrLink" | "scheduleLink" | "progressTrackerLink" | "notes", ExtArgs["result"]["studentProfile"]>
 export type StudentProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -570,7 +840,16 @@ export type $StudentProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     grade: string | null
     board: string | null
     targetUni: string | null
+    school: string | null
     paymentMethodPreference: string | null
+    whatsappNumber: string | null
+    parentWhatsappNumber: string | null
+    timeZone: string | null
+    timesheetUrl: string | null
+    gcrLink: string | null
+    scheduleLink: string | null
+    progressTrackerLink: string | null
+    notes: string | null
   }, ExtArgs["result"]["studentProfile"]>
   composites: {}
 }
@@ -1003,7 +1282,16 @@ export interface StudentProfileFieldRefs {
   readonly grade: Prisma.FieldRef<"StudentProfile", 'String'>
   readonly board: Prisma.FieldRef<"StudentProfile", 'String'>
   readonly targetUni: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly school: Prisma.FieldRef<"StudentProfile", 'String'>
   readonly paymentMethodPreference: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly whatsappNumber: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly parentWhatsappNumber: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly timeZone: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly timesheetUrl: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly gcrLink: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly scheduleLink: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly progressTrackerLink: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly notes: Prisma.FieldRef<"StudentProfile", 'String'>
 }
     
 

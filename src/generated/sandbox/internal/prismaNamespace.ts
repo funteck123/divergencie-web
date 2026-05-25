@@ -425,7 +425,10 @@ export const ModelName = {
   TeacherProfile: 'TeacherProfile',
   StudentProfile: 'StudentProfile',
   ParentProfile: 'ParentProfile',
-  AmbassadorProfile: 'AmbassadorProfile'
+  AmbassadorProfile: 'AmbassadorProfile',
+  CurrencyRate: 'CurrencyRate',
+  MessageTemplate: 'MessageTemplate',
+  MarketingPost: 'MarketingPost'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -441,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "group" | "batchRateCard" | "studentRateOverride" | "studentMonthlyEnrollment" | "enrollmentPackageItem" | "studentInvoice" | "resourceInvoice" | "counsellingInvoice" | "claim" | "account" | "accountTransaction" | "ledgerEntry" | "dCBankAccount" | "monthlyBillingSummary" | "monthlyPayrollSummary" | "academicSession" | "attendance" | "assignment" | "syllabusItem" | "doubt" | "studentProgress" | "recording" | "ticket" | "ticketCategory" | "ticketMessage" | "ticketHistory" | "ticketPermission" | "referral" | "meeting" | "meetingParticipant" | "candidate" | "lead" | "accessLog" | "announcement" | "asset" | "mockResult" | "staffProfile" | "teacherProfile" | "studentProfile" | "parentProfile" | "ambassadorProfile"
+    modelProps: "user" | "group" | "batchRateCard" | "studentRateOverride" | "studentMonthlyEnrollment" | "enrollmentPackageItem" | "studentInvoice" | "resourceInvoice" | "counsellingInvoice" | "claim" | "account" | "accountTransaction" | "ledgerEntry" | "dCBankAccount" | "monthlyBillingSummary" | "monthlyPayrollSummary" | "academicSession" | "attendance" | "assignment" | "syllabusItem" | "doubt" | "studentProgress" | "recording" | "ticket" | "ticketCategory" | "ticketMessage" | "ticketHistory" | "ticketPermission" | "referral" | "meeting" | "meetingParticipant" | "candidate" | "lead" | "accessLog" | "announcement" | "asset" | "mockResult" | "staffProfile" | "teacherProfile" | "studentProfile" | "parentProfile" | "ambassadorProfile" | "currencyRate" | "messageTemplate" | "marketingPost"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3553,6 +3556,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CurrencyRate: {
+      payload: Prisma.$CurrencyRatePayload<ExtArgs>
+      fields: Prisma.CurrencyRateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CurrencyRateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CurrencyRateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>
+        }
+        findFirst: {
+          args: Prisma.CurrencyRateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CurrencyRateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>
+        }
+        findMany: {
+          args: Prisma.CurrencyRateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>[]
+        }
+        create: {
+          args: Prisma.CurrencyRateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>
+        }
+        createMany: {
+          args: Prisma.CurrencyRateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CurrencyRateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>[]
+        }
+        delete: {
+          args: Prisma.CurrencyRateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>
+        }
+        update: {
+          args: Prisma.CurrencyRateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>
+        }
+        deleteMany: {
+          args: Prisma.CurrencyRateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CurrencyRateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CurrencyRateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>[]
+        }
+        upsert: {
+          args: Prisma.CurrencyRateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CurrencyRatePayload>
+        }
+        aggregate: {
+          args: Prisma.CurrencyRateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCurrencyRate>
+        }
+        groupBy: {
+          args: Prisma.CurrencyRateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CurrencyRateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CurrencyRateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CurrencyRateCountAggregateOutputType> | number
+        }
+      }
+    }
+    MessageTemplate: {
+      payload: Prisma.$MessageTemplatePayload<ExtArgs>
+      fields: Prisma.MessageTemplateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MessageTemplateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MessageTemplateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+        }
+        findFirst: {
+          args: Prisma.MessageTemplateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MessageTemplateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+        }
+        findMany: {
+          args: Prisma.MessageTemplateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+        }
+        create: {
+          args: Prisma.MessageTemplateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+        }
+        createMany: {
+          args: Prisma.MessageTemplateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MessageTemplateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+        }
+        delete: {
+          args: Prisma.MessageTemplateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+        }
+        update: {
+          args: Prisma.MessageTemplateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+        }
+        deleteMany: {
+          args: Prisma.MessageTemplateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MessageTemplateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MessageTemplateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>[]
+        }
+        upsert: {
+          args: Prisma.MessageTemplateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MessageTemplatePayload>
+        }
+        aggregate: {
+          args: Prisma.MessageTemplateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMessageTemplate>
+        }
+        groupBy: {
+          args: Prisma.MessageTemplateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MessageTemplateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MessageTemplateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MessageTemplateCountAggregateOutputType> | number
+        }
+      }
+    }
+    MarketingPost: {
+      payload: Prisma.$MarketingPostPayload<ExtArgs>
+      fields: Prisma.MarketingPostFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MarketingPostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MarketingPostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>
+        }
+        findFirst: {
+          args: Prisma.MarketingPostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MarketingPostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>
+        }
+        findMany: {
+          args: Prisma.MarketingPostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>[]
+        }
+        create: {
+          args: Prisma.MarketingPostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>
+        }
+        createMany: {
+          args: Prisma.MarketingPostCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MarketingPostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>[]
+        }
+        delete: {
+          args: Prisma.MarketingPostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>
+        }
+        update: {
+          args: Prisma.MarketingPostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>
+        }
+        deleteMany: {
+          args: Prisma.MarketingPostDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MarketingPostUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MarketingPostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>[]
+        }
+        upsert: {
+          args: Prisma.MarketingPostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MarketingPostPayload>
+        }
+        aggregate: {
+          args: Prisma.MarketingPostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMarketingPost>
+        }
+        groupBy: {
+          args: Prisma.MarketingPostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MarketingPostGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MarketingPostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MarketingPostCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3620,6 +3845,8 @@ export const GroupScalarFieldEnum = {
   id: 'id',
   code: 'code',
   subject: 'subject',
+  courseLevel: 'courseLevel',
+  status: 'status',
   teacherId: 'teacherId',
   createdAt: 'createdAt'
 } as const
@@ -3684,6 +3911,8 @@ export const StudentInvoiceScalarFieldEnum = {
   id: 'id',
   enrollmentId: 'enrollmentId',
   month: 'month',
+  billingStart: 'billingStart',
+  billingEnd: 'billingEnd',
   feesAmount: 'feesAmount',
   discountApplied: 'discountApplied',
   netAmount: 'netAmount',
@@ -3695,6 +3924,9 @@ export const StudentInvoiceScalarFieldEnum = {
   referenceNo: 'referenceNo',
   reminderStage: 'reminderStage',
   invoicePdfUrl: 'invoicePdfUrl',
+  paymentAcknowledgementMsg: 'paymentAcknowledgementMsg',
+  paymentReminderMsg: 'paymentReminderMsg',
+  serialNo: 'serialNo',
   createdAt: 'createdAt'
 } as const
 
@@ -3745,9 +3977,14 @@ export const ClaimScalarFieldEnum = {
   month: 'month',
   sessions: 'sessions',
   hours: 'hours',
+  rateApplied: 'rateApplied',
   amount: 'amount',
   status: 'status',
   notes: 'notes',
+  notes2: 'notes2',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  paymentDate: 'paymentDate',
   createdAt: 'createdAt'
 } as const
 
@@ -4055,6 +4292,17 @@ export const CandidateScalarFieldEnum = {
   docsLink: 'docsLink',
   notes: 'notes',
   outreach: 'outreach',
+  skills: 'skills',
+  extraSkills: 'extraSkills',
+  qualifications: 'qualifications',
+  expectedRate: 'expectedRate',
+  timeZone: 'timeZone',
+  interviewTime: 'interviewTime',
+  startDate: 'startDate',
+  offerLetterStatus: 'offerLetterStatus',
+  gcrAccess: 'gcrAccess',
+  classSchedule: 'classSchedule',
+  workFolder: 'workFolder',
   interviewRequestedAt: 'interviewRequestedAt',
   createdAt: 'createdAt'
 } as const
@@ -4172,7 +4420,16 @@ export const StudentProfileScalarFieldEnum = {
   grade: 'grade',
   board: 'board',
   targetUni: 'targetUni',
-  paymentMethodPreference: 'paymentMethodPreference'
+  school: 'school',
+  paymentMethodPreference: 'paymentMethodPreference',
+  whatsappNumber: 'whatsappNumber',
+  parentWhatsappNumber: 'parentWhatsappNumber',
+  timeZone: 'timeZone',
+  timesheetUrl: 'timesheetUrl',
+  gcrLink: 'gcrLink',
+  scheduleLink: 'scheduleLink',
+  progressTrackerLink: 'progressTrackerLink',
+  notes: 'notes'
 } as const
 
 export type StudentProfileScalarFieldEnum = (typeof StudentProfileScalarFieldEnum)[keyof typeof StudentProfileScalarFieldEnum]
@@ -4200,6 +4457,45 @@ export const AmbassadorProfileScalarFieldEnum = {
 } as const
 
 export type AmbassadorProfileScalarFieldEnum = (typeof AmbassadorProfileScalarFieldEnum)[keyof typeof AmbassadorProfileScalarFieldEnum]
+
+
+export const CurrencyRateScalarFieldEnum = {
+  id: 'id',
+  currency: 'currency',
+  toINR: 'toINR',
+  fromINR: 'fromINR',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CurrencyRateScalarFieldEnum = (typeof CurrencyRateScalarFieldEnum)[keyof typeof CurrencyRateScalarFieldEnum]
+
+
+export const MessageTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  text: 'text',
+  alternateText: 'alternateText',
+  use: 'use',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageTemplateScalarFieldEnum = (typeof MessageTemplateScalarFieldEnum)[keyof typeof MessageTemplateScalarFieldEnum]
+
+
+export const MarketingPostScalarFieldEnum = {
+  id: 'id',
+  canvaLink: 'canvaLink',
+  driveLink: 'driveLink',
+  caption: 'caption',
+  scheduledAt: 'scheduledAt',
+  status: 'status',
+  contentType: 'contentType',
+  campaignTag: 'campaignTag',
+  createdAt: 'createdAt'
+} as const
+
+export type MarketingPostScalarFieldEnum = (typeof MarketingPostScalarFieldEnum)[keyof typeof MarketingPostScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -4410,6 +4706,9 @@ export type GlobalOmitConfig = {
   studentProfile?: Prisma.StudentProfileOmit
   parentProfile?: Prisma.ParentProfileOmit
   ambassadorProfile?: Prisma.AmbassadorProfileOmit
+  currencyRate?: Prisma.CurrencyRateOmit
+  messageTemplate?: Prisma.MessageTemplateOmit
+  marketingPost?: Prisma.MarketingPostOmit
 }
 
 /* Types for Logging */

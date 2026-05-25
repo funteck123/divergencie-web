@@ -92,7 +92,10 @@ export const ModelName = {
   TeacherProfile: 'TeacherProfile',
   StudentProfile: 'StudentProfile',
   ParentProfile: 'ParentProfile',
-  AmbassadorProfile: 'AmbassadorProfile'
+  AmbassadorProfile: 'AmbassadorProfile',
+  CurrencyRate: 'CurrencyRate',
+  MessageTemplate: 'MessageTemplate',
+  MarketingPost: 'MarketingPost'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -139,6 +142,8 @@ export const GroupScalarFieldEnum = {
   id: 'id',
   code: 'code',
   subject: 'subject',
+  courseLevel: 'courseLevel',
+  status: 'status',
   teacherId: 'teacherId',
   createdAt: 'createdAt'
 } as const
@@ -203,6 +208,8 @@ export const StudentInvoiceScalarFieldEnum = {
   id: 'id',
   enrollmentId: 'enrollmentId',
   month: 'month',
+  billingStart: 'billingStart',
+  billingEnd: 'billingEnd',
   feesAmount: 'feesAmount',
   discountApplied: 'discountApplied',
   netAmount: 'netAmount',
@@ -214,6 +221,9 @@ export const StudentInvoiceScalarFieldEnum = {
   referenceNo: 'referenceNo',
   reminderStage: 'reminderStage',
   invoicePdfUrl: 'invoicePdfUrl',
+  paymentAcknowledgementMsg: 'paymentAcknowledgementMsg',
+  paymentReminderMsg: 'paymentReminderMsg',
+  serialNo: 'serialNo',
   createdAt: 'createdAt'
 } as const
 
@@ -264,9 +274,14 @@ export const ClaimScalarFieldEnum = {
   month: 'month',
   sessions: 'sessions',
   hours: 'hours',
+  rateApplied: 'rateApplied',
   amount: 'amount',
   status: 'status',
   notes: 'notes',
+  notes2: 'notes2',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  paymentDate: 'paymentDate',
   createdAt: 'createdAt'
 } as const
 
@@ -574,6 +589,17 @@ export const CandidateScalarFieldEnum = {
   docsLink: 'docsLink',
   notes: 'notes',
   outreach: 'outreach',
+  skills: 'skills',
+  extraSkills: 'extraSkills',
+  qualifications: 'qualifications',
+  expectedRate: 'expectedRate',
+  timeZone: 'timeZone',
+  interviewTime: 'interviewTime',
+  startDate: 'startDate',
+  offerLetterStatus: 'offerLetterStatus',
+  gcrAccess: 'gcrAccess',
+  classSchedule: 'classSchedule',
+  workFolder: 'workFolder',
   interviewRequestedAt: 'interviewRequestedAt',
   createdAt: 'createdAt'
 } as const
@@ -691,7 +717,16 @@ export const StudentProfileScalarFieldEnum = {
   grade: 'grade',
   board: 'board',
   targetUni: 'targetUni',
-  paymentMethodPreference: 'paymentMethodPreference'
+  school: 'school',
+  paymentMethodPreference: 'paymentMethodPreference',
+  whatsappNumber: 'whatsappNumber',
+  parentWhatsappNumber: 'parentWhatsappNumber',
+  timeZone: 'timeZone',
+  timesheetUrl: 'timesheetUrl',
+  gcrLink: 'gcrLink',
+  scheduleLink: 'scheduleLink',
+  progressTrackerLink: 'progressTrackerLink',
+  notes: 'notes'
 } as const
 
 export type StudentProfileScalarFieldEnum = (typeof StudentProfileScalarFieldEnum)[keyof typeof StudentProfileScalarFieldEnum]
@@ -719,6 +754,45 @@ export const AmbassadorProfileScalarFieldEnum = {
 } as const
 
 export type AmbassadorProfileScalarFieldEnum = (typeof AmbassadorProfileScalarFieldEnum)[keyof typeof AmbassadorProfileScalarFieldEnum]
+
+
+export const CurrencyRateScalarFieldEnum = {
+  id: 'id',
+  currency: 'currency',
+  toINR: 'toINR',
+  fromINR: 'fromINR',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CurrencyRateScalarFieldEnum = (typeof CurrencyRateScalarFieldEnum)[keyof typeof CurrencyRateScalarFieldEnum]
+
+
+export const MessageTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  text: 'text',
+  alternateText: 'alternateText',
+  use: 'use',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageTemplateScalarFieldEnum = (typeof MessageTemplateScalarFieldEnum)[keyof typeof MessageTemplateScalarFieldEnum]
+
+
+export const MarketingPostScalarFieldEnum = {
+  id: 'id',
+  canvaLink: 'canvaLink',
+  driveLink: 'driveLink',
+  caption: 'caption',
+  scheduledAt: 'scheduledAt',
+  status: 'status',
+  contentType: 'contentType',
+  campaignTag: 'campaignTag',
+  createdAt: 'createdAt'
+} as const
+
+export type MarketingPostScalarFieldEnum = (typeof MarketingPostScalarFieldEnum)[keyof typeof MarketingPostScalarFieldEnum]
 
 
 export const SortOrder = {

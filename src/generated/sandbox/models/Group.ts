@@ -28,6 +28,8 @@ export type GroupMinAggregateOutputType = {
   id: string | null
   code: string | null
   subject: string | null
+  courseLevel: string | null
+  status: string | null
   teacherId: string | null
   createdAt: Date | null
 }
@@ -36,6 +38,8 @@ export type GroupMaxAggregateOutputType = {
   id: string | null
   code: string | null
   subject: string | null
+  courseLevel: string | null
+  status: string | null
   teacherId: string | null
   createdAt: Date | null
 }
@@ -44,6 +48,8 @@ export type GroupCountAggregateOutputType = {
   id: number
   code: number
   subject: number
+  courseLevel: number
+  status: number
   teacherId: number
   createdAt: number
   _all: number
@@ -54,6 +60,8 @@ export type GroupMinAggregateInputType = {
   id?: true
   code?: true
   subject?: true
+  courseLevel?: true
+  status?: true
   teacherId?: true
   createdAt?: true
 }
@@ -62,6 +70,8 @@ export type GroupMaxAggregateInputType = {
   id?: true
   code?: true
   subject?: true
+  courseLevel?: true
+  status?: true
   teacherId?: true
   createdAt?: true
 }
@@ -70,6 +80,8 @@ export type GroupCountAggregateInputType = {
   id?: true
   code?: true
   subject?: true
+  courseLevel?: true
+  status?: true
   teacherId?: true
   createdAt?: true
   _all?: true
@@ -151,6 +163,8 @@ export type GroupGroupByOutputType = {
   id: string
   code: string
   subject: string
+  courseLevel: string | null
+  status: string
   teacherId: string
   createdAt: Date
   _count: GroupCountAggregateOutputType | null
@@ -180,6 +194,8 @@ export type GroupWhereInput = {
   id?: Prisma.StringFilter<"Group"> | string
   code?: Prisma.StringFilter<"Group"> | string
   subject?: Prisma.StringFilter<"Group"> | string
+  courseLevel?: Prisma.StringNullableFilter<"Group"> | string | null
+  status?: Prisma.StringFilter<"Group"> | string
   teacherId?: Prisma.StringFilter<"Group"> | string
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -194,6 +210,8 @@ export type GroupOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   subject?: Prisma.SortOrder
+  courseLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   teacher?: Prisma.UserOrderByWithRelationInput
@@ -211,6 +229,8 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.GroupWhereInput[]
   NOT?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
   subject?: Prisma.StringFilter<"Group"> | string
+  courseLevel?: Prisma.StringNullableFilter<"Group"> | string | null
+  status?: Prisma.StringFilter<"Group"> | string
   teacherId?: Prisma.StringFilter<"Group"> | string
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -225,6 +245,8 @@ export type GroupOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   subject?: Prisma.SortOrder
+  courseLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.GroupCountOrderByAggregateInput
@@ -239,6 +261,8 @@ export type GroupScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Group"> | string
   code?: Prisma.StringWithAggregatesFilter<"Group"> | string
   subject?: Prisma.StringWithAggregatesFilter<"Group"> | string
+  courseLevel?: Prisma.StringNullableWithAggregatesFilter<"Group"> | string | null
+  status?: Prisma.StringWithAggregatesFilter<"Group"> | string
   teacherId?: Prisma.StringWithAggregatesFilter<"Group"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Group"> | Date | string
 }
@@ -247,6 +271,8 @@ export type GroupCreateInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
   students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
@@ -260,6 +286,8 @@ export type GroupUncheckedCreateInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
   students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
@@ -273,6 +301,8 @@ export type GroupUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
   students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
@@ -286,6 +316,8 @@ export type GroupUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
@@ -299,6 +331,8 @@ export type GroupCreateManyInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
 }
@@ -307,6 +341,8 @@ export type GroupUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -314,6 +350,8 @@ export type GroupUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -332,6 +370,8 @@ export type GroupCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   subject?: Prisma.SortOrder
+  courseLevel?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -340,6 +380,8 @@ export type GroupMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   subject?: Prisma.SortOrder
+  courseLevel?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -348,6 +390,8 @@ export type GroupMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
   subject?: Prisma.SortOrder
+  courseLevel?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   teacherId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -506,6 +550,8 @@ export type GroupCreateWithoutTeacherInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
   sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
@@ -518,6 +564,8 @@ export type GroupUncheckedCreateWithoutTeacherInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
   sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
@@ -539,6 +587,8 @@ export type GroupCreateWithoutStudentsInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
   sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
@@ -551,6 +601,8 @@ export type GroupUncheckedCreateWithoutStudentsInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
   sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
@@ -587,6 +639,8 @@ export type GroupScalarWhereInput = {
   id?: Prisma.StringFilter<"Group"> | string
   code?: Prisma.StringFilter<"Group"> | string
   subject?: Prisma.StringFilter<"Group"> | string
+  courseLevel?: Prisma.StringNullableFilter<"Group"> | string | null
+  status?: Prisma.StringFilter<"Group"> | string
   teacherId?: Prisma.StringFilter<"Group"> | string
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
 }
@@ -611,6 +665,8 @@ export type GroupCreateWithoutBatchRatesInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
   students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
@@ -623,6 +679,8 @@ export type GroupUncheckedCreateWithoutBatchRatesInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
   students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
@@ -651,6 +709,8 @@ export type GroupUpdateWithoutBatchRatesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
   students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
@@ -663,6 +723,8 @@ export type GroupUncheckedUpdateWithoutBatchRatesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
@@ -675,6 +737,8 @@ export type GroupCreateWithoutStudentRateOverridesInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
   students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
@@ -687,6 +751,8 @@ export type GroupUncheckedCreateWithoutStudentRateOverridesInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
   students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
@@ -715,6 +781,8 @@ export type GroupUpdateWithoutStudentRateOverridesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
   students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
@@ -727,6 +795,8 @@ export type GroupUncheckedUpdateWithoutStudentRateOverridesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
@@ -739,6 +809,8 @@ export type GroupCreateWithoutEnrollmentPackageItemsInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
   students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
@@ -751,6 +823,8 @@ export type GroupUncheckedCreateWithoutEnrollmentPackageItemsInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
   students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
@@ -779,6 +853,8 @@ export type GroupUpdateWithoutEnrollmentPackageItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
   students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
@@ -791,6 +867,8 @@ export type GroupUncheckedUpdateWithoutEnrollmentPackageItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
@@ -803,6 +881,8 @@ export type GroupCreateWithoutSessionsInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
   teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
   students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
@@ -815,6 +895,8 @@ export type GroupUncheckedCreateWithoutSessionsInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   teacherId: string
   createdAt?: Date | string
   students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
@@ -843,6 +925,8 @@ export type GroupUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
   students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
@@ -855,6 +939,8 @@ export type GroupUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
@@ -867,6 +953,8 @@ export type GroupCreateManyTeacherInput = {
   id?: string
   code: string
   subject: string
+  courseLevel?: string | null
+  status?: string
   createdAt?: Date | string
 }
 
@@ -874,6 +962,8 @@ export type GroupUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
   sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
@@ -886,6 +976,8 @@ export type GroupUncheckedUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
   sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
@@ -898,6 +990,8 @@ export type GroupUncheckedUpdateManyWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -905,6 +999,8 @@ export type GroupUpdateWithoutStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
   sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
@@ -917,6 +1013,8 @@ export type GroupUncheckedUpdateWithoutStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
@@ -929,6 +1027,8 @@ export type GroupUncheckedUpdateManyWithoutStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1004,6 +1104,8 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   code?: boolean
   subject?: boolean
+  courseLevel?: boolean
+  status?: boolean
   teacherId?: boolean
   createdAt?: boolean
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1019,6 +1121,8 @@ export type GroupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   code?: boolean
   subject?: boolean
+  courseLevel?: boolean
+  status?: boolean
   teacherId?: boolean
   createdAt?: boolean
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1028,6 +1132,8 @@ export type GroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   code?: boolean
   subject?: boolean
+  courseLevel?: boolean
+  status?: boolean
   teacherId?: boolean
   createdAt?: boolean
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1037,11 +1143,13 @@ export type GroupSelectScalar = {
   id?: boolean
   code?: boolean
   subject?: boolean
+  courseLevel?: boolean
+  status?: boolean
   teacherId?: boolean
   createdAt?: boolean
 }
 
-export type GroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "subject" | "teacherId" | "createdAt", ExtArgs["result"]["group"]>
+export type GroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "subject" | "courseLevel" | "status" | "teacherId" | "createdAt", ExtArgs["result"]["group"]>
 export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   students?: boolean | Prisma.Group$studentsArgs<ExtArgs>
@@ -1072,6 +1180,8 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id: string
     code: string
     subject: string
+    courseLevel: string | null
+    status: string
     teacherId: string
     createdAt: Date
   }, ExtArgs["result"]["group"]>
@@ -1506,6 +1616,8 @@ export interface GroupFieldRefs {
   readonly id: Prisma.FieldRef<"Group", 'String'>
   readonly code: Prisma.FieldRef<"Group", 'String'>
   readonly subject: Prisma.FieldRef<"Group", 'String'>
+  readonly courseLevel: Prisma.FieldRef<"Group", 'String'>
+  readonly status: Prisma.FieldRef<"Group", 'String'>
   readonly teacherId: Prisma.FieldRef<"Group", 'String'>
   readonly createdAt: Prisma.FieldRef<"Group", 'DateTime'>
 }
