@@ -1,13 +1,134 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Database, RefreshCw, Play, ShieldCheck,
   FileSpreadsheet, Users, DollarSign,
   CheckCircle, AlertCircle, Info, ArrowLeftRight, Check, X, ShieldAlert,
   Pencil, Trash2, Plus, ChevronLeft, ChevronRight, ChevronUp, ChevronDown,
-  Search, Table2, TrendingUp, ToggleLeft, ToggleRight
+  Search, Table2, TrendingUp, ToggleLeft, ToggleRight, GitBranch, GitCompare
 } from "lucide-react";
+
+// ─── ERD constants (outside component) ───────────────────────────────────────
+
+type ErdNode = { id: string; x: number; y: number; fields: string[]; cluster: string };
+type ErdEdge = { from: string; to: string };
+
+const ERD_CLUSTERS: Record<string, { color: string; header: string; text: string }> = {
+  profiles: { color: "#7c3aed", header: "#4c1d95", text: "#ddd6fe" },
+  core:     { color: "#2563eb", header: "#1e3a8a", text: "#bfdbfe" },
+  academic: { color: "#0d9488", header: "#134e4a", text: "#99f6e4" },
+  billing:  { color: "#d97706", header: "#78350f", text: "#fde68a" },
+  ledger:   { color: "#16a34a", header: "#14532d", text: "#bbf7d0" },
+  tickets:  { color: "#dc2626", header: "#7f1d1d", text: "#fecaca" },
+  crm:      { color: "#475569", header: "#1e293b", text: "#cbd5e1" },
+};
+
+const ERD_NODES: ErdNode[] = [
+  // Col 0 — Profiles
+  { id: "StaffProfile",       x: 20,   y: 20,   cluster: "profiles", fields: ["id","userId↑","department","role"] },
+  { id: "TeacherProfile",     x: 20,   y: 156,  cluster: "profiles", fields: ["id","userId↑","subjects","qualification"] },
+  { id: "StudentProfile",     x: 20,   y: 274,  cluster: "profiles", fields: ["id","userId↑","grade","parentId↑"] },
+  { id: "ParentProfile",      x: 20,   y: 410,  cluster: "profiles", fields: ["id","userId↑","phone","occupation"] },
+  { id: "AmbassadorProfile",  x: 20,   y: 510,  cluster: "profiles", fields: ["id","userId↑","region","commission"] },
+  // Col 1 — Core
+  { id: "User",               x: 290,  y: 220,  cluster: "core",     fields: ["id","email","name","role","active","department"] },
+  // Col 2 — Academic
+  { id: "Group",              x: 560,  y: 20,   cluster: "academic", fields: ["id","code","name","subject","teacherId↑"] },
+  { id: "AcademicSession",    x: 560,  y: 138,  cluster: "academic", fields: ["id","groupId↑","teacherId↑","date","duration"] },
+  { id: "Attendance",         x: 560,  y: 292,  cluster: "academic", fields: ["id","sessionId↑","studentId↑","status"] },
+  { id: "SyllabusItem",       x: 560,  y: 428,  cluster: "academic", fields: ["id","groupId↑","title","order","done"] },
+  { id: "StudentProgress",    x: 560,  y: 564,  cluster: "academic", fields: ["id","syllabusItemId↑","studentId↑","score"] },
+  { id: "Doubt",              x: 560,  y: 674,  cluster: "academic", fields: ["id","studentId↑","syllabusItemId↑","text"] },
+  { id: "Assignment",         x: 560,  y: 810,  cluster: "academic", fields: ["id","groupId↑","createdById↑","title","dueAt"] },
+  { id: "MockResult",         x: 560,  y: 946,  cluster: "academic", fields: ["id","studentId↑","groupId↑","score","total"] },
+  { id: "Recording",          x: 560,  y: 1062, cluster: "academic", fields: ["id","sessionId↑","url","duration"] },
+  // Col 3 — Billing
+  { id: "StudentMonthlyEnrollment", x: 830, y: 20,  cluster: "billing", fields: ["id","studentId↑","month","status","currency"] },
+  { id: "EnrollmentPackageItem",    x: 830, y: 156, cluster: "billing", fields: ["id","enrollmentId↑","customServiceName","rateApplied"] },
+  { id: "StudentInvoice",           x: 830, y: 274, cluster: "billing", fields: ["id","enrollmentId↑","month","netAmount","dueAmount","paymentDone"] },
+  { id: "BatchRateCard",            x: 830, y: 410, cluster: "billing", fields: ["id","groupId↑","currency","rate"] },
+  { id: "StudentRateOverride",      x: 830, y: 510, cluster: "billing", fields: ["id","studentId↑","groupId↑","overrideRate"] },
+  { id: "DCBankAccount",            x: 830, y: 618, cluster: "billing", fields: ["id","name","currency","balance"] },
+  { id: "ResourceInvoice",          x: 830, y: 726, cluster: "billing", fields: ["id","userId↑","month","amount","paid"] },
+  { id: "CounsellingInvoice",       x: 830, y: 832, cluster: "billing", fields: ["id","userId↑","month","amount","paid"] },
+  // Col 4 — Ledger
+  { id: "Account",              x: 1100, y: 20,  cluster: "ledger", fields: ["id","name","accountType","balance","currency"] },
+  { id: "AccountTransaction",   x: 1100, y: 156, cluster: "ledger", fields: ["id","description","createdAt"] },
+  { id: "LedgerEntry",          x: 1100, y: 256, cluster: "ledger", fields: ["id","transactionId↑","accountId↑","amount","studentInvoiceId↑"] },
+  { id: "MonthlyBillingSummary",x: 1100, y: 374, cluster: "ledger", fields: ["id","month","totalINR","totalDueINR","paidRatio"] },
+  { id: "MonthlyPayrollSummary",x: 1100, y: 510, cluster: "ledger", fields: ["id","month","totalClaims","totalPaid"] },
+  // Col 5 — Tickets
+  { id: "Ticket",           x: 1370, y: 20,  cluster: "tickets", fields: ["id","title","creatorId↑","assigneeId↑","status","priority"] },
+  { id: "TicketMessage",    x: 1370, y: 156, cluster: "tickets", fields: ["id","ticketId↑","senderId↑","body"] },
+  { id: "TicketHistory",    x: 1370, y: 292, cluster: "tickets", fields: ["id","ticketId↑","action","changedById↑"] },
+  { id: "TicketCategory",   x: 1370, y: 402, cluster: "tickets", fields: ["id","name","department"] },
+  { id: "TicketPermission", x: 1370, y: 492, cluster: "tickets", fields: ["id","department","canTargetStudent","isInternalOnly"] },
+  // Col 6 — CRM/Misc
+  { id: "Lead",               x: 1640, y: 20,  cluster: "crm", fields: ["id","name","email","source","status"] },
+  { id: "Candidate",          x: 1640, y: 156, cluster: "crm", fields: ["id","name","email","role","appliedAt"] },
+  { id: "Referral",           x: 1640, y: 274, cluster: "crm", fields: ["id","referrerId↑","referredEmail","status"] },
+  { id: "Meeting",            x: 1640, y: 380, cluster: "crm", fields: ["id","title","dateTime","dept","status"] },
+  { id: "MeetingParticipant", x: 1640, y: 498, cluster: "crm", fields: ["id","meetingId↑","userId↑","role"] },
+  { id: "Claim",              x: 1640, y: 596, cluster: "crm", fields: ["id","userId↑","month","amount","hours","status"] },
+  { id: "Announcement",       x: 1640, y: 732, cluster: "crm", fields: ["id","title","body","targetRole","createdAt"] },
+  { id: "Asset",              x: 1640, y: 840, cluster: "crm", fields: ["id","name","type","url","ownerId↑"] },
+  { id: "AccessLog",          x: 1640, y: 956, cluster: "crm", fields: ["id","userId↑","action","resource","createdAt"] },
+];
+
+const ERD_EDGES: ErdEdge[] = [
+  // User → profiles (right→left)
+  { from: "User", to: "StaffProfile" },
+  { from: "User", to: "TeacherProfile" },
+  { from: "User", to: "StudentProfile" },
+  { from: "User", to: "ParentProfile" },
+  { from: "User", to: "AmbassadorProfile" },
+  // User → academic (left→right)
+  { from: "User", to: "Group" },
+  { from: "User", to: "AcademicSession" },
+  { from: "User", to: "Attendance" },
+  { from: "User", to: "Assignment" },
+  { from: "User", to: "MockResult" },
+  { from: "User", to: "Doubt" },
+  // User → billing
+  { from: "User", to: "StudentMonthlyEnrollment" },
+  { from: "User", to: "StudentRateOverride" },
+  { from: "User", to: "ResourceInvoice" },
+  { from: "User", to: "CounsellingInvoice" },
+  // User → other
+  { from: "User", to: "Ticket" },
+  { from: "User", to: "Referral" },
+  { from: "User", to: "Claim" },
+  { from: "User", to: "MeetingParticipant" },
+  // Group chains
+  { from: "Group", to: "AcademicSession" },
+  { from: "Group", to: "BatchRateCard" },
+  { from: "Group", to: "EnrollmentPackageItem" },
+  { from: "AcademicSession", to: "Attendance" },
+  // Syllabus
+  { from: "SyllabusItem", to: "StudentProgress" },
+  { from: "SyllabusItem", to: "Doubt" },
+  // Enrollment
+  { from: "StudentMonthlyEnrollment", to: "EnrollmentPackageItem" },
+  { from: "StudentMonthlyEnrollment", to: "StudentInvoice" },
+  // Ledger
+  { from: "Account", to: "LedgerEntry" },
+  { from: "AccountTransaction", to: "LedgerEntry" },
+  { from: "StudentInvoice", to: "LedgerEntry" },
+  { from: "Claim", to: "LedgerEntry" },
+  // Tickets
+  { from: "Ticket", to: "TicketMessage" },
+  { from: "Ticket", to: "TicketHistory" },
+  // Meeting
+  { from: "Meeting", to: "MeetingParticipant" },
+];
+
+const BOX_WIDTH = 210;
+function getBoxMetrics(nodeId: string) {
+  const node = ERD_NODES.find(n => n.id === nodeId)!;
+  const h = 34 + node.fields.length * 18 + 10;
+  return { x: node.x, y: node.y, w: BOX_WIDTH, h, cx: node.x + BOX_WIDTH / 2, cy: node.y + h / 2 };
+}
 
 export default function SandboxDashboard() {
   const [loading, setLoading] = useState(false);
@@ -32,6 +153,19 @@ export default function SandboxDashboard() {
 
   // Trends state
   const [trendField, setTrendField] = useState("totalINR");
+
+  // ERD pan/zoom state
+  const [erdScale, setErdScale] = useState(0.55);
+  const [erdPan, setErdPan] = useState({ x: 0, y: 0 });
+  const [erdDragging, setErdDragging] = useState(false);
+  const [erdDragStart, setErdDragStart] = useState({ mx: 0, my: 0, px: 0, py: 0 });
+  const erdContainerRef = useRef<HTMLDivElement>(null);
+
+  // Diff state
+  const [diffData, setDiffData] = useState<any | null>(null);
+  const [diffLoading, setDiffLoading] = useState(false);
+  const [diffTable, setDiffTable] = useState("users");
+  const [syncedExpanded, setSyncedExpanded] = useState(false);
 
   // Permissions inline-edit state
   const [localPerms, setLocalPerms] = useState<any[]>([]);
@@ -92,6 +226,26 @@ export default function SandboxDashboard() {
   useEffect(() => {
     if (activeTab === "explorer") fetchExplorer(explorerTable);
   }, [activeTab]);
+
+  // Auto-load diff when diff tab activates
+  useEffect(() => {
+    if (activeTab === "diff") fetchDiff(diffTable);
+  }, [activeTab]);
+
+  const fetchDiff = async (table: string) => {
+    setDiffLoading(true);
+    setDiffData(null);
+    try {
+      const res = await fetch(`/api/sandbox?diff=${table}`);
+      const json = await res.json();
+      if (json.success) setDiffData(json);
+      else setMessage({ type: "error", text: json.error || json.message || "Diff fetch failed." });
+    } catch (e: any) {
+      setMessage({ type: "error", text: e.message });
+    } finally {
+      setDiffLoading(false);
+    }
+  };
 
   const fetchExplorer = async (table: string) => {
     setExplorerLoading(true);
@@ -571,6 +725,26 @@ export default function SandboxDashboard() {
                 }`}
               >
                 <TrendingUp className="w-3.5 h-3.5" />Trends
+              </button>
+              <button
+                onClick={() => setActiveTab("erd")}
+                className={`py-4 px-4 text-xs font-bold tracking-tight border-b-2 cursor-pointer font-mono flex items-center gap-1.5 ${
+                  activeTab === "erd"
+                    ? "border-purple-500 text-white"
+                    : "border-transparent text-gray-400 hover:text-gray-200"
+                }`}
+              >
+                <GitBranch className="w-3.5 h-3.5" />ERD
+              </button>
+              <button
+                onClick={() => setActiveTab("diff")}
+                className={`py-4 px-4 text-xs font-bold tracking-tight border-b-2 cursor-pointer font-mono flex items-center gap-1.5 ${
+                  activeTab === "diff"
+                    ? "border-orange-500 text-white"
+                    : "border-transparent text-gray-400 hover:text-gray-200"
+                }`}
+              >
+                <GitCompare className="w-3.5 h-3.5" />Diff
               </button>
             </div>
 
@@ -1188,6 +1362,226 @@ export default function SandboxDashboard() {
                       Next<ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB CONTENT: ERD DIAGRAM */}
+            {activeTab === "erd" && (() => {
+              const renderErdNode = (node: ErdNode) => {
+                const { x, y, w, h } = getBoxMetrics(node.id);
+                const clr = ERD_CLUSTERS[node.cluster];
+                return (
+                  <g key={node.id}>
+                    <rect x={x} y={y} width={w} height={h} rx={5} fill="#0f172a" stroke={clr.color} strokeWidth={1.5} />
+                    <rect x={x} y={y} width={w} height={28} rx={5} fill={clr.header} />
+                    <rect x={x} y={y + 23} width={w} height={5} fill={clr.header} />
+                    <text x={x + w / 2} y={y + 17} textAnchor="middle" fill={clr.text} fontSize={11} fontWeight="bold" fontFamily="monospace">{node.id}</text>
+                    {node.fields.map((f, i) => (
+                      <text key={f} x={x + 8} y={y + 34 + i * 18 + 12} fill={f.endsWith("↑") ? "#94a3b8" : "#cbd5e1"} fontSize={9} fontFamily="monospace">
+                        {f.endsWith("↑") ? `↑ ${f.slice(0, -1)}` : `· ${f}`}
+                      </text>
+                    ))}
+                  </g>
+                );
+              };
+
+              const renderErdEdge = (edge: ErdEdge, idx: number) => {
+                const fm = getBoxMetrics(edge.from);
+                const tm = getBoxMetrics(edge.to);
+                const goRight = tm.x >= fm.x;
+                const x1 = goRight ? fm.x + fm.w : fm.x;
+                const y1 = fm.y + fm.h / 2;
+                const x2 = goRight ? tm.x : tm.x + tm.w;
+                const y2 = tm.y + tm.h / 2;
+                const cx1 = goRight ? x1 + 60 : x1 - 60;
+                const cx2 = goRight ? x2 - 60 : x2 + 60;
+                const fromClr = ERD_CLUSTERS[ERD_NODES.find(n => n.id === edge.from)!.cluster].color;
+                return (
+                  <path
+                    key={idx}
+                    d={`M${x1},${y1} C${cx1},${y1} ${cx2},${y2} ${x2},${y2}`}
+                    stroke={fromClr}
+                    strokeWidth={1}
+                    strokeOpacity={0.45}
+                    fill="none"
+                    markerEnd="url(#arrowhead)"
+                  />
+                );
+              };
+
+              return (
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-sm font-bold text-gray-200 font-mono">Entity Relationship Diagram</h3>
+                      <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded font-mono font-semibold uppercase">40 Models · Sandbox Schema</span>
+                    </div>
+                    <button
+                      onClick={() => { setErdScale(0.55); setErdPan({ x: 0, y: 0 }); }}
+                      className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 rounded-lg text-xs font-mono cursor-pointer"
+                    >
+                      Reset View
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[10px] font-mono">
+                    {Object.entries(ERD_CLUSTERS).map(([k, v]) => (
+                      <span key={k} className="flex items-center gap-1 px-2 py-0.5 rounded" style={{ background: v.header + "cc", color: v.text }}>
+                        <span className="w-2 h-2 rounded-full inline-block" style={{ background: v.color }} />{k}
+                      </span>
+                    ))}
+                  </div>
+                  <div
+                    ref={erdContainerRef}
+                    className="overflow-hidden rounded-xl border border-gray-800 bg-[#080c14] cursor-grab active:cursor-grabbing select-none"
+                    style={{ height: 650 }}
+                    onMouseDown={(e) => {
+                      setErdDragging(true);
+                      setErdDragStart({ mx: e.clientX, my: e.clientY, px: erdPan.x, py: erdPan.y });
+                    }}
+                    onMouseMove={(e) => {
+                      if (!erdDragging) return;
+                      setErdPan({ x: erdDragStart.px + e.clientX - erdDragStart.mx, y: erdDragStart.py + e.clientY - erdDragStart.my });
+                    }}
+                    onMouseUp={() => setErdDragging(false)}
+                    onMouseLeave={() => setErdDragging(false)}
+                    onWheel={(e) => {
+                      e.preventDefault();
+                      setErdScale(s => Math.min(2, Math.max(0.2, s - e.deltaY * 0.001)));
+                    }}
+                  >
+                    <div style={{ transform: `translate(${erdPan.x}px, ${erdPan.y}px) scale(${erdScale})`, transformOrigin: "0 0", width: 1900, height: 1120 }}>
+                      <svg width={1900} height={1120} viewBox="0 0 1900 1120">
+                        <defs>
+                          <marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                            <polygon points="0 0, 7 3.5, 0 7" fill="#475569" fillOpacity="0.7" />
+                          </marker>
+                        </defs>
+                        {ERD_EDGES.map((edge, i) => renderErdEdge(edge, i))}
+                        {ERD_NODES.map(node => renderErdNode(node))}
+                      </svg>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-gray-600 font-mono">Drag to pan · Scroll to zoom · Arrows = FK relationships</p>
+                </div>
+              );
+            })()}
+
+            {/* TAB CONTENT: CONFLICT / DIFF */}
+            {activeTab === "diff" && (
+              <div className="p-6 space-y-5">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="text-sm font-bold text-gray-200 font-mono">Sandbox vs Production Diff</h3>
+                  <span className="text-[10px] bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded font-mono font-semibold uppercase">Live Compare</span>
+                  <div className="ml-auto flex items-center gap-2">
+                    {(["users","claims","groups"] as const).map(t => (
+                      <button
+                        key={t}
+                        onClick={() => { setDiffTable(t); fetchDiff(t); }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold cursor-pointer transition-all ${
+                          diffTable === t ? "bg-orange-600 text-white" : "bg-gray-800 text-gray-400 hover:bg-gray-700 border border-gray-700"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => fetchDiff(diffTable)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 rounded-lg text-xs font-mono cursor-pointer"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${diffLoading ? "animate-spin" : ""}`} />Refresh
+                    </button>
+                  </div>
+                </div>
+
+                {diffLoading && (
+                  <div className="py-12 text-center text-gray-500 font-mono text-xs">Comparing sandbox vs production {diffTable}…</div>
+                )}
+
+                {diffData && !diffLoading && (
+                  <>
+                    {/* Summary banner */}
+                    <div className="flex flex-wrap gap-3 p-4 bg-gray-900/60 border border-gray-800 rounded-xl">
+                      <span className="text-xs font-mono text-gray-400">Prod: <span className="text-white font-bold">{diffData.prodCount}</span></span>
+                      <span className="text-xs font-mono text-gray-400">Sandbox: <span className="text-white font-bold">{diffData.sandboxCount}</span></span>
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/10 text-emerald-400 font-mono">{diffData.synced?.length ?? 0} Synced</span>
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-rose-500/10 text-rose-400 font-mono">{diffData.conflicts?.length ?? 0} Conflicts</span>
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500/10 text-blue-400 font-mono">{diffData.stagingOnly?.length ?? 0} Staging Only</span>
+                    </div>
+
+                    {/* Conflicts — always expanded */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold text-rose-400 font-mono uppercase tracking-wider flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-rose-500 inline-block" />
+                        Conflicts ({diffData.conflicts?.length ?? 0})
+                      </h4>
+                      {diffData.conflicts?.length === 0 && (
+                        <p className="text-xs text-gray-600 font-mono pl-4">No conflicts detected.</p>
+                      )}
+                      <div className="space-y-2">
+                        {diffData.conflicts?.map((item: any, i: number) => (
+                          <div key={i} className="flex flex-wrap items-start gap-3 p-3 bg-rose-500/5 border border-rose-500/20 rounded-lg">
+                            <div className="min-w-[160px]">
+                              <p className="text-xs font-bold text-white font-mono">{item.name || item.month || item.code || item.id?.substring(0,8)}</p>
+                              <p className="text-[10px] text-gray-500 font-mono">{item.email || item.userId || ""}</p>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {item.diffs?.map((d: string, j: number) => (
+                                <span key={j} className="px-2 py-0.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded text-[10px] font-mono">{d}</span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Staging Only */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold text-blue-400 font-mono uppercase tracking-wider flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+                        Staging Only ({diffData.stagingOnly?.length ?? 0})
+                      </h4>
+                      {diffData.stagingOnly?.length === 0 && (
+                        <p className="text-xs text-gray-600 font-mono pl-4">No staging-only records.</p>
+                      )}
+                      <div className="space-y-1">
+                        {diffData.stagingOnly?.map((item: any, i: number) => (
+                          <div key={i} className="flex items-center gap-3 px-3 py-2 bg-blue-500/5 border border-blue-500/15 rounded-lg text-xs font-mono">
+                            <span className="text-white font-bold">{item.name || item.id?.substring(0,8)}</span>
+                            <span className="text-gray-500">{item.email || item.month || item.code || ""}</span>
+                            {item.role && <span className="px-1.5 py-0.5 bg-blue-500/10 text-blue-400 rounded text-[9px]">{item.role}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Synced — collapsed by default */}
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setSyncedExpanded(e => !e)}
+                        className="flex items-center gap-2 text-xs font-bold text-emerald-400 font-mono uppercase tracking-wider cursor-pointer hover:text-emerald-300"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                        Synced ({diffData.synced?.length ?? 0})
+                        <span className="text-gray-600 font-normal normal-case">{syncedExpanded ? "▲ collapse" : "▼ expand"}</span>
+                      </button>
+                      {syncedExpanded && (
+                        <div className="space-y-1">
+                          {diffData.synced?.map((item: any, i: number) => (
+                            <div key={i} className="flex items-center gap-3 px-3 py-2 bg-emerald-500/5 border border-emerald-500/15 rounded-lg text-xs font-mono">
+                              <span className="text-white font-bold">{item.name || item.id?.substring(0,8)}</span>
+                              <span className="text-gray-500">{item.email || item.month || item.code || ""}</span>
+                              {item.role && <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[9px]">{item.role}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {!diffData && !diffLoading && (
+                  <div className="py-12 text-center text-gray-600 font-mono text-xs">Select a table and click Refresh to compare.</div>
                 )}
               </div>
             )}

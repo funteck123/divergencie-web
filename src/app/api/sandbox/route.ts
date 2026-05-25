@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { runSandboxETL } from "@/lib/db-sandbox-etl";
 import sandboxPrisma from "@/lib/db-sandbox";
+import prisma from "@/lib/db";
 
 const ALLOWED_TABLES = [
   "user", "group", "academicSession", "attendance", "assignment", "syllabusItem",
@@ -16,6 +17,85 @@ const ALLOWED_TABLES = [
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const table = searchParams.get("table");
+
+  // Diff: compare sandbox vs production
+  const diff = searchParams.get("diff");
+  if (diff) {
+    try {
+      if (diff === "users") {
+        const [sandboxUsers, prodUsers] = await Promise.all([
+          sandboxPrisma.user.findMany(),
+          prisma.user.findMany()
+        ]);
+        const prodMap = new Map(prodUsers.map((u: any) => [u.email, u]));
+        const sandboxMap = new Map(sandboxUsers.map((u: any) => [u.email, u]));
+        const synced: any[] = [];
+        const conflicts: any[] = [];
+        const stagingOnly: any[] = [];
+        for (const su of sandboxUsers) {
+          const pu = prodMap.get(su.email);
+          if (!pu) { stagingOnly.push(su); continue; }
+          const diffs: string[] = [];
+          if (su.name !== pu.name) diffs.push(`name: "${su.name}" → "${pu.name}"`);
+          if (su.role !== pu.role) diffs.push(`role: "${su.role}" → "${pu.role}"`);
+          if ((su as any).department !== (pu as any).department) diffs.push(`dept: "${(su as any).department}" → "${(pu as any).department}"`);
+          if (su.active !== pu.active) diffs.push(`active: ${su.active} → ${pu.active}`);
+          if (diffs.length === 0) synced.push(su);
+          else conflicts.push({ ...su, diffs });
+        }
+        return NextResponse.json({ success: true, synced, conflicts, stagingOnly, prodCount: prodUsers.length, sandboxCount: sandboxUsers.length });
+      }
+
+      if (diff === "claims") {
+        const [sandboxClaims, prodClaims] = await Promise.all([
+          sandboxPrisma.claim.findMany(),
+          prisma.claim.findMany()
+        ]);
+        const key = (c: any) => `${c.userId}::${c.month}`;
+        const prodMap = new Map(prodClaims.map((c: any) => [key(c), c]));
+        const synced: any[] = [];
+        const conflicts: any[] = [];
+        const stagingOnly: any[] = [];
+        for (const sc of sandboxClaims) {
+          const pc = prodMap.get(key(sc));
+          if (!pc) { stagingOnly.push(sc); continue; }
+          const diffs: string[] = [];
+          if (sc.amount !== pc.amount) diffs.push(`amount: ${sc.amount} → ${pc.amount}`);
+          if (sc.status !== pc.status) diffs.push(`status: "${sc.status}" → "${pc.status}"`);
+          if (sc.hours !== pc.hours) diffs.push(`hours: ${sc.hours} → ${pc.hours}`);
+          if (diffs.length === 0) synced.push(sc);
+          else conflicts.push({ ...sc, diffs });
+        }
+        return NextResponse.json({ success: true, synced, conflicts, stagingOnly, prodCount: prodClaims.length, sandboxCount: sandboxClaims.length });
+      }
+
+      if (diff === "groups") {
+        const [sandboxGroups, prodGroups] = await Promise.all([
+          sandboxPrisma.group.findMany(),
+          prisma.group.findMany()
+        ]);
+        const prodMap = new Map(prodGroups.map((g: any) => [g.code, g]));
+        const synced: any[] = [];
+        const conflicts: any[] = [];
+        const stagingOnly: any[] = [];
+        for (const sg of sandboxGroups) {
+          const pg = prodMap.get(sg.code);
+          if (!pg) { stagingOnly.push(sg); continue; }
+          const diffs: string[] = [];
+          if ((sg as any).name !== (pg as any).name) diffs.push(`name: "${(sg as any).name}" → "${(pg as any).name}"`);
+          if ((sg as any).subject !== (pg as any).subject) diffs.push(`subject: "${(sg as any).subject}" → "${(pg as any).subject}"`);
+          if ((sg as any).active !== (pg as any).active) diffs.push(`active: ${(sg as any).active} → ${(pg as any).active}`);
+          if (diffs.length === 0) synced.push(sg);
+          else conflicts.push({ ...sg, diffs });
+        }
+        return NextResponse.json({ success: true, synced, conflicts, stagingOnly, prodCount: prodGroups.length, sandboxCount: sandboxGroups.length });
+      }
+
+      return NextResponse.json({ success: false, message: `Unknown diff type: ${diff}` }, { status: 400 });
+    } catch (err: any) {
+      return NextResponse.json({ success: false, error: err.message });
+    }
+  }
 
   // Explorer: return rows for specific table
   if (table) {
