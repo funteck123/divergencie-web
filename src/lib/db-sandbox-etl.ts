@@ -414,21 +414,35 @@ export async function runSandboxETL() {
 
         // Ensure Group exists
         if (!xlsxGroupMap.has(groupKey)) {
-          const teacher = matchInstructor(instructor, userCache) || managementUser;
-          const group = await tx.group.create({
-            data: {
-              code: groupKey,
-              subject: `${subjectCode} ${subjectName} (${board} ${courseClass})`,
-              teacherId: teacher.id
-            }
-          });
+          let group = await tx.group.findUnique({ where: { code: groupKey } });
+          if (!group) {
+            const teacher = matchInstructor(instructor, userCache) || managementUser;
+            group = await tx.group.create({
+              data: {
+                code: groupKey,
+                subject: `${subjectCode} ${subjectName} (${board} ${courseClass})`,
+                teacherId: teacher.id
+              }
+            });
+          }
           xlsxGroupMap.set(groupKey, group);
         }
 
-        // Create BatchRateCard for this currency
+        // Create or update BatchRateCard for this currency
         const group = xlsxGroupMap.get(groupKey)!;
-        await tx.batchRateCard.create({
-          data: {
+        await tx.batchRateCard.upsert({
+          where: {
+            groupId_currency: {
+              groupId: group.id,
+              currency
+            }
+          },
+          update: {
+            feesValue: rate,
+            hourlyFeesValue: rate,
+            monthlyFeesValue: rate
+          },
+          create: {
             groupId: group.id,
             currency,
             feesValue: rate,
