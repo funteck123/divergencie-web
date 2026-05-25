@@ -4,7 +4,10 @@
 node_modules/
 .next/
 dev.db
+sandbox.db
 *.db-journal
+*.db-shm
+*.db-wal
 tsconfig.tsbuildinfo
 build_log*.txt
 redo_db.log

@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import * as XLSX from "xlsx";
 import prisma from "./db"; // production DB client
 import sandboxPrisma from "./db-sandbox"; // sandbox DB client
 
@@ -8,7 +9,7 @@ function parseCSVLine(line: string): string[] {
   const result: string[] = [];
   let current = "";
   let inQuotes = false;
-  
+
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
     if (char === '"') {
@@ -40,6 +41,19 @@ function cleanPercent(val: string): number {
   return isNaN(num) ? 0 : num;
 }
 
+// Match instructor name ("Mr Akhtar") to a user by last name fragment
+function matchInstructor(instructor: string, userCache: Map<string, any>): any {
+  if (!instructor) return null;
+  const parts = instructor.split(/\s+/);
+  const lastName = parts[parts.length - 1].toLowerCase();
+  for (const [key, user] of userCache.entries()) {
+    if (user && (user.role === "teacher" || user.role === "management" || user.role === "staff")) {
+      if (key.includes(lastName)) return user;
+    }
+  }
+  return null;
+}
+
 export async function runSandboxETL() {
   console.log("[ETL] Starting Sandbox database migration pipeline...");
 
@@ -53,17 +67,24 @@ export async function runSandboxETL() {
 
   // 1. TRUNCATE ALL TABLES IN SANDBOX DB (SQLite sequence clean)
   console.log("[ETL] Cleaning up isolated sandbox.db...");
-  
+
   // Disable foreign keys during truncation to prevent constraint blockages
   await sandboxPrisma.$executeRawUnsafe("PRAGMA foreign_keys = OFF;");
 
   const tablenames = [
+    // Profile tables first (FK to user)
+    "ambassadorProfile", "parentProfile", "studentProfile", "teacherProfile", "staffProfile",
+    // Ledger
     "ledgerEntry", "accountTransaction", "account",
+    // Billing
     "studentInvoice", "resourceInvoice", "counsellingInvoice",
     "enrollmentPackageItem", "studentMonthlyEnrollment", "studentRateOverride", "batchRateCard",
     "claim", "dCBankAccount", "monthlyBillingSummary", "monthlyPayrollSummary",
+    // Academic
     "attendance", "academicSession", "assignment", "studentProgress", "doubt", "recording",
+    // Tickets
     "ticketMessage", "ticketHistory", "ticket", "ticketCategory", "ticketPermission",
+    // CRM & org
     "referral", "meetingParticipant", "meeting", "group", "user",
     "syllabusItem", "mockResult", "candidate", "lead", "announcement", "asset", "accessLog"
   ];
@@ -82,12 +103,12 @@ export async function runSandboxETL() {
   return await sandboxPrisma.$transaction(async (tx) => {
     // 2. MIGRATE DATA FROM PRODUCTION DEV.DB TO SANDBOX.DB
     console.log("[ETL] Cloning schema instances from live dev.db to sandbox.db...");
-    
+
     // Clone Users
     const prodUsers = await prisma.user.findMany();
     await tx.user.createMany({ data: prodUsers as any });
 
-    // Clone Groups
+    // Clone Groups (prod only - XLSX will add more)
     const prodGroups = await prisma.group.findMany();
     await tx.group.createMany({ data: prodGroups as any });
 
@@ -165,110 +186,6 @@ export async function runSandboxETL() {
 
     console.log("[ETL] Standard website tables cloned successfully.");
 
-    // Ensure every cloned user has a corresponding sub-profile table entry based on their role
-    console.log("[ETL] Creating normalized profiles for cloned users...");
-    const clonedUsers = await tx.user.findMany();
-    for (const u of clonedUsers) {
-      if (u.role === "staff") {
-        const existing = await tx.staffProfile.findUnique({ where: { userId: u.id } });
-        if (!existing) {
-          let roleTitle = "Administrative Staff";
-          let qualification = "Bachelors Degree";
-          
-          if (u.name.toLowerCase().includes("atiqa")) {
-            roleTitle = "Associate Project Manager";
-            qualification = "Project Management Professional (PMP)";
-            // Set Atiqa's historical APM bio
-            await tx.user.update({
-              where: { id: u.id },
-              data: { bio: "Assistant Project Manager (before March 2026)" }
-            });
-          } else if (u.name.toLowerCase().includes("aleena")) {
-            roleTitle = "Teaching Assistant";
-            qualification = "Bachelors in Education";
-          } else if (u.name.toLowerCase().includes("mahrukh")) {
-            roleTitle = "SM Assistant";
-            qualification = "Bachelors in Media & Communications";
-          } else if (u.name.toLowerCase().includes("seher")) {
-            roleTitle = "Teaching Assistant";
-            qualification = "Bachelors in Science";
-          }
-
-          await tx.staffProfile.create({
-            data: {
-              userId: u.id,
-              firstName: u.name.split(" ")[0],
-              lastName: u.name.split(" ")[1] || "Staff",
-              dob: new Date("1998-05-20"),
-              roleTitle,
-              salaryType: u.name.toLowerCase().includes("atiqa") ? "monthly" : "hourly",
-              salaryRate: u.hourlyRate || 20.0,
-              latestQualification: qualification,
-              bankAccountInfo: "SBI Main Staging Account xxxx754"
-            }
-          });
-        }
-      } else if (u.role === "teacher") {
-        const existing = await tx.teacherProfile.findUnique({ where: { userId: u.id } });
-        if (!existing) {
-          await tx.teacherProfile.create({
-            data: {
-              userId: u.id,
-              firstName: u.name.split(" ")[0],
-              lastName: u.name.split(" ")[1] || "Tutor",
-              dob: new Date("1995-08-15"),
-              hourlyRate: u.hourlyRate || 15.0,
-              latestQualification: "Bachelors in Cambridge CIE Pedagogy",
-              teachingProfileUrl: `https://divergencie.co.uk/tutors/${u.name.toLowerCase().replace(/[^a-z0-9]/g, "")}`,
-              bankAccountInfo: "HDFC Main Staging Account xxxx432"
-            }
-          });
-        }
-      } else if (u.role === "student") {
-        const existing = await tx.studentProfile.findUnique({ where: { userId: u.id } });
-        if (!existing) {
-          await tx.studentProfile.create({
-            data: {
-              userId: u.id,
-              firstName: u.name.split(" ")[0],
-              lastName: u.name.split(" ")[1] || "Student",
-              dob: new Date("2008-03-12"),
-              grade: u.grade || "IGCSE",
-              board: u.board || "Cambridge",
-              targetUni: u.targetUni || "Oxford University",
-              paymentMethodPreference: "SBI Corporate Bank Account"
-            }
-          });
-        }
-      } else if (u.role === "parent") {
-        const existing = await tx.parentProfile.findUnique({ where: { userId: u.id } });
-        if (!existing) {
-          await tx.parentProfile.create({
-            data: {
-              userId: u.id,
-              firstName: u.name.split(" ")[0],
-              lastName: u.name.split(" ")[1] || "Parent",
-              phone: u.phone || "+44 7700 900077",
-              address: u.address || "12 Baker St, London, UK"
-            }
-          });
-        }
-      } else if (u.role === "ambassador") {
-        const existing = await tx.ambassadorProfile.findUnique({ where: { userId: u.id } });
-        if (!existing) {
-          await tx.ambassadorProfile.create({
-            data: {
-              userId: u.id,
-              firstName: u.name.split(" ")[0],
-              lastName: u.name.split(" ")[1] || "Ambassador",
-              dob: new Date("1990-11-25"),
-              bankAccountInfo: "Barclays Staging Account xxxx987"
-            }
-          });
-        }
-      }
-    }
-
     // 3. INITIALIZE LEDGER accounts
     console.log("[ETL] Initializing Chart of Accounts for Double-Entry Ledger...");
     const accountsData = [
@@ -282,7 +199,7 @@ export async function runSandboxETL() {
       { name: "Teacher Compensation Expense", accountType: "EXPENSE", balance: 0 },
       { name: "Staff Payroll Expense", accountType: "EXPENSE", balance: 0 },
       { name: "General Administration Expense", accountType: "EXPENSE", balance: 0 },
-      { name: "Social Media Campaigns Q1 2026", accountType: "ASSET", balance: 0 } // Campaign budget
+      { name: "Social Media Campaigns Q1 2026", accountType: "ASSET", balance: 0 }
     ];
 
     const accountMap = new Map<string, any>();
@@ -293,7 +210,7 @@ export async function runSandboxETL() {
       accountBalances.set(createdAcc.name, createdAcc.balance);
     }
 
-    // Create default corporate bank methods
+    // Create default corporate bank account
     const defaultBank = await tx.dCBankAccount.create({
       data: {
         label: "Mohammad Fahim Akhtar State Bank of India",
@@ -305,44 +222,295 @@ export async function runSandboxETL() {
       }
     });
 
-    // 4. PRE-CACHE COMMONLY LOOKED UP TABLES
-    console.log("[ETL] Building fast in-memory lookups for users, groups, and bank accounts...");
-    const allUsers = await tx.user.findMany();
+    // 4. BUILD FAST IN-MEMORY USER CACHE (before XLSX processing)
+    console.log("[ETL] Building fast in-memory user lookup cache...");
+    const allUsersInit = await tx.user.findMany();
     const userCache = new Map<string, any>();
-    for (const u of allUsers) {
-      userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
-      // Also index by name lowercase for backup matching
+    for (const u of allUsersInit) {
       userCache.set(u.name.toLowerCase(), u);
+      userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
+    }
+
+    // Get management user as fallback for teacher assignments
+    const managementUser = allUsersInit.find(u => u.role === "management") || allUsersInit[0];
+
+    // 5. CREATE NORMALIZED PROFILES FOR CLONED PROD USERS
+    console.log("[ETL] Creating normalized profiles for cloned production users...");
+    for (const u of allUsersInit) {
+      if (u.role === "staff") {
+        let roleTitle = "Administrative Staff";
+        let qualification = "Bachelors Degree";
+        if (u.name.toLowerCase().includes("atiqa")) {
+          roleTitle = "Associate Project Manager";
+          qualification = "Project Management Professional (PMP)";
+          await tx.user.update({ where: { id: u.id }, data: { bio: "Assistant Project Manager (before March 2026)" } });
+        } else if (u.name.toLowerCase().includes("aleena")) {
+          roleTitle = "Teaching Assistant";
+          qualification = "Bachelors in Education";
+        } else if (u.name.toLowerCase().includes("mahrukh")) {
+          roleTitle = "SM Assistant";
+          qualification = "Bachelors in Media & Communications";
+        } else if (u.name.toLowerCase().includes("seher")) {
+          roleTitle = "Teaching Assistant";
+          qualification = "Bachelors in Science";
+        }
+        await tx.staffProfile.create({
+          data: {
+            userId: u.id,
+            firstName: u.name.split(" ")[0],
+            lastName: u.name.split(" ")[1] || "Staff",
+            dob: new Date("1998-05-20"),
+            roleTitle,
+            salaryType: u.name.toLowerCase().includes("atiqa") ? "monthly" : "hourly",
+            salaryRate: u.hourlyRate || 20.0,
+            latestQualification: qualification,
+            bankAccountInfo: "SBI Main Staging Account xxxx754"
+          }
+        });
+      } else if (u.role === "teacher") {
+        await tx.teacherProfile.create({
+          data: {
+            userId: u.id,
+            firstName: u.name.split(" ")[0],
+            lastName: u.name.split(" ")[1] || "Tutor",
+            dob: new Date("1995-08-15"),
+            hourlyRate: u.hourlyRate || 15.0,
+            latestQualification: "Bachelors in Cambridge CIE Pedagogy",
+            teachingProfileUrl: `https://divergencie.co.uk/tutors/${u.name.toLowerCase().replace(/[^a-z0-9]/g, "")}`,
+            bankAccountInfo: "HDFC Main Staging Account xxxx432"
+          }
+        });
+      } else if (u.role === "student") {
+        await tx.studentProfile.create({
+          data: {
+            userId: u.id,
+            firstName: u.name.split(" ")[0],
+            lastName: u.name.split(" ")[1] || "Student",
+            dob: new Date("2008-03-12"),
+            grade: u.grade || "IGCSE",
+            board: u.board || "Cambridge",
+            targetUni: u.targetUni || "TBD",
+            paymentMethodPreference: "SBI Corporate Bank Account"
+          }
+        });
+      } else if (u.role === "parent") {
+        await tx.parentProfile.create({
+          data: {
+            userId: u.id,
+            firstName: u.name.split(" ")[0],
+            lastName: u.name.split(" ")[1] || "Parent",
+            phone: u.phone || null,
+            address: u.address || null
+          }
+        });
+      } else if (u.role === "ambassador") {
+        await tx.ambassadorProfile.create({
+          data: {
+            userId: u.id,
+            firstName: u.name.split(" ")[0],
+            lastName: u.name.split(" ")[1] || "Ambassador",
+            dob: new Date("1990-11-25"),
+            bankAccountInfo: "Barclays Staging Account xxxx987"
+          }
+        });
+      }
+    }
+
+    // 6. PARSE XLSX — Services, Students, Recruits sheets
+    const xlsxPath = path.join(process.cwd(), "Data", "DC Database 2026.xlsx");
+    if (fs.existsSync(xlsxPath)) {
+      console.log("[ETL] Parsing DC Database 2026.xlsx sheets...");
+      const wb = XLSX.readFile(xlsxPath, { cellDates: true });
+
+      // --- 6A. Services sheet → Groups + BatchRateCards ---
+      console.log("[ETL] Importing Services sheet → Groups + BatchRateCards...");
+      const servicesSheet = wb.Sheets["Services"];
+      const servicesRows = XLSX.utils.sheet_to_json<any>(servicesSheet, { defval: null });
+
+      // Track created groups: groupKey → group record
+      const xlsxGroupMap = new Map<string, any>();
+
+      for (const row of servicesRows) {
+        const batchCode = row["Batch"]?.toString().trim();
+        const subjectCode = row["Subject Code"]?.toString().trim();
+        const subjectName = row["Subject Name"]?.toString().trim();
+        const courseClass = row["Course/Class"]?.toString().trim();
+        const board = row["Board"]?.toString().trim();
+        const instructor = row["Instructor"]?.toString().trim();
+        const currency = row["Currency"]?.toString().trim();
+        const rate = parseFloat(row["Rate"]) || 0;
+
+        if (!batchCode || !subjectCode || !currency) continue;
+
+        const groupKey = `${batchCode}-${subjectCode}`;
+
+        // Ensure Group exists
+        if (!xlsxGroupMap.has(groupKey)) {
+          const teacher = matchInstructor(instructor, userCache) || managementUser;
+          const group = await tx.group.create({
+            data: {
+              code: groupKey,
+              subject: `${subjectCode} ${subjectName} (${board} ${courseClass})`,
+              teacherId: teacher.id
+            }
+          });
+          xlsxGroupMap.set(groupKey, group);
+        }
+
+        // Create BatchRateCard for this currency
+        const group = xlsxGroupMap.get(groupKey)!;
+        await tx.batchRateCard.create({
+          data: {
+            groupId: group.id,
+            currency,
+            feesValue: rate,
+            hourlyFeesValue: rate,
+            monthlyFeesValue: rate
+          }
+        });
+      }
+
+      console.log(`[ETL] Created ${xlsxGroupMap.size} Groups and ${servicesRows.length} BatchRateCards from Services sheet.`);
+
+      // --- 6B. Students sheet → StudentProfile enrichment ---
+      console.log("[ETL] Importing Students sheet → enriching StudentProfiles...");
+      const studentsSheet = wb.Sheets["Students"];
+      const studentsRows = XLSX.utils.sheet_to_json<any>(studentsSheet, { defval: null });
+
+      for (const row of studentsRows) {
+        const studentName = row["Student Name"]?.toString().trim();
+        if (!studentName) continue;
+
+        const email = row["Email"]?.toString().trim() || null;
+        const school = row["School"]?.toString().trim() || null;
+        const phone = row["WhatsApp Number"]?.toString().trim() || null;
+        const location = row["Location"]?.toString().trim() || null;
+
+        // Try to find the student user in cache
+        let user = userCache.get(studentName.toLowerCase());
+        if (!user || user.role !== "student") {
+          // Try partial match on first name
+          for (const [key, u] of userCache.entries()) {
+            if (u.role === "student" && key.startsWith(studentName.split(" ")[0].toLowerCase())) {
+              user = u;
+              break;
+            }
+          }
+        }
+
+        if (user && user.role === "student") {
+          // Update user email/phone if real data available
+          if (email || phone) {
+            await tx.user.update({
+              where: { id: user.id },
+              data: {
+                ...(email ? { email } : {}),
+                ...(phone ? { phone } : {})
+              }
+            });
+          }
+
+          // Update StudentProfile with real school/location data
+          const profile = await tx.studentProfile.findUnique({ where: { userId: user.id } });
+          if (profile && (school || location)) {
+            await tx.studentProfile.update({
+              where: { userId: user.id },
+              data: {
+                ...(school ? { targetUni: school } : {}),
+                ...(location ? { paymentMethodPreference: location } : {})
+              }
+            });
+          }
+        }
+      }
+
+      // --- 6C. Recruits sheet → Candidates ---
+      console.log("[ETL] Importing Recruits sheet → Candidates...");
+      const recruitsSheet = wb.Sheets["Recruits"];
+      const recruitsRows = XLSX.utils.sheet_to_json<any>(recruitsSheet, { defval: null });
+
+      for (const row of recruitsRows) {
+        const name = row["NAME"]?.toString().trim();
+        if (!name) continue;
+
+        const position = row["INTERVIEW POSITION"]?.toString().trim() || "Teacher";
+        const email = row["EMAIL"]?.toString().trim() || null;
+        const statusRaw = row["STATUS"]?.toString().trim() || "Unavailable";
+        const notes = row["NOTES"]?.toString().trim() || null;
+        const skills = row["SKILLS/SUBJECTS"]?.toString().trim() || null;
+        const interviewDateRaw = row["INTERVIEW DATE"];
+
+        const candidateEmail = email ||
+          `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.recruit@divergencie.co.uk`;
+
+        const status = statusRaw.toLowerCase() === "available" ? "active" : "inactive";
+
+        let interviewDate: Date | null = null;
+        if (interviewDateRaw instanceof Date) {
+          interviewDate = interviewDateRaw;
+        } else if (typeof interviewDateRaw === "string" && interviewDateRaw.trim()) {
+          const d = new Date(interviewDateRaw);
+          if (!isNaN(d.getTime())) interviewDate = d;
+        }
+
+        const notesCombined = [notes, skills ? `Skills: ${skills}` : null]
+          .filter(Boolean).join("\n") || null;
+
+        await tx.candidate.upsert({
+          where: { email: candidateEmail },
+          update: { status, notes: notesCombined },
+          create: {
+            email: candidateEmail,
+            name,
+            role: position,
+            status,
+            notes: notesCombined,
+            interviewRequestedAt: interviewDate
+          }
+        });
+      }
+
+      console.log(`[ETL] Imported ${recruitsRows.length} recruit candidates from Recruits sheet.`);
+    } else {
+      console.warn("[ETL] DC Database 2026.xlsx not found at Data/ — skipping XLSX import.");
+    }
+
+    // 7. REBUILD CACHES after XLSX group import
+    console.log("[ETL] Rebuilding caches after XLSX import...");
+    const allUsers = await tx.user.findMany();
+    // Re-sync userCache with any new users
+    for (const u of allUsers) {
+      userCache.set(u.name.toLowerCase(), u);
+      userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
     }
 
     const allGroups = await tx.group.findMany();
-
     const enrollmentCache = new Map<string, any>();
 
-    // 5. PARSE STUDENT INVOICES SPREADSHEET
+    // 8. PARSE STUDENT INVOICES SPREADSHEET
     console.log("[ETL] Parsing Student Invoices CSV operational data...");
     const studentInvoicesPath = path.join(process.cwd(), "planning", "old system data", "DC Staff_Students 2026 - Student Invoices 2025 (1).csv");
-    
+
     if (fs.existsSync(studentInvoicesPath)) {
       const fileContent = fs.readFileSync(studentInvoicesPath, "utf-8");
       const lines = fileContent.split(/\r?\n/);
-      
+
       let currentMonth = "Apr_of_2026"; // Default starting block
-      
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         if (!line || line.trim() === "") continue;
-        
+
         const cells = parseCSVLine(line);
         if (cells.length < 5) continue;
-        
+
         // Detect month switches
         const possibleMonthIdx = cells.findIndex(c => c === "Month");
         if (possibleMonthIdx !== -1 && possibleMonthIdx + 1 < cells.length && cells[possibleMonthIdx + 1] !== "") {
           currentMonth = cells[possibleMonthIdx + 1].trim();
           continue;
         }
-        
+
         const studentName = cells[2];
         const status = cells[3];
         const subjectsStr = cells[4];
@@ -356,10 +524,10 @@ export async function runSandboxETL() {
         const paymentDoneRaw = cells[14];
         const paymentDateRaw = cells[17];
         const invoicePdfUrl = cells[19];
-        
+
         // Skip header lines or totals/blank names
         if (!studentName || studentName === "Students" || studentName === "Student Count" || studentName === "Month" || studentName === "Date" || studentName === "") continue;
-        
+
         // Clean values
         const discountPct = cleanPercent(discountRaw);
         const feesAmount = cleanNumeric(feesRaw);
@@ -373,11 +541,11 @@ export async function runSandboxETL() {
             paymentDate = parsedDate;
           }
         }
-        
+
         // A. Match or create Student User record
         const studentKey = `${studentName.toLowerCase()}_student`;
         let student = userCache.get(studentKey) || userCache.get(studentName.toLowerCase());
-        
+
         if (!student || student.role !== "student") {
           student = await tx.user.create({
             data: {
@@ -392,25 +560,25 @@ export async function runSandboxETL() {
           userCache.set(studentKey, student);
           userCache.set(studentName.toLowerCase(), student);
 
-          // Seed dynamic StudentProfile matching GSheet CSV properties
+          // Create StudentProfile for new CSV student
           await tx.studentProfile.create({
             data: {
               userId: student.id,
               firstName: studentName.split(" ")[0],
-              lastName: studentName.split(" ")[1] || "Student",
+              lastName: studentName.split(" ").slice(1).join(" ") || "Student",
               dob: new Date("2008-03-12"),
               grade: "IGCSE",
               board: "Cambridge",
-              targetUni: "Oxford University",
+              targetUni: "TBD",
               paymentMethodPreference: "SBI Corporate Bank Account"
             }
           });
         }
-        
+
         // B. Create or Resolve StudentMonthlyEnrollment Snapshot Row
         const enrollmentKey = `${student.id}_${currentMonth}`;
         let enrollment = enrollmentCache.get(enrollmentKey);
-        
+
         if (!enrollment) {
           enrollment = await tx.studentMonthlyEnrollment.create({
             data: {
@@ -425,20 +593,24 @@ export async function runSandboxETL() {
           });
           enrollmentCache.set(enrollmentKey, enrollment);
         }
-        
+
         // C. Parse comma-separated subject codes and create Package Items
         if (subjectsStr && subjectsStr.trim() !== "") {
           const subjects = subjectsStr.split(",");
           for (const sub of subjects) {
             const subTrimmed = sub.trim();
             if (subTrimmed === "") continue;
-            
-            // Match matching Group code from cache
-            const group = allGroups.find(g => g.code.includes(subTrimmed.substring(0, 3)));
-            
+
+            // Match group by code prefix (batch code in subject name)
+            const batchPrefix = subTrimmed.split(" ")[0]; // e.g., "B14"
+            const subjectCodeMatch = subTrimmed.match(/\b(\d{4})\b/); // e.g., "0625"
+            const subjectCode = subjectCodeMatch ? subjectCodeMatch[1] : null;
+            const groupCode = subjectCode ? `${batchPrefix}-${subjectCode}` : null;
+            const group = groupCode ? allGroups.find(g => g.code === groupCode) : allGroups.find(g => g.code.startsWith(batchPrefix));
+
             const isHourly = hoursLoggedRaw.includes(",");
             const cleanHours = parseFloat(hoursLoggedRaw.replace(/,/g, "")) || 1;
-            
+
             await tx.enrollmentPackageItem.create({
               data: {
                 enrollmentId: enrollment.id,
@@ -452,7 +624,7 @@ export async function runSandboxETL() {
             });
           }
         }
-        
+
         // D. Create Decoupled StudentInvoice Record
         const invoice = await tx.studentInvoice.create({
           data: {
@@ -470,7 +642,7 @@ export async function runSandboxETL() {
             invoicePdfUrl
           }
         });
-        
+
         // E. Log Double-Entry Ledger Record for Invoiced Revenue
         if (feesAmount > 0) {
           const transaction = await tx.accountTransaction.create({
@@ -478,33 +650,18 @@ export async function runSandboxETL() {
               description: `Import Tuition Fee Invoice - ${studentName} - ${currentMonth}`
             }
           });
-          
-          // Debit Asset (Due balance or Paid cash)
+
           const activeAssetAccount = paymentDone ? "SBI Corporate Bank Account" : "DivergenCIE Corporate Cash Wallet";
           const assetAcc = accountMap.get(activeAssetAccount);
           const revAcc = accountMap.get("Tuition Fees Revenue Account");
-          
+
           if (assetAcc && revAcc) {
             await tx.ledgerEntry.create({
-              data: {
-                transactionId: transaction.id,
-                accountId: assetAcc.id,
-                amount: inrEquivalent,
-                studentInvoiceId: invoice.id
-              }
+              data: { transactionId: transaction.id, accountId: assetAcc.id, amount: inrEquivalent, studentInvoiceId: invoice.id }
             });
-            
-            // Credit Revenue Account
             await tx.ledgerEntry.create({
-              data: {
-                transactionId: transaction.id,
-                accountId: revAcc.id,
-                amount: -inrEquivalent,
-                studentInvoiceId: invoice.id
-              }
+              data: { transactionId: transaction.id, accountId: revAcc.id, amount: -inrEquivalent, studentInvoiceId: invoice.id }
             });
-            
-            // Update Account Balances in cache
             accountBalances.set(activeAssetAccount, (accountBalances.get(activeAssetAccount) || 0) + inrEquivalent);
             accountBalances.set("Tuition Fees Revenue Account", (accountBalances.get("Tuition Fees Revenue Account") || 0) + inrEquivalent);
           }
@@ -512,23 +669,23 @@ export async function runSandboxETL() {
       }
     }
 
-    // 6. PARSE STAFF PAYMENTS SPREADSHEET
+    // 9. PARSE STAFF PAYMENTS SPREADSHEET
     console.log("[ETL] Parsing Staff Payments CSV operational data...");
     const staffPaymentsPath = path.join(process.cwd(), "planning", "old system data", "DC Staff_Students 2026 - Staff Payments 2024.csv");
-    
+
     if (fs.existsSync(staffPaymentsPath)) {
       const fileContent = fs.readFileSync(staffPaymentsPath, "utf-8");
       const lines = fileContent.split(/\r?\n/);
-      
-      let currentMonth = "December of 2023";
-      
+
+      let currentMonth = "December_of_2023";
+
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         if (!line || line.trim() === "") continue;
-        
+
         const cells = parseCSVLine(line);
         if (cells.length < 5) continue;
-        
+
         // Detect month switches
         if (line.includes("December of") || line.includes("January of") || line.includes("February of") || line.includes("March of")) {
           const match = line.match(/(December|January|February|March)\s+of\s+\d{4}/i);
@@ -537,31 +694,28 @@ export async function runSandboxETL() {
             continue;
           }
         }
-        
+
         const notes = cells[0];
         const staffNameRaw = cells[1];
-        const status = cells[2];
         const hoursRaw = cells[3];
         const rateRaw = cells[4];
         const feesRaw = cells[5];
         const inrRaw = cells[6];
-        const dueRaw = cells[7];
         const paymentDoneRaw = cells[10];
-        
+
         if (!staffNameRaw || staffNameRaw.includes("Staff") || staffNameRaw.includes("Count") || staffNameRaw.includes("Total Due") || staffNameRaw.trim() === "") continue;
-        
+
         const cleanStaffName = staffNameRaw.split("(")[0].trim().replace(/ xx$/i, "");
         const hours = parseFloat(hoursRaw) || 0;
         const amount = cleanNumeric(feesRaw);
         const inrAmount = cleanNumeric(inrRaw);
         const paymentDone = paymentDoneRaw === "1" || paymentDoneRaw === "true";
-        
-        // A. Match or create Staff/Teacher user profile from cache
+
         let staff = userCache.get(cleanStaffName.toLowerCase());
-        
+
         const isStaffRole = cleanStaffName.match(/(Fahim|Supervisor|Manager|Atiqa|Aleena|Mahrukh|Seher)/i) !== null;
         const resolvedRole = isStaffRole ? "staff" : "teacher";
-        
+
         if (!staff) {
           staff = await tx.user.create({
             data: {
@@ -575,71 +729,44 @@ export async function runSandboxETL() {
           });
           userCache.set(`${cleanStaffName.toLowerCase()}_${resolvedRole}`, staff);
           userCache.set(cleanStaffName.toLowerCase(), staff);
-        } else if (staff.role !== resolvedRole) {
-          // Sync role to correctly separate profiles
-          staff = await tx.user.update({
-            where: { id: staff.id },
-            data: { role: resolvedRole }
-          });
-          userCache.set(cleanStaffName.toLowerCase(), staff);
-        }
 
-        // Initialize staging profile
-        if (resolvedRole === "staff") {
-          const profileKey = `profile_staff_${staff.id}`;
-          if (!userCache.has(profileKey)) {
+          // Create normalized profile for newly created staff/teacher
+          if (resolvedRole === "staff") {
             let roleTitle = "Administrative Staff";
             let qualification = "Bachelors Degree";
-            
             if (cleanStaffName.toLowerCase().includes("atiqa")) {
-              roleTitle = "Associate Project Manager";
-              qualification = "Project Management Professional (PMP)";
+              roleTitle = "Associate Project Manager"; qualification = "Project Management Professional (PMP)";
             } else if (cleanStaffName.toLowerCase().includes("aleena")) {
-              roleTitle = "Teaching Assistant";
-              qualification = "Bachelors in Education";
+              roleTitle = "Teaching Assistant"; qualification = "Bachelors in Education";
             } else if (cleanStaffName.toLowerCase().includes("mahrukh")) {
-              roleTitle = "SM Assistant";
-              qualification = "Bachelors in Media & Communications";
+              roleTitle = "SM Assistant"; qualification = "Bachelors in Media & Communications";
             } else if (cleanStaffName.toLowerCase().includes("seher")) {
-              roleTitle = "Teaching Assistant";
-              qualification = "Bachelors in Science";
+              roleTitle = "Teaching Assistant"; qualification = "Bachelors in Science";
             }
-            
             await tx.staffProfile.create({
               data: {
-                userId: staff.id,
-                firstName: cleanStaffName.split(" ")[0],
-                lastName: cleanStaffName.split(" ")[1] || "Staff",
-                dob: new Date("1998-05-20"),
-                roleTitle,
-                salaryType: cleanStaffName.toLowerCase().includes("atiqa") ? "monthly" : "hourly",
-                salaryRate: cleanNumeric(rateRaw) || 20.0,
-                latestQualification: qualification,
-                bankAccountInfo: "SBI Main Staging Account xxxx754"
+                userId: staff.id, firstName: cleanStaffName.split(" ")[0], lastName: cleanStaffName.split(" ")[1] || "Staff",
+                dob: new Date("1998-05-20"), roleTitle, salaryType: cleanStaffName.toLowerCase().includes("atiqa") ? "monthly" : "hourly",
+                salaryRate: cleanNumeric(rateRaw) || 20.0, latestQualification: qualification, bankAccountInfo: "SBI Main Staging Account xxxx754"
               }
             });
-            userCache.set(profileKey, true);
-          }
-        } else {
-          const profileKey = `profile_teacher_${staff.id}`;
-          if (!userCache.has(profileKey)) {
+          } else {
             await tx.teacherProfile.create({
               data: {
-                userId: staff.id,
-                firstName: cleanStaffName.split(" ")[0],
-                lastName: cleanStaffName.split(" ")[1] || "Tutor",
-                dob: new Date("1995-08-15"),
-                hourlyRate: cleanNumeric(rateRaw) || 15.0,
+                userId: staff.id, firstName: cleanStaffName.split(" ")[0], lastName: cleanStaffName.split(" ")[1] || "Tutor",
+                dob: new Date("1995-08-15"), hourlyRate: cleanNumeric(rateRaw) || 15.0,
                 latestQualification: "Bachelors in Cambridge CIE Pedagogy",
                 teachingProfileUrl: `https://divergencie.co.uk/tutors/${cleanStaffName.toLowerCase().replace(/[^a-z0-9]/g, "")}`,
                 bankAccountInfo: "HDFC Main Staging Account xxxx432"
               }
             });
-            userCache.set(profileKey, true);
           }
+        } else if (staff.role !== resolvedRole) {
+          staff = await tx.user.update({ where: { id: staff.id }, data: { role: resolvedRole } });
+          userCache.set(cleanStaffName.toLowerCase(), staff);
         }
-        
-        // B. Create Claim Record
+
+        // Create Claim Record
         const claim = await tx.claim.create({
           data: {
             userId: staff.id,
@@ -650,44 +777,25 @@ export async function runSandboxETL() {
             notes: notes || "Historical imported contract Timesheet"
           }
         });
-        
-        // C. Log Double-Entry Ledger entries for Claim expenses
+
+        // Log Double-Entry Ledger entries for Claim expenses
         if (amount > 0) {
           const transaction = await tx.accountTransaction.create({
-            data: {
-              description: `Import Compensation Claim - ${cleanStaffName} - ${currentMonth}`
-            }
+            data: { description: `Import Compensation Claim - ${cleanStaffName} - ${currentMonth}` }
           });
-          
-          const expenseAccountName = staff.role === "teacher" ? "Teacher Compensation Expense" : "Staff Payroll Expense";
+
+          const expenseAccountName = resolvedRole === "teacher" ? "Teacher Compensation Expense" : "Staff Payroll Expense";
           const expenseAcc = accountMap.get(expenseAccountName);
-          
-          // Credit Bank / Cash Asset (if paid) or Expense Payable Liability (if unpaid)
           const creditAccountName = paymentDone ? "SBI Corporate Bank Account" : "DivergenCIE Corporate Cash Wallet";
           const assetAcc = accountMap.get(creditAccountName);
-          
+
           if (expenseAcc && assetAcc) {
-            // Debit Expense Account
             await tx.ledgerEntry.create({
-              data: {
-                transactionId: transaction.id,
-                accountId: expenseAcc.id,
-                amount: inrAmount,
-                claimId: claim.id
-              }
+              data: { transactionId: transaction.id, accountId: expenseAcc.id, amount: inrAmount, claimId: claim.id }
             });
-            
-            // Credit Asset Account
             await tx.ledgerEntry.create({
-              data: {
-                transactionId: transaction.id,
-                accountId: assetAcc.id,
-                amount: -inrAmount,
-                claimId: claim.id
-              }
+              data: { transactionId: transaction.id, accountId: assetAcc.id, amount: -inrAmount, claimId: claim.id }
             });
-            
-            // Update Balances in cache
             accountBalances.set(expenseAccountName, (accountBalances.get(expenseAccountName) || 0) + inrAmount);
             accountBalances.set(creditAccountName, (accountBalances.get(creditAccountName) || 0) - inrAmount);
           }
@@ -695,50 +803,50 @@ export async function runSandboxETL() {
       }
     }
 
-    // 7. SAVE FINAL ACCOUNT LEDGER BALANCES
+    // 10. SAVE FINAL ACCOUNT LEDGER BALANCES
     console.log("[ETL] Committing in-memory ledger account balance aggregates...");
     for (const [name, finalBalance] of accountBalances.entries()) {
-      await tx.account.update({
-        where: { name },
-        data: { balance: finalBalance }
-      });
+      await tx.account.update({ where: { name }, data: { balance: finalBalance } });
     }
 
-    // 8. RUN DYNAMIC SUMMARIES AGGREGATIONS
-    console.log("[ETL] Generating dynamic monthly cache summaries...");
-    
-    // Aggregate Student Invoices by Month
+    // 11. GENERATE MONTHLY BILLING SUMMARIES (student-side)
+    console.log("[ETL] Generating dynamic monthly billing cache summaries...");
     const allInvoices = await tx.studentInvoice.findMany();
     const monthGroups = new Map<string, any[]>();
     for (const inv of allInvoices) {
-      const m = inv.month;
-      if (!monthGroups.has(m)) {
-        monthGroups.set(m, []);
-      }
-      monthGroups.get(m)!.push(inv);
+      if (!monthGroups.has(inv.month)) monthGroups.set(inv.month, []);
+      monthGroups.get(inv.month)!.push(inv);
     }
-    
     for (const [m, studentInvoices] of monthGroups.entries()) {
-      const studentCount = await tx.studentMonthlyEnrollment.count({
-        where: { month: m, status: "Active" }
-      });
+      const studentCount = await tx.studentMonthlyEnrollment.count({ where: { month: m, status: "Active" } });
       const totalLocalFees = studentInvoices.reduce((sum, inv) => sum + inv.feesAmount, 0);
       const totalINR = studentInvoices.reduce((sum, inv) => sum + inv.inrEquivalent, 0);
       const totalDueINR = studentInvoices.reduce((sum, inv) => sum + (inv.paymentDone ? 0 : inv.inrEquivalent), 0);
       const paidInvoices = studentInvoices.filter(inv => inv.paymentDone).length;
       const dueInvoices = studentInvoices.filter(inv => !inv.paymentDone).length;
-      
       await tx.monthlyBillingSummary.create({
-        data: {
-          month: m,
-          studentCount,
-          totalLocalFees,
-          totalINR,
-          totalDueINR,
-          paidInvoices,
-          dueInvoices,
-          paidRatio: studentInvoices.length > 0 ? (paidInvoices / studentInvoices.length) : 0
-        }
+        data: { month: m, studentCount, totalLocalFees, totalINR, totalDueINR, paidInvoices, dueInvoices, paidRatio: studentInvoices.length > 0 ? (paidInvoices / studentInvoices.length) : 0 }
+      });
+    }
+
+    // 12. GENERATE MONTHLY PAYROLL SUMMARIES (staff-side)
+    console.log("[ETL] Generating monthly payroll summaries...");
+    const allClaims = await tx.claim.findMany();
+    const claimMonthGroups = new Map<string, any[]>();
+    for (const c of allClaims) {
+      if (!claimMonthGroups.has(c.month)) claimMonthGroups.set(c.month, []);
+      claimMonthGroups.get(c.month)!.push(c);
+    }
+    for (const [m, claims] of claimMonthGroups.entries()) {
+      const staffCount = new Set(claims.map((c: any) => c.userId)).size;
+      const totalLocalFees = claims.reduce((sum: number, c: any) => sum + c.amount, 0);
+      // Rough GBP→INR at 105 (approximate historical average)
+      const totalINR = totalLocalFees * 105;
+      const paidClaims = claims.filter((c: any) => c.status === "paid").length;
+      const dueClaims = claims.filter((c: any) => c.status !== "paid").length;
+      const totalDueINR = claims.filter((c: any) => c.status !== "paid").reduce((sum: number, c: any) => sum + c.amount, 0) * 105;
+      await tx.monthlyPayrollSummary.create({
+        data: { month: m, staffCount, totalLocalFees, totalINR, totalDueINR, paidClaims, dueClaims }
       });
     }
 
