@@ -26,64 +26,64 @@ export type AggregateDoubt = {
 
 export type DoubtMinAggregateOutputType = {
   id: string | null
+  studentId: string | null
+  syllabusItemId: string | null
   body: string | null
   response: string | null
   status: string | null
   createdAt: Date | null
-  studentId: string | null
-  syllabusItemId: string | null
 }
 
 export type DoubtMaxAggregateOutputType = {
   id: string | null
+  studentId: string | null
+  syllabusItemId: string | null
   body: string | null
   response: string | null
   status: string | null
   createdAt: Date | null
-  studentId: string | null
-  syllabusItemId: string | null
 }
 
 export type DoubtCountAggregateOutputType = {
   id: number
+  studentId: number
+  syllabusItemId: number
   body: number
   response: number
   status: number
   createdAt: number
-  studentId: number
-  syllabusItemId: number
   _all: number
 }
 
 
 export type DoubtMinAggregateInputType = {
   id?: true
+  studentId?: true
+  syllabusItemId?: true
   body?: true
   response?: true
   status?: true
   createdAt?: true
-  studentId?: true
-  syllabusItemId?: true
 }
 
 export type DoubtMaxAggregateInputType = {
   id?: true
+  studentId?: true
+  syllabusItemId?: true
   body?: true
   response?: true
   status?: true
   createdAt?: true
-  studentId?: true
-  syllabusItemId?: true
 }
 
 export type DoubtCountAggregateInputType = {
   id?: true
+  studentId?: true
+  syllabusItemId?: true
   body?: true
   response?: true
   status?: true
   createdAt?: true
-  studentId?: true
-  syllabusItemId?: true
   _all?: true
 }
 
@@ -161,12 +161,12 @@ export type DoubtGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type DoubtGroupByOutputType = {
   id: string
+  studentId: string
+  syllabusItemId: string
   body: string
   response: string | null
   status: string
   createdAt: Date
-  studentId: string
-  syllabusItemId: string
   _count: DoubtCountAggregateOutputType | null
   _min: DoubtMinAggregateOutputType | null
   _max: DoubtMaxAggregateOutputType | null
@@ -192,26 +192,26 @@ export type DoubtWhereInput = {
   OR?: Prisma.DoubtWhereInput[]
   NOT?: Prisma.DoubtWhereInput | Prisma.DoubtWhereInput[]
   id?: Prisma.StringFilter<"Doubt"> | string
+  studentId?: Prisma.StringFilter<"Doubt"> | string
+  syllabusItemId?: Prisma.StringFilter<"Doubt"> | string
   body?: Prisma.StringFilter<"Doubt"> | string
   response?: Prisma.StringNullableFilter<"Doubt"> | string | null
   status?: Prisma.StringFilter<"Doubt"> | string
   createdAt?: Prisma.DateTimeFilter<"Doubt"> | Date | string
-  studentId?: Prisma.StringFilter<"Doubt"> | string
-  syllabusItemId?: Prisma.StringFilter<"Doubt"> | string
-  syllabusItem?: Prisma.XOR<Prisma.SyllabusItemScalarRelationFilter, Prisma.SyllabusItemWhereInput>
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  syllabusItem?: Prisma.XOR<Prisma.SyllabusItemScalarRelationFilter, Prisma.SyllabusItemWhereInput>
 }
 
 export type DoubtOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
+  syllabusItemId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   response?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  syllabusItemId?: Prisma.SortOrder
-  syllabusItem?: Prisma.SyllabusItemOrderByWithRelationInput
   student?: Prisma.UserOrderByWithRelationInput
+  syllabusItem?: Prisma.SyllabusItemOrderByWithRelationInput
 }
 
 export type DoubtWhereUniqueInput = Prisma.AtLeast<{
@@ -219,24 +219,24 @@ export type DoubtWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.DoubtWhereInput | Prisma.DoubtWhereInput[]
   OR?: Prisma.DoubtWhereInput[]
   NOT?: Prisma.DoubtWhereInput | Prisma.DoubtWhereInput[]
+  studentId?: Prisma.StringFilter<"Doubt"> | string
+  syllabusItemId?: Prisma.StringFilter<"Doubt"> | string
   body?: Prisma.StringFilter<"Doubt"> | string
   response?: Prisma.StringNullableFilter<"Doubt"> | string | null
   status?: Prisma.StringFilter<"Doubt"> | string
   createdAt?: Prisma.DateTimeFilter<"Doubt"> | Date | string
-  studentId?: Prisma.StringFilter<"Doubt"> | string
-  syllabusItemId?: Prisma.StringFilter<"Doubt"> | string
-  syllabusItem?: Prisma.XOR<Prisma.SyllabusItemScalarRelationFilter, Prisma.SyllabusItemWhereInput>
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  syllabusItem?: Prisma.XOR<Prisma.SyllabusItemScalarRelationFilter, Prisma.SyllabusItemWhereInput>
 }, "id">
 
 export type DoubtOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
+  syllabusItemId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   response?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  syllabusItemId?: Prisma.SortOrder
   _count?: Prisma.DoubtCountOrderByAggregateInput
   _max?: Prisma.DoubtMaxOrderByAggregateInput
   _min?: Prisma.DoubtMinOrderByAggregateInput
@@ -247,12 +247,12 @@ export type DoubtScalarWhereWithAggregatesInput = {
   OR?: Prisma.DoubtScalarWhereWithAggregatesInput[]
   NOT?: Prisma.DoubtScalarWhereWithAggregatesInput | Prisma.DoubtScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
+  studentId?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
+  syllabusItemId?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
   body?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
   response?: Prisma.StringNullableWithAggregatesFilter<"Doubt"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Doubt"> | Date | string
-  studentId?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
-  syllabusItemId?: Prisma.StringWithAggregatesFilter<"Doubt"> | string
 }
 
 export type DoubtCreateInput = {
@@ -261,18 +261,18 @@ export type DoubtCreateInput = {
   response?: string | null
   status?: string
   createdAt?: Date | string
-  syllabusItem: Prisma.SyllabusItemCreateNestedOneWithoutDoubtsInput
   student: Prisma.UserCreateNestedOneWithoutDoubtsInput
+  syllabusItem: Prisma.SyllabusItemCreateNestedOneWithoutDoubtsInput
 }
 
 export type DoubtUncheckedCreateInput = {
   id?: string
+  studentId: string
+  syllabusItemId: string
   body: string
   response?: string | null
   status?: string
   createdAt?: Date | string
-  studentId: string
-  syllabusItemId: string
 }
 
 export type DoubtUpdateInput = {
@@ -281,28 +281,28 @@ export type DoubtUpdateInput = {
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  syllabusItem?: Prisma.SyllabusItemUpdateOneRequiredWithoutDoubtsNestedInput
   student?: Prisma.UserUpdateOneRequiredWithoutDoubtsNestedInput
+  syllabusItem?: Prisma.SyllabusItemUpdateOneRequiredWithoutDoubtsNestedInput
 }
 
 export type DoubtUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type DoubtCreateManyInput = {
   id?: string
+  studentId: string
+  syllabusItemId: string
   body: string
   response?: string | null
   status?: string
   createdAt?: Date | string
-  studentId: string
-  syllabusItemId: string
 }
 
 export type DoubtUpdateManyMutationInput = {
@@ -315,12 +315,12 @@ export type DoubtUpdateManyMutationInput = {
 
 export type DoubtUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type DoubtListRelationFilter = {
@@ -335,32 +335,32 @@ export type DoubtOrderByRelationAggregateInput = {
 
 export type DoubtCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
+  syllabusItemId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   response?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  syllabusItemId?: Prisma.SortOrder
 }
 
 export type DoubtMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
+  syllabusItemId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   response?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  syllabusItemId?: Prisma.SortOrder
 }
 
 export type DoubtMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  studentId?: Prisma.SortOrder
+  syllabusItemId?: Prisma.SortOrder
   body?: Prisma.SortOrder
   response?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  syllabusItemId?: Prisma.SortOrder
 }
 
 export type DoubtCreateNestedManyWithoutStudentInput = {
@@ -458,11 +458,11 @@ export type DoubtCreateWithoutStudentInput = {
 
 export type DoubtUncheckedCreateWithoutStudentInput = {
   id?: string
+  syllabusItemId: string
   body: string
   response?: string | null
   status?: string
   createdAt?: Date | string
-  syllabusItemId: string
 }
 
 export type DoubtCreateOrConnectWithoutStudentInput = {
@@ -495,12 +495,12 @@ export type DoubtScalarWhereInput = {
   OR?: Prisma.DoubtScalarWhereInput[]
   NOT?: Prisma.DoubtScalarWhereInput | Prisma.DoubtScalarWhereInput[]
   id?: Prisma.StringFilter<"Doubt"> | string
+  studentId?: Prisma.StringFilter<"Doubt"> | string
+  syllabusItemId?: Prisma.StringFilter<"Doubt"> | string
   body?: Prisma.StringFilter<"Doubt"> | string
   response?: Prisma.StringNullableFilter<"Doubt"> | string | null
   status?: Prisma.StringFilter<"Doubt"> | string
   createdAt?: Prisma.DateTimeFilter<"Doubt"> | Date | string
-  studentId?: Prisma.StringFilter<"Doubt"> | string
-  syllabusItemId?: Prisma.StringFilter<"Doubt"> | string
 }
 
 export type DoubtCreateWithoutSyllabusItemInput = {
@@ -514,11 +514,11 @@ export type DoubtCreateWithoutSyllabusItemInput = {
 
 export type DoubtUncheckedCreateWithoutSyllabusItemInput = {
   id?: string
+  studentId: string
   body: string
   response?: string | null
   status?: string
   createdAt?: Date | string
-  studentId: string
 }
 
 export type DoubtCreateOrConnectWithoutSyllabusItemInput = {
@@ -548,11 +548,11 @@ export type DoubtUpdateManyWithWhereWithoutSyllabusItemInput = {
 
 export type DoubtCreateManyStudentInput = {
   id?: string
+  syllabusItemId: string
   body: string
   response?: string | null
   status?: string
   createdAt?: Date | string
-  syllabusItemId: string
 }
 
 export type DoubtUpdateWithoutStudentInput = {
@@ -566,29 +566,29 @@ export type DoubtUpdateWithoutStudentInput = {
 
 export type DoubtUncheckedUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type DoubtUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type DoubtCreateManySyllabusItemInput = {
   id?: string
+  studentId: string
   body: string
   response?: string | null
   status?: string
   createdAt?: Date | string
-  studentId: string
 }
 
 export type DoubtUpdateWithoutSyllabusItemInput = {
@@ -602,98 +602,98 @@ export type DoubtUpdateWithoutSyllabusItemInput = {
 
 export type DoubtUncheckedUpdateWithoutSyllabusItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type DoubtUncheckedUpdateManyWithoutSyllabusItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
   body?: Prisma.StringFieldUpdateOperationsInput | string
   response?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
 
 export type DoubtSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  studentId?: boolean
+  syllabusItemId?: boolean
   body?: boolean
   response?: boolean
   status?: boolean
   createdAt?: boolean
-  studentId?: boolean
-  syllabusItemId?: boolean
-  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doubt"]>
 
 export type DoubtSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  studentId?: boolean
+  syllabusItemId?: boolean
   body?: boolean
   response?: boolean
   status?: boolean
   createdAt?: boolean
-  studentId?: boolean
-  syllabusItemId?: boolean
-  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doubt"]>
 
 export type DoubtSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  studentId?: boolean
+  syllabusItemId?: boolean
   body?: boolean
   response?: boolean
   status?: boolean
   createdAt?: boolean
-  studentId?: boolean
-  syllabusItemId?: boolean
-  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doubt"]>
 
 export type DoubtSelectScalar = {
   id?: boolean
+  studentId?: boolean
+  syllabusItemId?: boolean
   body?: boolean
   response?: boolean
   status?: boolean
   createdAt?: boolean
-  studentId?: boolean
-  syllabusItemId?: boolean
 }
 
-export type DoubtOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "body" | "response" | "status" | "createdAt" | "studentId" | "syllabusItemId", ExtArgs["result"]["doubt"]>
+export type DoubtOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "syllabusItemId" | "body" | "response" | "status" | "createdAt", ExtArgs["result"]["doubt"]>
 export type DoubtInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }
 export type DoubtIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }
 export type DoubtIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }
 
 export type $DoubtPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Doubt"
   objects: {
-    syllabusItem: Prisma.$SyllabusItemPayload<ExtArgs>
     student: Prisma.$UserPayload<ExtArgs>
+    syllabusItem: Prisma.$SyllabusItemPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    studentId: string
+    syllabusItemId: string
     body: string
     response: string | null
     status: string
     createdAt: Date
-    studentId: string
-    syllabusItemId: string
   }, ExtArgs["result"]["doubt"]>
   composites: {}
 }
@@ -1088,8 +1088,8 @@ readonly fields: DoubtFieldRefs;
  */
 export interface Prisma__DoubtClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  syllabusItem<T extends Prisma.SyllabusItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItemDefaultArgs<ExtArgs>>): Prisma.Prisma__SyllabusItemClient<runtime.Types.Result.GetResult<Prisma.$SyllabusItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  syllabusItem<T extends Prisma.SyllabusItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItemDefaultArgs<ExtArgs>>): Prisma.Prisma__SyllabusItemClient<runtime.Types.Result.GetResult<Prisma.$SyllabusItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1120,12 +1120,12 @@ export interface Prisma__DoubtClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface DoubtFieldRefs {
   readonly id: Prisma.FieldRef<"Doubt", 'String'>
+  readonly studentId: Prisma.FieldRef<"Doubt", 'String'>
+  readonly syllabusItemId: Prisma.FieldRef<"Doubt", 'String'>
   readonly body: Prisma.FieldRef<"Doubt", 'String'>
   readonly response: Prisma.FieldRef<"Doubt", 'String'>
   readonly status: Prisma.FieldRef<"Doubt", 'String'>
   readonly createdAt: Prisma.FieldRef<"Doubt", 'DateTime'>
-  readonly studentId: Prisma.FieldRef<"Doubt", 'String'>
-  readonly syllabusItemId: Prisma.FieldRef<"Doubt", 'String'>
 }
     
 

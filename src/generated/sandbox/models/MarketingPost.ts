@@ -29,10 +29,12 @@ export type MarketingPostMinAggregateOutputType = {
   canvaLink: string | null
   driveLink: string | null
   caption: string | null
-  scheduledAt: Date | null
-  status: string | null
+  scheduledDate: Date | null
   contentType: string | null
+  status: string | null
   campaignTag: string | null
+  performanceNotes: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -41,10 +43,12 @@ export type MarketingPostMaxAggregateOutputType = {
   canvaLink: string | null
   driveLink: string | null
   caption: string | null
-  scheduledAt: Date | null
-  status: string | null
+  scheduledDate: Date | null
   contentType: string | null
+  status: string | null
   campaignTag: string | null
+  performanceNotes: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -53,10 +57,12 @@ export type MarketingPostCountAggregateOutputType = {
   canvaLink: number
   driveLink: number
   caption: number
-  scheduledAt: number
-  status: number
+  scheduledDate: number
   contentType: number
+  status: number
   campaignTag: number
+  performanceNotes: number
+  isActive: number
   createdAt: number
   _all: number
 }
@@ -67,10 +73,12 @@ export type MarketingPostMinAggregateInputType = {
   canvaLink?: true
   driveLink?: true
   caption?: true
-  scheduledAt?: true
-  status?: true
+  scheduledDate?: true
   contentType?: true
+  status?: true
   campaignTag?: true
+  performanceNotes?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -79,10 +87,12 @@ export type MarketingPostMaxAggregateInputType = {
   canvaLink?: true
   driveLink?: true
   caption?: true
-  scheduledAt?: true
-  status?: true
+  scheduledDate?: true
   contentType?: true
+  status?: true
   campaignTag?: true
+  performanceNotes?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -91,10 +101,12 @@ export type MarketingPostCountAggregateInputType = {
   canvaLink?: true
   driveLink?: true
   caption?: true
-  scheduledAt?: true
-  status?: true
+  scheduledDate?: true
   contentType?: true
+  status?: true
   campaignTag?: true
+  performanceNotes?: true
+  isActive?: true
   createdAt?: true
   _all?: true
 }
@@ -176,10 +188,12 @@ export type MarketingPostGroupByOutputType = {
   canvaLink: string | null
   driveLink: string | null
   caption: string | null
-  scheduledAt: Date
-  status: string
+  scheduledDate: Date
   contentType: string | null
+  status: string
   campaignTag: string | null
+  performanceNotes: string | null
+  isActive: boolean
   createdAt: Date
   _count: MarketingPostCountAggregateOutputType | null
   _min: MarketingPostMinAggregateOutputType | null
@@ -209,10 +223,12 @@ export type MarketingPostWhereInput = {
   canvaLink?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
   driveLink?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
   caption?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
-  scheduledAt?: Prisma.DateTimeFilter<"MarketingPost"> | Date | string
-  status?: Prisma.StringFilter<"MarketingPost"> | string
+  scheduledDate?: Prisma.DateTimeFilter<"MarketingPost"> | Date | string
   contentType?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
+  status?: Prisma.StringFilter<"MarketingPost"> | string
   campaignTag?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
+  performanceNotes?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
+  isActive?: Prisma.BoolFilter<"MarketingPost"> | boolean
   createdAt?: Prisma.DateTimeFilter<"MarketingPost"> | Date | string
 }
 
@@ -221,10 +237,12 @@ export type MarketingPostOrderByWithRelationInput = {
   canvaLink?: Prisma.SortOrderInput | Prisma.SortOrder
   driveLink?: Prisma.SortOrderInput | Prisma.SortOrder
   caption?: Prisma.SortOrderInput | Prisma.SortOrder
-  scheduledAt?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   contentType?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   campaignTag?: Prisma.SortOrderInput | Prisma.SortOrder
+  performanceNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -236,10 +254,12 @@ export type MarketingPostWhereUniqueInput = Prisma.AtLeast<{
   canvaLink?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
   driveLink?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
   caption?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
-  scheduledAt?: Prisma.DateTimeFilter<"MarketingPost"> | Date | string
-  status?: Prisma.StringFilter<"MarketingPost"> | string
+  scheduledDate?: Prisma.DateTimeFilter<"MarketingPost"> | Date | string
   contentType?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
+  status?: Prisma.StringFilter<"MarketingPost"> | string
   campaignTag?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
+  performanceNotes?: Prisma.StringNullableFilter<"MarketingPost"> | string | null
+  isActive?: Prisma.BoolFilter<"MarketingPost"> | boolean
   createdAt?: Prisma.DateTimeFilter<"MarketingPost"> | Date | string
 }, "id">
 
@@ -248,10 +268,12 @@ export type MarketingPostOrderByWithAggregationInput = {
   canvaLink?: Prisma.SortOrderInput | Prisma.SortOrder
   driveLink?: Prisma.SortOrderInput | Prisma.SortOrder
   caption?: Prisma.SortOrderInput | Prisma.SortOrder
-  scheduledAt?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   contentType?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   campaignTag?: Prisma.SortOrderInput | Prisma.SortOrder
+  performanceNotes?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MarketingPostCountOrderByAggregateInput
   _max?: Prisma.MarketingPostMaxOrderByAggregateInput
@@ -266,10 +288,12 @@ export type MarketingPostScalarWhereWithAggregatesInput = {
   canvaLink?: Prisma.StringNullableWithAggregatesFilter<"MarketingPost"> | string | null
   driveLink?: Prisma.StringNullableWithAggregatesFilter<"MarketingPost"> | string | null
   caption?: Prisma.StringNullableWithAggregatesFilter<"MarketingPost"> | string | null
-  scheduledAt?: Prisma.DateTimeWithAggregatesFilter<"MarketingPost"> | Date | string
-  status?: Prisma.StringWithAggregatesFilter<"MarketingPost"> | string
+  scheduledDate?: Prisma.DateTimeWithAggregatesFilter<"MarketingPost"> | Date | string
   contentType?: Prisma.StringNullableWithAggregatesFilter<"MarketingPost"> | string | null
+  status?: Prisma.StringWithAggregatesFilter<"MarketingPost"> | string
   campaignTag?: Prisma.StringNullableWithAggregatesFilter<"MarketingPost"> | string | null
+  performanceNotes?: Prisma.StringNullableWithAggregatesFilter<"MarketingPost"> | string | null
+  isActive?: Prisma.BoolWithAggregatesFilter<"MarketingPost"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MarketingPost"> | Date | string
 }
 
@@ -278,10 +302,12 @@ export type MarketingPostCreateInput = {
   canvaLink?: string | null
   driveLink?: string | null
   caption?: string | null
-  scheduledAt: Date | string
-  status?: string
+  scheduledDate: Date | string
   contentType?: string | null
+  status?: string
   campaignTag?: string | null
+  performanceNotes?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -290,10 +316,12 @@ export type MarketingPostUncheckedCreateInput = {
   canvaLink?: string | null
   driveLink?: string | null
   caption?: string | null
-  scheduledAt: Date | string
-  status?: string
+  scheduledDate: Date | string
   contentType?: string | null
+  status?: string
   campaignTag?: string | null
+  performanceNotes?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -302,10 +330,12 @@ export type MarketingPostUpdateInput = {
   canvaLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   campaignTag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performanceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -314,10 +344,12 @@ export type MarketingPostUncheckedUpdateInput = {
   canvaLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   campaignTag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performanceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -326,10 +358,12 @@ export type MarketingPostCreateManyInput = {
   canvaLink?: string | null
   driveLink?: string | null
   caption?: string | null
-  scheduledAt: Date | string
-  status?: string
+  scheduledDate: Date | string
   contentType?: string | null
+  status?: string
   campaignTag?: string | null
+  performanceNotes?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -338,10 +372,12 @@ export type MarketingPostUpdateManyMutationInput = {
   canvaLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   campaignTag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performanceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -350,10 +386,12 @@ export type MarketingPostUncheckedUpdateManyInput = {
   canvaLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   caption?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
   campaignTag?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performanceNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -362,10 +400,12 @@ export type MarketingPostCountOrderByAggregateInput = {
   canvaLink?: Prisma.SortOrder
   driveLink?: Prisma.SortOrder
   caption?: Prisma.SortOrder
-  scheduledAt?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   contentType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   campaignTag?: Prisma.SortOrder
+  performanceNotes?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -374,10 +414,12 @@ export type MarketingPostMaxOrderByAggregateInput = {
   canvaLink?: Prisma.SortOrder
   driveLink?: Prisma.SortOrder
   caption?: Prisma.SortOrder
-  scheduledAt?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   contentType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   campaignTag?: Prisma.SortOrder
+  performanceNotes?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -386,10 +428,12 @@ export type MarketingPostMinOrderByAggregateInput = {
   canvaLink?: Prisma.SortOrder
   driveLink?: Prisma.SortOrder
   caption?: Prisma.SortOrder
-  scheduledAt?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  scheduledDate?: Prisma.SortOrder
   contentType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   campaignTag?: Prisma.SortOrder
+  performanceNotes?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -400,10 +444,12 @@ export type MarketingPostSelect<ExtArgs extends runtime.Types.Extensions.Interna
   canvaLink?: boolean
   driveLink?: boolean
   caption?: boolean
-  scheduledAt?: boolean
-  status?: boolean
+  scheduledDate?: boolean
   contentType?: boolean
+  status?: boolean
   campaignTag?: boolean
+  performanceNotes?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["marketingPost"]>
 
@@ -412,10 +458,12 @@ export type MarketingPostSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   canvaLink?: boolean
   driveLink?: boolean
   caption?: boolean
-  scheduledAt?: boolean
-  status?: boolean
+  scheduledDate?: boolean
   contentType?: boolean
+  status?: boolean
   campaignTag?: boolean
+  performanceNotes?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["marketingPost"]>
 
@@ -424,10 +472,12 @@ export type MarketingPostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   canvaLink?: boolean
   driveLink?: boolean
   caption?: boolean
-  scheduledAt?: boolean
-  status?: boolean
+  scheduledDate?: boolean
   contentType?: boolean
+  status?: boolean
   campaignTag?: boolean
+  performanceNotes?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["marketingPost"]>
 
@@ -436,14 +486,16 @@ export type MarketingPostSelectScalar = {
   canvaLink?: boolean
   driveLink?: boolean
   caption?: boolean
-  scheduledAt?: boolean
-  status?: boolean
+  scheduledDate?: boolean
   contentType?: boolean
+  status?: boolean
   campaignTag?: boolean
+  performanceNotes?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }
 
-export type MarketingPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "canvaLink" | "driveLink" | "caption" | "scheduledAt" | "status" | "contentType" | "campaignTag" | "createdAt", ExtArgs["result"]["marketingPost"]>
+export type MarketingPostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "canvaLink" | "driveLink" | "caption" | "scheduledDate" | "contentType" | "status" | "campaignTag" | "performanceNotes" | "isActive" | "createdAt", ExtArgs["result"]["marketingPost"]>
 
 export type $MarketingPostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MarketingPost"
@@ -453,10 +505,12 @@ export type $MarketingPostPayload<ExtArgs extends runtime.Types.Extensions.Inter
     canvaLink: string | null
     driveLink: string | null
     caption: string | null
-    scheduledAt: Date
-    status: string
+    scheduledDate: Date
     contentType: string | null
+    status: string
     campaignTag: string | null
+    performanceNotes: string | null
+    isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["marketingPost"]>
   composites: {}
@@ -885,10 +939,12 @@ export interface MarketingPostFieldRefs {
   readonly canvaLink: Prisma.FieldRef<"MarketingPost", 'String'>
   readonly driveLink: Prisma.FieldRef<"MarketingPost", 'String'>
   readonly caption: Prisma.FieldRef<"MarketingPost", 'String'>
-  readonly scheduledAt: Prisma.FieldRef<"MarketingPost", 'DateTime'>
-  readonly status: Prisma.FieldRef<"MarketingPost", 'String'>
+  readonly scheduledDate: Prisma.FieldRef<"MarketingPost", 'DateTime'>
   readonly contentType: Prisma.FieldRef<"MarketingPost", 'String'>
+  readonly status: Prisma.FieldRef<"MarketingPost", 'String'>
   readonly campaignTag: Prisma.FieldRef<"MarketingPost", 'String'>
+  readonly performanceNotes: Prisma.FieldRef<"MarketingPost", 'String'>
+  readonly isActive: Prisma.FieldRef<"MarketingPost", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"MarketingPost", 'DateTime'>
 }
     

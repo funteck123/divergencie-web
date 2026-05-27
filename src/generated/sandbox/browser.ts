@@ -23,80 +23,55 @@ export * from './enums';
  */
 export type User = Prisma.UserModel
 /**
+ * Model StudentProfile
+ * 
+ */
+export type StudentProfile = Prisma.StudentProfileModel
+/**
+ * Model TeacherProfile
+ * 
+ */
+export type TeacherProfile = Prisma.TeacherProfileModel
+/**
+ * Model StaffProfile
+ * 
+ */
+export type StaffProfile = Prisma.StaffProfileModel
+/**
+ * Model ParentProfile
+ * 
+ */
+export type ParentProfile = Prisma.ParentProfileModel
+/**
+ * Model AmbassadorProfile
+ * 
+ */
+export type AmbassadorProfile = Prisma.AmbassadorProfileModel
+/**
+ * Model BankAccount
+ * 
+ */
+export type BankAccount = Prisma.BankAccountModel
+/**
  * Model Group
  * 
  */
 export type Group = Prisma.GroupModel
 /**
- * Model BatchRateCard
+ * Model Service
  * 
  */
-export type BatchRateCard = Prisma.BatchRateCardModel
+export type Service = Prisma.ServiceModel
 /**
- * Model StudentRateOverride
+ * Model Enrollment
  * 
  */
-export type StudentRateOverride = Prisma.StudentRateOverrideModel
+export type Enrollment = Prisma.EnrollmentModel
 /**
- * Model StudentMonthlyEnrollment
+ * Model Discount
  * 
  */
-export type StudentMonthlyEnrollment = Prisma.StudentMonthlyEnrollmentModel
-/**
- * Model EnrollmentPackageItem
- * 
- */
-export type EnrollmentPackageItem = Prisma.EnrollmentPackageItemModel
-/**
- * Model StudentInvoice
- * 
- */
-export type StudentInvoice = Prisma.StudentInvoiceModel
-/**
- * Model ResourceInvoice
- * 
- */
-export type ResourceInvoice = Prisma.ResourceInvoiceModel
-/**
- * Model CounsellingInvoice
- * 
- */
-export type CounsellingInvoice = Prisma.CounsellingInvoiceModel
-/**
- * Model Claim
- * 
- */
-export type Claim = Prisma.ClaimModel
-/**
- * Model Account
- * 
- */
-export type Account = Prisma.AccountModel
-/**
- * Model AccountTransaction
- * 
- */
-export type AccountTransaction = Prisma.AccountTransactionModel
-/**
- * Model LedgerEntry
- * 
- */
-export type LedgerEntry = Prisma.LedgerEntryModel
-/**
- * Model DCBankAccount
- * 
- */
-export type DCBankAccount = Prisma.DCBankAccountModel
-/**
- * Model MonthlyBillingSummary
- * 
- */
-export type MonthlyBillingSummary = Prisma.MonthlyBillingSummaryModel
-/**
- * Model MonthlyPayrollSummary
- * 
- */
-export type MonthlyPayrollSummary = Prisma.MonthlyPayrollSummaryModel
+export type Discount = Prisma.DiscountModel
 /**
  * Model AcademicSession
  * 
@@ -108,30 +83,50 @@ export type AcademicSession = Prisma.AcademicSessionModel
  */
 export type Attendance = Prisma.AttendanceModel
 /**
- * Model Assignment
+ * Model InvoiceMonth
  * 
  */
-export type Assignment = Prisma.AssignmentModel
+export type InvoiceMonth = Prisma.InvoiceMonthModel
 /**
- * Model SyllabusItem
+ * Model StudentInvoice
  * 
  */
-export type SyllabusItem = Prisma.SyllabusItemModel
+export type StudentInvoice = Prisma.StudentInvoiceModel
 /**
- * Model Doubt
+ * Model InvoiceLineItem
  * 
  */
-export type Doubt = Prisma.DoubtModel
+export type InvoiceLineItem = Prisma.InvoiceLineItemModel
 /**
- * Model StudentProgress
+ * Model Claim
  * 
  */
-export type StudentProgress = Prisma.StudentProgressModel
+export type Claim = Prisma.ClaimModel
 /**
- * Model Recording
+ * Model AccountTransaction
  * 
  */
-export type Recording = Prisma.RecordingModel
+export type AccountTransaction = Prisma.AccountTransactionModel
+/**
+ * Model LedgerEntry
+ * 
+ */
+export type LedgerEntry = Prisma.LedgerEntryModel
+/**
+ * Model DeptBudget
+ * 
+ */
+export type DeptBudget = Prisma.DeptBudgetModel
+/**
+ * Model BudgetSubCategory
+ * 
+ */
+export type BudgetSubCategory = Prisma.BudgetSubCategoryModel
+/**
+ * Model BudgetUtilisation
+ * 
+ */
+export type BudgetUtilisation = Prisma.BudgetUtilisationModel
 /**
  * Model Ticket
  * 
@@ -158,10 +153,35 @@ export type TicketHistory = Prisma.TicketHistoryModel
  */
 export type TicketPermission = Prisma.TicketPermissionModel
 /**
- * Model Referral
+ * Model SyllabusItem
  * 
  */
-export type Referral = Prisma.ReferralModel
+export type SyllabusItem = Prisma.SyllabusItemModel
+/**
+ * Model StudentProgress
+ * 
+ */
+export type StudentProgress = Prisma.StudentProgressModel
+/**
+ * Model Doubt
+ * 
+ */
+export type Doubt = Prisma.DoubtModel
+/**
+ * Model MockResult
+ * 
+ */
+export type MockResult = Prisma.MockResultModel
+/**
+ * Model Assignment
+ * 
+ */
+export type Assignment = Prisma.AssignmentModel
+/**
+ * Model Candidate
+ * 
+ */
+export type Candidate = Prisma.CandidateModel
 /**
  * Model Meeting
  * 
@@ -173,72 +193,87 @@ export type Meeting = Prisma.MeetingModel
  */
 export type MeetingParticipant = Prisma.MeetingParticipantModel
 /**
- * Model Candidate
+ * Model Referral
  * 
  */
-export type Candidate = Prisma.CandidateModel
+export type Referral = Prisma.ReferralModel
+/**
+ * Model AmbassadorDeliverable
+ * 
+ */
+export type AmbassadorDeliverable = Prisma.AmbassadorDeliverableModel
+/**
+ * Model AmbassadorEarning
+ * 
+ */
+export type AmbassadorEarning = Prisma.AmbassadorEarningModel
+/**
+ * Model ContentBankItem
+ * 
+ */
+export type ContentBankItem = Prisma.ContentBankItemModel
+/**
+ * Model MarketingPost
+ * 
+ */
+export type MarketingPost = Prisma.MarketingPostModel
 /**
  * Model Lead
  * 
  */
 export type Lead = Prisma.LeadModel
 /**
- * Model AccessLog
- * 
- */
-export type AccessLog = Prisma.AccessLogModel
-/**
  * Model Announcement
  * 
  */
 export type Announcement = Prisma.AnnouncementModel
 /**
- * Model Asset
+ * Model Recording
  * 
  */
-export type Asset = Prisma.AssetModel
+export type Recording = Prisma.RecordingModel
 /**
- * Model MockResult
+ * Model StudentStatus
  * 
  */
-export type MockResult = Prisma.MockResultModel
+export type StudentStatus = Prisma.StudentStatusModel
 /**
- * Model StaffProfile
+ * Model CanvaDesign
  * 
  */
-export type StaffProfile = Prisma.StaffProfileModel
+export type CanvaDesign = Prisma.CanvaDesignModel
 /**
- * Model TeacherProfile
+ * Model Booklet
  * 
  */
-export type TeacherProfile = Prisma.TeacherProfileModel
+export type Booklet = Prisma.BookletModel
 /**
- * Model StudentProfile
+ * Model GcrClassroom
  * 
  */
-export type StudentProfile = Prisma.StudentProfileModel
+export type GcrClassroom = Prisma.GcrClassroomModel
 /**
- * Model ParentProfile
+ * Model BacklogItem
  * 
  */
-export type ParentProfile = Prisma.ParentProfileModel
+export type BacklogItem = Prisma.BacklogItemModel
 /**
- * Model AmbassadorProfile
+ * Model SprintItem
  * 
  */
-export type AmbassadorProfile = Prisma.AmbassadorProfileModel
+export type SprintItem = Prisma.SprintItemModel
 /**
  * Model CurrencyRate
  * 
  */
 export type CurrencyRate = Prisma.CurrencyRateModel
 /**
- * Model MessageTemplate
+ * Model TextFormat
  * 
  */
-export type MessageTemplate = Prisma.MessageTemplateModel
+export type TextFormat = Prisma.TextFormatModel
 /**
- * Model MarketingPost
+ * Model AccessLog
  * 
  */
-export type MarketingPost = Prisma.MarketingPostModel
+export type AccessLog = Prisma.AccessLogModel

@@ -44,7 +44,7 @@ export type StaffProfileMinAggregateOutputType = {
   salaryType: string | null
   salaryRate: number | null
   latestQualification: string | null
-  bankAccountInfo: string | null
+  createdAt: Date | null
 }
 
 export type StaffProfileMaxAggregateOutputType = {
@@ -57,7 +57,7 @@ export type StaffProfileMaxAggregateOutputType = {
   salaryType: string | null
   salaryRate: number | null
   latestQualification: string | null
-  bankAccountInfo: string | null
+  createdAt: Date | null
 }
 
 export type StaffProfileCountAggregateOutputType = {
@@ -70,7 +70,7 @@ export type StaffProfileCountAggregateOutputType = {
   salaryType: number
   salaryRate: number
   latestQualification: number
-  bankAccountInfo: number
+  createdAt: number
   _all: number
 }
 
@@ -93,7 +93,7 @@ export type StaffProfileMinAggregateInputType = {
   salaryType?: true
   salaryRate?: true
   latestQualification?: true
-  bankAccountInfo?: true
+  createdAt?: true
 }
 
 export type StaffProfileMaxAggregateInputType = {
@@ -106,7 +106,7 @@ export type StaffProfileMaxAggregateInputType = {
   salaryType?: true
   salaryRate?: true
   latestQualification?: true
-  bankAccountInfo?: true
+  createdAt?: true
 }
 
 export type StaffProfileCountAggregateInputType = {
@@ -119,7 +119,7 @@ export type StaffProfileCountAggregateInputType = {
   salaryType?: true
   salaryRate?: true
   latestQualification?: true
-  bankAccountInfo?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -215,11 +215,11 @@ export type StaffProfileGroupByOutputType = {
   firstName: string
   lastName: string
   dob: Date | null
-  roleTitle: string
-  salaryType: string
-  salaryRate: number
-  latestQualification: string
-  bankAccountInfo: string | null
+  roleTitle: string | null
+  salaryType: string | null
+  salaryRate: number | null
+  latestQualification: string | null
+  createdAt: Date
   _count: StaffProfileCountAggregateOutputType | null
   _avg: StaffProfileAvgAggregateOutputType | null
   _sum: StaffProfileSumAggregateOutputType | null
@@ -251,11 +251,11 @@ export type StaffProfileWhereInput = {
   firstName?: Prisma.StringFilter<"StaffProfile"> | string
   lastName?: Prisma.StringFilter<"StaffProfile"> | string
   dob?: Prisma.DateTimeNullableFilter<"StaffProfile"> | Date | string | null
-  roleTitle?: Prisma.StringFilter<"StaffProfile"> | string
-  salaryType?: Prisma.StringFilter<"StaffProfile"> | string
-  salaryRate?: Prisma.FloatFilter<"StaffProfile"> | number
-  latestQualification?: Prisma.StringFilter<"StaffProfile"> | string
-  bankAccountInfo?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  roleTitle?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  salaryType?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  salaryRate?: Prisma.FloatNullableFilter<"StaffProfile"> | number | null
+  latestQualification?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"StaffProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -265,11 +265,11 @@ export type StaffProfileOrderByWithRelationInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrderInput | Prisma.SortOrder
-  roleTitle?: Prisma.SortOrder
-  salaryType?: Prisma.SortOrder
-  salaryRate?: Prisma.SortOrder
-  latestQualification?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  roleTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  salaryType?: Prisma.SortOrderInput | Prisma.SortOrder
+  salaryRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestQualification?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -282,11 +282,11 @@ export type StaffProfileWhereUniqueInput = Prisma.AtLeast<{
   firstName?: Prisma.StringFilter<"StaffProfile"> | string
   lastName?: Prisma.StringFilter<"StaffProfile"> | string
   dob?: Prisma.DateTimeNullableFilter<"StaffProfile"> | Date | string | null
-  roleTitle?: Prisma.StringFilter<"StaffProfile"> | string
-  salaryType?: Prisma.StringFilter<"StaffProfile"> | string
-  salaryRate?: Prisma.FloatFilter<"StaffProfile"> | number
-  latestQualification?: Prisma.StringFilter<"StaffProfile"> | string
-  bankAccountInfo?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  roleTitle?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  salaryType?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  salaryRate?: Prisma.FloatNullableFilter<"StaffProfile"> | number | null
+  latestQualification?: Prisma.StringNullableFilter<"StaffProfile"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"StaffProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
@@ -296,11 +296,11 @@ export type StaffProfileOrderByWithAggregationInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrderInput | Prisma.SortOrder
-  roleTitle?: Prisma.SortOrder
-  salaryType?: Prisma.SortOrder
-  salaryRate?: Prisma.SortOrder
-  latestQualification?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  roleTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  salaryType?: Prisma.SortOrderInput | Prisma.SortOrder
+  salaryRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  latestQualification?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.StaffProfileCountOrderByAggregateInput
   _avg?: Prisma.StaffProfileAvgOrderByAggregateInput
   _max?: Prisma.StaffProfileMaxOrderByAggregateInput
@@ -317,11 +317,11 @@ export type StaffProfileScalarWhereWithAggregatesInput = {
   firstName?: Prisma.StringWithAggregatesFilter<"StaffProfile"> | string
   lastName?: Prisma.StringWithAggregatesFilter<"StaffProfile"> | string
   dob?: Prisma.DateTimeNullableWithAggregatesFilter<"StaffProfile"> | Date | string | null
-  roleTitle?: Prisma.StringWithAggregatesFilter<"StaffProfile"> | string
-  salaryType?: Prisma.StringWithAggregatesFilter<"StaffProfile"> | string
-  salaryRate?: Prisma.FloatWithAggregatesFilter<"StaffProfile"> | number
-  latestQualification?: Prisma.StringWithAggregatesFilter<"StaffProfile"> | string
-  bankAccountInfo?: Prisma.StringNullableWithAggregatesFilter<"StaffProfile"> | string | null
+  roleTitle?: Prisma.StringNullableWithAggregatesFilter<"StaffProfile"> | string | null
+  salaryType?: Prisma.StringNullableWithAggregatesFilter<"StaffProfile"> | string | null
+  salaryRate?: Prisma.FloatNullableWithAggregatesFilter<"StaffProfile"> | number | null
+  latestQualification?: Prisma.StringNullableWithAggregatesFilter<"StaffProfile"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"StaffProfile"> | Date | string
 }
 
 export type StaffProfileCreateInput = {
@@ -329,11 +329,11 @@ export type StaffProfileCreateInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  roleTitle: string
-  salaryType: string
-  salaryRate: number
-  latestQualification: string
-  bankAccountInfo?: string | null
+  roleTitle?: string | null
+  salaryType?: string | null
+  salaryRate?: number | null
+  latestQualification?: string | null
+  createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutStaffProfileInput
 }
 
@@ -343,11 +343,11 @@ export type StaffProfileUncheckedCreateInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  roleTitle: string
-  salaryType: string
-  salaryRate: number
-  latestQualification: string
-  bankAccountInfo?: string | null
+  roleTitle?: string | null
+  salaryType?: string | null
+  salaryRate?: number | null
+  latestQualification?: string | null
+  createdAt?: Date | string
 }
 
 export type StaffProfileUpdateInput = {
@@ -355,11 +355,11 @@ export type StaffProfileUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roleTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryType?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutStaffProfileNestedInput
 }
 
@@ -369,11 +369,11 @@ export type StaffProfileUncheckedUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roleTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryType?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StaffProfileCreateManyInput = {
@@ -382,11 +382,11 @@ export type StaffProfileCreateManyInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  roleTitle: string
-  salaryType: string
-  salaryRate: number
-  latestQualification: string
-  bankAccountInfo?: string | null
+  roleTitle?: string | null
+  salaryType?: string | null
+  salaryRate?: number | null
+  latestQualification?: string | null
+  createdAt?: Date | string
 }
 
 export type StaffProfileUpdateManyMutationInput = {
@@ -394,11 +394,11 @@ export type StaffProfileUpdateManyMutationInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roleTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryType?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StaffProfileUncheckedUpdateManyInput = {
@@ -407,11 +407,11 @@ export type StaffProfileUncheckedUpdateManyInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roleTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryType?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StaffProfileNullableScalarRelationFilter = {
@@ -429,7 +429,7 @@ export type StaffProfileCountOrderByAggregateInput = {
   salaryType?: Prisma.SortOrder
   salaryRate?: Prisma.SortOrder
   latestQualification?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StaffProfileAvgOrderByAggregateInput = {
@@ -446,7 +446,7 @@ export type StaffProfileMaxOrderByAggregateInput = {
   salaryType?: Prisma.SortOrder
   salaryRate?: Prisma.SortOrder
   latestQualification?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StaffProfileMinOrderByAggregateInput = {
@@ -459,7 +459,7 @@ export type StaffProfileMinOrderByAggregateInput = {
   salaryType?: Prisma.SortOrder
   salaryRate?: Prisma.SortOrder
   latestQualification?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type StaffProfileSumOrderByAggregateInput = {
@@ -498,16 +498,24 @@ export type StaffProfileUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StaffProfileUpdateToOneWithWhereWithoutUserInput, Prisma.StaffProfileUpdateWithoutUserInput>, Prisma.StaffProfileUncheckedUpdateWithoutUserInput>
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type StaffProfileCreateWithoutUserInput = {
   id?: string
   firstName: string
   lastName: string
   dob?: Date | string | null
-  roleTitle: string
-  salaryType: string
-  salaryRate: number
-  latestQualification: string
-  bankAccountInfo?: string | null
+  roleTitle?: string | null
+  salaryType?: string | null
+  salaryRate?: number | null
+  latestQualification?: string | null
+  createdAt?: Date | string
 }
 
 export type StaffProfileUncheckedCreateWithoutUserInput = {
@@ -515,11 +523,11 @@ export type StaffProfileUncheckedCreateWithoutUserInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  roleTitle: string
-  salaryType: string
-  salaryRate: number
-  latestQualification: string
-  bankAccountInfo?: string | null
+  roleTitle?: string | null
+  salaryType?: string | null
+  salaryRate?: number | null
+  latestQualification?: string | null
+  createdAt?: Date | string
 }
 
 export type StaffProfileCreateOrConnectWithoutUserInput = {
@@ -543,11 +551,11 @@ export type StaffProfileUpdateWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roleTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryType?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StaffProfileUncheckedUpdateWithoutUserInput = {
@@ -555,11 +563,11 @@ export type StaffProfileUncheckedUpdateWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  roleTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryType?: Prisma.StringFieldUpdateOperationsInput | string
-  salaryRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roleTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -574,7 +582,7 @@ export type StaffProfileSelect<ExtArgs extends runtime.Types.Extensions.Internal
   salaryType?: boolean
   salaryRate?: boolean
   latestQualification?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staffProfile"]>
 
@@ -588,7 +596,7 @@ export type StaffProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   salaryType?: boolean
   salaryRate?: boolean
   latestQualification?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staffProfile"]>
 
@@ -602,7 +610,7 @@ export type StaffProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   salaryType?: boolean
   salaryRate?: boolean
   latestQualification?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staffProfile"]>
 
@@ -616,10 +624,10 @@ export type StaffProfileSelectScalar = {
   salaryType?: boolean
   salaryRate?: boolean
   latestQualification?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
 }
 
-export type StaffProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "dob" | "roleTitle" | "salaryType" | "salaryRate" | "latestQualification" | "bankAccountInfo", ExtArgs["result"]["staffProfile"]>
+export type StaffProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "dob" | "roleTitle" | "salaryType" | "salaryRate" | "latestQualification" | "createdAt", ExtArgs["result"]["staffProfile"]>
 export type StaffProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -641,11 +649,11 @@ export type $StaffProfilePayload<ExtArgs extends runtime.Types.Extensions.Intern
     firstName: string
     lastName: string
     dob: Date | null
-    roleTitle: string
-    salaryType: string
-    salaryRate: number
-    latestQualification: string
-    bankAccountInfo: string | null
+    roleTitle: string | null
+    salaryType: string | null
+    salaryRate: number | null
+    latestQualification: string | null
+    createdAt: Date
   }, ExtArgs["result"]["staffProfile"]>
   composites: {}
 }
@@ -1079,7 +1087,7 @@ export interface StaffProfileFieldRefs {
   readonly salaryType: Prisma.FieldRef<"StaffProfile", 'String'>
   readonly salaryRate: Prisma.FieldRef<"StaffProfile", 'Float'>
   readonly latestQualification: Prisma.FieldRef<"StaffProfile", 'String'>
-  readonly bankAccountInfo: Prisma.FieldRef<"StaffProfile", 'String'>
+  readonly createdAt: Prisma.FieldRef<"StaffProfile", 'DateTime'>
 }
     
 

@@ -20,18 +20,8 @@ export type TeacherProfileModel = runtime.Types.Result.DefaultSelection<Prisma.$
 
 export type AggregateTeacherProfile = {
   _count: TeacherProfileCountAggregateOutputType | null
-  _avg: TeacherProfileAvgAggregateOutputType | null
-  _sum: TeacherProfileSumAggregateOutputType | null
   _min: TeacherProfileMinAggregateOutputType | null
   _max: TeacherProfileMaxAggregateOutputType | null
-}
-
-export type TeacherProfileAvgAggregateOutputType = {
-  hourlyRate: number | null
-}
-
-export type TeacherProfileSumAggregateOutputType = {
-  hourlyRate: number | null
 }
 
 export type TeacherProfileMinAggregateOutputType = {
@@ -40,10 +30,9 @@ export type TeacherProfileMinAggregateOutputType = {
   firstName: string | null
   lastName: string | null
   dob: Date | null
-  hourlyRate: number | null
   latestQualification: string | null
   teachingProfileUrl: string | null
-  bankAccountInfo: string | null
+  createdAt: Date | null
 }
 
 export type TeacherProfileMaxAggregateOutputType = {
@@ -52,10 +41,9 @@ export type TeacherProfileMaxAggregateOutputType = {
   firstName: string | null
   lastName: string | null
   dob: Date | null
-  hourlyRate: number | null
   latestQualification: string | null
   teachingProfileUrl: string | null
-  bankAccountInfo: string | null
+  createdAt: Date | null
 }
 
 export type TeacherProfileCountAggregateOutputType = {
@@ -64,21 +52,12 @@ export type TeacherProfileCountAggregateOutputType = {
   firstName: number
   lastName: number
   dob: number
-  hourlyRate: number
   latestQualification: number
   teachingProfileUrl: number
-  bankAccountInfo: number
+  createdAt: number
   _all: number
 }
 
-
-export type TeacherProfileAvgAggregateInputType = {
-  hourlyRate?: true
-}
-
-export type TeacherProfileSumAggregateInputType = {
-  hourlyRate?: true
-}
 
 export type TeacherProfileMinAggregateInputType = {
   id?: true
@@ -86,10 +65,9 @@ export type TeacherProfileMinAggregateInputType = {
   firstName?: true
   lastName?: true
   dob?: true
-  hourlyRate?: true
   latestQualification?: true
   teachingProfileUrl?: true
-  bankAccountInfo?: true
+  createdAt?: true
 }
 
 export type TeacherProfileMaxAggregateInputType = {
@@ -98,10 +76,9 @@ export type TeacherProfileMaxAggregateInputType = {
   firstName?: true
   lastName?: true
   dob?: true
-  hourlyRate?: true
   latestQualification?: true
   teachingProfileUrl?: true
-  bankAccountInfo?: true
+  createdAt?: true
 }
 
 export type TeacherProfileCountAggregateInputType = {
@@ -110,10 +87,9 @@ export type TeacherProfileCountAggregateInputType = {
   firstName?: true
   lastName?: true
   dob?: true
-  hourlyRate?: true
   latestQualification?: true
   teachingProfileUrl?: true
-  bankAccountInfo?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -155,18 +131,6 @@ export type TeacherProfileAggregateArgs<ExtArgs extends runtime.Types.Extensions
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: TeacherProfileAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: TeacherProfileSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: TeacherProfileMinAggregateInputType
@@ -197,8 +161,6 @@ export type TeacherProfileGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   _count?: TeacherProfileCountAggregateInputType | true
-  _avg?: TeacherProfileAvgAggregateInputType
-  _sum?: TeacherProfileSumAggregateInputType
   _min?: TeacherProfileMinAggregateInputType
   _max?: TeacherProfileMaxAggregateInputType
 }
@@ -209,13 +171,10 @@ export type TeacherProfileGroupByOutputType = {
   firstName: string
   lastName: string
   dob: Date | null
-  hourlyRate: number
-  latestQualification: string
+  latestQualification: string | null
   teachingProfileUrl: string | null
-  bankAccountInfo: string | null
+  createdAt: Date
   _count: TeacherProfileCountAggregateOutputType | null
-  _avg: TeacherProfileAvgAggregateOutputType | null
-  _sum: TeacherProfileSumAggregateOutputType | null
   _min: TeacherProfileMinAggregateOutputType | null
   _max: TeacherProfileMaxAggregateOutputType | null
 }
@@ -244,10 +203,9 @@ export type TeacherProfileWhereInput = {
   firstName?: Prisma.StringFilter<"TeacherProfile"> | string
   lastName?: Prisma.StringFilter<"TeacherProfile"> | string
   dob?: Prisma.DateTimeNullableFilter<"TeacherProfile"> | Date | string | null
-  hourlyRate?: Prisma.FloatFilter<"TeacherProfile"> | number
-  latestQualification?: Prisma.StringFilter<"TeacherProfile"> | string
+  latestQualification?: Prisma.StringNullableFilter<"TeacherProfile"> | string | null
   teachingProfileUrl?: Prisma.StringNullableFilter<"TeacherProfile"> | string | null
-  bankAccountInfo?: Prisma.StringNullableFilter<"TeacherProfile"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"TeacherProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -257,10 +215,9 @@ export type TeacherProfileOrderByWithRelationInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrderInput | Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
-  latestQualification?: Prisma.SortOrder
+  latestQualification?: Prisma.SortOrderInput | Prisma.SortOrder
   teachingProfileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -273,10 +230,9 @@ export type TeacherProfileWhereUniqueInput = Prisma.AtLeast<{
   firstName?: Prisma.StringFilter<"TeacherProfile"> | string
   lastName?: Prisma.StringFilter<"TeacherProfile"> | string
   dob?: Prisma.DateTimeNullableFilter<"TeacherProfile"> | Date | string | null
-  hourlyRate?: Prisma.FloatFilter<"TeacherProfile"> | number
-  latestQualification?: Prisma.StringFilter<"TeacherProfile"> | string
+  latestQualification?: Prisma.StringNullableFilter<"TeacherProfile"> | string | null
   teachingProfileUrl?: Prisma.StringNullableFilter<"TeacherProfile"> | string | null
-  bankAccountInfo?: Prisma.StringNullableFilter<"TeacherProfile"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"TeacherProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
@@ -286,15 +242,12 @@ export type TeacherProfileOrderByWithAggregationInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrderInput | Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
-  latestQualification?: Prisma.SortOrder
+  latestQualification?: Prisma.SortOrderInput | Prisma.SortOrder
   teachingProfileUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.TeacherProfileCountOrderByAggregateInput
-  _avg?: Prisma.TeacherProfileAvgOrderByAggregateInput
   _max?: Prisma.TeacherProfileMaxOrderByAggregateInput
   _min?: Prisma.TeacherProfileMinOrderByAggregateInput
-  _sum?: Prisma.TeacherProfileSumOrderByAggregateInput
 }
 
 export type TeacherProfileScalarWhereWithAggregatesInput = {
@@ -306,10 +259,9 @@ export type TeacherProfileScalarWhereWithAggregatesInput = {
   firstName?: Prisma.StringWithAggregatesFilter<"TeacherProfile"> | string
   lastName?: Prisma.StringWithAggregatesFilter<"TeacherProfile"> | string
   dob?: Prisma.DateTimeNullableWithAggregatesFilter<"TeacherProfile"> | Date | string | null
-  hourlyRate?: Prisma.FloatWithAggregatesFilter<"TeacherProfile"> | number
-  latestQualification?: Prisma.StringWithAggregatesFilter<"TeacherProfile"> | string
+  latestQualification?: Prisma.StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
   teachingProfileUrl?: Prisma.StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
-  bankAccountInfo?: Prisma.StringNullableWithAggregatesFilter<"TeacherProfile"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"TeacherProfile"> | Date | string
 }
 
 export type TeacherProfileCreateInput = {
@@ -317,10 +269,9 @@ export type TeacherProfileCreateInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  hourlyRate: number
-  latestQualification: string
+  latestQualification?: string | null
   teachingProfileUrl?: string | null
-  bankAccountInfo?: string | null
+  createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTeacherProfileInput
 }
 
@@ -330,10 +281,9 @@ export type TeacherProfileUncheckedCreateInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  hourlyRate: number
-  latestQualification: string
+  latestQualification?: string | null
   teachingProfileUrl?: string | null
-  bankAccountInfo?: string | null
+  createdAt?: Date | string
 }
 
 export type TeacherProfileUpdateInput = {
@@ -341,10 +291,9 @@ export type TeacherProfileUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  hourlyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teachingProfileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTeacherProfileNestedInput
 }
 
@@ -354,10 +303,9 @@ export type TeacherProfileUncheckedUpdateInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  hourlyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teachingProfileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TeacherProfileCreateManyInput = {
@@ -366,10 +314,9 @@ export type TeacherProfileCreateManyInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  hourlyRate: number
-  latestQualification: string
+  latestQualification?: string | null
   teachingProfileUrl?: string | null
-  bankAccountInfo?: string | null
+  createdAt?: Date | string
 }
 
 export type TeacherProfileUpdateManyMutationInput = {
@@ -377,10 +324,9 @@ export type TeacherProfileUpdateManyMutationInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  hourlyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teachingProfileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TeacherProfileUncheckedUpdateManyInput = {
@@ -389,10 +335,9 @@ export type TeacherProfileUncheckedUpdateManyInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  hourlyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teachingProfileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TeacherProfileNullableScalarRelationFilter = {
@@ -406,14 +351,9 @@ export type TeacherProfileCountOrderByAggregateInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
   latestQualification?: Prisma.SortOrder
   teachingProfileUrl?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrder
-}
-
-export type TeacherProfileAvgOrderByAggregateInput = {
-  hourlyRate?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type TeacherProfileMaxOrderByAggregateInput = {
@@ -422,10 +362,9 @@ export type TeacherProfileMaxOrderByAggregateInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
   latestQualification?: Prisma.SortOrder
   teachingProfileUrl?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type TeacherProfileMinOrderByAggregateInput = {
@@ -434,14 +373,9 @@ export type TeacherProfileMinOrderByAggregateInput = {
   firstName?: Prisma.SortOrder
   lastName?: Prisma.SortOrder
   dob?: Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
   latestQualification?: Prisma.SortOrder
   teachingProfileUrl?: Prisma.SortOrder
-  bankAccountInfo?: Prisma.SortOrder
-}
-
-export type TeacherProfileSumOrderByAggregateInput = {
-  hourlyRate?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type TeacherProfileCreateNestedOneWithoutUserInput = {
@@ -481,10 +415,9 @@ export type TeacherProfileCreateWithoutUserInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  hourlyRate: number
-  latestQualification: string
+  latestQualification?: string | null
   teachingProfileUrl?: string | null
-  bankAccountInfo?: string | null
+  createdAt?: Date | string
 }
 
 export type TeacherProfileUncheckedCreateWithoutUserInput = {
@@ -492,10 +425,9 @@ export type TeacherProfileUncheckedCreateWithoutUserInput = {
   firstName: string
   lastName: string
   dob?: Date | string | null
-  hourlyRate: number
-  latestQualification: string
+  latestQualification?: string | null
   teachingProfileUrl?: string | null
-  bankAccountInfo?: string | null
+  createdAt?: Date | string
 }
 
 export type TeacherProfileCreateOrConnectWithoutUserInput = {
@@ -519,10 +451,9 @@ export type TeacherProfileUpdateWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  hourlyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teachingProfileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TeacherProfileUncheckedUpdateWithoutUserInput = {
@@ -530,10 +461,9 @@ export type TeacherProfileUncheckedUpdateWithoutUserInput = {
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  hourlyRate?: Prisma.FloatFieldUpdateOperationsInput | number
-  latestQualification?: Prisma.StringFieldUpdateOperationsInput | string
+  latestQualification?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teachingProfileUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bankAccountInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -544,10 +474,9 @@ export type TeacherProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   firstName?: boolean
   lastName?: boolean
   dob?: boolean
-  hourlyRate?: boolean
   latestQualification?: boolean
   teachingProfileUrl?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherProfile"]>
 
@@ -557,10 +486,9 @@ export type TeacherProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   firstName?: boolean
   lastName?: boolean
   dob?: boolean
-  hourlyRate?: boolean
   latestQualification?: boolean
   teachingProfileUrl?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherProfile"]>
 
@@ -570,10 +498,9 @@ export type TeacherProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   firstName?: boolean
   lastName?: boolean
   dob?: boolean
-  hourlyRate?: boolean
   latestQualification?: boolean
   teachingProfileUrl?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teacherProfile"]>
 
@@ -583,13 +510,12 @@ export type TeacherProfileSelectScalar = {
   firstName?: boolean
   lastName?: boolean
   dob?: boolean
-  hourlyRate?: boolean
   latestQualification?: boolean
   teachingProfileUrl?: boolean
-  bankAccountInfo?: boolean
+  createdAt?: boolean
 }
 
-export type TeacherProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "dob" | "hourlyRate" | "latestQualification" | "teachingProfileUrl" | "bankAccountInfo", ExtArgs["result"]["teacherProfile"]>
+export type TeacherProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "dob" | "latestQualification" | "teachingProfileUrl" | "createdAt", ExtArgs["result"]["teacherProfile"]>
 export type TeacherProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -611,10 +537,9 @@ export type $TeacherProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     firstName: string
     lastName: string
     dob: Date | null
-    hourlyRate: number
-    latestQualification: string
+    latestQualification: string | null
     teachingProfileUrl: string | null
-    bankAccountInfo: string | null
+    createdAt: Date
   }, ExtArgs["result"]["teacherProfile"]>
   composites: {}
 }
@@ -1044,10 +969,9 @@ export interface TeacherProfileFieldRefs {
   readonly firstName: Prisma.FieldRef<"TeacherProfile", 'String'>
   readonly lastName: Prisma.FieldRef<"TeacherProfile", 'String'>
   readonly dob: Prisma.FieldRef<"TeacherProfile", 'DateTime'>
-  readonly hourlyRate: Prisma.FieldRef<"TeacherProfile", 'Float'>
   readonly latestQualification: Prisma.FieldRef<"TeacherProfile", 'String'>
   readonly teachingProfileUrl: Prisma.FieldRef<"TeacherProfile", 'String'>
-  readonly bankAccountInfo: Prisma.FieldRef<"TeacherProfile", 'String'>
+  readonly createdAt: Prisma.FieldRef<"TeacherProfile", 'DateTime'>
 }
     
 

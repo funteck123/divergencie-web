@@ -26,58 +26,64 @@ export type AggregateReferral = {
 
 export type ReferralMinAggregateOutputType = {
   id: string | null
+  referrerId: string | null
+  referredStudentId: string | null
   code: string | null
   status: string | null
+  isActive: boolean | null
   createdAt: Date | null
-  referrerId: string | null
-  studentId: string | null
 }
 
 export type ReferralMaxAggregateOutputType = {
   id: string | null
+  referrerId: string | null
+  referredStudentId: string | null
   code: string | null
   status: string | null
+  isActive: boolean | null
   createdAt: Date | null
-  referrerId: string | null
-  studentId: string | null
 }
 
 export type ReferralCountAggregateOutputType = {
   id: number
+  referrerId: number
+  referredStudentId: number
   code: number
   status: number
+  isActive: number
   createdAt: number
-  referrerId: number
-  studentId: number
   _all: number
 }
 
 
 export type ReferralMinAggregateInputType = {
   id?: true
+  referrerId?: true
+  referredStudentId?: true
   code?: true
   status?: true
+  isActive?: true
   createdAt?: true
-  referrerId?: true
-  studentId?: true
 }
 
 export type ReferralMaxAggregateInputType = {
   id?: true
+  referrerId?: true
+  referredStudentId?: true
   code?: true
   status?: true
+  isActive?: true
   createdAt?: true
-  referrerId?: true
-  studentId?: true
 }
 
 export type ReferralCountAggregateInputType = {
   id?: true
+  referrerId?: true
+  referredStudentId?: true
   code?: true
   status?: true
+  isActive?: true
   createdAt?: true
-  referrerId?: true
-  studentId?: true
   _all?: true
 }
 
@@ -155,11 +161,12 @@ export type ReferralGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type ReferralGroupByOutputType = {
   id: string
+  referrerId: string
+  referredStudentId: string | null
   code: string
   status: string
+  isActive: boolean
   createdAt: Date
-  referrerId: string
-  studentId: string | null
   _count: ReferralCountAggregateOutputType | null
   _min: ReferralMinAggregateOutputType | null
   _max: ReferralMaxAggregateOutputType | null
@@ -185,44 +192,51 @@ export type ReferralWhereInput = {
   OR?: Prisma.ReferralWhereInput[]
   NOT?: Prisma.ReferralWhereInput | Prisma.ReferralWhereInput[]
   id?: Prisma.StringFilter<"Referral"> | string
+  referrerId?: Prisma.StringFilter<"Referral"> | string
+  referredStudentId?: Prisma.StringNullableFilter<"Referral"> | string | null
   code?: Prisma.StringFilter<"Referral"> | string
   status?: Prisma.StringFilter<"Referral"> | string
+  isActive?: Prisma.BoolFilter<"Referral"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Referral"> | Date | string
-  referrerId?: Prisma.StringFilter<"Referral"> | string
-  studentId?: Prisma.StringNullableFilter<"Referral"> | string | null
   referrer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  earnings?: Prisma.AmbassadorEarningListRelationFilter
 }
 
 export type ReferralOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  referrerId?: Prisma.SortOrder
+  referredStudentId?: Prisma.SortOrderInput | Prisma.SortOrder
   code?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referrerId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrderInput | Prisma.SortOrder
   referrer?: Prisma.UserOrderByWithRelationInput
+  earnings?: Prisma.AmbassadorEarningOrderByRelationAggregateInput
 }
 
 export type ReferralWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  studentId?: string
   AND?: Prisma.ReferralWhereInput | Prisma.ReferralWhereInput[]
   OR?: Prisma.ReferralWhereInput[]
   NOT?: Prisma.ReferralWhereInput | Prisma.ReferralWhereInput[]
+  referrerId?: Prisma.StringFilter<"Referral"> | string
+  referredStudentId?: Prisma.StringNullableFilter<"Referral"> | string | null
   code?: Prisma.StringFilter<"Referral"> | string
   status?: Prisma.StringFilter<"Referral"> | string
+  isActive?: Prisma.BoolFilter<"Referral"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Referral"> | Date | string
-  referrerId?: Prisma.StringFilter<"Referral"> | string
   referrer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id" | "studentId">
+  earnings?: Prisma.AmbassadorEarningListRelationFilter
+}, "id">
 
 export type ReferralOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  referrerId?: Prisma.SortOrder
+  referredStudentId?: Prisma.SortOrderInput | Prisma.SortOrder
   code?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referrerId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ReferralCountOrderByAggregateInput
   _max?: Prisma.ReferralMaxOrderByAggregateInput
   _min?: Prisma.ReferralMinOrderByAggregateInput
@@ -233,73 +247,85 @@ export type ReferralScalarWhereWithAggregatesInput = {
   OR?: Prisma.ReferralScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ReferralScalarWhereWithAggregatesInput | Prisma.ReferralScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Referral"> | string
+  referrerId?: Prisma.StringWithAggregatesFilter<"Referral"> | string
+  referredStudentId?: Prisma.StringNullableWithAggregatesFilter<"Referral"> | string | null
   code?: Prisma.StringWithAggregatesFilter<"Referral"> | string
   status?: Prisma.StringWithAggregatesFilter<"Referral"> | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"Referral"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Referral"> | Date | string
-  referrerId?: Prisma.StringWithAggregatesFilter<"Referral"> | string
-  studentId?: Prisma.StringNullableWithAggregatesFilter<"Referral"> | string | null
 }
 
 export type ReferralCreateInput = {
   id?: string
+  referredStudentId?: string | null
   code: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  studentId?: string | null
-  referrer: Prisma.UserCreateNestedOneWithoutReferralsInput
+  referrer: Prisma.UserCreateNestedOneWithoutReferralsGivenInput
+  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutReferralInput
 }
 
 export type ReferralUncheckedCreateInput = {
   id?: string
+  referrerId: string
+  referredStudentId?: string | null
   code: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  referrerId: string
-  studentId?: string | null
+  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutReferralInput
 }
 
 export type ReferralUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referrer?: Prisma.UserUpdateOneRequiredWithoutReferralsNestedInput
+  referrer?: Prisma.UserUpdateOneRequiredWithoutReferralsGivenNestedInput
+  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutReferralNestedInput
 }
 
 export type ReferralUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referrerId?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referrerId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutReferralNestedInput
 }
 
 export type ReferralCreateManyInput = {
   id?: string
+  referrerId: string
+  referredStudentId?: string | null
   code: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  referrerId: string
-  studentId?: string | null
 }
 
 export type ReferralUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ReferralUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referrerId?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referrerId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ReferralListRelationFilter = {
@@ -314,29 +340,37 @@ export type ReferralOrderByRelationAggregateInput = {
 
 export type ReferralCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  referrerId?: Prisma.SortOrder
+  referredStudentId?: Prisma.SortOrder
   code?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referrerId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
 }
 
 export type ReferralMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  referrerId?: Prisma.SortOrder
+  referredStudentId?: Prisma.SortOrder
   code?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referrerId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
 }
 
 export type ReferralMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  referrerId?: Prisma.SortOrder
+  referredStudentId?: Prisma.SortOrder
   code?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  referrerId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
+}
+
+export type ReferralNullableScalarRelationFilter = {
+  is?: Prisma.ReferralWhereInput | null
+  isNot?: Prisma.ReferralWhereInput | null
 }
 
 export type ReferralCreateNestedManyWithoutReferrerInput = {
@@ -381,20 +415,40 @@ export type ReferralUncheckedUpdateManyWithoutReferrerNestedInput = {
   deleteMany?: Prisma.ReferralScalarWhereInput | Prisma.ReferralScalarWhereInput[]
 }
 
+export type ReferralCreateNestedOneWithoutEarningsInput = {
+  create?: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
+  connectOrCreate?: Prisma.ReferralCreateOrConnectWithoutEarningsInput
+  connect?: Prisma.ReferralWhereUniqueInput
+}
+
+export type ReferralUpdateOneWithoutEarningsNestedInput = {
+  create?: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
+  connectOrCreate?: Prisma.ReferralCreateOrConnectWithoutEarningsInput
+  upsert?: Prisma.ReferralUpsertWithoutEarningsInput
+  disconnect?: Prisma.ReferralWhereInput | boolean
+  delete?: Prisma.ReferralWhereInput | boolean
+  connect?: Prisma.ReferralWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ReferralUpdateToOneWithWhereWithoutEarningsInput, Prisma.ReferralUpdateWithoutEarningsInput>, Prisma.ReferralUncheckedUpdateWithoutEarningsInput>
+}
+
 export type ReferralCreateWithoutReferrerInput = {
   id?: string
+  referredStudentId?: string | null
   code: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  studentId?: string | null
+  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutReferralInput
 }
 
 export type ReferralUncheckedCreateWithoutReferrerInput = {
   id?: string
+  referredStudentId?: string | null
   code: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  studentId?: string | null
+  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutReferralInput
 }
 
 export type ReferralCreateOrConnectWithoutReferrerInput = {
@@ -427,89 +481,189 @@ export type ReferralScalarWhereInput = {
   OR?: Prisma.ReferralScalarWhereInput[]
   NOT?: Prisma.ReferralScalarWhereInput | Prisma.ReferralScalarWhereInput[]
   id?: Prisma.StringFilter<"Referral"> | string
+  referrerId?: Prisma.StringFilter<"Referral"> | string
+  referredStudentId?: Prisma.StringNullableFilter<"Referral"> | string | null
   code?: Prisma.StringFilter<"Referral"> | string
   status?: Prisma.StringFilter<"Referral"> | string
+  isActive?: Prisma.BoolFilter<"Referral"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Referral"> | Date | string
-  referrerId?: Prisma.StringFilter<"Referral"> | string
-  studentId?: Prisma.StringNullableFilter<"Referral"> | string | null
+}
+
+export type ReferralCreateWithoutEarningsInput = {
+  id?: string
+  referredStudentId?: string | null
+  code: string
+  status?: string
+  isActive?: boolean
+  createdAt?: Date | string
+  referrer: Prisma.UserCreateNestedOneWithoutReferralsGivenInput
+}
+
+export type ReferralUncheckedCreateWithoutEarningsInput = {
+  id?: string
+  referrerId: string
+  referredStudentId?: string | null
+  code: string
+  status?: string
+  isActive?: boolean
+  createdAt?: Date | string
+}
+
+export type ReferralCreateOrConnectWithoutEarningsInput = {
+  where: Prisma.ReferralWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
+}
+
+export type ReferralUpsertWithoutEarningsInput = {
+  update: Prisma.XOR<Prisma.ReferralUpdateWithoutEarningsInput, Prisma.ReferralUncheckedUpdateWithoutEarningsInput>
+  create: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
+  where?: Prisma.ReferralWhereInput
+}
+
+export type ReferralUpdateToOneWithWhereWithoutEarningsInput = {
+  where?: Prisma.ReferralWhereInput
+  data: Prisma.XOR<Prisma.ReferralUpdateWithoutEarningsInput, Prisma.ReferralUncheckedUpdateWithoutEarningsInput>
+}
+
+export type ReferralUpdateWithoutEarningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  referrer?: Prisma.UserUpdateOneRequiredWithoutReferralsGivenNestedInput
+}
+
+export type ReferralUncheckedUpdateWithoutEarningsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  referrerId?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ReferralCreateManyReferrerInput = {
   id?: string
+  referredStudentId?: string | null
   code: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  studentId?: string | null
 }
 
 export type ReferralUpdateWithoutReferrerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutReferralNestedInput
 }
 
 export type ReferralUncheckedUpdateWithoutReferrerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutReferralNestedInput
 }
 
 export type ReferralUncheckedUpdateManyWithoutReferrerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
+
+/**
+ * Count Type ReferralCountOutputType
+ */
+
+export type ReferralCountOutputType = {
+  earnings: number
+}
+
+export type ReferralCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  earnings?: boolean | ReferralCountOutputTypeCountEarningsArgs
+}
+
+/**
+ * ReferralCountOutputType without action
+ */
+export type ReferralCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReferralCountOutputType
+   */
+  select?: Prisma.ReferralCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ReferralCountOutputType without action
+ */
+export type ReferralCountOutputTypeCountEarningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AmbassadorEarningWhereInput
+}
 
 
 export type ReferralSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  referrerId?: boolean
+  referredStudentId?: boolean
   code?: boolean
   status?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  referrerId?: boolean
-  studentId?: boolean
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  earnings?: boolean | Prisma.Referral$earningsArgs<ExtArgs>
+  _count?: boolean | Prisma.ReferralCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referral"]>
 
 export type ReferralSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  referrerId?: boolean
+  referredStudentId?: boolean
   code?: boolean
   status?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  referrerId?: boolean
-  studentId?: boolean
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referral"]>
 
 export type ReferralSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  referrerId?: boolean
+  referredStudentId?: boolean
   code?: boolean
   status?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  referrerId?: boolean
-  studentId?: boolean
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referral"]>
 
 export type ReferralSelectScalar = {
   id?: boolean
+  referrerId?: boolean
+  referredStudentId?: boolean
   code?: boolean
   status?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  referrerId?: boolean
-  studentId?: boolean
 }
 
-export type ReferralOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "status" | "createdAt" | "referrerId" | "studentId", ExtArgs["result"]["referral"]>
+export type ReferralOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "referrerId" | "referredStudentId" | "code" | "status" | "isActive" | "createdAt", ExtArgs["result"]["referral"]>
 export type ReferralInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  earnings?: boolean | Prisma.Referral$earningsArgs<ExtArgs>
+  _count?: boolean | Prisma.ReferralCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReferralIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -522,14 +676,16 @@ export type $ReferralPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Referral"
   objects: {
     referrer: Prisma.$UserPayload<ExtArgs>
+    earnings: Prisma.$AmbassadorEarningPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    referrerId: string
+    referredStudentId: string | null
     code: string
     status: string
+    isActive: boolean
     createdAt: Date
-    referrerId: string
-    studentId: string | null
   }, ExtArgs["result"]["referral"]>
   composites: {}
 }
@@ -925,6 +1081,7 @@ readonly fields: ReferralFieldRefs;
 export interface Prisma__ReferralClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   referrer<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  earnings<T extends Prisma.Referral$earningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Referral$earningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorEarningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -955,11 +1112,12 @@ export interface Prisma__ReferralClient<T, Null = never, ExtArgs extends runtime
  */
 export interface ReferralFieldRefs {
   readonly id: Prisma.FieldRef<"Referral", 'String'>
+  readonly referrerId: Prisma.FieldRef<"Referral", 'String'>
+  readonly referredStudentId: Prisma.FieldRef<"Referral", 'String'>
   readonly code: Prisma.FieldRef<"Referral", 'String'>
   readonly status: Prisma.FieldRef<"Referral", 'String'>
+  readonly isActive: Prisma.FieldRef<"Referral", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Referral", 'DateTime'>
-  readonly referrerId: Prisma.FieldRef<"Referral", 'String'>
-  readonly studentId: Prisma.FieldRef<"Referral", 'String'>
 }
     
 
@@ -1356,6 +1514,30 @@ export type ReferralDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Referrals to delete.
    */
   limit?: number
+}
+
+/**
+ * Referral.earnings
+ */
+export type Referral$earningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AmbassadorEarning
+   */
+  select?: Prisma.AmbassadorEarningSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AmbassadorEarning
+   */
+  omit?: Prisma.AmbassadorEarningOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorEarningInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorEarningWhereInput
+  orderBy?: Prisma.AmbassadorEarningOrderByWithRelationInput | Prisma.AmbassadorEarningOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorEarningWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AmbassadorEarningScalarFieldEnum | Prisma.AmbassadorEarningScalarFieldEnum[]
 }
 
 /**

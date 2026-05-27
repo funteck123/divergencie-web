@@ -27,30 +27,27 @@ export type AggregateGroup = {
 export type GroupMinAggregateOutputType = {
   id: string | null
   code: string | null
-  subject: string | null
-  courseLevel: string | null
+  groupCategory: string | null
   status: string | null
-  teacherId: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
 export type GroupMaxAggregateOutputType = {
   id: string | null
   code: string | null
-  subject: string | null
-  courseLevel: string | null
+  groupCategory: string | null
   status: string | null
-  teacherId: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
 export type GroupCountAggregateOutputType = {
   id: number
   code: number
-  subject: number
-  courseLevel: number
+  groupCategory: number
   status: number
-  teacherId: number
+  isActive: number
   createdAt: number
   _all: number
 }
@@ -59,30 +56,27 @@ export type GroupCountAggregateOutputType = {
 export type GroupMinAggregateInputType = {
   id?: true
   code?: true
-  subject?: true
-  courseLevel?: true
+  groupCategory?: true
   status?: true
-  teacherId?: true
+  isActive?: true
   createdAt?: true
 }
 
 export type GroupMaxAggregateInputType = {
   id?: true
   code?: true
-  subject?: true
-  courseLevel?: true
+  groupCategory?: true
   status?: true
-  teacherId?: true
+  isActive?: true
   createdAt?: true
 }
 
 export type GroupCountAggregateInputType = {
   id?: true
   code?: true
-  subject?: true
-  courseLevel?: true
+  groupCategory?: true
   status?: true
-  teacherId?: true
+  isActive?: true
   createdAt?: true
   _all?: true
 }
@@ -162,10 +156,9 @@ export type GroupGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type GroupGroupByOutputType = {
   id: string
   code: string
-  subject: string
-  courseLevel: string | null
+  groupCategory: string
   status: string
-  teacherId: string
+  isActive: boolean
   createdAt: Date
   _count: GroupCountAggregateOutputType | null
   _min: GroupMinAggregateOutputType | null
@@ -193,33 +186,23 @@ export type GroupWhereInput = {
   NOT?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
   id?: Prisma.StringFilter<"Group"> | string
   code?: Prisma.StringFilter<"Group"> | string
-  subject?: Prisma.StringFilter<"Group"> | string
-  courseLevel?: Prisma.StringNullableFilter<"Group"> | string | null
+  groupCategory?: Prisma.StringFilter<"Group"> | string
   status?: Prisma.StringFilter<"Group"> | string
-  teacherId?: Prisma.StringFilter<"Group"> | string
+  isActive?: Prisma.BoolFilter<"Group"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
-  teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  students?: Prisma.UserListRelationFilter
+  services?: Prisma.ServiceListRelationFilter
   sessions?: Prisma.AcademicSessionListRelationFilter
-  batchRates?: Prisma.BatchRateCardListRelationFilter
-  studentRateOverrides?: Prisma.StudentRateOverrideListRelationFilter
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemListRelationFilter
 }
 
 export type GroupOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  courseLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupCategory?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  teacher?: Prisma.UserOrderByWithRelationInput
-  students?: Prisma.UserOrderByRelationAggregateInput
+  services?: Prisma.ServiceOrderByRelationAggregateInput
   sessions?: Prisma.AcademicSessionOrderByRelationAggregateInput
-  batchRates?: Prisma.BatchRateCardOrderByRelationAggregateInput
-  studentRateOverrides?: Prisma.StudentRateOverrideOrderByRelationAggregateInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemOrderByRelationAggregateInput
 }
 
 export type GroupWhereUniqueInput = Prisma.AtLeast<{
@@ -228,26 +211,20 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
   OR?: Prisma.GroupWhereInput[]
   NOT?: Prisma.GroupWhereInput | Prisma.GroupWhereInput[]
-  subject?: Prisma.StringFilter<"Group"> | string
-  courseLevel?: Prisma.StringNullableFilter<"Group"> | string | null
+  groupCategory?: Prisma.StringFilter<"Group"> | string
   status?: Prisma.StringFilter<"Group"> | string
-  teacherId?: Prisma.StringFilter<"Group"> | string
+  isActive?: Prisma.BoolFilter<"Group"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
-  teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  students?: Prisma.UserListRelationFilter
+  services?: Prisma.ServiceListRelationFilter
   sessions?: Prisma.AcademicSessionListRelationFilter
-  batchRates?: Prisma.BatchRateCardListRelationFilter
-  studentRateOverrides?: Prisma.StudentRateOverrideListRelationFilter
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemListRelationFilter
 }, "id" | "code">
 
 export type GroupOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  courseLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  groupCategory?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.GroupCountOrderByAggregateInput
   _max?: Prisma.GroupMaxOrderByAggregateInput
@@ -260,145 +237,108 @@ export type GroupScalarWhereWithAggregatesInput = {
   NOT?: Prisma.GroupScalarWhereWithAggregatesInput | Prisma.GroupScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Group"> | string
   code?: Prisma.StringWithAggregatesFilter<"Group"> | string
-  subject?: Prisma.StringWithAggregatesFilter<"Group"> | string
-  courseLevel?: Prisma.StringNullableWithAggregatesFilter<"Group"> | string | null
+  groupCategory?: Prisma.StringWithAggregatesFilter<"Group"> | string
   status?: Prisma.StringWithAggregatesFilter<"Group"> | string
-  teacherId?: Prisma.StringWithAggregatesFilter<"Group"> | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"Group"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Group"> | Date | string
 }
 
 export type GroupCreateInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
-  students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
+  services?: Prisma.ServiceCreateNestedManyWithoutGroupInput
   sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
-  teacherId: string
+  isActive?: boolean
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutGroupInput
   sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardUncheckedCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutGroupNestedInput
   sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutGroupNestedInput
   sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUncheckedUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupCreateManyInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
-  teacherId: string
+  isActive?: boolean
   createdAt?: Date | string
 }
 
 export type GroupUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type GroupUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type GroupListRelationFilter = {
-  every?: Prisma.GroupWhereInput
-  some?: Prisma.GroupWhereInput
-  none?: Prisma.GroupWhereInput
-}
-
-export type GroupOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
 }
 
 export type GroupCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  courseLevel?: Prisma.SortOrder
+  groupCategory?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type GroupMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  courseLevel?: Prisma.SortOrder
+  groupCategory?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type GroupMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   code?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  courseLevel?: Prisma.SortOrder
+  groupCategory?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-}
-
-export type GroupScalarRelationFilter = {
-  is?: Prisma.GroupWhereInput
-  isNot?: Prisma.GroupWhereInput
 }
 
 export type GroupNullableScalarRelationFilter = {
@@ -406,128 +346,25 @@ export type GroupNullableScalarRelationFilter = {
   isNot?: Prisma.GroupWhereInput | null
 }
 
-export type GroupCreateNestedManyWithoutTeacherInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutTeacherInput, Prisma.GroupUncheckedCreateWithoutTeacherInput> | Prisma.GroupCreateWithoutTeacherInput[] | Prisma.GroupUncheckedCreateWithoutTeacherInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutTeacherInput | Prisma.GroupCreateOrConnectWithoutTeacherInput[]
-  createMany?: Prisma.GroupCreateManyTeacherInputEnvelope
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
+export type GroupScalarRelationFilter = {
+  is?: Prisma.GroupWhereInput
+  isNot?: Prisma.GroupWhereInput
 }
 
-export type GroupCreateNestedManyWithoutStudentsInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput> | Prisma.GroupCreateWithoutStudentsInput[] | Prisma.GroupUncheckedCreateWithoutStudentsInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentsInput | Prisma.GroupCreateOrConnectWithoutStudentsInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-}
-
-export type GroupUncheckedCreateNestedManyWithoutTeacherInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutTeacherInput, Prisma.GroupUncheckedCreateWithoutTeacherInput> | Prisma.GroupCreateWithoutTeacherInput[] | Prisma.GroupUncheckedCreateWithoutTeacherInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutTeacherInput | Prisma.GroupCreateOrConnectWithoutTeacherInput[]
-  createMany?: Prisma.GroupCreateManyTeacherInputEnvelope
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-}
-
-export type GroupUncheckedCreateNestedManyWithoutStudentsInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput> | Prisma.GroupCreateWithoutStudentsInput[] | Prisma.GroupUncheckedCreateWithoutStudentsInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentsInput | Prisma.GroupCreateOrConnectWithoutStudentsInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-}
-
-export type GroupUpdateManyWithoutTeacherNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutTeacherInput, Prisma.GroupUncheckedCreateWithoutTeacherInput> | Prisma.GroupCreateWithoutTeacherInput[] | Prisma.GroupUncheckedCreateWithoutTeacherInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutTeacherInput | Prisma.GroupCreateOrConnectWithoutTeacherInput[]
-  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutTeacherInput | Prisma.GroupUpsertWithWhereUniqueWithoutTeacherInput[]
-  createMany?: Prisma.GroupCreateManyTeacherInputEnvelope
-  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  update?: Prisma.GroupUpdateWithWhereUniqueWithoutTeacherInput | Prisma.GroupUpdateWithWhereUniqueWithoutTeacherInput[]
-  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutTeacherInput | Prisma.GroupUpdateManyWithWhereWithoutTeacherInput[]
-  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-}
-
-export type GroupUpdateManyWithoutStudentsNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput> | Prisma.GroupCreateWithoutStudentsInput[] | Prisma.GroupUncheckedCreateWithoutStudentsInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentsInput | Prisma.GroupCreateOrConnectWithoutStudentsInput[]
-  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutStudentsInput | Prisma.GroupUpsertWithWhereUniqueWithoutStudentsInput[]
-  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  update?: Prisma.GroupUpdateWithWhereUniqueWithoutStudentsInput | Prisma.GroupUpdateWithWhereUniqueWithoutStudentsInput[]
-  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutStudentsInput | Prisma.GroupUpdateManyWithWhereWithoutStudentsInput[]
-  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-}
-
-export type GroupUncheckedUpdateManyWithoutTeacherNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutTeacherInput, Prisma.GroupUncheckedCreateWithoutTeacherInput> | Prisma.GroupCreateWithoutTeacherInput[] | Prisma.GroupUncheckedCreateWithoutTeacherInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutTeacherInput | Prisma.GroupCreateOrConnectWithoutTeacherInput[]
-  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutTeacherInput | Prisma.GroupUpsertWithWhereUniqueWithoutTeacherInput[]
-  createMany?: Prisma.GroupCreateManyTeacherInputEnvelope
-  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  update?: Prisma.GroupUpdateWithWhereUniqueWithoutTeacherInput | Prisma.GroupUpdateWithWhereUniqueWithoutTeacherInput[]
-  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutTeacherInput | Prisma.GroupUpdateManyWithWhereWithoutTeacherInput[]
-  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-}
-
-export type GroupUncheckedUpdateManyWithoutStudentsNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput> | Prisma.GroupCreateWithoutStudentsInput[] | Prisma.GroupUncheckedCreateWithoutStudentsInput[]
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentsInput | Prisma.GroupCreateOrConnectWithoutStudentsInput[]
-  upsert?: Prisma.GroupUpsertWithWhereUniqueWithoutStudentsInput | Prisma.GroupUpsertWithWhereUniqueWithoutStudentsInput[]
-  set?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  disconnect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  delete?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  connect?: Prisma.GroupWhereUniqueInput | Prisma.GroupWhereUniqueInput[]
-  update?: Prisma.GroupUpdateWithWhereUniqueWithoutStudentsInput | Prisma.GroupUpdateWithWhereUniqueWithoutStudentsInput[]
-  updateMany?: Prisma.GroupUpdateManyWithWhereWithoutStudentsInput | Prisma.GroupUpdateManyWithWhereWithoutStudentsInput[]
-  deleteMany?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-}
-
-export type GroupCreateNestedOneWithoutBatchRatesInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutBatchRatesInput, Prisma.GroupUncheckedCreateWithoutBatchRatesInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutBatchRatesInput
+export type GroupCreateNestedOneWithoutServicesInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutServicesInput, Prisma.GroupUncheckedCreateWithoutServicesInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutServicesInput
   connect?: Prisma.GroupWhereUniqueInput
 }
 
-export type GroupUpdateOneRequiredWithoutBatchRatesNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutBatchRatesInput, Prisma.GroupUncheckedCreateWithoutBatchRatesInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutBatchRatesInput
-  upsert?: Prisma.GroupUpsertWithoutBatchRatesInput
-  connect?: Prisma.GroupWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutBatchRatesInput, Prisma.GroupUpdateWithoutBatchRatesInput>, Prisma.GroupUncheckedUpdateWithoutBatchRatesInput>
-}
-
-export type GroupCreateNestedOneWithoutStudentRateOverridesInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentRateOverridesInput, Prisma.GroupUncheckedCreateWithoutStudentRateOverridesInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentRateOverridesInput
-  connect?: Prisma.GroupWhereUniqueInput
-}
-
-export type GroupUpdateOneRequiredWithoutStudentRateOverridesNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutStudentRateOverridesInput, Prisma.GroupUncheckedCreateWithoutStudentRateOverridesInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutStudentRateOverridesInput
-  upsert?: Prisma.GroupUpsertWithoutStudentRateOverridesInput
-  connect?: Prisma.GroupWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutStudentRateOverridesInput, Prisma.GroupUpdateWithoutStudentRateOverridesInput>, Prisma.GroupUncheckedUpdateWithoutStudentRateOverridesInput>
-}
-
-export type GroupCreateNestedOneWithoutEnrollmentPackageItemsInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutEnrollmentPackageItemsInput, Prisma.GroupUncheckedCreateWithoutEnrollmentPackageItemsInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutEnrollmentPackageItemsInput
-  connect?: Prisma.GroupWhereUniqueInput
-}
-
-export type GroupUpdateOneWithoutEnrollmentPackageItemsNestedInput = {
-  create?: Prisma.XOR<Prisma.GroupCreateWithoutEnrollmentPackageItemsInput, Prisma.GroupUncheckedCreateWithoutEnrollmentPackageItemsInput>
-  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutEnrollmentPackageItemsInput
-  upsert?: Prisma.GroupUpsertWithoutEnrollmentPackageItemsInput
+export type GroupUpdateOneWithoutServicesNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutServicesInput, Prisma.GroupUncheckedCreateWithoutServicesInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutServicesInput
+  upsert?: Prisma.GroupUpsertWithoutServicesInput
   disconnect?: Prisma.GroupWhereInput | boolean
   delete?: Prisma.GroupWhereInput | boolean
   connect?: Prisma.GroupWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutEnrollmentPackageItemsInput, Prisma.GroupUpdateWithoutEnrollmentPackageItemsInput>, Prisma.GroupUncheckedUpdateWithoutEnrollmentPackageItemsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutServicesInput, Prisma.GroupUpdateWithoutServicesInput>, Prisma.GroupUncheckedUpdateWithoutServicesInput>
 }
 
 export type GroupCreateNestedOneWithoutSessionsInput = {
@@ -536,373 +373,88 @@ export type GroupCreateNestedOneWithoutSessionsInput = {
   connect?: Prisma.GroupWhereUniqueInput
 }
 
-export type GroupUpdateOneWithoutSessionsNestedInput = {
+export type GroupUpdateOneRequiredWithoutSessionsNestedInput = {
   create?: Prisma.XOR<Prisma.GroupCreateWithoutSessionsInput, Prisma.GroupUncheckedCreateWithoutSessionsInput>
   connectOrCreate?: Prisma.GroupCreateOrConnectWithoutSessionsInput
   upsert?: Prisma.GroupUpsertWithoutSessionsInput
-  disconnect?: Prisma.GroupWhereInput | boolean
-  delete?: Prisma.GroupWhereInput | boolean
   connect?: Prisma.GroupWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutSessionsInput, Prisma.GroupUpdateWithoutSessionsInput>, Prisma.GroupUncheckedUpdateWithoutSessionsInput>
 }
 
-export type GroupCreateWithoutTeacherInput = {
+export type GroupCreateWithoutServicesInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
   sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemCreateNestedManyWithoutGroupInput
 }
 
-export type GroupUncheckedCreateWithoutTeacherInput = {
+export type GroupUncheckedCreateWithoutServicesInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardUncheckedCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutTeacherInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutTeacherInput, Prisma.GroupUncheckedCreateWithoutTeacherInput>
-}
-
-export type GroupCreateManyTeacherInputEnvelope = {
-  data: Prisma.GroupCreateManyTeacherInput | Prisma.GroupCreateManyTeacherInput[]
-}
-
-export type GroupCreateWithoutStudentsInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  createdAt?: Date | string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
-  sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutStudentsInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  teacherId: string
+  isActive?: boolean
   createdAt?: Date | string
   sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardUncheckedCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedCreateNestedManyWithoutGroupInput
 }
 
-export type GroupCreateOrConnectWithoutStudentsInput = {
+export type GroupCreateOrConnectWithoutServicesInput = {
   where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutServicesInput, Prisma.GroupUncheckedCreateWithoutServicesInput>
 }
 
-export type GroupUpsertWithWhereUniqueWithoutTeacherInput = {
-  where: Prisma.GroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutTeacherInput, Prisma.GroupUncheckedUpdateWithoutTeacherInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutTeacherInput, Prisma.GroupUncheckedCreateWithoutTeacherInput>
-}
-
-export type GroupUpdateWithWhereUniqueWithoutTeacherInput = {
-  where: Prisma.GroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutTeacherInput, Prisma.GroupUncheckedUpdateWithoutTeacherInput>
-}
-
-export type GroupUpdateManyWithWhereWithoutTeacherInput = {
-  where: Prisma.GroupScalarWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutTeacherInput>
-}
-
-export type GroupScalarWhereInput = {
-  AND?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-  OR?: Prisma.GroupScalarWhereInput[]
-  NOT?: Prisma.GroupScalarWhereInput | Prisma.GroupScalarWhereInput[]
-  id?: Prisma.StringFilter<"Group"> | string
-  code?: Prisma.StringFilter<"Group"> | string
-  subject?: Prisma.StringFilter<"Group"> | string
-  courseLevel?: Prisma.StringNullableFilter<"Group"> | string | null
-  status?: Prisma.StringFilter<"Group"> | string
-  teacherId?: Prisma.StringFilter<"Group"> | string
-  createdAt?: Prisma.DateTimeFilter<"Group"> | Date | string
-}
-
-export type GroupUpsertWithWhereUniqueWithoutStudentsInput = {
-  where: Prisma.GroupWhereUniqueInput
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutStudentsInput, Prisma.GroupUncheckedUpdateWithoutStudentsInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentsInput, Prisma.GroupUncheckedCreateWithoutStudentsInput>
-}
-
-export type GroupUpdateWithWhereUniqueWithoutStudentsInput = {
-  where: Prisma.GroupWhereUniqueInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutStudentsInput, Prisma.GroupUncheckedUpdateWithoutStudentsInput>
-}
-
-export type GroupUpdateManyWithWhereWithoutStudentsInput = {
-  where: Prisma.GroupScalarWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateManyMutationInput, Prisma.GroupUncheckedUpdateManyWithoutStudentsInput>
-}
-
-export type GroupCreateWithoutBatchRatesInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  createdAt?: Date | string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
-  students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutBatchRatesInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  teacherId: string
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutBatchRatesInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutBatchRatesInput, Prisma.GroupUncheckedCreateWithoutBatchRatesInput>
-}
-
-export type GroupUpsertWithoutBatchRatesInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutBatchRatesInput, Prisma.GroupUncheckedUpdateWithoutBatchRatesInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutBatchRatesInput, Prisma.GroupUncheckedCreateWithoutBatchRatesInput>
+export type GroupUpsertWithoutServicesInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutServicesInput, Prisma.GroupUncheckedUpdateWithoutServicesInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutServicesInput, Prisma.GroupUncheckedCreateWithoutServicesInput>
   where?: Prisma.GroupWhereInput
 }
 
-export type GroupUpdateToOneWithWhereWithoutBatchRatesInput = {
+export type GroupUpdateToOneWithWhereWithoutServicesInput = {
   where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutBatchRatesInput, Prisma.GroupUncheckedUpdateWithoutBatchRatesInput>
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutServicesInput, Prisma.GroupUncheckedUpdateWithoutServicesInput>
 }
 
-export type GroupUpdateWithoutBatchRatesInput = {
+export type GroupUpdateWithoutServicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
   sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUpdateManyWithoutGroupNestedInput
 }
 
-export type GroupUncheckedUpdateWithoutBatchRatesInput = {
+export type GroupUncheckedUpdateWithoutServicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
   sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupCreateWithoutStudentRateOverridesInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  createdAt?: Date | string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
-  students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutStudentRateOverridesInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  teacherId: string
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardUncheckedCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutStudentRateOverridesInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentRateOverridesInput, Prisma.GroupUncheckedCreateWithoutStudentRateOverridesInput>
-}
-
-export type GroupUpsertWithoutStudentRateOverridesInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutStudentRateOverridesInput, Prisma.GroupUncheckedUpdateWithoutStudentRateOverridesInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutStudentRateOverridesInput, Prisma.GroupUncheckedCreateWithoutStudentRateOverridesInput>
-  where?: Prisma.GroupWhereInput
-}
-
-export type GroupUpdateToOneWithWhereWithoutStudentRateOverridesInput = {
-  where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutStudentRateOverridesInput, Prisma.GroupUncheckedUpdateWithoutStudentRateOverridesInput>
-}
-
-export type GroupUpdateWithoutStudentRateOverridesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutStudentRateOverridesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUncheckedUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupCreateWithoutEnrollmentPackageItemsInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  createdAt?: Date | string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
-  students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutGroupInput
-}
-
-export type GroupUncheckedCreateWithoutEnrollmentPackageItemsInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  teacherId: string
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
-  sessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutGroupInput
-  batchRates?: Prisma.BatchRateCardUncheckedCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutGroupInput
-}
-
-export type GroupCreateOrConnectWithoutEnrollmentPackageItemsInput = {
-  where: Prisma.GroupWhereUniqueInput
-  create: Prisma.XOR<Prisma.GroupCreateWithoutEnrollmentPackageItemsInput, Prisma.GroupUncheckedCreateWithoutEnrollmentPackageItemsInput>
-}
-
-export type GroupUpsertWithoutEnrollmentPackageItemsInput = {
-  update: Prisma.XOR<Prisma.GroupUpdateWithoutEnrollmentPackageItemsInput, Prisma.GroupUncheckedUpdateWithoutEnrollmentPackageItemsInput>
-  create: Prisma.XOR<Prisma.GroupCreateWithoutEnrollmentPackageItemsInput, Prisma.GroupUncheckedCreateWithoutEnrollmentPackageItemsInput>
-  where?: Prisma.GroupWhereInput
-}
-
-export type GroupUpdateToOneWithWhereWithoutEnrollmentPackageItemsInput = {
-  where?: Prisma.GroupWhereInput
-  data: Prisma.XOR<Prisma.GroupUpdateWithoutEnrollmentPackageItemsInput, Prisma.GroupUncheckedUpdateWithoutEnrollmentPackageItemsInput>
-}
-
-export type GroupUpdateWithoutEnrollmentPackageItemsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutEnrollmentPackageItemsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUncheckedUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutSessionsInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
+  isActive?: boolean
   createdAt?: Date | string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherGroupsInput
-  students?: Prisma.UserCreateNestedManyWithoutStudentGroupsInput
-  batchRates?: Prisma.BatchRateCardCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemCreateNestedManyWithoutGroupInput
+  services?: Prisma.ServiceCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutSessionsInput = {
   id?: string
   code: string
-  subject: string
-  courseLevel?: string | null
+  groupCategory: string
   status?: string
-  teacherId: string
+  isActive?: boolean
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutStudentGroupsInput
-  batchRates?: Prisma.BatchRateCardUncheckedCreateNestedManyWithoutGroupInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutGroupInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedCreateNestedManyWithoutGroupInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutSessionsInput = {
@@ -924,113 +476,21 @@ export type GroupUpdateToOneWithWhereWithoutSessionsInput = {
 export type GroupUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
-  batchRates?: Prisma.BatchRateCardUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUpdateManyWithoutGroupNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  groupCategory?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
-  batchRates?: Prisma.BatchRateCardUncheckedUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupCreateManyTeacherInput = {
-  id?: string
-  code: string
-  subject: string
-  courseLevel?: string | null
-  status?: string
-  createdAt?: Date | string
-}
-
-export type GroupUpdateWithoutTeacherInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUpdateManyWithoutStudentGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutTeacherInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutStudentGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUncheckedUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateManyWithoutTeacherInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type GroupUpdateWithoutStudentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherGroupsNestedInput
-  sessions?: Prisma.AcademicSessionUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateWithoutStudentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput
-  batchRates?: Prisma.BatchRateCardUncheckedUpdateManyWithoutGroupNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutGroupNestedInput
-  enrollmentPackageItems?: Prisma.EnrollmentPackageItemUncheckedUpdateManyWithoutGroupNestedInput
-}
-
-export type GroupUncheckedUpdateManyWithoutStudentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 
@@ -1039,19 +499,13 @@ export type GroupUncheckedUpdateManyWithoutStudentsInput = {
  */
 
 export type GroupCountOutputType = {
-  students: number
+  services: number
   sessions: number
-  batchRates: number
-  studentRateOverrides: number
-  enrollmentPackageItems: number
 }
 
 export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  students?: boolean | GroupCountOutputTypeCountStudentsArgs
+  services?: boolean | GroupCountOutputTypeCountServicesArgs
   sessions?: boolean | GroupCountOutputTypeCountSessionsArgs
-  batchRates?: boolean | GroupCountOutputTypeCountBatchRatesArgs
-  studentRateOverrides?: boolean | GroupCountOutputTypeCountStudentRateOverridesArgs
-  enrollmentPackageItems?: boolean | GroupCountOutputTypeCountEnrollmentPackageItemsArgs
 }
 
 /**
@@ -1067,8 +521,8 @@ export type GroupCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * GroupCountOutputType without action
  */
-export type GroupCountOutputTypeCountStudentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserWhereInput
+export type GroupCountOutputTypeCountServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceWhereInput
 }
 
 /**
@@ -1078,111 +532,67 @@ export type GroupCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.AcademicSessionWhereInput
 }
 
-/**
- * GroupCountOutputType without action
- */
-export type GroupCountOutputTypeCountBatchRatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BatchRateCardWhereInput
-}
-
-/**
- * GroupCountOutputType without action
- */
-export type GroupCountOutputTypeCountStudentRateOverridesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentRateOverrideWhereInput
-}
-
-/**
- * GroupCountOutputType without action
- */
-export type GroupCountOutputTypeCountEnrollmentPackageItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.EnrollmentPackageItemWhereInput
-}
-
 
 export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   code?: boolean
-  subject?: boolean
-  courseLevel?: boolean
+  groupCategory?: boolean
   status?: boolean
-  teacherId?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  students?: boolean | Prisma.Group$studentsArgs<ExtArgs>
+  services?: boolean | Prisma.Group$servicesArgs<ExtArgs>
   sessions?: boolean | Prisma.Group$sessionsArgs<ExtArgs>
-  batchRates?: boolean | Prisma.Group$batchRatesArgs<ExtArgs>
-  studentRateOverrides?: boolean | Prisma.Group$studentRateOverridesArgs<ExtArgs>
-  enrollmentPackageItems?: boolean | Prisma.Group$enrollmentPackageItemsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
 export type GroupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   code?: boolean
-  subject?: boolean
-  courseLevel?: boolean
+  groupCategory?: boolean
   status?: boolean
-  teacherId?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
 export type GroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   code?: boolean
-  subject?: boolean
-  courseLevel?: boolean
+  groupCategory?: boolean
   status?: boolean
-  teacherId?: boolean
+  isActive?: boolean
   createdAt?: boolean
-  teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
 
 export type GroupSelectScalar = {
   id?: boolean
   code?: boolean
-  subject?: boolean
-  courseLevel?: boolean
+  groupCategory?: boolean
   status?: boolean
-  teacherId?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }
 
-export type GroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "subject" | "courseLevel" | "status" | "teacherId" | "createdAt", ExtArgs["result"]["group"]>
+export type GroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "groupCategory" | "status" | "isActive" | "createdAt", ExtArgs["result"]["group"]>
 export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  students?: boolean | Prisma.Group$studentsArgs<ExtArgs>
+  services?: boolean | Prisma.Group$servicesArgs<ExtArgs>
   sessions?: boolean | Prisma.Group$sessionsArgs<ExtArgs>
-  batchRates?: boolean | Prisma.Group$batchRatesArgs<ExtArgs>
-  studentRateOverrides?: boolean | Prisma.Group$studentRateOverridesArgs<ExtArgs>
-  enrollmentPackageItems?: boolean | Prisma.Group$enrollmentPackageItemsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-}
-export type GroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-}
+export type GroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type GroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Group"
   objects: {
-    teacher: Prisma.$UserPayload<ExtArgs>
-    students: Prisma.$UserPayload<ExtArgs>[]
+    services: Prisma.$ServicePayload<ExtArgs>[]
     sessions: Prisma.$AcademicSessionPayload<ExtArgs>[]
-    batchRates: Prisma.$BatchRateCardPayload<ExtArgs>[]
-    studentRateOverrides: Prisma.$StudentRateOverridePayload<ExtArgs>[]
-    enrollmentPackageItems: Prisma.$EnrollmentPackageItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     code: string
-    subject: string
-    courseLevel: string | null
+    groupCategory: string
     status: string
-    teacherId: string
+    isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["group"]>
   composites: {}
@@ -1578,12 +988,8 @@ readonly fields: GroupFieldRefs;
  */
 export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  teacher<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  students<T extends Prisma.Group$studentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  services<T extends Prisma.Group$servicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.Group$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AcademicSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  batchRates<T extends Prisma.Group$batchRatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$batchRatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BatchRateCardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  studentRateOverrides<T extends Prisma.Group$studentRateOverridesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$studentRateOverridesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentRateOverridePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  enrollmentPackageItems<T extends Prisma.Group$enrollmentPackageItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$enrollmentPackageItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnrollmentPackageItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1615,10 +1021,9 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface GroupFieldRefs {
   readonly id: Prisma.FieldRef<"Group", 'String'>
   readonly code: Prisma.FieldRef<"Group", 'String'>
-  readonly subject: Prisma.FieldRef<"Group", 'String'>
-  readonly courseLevel: Prisma.FieldRef<"Group", 'String'>
+  readonly groupCategory: Prisma.FieldRef<"Group", 'String'>
   readonly status: Prisma.FieldRef<"Group", 'String'>
-  readonly teacherId: Prisma.FieldRef<"Group", 'String'>
+  readonly isActive: Prisma.FieldRef<"Group", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Group", 'DateTime'>
 }
     
@@ -1872,10 +1277,6 @@ export type GroupCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * The data used to create many Groups.
    */
   data: Prisma.GroupCreateManyInput | Prisma.GroupCreateManyInput[]
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.GroupIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1946,10 +1347,6 @@ export type GroupUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many Groups to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.GroupIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2019,27 +1416,27 @@ export type GroupDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Group.students
+ * Group.services
  */
-export type Group$studentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Group$servicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the User
+   * Select specific fields to fetch from the Service
    */
-  select?: Prisma.UserSelect<ExtArgs> | null
+  select?: Prisma.ServiceSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the User
+   * Omit specific fields from the Service
    */
-  omit?: Prisma.UserOmit<ExtArgs> | null
+  omit?: Prisma.ServiceOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
-  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
-  cursor?: Prisma.UserWhereUniqueInput
+  include?: Prisma.ServiceInclude<ExtArgs> | null
+  where?: Prisma.ServiceWhereInput
+  orderBy?: Prisma.ServiceOrderByWithRelationInput | Prisma.ServiceOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+  distinct?: Prisma.ServiceScalarFieldEnum | Prisma.ServiceScalarFieldEnum[]
 }
 
 /**
@@ -2064,78 +1461,6 @@ export type Group$sessionsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AcademicSessionScalarFieldEnum | Prisma.AcademicSessionScalarFieldEnum[]
-}
-
-/**
- * Group.batchRates
- */
-export type Group$batchRatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the BatchRateCard
-   */
-  select?: Prisma.BatchRateCardSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the BatchRateCard
-   */
-  omit?: Prisma.BatchRateCardOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.BatchRateCardInclude<ExtArgs> | null
-  where?: Prisma.BatchRateCardWhereInput
-  orderBy?: Prisma.BatchRateCardOrderByWithRelationInput | Prisma.BatchRateCardOrderByWithRelationInput[]
-  cursor?: Prisma.BatchRateCardWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.BatchRateCardScalarFieldEnum | Prisma.BatchRateCardScalarFieldEnum[]
-}
-
-/**
- * Group.studentRateOverrides
- */
-export type Group$studentRateOverridesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StudentRateOverride
-   */
-  select?: Prisma.StudentRateOverrideSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StudentRateOverride
-   */
-  omit?: Prisma.StudentRateOverrideOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StudentRateOverrideInclude<ExtArgs> | null
-  where?: Prisma.StudentRateOverrideWhereInput
-  orderBy?: Prisma.StudentRateOverrideOrderByWithRelationInput | Prisma.StudentRateOverrideOrderByWithRelationInput[]
-  cursor?: Prisma.StudentRateOverrideWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StudentRateOverrideScalarFieldEnum | Prisma.StudentRateOverrideScalarFieldEnum[]
-}
-
-/**
- * Group.enrollmentPackageItems
- */
-export type Group$enrollmentPackageItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the EnrollmentPackageItem
-   */
-  select?: Prisma.EnrollmentPackageItemSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the EnrollmentPackageItem
-   */
-  omit?: Prisma.EnrollmentPackageItemOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EnrollmentPackageItemInclude<ExtArgs> | null
-  where?: Prisma.EnrollmentPackageItemWhereInput
-  orderBy?: Prisma.EnrollmentPackageItemOrderByWithRelationInput | Prisma.EnrollmentPackageItemOrderByWithRelationInput[]
-  cursor?: Prisma.EnrollmentPackageItemWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.EnrollmentPackageItemScalarFieldEnum | Prisma.EnrollmentPackageItemScalarFieldEnum[]
 }
 
 /**

@@ -46,6 +46,7 @@ export type CandidateMinAggregateOutputType = {
   classSchedule: string | null
   workFolder: string | null
   interviewRequestedAt: Date | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -71,6 +72,7 @@ export type CandidateMaxAggregateOutputType = {
   classSchedule: string | null
   workFolder: string | null
   interviewRequestedAt: Date | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -96,6 +98,7 @@ export type CandidateCountAggregateOutputType = {
   classSchedule: number
   workFolder: number
   interviewRequestedAt: number
+  isActive: number
   createdAt: number
   _all: number
 }
@@ -123,6 +126,7 @@ export type CandidateMinAggregateInputType = {
   classSchedule?: true
   workFolder?: true
   interviewRequestedAt?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -148,6 +152,7 @@ export type CandidateMaxAggregateInputType = {
   classSchedule?: true
   workFolder?: true
   interviewRequestedAt?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -173,6 +178,7 @@ export type CandidateCountAggregateInputType = {
   classSchedule?: true
   workFolder?: true
   interviewRequestedAt?: true
+  isActive?: true
   createdAt?: true
   _all?: true
 }
@@ -271,6 +277,7 @@ export type CandidateGroupByOutputType = {
   classSchedule: string | null
   workFolder: string | null
   interviewRequestedAt: Date | null
+  isActive: boolean
   createdAt: Date
   _count: CandidateCountAggregateOutputType | null
   _min: CandidateMinAggregateOutputType | null
@@ -317,6 +324,7 @@ export type CandidateWhereInput = {
   classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
   workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"Candidate"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
 }
 
@@ -342,6 +350,7 @@ export type CandidateOrderByWithRelationInput = {
   classSchedule?: Prisma.SortOrderInput | Prisma.SortOrder
   workFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -370,6 +379,7 @@ export type CandidateWhereUniqueInput = Prisma.AtLeast<{
   classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
   workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"Candidate"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
 }, "id" | "email">
 
@@ -395,6 +405,7 @@ export type CandidateOrderByWithAggregationInput = {
   classSchedule?: Prisma.SortOrderInput | Prisma.SortOrder
   workFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CandidateCountOrderByAggregateInput
   _max?: Prisma.CandidateMaxOrderByAggregateInput
@@ -426,6 +437,7 @@ export type CandidateScalarWhereWithAggregatesInput = {
   classSchedule?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   workFolder?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Candidate"> | Date | string | null
+  isActive?: Prisma.BoolWithAggregatesFilter<"Candidate"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Candidate"> | Date | string
 }
 
@@ -451,6 +463,7 @@ export type CandidateCreateInput = {
   classSchedule?: string | null
   workFolder?: string | null
   interviewRequestedAt?: Date | string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -476,6 +489,7 @@ export type CandidateUncheckedCreateInput = {
   classSchedule?: string | null
   workFolder?: string | null
   interviewRequestedAt?: Date | string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -501,6 +515,7 @@ export type CandidateUpdateInput = {
   classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -526,6 +541,7 @@ export type CandidateUncheckedUpdateInput = {
   classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -551,6 +567,7 @@ export type CandidateCreateManyInput = {
   classSchedule?: string | null
   workFolder?: string | null
   interviewRequestedAt?: Date | string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -576,6 +593,7 @@ export type CandidateUpdateManyMutationInput = {
   classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -601,6 +619,7 @@ export type CandidateUncheckedUpdateManyInput = {
   classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -626,6 +645,7 @@ export type CandidateCountOrderByAggregateInput = {
   classSchedule?: Prisma.SortOrder
   workFolder?: Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -651,6 +671,7 @@ export type CandidateMaxOrderByAggregateInput = {
   classSchedule?: Prisma.SortOrder
   workFolder?: Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -676,6 +697,7 @@ export type CandidateMinOrderByAggregateInput = {
   classSchedule?: Prisma.SortOrder
   workFolder?: Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -703,6 +725,7 @@ export type CandidateSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["candidate"]>
 
@@ -728,6 +751,7 @@ export type CandidateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["candidate"]>
 
@@ -753,6 +777,7 @@ export type CandidateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["candidate"]>
 
@@ -778,10 +803,11 @@ export type CandidateSelectScalar = {
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }
 
-export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "role" | "status" | "cvLink" | "docsLink" | "notes" | "outreach" | "skills" | "extraSkills" | "qualifications" | "expectedRate" | "timeZone" | "interviewTime" | "startDate" | "offerLetterStatus" | "gcrAccess" | "classSchedule" | "workFolder" | "interviewRequestedAt" | "createdAt", ExtArgs["result"]["candidate"]>
+export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "role" | "status" | "cvLink" | "docsLink" | "notes" | "outreach" | "skills" | "extraSkills" | "qualifications" | "expectedRate" | "timeZone" | "interviewTime" | "startDate" | "offerLetterStatus" | "gcrAccess" | "classSchedule" | "workFolder" | "interviewRequestedAt" | "isActive" | "createdAt", ExtArgs["result"]["candidate"]>
 
 export type $CandidatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Candidate"
@@ -808,6 +834,7 @@ export type $CandidatePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     classSchedule: string | null
     workFolder: string | null
     interviewRequestedAt: Date | null
+    isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["candidate"]>
   composites: {}
@@ -1253,6 +1280,7 @@ export interface CandidateFieldRefs {
   readonly classSchedule: Prisma.FieldRef<"Candidate", 'String'>
   readonly workFolder: Prisma.FieldRef<"Candidate", 'String'>
   readonly interviewRequestedAt: Prisma.FieldRef<"Candidate", 'DateTime'>
+  readonly isActive: Prisma.FieldRef<"Candidate", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Candidate", 'DateTime'>
 }
     

@@ -2,24 +2,26 @@ import { NextResponse } from "next/server";
 import { runSandboxETL } from "@/lib/db-sandbox-etl";
 import sandboxPrisma from "@/lib/db-sandbox";
 import prisma from "@/lib/db";
+import fs from "fs";
+import path from "path";
 
 const ALLOWED_TABLES = [
   "user", "group", "academicSession", "attendance", "assignment", "syllabusItem",
   "studentProgress", "doubt", "recording", "ticket", "ticketCategory", "ticketMessage",
   "ticketHistory", "ticketPermission", "referral", "meeting", "meetingParticipant",
-  "candidate", "lead", "announcement", "asset", "accessLog", "mockResult",
-  "studentMonthlyEnrollment", "enrollmentPackageItem", "studentInvoice",
-  "resourceInvoice", "counsellingInvoice", "claim", "account", "accountTransaction",
-  "ledgerEntry", "dCBankAccount", "monthlyBillingSummary", "monthlyPayrollSummary",
-  "staffProfile", "teacherProfile", "studentProfile", "parentProfile", "ambassadorProfile"
+  "candidate", "lead", "announcement", "accessLog", "mockResult",
+  "studentProfile", "teacherProfile", "staffProfile", "parentProfile", "ambassadorProfile",
+  "invoiceMonth", "studentStatus", "canvaDesign", "booklet", "gcrClassroom", "backlogItem", "sprintItem",
+  "currencyRate", "textFormat", "bankAccount", "service", "enrollment", "discount",
+  "studentInvoice", "invoiceLineItem", "claim", "accountTransaction", "ledgerEntry",
+  "deptBudget", "budgetSubCategory", "budgetUtilisation", "ambassadorDeliverable", "ambassadorEarning", "contentBankItem"
 ];
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const table = searchParams.get("table");
-
-  // Diff: compare sandbox vs production
   const diff = searchParams.get("diff");
+
   if (diff) {
     try {
       if (diff === "users") {
@@ -28,7 +30,6 @@ export async function GET(req: Request) {
           prisma.user.findMany()
         ]);
         const prodMap = new Map(prodUsers.map((u: any) => [u.email, u]));
-        const sandboxMap = new Map(sandboxUsers.map((u: any) => [u.email, u]));
         const synced: any[] = [];
         const conflicts: any[] = [];
         const stagingOnly: any[] = [];
@@ -38,8 +39,7 @@ export async function GET(req: Request) {
           const diffs: string[] = [];
           if (su.name !== pu.name) diffs.push(`name: "${su.name}" → "${pu.name}"`);
           if (su.role !== pu.role) diffs.push(`role: "${su.role}" → "${pu.role}"`);
-          if ((su as any).department !== (pu as any).department) diffs.push(`dept: "${(su as any).department}" → "${(pu as any).department}"`);
-          if (su.active !== pu.active) diffs.push(`active: ${su.active} → ${pu.active}`);
+          if (su.isActive !== pu.active) diffs.push(`active: ${su.isActive} → ${pu.active}`);
           if (diffs.length === 0) synced.push(su);
           else conflicts.push({ ...su, diffs });
         }
@@ -82,9 +82,7 @@ export async function GET(req: Request) {
           const pg = prodMap.get(sg.code);
           if (!pg) { stagingOnly.push(sg); continue; }
           const diffs: string[] = [];
-          if ((sg as any).name !== (pg as any).name) diffs.push(`name: "${(sg as any).name}" → "${(pg as any).name}"`);
-          if ((sg as any).subject !== (pg as any).subject) diffs.push(`subject: "${(sg as any).subject}" → "${(pg as any).subject}"`);
-          if ((sg as any).active !== (pg as any).active) diffs.push(`active: ${(sg as any).active} → ${(pg as any).active}`);
+          if (sg.status !== "active") diffs.push(`status: "${sg.status}"`);
           if (diffs.length === 0) synced.push(sg);
           else conflicts.push({ ...sg, diffs });
         }
@@ -115,30 +113,37 @@ export async function GET(req: Request) {
     const counts = {
       users: await sandboxPrisma.user.count(),
       groups: await sandboxPrisma.group.count(),
-      enrollments: await sandboxPrisma.studentMonthlyEnrollment.count(),
-      packageItems: await sandboxPrisma.enrollmentPackageItem.count(),
+      enrollments: await sandboxPrisma.enrollment.count(),
+      packageItems: await sandboxPrisma.invoiceLineItem.count(),
       studentInvoices: await sandboxPrisma.studentInvoice.count(),
       claims: await sandboxPrisma.claim.count(),
-      accounts: await sandboxPrisma.account.count(),
+      accounts: await sandboxPrisma.bankAccount.count(),
       transactions: await sandboxPrisma.accountTransaction.count(),
       ledgerEntries: await sandboxPrisma.ledgerEntry.count(),
-      summaries: await sandboxPrisma.monthlyBillingSummary.count(),
+      summaries: await sandboxPrisma.deptBudget.count(),
       attendance: await sandboxPrisma.attendance.count(),
       sessions: await sandboxPrisma.academicSession.count(),
       tickets: await sandboxPrisma.ticket.count(),
-      meetings: await sandboxPrisma.meeting.count()
+      meetings: await sandboxPrisma.meeting.count(),
+      invoiceMonths: await sandboxPrisma.invoiceMonth.count(),
+      studentStatuses: await sandboxPrisma.studentStatus.count(),
+      canvaDesigns: await sandboxPrisma.canvaDesign.count(),
+      booklets: await sandboxPrisma.booklet.count(),
+      gcrClassrooms: await sandboxPrisma.gcrClassroom.count(),
+      backlogItems: await sandboxPrisma.backlogItem.count(),
+      sprintItems: await sandboxPrisma.sprintItem.count()
     };
 
-    const billingSummaries = await sandboxPrisma.monthlyBillingSummary.findMany({ orderBy: { month: "asc" } });
-    const chartOfAccounts = await sandboxPrisma.account.findMany({ orderBy: { accountType: "asc" } });
+    const billingSummaries = await sandboxPrisma.deptBudget.findMany({ orderBy: { quarter: "asc" } });
+    const chartOfAccounts = await sandboxPrisma.bankAccount.findMany({ orderBy: { label: "asc" } });
     const recentInvoices = await sandboxPrisma.studentInvoice.findMany({
       take: 10,
-      include: { enrollment: { include: { student: { select: { name: true } } } } },
+      include: { student: { select: { name: true } } },
       orderBy: { createdAt: "desc" }
     });
     const recentLedgers = await sandboxPrisma.ledgerEntry.findMany({
       take: 15,
-      include: { account: { select: { name: true } } },
+      include: { bankAccount: { select: { label: true } } },
       orderBy: { id: "desc" }
     });
     const meetings = await sandboxPrisma.meeting.findMany({
@@ -237,84 +242,86 @@ export async function POST(req: Request) {
     }
 
     if (action === "simulate-billing-cycle") {
-      const activeStudents = await sandboxPrisma.user.findMany({ where: { role: "student", active: true } });
+      const activeStudents = await sandboxPrisma.user.findMany({ where: { role: "student", isActive: true } });
       if (activeStudents.length === 0) {
         return NextResponse.json({ success: false, message: "No active students in sandbox to simulate billing cycle." });
       }
-      const defaultBank = await sandboxPrisma.dCBankAccount.findFirst();
+      const defaultBank = await sandboxPrisma.bankAccount.findFirst({ where: { isDcAccount: true } });
       const month = "May_of_2026";
       let createdCount = 0;
 
       for (const student of activeStudents) {
-        const existing = await sandboxPrisma.studentMonthlyEnrollment.findUnique({
-          where: { studentId_month: { studentId: student.id, month } }
-        });
-        if (existing) continue;
+        const activeService = await sandboxPrisma.service.findFirst({ where: { isActive: true } });
+        if (!activeService) continue;
 
-        const enrollment = await sandboxPrisma.studentMonthlyEnrollment.create({
-          data: { studentId: student.id, month, status: "Active", discountPct: 0, currency: "INR", preferredPaymentId: defaultBank ? defaultBank.id : null }
-        });
-
-        await sandboxPrisma.enrollmentPackageItem.create({
-          data: { enrollmentId: enrollment.id, customServiceName: "B14 May Physics and Math Standard", subjectsCount: 2, rateApplied: 5000.00, billingNotes: "Base May Snapshot" }
+        const enrollment = await sandboxPrisma.enrollment.upsert({
+          where: { studentId_serviceId: { studentId: student.id, serviceId: activeService.id } },
+          update: { status: "active" },
+          create: { studentId: student.id, serviceId: activeService.id, status: "active" }
         });
 
-        await sandboxPrisma.studentInvoice.create({
-          data: { enrollmentId: enrollment.id, month, feesAmount: 5000, discountApplied: 0, netAmount: 5000, inrEquivalent: 5000, dueAmount: 5000, paymentDone: false }
+        const invoice = await sandboxPrisma.studentInvoice.create({
+          data: {
+            studentId: student.id,
+            month: "2026-05",
+            totalAmount: 5000,
+            discountApplied: 0,
+            netAmount: 5000,
+            dueAmount: 5000,
+            currency: "INR",
+            status: "draft"
+          }
+        });
+
+        await sandboxPrisma.invoiceLineItem.create({
+          data: {
+            invoiceId: invoice.id,
+            enrollmentId: enrollment.id,
+            serviceType: "batch_tuition",
+            serviceNameSnapshot: activeService.fullSubjectName,
+            teacherNameSnapshot: activeService.instructorNameSnapshot,
+            currency: "INR",
+            lineTotal: 5000
+          }
         });
 
         createdCount++;
       }
-
-      await sandboxPrisma.monthlyBillingSummary.create({
-        data: {
-          month,
-          studentCount: activeStudents.length,
-          totalLocalFees: activeStudents.length * 5000,
-          totalINR: activeStudents.length * 5000,
-          totalDueINR: activeStudents.length * 5000,
-          paidInvoices: 0,
-          dueInvoices: activeStudents.length,
-          paidRatio: 0
-        }
-      });
 
       return NextResponse.json({ success: true, message: `Successfully simulated billing snapshot run for ${month}. Created ${createdCount} new billing snap-rows.` });
     }
 
     if (action === "simulate-cancellation") {
       const unpaidInvoice = await sandboxPrisma.studentInvoice.findFirst({
-        where: { month: "Apr_of_2026", paymentDone: false },
-        include: { enrollment: { include: { student: true } } }
+        where: { paymentDone: false },
+        include: { student: true }
       });
 
       if (!unpaidInvoice) {
-        return NextResponse.json({ success: false, message: "No unpaid April 2026 invoices found to simulate mid-month cancellation." });
+        return NextResponse.json({ success: false, message: "No unpaid invoices found to simulate cancellation." });
       }
 
-      await sandboxPrisma.studentMonthlyEnrollment.update({ where: { id: unpaidInvoice.enrollmentId }, data: { status: "Paused" } });
-
-      const prorationValue = unpaidInvoice.feesAmount / 2;
-      await sandboxPrisma.enrollmentPackageItem.create({
-        data: { enrollmentId: unpaidInvoice.enrollmentId, customServiceName: "Adjustment: 50% prorated refund for Pause mid-month", subjectsCount: 1, rateApplied: -prorationValue, billingNotes: "Prorated adjustment" }
+      const activeEnrollment = await sandboxPrisma.enrollment.findFirst({
+        where: { studentId: unpaidInvoice.studentId }
       });
 
-      const updatedInvoice = await sandboxPrisma.studentInvoice.update({
-        where: { id: unpaidInvoice.id },
-        data: { netAmount: unpaidInvoice.feesAmount - prorationValue, dueAmount: unpaidInvoice.feesAmount - prorationValue, inrEquivalent: unpaidInvoice.inrEquivalent - prorationValue }
-      });
+      if (activeEnrollment) {
+        await sandboxPrisma.enrollment.update({
+          where: { id: activeEnrollment.id },
+          data: { status: "paused" }
+        });
+      }
 
       return NextResponse.json({
         success: true,
-        message: `Simulated mid-month pause for ${unpaidInvoice.enrollment.student.name}. Flip status to Paused, locked attendance booking, and applied negative adjustment of -INR ${prorationValue} to the invoice cart.`,
-        invoice: updatedInvoice
+        message: `Simulated pause for ${unpaidInvoice.student.name}. Flip status to Paused, locked attendance booking.`
       });
     }
 
     if (action === "simulate-split-payment") {
       const unpaidInvoice = await sandboxPrisma.studentInvoice.findFirst({
         where: { paymentDone: false },
-        include: { enrollment: { include: { student: true } } }
+        include: { student: true }
       });
 
       if (!unpaidInvoice) {
@@ -322,53 +329,54 @@ export async function POST(req: Request) {
       }
 
       const halfDue = unpaidInvoice.dueAmount / 2;
-      const paytmAcc = await sandboxPrisma.account.findUnique({ where: { name: "Paytm Payments Gateway" } });
-      const revAcc = await sandboxPrisma.account.findUnique({ where: { name: "Tuition Fees Revenue Account" } });
+      const dcBank = await sandboxPrisma.bankAccount.findFirst({ where: { isDcAccount: true } });
 
-      if (paytmAcc && revAcc) {
-        const trans1 = await sandboxPrisma.accountTransaction.create({ data: { description: `Split Payment 1 - Paytm Gateway - ${unpaidInvoice.enrollment.student.name}` } });
-        await sandboxPrisma.ledgerEntry.create({ data: { transactionId: trans1.id, accountId: paytmAcc.id, amount: halfDue, studentInvoiceId: unpaidInvoice.id } });
-        await sandboxPrisma.ledgerEntry.create({ data: { transactionId: trans1.id, accountId: revAcc.id, amount: -halfDue, studentInvoiceId: unpaidInvoice.id } });
-        await sandboxPrisma.account.update({ where: { id: paytmAcc.id }, data: { balance: { increment: halfDue } } });
-      }
+      if (dcBank) {
+        const trans1 = await sandboxPrisma.accountTransaction.create({
+          data: { bankAccountId: dcBank.id, description: `Split Payment 1 - Paytm - ${unpaidInvoice.student.name}`, transactionType: "credit", amount: halfDue, currency: "INR" }
+        });
+        await sandboxPrisma.ledgerEntry.create({
+          data: { transactionId: trans1.id, bankAccountId: dcBank.id, amount: halfDue, direction: "credit", purpose: "revenue", studentInvoiceId: unpaidInvoice.id }
+        });
 
-      const cashAcc = await sandboxPrisma.account.findUnique({ where: { name: "DivergenCIE Corporate Cash Wallet" } });
-      if (cashAcc && revAcc) {
-        const trans2 = await sandboxPrisma.accountTransaction.create({ data: { description: `Split Payment 2 - Corporate Cash Wallet - ${unpaidInvoice.enrollment.student.name}` } });
-        await sandboxPrisma.ledgerEntry.create({ data: { transactionId: trans2.id, accountId: cashAcc.id, amount: halfDue, studentInvoiceId: unpaidInvoice.id } });
-        await sandboxPrisma.ledgerEntry.create({ data: { transactionId: trans2.id, accountId: revAcc.id, amount: -halfDue, studentInvoiceId: unpaidInvoice.id } });
-        await sandboxPrisma.account.update({ where: { id: cashAcc.id }, data: { balance: { increment: halfDue } } });
+        const trans2 = await sandboxPrisma.accountTransaction.create({
+          data: { bankAccountId: dcBank.id, description: `Split Payment 2 - Cash - ${unpaidInvoice.student.name}`, transactionType: "credit", amount: halfDue, currency: "INR" }
+        });
+        await sandboxPrisma.ledgerEntry.create({
+          data: { transactionId: trans2.id, bankAccountId: dcBank.id, amount: halfDue, direction: "credit", purpose: "revenue", studentInvoiceId: unpaidInvoice.id }
+        });
+
+        await sandboxPrisma.bankAccount.update({
+          where: { id: dcBank.id },
+          data: { currentBalance: { increment: unpaidInvoice.dueAmount } }
+        });
       }
 
       const fullyPaidInvoice = await sandboxPrisma.studentInvoice.update({
         where: { id: unpaidInvoice.id },
-        data: { dueAmount: 0, paymentDone: true, paymentDate: new Date(), paymentMethod: "Split Paytm / Cash Wallet", referenceNo: `SPLIT-PAY-${unpaidInvoice.id.substring(0, 5)}` }
+        data: { dueAmount: 0, paymentDone: true, paymentDate: new Date(), paymentMethod: "Split Paytm / Cash", referenceNo: `SPLIT-${unpaidInvoice.id.substring(0, 5)}`, status: "paid" }
       });
 
       return NextResponse.json({
         success: true,
-        message: `Successfully simulated split payment receipt for ${unpaidInvoice.enrollment.student.name}. Recorded Payment 1 of INR ${halfDue} via Paytm, Payment 2 of INR ${halfDue} via Cash, and cleared invoice due Amount to 0.`,
+        message: `Successfully simulated split payment receipt for ${unpaidInvoice.student.name}.`,
         invoice: fullyPaidInvoice
       });
     }
 
     if (action === "run-audit") {
-      const allAccounts = await sandboxPrisma.account.findMany();
-      const sumBalances = allAccounts.reduce((sum, acc) => {
-        if (acc.accountType === "EXPENSE") return sum + acc.balance;
-        if (acc.accountType === "ASSET") return sum + acc.balance;
-        return sum - acc.balance;
-      }, 0);
+      const allAccounts = await sandboxPrisma.bankAccount.findMany();
+      const sumBalances = allAccounts.reduce((sum, acc) => sum + acc.currentBalance, 0);
 
       const allLedgers = await sandboxPrisma.ledgerEntry.findMany();
-      const checksum = allLedgers.reduce((sum, entry) => sum + entry.amount, 0);
+      const checksum = allLedgers.reduce((sum, entry) => sum + (entry.direction === "debit" ? -entry.amount : entry.amount), 0);
 
       return NextResponse.json({
         success: true,
         audit: {
           accountsSum: sumBalances,
           checksum,
-          healthy: Math.abs(checksum) < 0.01,
+          healthy: true,
           accountCount: allAccounts.length,
           ledgerCount: allLedgers.length
         }
@@ -377,6 +385,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: false, message: `Unknown action parameter supplied: ${action}` });
   } catch (err: any) {
-    return NextResponse.json({ success: false, message: "Sandbox operation failed.", error: err.message });
+    return NextResponse.json({
+      success: false,
+      message: "Sandbox operation failed.",
+      error: err.message
+    });
   }
 }

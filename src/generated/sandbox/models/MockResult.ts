@@ -28,47 +28,44 @@ export type AggregateMockResult = {
 
 export type MockResultAvgAggregateOutputType = {
   score: number | null
-  timeTaken: number | null
+  maxScore: number | null
 }
 
 export type MockResultSumAggregateOutputType = {
   score: number | null
-  timeTaken: number | null
+  maxScore: number | null
 }
 
 export type MockResultMinAggregateOutputType = {
   id: string | null
   studentId: string | null
-  subject: string | null
-  level: string | null
-  diff: string | null
+  serviceId: string | null
   score: number | null
-  grade: string | null
-  timeTaken: number | null
+  maxScore: number | null
+  topic: string | null
+  takenAt: Date | null
   createdAt: Date | null
 }
 
 export type MockResultMaxAggregateOutputType = {
   id: string | null
   studentId: string | null
-  subject: string | null
-  level: string | null
-  diff: string | null
+  serviceId: string | null
   score: number | null
-  grade: string | null
-  timeTaken: number | null
+  maxScore: number | null
+  topic: string | null
+  takenAt: Date | null
   createdAt: Date | null
 }
 
 export type MockResultCountAggregateOutputType = {
   id: number
   studentId: number
-  subject: number
-  level: number
-  diff: number
+  serviceId: number
   score: number
-  grade: number
-  timeTaken: number
+  maxScore: number
+  topic: number
+  takenAt: number
   createdAt: number
   _all: number
 }
@@ -76,47 +73,44 @@ export type MockResultCountAggregateOutputType = {
 
 export type MockResultAvgAggregateInputType = {
   score?: true
-  timeTaken?: true
+  maxScore?: true
 }
 
 export type MockResultSumAggregateInputType = {
   score?: true
-  timeTaken?: true
+  maxScore?: true
 }
 
 export type MockResultMinAggregateInputType = {
   id?: true
   studentId?: true
-  subject?: true
-  level?: true
-  diff?: true
+  serviceId?: true
   score?: true
-  grade?: true
-  timeTaken?: true
+  maxScore?: true
+  topic?: true
+  takenAt?: true
   createdAt?: true
 }
 
 export type MockResultMaxAggregateInputType = {
   id?: true
   studentId?: true
-  subject?: true
-  level?: true
-  diff?: true
+  serviceId?: true
   score?: true
-  grade?: true
-  timeTaken?: true
+  maxScore?: true
+  topic?: true
+  takenAt?: true
   createdAt?: true
 }
 
 export type MockResultCountAggregateInputType = {
   id?: true
   studentId?: true
-  subject?: true
-  level?: true
-  diff?: true
+  serviceId?: true
   score?: true
-  grade?: true
-  timeTaken?: true
+  maxScore?: true
+  topic?: true
+  takenAt?: true
   createdAt?: true
   _all?: true
 }
@@ -210,12 +204,11 @@ export type MockResultGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type MockResultGroupByOutputType = {
   id: string
   studentId: string
-  subject: string
-  level: string
-  diff: string
+  serviceId: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic: string | null
+  takenAt: Date
   createdAt: Date
   _count: MockResultCountAggregateOutputType | null
   _avg: MockResultAvgAggregateOutputType | null
@@ -245,27 +238,27 @@ export type MockResultWhereInput = {
   NOT?: Prisma.MockResultWhereInput | Prisma.MockResultWhereInput[]
   id?: Prisma.StringFilter<"MockResult"> | string
   studentId?: Prisma.StringFilter<"MockResult"> | string
-  subject?: Prisma.StringFilter<"MockResult"> | string
-  level?: Prisma.StringFilter<"MockResult"> | string
-  diff?: Prisma.StringFilter<"MockResult"> | string
-  score?: Prisma.IntFilter<"MockResult"> | number
-  grade?: Prisma.StringFilter<"MockResult"> | string
-  timeTaken?: Prisma.IntFilter<"MockResult"> | number
+  serviceId?: Prisma.StringFilter<"MockResult"> | string
+  score?: Prisma.FloatFilter<"MockResult"> | number
+  maxScore?: Prisma.FloatFilter<"MockResult"> | number
+  topic?: Prisma.StringNullableFilter<"MockResult"> | string | null
+  takenAt?: Prisma.DateTimeFilter<"MockResult"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"MockResult"> | Date | string
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
 }
 
 export type MockResultOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  level?: Prisma.SortOrder
-  diff?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   score?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
+  topic?: Prisma.SortOrderInput | Prisma.SortOrder
+  takenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   student?: Prisma.UserOrderByWithRelationInput
+  service?: Prisma.ServiceOrderByWithRelationInput
 }
 
 export type MockResultWhereUniqueInput = Prisma.AtLeast<{
@@ -274,25 +267,24 @@ export type MockResultWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MockResultWhereInput[]
   NOT?: Prisma.MockResultWhereInput | Prisma.MockResultWhereInput[]
   studentId?: Prisma.StringFilter<"MockResult"> | string
-  subject?: Prisma.StringFilter<"MockResult"> | string
-  level?: Prisma.StringFilter<"MockResult"> | string
-  diff?: Prisma.StringFilter<"MockResult"> | string
-  score?: Prisma.IntFilter<"MockResult"> | number
-  grade?: Prisma.StringFilter<"MockResult"> | string
-  timeTaken?: Prisma.IntFilter<"MockResult"> | number
+  serviceId?: Prisma.StringFilter<"MockResult"> | string
+  score?: Prisma.FloatFilter<"MockResult"> | number
+  maxScore?: Prisma.FloatFilter<"MockResult"> | number
+  topic?: Prisma.StringNullableFilter<"MockResult"> | string | null
+  takenAt?: Prisma.DateTimeFilter<"MockResult"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"MockResult"> | Date | string
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
 }, "id">
 
 export type MockResultOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  level?: Prisma.SortOrder
-  diff?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   score?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
+  topic?: Prisma.SortOrderInput | Prisma.SortOrder
+  takenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MockResultCountOrderByAggregateInput
   _avg?: Prisma.MockResultAvgOrderByAggregateInput
@@ -307,95 +299,86 @@ export type MockResultScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MockResultScalarWhereWithAggregatesInput | Prisma.MockResultScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
   studentId?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
-  subject?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
-  level?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
-  diff?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
-  score?: Prisma.IntWithAggregatesFilter<"MockResult"> | number
-  grade?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
-  timeTaken?: Prisma.IntWithAggregatesFilter<"MockResult"> | number
+  serviceId?: Prisma.StringWithAggregatesFilter<"MockResult"> | string
+  score?: Prisma.FloatWithAggregatesFilter<"MockResult"> | number
+  maxScore?: Prisma.FloatWithAggregatesFilter<"MockResult"> | number
+  topic?: Prisma.StringNullableWithAggregatesFilter<"MockResult"> | string | null
+  takenAt?: Prisma.DateTimeWithAggregatesFilter<"MockResult"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"MockResult"> | Date | string
 }
 
 export type MockResultCreateInput = {
   id?: string
-  subject: string
-  level: string
-  diff: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
   createdAt?: Date | string
   student: Prisma.UserCreateNestedOneWithoutMockResultsInput
+  service: Prisma.ServiceCreateNestedOneWithoutMockResultsInput
 }
 
 export type MockResultUncheckedCreateInput = {
   id?: string
   studentId: string
-  subject: string
-  level: string
-  diff: string
+  serviceId: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
   createdAt?: Date | string
 }
 
 export type MockResultUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.UserUpdateOneRequiredWithoutMockResultsNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutMockResultsNestedInput
 }
 
 export type MockResultUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MockResultCreateManyInput = {
   id?: string
   studentId: string
-  subject: string
-  level: string
-  diff: string
+  serviceId: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
   createdAt?: Date | string
 }
 
 export type MockResultUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MockResultUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -412,47 +395,44 @@ export type MockResultOrderByRelationAggregateInput = {
 export type MockResultCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  level?: Prisma.SortOrder
-  diff?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   score?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  takenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type MockResultAvgOrderByAggregateInput = {
   score?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
 }
 
 export type MockResultMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  level?: Prisma.SortOrder
-  diff?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   score?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  takenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type MockResultMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  level?: Prisma.SortOrder
-  diff?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   score?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
+  topic?: Prisma.SortOrder
+  takenAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type MockResultSumOrderByAggregateInput = {
   score?: Prisma.SortOrder
-  timeTaken?: Prisma.SortOrder
+  maxScore?: Prisma.SortOrder
 }
 
 export type MockResultCreateNestedManyWithoutStudentInput = {
@@ -497,25 +477,65 @@ export type MockResultUncheckedUpdateManyWithoutStudentNestedInput = {
   deleteMany?: Prisma.MockResultScalarWhereInput | Prisma.MockResultScalarWhereInput[]
 }
 
+export type MockResultCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.MockResultCreateWithoutServiceInput, Prisma.MockResultUncheckedCreateWithoutServiceInput> | Prisma.MockResultCreateWithoutServiceInput[] | Prisma.MockResultUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.MockResultCreateOrConnectWithoutServiceInput | Prisma.MockResultCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.MockResultCreateManyServiceInputEnvelope
+  connect?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+}
+
+export type MockResultUncheckedCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.MockResultCreateWithoutServiceInput, Prisma.MockResultUncheckedCreateWithoutServiceInput> | Prisma.MockResultCreateWithoutServiceInput[] | Prisma.MockResultUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.MockResultCreateOrConnectWithoutServiceInput | Prisma.MockResultCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.MockResultCreateManyServiceInputEnvelope
+  connect?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+}
+
+export type MockResultUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.MockResultCreateWithoutServiceInput, Prisma.MockResultUncheckedCreateWithoutServiceInput> | Prisma.MockResultCreateWithoutServiceInput[] | Prisma.MockResultUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.MockResultCreateOrConnectWithoutServiceInput | Prisma.MockResultCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.MockResultUpsertWithWhereUniqueWithoutServiceInput | Prisma.MockResultUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.MockResultCreateManyServiceInputEnvelope
+  set?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  disconnect?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  delete?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  connect?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  update?: Prisma.MockResultUpdateWithWhereUniqueWithoutServiceInput | Prisma.MockResultUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.MockResultUpdateManyWithWhereWithoutServiceInput | Prisma.MockResultUpdateManyWithWhereWithoutServiceInput[]
+  deleteMany?: Prisma.MockResultScalarWhereInput | Prisma.MockResultScalarWhereInput[]
+}
+
+export type MockResultUncheckedUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.MockResultCreateWithoutServiceInput, Prisma.MockResultUncheckedCreateWithoutServiceInput> | Prisma.MockResultCreateWithoutServiceInput[] | Prisma.MockResultUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.MockResultCreateOrConnectWithoutServiceInput | Prisma.MockResultCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.MockResultUpsertWithWhereUniqueWithoutServiceInput | Prisma.MockResultUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.MockResultCreateManyServiceInputEnvelope
+  set?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  disconnect?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  delete?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  connect?: Prisma.MockResultWhereUniqueInput | Prisma.MockResultWhereUniqueInput[]
+  update?: Prisma.MockResultUpdateWithWhereUniqueWithoutServiceInput | Prisma.MockResultUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.MockResultUpdateManyWithWhereWithoutServiceInput | Prisma.MockResultUpdateManyWithWhereWithoutServiceInput[]
+  deleteMany?: Prisma.MockResultScalarWhereInput | Prisma.MockResultScalarWhereInput[]
+}
+
 export type MockResultCreateWithoutStudentInput = {
   id?: string
-  subject: string
-  level: string
-  diff: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
   createdAt?: Date | string
+  service: Prisma.ServiceCreateNestedOneWithoutMockResultsInput
 }
 
 export type MockResultUncheckedCreateWithoutStudentInput = {
   id?: string
-  subject: string
-  level: string
-  diff: string
+  serviceId: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
   createdAt?: Date | string
 }
 
@@ -550,56 +570,136 @@ export type MockResultScalarWhereInput = {
   NOT?: Prisma.MockResultScalarWhereInput | Prisma.MockResultScalarWhereInput[]
   id?: Prisma.StringFilter<"MockResult"> | string
   studentId?: Prisma.StringFilter<"MockResult"> | string
-  subject?: Prisma.StringFilter<"MockResult"> | string
-  level?: Prisma.StringFilter<"MockResult"> | string
-  diff?: Prisma.StringFilter<"MockResult"> | string
-  score?: Prisma.IntFilter<"MockResult"> | number
-  grade?: Prisma.StringFilter<"MockResult"> | string
-  timeTaken?: Prisma.IntFilter<"MockResult"> | number
+  serviceId?: Prisma.StringFilter<"MockResult"> | string
+  score?: Prisma.FloatFilter<"MockResult"> | number
+  maxScore?: Prisma.FloatFilter<"MockResult"> | number
+  topic?: Prisma.StringNullableFilter<"MockResult"> | string | null
+  takenAt?: Prisma.DateTimeFilter<"MockResult"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"MockResult"> | Date | string
+}
+
+export type MockResultCreateWithoutServiceInput = {
+  id?: string
+  score: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
+  createdAt?: Date | string
+  student: Prisma.UserCreateNestedOneWithoutMockResultsInput
+}
+
+export type MockResultUncheckedCreateWithoutServiceInput = {
+  id?: string
+  studentId: string
+  score: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
+  createdAt?: Date | string
+}
+
+export type MockResultCreateOrConnectWithoutServiceInput = {
+  where: Prisma.MockResultWhereUniqueInput
+  create: Prisma.XOR<Prisma.MockResultCreateWithoutServiceInput, Prisma.MockResultUncheckedCreateWithoutServiceInput>
+}
+
+export type MockResultCreateManyServiceInputEnvelope = {
+  data: Prisma.MockResultCreateManyServiceInput | Prisma.MockResultCreateManyServiceInput[]
+}
+
+export type MockResultUpsertWithWhereUniqueWithoutServiceInput = {
+  where: Prisma.MockResultWhereUniqueInput
+  update: Prisma.XOR<Prisma.MockResultUpdateWithoutServiceInput, Prisma.MockResultUncheckedUpdateWithoutServiceInput>
+  create: Prisma.XOR<Prisma.MockResultCreateWithoutServiceInput, Prisma.MockResultUncheckedCreateWithoutServiceInput>
+}
+
+export type MockResultUpdateWithWhereUniqueWithoutServiceInput = {
+  where: Prisma.MockResultWhereUniqueInput
+  data: Prisma.XOR<Prisma.MockResultUpdateWithoutServiceInput, Prisma.MockResultUncheckedUpdateWithoutServiceInput>
+}
+
+export type MockResultUpdateManyWithWhereWithoutServiceInput = {
+  where: Prisma.MockResultScalarWhereInput
+  data: Prisma.XOR<Prisma.MockResultUpdateManyMutationInput, Prisma.MockResultUncheckedUpdateManyWithoutServiceInput>
 }
 
 export type MockResultCreateManyStudentInput = {
   id?: string
-  subject: string
-  level: string
-  diff: string
+  serviceId: string
   score: number
-  grade: string
-  timeTaken: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
   createdAt?: Date | string
 }
 
 export type MockResultUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service?: Prisma.ServiceUpdateOneRequiredWithoutMockResultsNestedInput
 }
 
 export type MockResultUncheckedUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MockResultUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  level?: Prisma.StringFieldUpdateOperationsInput | string
-  diff?: Prisma.StringFieldUpdateOperationsInput | string
-  score?: Prisma.IntFieldUpdateOperationsInput | number
-  grade?: Prisma.StringFieldUpdateOperationsInput | string
-  timeTaken?: Prisma.IntFieldUpdateOperationsInput | number
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MockResultCreateManyServiceInput = {
+  id?: string
+  studentId: string
+  score: number
+  maxScore: number
+  topic?: string | null
+  takenAt: Date | string
+  createdAt?: Date | string
+}
+
+export type MockResultUpdateWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  student?: Prisma.UserUpdateOneRequiredWithoutMockResultsNestedInput
+}
+
+export type MockResultUncheckedUpdateWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type MockResultUncheckedUpdateManyWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  score?: Prisma.FloatFieldUpdateOperationsInput | number
+  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  takenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -608,79 +708,81 @@ export type MockResultUncheckedUpdateManyWithoutStudentInput = {
 export type MockResultSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   studentId?: boolean
-  subject?: boolean
-  level?: boolean
-  diff?: boolean
+  serviceId?: boolean
   score?: boolean
-  grade?: boolean
-  timeTaken?: boolean
+  maxScore?: boolean
+  topic?: boolean
+  takenAt?: boolean
   createdAt?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mockResult"]>
 
 export type MockResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   studentId?: boolean
-  subject?: boolean
-  level?: boolean
-  diff?: boolean
+  serviceId?: boolean
   score?: boolean
-  grade?: boolean
-  timeTaken?: boolean
+  maxScore?: boolean
+  topic?: boolean
+  takenAt?: boolean
   createdAt?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mockResult"]>
 
 export type MockResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   studentId?: boolean
-  subject?: boolean
-  level?: boolean
-  diff?: boolean
+  serviceId?: boolean
   score?: boolean
-  grade?: boolean
-  timeTaken?: boolean
+  maxScore?: boolean
+  topic?: boolean
+  takenAt?: boolean
   createdAt?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mockResult"]>
 
 export type MockResultSelectScalar = {
   id?: boolean
   studentId?: boolean
-  subject?: boolean
-  level?: boolean
-  diff?: boolean
+  serviceId?: boolean
   score?: boolean
-  grade?: boolean
-  timeTaken?: boolean
+  maxScore?: boolean
+  topic?: boolean
+  takenAt?: boolean
   createdAt?: boolean
 }
 
-export type MockResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "subject" | "level" | "diff" | "score" | "grade" | "timeTaken" | "createdAt", ExtArgs["result"]["mockResult"]>
+export type MockResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "serviceId" | "score" | "maxScore" | "topic" | "takenAt" | "createdAt", ExtArgs["result"]["mockResult"]>
 export type MockResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 export type MockResultIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 export type MockResultIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 
 export type $MockResultPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MockResult"
   objects: {
     student: Prisma.$UserPayload<ExtArgs>
+    service: Prisma.$ServicePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     studentId: string
-    subject: string
-    level: string
-    diff: string
+    serviceId: string
     score: number
-    grade: string
-    timeTaken: number
+    maxScore: number
+    topic: string | null
+    takenAt: Date
     createdAt: Date
   }, ExtArgs["result"]["mockResult"]>
   composites: {}
@@ -1077,6 +1179,7 @@ readonly fields: MockResultFieldRefs;
 export interface Prisma__MockResultClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1108,12 +1211,11 @@ export interface Prisma__MockResultClient<T, Null = never, ExtArgs extends runti
 export interface MockResultFieldRefs {
   readonly id: Prisma.FieldRef<"MockResult", 'String'>
   readonly studentId: Prisma.FieldRef<"MockResult", 'String'>
-  readonly subject: Prisma.FieldRef<"MockResult", 'String'>
-  readonly level: Prisma.FieldRef<"MockResult", 'String'>
-  readonly diff: Prisma.FieldRef<"MockResult", 'String'>
-  readonly score: Prisma.FieldRef<"MockResult", 'Int'>
-  readonly grade: Prisma.FieldRef<"MockResult", 'String'>
-  readonly timeTaken: Prisma.FieldRef<"MockResult", 'Int'>
+  readonly serviceId: Prisma.FieldRef<"MockResult", 'String'>
+  readonly score: Prisma.FieldRef<"MockResult", 'Float'>
+  readonly maxScore: Prisma.FieldRef<"MockResult", 'Float'>
+  readonly topic: Prisma.FieldRef<"MockResult", 'String'>
+  readonly takenAt: Prisma.FieldRef<"MockResult", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"MockResult", 'DateTime'>
 }
     
