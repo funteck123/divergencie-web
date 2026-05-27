@@ -33,6 +33,9 @@ export type LeadMinAggregateOutputType = {
   status: string | null
   notes: string | null
   passedToPR: boolean | null
+  passedAt: Date | null
+  prTicketId: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -45,6 +48,9 @@ export type LeadMaxAggregateOutputType = {
   status: string | null
   notes: string | null
   passedToPR: boolean | null
+  passedAt: Date | null
+  prTicketId: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -57,6 +63,9 @@ export type LeadCountAggregateOutputType = {
   status: number
   notes: number
   passedToPR: number
+  passedAt: number
+  prTicketId: number
+  isActive: number
   createdAt: number
   _all: number
 }
@@ -71,6 +80,9 @@ export type LeadMinAggregateInputType = {
   status?: true
   notes?: true
   passedToPR?: true
+  passedAt?: true
+  prTicketId?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -83,6 +95,9 @@ export type LeadMaxAggregateInputType = {
   status?: true
   notes?: true
   passedToPR?: true
+  passedAt?: true
+  prTicketId?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -95,6 +110,9 @@ export type LeadCountAggregateInputType = {
   status?: true
   notes?: true
   passedToPR?: true
+  passedAt?: true
+  prTicketId?: true
+  isActive?: true
   createdAt?: true
   _all?: true
 }
@@ -180,6 +198,9 @@ export type LeadGroupByOutputType = {
   status: string
   notes: string | null
   passedToPR: boolean
+  passedAt: Date | null
+  prTicketId: string | null
+  isActive: boolean
   createdAt: Date
   _count: LeadCountAggregateOutputType | null
   _min: LeadMinAggregateOutputType | null
@@ -213,6 +234,9 @@ export type LeadWhereInput = {
   status?: Prisma.StringFilter<"Lead"> | string
   notes?: Prisma.StringNullableFilter<"Lead"> | string | null
   passedToPR?: Prisma.BoolFilter<"Lead"> | boolean
+  passedAt?: Prisma.DateTimeNullableFilter<"Lead"> | Date | string | null
+  prTicketId?: Prisma.StringNullableFilter<"Lead"> | string | null
+  isActive?: Prisma.BoolFilter<"Lead"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Lead"> | Date | string
 }
 
@@ -225,6 +249,9 @@ export type LeadOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   passedToPR?: Prisma.SortOrder
+  passedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  prTicketId?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -240,6 +267,9 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Lead"> | string
   notes?: Prisma.StringNullableFilter<"Lead"> | string | null
   passedToPR?: Prisma.BoolFilter<"Lead"> | boolean
+  passedAt?: Prisma.DateTimeNullableFilter<"Lead"> | Date | string | null
+  prTicketId?: Prisma.StringNullableFilter<"Lead"> | string | null
+  isActive?: Prisma.BoolFilter<"Lead"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Lead"> | Date | string
 }, "id">
 
@@ -252,6 +282,9 @@ export type LeadOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   passedToPR?: Prisma.SortOrder
+  passedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  prTicketId?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.LeadCountOrderByAggregateInput
   _max?: Prisma.LeadMaxOrderByAggregateInput
@@ -270,6 +303,9 @@ export type LeadScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"Lead"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   passedToPR?: Prisma.BoolWithAggregatesFilter<"Lead"> | boolean
+  passedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+  prTicketId?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
+  isActive?: Prisma.BoolWithAggregatesFilter<"Lead"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Lead"> | Date | string
 }
 
@@ -282,6 +318,9 @@ export type LeadCreateInput = {
   status?: string
   notes?: string | null
   passedToPR?: boolean
+  passedAt?: Date | string | null
+  prTicketId?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -294,6 +333,9 @@ export type LeadUncheckedCreateInput = {
   status?: string
   notes?: string | null
   passedToPR?: boolean
+  passedAt?: Date | string | null
+  prTicketId?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -306,6 +348,9 @@ export type LeadUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passedToPR?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prTicketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -318,6 +363,9 @@ export type LeadUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passedToPR?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prTicketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -330,6 +378,9 @@ export type LeadCreateManyInput = {
   status?: string
   notes?: string | null
   passedToPR?: boolean
+  passedAt?: Date | string | null
+  prTicketId?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -342,6 +393,9 @@ export type LeadUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passedToPR?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prTicketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -354,6 +408,9 @@ export type LeadUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passedToPR?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prTicketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -366,6 +423,9 @@ export type LeadCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   passedToPR?: Prisma.SortOrder
+  passedAt?: Prisma.SortOrder
+  prTicketId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -378,6 +438,9 @@ export type LeadMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   passedToPR?: Prisma.SortOrder
+  passedAt?: Prisma.SortOrder
+  prTicketId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -390,6 +453,9 @@ export type LeadMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   passedToPR?: Prisma.SortOrder
+  passedAt?: Prisma.SortOrder
+  prTicketId?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -404,6 +470,9 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   status?: boolean
   notes?: boolean
   passedToPR?: boolean
+  passedAt?: boolean
+  prTicketId?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["lead"]>
 
@@ -416,6 +485,9 @@ export type LeadSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   notes?: boolean
   passedToPR?: boolean
+  passedAt?: boolean
+  prTicketId?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["lead"]>
 
@@ -428,6 +500,9 @@ export type LeadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   notes?: boolean
   passedToPR?: boolean
+  passedAt?: boolean
+  prTicketId?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["lead"]>
 
@@ -440,10 +515,13 @@ export type LeadSelectScalar = {
   status?: boolean
   notes?: boolean
   passedToPR?: boolean
+  passedAt?: boolean
+  prTicketId?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }
 
-export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "source" | "status" | "notes" | "passedToPR" | "createdAt", ExtArgs["result"]["lead"]>
+export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "phone" | "source" | "status" | "notes" | "passedToPR" | "passedAt" | "prTicketId" | "isActive" | "createdAt", ExtArgs["result"]["lead"]>
 
 export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Lead"
@@ -457,6 +535,9 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     status: string
     notes: string | null
     passedToPR: boolean
+    passedAt: Date | null
+    prTicketId: string | null
+    isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["lead"]>
   composites: {}
@@ -889,6 +970,9 @@ export interface LeadFieldRefs {
   readonly status: Prisma.FieldRef<"Lead", 'String'>
   readonly notes: Prisma.FieldRef<"Lead", 'String'>
   readonly passedToPR: Prisma.FieldRef<"Lead", 'Boolean'>
+  readonly passedAt: Prisma.FieldRef<"Lead", 'DateTime'>
+  readonly prTicketId: Prisma.FieldRef<"Lead", 'String'>
+  readonly isActive: Prisma.FieldRef<"Lead", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Lead", 'DateTime'>
 }
     

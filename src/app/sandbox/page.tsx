@@ -369,11 +369,12 @@ export default function SandboxDashboard() {
     "user", "group", "academicSession", "attendance", "assignment", "syllabusItem",
     "studentProgress", "doubt", "recording", "ticket", "ticketCategory", "ticketMessage",
     "ticketHistory", "ticketPermission", "referral", "meeting", "meetingParticipant",
-    "candidate", "lead", "announcement", "asset", "accessLog", "mockResult",
-    "studentMonthlyEnrollment", "enrollmentPackageItem", "studentInvoice",
-    "resourceInvoice", "counsellingInvoice", "claim", "account", "accountTransaction",
-    "ledgerEntry", "dCBankAccount", "monthlyBillingSummary", "monthlyPayrollSummary",
-    "staffProfile", "teacherProfile", "studentProfile", "parentProfile", "ambassadorProfile"
+    "candidate", "lead", "announcement", "accessLog", "mockResult",
+    "studentProfile", "teacherProfile", "staffProfile", "parentProfile", "ambassadorProfile",
+    "invoiceMonth", "studentStatus", "canvaDesign", "booklet", "gcrClassroom", "backlogItem", "sprintItem",
+    "currencyRate", "textFormat", "bankAccount", "service", "enrollment", "discount",
+    "studentInvoice", "invoiceLineItem", "claim", "accountTransaction", "ledgerEntry",
+    "deptBudget", "budgetSubCategory", "budgetUtilisation", "ambassadorDeliverable", "ambassadorEarning", "contentBankItem"
   ];
 
   const filteredRows = explorerRows.filter(r =>

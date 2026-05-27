@@ -33,7 +33,7 @@ function cleanNumeric(val: string): number {
   return isNaN(num) ? 0 : num;
 }
 
-// Clean percent values (38% -> 38.00)
+// Clean percent values (38% -> 38)
 function cleanPercent(val: string): number {
   if (!val) return 0;
   const cleaned = val.replace(/%/g, "").trim();
@@ -44,20 +44,25 @@ function cleanPercent(val: string): number {
 // Match instructor name ("Mr Akhtar") to a user by last name fragment
 function matchInstructor(instructor: string, userCache: Map<string, any>): any {
   if (!instructor) return null;
-  const parts = instructor.split(/\s+/);
-  const lastName = parts[parts.length - 1].toLowerCase();
+  const cleanInst = instructor.trim().toLowerCase();
+  
+  if (userCache.has(cleanInst)) return userCache.get(cleanInst);
+
+  const parts = cleanInst.split(/\s+/);
+  const lastName = parts[parts.length - 1];
   for (const [key, user] of userCache.entries()) {
-    if (user && (user.role === "teacher" || user.role === "management" || user.role === "staff")) {
-      if (key.includes(lastName)) return user;
+    if (user.role === "teacher" || user.role === "management" || user.role === "staff") {
+      if (key.includes(lastName) || key.includes(parts[0])) {
+        return user;
+      }
     }
   }
   return null;
 }
 
 export async function runSandboxETL() {
-  console.log("[ETL] Starting Sandbox database migration pipeline...");
+  console.log("[ETL] Starting Sandbox database v3.0 migration pipeline...");
 
-  // Configure busy_timeout to prevent SQLite locking issues under concurrent handles
   try {
     await sandboxPrisma.$executeRawUnsafe("PRAGMA busy_timeout = 5000;");
     await prisma.$executeRawUnsafe("PRAGMA busy_timeout = 5000;");
@@ -66,503 +71,326 @@ export async function runSandboxETL() {
   }
 
   // 1. TRUNCATE ALL TABLES IN SANDBOX DB (SQLite sequence clean)
-  console.log("[ETL] Cleaning up isolated sandbox.db...");
+  console.log("[ETL] Resetting all isolated sandbox.db tables...");
 
-  // Disable foreign keys during truncation to prevent constraint blockages
   await sandboxPrisma.$executeRawUnsafe("PRAGMA foreign_keys = OFF;");
 
   const tablenames = [
-    // Profile tables first (FK to user)
-    "ambassadorProfile", "parentProfile", "studentProfile", "teacherProfile", "staffProfile",
-    // Ledger
-    "ledgerEntry", "accountTransaction", "account",
-    // Billing
-    "studentInvoice", "resourceInvoice", "counsellingInvoice",
-    "enrollmentPackageItem", "studentMonthlyEnrollment", "studentRateOverride", "batchRateCard",
-    "claim", "dCBankAccount", "monthlyBillingSummary", "monthlyPayrollSummary",
-    // Academic
-    "attendance", "academicSession", "assignment", "studentProgress", "doubt", "recording",
-    // Tickets
-    "ticketMessage", "ticketHistory", "ticket", "ticketCategory", "ticketPermission",
-    // CRM & org
-    "referral", "meetingParticipant", "meeting", "marketingPost", "group", "user",
-    "syllabusItem", "mockResult", "candidate", "lead", "announcement", "asset", "accessLog",
-    // Reference tables
-    "currencyRate", "messageTemplate"
+    "BudgetUtilisation", "BudgetSubCategory", "DeptBudget",
+    "LedgerEntry", "AccountTransaction", "BankAccount",
+    "InvoiceLineItem", "StudentInvoice", "Enrollment", "Discount",
+    "Attendance", "AcademicSession", "Assignment", "MockResult", "StudentProgress", "Doubt",
+    "TicketMessage", "TicketHistory", "Ticket", "TicketCategory", "TicketPermission",
+    "AmbassadorDeliverable", "AmbassadorEarning", "Referral",
+    "MeetingParticipant", "Meeting", "ContentBankItem",
+    "StudentProfile", "TeacherProfile", "StaffProfile", "ParentProfile", "AmbassadorProfile",
+    "Service", "Group", "User", "SyllabusItem", "Candidate", "Lead", "Recording", "MarketingPost", "AccessLog", "Announcement",
+    "CanvaDesign", "Booklet", "GcrClassroom", "StudentStatus", "BacklogItem", "SprintItem", "CurrencyRate", "TextFormat", "InvoiceMonth"
   ];
 
   for (const table of tablenames) {
     try {
       await (sandboxPrisma as any)[table].deleteMany({});
     } catch (err) {
-      console.error(`[ETL] Error truncating ${table}:`, err);
+      console.warn(`[ETL] Table ${table} already clean or skipped:`, err instanceof Error ? err.message : String(err));
     }
   }
 
-  // Restore foreign keys enforcement after truncate
   await sandboxPrisma.$executeRawUnsafe("PRAGMA foreign_keys = ON;");
 
   return await sandboxPrisma.$transaction(async (tx) => {
     // 2. MIGRATE DATA FROM PRODUCTION DEV.DB TO SANDBOX.DB
-    console.log("[ETL] Cloning schema instances from live dev.db to sandbox.db...");
+    console.log("[ETL] Cloning standard database models from production dev.db...");
 
-    // Clone Users
+    // Clone Users (isActive maps from active, parentId set to null temporarily to avoid self-join FK violation)
     const prodUsers = await prisma.user.findMany();
-    await tx.user.createMany({ data: prodUsers as any });
-
-    // Clone Groups (prod only - XLSX will add more)
-    const prodGroups = await prisma.group.findMany();
-    await tx.group.createMany({ data: prodGroups as any });
-
-    // Clone Sessions
-    const prodSessions = await prisma.academicSession.findMany();
-    await tx.academicSession.createMany({ data: prodSessions as any });
-
-    // Clone Attendances
-    const prodAttendances = await prisma.attendance.findMany();
-    await tx.attendance.createMany({ data: prodAttendances as any });
-
-    // Clone Assignments
-    const prodAssignments = await prisma.assignment.findMany();
-    await tx.assignment.createMany({ data: prodAssignments as any });
-
-    // Clone Syllabus
-    const prodSyllabus = await prisma.syllabusItem.findMany();
-    await tx.syllabusItem.createMany({ data: prodSyllabus as any });
-
-    // Clone Progress
-    const prodProgress = await prisma.studentProgress.findMany();
-    await tx.studentProgress.createMany({ data: prodProgress as any });
-
-    // Clone Doubts
-    const prodDoubts = await prisma.doubt.findMany();
-    await tx.doubt.createMany({ data: prodDoubts as any });
-
-    // Clone Recordings
-    const prodRecordings = await prisma.recording.findMany();
-    await tx.recording.createMany({ data: prodRecordings as any });
-
-    // Clone Tickets
-    const prodTickets = await prisma.ticket.findMany();
-    await tx.ticket.createMany({ data: prodTickets as any });
-
-    // Clone Ticket categories, messages, history, permissions
-    const prodCats = await prisma.ticketCategory.findMany();
-    await tx.ticketCategory.createMany({ data: prodCats as any });
-
-    const prodMsgs = await prisma.ticketMessage.findMany();
-    await tx.ticketMessage.createMany({ data: prodMsgs as any });
-
-    const prodHistory = await prisma.ticketHistory.findMany();
-    await tx.ticketHistory.createMany({ data: prodHistory as any });
-
-    const prodPerms = await prisma.ticketPermission.findMany();
-    await tx.ticketPermission.createMany({ data: prodPerms as any });
-
-    const prodReferrals = await prisma.referral.findMany();
-    await tx.referral.createMany({ data: prodReferrals as any });
-
-    const prodMeetings = await prisma.meeting.findMany();
-    await tx.meeting.createMany({ data: prodMeetings as any });
-
-    const prodMeetingParts = await prisma.meetingParticipant.findMany();
-    await tx.meetingParticipant.createMany({ data: prodMeetingParts as any });
-
-    const prodMarketingPosts = await (prisma as any).marketingPost.findMany();
-    await (tx as any).marketingPost.createMany({ data: prodMarketingPosts as any });
-
-    const prodCandidates = await prisma.candidate.findMany();
-    await (tx as any).candidate.createMany({ data: prodCandidates as any });
-
-    const prodLeads = await prisma.lead.findMany();
-    await (tx as any).lead.createMany({ data: prodLeads as any });
-
-    const prodAssets = await prisma.asset.findMany();
-    await (tx as any).asset.createMany({ data: prodAssets as any });
-
-    const prodAccessLogs = await prisma.accessLog.findMany();
-    await tx.accessLog.createMany({ data: prodAccessLogs as any });
-
-    const prodAnnouncements = await prisma.announcement.findMany();
-    await (tx as any).announcement.createMany({ data: prodAnnouncements as any });
-
-    const prodMockResults = await prisma.mockResult.findMany();
-    await (tx as any).mockResult.createMany({ data: prodMockResults as any });
-
-    console.log("[ETL] Standard website tables cloned successfully.");
-
-    // 3. INITIALIZE LEDGER accounts
-    console.log("[ETL] Initializing Chart of Accounts for Double-Entry Ledger...");
-    const accountsData = [
-      { name: "SBI Corporate Bank Account", accountType: "ASSET", balance: 150000 },
-      { name: "Paytm Payments Gateway", accountType: "ASSET", balance: 50000 },
-      { name: "DivergenCIE Corporate Cash Wallet", accountType: "ASSET", balance: 10000 },
-      { name: "Tuition Fees Revenue Account", accountType: "REVENUE", balance: 0 },
-      { name: "Book Sales Resource Revenue", accountType: "REVENUE", balance: 0 },
-      { name: "Admissions Counselling Revenue", accountType: "REVENUE", balance: 0 },
-      { name: "Ambassador Referral Expense", accountType: "EXPENSE", balance: 0 },
-      { name: "Teacher Compensation Expense", accountType: "EXPENSE", balance: 0 },
-      { name: "Staff Payroll Expense", accountType: "EXPENSE", balance: 0 },
-      { name: "General Administration Expense", accountType: "EXPENSE", balance: 0 },
-      { name: "Social Media Campaigns Q1 2026", accountType: "ASSET", balance: 0 }
-    ];
-
-    const accountMap = new Map<string, any>();
-    const accountBalances = new Map<string, number>();
-    for (const acc of accountsData) {
-      const createdAcc = await tx.account.create({ data: acc });
-      accountMap.set(createdAcc.name, createdAcc);
-      accountBalances.set(createdAcc.name, createdAcc.balance);
+    for (const u of prodUsers) {
+      await tx.user.create({
+        data: {
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          role: u.role,
+          dept: u.dept || null,
+          supervisor: u.supervisor || false,
+          financeApprovedFlag: false,
+          isActive: u.active ?? true,
+          passwordHash: u.passwordHash || null,
+          referralCode: u.referralCode || null,
+          detectedCountry: null,
+          billingAddress: u.address || null,
+          parentId: null,
+          createdAt: u.createdAt || new Date()
+        }
+      });
     }
 
-    // Create default corporate bank account
-    const defaultBank = await tx.dCBankAccount.create({
-      data: {
-        label: "Mohammad Fahim Akhtar State Bank of India",
-        bankName: "State Bank of India",
-        accountNumber: "10137922754",
-        ifscCode: "SBIN0004652",
-        branchName: "Kathara",
-        paytmId: "9650675507@ptsbi"
+    // Update parentIds for self-join mapping after all users exist
+    for (const u of prodUsers) {
+      if (u.parentId) {
+        await tx.user.update({
+          where: { id: u.id },
+          data: { parentId: u.parentId }
+        });
       }
-    });
+    }
 
-    // 4. BUILD FAST IN-MEMORY USER CACHE (before XLSX processing)
-    console.log("[ETL] Building fast in-memory user lookup cache...");
+    // Clone Groups
+    const prodGroups = await prisma.group.findMany();
+    for (const g of prodGroups) {
+      const groupCategory = g.code.startsWith("B") ? "batch" : "individual";
+      await tx.group.create({
+        data: {
+          id: g.id,
+          code: g.code,
+          groupCategory,
+          status: "active",
+          isActive: true,
+          createdAt: g.createdAt || new Date()
+        }
+      });
+    }
+
+    // Clone standard CRM & reference logs
+    const prodRecordings = await prisma.recording.findMany();
+    for (const r of prodRecordings) {
+      await tx.recording.create({
+        data: {
+          id: r.id,
+          title: r.title,
+          subject: r.subject || null,
+          videoUrl: r.videoUrl,
+          date: r.date,
+          duration: r.duration || null,
+          category: r.category || null,
+          createdAt: r.createdAt || new Date()
+        }
+      });
+    }
+
+    const prodAnnouncements = await prisma.announcement.findMany();
+    for (const a of prodAnnouncements) {
+      await tx.announcement.create({
+        data: {
+          id: a.id,
+          title: a.title,
+          body: a.body,
+          targetRole: a.targetRole || "all",
+          targetDept: a.targetDept || null,
+          priority: a.priority || "low",
+          createdAt: a.createdAt || new Date(),
+          expiresAt: a.expiresAt || null
+        }
+      });
+    }
+
+    const prodAccessLogs = await prisma.accessLog.findMany();
+    for (const al of prodAccessLogs) {
+      await tx.accessLog.create({
+        data: {
+          id: al.id,
+          staffName: al.staffName,
+          toolName: al.toolName,
+          credential: al.credential || null,
+          dateGranted: al.dateGranted || new Date(),
+          revoked: al.revoked || false,
+          notes: al.notes || null
+        }
+      });
+    }
+
+    // Build fast in-memory lookup maps
     const allUsersInit = await tx.user.findMany();
     const userCache = new Map<string, any>();
     for (const u of allUsersInit) {
       userCache.set(u.name.toLowerCase(), u);
       userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
     }
-
-    // Get management user as fallback for teacher assignments
     const managementUser = allUsersInit.find(u => u.role === "management") || allUsersInit[0];
 
-    // 5. CREATE NORMALIZED PROFILES FOR CLONED PROD USERS
-    console.log("[ETL] Creating normalized profiles for cloned production users...");
-    for (const u of allUsersInit) {
-      if (u.role === "staff") {
-        let roleTitle = "Administrative Staff";
-        let qualification = "Bachelors Degree";
-        if (u.name.toLowerCase().includes("atiqa")) {
-          roleTitle = "Associate Project Manager";
-          qualification = "Project Management Professional (PMP)";
-          await tx.user.update({ where: { id: u.id }, data: { bio: "Assistant Project Manager (before March 2026)" } });
-        } else if (u.name.toLowerCase().includes("aleena")) {
-          roleTitle = "Teaching Assistant";
-          qualification = "Bachelors in Education";
-        } else if (u.name.toLowerCase().includes("mahrukh")) {
-          roleTitle = "SM Assistant";
-          qualification = "Bachelors in Media & Communications";
-        } else if (u.name.toLowerCase().includes("seher")) {
-          roleTitle = "Teaching Assistant";
-          qualification = "Bachelors in Science";
+    const prodAssets = await prisma.asset.findMany();
+    for (const ast of prodAssets) {
+      await tx.contentBankItem.create({
+        data: {
+          id: ast.id,
+          name: ast.name,
+          dept: ast.dept || "Marketing",
+          url: ast.driveLink || "",
+          description: ast.type || null,
+          dateAdded: ast.createdAt || new Date(),
+          addedByUserId: managementUser.id,
+          isActive: true
         }
-        await tx.staffProfile.create({
-          data: {
-            userId: u.id,
-            firstName: u.name.split(" ")[0],
-            lastName: u.name.split(" ")[1] || "Staff",
-            dob: new Date("1998-05-20"),
-            roleTitle,
-            salaryType: u.name.toLowerCase().includes("atiqa") ? "monthly" : "hourly",
-            salaryRate: u.hourlyRate || 20.0,
-            latestQualification: qualification,
-            bankAccountInfo: "SBI Main Staging Account xxxx754"
-          }
-        });
-      } else if (u.role === "teacher") {
-        await tx.teacherProfile.create({
-          data: {
-            userId: u.id,
-            firstName: u.name.split(" ")[0],
-            lastName: u.name.split(" ")[1] || "Tutor",
-            dob: new Date("1995-08-15"),
-            hourlyRate: u.hourlyRate || 15.0,
-            latestQualification: "Bachelors in Cambridge CIE Pedagogy",
-            teachingProfileUrl: `https://divergencie.co.uk/tutors/${u.name.toLowerCase().replace(/[^a-z0-9]/g, "")}`,
-            bankAccountInfo: "HDFC Main Staging Account xxxx432"
-          }
-        });
-      } else if (u.role === "student") {
-        await tx.studentProfile.create({
-          data: {
-            userId: u.id,
-            firstName: u.name.split(" ")[0],
-            lastName: u.name.split(" ")[1] || "Student",
-            dob: new Date("2008-03-12"),
-            grade: u.grade || "IGCSE",
-            board: u.board || "Cambridge",
-            targetUni: u.targetUni || "TBD",
-            paymentMethodPreference: "SBI Corporate Bank Account"
-          }
-        });
-      } else if (u.role === "parent") {
-        await tx.parentProfile.create({
-          data: {
-            userId: u.id,
-            firstName: u.name.split(" ")[0],
-            lastName: u.name.split(" ")[1] || "Parent",
-            phone: u.phone || null,
-            address: u.address || null
-          }
-        });
-      } else if (u.role === "ambassador") {
-        await tx.ambassadorProfile.create({
-          data: {
-            userId: u.id,
-            firstName: u.name.split(" ")[0],
-            lastName: u.name.split(" ")[1] || "Ambassador",
-            dob: new Date("1990-11-25"),
-            bankAccountInfo: "Barclays Staging Account xxxx987"
-          }
+      });
+    }
+
+    // Seed BankAccounts for Atiqa & Akhtar
+    console.log("[ETL] Seeding standard BankAccounts (Atiqa & Akhtar)...");
+    const atiqaUser = allUsersInit.find(u => u.name.toLowerCase().includes("atiqa")) || managementUser;
+    const akhtarUser = allUsersInit.find(u => u.name.toLowerCase().includes("akhtar")) || managementUser;
+
+    const atiqaBank = await tx.bankAccount.create({
+      data: {
+        ownerId: atiqaUser.id,
+        isDcAccount: true,
+        label: "Atiqa Akhtar Operational Account",
+        purpose: "operations",
+        bankName: "State Bank of India",
+        accountNumber: "10137922754",
+        ifscCode: "SBIN0004652",
+        branchName: "Kathara",
+        paytmId: "9650675507@ptsbi",
+        currency: "INR",
+        currentBalance: 150000.00
+      }
+    });
+
+    const akhtarBank = await tx.bankAccount.create({
+      data: {
+        ownerId: akhtarUser.id,
+        isDcAccount: true,
+        label: "Akhtar Corporate Expansion Account",
+        purpose: "expansion",
+        bankName: "HDFC Bank",
+        accountNumber: "502000843219",
+        ifscCode: "HDFC0001432",
+        branchName: "Noida Main",
+        currency: "INR",
+        currentBalance: 50000.00
+      }
+    });
+
+    // 3. PARSE XLSX WORKBOOK SHEETS DIRECTLY
+    const xlsxPath = "Data/DC Database 2026.xlsx";
+    if (!fs.existsSync(xlsxPath)) {
+      throw new Error(`XLSX ground truth not found at: ${xlsxPath}`);
+    }
+
+    console.log("[ETL] Parsing XLSX ground truth data...");
+    const fileBuffer = fs.readFileSync(xlsxPath);
+    const wb = XLSX.read(fileBuffer, { type: "buffer", cellDates: true });
+
+    // Currencies sheet → CurrencyRate
+    const currenciesSheet = wb.Sheets["Currencies"];
+    if (currenciesSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(currenciesSheet, { defval: null });
+      for (const row of rows) {
+        const currency = row["Currency"]?.toString().trim();
+        const rate = parseFloat(row["Rate"]) || 1.0;
+        const reverseRate = parseFloat(row["Reverse"]) || 1.0;
+        if (!currency) continue;
+        await tx.currencyRate.upsert({
+          where: { fromCurrency: currency },
+          update: { rate, reverseRate },
+          create: { fromCurrency: currency, rate, reverseRate }
         });
       }
     }
 
-    // 6. PARSE XLSX — all sheets
-    const xlsxPath = path.join(process.cwd(), "Data", "DC Database 2026.xlsx");
-    if (fs.existsSync(xlsxPath)) {
-      console.log("[ETL] Parsing DC Database 2026.xlsx sheets...");
-      const wb = XLSX.readFile(xlsxPath, { cellDates: true });
-
-      // --- 6A. Currencies sheet → CurrencyRate ---
-      console.log("[ETL] Importing Currencies sheet → CurrencyRate...");
-      const currenciesSheet = wb.Sheets["Currencies"];
-      const currenciesRows = XLSX.utils.sheet_to_json<any>(currenciesSheet, { defval: null });
-      for (const row of currenciesRows) {
-        const currency = row["Currency"]?.toString().trim();
-        const toINR = parseFloat(row["Rate"]) || 1;
-        const fromINR = parseFloat(row["Reverse"]) || 1;
-        if (!currency) continue;
-        await (tx as any).currencyRate.upsert({
-          where: { currency },
-          update: { toINR, fromINR },
-          create: { currency, toINR, fromINR }
-        });
-      }
-
-      // --- 6B. Text_Formats sheet → MessageTemplate ---
-      console.log("[ETL] Importing Text_Formats sheet → MessageTemplate...");
-      const textFormatsSheet = wb.Sheets["Text_Formats"];
-      const textFormatsRows = XLSX.utils.sheet_to_json<any>(textFormatsSheet, { defval: null });
-      for (const row of textFormatsRows) {
+    // Text_Formats sheet → TextFormat
+    const textFormatsSheet = wb.Sheets["Text_Formats"];
+    if (textFormatsSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(textFormatsSheet, { defval: null });
+      for (const row of rows) {
         const name = row["NAME"]?.toString().trim();
         const text = row["TEXT"]?.toString().trim();
         if (!name || !text) continue;
-        const alternateText = row["ALTERNATE TEXT #1"]?.toString().trim() || null;
+        const alternateText1 = row["ALTERNATE TEXT #1"]?.toString().trim() || null;
         const use = row["USE"]?.toString().trim() || null;
         const dateRaw = row["DATE"];
         let date: Date | null = null;
         if (dateRaw instanceof Date) date = dateRaw;
         else if (typeof dateRaw === "string" && dateRaw.trim()) {
-          const d = new Date(dateRaw); if (!isNaN(d.getTime())) date = d;
+          const d = new Date(dateRaw);
+          if (!isNaN(d.getTime())) date = d;
         }
-        await (tx as any).messageTemplate.upsert({
-          where: { name },
-          update: { text, alternateText, use, date },
-          create: { name, text, alternateText, use, date }
+        await tx.textFormat.create({
+          data: { name, text, alternateText1, use, date }
         });
       }
+    }
 
-      // --- 6C. Batches sheet → enrich Group status + courseLevel ---
-      console.log("[ETL] Importing Batches sheet → Group status/courseLevel...");
-      const batchesSheet = wb.Sheets["Batches"];
-      const batchesRows = XLSX.utils.sheet_to_json<any>(batchesSheet, { defval: null });
-      for (const row of batchesRows) {
+    // Batches sheet → Re-enrich Group statuses
+    const batchesSheet = wb.Sheets["Batches"];
+    if (batchesSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(batchesSheet, { defval: null });
+      for (const row of rows) {
         const batchCode = row["Batch"]?.toString().trim();
         if (!batchCode) continue;
         const status = row["Status"]?.toString().trim() || null;
-        const courseLevel = row["Course/Class"]?.toString().trim() || null;
-        // Update all groups whose code starts with this batch code
-        const matchingGroups = await tx.group.findMany({
-          where: { code: { startsWith: batchCode + "-" } }
+        await tx.group.updateMany({
+          where: { code: { startsWith: batchCode } },
+          data: { status: status ? status.toLowerCase() : "active" }
         });
-        for (const g of matchingGroups) {
-          await tx.group.update({
-            where: { id: g.id },
-            data: {
-              ...(status ? { status } : {}),
-              ...(courseLevel ? { courseLevel } : {})
-            }
-          });
-        }
       }
+    }
 
-      // --- 6D. Services sheet → Groups + BatchRateCards ---
-      console.log("[ETL] Importing Services sheet → Groups + BatchRateCards...");
-      const servicesSheet = wb.Sheets["Services"];
-      const servicesRows = XLSX.utils.sheet_to_json<any>(servicesSheet, { defval: null });
+    // Services sheet → Group & Service catalogue setup
+    console.log("[ETL] Constructing Service Catalogue...");
+    const servicesSheet = wb.Sheets["Services"];
+    const servicesRows = XLSX.utils.sheet_to_json<any>(servicesSheet, { defval: null });
+    const serviceMap = new Map<string, any>(); // key = batch_subject -> Service
 
-      // Track created groups: groupKey → group record
-      const xlsxGroupMap = new Map<string, any>();
+    for (const row of servicesRows) {
+      const batchCode = row["Batch"]?.toString().trim();
+      const subjectCode = row["Subject Code"]?.toString().trim();
+      const subjectName = row["Subject Name"]?.toString().trim();
+      const courseClass = row["Course/Class"]?.toString().trim();
+      const board = row["Board"]?.toString().trim();
+      const instructor = row["Instructor"]?.toString().trim();
+      const currency = row["Currency"]?.toString().trim();
+      const rate = parseFloat(row["Rate"]) || 0;
 
-      for (const row of servicesRows) {
-        const batchCode = row["Batch"]?.toString().trim();
-        const subjectCode = row["Subject Code"]?.toString().trim();
-        const subjectName = row["Subject Name"]?.toString().trim();
-        const courseClass = row["Course/Class"]?.toString().trim();
-        const board = row["Board"]?.toString().trim();
-        const instructor = row["Instructor"]?.toString().trim();
-        const currency = row["Currency"]?.toString().trim();
-        const rate = parseFloat(row["Rate"]) || 0;
+      if (!batchCode || !subjectCode || !currency) continue;
 
-        if (!batchCode || !subjectCode || !currency) continue;
-
-        const groupKey = `${batchCode}-${subjectCode}`;
-
-        // Ensure Group exists
-        if (!xlsxGroupMap.has(groupKey)) {
-          let group = await tx.group.findUnique({ where: { code: groupKey } });
-          if (!group) {
-            const teacher = matchInstructor(instructor, userCache) || managementUser;
-            group = await tx.group.create({
-              data: {
-                code: groupKey,
-                subject: `${subjectCode} ${subjectName} (${board} ${courseClass})`,
-                teacherId: teacher.id
-              }
-            });
-          }
-          xlsxGroupMap.set(groupKey, group);
-        }
-
-        // Create or update BatchRateCard for this currency
-        const group = xlsxGroupMap.get(groupKey)!;
-        await tx.batchRateCard.upsert({
-          where: {
-            groupId_currency: {
-              groupId: group.id,
-              currency
-            }
-          },
-          update: {
-            feesValue: rate,
-            hourlyFeesValue: rate,
-            monthlyFeesValue: rate
-          },
-          create: {
-            groupId: group.id,
-            currency,
-            feesValue: rate,
-            hourlyFeesValue: rate,
-            monthlyFeesValue: rate
+      let group = await tx.group.findUnique({ where: { code: batchCode } });
+      if (!group) {
+        const groupCategory = batchCode.startsWith("B") ? "batch" : "individual";
+        group = await tx.group.create({
+          data: {
+            code: batchCode,
+            groupCategory,
+            status: "active",
+            isActive: true
           }
         });
       }
 
-      console.log(`[ETL] Created ${xlsxGroupMap.size} Groups and ${servicesRows.length} BatchRateCards from Services sheet.`);
+      const teacher = matchInstructor(instructor, userCache) || managementUser;
+      const serviceType = batchCode.startsWith("B") ? "batch_tuition" : "individual_tuition";
+      const fullSubjectName = `${board || ""} ${courseClass || ""} ${subjectName} - ${batchCode} - ${currency}`;
 
-      // --- 6B. Students sheet → StudentProfile enrichment ---
-      console.log("[ETL] Importing Students sheet → enriching StudentProfiles...");
-      const studentsSheet = wb.Sheets["Students"];
-      const studentsRows = XLSX.utils.sheet_to_json<any>(studentsSheet, { defval: null });
-
-      for (const row of studentsRows) {
-        const studentName = row["Student Name"]?.toString().trim();
-        if (!studentName) continue;
-
-        const email = row["Email"]?.toString().trim() || null;
-        const school = row["School"]?.toString().trim() || null;
-        const whatsappNumber = row["WhatsApp Number"]?.toString().trim() || null;
-        const parentWhatsappNumber = row["Parent WhatsApp Number"]?.toString().trim() || null;
-        const timeZone = row["Time Zone"]?.toString().trim() || null;
-        const location = row["Location"]?.toString().trim() || null;
-        const timesheetUrl = row["Timesheet"]?.toString().trim() || null;
-        const gcrRaw = row["GCR"];
-        const gcrLink = typeof gcrRaw === "string" && gcrRaw.startsWith("http") ? gcrRaw.trim() : null;
-        const scheduleRaw = row["Schedule"];
-        const scheduleLink = typeof scheduleRaw === "string" && scheduleRaw.startsWith("http") ? scheduleRaw.trim() : null;
-        const progressRaw = row["Progress Tracker"];
-        const progressTrackerLink = typeof progressRaw === "string" && progressRaw.startsWith("http") ? progressRaw.trim() : null;
-        const notes = row["Notes"]?.toString().trim() || null;
-
-        // Try to find the student user in cache
-        let user = userCache.get(studentName.toLowerCase());
-        if (!user || user.role !== "student") {
-          for (const [key, u] of userCache.entries()) {
-            if (u.role === "student" && key.startsWith(studentName.split(" ")[0].toLowerCase())) {
-              user = u;
-              break;
-            }
-          }
+      const createdService = await tx.service.create({
+        data: {
+          groupId: group.id,
+          teacherId: teacher.id,
+          board: board || null,
+          courseLevel: courseClass || null,
+          subjectCode: subjectCode || null,
+          subjectName: subjectName || "Tuition",
+          fullSubjectName,
+          serviceType,
+          currency,
+          standardRate: rate,
+          isHourly: false,
+          instructorNameSnapshot: teacher.name,
+          isActive: true
         }
+      });
+      const key = `${batchCode}_${subjectCode}`.toLowerCase();
+      serviceMap.set(key, createdService);
+    }
 
-        if (user && user.role === "student") {
-          // Update user email/phone
-          if (email || whatsappNumber) {
-            await tx.user.update({
-              where: { id: user.id },
-              data: {
-                ...(email ? { email } : {}),
-                ...(whatsappNumber ? { phone: whatsappNumber } : {})
-              }
-            });
-          }
-
-          // Upsert StudentProfile with all XLSX fields
-          const existing = await tx.studentProfile.findUnique({ where: { userId: user.id } });
-          const profileData = {
-            school: school || undefined,
-            whatsappNumber: whatsappNumber || undefined,
-            parentWhatsappNumber: parentWhatsappNumber || undefined,
-            timeZone: timeZone || undefined,
-            timesheetUrl: timesheetUrl || undefined,
-            gcrLink: gcrLink || undefined,
-            scheduleLink: scheduleLink || undefined,
-            progressTrackerLink: progressTrackerLink || undefined,
-            notes: notes || undefined,
-            paymentMethodPreference: location || undefined
-          };
-          if (existing) {
-            await tx.studentProfile.update({ where: { userId: user.id }, data: profileData });
-          } else {
-            await tx.studentProfile.create({
-              data: {
-                userId: user.id,
-                firstName: studentName.split(" ")[0],
-                lastName: studentName.split(" ").slice(1).join(" ") || "Student",
-                grade: user.grade || "IGCSE",
-                board: user.board || "Cambridge",
-                ...profileData
-              }
-            });
-          }
-        }
-      }
-
-      // --- 6C. Recruits sheet → Candidates ---
-      console.log("[ETL] Importing Recruits sheet → Candidates...");
-      const recruitsSheet = wb.Sheets["Recruits"];
-      const recruitsRows = XLSX.utils.sheet_to_json<any>(recruitsSheet, { defval: null });
-
-      for (const row of recruitsRows) {
+    // Recruits sheet → Candidate
+    const recruitsSheet = wb.Sheets["Recruits"];
+    if (recruitsSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(recruitsSheet, { defval: null });
+      for (const row of rows) {
         const name = row["NAME"]?.toString().trim();
         if (!name) continue;
-
-        const position = row["INTERVIEW POSITION"]?.toString().trim() || "Teacher";
-        const email = row["EMAIL"]?.toString().trim() || null;
+        const position = row["INTERVIEW POSITION"]?.toString().trim() || "teacher";
+        const email = row["EMAIL"]?.toString().trim() || `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.recruit@divergencie.co.uk`;
         const statusRaw = row["STATUS"]?.toString().trim() || "Unavailable";
-        const notes = row["NOTES"]?.toString().trim() || null;
-        const skills = row["SKILLS/SUBJECTS"]?.toString().trim() || null;
-        const extraSkills = row["EXTRA SKILLS/SUBJECTS"]?.toString().trim() || null;
-        const cvLink = row["LINKS "]?.toString().trim() || row["LINKS"]?.toString().trim() || null;
-        const qualifications = row["QUALIFICATIONS"]?.toString().trim() || null;
-        const timeZone = row["TIME ZONE"]?.toString().trim() || null;
-        const interviewTime = row["INTERVIEW TIME"]?.toString().trim() || null;
-        const offerLetterStatus = row["OFFER LETTER"]?.toString().trim() || null;
-        const expectedRate = row["RATE"] != null ? String(row["RATE"]).trim() : null;
-        const gcrAccess = row["GCR ACCESS"]?.toString().trim() || null;
-        const classSchedule = row["CLASS SCHEDULE"]?.toString().trim() || null;
-        const workFolder = row["WORK FOLDER"]?.toString().trim() || null;
-
-        const interviewDateRaw = row["INTERVIEW DATE"];
-        const startDateRaw = row["START DATE"];
-
-        const candidateEmail = email ||
-          `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.recruit@divergencie.co.uk`;
-
         const status = statusRaw.toLowerCase() === "available" ? "active" : "inactive";
 
         const parseDate = (raw: any): Date | null => {
@@ -574,67 +402,267 @@ export async function runSandboxETL() {
           return null;
         };
 
-        const candidateData = {
-          role: position,
-          status,
-          notes,
-          skills,
-          extraSkills,
-          cvLink,
-          qualifications,
-          expectedRate,
-          timeZone,
-          interviewTime,
-          offerLetterStatus,
-          gcrAccess,
-          classSchedule,
-          workFolder,
-          startDate: parseDate(startDateRaw),
-          interviewRequestedAt: parseDate(interviewDateRaw)
-        };
-
-        await tx.candidate.upsert({
-          where: { email: candidateEmail },
-          update: candidateData,
-          create: { email: candidateEmail, name, ...candidateData }
+        await tx.candidate.create({
+          data: {
+            name,
+            email,
+            role: position,
+            status,
+            cvLink: row["LINKS "]?.toString().trim() || row["LINKS"]?.toString().trim() || null,
+            docsLink: null,
+            notes: row["NOTES"]?.toString().trim() || null,
+            outreach: null,
+            skills: row["SKILLS/SUBJECTS"]?.toString().trim() || null,
+            extraSkills: row["EXTRA SKILLS/SUBJECTS"]?.toString().trim() || null,
+            qualifications: row["QUALIFICATIONS"]?.toString().trim() || null,
+            expectedRate: row["RATE"] != null ? String(row["RATE"]).trim() : null,
+            timeZone: row["TIME ZONE"]?.toString().trim() || null,
+            interviewTime: row["INTERVIEW TIME"]?.toString().trim() || null,
+            startDate: parseDate(row["START DATE"]),
+            offerLetterStatus: row["OFFER LETTER"]?.toString().trim() || null,
+            gcrAccess: row["GCR ACCESS"]?.toString().trim() || null,
+            classSchedule: row["CLASS SCHEDULE"]?.toString().trim() || null,
+            workFolder: row["WORK FOLDER"]?.toString().trim() || null,
+            interviewRequestedAt: parseDate(row["INTERVIEW DATE"]),
+            isActive: true
+          }
         });
       }
-
-      console.log(`[ETL] Imported ${recruitsRows.length} recruit candidates from Recruits sheet.`);
-    } else {
-      console.warn("[ETL] DC Database 2026.xlsx not found at Data/ — skipping XLSX import.");
     }
 
-    // 7. REBUILD CACHES after XLSX group import
-    console.log("[ETL] Rebuilding caches after XLSX import...");
-    const allUsers = await tx.user.findMany();
-    // Re-sync userCache with any new users
-    for (const u of allUsers) {
-      userCache.set(u.name.toLowerCase(), u);
-      userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
+    // Stencil tables ingestion
+    const invoiceMonthsSheet = wb.Sheets["Invoice_Months"];
+    if (invoiceMonthsSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(invoiceMonthsSheet, { defval: null });
+      for (const row of rows) {
+        const month = row["Month"]?.toString().trim();
+        if (!month) continue;
+        const serialNo = row["S. No."] ? parseInt(row["S. No."].toString()) : null;
+        await tx.invoiceMonth.create({
+          data: { month, serialNo }
+        });
+      }
     }
 
-    const allGroups = await tx.group.findMany();
-    const enrollmentCache = new Map<string, any>();
+    const studentStatusesSheet = wb.Sheets["Student_Statuses"];
+    if (studentStatusesSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(studentStatusesSheet, { defval: null });
+      for (const row of rows) {
+        const name = row["Name"]?.toString().trim();
+        if (!name) continue;
+        const definition = row["Definition"]?.toString().trim() || null;
+        await tx.studentStatus.create({
+          data: { name, definition }
+        });
+      }
+    }
 
-    // 8. PARSE STUDENT INVOICES SPREADSHEET
-    console.log("[ETL] Parsing Student Invoices CSV operational data...");
-    const studentInvoicesPath = path.join(process.cwd(), "planning", "old system data", "DC Staff_Students 2026 - Student Invoices 2025 (1).csv");
+    const canvaSheet = wb.Sheets["Canva"];
+    if (canvaSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(canvaSheet, { defval: null });
+      for (const row of rows) {
+        const name = row["Name"]?.toString().trim();
+        const link = row["Link"]?.toString().trim();
+        if (!name || !link) continue;
+        const dateRaw = row["Date"];
+        let date: Date | null = null;
+        if (dateRaw instanceof Date) date = dateRaw;
+        else if (typeof dateRaw === "string" && dateRaw.trim()) {
+          const d = new Date(dateRaw); if (!isNaN(d.getTime())) date = d;
+        }
+        await tx.canvaDesign.create({
+          data: { name, link, date }
+        });
+      }
+    }
 
-    if (fs.existsSync(studentInvoicesPath)) {
-      const fileContent = fs.readFileSync(studentInvoicesPath, "utf-8");
-      const lines = fileContent.split(/\r?\n/);
+    const bookletsSheet = wb.Sheets["Booklets"];
+    if (bookletsSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(bookletsSheet, { defval: null });
+      for (const row of rows) {
+        const name = row["Name"]?.toString().trim();
+        let link = row["Link"]?.toString().trim();
+        let date: Date | null = null;
+        const dateRaw = row["Date"];
+        if (dateRaw) {
+          const dateStr = dateRaw.toString().trim();
+          if (dateStr.startsWith("http")) {
+            link = dateStr;
+          } else {
+            if (dateRaw instanceof Date) date = dateRaw;
+            else {
+              const d = new Date(dateStr);
+              if (!isNaN(d.getTime())) date = d;
+            }
+          }
+        }
+        if (!name || !link) continue;
+        await tx.booklet.create({
+          data: { name, link, date }
+        });
+      }
+    }
 
-      let currentMonth = "Apr_of_2026"; // Default starting block
+    const gcrSheet = wb.Sheets["GCR"];
+    if (gcrSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(gcrSheet, { defval: null });
+      for (const row of rows) {
+        const name = row["Name"]?.toString().trim();
+        const link = row["Link"]?.toString().trim();
+        if (!name || !link) continue;
+        const serialNo = row["S. No."] ? parseInt(row["S. No."].toString()) : null;
+        const dateRaw = row["Date"];
+        let date: Date | null = null;
+        if (dateRaw instanceof Date) date = dateRaw;
+        else if (typeof dateRaw === "string" && dateRaw.trim()) {
+          const d = new Date(dateRaw); if (!isNaN(d.getTime())) date = d;
+        }
+        await tx.gcrClassroom.create({
+          data: { name, link, serialNo, date }
+        });
+      }
+    }
 
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line || line.trim() === "") continue;
+    const backlogSheet = wb.Sheets["Backlog"];
+    if (backlogSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(backlogSheet, { defval: null });
+      for (const row of rows) {
+        const event = row["Event"]?.toString().trim();
+        const desc = row["Desc"]?.toString().trim();
+        if (!event && !desc) continue;
+        const parseSheetDate = (raw: any): Date | null => {
+          if (raw instanceof Date) return raw;
+          if (typeof raw === "string" && raw.trim()) {
+            const d = new Date(raw);
+            return isNaN(d.getTime()) ? null : d;
+          }
+          return null;
+        };
+        await tx.backlogItem.create({
+          data: {
+            serialNo: row["S. No."] ? parseInt(row["S. No."].toString()) : null,
+            importance: row["Importance"]?.toString().trim() || null,
+            addedToCalendar: row["Added to Calendar"]?.toString().trim() || null,
+            dateAdded: parseSheetDate(row["Date Added"]),
+            addedToCalendar2: row["Added to Calendar 2"]?.toString().trim() || null,
+            date: parseSheetDate(row["Date"]),
+            additionalTask: row["Additional Task"]?.toString().trim() || null,
+            event,
+            desc,
+            startTime: row["Start Time"]?.toString().trim() || null,
+            endTime: row["End time"]?.toString().trim() || null,
+            durationHours: row["Duration / Hours"] ? parseFloat(row["Duration / Hours"].toString()) : null,
+            location: row["Location"]?.toString().trim() || null,
+            tag: row["Tag"]?.toString().trim() || null,
+            nextSteps: row["Next Steps"]?.toString().trim() || null
+          }
+        });
+      }
+    }
 
-        const cells = parseCSVLine(line);
+    const sprintsSheet = wb.Sheets["Sprints"];
+    if (sprintsSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(sprintsSheet, { defval: null });
+      for (const row of rows) {
+        const event = row["Event"]?.toString().trim();
+        const desc = row["Desc"]?.toString().trim();
+        if (!event && !desc) continue;
+        const parseSheetDate = (raw: any): Date | null => {
+          if (raw instanceof Date) return raw;
+          if (typeof raw === "string" && raw.trim()) {
+            const d = new Date(raw);
+            return isNaN(d.getTime()) ? null : d;
+          }
+          return null;
+        };
+        await tx.sprintItem.create({
+          data: {
+            serialNo: row["S. No."] ? parseInt(row["S. No."].toString()) : null,
+            importance: row["Importance"]?.toString().trim() || null,
+            addedToCalendar: row["Added to Calendar"]?.toString().trim() || null,
+            dateAdded: parseSheetDate(row["Date Added"]),
+            addedToCalendar2: row["Added to Calendar 2"]?.toString().trim() || null,
+            date: parseSheetDate(row["Date"]),
+            additionalTask: row["Additional Task"]?.toString().trim() || null,
+            event,
+            desc,
+            startTime: row["Start Time"]?.toString().trim() || null,
+            endTime: row["End time"]?.toString().trim() || null,
+            durationHours: row["Duration / Hours"] ? parseFloat(row["Duration / Hours"].toString()) : null,
+            location: row["Location"]?.toString().trim() || null,
+            tag: row["Tag"]?.toString().trim() || null,
+            nextSteps: row["Next Steps"]?.toString().trim() || null
+          }
+        });
+      }
+    }
+
+    // Students sheet → enriching Profiles
+    const studentsSheet = wb.Sheets["Students"];
+    if (studentsSheet) {
+      const rows = XLSX.utils.sheet_to_json<any>(studentsSheet, { defval: null });
+      for (const row of rows) {
+        const studentName = row["Student Name"]?.toString().trim();
+        if (!studentName) continue;
+
+        let user = userCache.get(studentName.toLowerCase()) || userCache.get(`${studentName.toLowerCase()}_student`);
+        if (!user) {
+          for (const [key, u] of userCache.entries()) {
+            if (u.role === "student" && key.startsWith(studentName.split(" ")[0].toLowerCase())) {
+              user = u;
+              break;
+            }
+          }
+        }
+
+        if (user && user.role === "student") {
+          await tx.studentProfile.upsert({
+            where: { userId: user.id },
+            update: {
+              school: row["School"]?.toString().trim() || null,
+              whatsappNumber: row["WhatsApp Number"]?.toString().trim() || null,
+              parentWhatsappNumber: row["Parent WhatsApp Number"]?.toString().trim() || null,
+              timeZone: row["Time Zone"]?.toString().trim() || null,
+              timesheetUrl: row["Timesheet"]?.toString().trim() || null,
+              gcrLink: row["GCR"]?.toString().trim() || null,
+              scheduleLink: row["Schedule"]?.toString().trim() || null,
+              progressTrackerLink: row["Progress Tracker"]?.toString().trim() || null,
+              location: row["Location"]?.toString().trim() || null,
+              notes: row["Notes"]?.toString().trim() || null
+            },
+            create: {
+              userId: user.id,
+              firstName: studentName.split(" ")[0],
+              lastName: studentName.split(" ").slice(1).join(" ") || "Student",
+              school: row["School"]?.toString().trim() || null,
+              whatsappNumber: row["WhatsApp Number"]?.toString().trim() || null,
+              parentWhatsappNumber: row["Parent WhatsApp Number"]?.toString().trim() || null,
+              timeZone: row["Time Zone"]?.toString().trim() || null,
+              timesheetUrl: row["Timesheet"]?.toString().trim() || null,
+              gcrLink: row["GCR"]?.toString().trim() || null,
+              scheduleLink: row["Schedule"]?.toString().trim() || null,
+              progressTrackerLink: row["Progress Tracker"]?.toString().trim() || null,
+              location: row["Location"]?.toString().trim() || null,
+              notes: row["Notes"]?.toString().trim() || null
+            }
+          });
+        }
+      }
+    }
+
+    // 4. PARSE STUDENT INVOICES OPERATIONAL DATA (GROUND TRUTH)
+    console.log("[ETL] Reading Student Invoices operational ground truth...");
+    const invoiceSheet = wb.Sheets["Student_Invoices"];
+    if (invoiceSheet) {
+      const invoiceRows = XLSX.utils.sheet_to_json<any[]>(invoiceSheet, { header: 1, defval: "" });
+      let currentMonth = "Apr_of_2026";
+      const enrollmentCache = new Map<string, any>();
+
+      for (let i = 0; i < invoiceRows.length; i++) {
+        const cells = invoiceRows[i].map(c => String(c).trim());
         if (cells.length < 5) continue;
 
-        // Detect month switches
+        // Month divider detection
         const possibleMonthIdx = cells.findIndex(c => c === "Month");
         if (possibleMonthIdx !== -1 && possibleMonthIdx + 1 < cells.length && cells[possibleMonthIdx + 1] !== "") {
           currentMonth = cells[possibleMonthIdx + 1].trim();
@@ -651,19 +679,17 @@ export async function runSandboxETL() {
         const feesRaw = cells[9];
         const inrRaw = cells[10];
         const dueRaw = cells[11];
-        const billingStartRaw = cells[12];   // XLSX col11 "Start"
-        const billingEndRaw = cells[13];     // XLSX col12 "Finish"
+        const billingStartRaw = cells[12];
+        const billingEndRaw = cells[13];
         const paymentDoneRaw = cells[14];
         const paymentDateRaw = cells[17];
-        const paymentAcknowledgementMsg = cells[18] || null;  // XLSX col17
-        const invoicePdfUrl = cells[19] || null;              // XLSX col18
-        const serialNoRaw = cells[20];                        // XLSX col19 "S. No."
-        const paymentReminderMsg = cells[21] || null;         // XLSX col20
+        const paymentAcknowledgementMsg = cells[18] || null;
+        const invoicePdfUrl = cells[19] || null;
+        const serialNoRaw = cells[20];
+        const paymentReminderMsg = cells[21] || null;
 
-        // Skip header lines or totals/blank names
-        if (!studentName || studentName === "Students" || studentName === "Student Count" || studentName === "Month" || studentName === "Date" || studentName === "") continue;
+        if (!studentName || studentName === "Students" || studentName === "Student Count" || studentName === "Month" || studentName === "") continue;
 
-        // Clean values
         const discountPct = cleanPercent(discountRaw);
         const feesAmount = cleanNumeric(feesRaw);
         const inrEquivalent = cleanNumeric(inrRaw);
@@ -671,35 +697,33 @@ export async function runSandboxETL() {
         const paymentDone = paymentDoneRaw === "1" || paymentDoneRaw === "true";
         const serialNo = serialNoRaw ? Math.round(parseFloat(serialNoRaw)) || null : null;
 
-        const parseCSVDate = (raw: string | null): Date | null => {
-          if (!raw || raw.trim() === "") return null;
-          const d = new Date(raw);
+        const parseDate = (raw: any): Date | null => {
+          if (!raw) return null;
+          if (raw instanceof Date) return raw;
+          const str = String(raw).trim();
+          if (str === "") return null;
+          const d = new Date(str);
           return isNaN(d.getTime()) ? null : d;
         };
 
-        const paymentDate = parseCSVDate(paymentDateRaw);
-        const billingStart = parseCSVDate(billingStartRaw);
-        const billingEnd = parseCSVDate(billingEndRaw);
+        const paymentDate = parseDate(paymentDateRaw);
+        const billingStart = parseDate(billingStartRaw);
+        const billingEnd = parseDate(billingEndRaw);
 
-        // A. Match or create Student User record
-        const studentKey = `${studentName.toLowerCase()}_student`;
-        let student = userCache.get(studentKey) || userCache.get(studentName.toLowerCase());
-
-        if (!student || student.role !== "student") {
+        // Resolve student
+        let student = userCache.get(studentName.toLowerCase()) || userCache.get(`${studentName.toLowerCase()}_student`);
+        if (!student) {
           student = await tx.user.create({
             data: {
               email: `${studentName.toLowerCase().replace(/[^a-z0-9]/g, "")}@divergencie.co.uk`,
               name: studentName,
               role: "student",
-              active: status === "Active",
-              grade: "IGCSE",
-              board: "Cambridge"
+              isActive: status === "Active"
             }
           });
-          userCache.set(studentKey, student);
           userCache.set(studentName.toLowerCase(), student);
-
-          // Create StudentProfile for new CSV student
+          userCache.set(`${studentName.toLowerCase()}_student`, student);
+          
           await tx.studentProfile.create({
             data: {
               userId: student.id,
@@ -707,132 +731,149 @@ export async function runSandboxETL() {
               lastName: studentName.split(" ").slice(1).join(" ") || "Student",
               dob: new Date("2008-03-12"),
               grade: "IGCSE",
-              board: "Cambridge",
-              targetUni: "TBD",
-              paymentMethodPreference: "SBI Corporate Bank Account"
+              board: "Cambridge"
             }
           });
         }
 
-        // B. Create or Resolve StudentMonthlyEnrollment Snapshot Row
-        const enrollmentKey = `${student.id}_${currentMonth}`;
-        let enrollment = enrollmentCache.get(enrollmentKey);
-
-        if (!enrollment) {
-          enrollment = await tx.studentMonthlyEnrollment.create({
-            data: {
-              studentId: student.id,
-              month: currentMonth,
-              status: status || "Active",
-              discountPct,
-              currency,
-              exchangeRate: feesAmount > 0 ? (inrEquivalent / feesAmount) : 1.0,
-              preferredPaymentId: defaultBank.id
-            }
+        // Period InvoiceMonth FK linking
+        let invMonth = await tx.invoiceMonth.findUnique({ where: { month: currentMonth } });
+        if (!invMonth) {
+          invMonth = await tx.invoiceMonth.create({
+            data: { month: currentMonth }
           });
-          enrollmentCache.set(enrollmentKey, enrollment);
         }
 
-        // C. Parse comma-separated subject codes and create Package Items
-        if (subjectsStr && subjectsStr.trim() !== "") {
+        // Resolve overall StudentInvoice Cart row
+        const invoice = await tx.studentInvoice.create({
+          data: {
+            studentId: student.id,
+            invoiceMonthId: invMonth.id,
+            month: currentMonth.substring(0, 7), // "YYYY-MM" snippet fallback
+            billingStart,
+            billingEnd,
+            totalAmount: feesAmount,
+            discountApplied: discountPct,
+            netAmount: feesAmount * (1 - discountPct / 100),
+            dueAmount,
+            currency,
+            paymentDone,
+            paymentDate,
+            paymentMethod: paymentDone ? "SBI Bank Account" : null,
+            referenceNo: paymentDone ? `REF-INV-${student.id.substring(0, 4)}-${currentMonth}` : null,
+            reminderStage: paymentDone ? 0 : 1,
+            invoicePdfUrl,
+            paymentAcknowledgementMsg,
+            paymentReminderMsg,
+            serialNo,
+            status: paymentDone ? "paid" : "overdue"
+          }
+        });
+
+        // Resolve line items and enrollments
+        if (subjectsStr) {
           const subjects = subjectsStr.split(",");
           for (const sub of subjects) {
             const subTrimmed = sub.trim();
             if (subTrimmed === "") continue;
 
-            // Match group by code prefix (batch code in subject name)
-            const batchPrefix = subTrimmed.split(" ")[0]; // e.g., "B14"
-            const subjectCodeMatch = subTrimmed.match(/\b(\d{4})\b/); // e.g., "0625"
-            const subjectCode = subjectCodeMatch ? subjectCodeMatch[1] : null;
-            const groupCode = subjectCode ? `${batchPrefix}-${subjectCode}` : null;
-            const group = groupCode ? allGroups.find(g => g.code === groupCode) : allGroups.find(g => g.code.startsWith(batchPrefix));
+            const batchPrefix = subTrimmed.split(" ")[0];
+            const subjectCodeMatch = subTrimmed.match(/\b(\d{4})\b/);
+            const subjectCode = subjectCodeMatch ? subjectCodeMatch[1] : "";
+            const key = `${batchPrefix}_${subjectCode}`.toLowerCase();
 
-            const isHourly = hoursLoggedRaw.includes(",");
-            const cleanHours = parseFloat(hoursLoggedRaw.replace(/,/g, "")) || 1;
+            // Find catalogue service
+            let service = serviceMap.get(key);
+            if (!service) {
+              // Create ad-hoc service
+              service = await tx.service.create({
+                data: {
+                  teacherId: managementUser.id,
+                  subjectName: subTrimmed,
+                  fullSubjectName: subTrimmed,
+                  serviceType: "adhoc",
+                  currency,
+                  standardRate: cleanNumeric(rateRaw)
+                }
+              });
+              serviceMap.set(key, service);
+            }
 
-            await tx.enrollmentPackageItem.create({
+            // Student enrollment
+            const enrollKey = `${student.id}_${service.id}`;
+            let enrollment = enrollmentCache.get(enrollKey);
+            if (!enrollment) {
+              enrollment = await tx.enrollment.create({
+                data: {
+                  studentId: student.id,
+                  serviceId: service.id,
+                  status: status === "Active" ? "active" : "paused",
+                  startDate: billingStart,
+                  endDate: billingEnd
+                }
+              });
+              enrollmentCache.set(enrollKey, enrollment);
+            }
+
+            // Billed line item
+            await tx.invoiceLineItem.create({
               data: {
+                invoiceId: invoice.id,
                 enrollmentId: enrollment.id,
-                groupId: group ? group.id : null,
-                customServiceName: group ? null : subTrimmed,
-                subjectsCount: isHourly ? 1 : Math.round(cleanHours),
-                isHourly,
-                rateApplied: cleanNumeric(rateRaw),
-                billingNotes: rateRaw
+                serviceType: service.serviceType,
+                serviceNameSnapshot: service.fullSubjectName,
+                teacherNameSnapshot: service.instructorNameSnapshot || "Staff",
+                groupCodeSnapshot: batchPrefix,
+                rateSnapshot: cleanNumeric(rateRaw),
+                currency,
+                hoursOrQty: parseFloat(hoursLoggedRaw) || 1.0,
+                lineTotal: feesAmount
               }
             });
           }
         }
 
-        // D. Create Decoupled StudentInvoice Record
-        const invoice = await tx.studentInvoice.create({
-          data: {
-            enrollmentId: enrollment.id,
-            month: currentMonth,
-            billingStart,
-            billingEnd,
-            feesAmount,
-            discountApplied: discountPct,
-            netAmount: feesAmount * (1 - discountPct / 100),
-            inrEquivalent,
-            dueAmount,
-            paymentDone,
-            paymentDate,
-            paymentMethod: paymentDone ? "SBI Corporate Bank Account" : null,
-            referenceNo: paymentDone ? `REF-MIG-${currentMonth.toUpperCase()}-${student.id.substring(0, 4)}` : null,
-            invoicePdfUrl,
-            paymentAcknowledgementMsg,
-            paymentReminderMsg,
-            serialNo
-          }
-        });
-
-        // E. Log Double-Entry Ledger Record for Invoiced Revenue
+        // Debit transactions matching double-entry accounting rules
         if (feesAmount > 0) {
-          const transaction = await tx.accountTransaction.create({
+          const trans = await tx.accountTransaction.create({
             data: {
-              description: `Import Tuition Fee Invoice - ${studentName} - ${currentMonth}`
+              bankAccountId: atiqaBank.id,
+              description: `Tuition Invoice - ${studentName} - ${currentMonth}`,
+              transactionType: paymentDone ? "credit" : "debit",
+              amount: inrEquivalent,
+              currency: "INR"
             }
           });
 
-          const activeAssetAccount = paymentDone ? "SBI Corporate Bank Account" : "DivergenCIE Corporate Cash Wallet";
-          const assetAcc = accountMap.get(activeAssetAccount);
-          const revAcc = accountMap.get("Tuition Fees Revenue Account");
-
-          if (assetAcc && revAcc) {
-            await tx.ledgerEntry.create({
-              data: { transactionId: transaction.id, accountId: assetAcc.id, amount: inrEquivalent, studentInvoiceId: invoice.id }
-            });
-            await tx.ledgerEntry.create({
-              data: { transactionId: transaction.id, accountId: revAcc.id, amount: -inrEquivalent, studentInvoiceId: invoice.id }
-            });
-            accountBalances.set(activeAssetAccount, (accountBalances.get(activeAssetAccount) || 0) + inrEquivalent);
-            accountBalances.set("Tuition Fees Revenue Account", (accountBalances.get("Tuition Fees Revenue Account") || 0) + inrEquivalent);
-          }
+          await tx.ledgerEntry.create({
+            data: {
+              transactionId: trans.id,
+              bankAccountId: atiqaBank.id,
+              amount: inrEquivalent,
+              direction: paymentDone ? "credit" : "debit",
+              purpose: "revenue",
+              studentInvoiceId: invoice.id
+            }
+          });
         }
       }
     }
 
-    // 9. PARSE STAFF PAYMENTS SPREADSHEET
-    console.log("[ETL] Parsing Staff Payments CSV operational data...");
-    const staffPaymentsPath = path.join(process.cwd(), "planning", "old system data", "DC Staff_Students 2026 - Staff Payments 2024.csv");
-
-    if (fs.existsSync(staffPaymentsPath)) {
-      const fileContent = fs.readFileSync(staffPaymentsPath, "utf-8");
-      const lines = fileContent.split(/\r?\n/);
-
+    // 5. PARSE STAFF PAYMENTS OPERATIONAL DATA (GROUND TRUTH)
+    console.log("[ETL] Reading Staff Claims operational ground truth...");
+    const claimSheet = wb.Sheets["Copy of Staff_Payments"];
+    if (claimSheet) {
+      const staffRows = XLSX.utils.sheet_to_json<any[]>(claimSheet, { header: 1, defval: "" });
       let currentMonth = "December_of_2023";
 
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line || line.trim() === "") continue;
-
-        const cells = parseCSVLine(line);
+      for (let i = 0; i < staffRows.length; i++) {
+        const cells = staffRows[i].map(c => String(c).trim());
         if (cells.length < 5) continue;
 
-        // Detect month switches
-        if (line.includes("December of") || line.includes("January of") || line.includes("February of") || line.includes("March of")) {
-          const match = line.match(/(December|January|February|March)\s+of\s+\d{4}/i);
+        // Month divider detection
+        const joinedLine = cells.join(" ");
+        if (joinedLine.includes("December of") || joinedLine.includes("January of") || joinedLine.includes("February of") || joinedLine.includes("March of")) {
+          const match = joinedLine.match(/(December|January|February|March)\s+of\s+\d{4}/i);
           if (match) {
             currentMonth = match[0].trim().replace(/\s+/g, "_");
             continue;
@@ -845,178 +886,229 @@ export async function runSandboxETL() {
         const rateRaw = cells[4];
         const feesRaw = cells[5];
         const inrRaw = cells[6];
-        const startedRaw = cells[8];    // XLSX col8 "Started"
-        const finishRaw = cells[9];     // XLSX col9 "Finish"
+        const startedRaw = cells[8];
+        const finishRaw = cells[9];
         const paymentDoneRaw = cells[10];
-        const dateDoneRaw = cells[12];  // XLSX col12 "Date done"
-        const notes2Raw = cells[13];    // XLSX col13 "Notes 2"
+        const dateDoneRaw = cells[12];
+        const notes2Raw = cells[13];
 
-        if (!staffNameRaw || staffNameRaw.includes("Staff") || staffNameRaw.includes("Count") || staffNameRaw.includes("Total Due") || staffNameRaw.trim() === "") continue;
+        if (!staffNameRaw || staffNameRaw.includes("Staff") || staffNameRaw.includes("Count") || staffNameRaw.includes("Total Due") || staffNameRaw === "") continue;
 
         const cleanStaffName = staffNameRaw.split("(")[0].trim().replace(/ xx$/i, "");
         const hours = parseFloat(hoursRaw) || 0;
-        const rateApplied = cleanNumeric(rateRaw) || null;
+        const rateApplied = cleanNumeric(rateRaw);
         const amount = cleanNumeric(feesRaw);
         const inrAmount = cleanNumeric(inrRaw);
         const paymentDone = paymentDoneRaw === "1" || paymentDoneRaw === "true";
 
-        const parseStaffDate = (raw: string | null): Date | null => {
-          if (!raw || raw.trim() === "") return null;
-          const d = new Date(raw);
+        const parseDate = (raw: any): Date | null => {
+          if (!raw) return null;
+          if (raw instanceof Date) return raw;
+          const str = String(raw).trim();
+          if (str === "") return null;
+          const d = new Date(str);
           return isNaN(d.getTime()) ? null : d;
         };
-        const startDate = parseStaffDate(startedRaw);
-        const endDate = parseStaffDate(finishRaw);
-        const paymentDate = parseStaffDate(dateDoneRaw);
-        const notes2 = notes2Raw && !isNaN(parseFloat(notes2Raw)) ? null : (notes2Raw || null); // col13 is sometimes a numeric INR value, skip those
 
-        let staff = userCache.get(cleanStaffName.toLowerCase());
+        const startDate = parseDate(startedRaw);
+        const endDate = parseDate(finishRaw);
+        const paymentDate = parseDate(dateDoneRaw);
 
-        const isStaffRole = cleanStaffName.match(/(Fahim|Supervisor|Manager|Atiqa|Aleena|Mahrukh|Seher)/i) !== null;
-        const resolvedRole = isStaffRole ? "staff" : "teacher";
-
+        // Resolve staff user
+        let staff = userCache.get(cleanStaffName.toLowerCase()) || userCache.get(`${cleanStaffName.toLowerCase()}_teacher`);
         if (!staff) {
+          const isStaffRole = cleanStaffName.match(/(Fahim|Supervisor|Manager|Atiqa|Aleena|Mahrukh|Seher)/i) !== null;
           staff = await tx.user.create({
             data: {
               email: `${cleanStaffName.toLowerCase().replace(/[^a-z0-9]/g, "")}@divergencie.co.uk`,
               name: cleanStaffName,
-              role: resolvedRole,
-              active: true,
-              hourlyRate: cleanNumeric(rateRaw),
-              specialization: notes || "Tutor"
+              role: isStaffRole ? "staff" : "teacher",
+              dept: isStaffRole ? "PR" : "IT",
+              isActive: true
             }
           });
-          userCache.set(`${cleanStaffName.toLowerCase()}_${resolvedRole}`, staff);
           userCache.set(cleanStaffName.toLowerCase(), staff);
-
-          // Create normalized profile for newly created staff/teacher
-          if (resolvedRole === "staff") {
-            let roleTitle = "Administrative Staff";
-            let qualification = "Bachelors Degree";
-            if (cleanStaffName.toLowerCase().includes("atiqa")) {
-              roleTitle = "Associate Project Manager"; qualification = "Project Management Professional (PMP)";
-            } else if (cleanStaffName.toLowerCase().includes("aleena")) {
-              roleTitle = "Teaching Assistant"; qualification = "Bachelors in Education";
-            } else if (cleanStaffName.toLowerCase().includes("mahrukh")) {
-              roleTitle = "SM Assistant"; qualification = "Bachelors in Media & Communications";
-            } else if (cleanStaffName.toLowerCase().includes("seher")) {
-              roleTitle = "Teaching Assistant"; qualification = "Bachelors in Science";
+          
+          await tx.teacherProfile.create({
+            data: {
+              userId: staff.id,
+              firstName: cleanStaffName.split(" ")[0],
+              lastName: cleanStaffName.split(" ")[1] || "Tutor"
             }
-            await tx.staffProfile.create({
-              data: {
-                userId: staff.id, firstName: cleanStaffName.split(" ")[0], lastName: cleanStaffName.split(" ")[1] || "Staff",
-                dob: new Date("1998-05-20"), roleTitle, salaryType: cleanStaffName.toLowerCase().includes("atiqa") ? "monthly" : "hourly",
-                salaryRate: cleanNumeric(rateRaw) || 20.0, latestQualification: qualification, bankAccountInfo: "SBI Main Staging Account xxxx754"
-              }
-            });
-          } else {
-            await tx.teacherProfile.create({
-              data: {
-                userId: staff.id, firstName: cleanStaffName.split(" ")[0], lastName: cleanStaffName.split(" ")[1] || "Tutor",
-                dob: new Date("1995-08-15"), hourlyRate: cleanNumeric(rateRaw) || 15.0,
-                latestQualification: "Bachelors in Cambridge CIE Pedagogy",
-                teachingProfileUrl: `https://divergencie.co.uk/tutors/${cleanStaffName.toLowerCase().replace(/[^a-z0-9]/g, "")}`,
-                bankAccountInfo: "HDFC Main Staging Account xxxx432"
-              }
-            });
-          }
-        } else if (staff.role !== resolvedRole) {
-          staff = await tx.user.update({ where: { id: staff.id }, data: { role: resolvedRole } });
-          userCache.set(cleanStaffName.toLowerCase(), staff);
+          });
         }
 
-        // Create Claim Record
+        // Create Claim item
         const claim = await tx.claim.create({
           data: {
             userId: staff.id,
+            dept: staff.dept || "IT",
             month: currentMonth,
+            sessions: 0,
             hours,
             rateApplied,
             amount,
+            currency: "INR",
             status: paymentDone ? "paid" : "pending",
-            notes: notes || "Historical imported contract Timesheet",
-            notes2,
+            notes: notes || "XLSX Timesheet",
+            notes2: notes2Raw || null,
             startDate,
             endDate,
-            paymentDate
+            paymentDate,
+            isActive: true
           }
         });
 
-        // Log Double-Entry Ledger entries for Claim expenses
+        // Trigger double-entry bookkeeping ledger entry and automatic debit claim budgets (Q12)
         if (amount > 0) {
-          const transaction = await tx.accountTransaction.create({
-            data: { description: `Import Compensation Claim - ${cleanStaffName} - ${currentMonth}` }
+          const trans = await tx.accountTransaction.create({
+            data: {
+              bankAccountId: akhtarBank.id,
+              description: `Compensation Claim - ${cleanStaffName} - ${currentMonth}`,
+              transactionType: "debit",
+              amount: inrAmount,
+              currency: "INR"
+            }
           });
 
-          const expenseAccountName = resolvedRole === "teacher" ? "Teacher Compensation Expense" : "Staff Payroll Expense";
-          const expenseAcc = accountMap.get(expenseAccountName);
-          const creditAccountName = paymentDone ? "SBI Corporate Bank Account" : "DivergenCIE Corporate Cash Wallet";
-          const assetAcc = accountMap.get(creditAccountName);
+          const ledgerEntry = await tx.ledgerEntry.create({
+            data: {
+              transactionId: trans.id,
+              bankAccountId: akhtarBank.id,
+              amount: inrAmount,
+              direction: "debit",
+              purpose: "claim_payment",
+              claimId: claim.id
+            }
+          });
 
-          if (expenseAcc && assetAcc) {
-            await tx.ledgerEntry.create({
-              data: { transactionId: transaction.id, accountId: expenseAcc.id, amount: inrAmount, claimId: claim.id }
+          // Budget debit automation logic (claims_budget category)
+          const dept = staff.dept || "IT";
+          let budget = await tx.deptBudget.findFirst({
+            where: { dept, quarter: "2026-Q1" }
+          });
+          if (!budget) {
+            budget = await tx.deptBudget.create({
+              data: {
+                dept,
+                quarter: "2026-Q1",
+                totalAllocated: 250000.00,
+                status: "active",
+                bankAccountId: akhtarBank.id,
+                quarterStart: new Date("2026-01-01"),
+                quarterEnd: new Date("2026-03-31")
+              }
             });
-            await tx.ledgerEntry.create({
-              data: { transactionId: transaction.id, accountId: assetAcc.id, amount: -inrAmount, claimId: claim.id }
-            });
-            accountBalances.set(expenseAccountName, (accountBalances.get(expenseAccountName) || 0) + inrAmount);
-            accountBalances.set(creditAccountName, (accountBalances.get(creditAccountName) || 0) - inrAmount);
           }
+
+          let subCategory = await tx.budgetSubCategory.findFirst({
+            where: { budgetId: budget.id, subCategoryType: "claims" }
+          });
+          if (!subCategory) {
+            subCategory = await tx.budgetSubCategory.create({
+              data: {
+                budgetId: budget.id,
+                subCategoryType: "claims",
+                allocated: 150000.00,
+                utilised: 0,
+                remaining: 150000.00
+              }
+            });
+          }
+
+          // Ingest BudgetUtilisation consumed_by ledger entry
+          await tx.budgetUtilisation.create({
+            data: {
+              subCategoryId: subCategory.id,
+              ledgerEntryId: ledgerEntry.id,
+              referenceType: "claim",
+              referenceId: claim.id,
+              claimId: claim.id,
+              amount: inrAmount
+            }
+          });
+
+          // Update Category total utilised amounts
+          await tx.budgetSubCategory.update({
+            where: { id: subCategory.id },
+            data: {
+              utilised: { increment: inrAmount },
+              remaining: { decrement: inrAmount }
+            }
+          });
         }
       }
     }
 
-    // 10. SAVE FINAL ACCOUNT LEDGER BALANCES
-    console.log("[ETL] Committing in-memory ledger account balance aggregates...");
-    for (const [name, finalBalance] of accountBalances.entries()) {
-      await tx.account.update({ where: { name }, data: { balance: finalBalance } });
+    // 6. PROGRAMMATIC DATA FIXES — MATCH SERVICE IDs (Step 7 Prerequisites)
+    console.log("[ETL] Programmatically resolving nullable serviceId FKs...");
+    const activeServicesList = await tx.service.findMany();
+
+    const academicSessions = await tx.academicSession.findMany();
+    for (const sess of academicSessions) {
+      const match = activeServicesList.find(s => s.groupId === sess.groupId) || activeServicesList[0];
+      if (match) {
+        await tx.academicSession.update({
+          where: { id: sess.id },
+          data: { serviceId: match.id }
+        });
+      }
     }
 
-    // 11. GENERATE MONTHLY BILLING SUMMARIES (student-side)
-    console.log("[ETL] Generating dynamic monthly billing cache summaries...");
-    const allInvoices = await tx.studentInvoice.findMany();
-    const monthGroups = new Map<string, any[]>();
-    for (const inv of allInvoices) {
-      if (!monthGroups.has(inv.month)) monthGroups.set(inv.month, []);
-      monthGroups.get(inv.month)!.push(inv);
+    const assignments = await tx.assignment.findMany();
+    for (const ass of assignments) {
+      const match = activeServicesList.find(s => s.teacherId === ass.studentId) || activeServicesList[0];
+      if (match) {
+        await tx.assignment.update({
+          where: { id: ass.id },
+          data: { serviceId: match.id }
+        });
+      }
     }
-    for (const [m, studentInvoices] of monthGroups.entries()) {
-      const studentCount = await tx.studentMonthlyEnrollment.count({ where: { month: m, status: "Active" } });
-      const totalLocalFees = studentInvoices.reduce((sum, inv) => sum + inv.feesAmount, 0);
-      const totalINR = studentInvoices.reduce((sum, inv) => sum + inv.inrEquivalent, 0);
-      const totalDueINR = studentInvoices.reduce((sum, inv) => sum + (inv.paymentDone ? 0 : inv.inrEquivalent), 0);
-      const paidInvoices = studentInvoices.filter(inv => inv.paymentDone).length;
-      const dueInvoices = studentInvoices.filter(inv => !inv.paymentDone).length;
-      await tx.monthlyBillingSummary.create({
-        data: { month: m, studentCount, totalLocalFees, totalINR, totalDueINR, paidInvoices, dueInvoices, paidRatio: studentInvoices.length > 0 ? (paidInvoices / studentInvoices.length) : 0 }
+
+    const mockResults = await tx.mockResult.findMany();
+    for (const mr of mockResults) {
+      const match = activeServicesList[0];
+      if (match) {
+        await tx.mockResult.update({
+          where: { id: mr.id },
+          data: { serviceId: match.id }
+        });
+      }
+    }
+
+    const syllabusItems = await tx.syllabusItem.findMany();
+    for (const sy of syllabusItems) {
+      const match = activeServicesList[0];
+      if (match) {
+        await tx.syllabusItem.update({
+          where: { id: sy.id },
+          data: { serviceId: match.id }
+        });
+      }
+    }
+
+    console.log("[ETL] Populating ticket permissions standard stencils...");
+    const depts = ["PR", "HR", "Finance", "Marketing", "IT", "Management"];
+    for (const d of depts) {
+      await tx.ticketPermission.upsert({
+        where: { department: d },
+        update: {},
+        create: {
+          department: d,
+          canTargetStudent: true,
+          canTargetParent: true,
+          canTargetTeacher: true,
+          canTargetAmbassador: true,
+          canTargetCandidate: true,
+          isInternalOnly: false
+        }
       });
     }
 
-    // 12. GENERATE MONTHLY PAYROLL SUMMARIES (staff-side)
-    console.log("[ETL] Generating monthly payroll summaries...");
-    const allClaims = await tx.claim.findMany();
-    const claimMonthGroups = new Map<string, any[]>();
-    for (const c of allClaims) {
-      if (!claimMonthGroups.has(c.month)) claimMonthGroups.set(c.month, []);
-      claimMonthGroups.get(c.month)!.push(c);
-    }
-    for (const [m, claims] of claimMonthGroups.entries()) {
-      const staffCount = new Set(claims.map((c: any) => c.userId)).size;
-      const totalLocalFees = claims.reduce((sum: number, c: any) => sum + c.amount, 0);
-      // Rough GBP→INR at 105 (approximate historical average)
-      const totalINR = totalLocalFees * 105;
-      const paidClaims = claims.filter((c: any) => c.status === "paid").length;
-      const dueClaims = claims.filter((c: any) => c.status !== "paid").length;
-      const totalDueINR = claims.filter((c: any) => c.status !== "paid").reduce((sum: number, c: any) => sum + c.amount, 0) * 105;
-      await tx.monthlyPayrollSummary.create({
-        data: { month: m, staffCount, totalLocalFees, totalINR, totalDueINR, paidClaims, dueClaims }
-      });
-    }
-
-    console.log("[ETL] ETL Database Migration completed successfully!");
+    console.log("[ETL] ETL Database migration succeeded!");
     return { success: true };
   }, {
-    timeout: 300000 // 5 minutes timeout
+    timeout: 300000 // 5 minutes timeout limit
   });
 }

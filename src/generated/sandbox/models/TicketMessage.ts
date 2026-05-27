@@ -198,8 +198,8 @@ export type TicketMessageWhereInput = {
   isInternal?: Prisma.BoolFilter<"TicketMessage"> | boolean
   attachmentLink?: Prisma.StringNullableFilter<"TicketMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TicketMessage"> | Date | string
-  sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   ticket?: Prisma.XOR<Prisma.TicketScalarRelationFilter, Prisma.TicketWhereInput>
+  sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type TicketMessageOrderByWithRelationInput = {
@@ -210,8 +210,8 @@ export type TicketMessageOrderByWithRelationInput = {
   isInternal?: Prisma.SortOrder
   attachmentLink?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  sender?: Prisma.UserOrderByWithRelationInput
   ticket?: Prisma.TicketOrderByWithRelationInput
+  sender?: Prisma.UserOrderByWithRelationInput
 }
 
 export type TicketMessageWhereUniqueInput = Prisma.AtLeast<{
@@ -225,8 +225,8 @@ export type TicketMessageWhereUniqueInput = Prisma.AtLeast<{
   isInternal?: Prisma.BoolFilter<"TicketMessage"> | boolean
   attachmentLink?: Prisma.StringNullableFilter<"TicketMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TicketMessage"> | Date | string
-  sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   ticket?: Prisma.XOR<Prisma.TicketScalarRelationFilter, Prisma.TicketWhereInput>
+  sender?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type TicketMessageOrderByWithAggregationInput = {
@@ -261,8 +261,8 @@ export type TicketMessageCreateInput = {
   isInternal?: boolean
   attachmentLink?: string | null
   createdAt?: Date | string
-  sender: Prisma.UserCreateNestedOneWithoutMessagesInput
   ticket: Prisma.TicketCreateNestedOneWithoutMessagesInput
+  sender: Prisma.UserCreateNestedOneWithoutTicketMessagesInput
 }
 
 export type TicketMessageUncheckedCreateInput = {
@@ -281,8 +281,8 @@ export type TicketMessageUpdateInput = {
   isInternal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachmentLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sender?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
   ticket?: Prisma.TicketUpdateOneRequiredWithoutMessagesNestedInput
+  sender?: Prisma.UserUpdateOneRequiredWithoutTicketMessagesNestedInput
 }
 
 export type TicketMessageUncheckedUpdateInput = {
@@ -509,7 +509,7 @@ export type TicketMessageCreateWithoutTicketInput = {
   isInternal?: boolean
   attachmentLink?: string | null
   createdAt?: Date | string
-  sender: Prisma.UserCreateNestedOneWithoutMessagesInput
+  sender: Prisma.UserCreateNestedOneWithoutTicketMessagesInput
 }
 
 export type TicketMessageUncheckedCreateWithoutTicketInput = {
@@ -597,7 +597,7 @@ export type TicketMessageUpdateWithoutTicketInput = {
   isInternal?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attachmentLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sender?: Prisma.UserUpdateOneRequiredWithoutMessagesNestedInput
+  sender?: Prisma.UserUpdateOneRequiredWithoutTicketMessagesNestedInput
 }
 
 export type TicketMessageUncheckedUpdateWithoutTicketInput = {
@@ -628,8 +628,8 @@ export type TicketMessageSelect<ExtArgs extends runtime.Types.Extensions.Interna
   isInternal?: boolean
   attachmentLink?: boolean
   createdAt?: boolean
-  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ticketMessage"]>
 
 export type TicketMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -640,8 +640,8 @@ export type TicketMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   isInternal?: boolean
   attachmentLink?: boolean
   createdAt?: boolean
-  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ticketMessage"]>
 
 export type TicketMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -652,8 +652,8 @@ export type TicketMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   isInternal?: boolean
   attachmentLink?: boolean
   createdAt?: boolean
-  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ticketMessage"]>
 
 export type TicketMessageSelectScalar = {
@@ -668,23 +668,23 @@ export type TicketMessageSelectScalar = {
 
 export type TicketMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ticketId" | "senderId" | "body" | "isInternal" | "attachmentLink" | "createdAt", ExtArgs["result"]["ticketMessage"]>
 export type TicketMessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type TicketMessageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type TicketMessageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   ticket?: boolean | Prisma.TicketDefaultArgs<ExtArgs>
+  sender?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $TicketMessagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TicketMessage"
   objects: {
-    sender: Prisma.$UserPayload<ExtArgs>
     ticket: Prisma.$TicketPayload<ExtArgs>
+    sender: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1088,8 +1088,8 @@ readonly fields: TicketMessageFieldRefs;
  */
 export interface Prisma__TicketMessageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  sender<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   ticket<T extends Prisma.TicketDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TicketDefaultArgs<ExtArgs>>): Prisma.Prisma__TicketClient<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  sender<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

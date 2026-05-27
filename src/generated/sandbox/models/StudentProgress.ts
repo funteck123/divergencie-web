@@ -224,6 +224,7 @@ export type StudentProgressWhereInput = {
   completed?: Prisma.BoolFilter<"StudentProgress"> | boolean
   masteryPct?: Prisma.IntFilter<"StudentProgress"> | number
   updatedAt?: Prisma.DateTimeFilter<"StudentProgress"> | Date | string
+  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   syllabusItem?: Prisma.XOR<Prisma.SyllabusItemScalarRelationFilter, Prisma.SyllabusItemWhereInput>
 }
 
@@ -234,6 +235,7 @@ export type StudentProgressOrderByWithRelationInput = {
   completed?: Prisma.SortOrder
   masteryPct?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  student?: Prisma.UserOrderByWithRelationInput
   syllabusItem?: Prisma.SyllabusItemOrderByWithRelationInput
 }
 
@@ -248,6 +250,7 @@ export type StudentProgressWhereUniqueInput = Prisma.AtLeast<{
   completed?: Prisma.BoolFilter<"StudentProgress"> | boolean
   masteryPct?: Prisma.IntFilter<"StudentProgress"> | number
   updatedAt?: Prisma.DateTimeFilter<"StudentProgress"> | Date | string
+  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   syllabusItem?: Prisma.XOR<Prisma.SyllabusItemScalarRelationFilter, Prisma.SyllabusItemWhereInput>
 }, "id" | "studentId_syllabusItemId">
 
@@ -279,10 +282,10 @@ export type StudentProgressScalarWhereWithAggregatesInput = {
 
 export type StudentProgressCreateInput = {
   id?: string
-  studentId: string
   completed?: boolean
   masteryPct?: number
   updatedAt?: Date | string
+  student: Prisma.UserCreateNestedOneWithoutStudentProgressInput
   syllabusItem: Prisma.SyllabusItemCreateNestedOneWithoutProgressInput
 }
 
@@ -297,10 +300,10 @@ export type StudentProgressUncheckedCreateInput = {
 
 export type StudentProgressUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
   completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   masteryPct?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  student?: Prisma.UserUpdateOneRequiredWithoutStudentProgressNestedInput
   syllabusItem?: Prisma.SyllabusItemUpdateOneRequiredWithoutProgressNestedInput
 }
 
@@ -324,7 +327,6 @@ export type StudentProgressCreateManyInput = {
 
 export type StudentProgressUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
   completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   masteryPct?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -389,6 +391,48 @@ export type StudentProgressSumOrderByAggregateInput = {
   masteryPct?: Prisma.SortOrder
 }
 
+export type StudentProgressCreateNestedManyWithoutStudentInput = {
+  create?: Prisma.XOR<Prisma.StudentProgressCreateWithoutStudentInput, Prisma.StudentProgressUncheckedCreateWithoutStudentInput> | Prisma.StudentProgressCreateWithoutStudentInput[] | Prisma.StudentProgressUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.StudentProgressCreateOrConnectWithoutStudentInput | Prisma.StudentProgressCreateOrConnectWithoutStudentInput[]
+  createMany?: Prisma.StudentProgressCreateManyStudentInputEnvelope
+  connect?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+}
+
+export type StudentProgressUncheckedCreateNestedManyWithoutStudentInput = {
+  create?: Prisma.XOR<Prisma.StudentProgressCreateWithoutStudentInput, Prisma.StudentProgressUncheckedCreateWithoutStudentInput> | Prisma.StudentProgressCreateWithoutStudentInput[] | Prisma.StudentProgressUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.StudentProgressCreateOrConnectWithoutStudentInput | Prisma.StudentProgressCreateOrConnectWithoutStudentInput[]
+  createMany?: Prisma.StudentProgressCreateManyStudentInputEnvelope
+  connect?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+}
+
+export type StudentProgressUpdateManyWithoutStudentNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentProgressCreateWithoutStudentInput, Prisma.StudentProgressUncheckedCreateWithoutStudentInput> | Prisma.StudentProgressCreateWithoutStudentInput[] | Prisma.StudentProgressUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.StudentProgressCreateOrConnectWithoutStudentInput | Prisma.StudentProgressCreateOrConnectWithoutStudentInput[]
+  upsert?: Prisma.StudentProgressUpsertWithWhereUniqueWithoutStudentInput | Prisma.StudentProgressUpsertWithWhereUniqueWithoutStudentInput[]
+  createMany?: Prisma.StudentProgressCreateManyStudentInputEnvelope
+  set?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  disconnect?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  delete?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  connect?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  update?: Prisma.StudentProgressUpdateWithWhereUniqueWithoutStudentInput | Prisma.StudentProgressUpdateWithWhereUniqueWithoutStudentInput[]
+  updateMany?: Prisma.StudentProgressUpdateManyWithWhereWithoutStudentInput | Prisma.StudentProgressUpdateManyWithWhereWithoutStudentInput[]
+  deleteMany?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
+}
+
+export type StudentProgressUncheckedUpdateManyWithoutStudentNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentProgressCreateWithoutStudentInput, Prisma.StudentProgressUncheckedCreateWithoutStudentInput> | Prisma.StudentProgressCreateWithoutStudentInput[] | Prisma.StudentProgressUncheckedCreateWithoutStudentInput[]
+  connectOrCreate?: Prisma.StudentProgressCreateOrConnectWithoutStudentInput | Prisma.StudentProgressCreateOrConnectWithoutStudentInput[]
+  upsert?: Prisma.StudentProgressUpsertWithWhereUniqueWithoutStudentInput | Prisma.StudentProgressUpsertWithWhereUniqueWithoutStudentInput[]
+  createMany?: Prisma.StudentProgressCreateManyStudentInputEnvelope
+  set?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  disconnect?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  delete?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  connect?: Prisma.StudentProgressWhereUniqueInput | Prisma.StudentProgressWhereUniqueInput[]
+  update?: Prisma.StudentProgressUpdateWithWhereUniqueWithoutStudentInput | Prisma.StudentProgressUpdateWithWhereUniqueWithoutStudentInput[]
+  updateMany?: Prisma.StudentProgressUpdateManyWithWhereWithoutStudentInput | Prisma.StudentProgressUpdateManyWithWhereWithoutStudentInput[]
+  deleteMany?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
+}
+
 export type StudentProgressCreateNestedManyWithoutSyllabusItemInput = {
   create?: Prisma.XOR<Prisma.StudentProgressCreateWithoutSyllabusItemInput, Prisma.StudentProgressUncheckedCreateWithoutSyllabusItemInput> | Prisma.StudentProgressCreateWithoutSyllabusItemInput[] | Prisma.StudentProgressUncheckedCreateWithoutSyllabusItemInput[]
   connectOrCreate?: Prisma.StudentProgressCreateOrConnectWithoutSyllabusItemInput | Prisma.StudentProgressCreateOrConnectWithoutSyllabusItemInput[]
@@ -431,12 +475,65 @@ export type StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput = {
   deleteMany?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
 }
 
-export type StudentProgressCreateWithoutSyllabusItemInput = {
+export type StudentProgressCreateWithoutStudentInput = {
   id?: string
-  studentId: string
   completed?: boolean
   masteryPct?: number
   updatedAt?: Date | string
+  syllabusItem: Prisma.SyllabusItemCreateNestedOneWithoutProgressInput
+}
+
+export type StudentProgressUncheckedCreateWithoutStudentInput = {
+  id?: string
+  syllabusItemId: string
+  completed?: boolean
+  masteryPct?: number
+  updatedAt?: Date | string
+}
+
+export type StudentProgressCreateOrConnectWithoutStudentInput = {
+  where: Prisma.StudentProgressWhereUniqueInput
+  create: Prisma.XOR<Prisma.StudentProgressCreateWithoutStudentInput, Prisma.StudentProgressUncheckedCreateWithoutStudentInput>
+}
+
+export type StudentProgressCreateManyStudentInputEnvelope = {
+  data: Prisma.StudentProgressCreateManyStudentInput | Prisma.StudentProgressCreateManyStudentInput[]
+}
+
+export type StudentProgressUpsertWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.StudentProgressWhereUniqueInput
+  update: Prisma.XOR<Prisma.StudentProgressUpdateWithoutStudentInput, Prisma.StudentProgressUncheckedUpdateWithoutStudentInput>
+  create: Prisma.XOR<Prisma.StudentProgressCreateWithoutStudentInput, Prisma.StudentProgressUncheckedCreateWithoutStudentInput>
+}
+
+export type StudentProgressUpdateWithWhereUniqueWithoutStudentInput = {
+  where: Prisma.StudentProgressWhereUniqueInput
+  data: Prisma.XOR<Prisma.StudentProgressUpdateWithoutStudentInput, Prisma.StudentProgressUncheckedUpdateWithoutStudentInput>
+}
+
+export type StudentProgressUpdateManyWithWhereWithoutStudentInput = {
+  where: Prisma.StudentProgressScalarWhereInput
+  data: Prisma.XOR<Prisma.StudentProgressUpdateManyMutationInput, Prisma.StudentProgressUncheckedUpdateManyWithoutStudentInput>
+}
+
+export type StudentProgressScalarWhereInput = {
+  AND?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
+  OR?: Prisma.StudentProgressScalarWhereInput[]
+  NOT?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
+  id?: Prisma.StringFilter<"StudentProgress"> | string
+  studentId?: Prisma.StringFilter<"StudentProgress"> | string
+  syllabusItemId?: Prisma.StringFilter<"StudentProgress"> | string
+  completed?: Prisma.BoolFilter<"StudentProgress"> | boolean
+  masteryPct?: Prisma.IntFilter<"StudentProgress"> | number
+  updatedAt?: Prisma.DateTimeFilter<"StudentProgress"> | Date | string
+}
+
+export type StudentProgressCreateWithoutSyllabusItemInput = {
+  id?: string
+  completed?: boolean
+  masteryPct?: number
+  updatedAt?: Date | string
+  student: Prisma.UserCreateNestedOneWithoutStudentProgressInput
 }
 
 export type StudentProgressUncheckedCreateWithoutSyllabusItemInput = {
@@ -472,16 +569,36 @@ export type StudentProgressUpdateManyWithWhereWithoutSyllabusItemInput = {
   data: Prisma.XOR<Prisma.StudentProgressUpdateManyMutationInput, Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemInput>
 }
 
-export type StudentProgressScalarWhereInput = {
-  AND?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
-  OR?: Prisma.StudentProgressScalarWhereInput[]
-  NOT?: Prisma.StudentProgressScalarWhereInput | Prisma.StudentProgressScalarWhereInput[]
-  id?: Prisma.StringFilter<"StudentProgress"> | string
-  studentId?: Prisma.StringFilter<"StudentProgress"> | string
-  syllabusItemId?: Prisma.StringFilter<"StudentProgress"> | string
-  completed?: Prisma.BoolFilter<"StudentProgress"> | boolean
-  masteryPct?: Prisma.IntFilter<"StudentProgress"> | number
-  updatedAt?: Prisma.DateTimeFilter<"StudentProgress"> | Date | string
+export type StudentProgressCreateManyStudentInput = {
+  id?: string
+  syllabusItemId: string
+  completed?: boolean
+  masteryPct?: number
+  updatedAt?: Date | string
+}
+
+export type StudentProgressUpdateWithoutStudentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  masteryPct?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  syllabusItem?: Prisma.SyllabusItemUpdateOneRequiredWithoutProgressNestedInput
+}
+
+export type StudentProgressUncheckedUpdateWithoutStudentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  masteryPct?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StudentProgressUncheckedUpdateManyWithoutStudentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusItemId?: Prisma.StringFieldUpdateOperationsInput | string
+  completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  masteryPct?: Prisma.IntFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudentProgressCreateManySyllabusItemInput = {
@@ -494,10 +611,10 @@ export type StudentProgressCreateManySyllabusItemInput = {
 
 export type StudentProgressUpdateWithoutSyllabusItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
   completed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   masteryPct?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  student?: Prisma.UserUpdateOneRequiredWithoutStudentProgressNestedInput
 }
 
 export type StudentProgressUncheckedUpdateWithoutSyllabusItemInput = {
@@ -525,6 +642,7 @@ export type StudentProgressSelect<ExtArgs extends runtime.Types.Extensions.Inter
   completed?: boolean
   masteryPct?: boolean
   updatedAt?: boolean
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentProgress"]>
 
@@ -535,6 +653,7 @@ export type StudentProgressSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   completed?: boolean
   masteryPct?: boolean
   updatedAt?: boolean
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentProgress"]>
 
@@ -545,6 +664,7 @@ export type StudentProgressSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   completed?: boolean
   masteryPct?: boolean
   updatedAt?: boolean
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studentProgress"]>
 
@@ -559,18 +679,22 @@ export type StudentProgressSelectScalar = {
 
 export type StudentProgressOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "syllabusItemId" | "completed" | "masteryPct" | "updatedAt", ExtArgs["result"]["studentProgress"]>
 export type StudentProgressInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }
 export type StudentProgressIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }
 export type StudentProgressIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   syllabusItem?: boolean | Prisma.SyllabusItemDefaultArgs<ExtArgs>
 }
 
 export type $StudentProgressPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "StudentProgress"
   objects: {
+    student: Prisma.$UserPayload<ExtArgs>
     syllabusItem: Prisma.$SyllabusItemPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -974,6 +1098,7 @@ readonly fields: StudentProgressFieldRefs;
  */
 export interface Prisma__StudentProgressClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   syllabusItem<T extends Prisma.SyllabusItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItemDefaultArgs<ExtArgs>>): Prisma.Prisma__SyllabusItemClient<runtime.Types.Result.GetResult<Prisma.$SyllabusItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

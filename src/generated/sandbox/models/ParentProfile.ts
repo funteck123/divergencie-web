@@ -31,6 +31,7 @@ export type ParentProfileMinAggregateOutputType = {
   lastName: string | null
   phone: string | null
   address: string | null
+  createdAt: Date | null
 }
 
 export type ParentProfileMaxAggregateOutputType = {
@@ -40,6 +41,7 @@ export type ParentProfileMaxAggregateOutputType = {
   lastName: string | null
   phone: string | null
   address: string | null
+  createdAt: Date | null
 }
 
 export type ParentProfileCountAggregateOutputType = {
@@ -49,6 +51,7 @@ export type ParentProfileCountAggregateOutputType = {
   lastName: number
   phone: number
   address: number
+  createdAt: number
   _all: number
 }
 
@@ -60,6 +63,7 @@ export type ParentProfileMinAggregateInputType = {
   lastName?: true
   phone?: true
   address?: true
+  createdAt?: true
 }
 
 export type ParentProfileMaxAggregateInputType = {
@@ -69,6 +73,7 @@ export type ParentProfileMaxAggregateInputType = {
   lastName?: true
   phone?: true
   address?: true
+  createdAt?: true
 }
 
 export type ParentProfileCountAggregateInputType = {
@@ -78,6 +83,7 @@ export type ParentProfileCountAggregateInputType = {
   lastName?: true
   phone?: true
   address?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -160,6 +166,7 @@ export type ParentProfileGroupByOutputType = {
   lastName: string
   phone: string | null
   address: string | null
+  createdAt: Date
   _count: ParentProfileCountAggregateOutputType | null
   _min: ParentProfileMinAggregateOutputType | null
   _max: ParentProfileMaxAggregateOutputType | null
@@ -190,6 +197,7 @@ export type ParentProfileWhereInput = {
   lastName?: Prisma.StringFilter<"ParentProfile"> | string
   phone?: Prisma.StringNullableFilter<"ParentProfile"> | string | null
   address?: Prisma.StringNullableFilter<"ParentProfile"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"ParentProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -200,6 +208,7 @@ export type ParentProfileOrderByWithRelationInput = {
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -213,6 +222,7 @@ export type ParentProfileWhereUniqueInput = Prisma.AtLeast<{
   lastName?: Prisma.StringFilter<"ParentProfile"> | string
   phone?: Prisma.StringNullableFilter<"ParentProfile"> | string | null
   address?: Prisma.StringNullableFilter<"ParentProfile"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"ParentProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
@@ -223,6 +233,7 @@ export type ParentProfileOrderByWithAggregationInput = {
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.ParentProfileCountOrderByAggregateInput
   _max?: Prisma.ParentProfileMaxOrderByAggregateInput
   _min?: Prisma.ParentProfileMinOrderByAggregateInput
@@ -238,6 +249,7 @@ export type ParentProfileScalarWhereWithAggregatesInput = {
   lastName?: Prisma.StringWithAggregatesFilter<"ParentProfile"> | string
   phone?: Prisma.StringNullableWithAggregatesFilter<"ParentProfile"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"ParentProfile"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"ParentProfile"> | Date | string
 }
 
 export type ParentProfileCreateInput = {
@@ -246,6 +258,7 @@ export type ParentProfileCreateInput = {
   lastName: string
   phone?: string | null
   address?: string | null
+  createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutParentProfileInput
 }
 
@@ -256,6 +269,7 @@ export type ParentProfileUncheckedCreateInput = {
   lastName: string
   phone?: string | null
   address?: string | null
+  createdAt?: Date | string
 }
 
 export type ParentProfileUpdateInput = {
@@ -264,6 +278,7 @@ export type ParentProfileUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutParentProfileNestedInput
 }
 
@@ -274,6 +289,7 @@ export type ParentProfileUncheckedUpdateInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ParentProfileCreateManyInput = {
@@ -283,6 +299,7 @@ export type ParentProfileCreateManyInput = {
   lastName: string
   phone?: string | null
   address?: string | null
+  createdAt?: Date | string
 }
 
 export type ParentProfileUpdateManyMutationInput = {
@@ -291,6 +308,7 @@ export type ParentProfileUpdateManyMutationInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ParentProfileUncheckedUpdateManyInput = {
@@ -300,6 +318,7 @@ export type ParentProfileUncheckedUpdateManyInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ParentProfileNullableScalarRelationFilter = {
@@ -314,6 +333,7 @@ export type ParentProfileCountOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type ParentProfileMaxOrderByAggregateInput = {
@@ -323,6 +343,7 @@ export type ParentProfileMaxOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type ParentProfileMinOrderByAggregateInput = {
@@ -332,6 +353,7 @@ export type ParentProfileMinOrderByAggregateInput = {
   lastName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type ParentProfileCreateNestedOneWithoutUserInput = {
@@ -372,6 +394,7 @@ export type ParentProfileCreateWithoutUserInput = {
   lastName: string
   phone?: string | null
   address?: string | null
+  createdAt?: Date | string
 }
 
 export type ParentProfileUncheckedCreateWithoutUserInput = {
@@ -380,6 +403,7 @@ export type ParentProfileUncheckedCreateWithoutUserInput = {
   lastName: string
   phone?: string | null
   address?: string | null
+  createdAt?: Date | string
 }
 
 export type ParentProfileCreateOrConnectWithoutUserInput = {
@@ -404,6 +428,7 @@ export type ParentProfileUpdateWithoutUserInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ParentProfileUncheckedUpdateWithoutUserInput = {
@@ -412,6 +437,7 @@ export type ParentProfileUncheckedUpdateWithoutUserInput = {
   lastName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -423,6 +449,7 @@ export type ParentProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   lastName?: boolean
   phone?: boolean
   address?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["parentProfile"]>
 
@@ -433,6 +460,7 @@ export type ParentProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   lastName?: boolean
   phone?: boolean
   address?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["parentProfile"]>
 
@@ -443,6 +471,7 @@ export type ParentProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   lastName?: boolean
   phone?: boolean
   address?: boolean
+  createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["parentProfile"]>
 
@@ -453,9 +482,10 @@ export type ParentProfileSelectScalar = {
   lastName?: boolean
   phone?: boolean
   address?: boolean
+  createdAt?: boolean
 }
 
-export type ParentProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "phone" | "address", ExtArgs["result"]["parentProfile"]>
+export type ParentProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "firstName" | "lastName" | "phone" | "address" | "createdAt", ExtArgs["result"]["parentProfile"]>
 export type ParentProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -478,6 +508,7 @@ export type $ParentProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     lastName: string
     phone: string | null
     address: string | null
+    createdAt: Date
   }, ExtArgs["result"]["parentProfile"]>
   composites: {}
 }
@@ -908,6 +939,7 @@ export interface ParentProfileFieldRefs {
   readonly lastName: Prisma.FieldRef<"ParentProfile", 'String'>
   readonly phone: Prisma.FieldRef<"ParentProfile", 'String'>
   readonly address: Prisma.FieldRef<"ParentProfile", 'String'>
+  readonly createdAt: Prisma.FieldRef<"ParentProfile", 'DateTime'>
 }
     
 

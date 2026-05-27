@@ -37,34 +37,37 @@ export type LedgerEntrySumAggregateOutputType = {
 export type LedgerEntryMinAggregateOutputType = {
   id: string | null
   transactionId: string | null
-  accountId: string | null
+  bankAccountId: string | null
   amount: number | null
+  direction: string | null
+  purpose: string | null
   studentInvoiceId: string | null
-  resourceInvoiceId: string | null
-  counsellingInvoiceId: string | null
   claimId: string | null
+  createdAt: Date | null
 }
 
 export type LedgerEntryMaxAggregateOutputType = {
   id: string | null
   transactionId: string | null
-  accountId: string | null
+  bankAccountId: string | null
   amount: number | null
+  direction: string | null
+  purpose: string | null
   studentInvoiceId: string | null
-  resourceInvoiceId: string | null
-  counsellingInvoiceId: string | null
   claimId: string | null
+  createdAt: Date | null
 }
 
 export type LedgerEntryCountAggregateOutputType = {
   id: number
   transactionId: number
-  accountId: number
+  bankAccountId: number
   amount: number
+  direction: number
+  purpose: number
   studentInvoiceId: number
-  resourceInvoiceId: number
-  counsellingInvoiceId: number
   claimId: number
+  createdAt: number
   _all: number
 }
 
@@ -80,34 +83,37 @@ export type LedgerEntrySumAggregateInputType = {
 export type LedgerEntryMinAggregateInputType = {
   id?: true
   transactionId?: true
-  accountId?: true
+  bankAccountId?: true
   amount?: true
+  direction?: true
+  purpose?: true
   studentInvoiceId?: true
-  resourceInvoiceId?: true
-  counsellingInvoiceId?: true
   claimId?: true
+  createdAt?: true
 }
 
 export type LedgerEntryMaxAggregateInputType = {
   id?: true
   transactionId?: true
-  accountId?: true
+  bankAccountId?: true
   amount?: true
+  direction?: true
+  purpose?: true
   studentInvoiceId?: true
-  resourceInvoiceId?: true
-  counsellingInvoiceId?: true
   claimId?: true
+  createdAt?: true
 }
 
 export type LedgerEntryCountAggregateInputType = {
   id?: true
   transactionId?: true
-  accountId?: true
+  bankAccountId?: true
   amount?: true
+  direction?: true
+  purpose?: true
   studentInvoiceId?: true
-  resourceInvoiceId?: true
-  counsellingInvoiceId?: true
   claimId?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -200,12 +206,13 @@ export type LedgerEntryGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 export type LedgerEntryGroupByOutputType = {
   id: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId: string | null
-  resourceInvoiceId: string | null
-  counsellingInvoiceId: string | null
   claimId: string | null
+  createdAt: Date
   _count: LedgerEntryCountAggregateOutputType | null
   _avg: LedgerEntryAvgAggregateOutputType | null
   _sum: LedgerEntrySumAggregateOutputType | null
@@ -234,35 +241,35 @@ export type LedgerEntryWhereInput = {
   NOT?: Prisma.LedgerEntryWhereInput | Prisma.LedgerEntryWhereInput[]
   id?: Prisma.StringFilter<"LedgerEntry"> | string
   transactionId?: Prisma.StringFilter<"LedgerEntry"> | string
-  accountId?: Prisma.StringFilter<"LedgerEntry"> | string
+  bankAccountId?: Prisma.StringFilter<"LedgerEntry"> | string
   amount?: Prisma.FloatFilter<"LedgerEntry"> | number
+  direction?: Prisma.StringFilter<"LedgerEntry"> | string
+  purpose?: Prisma.StringFilter<"LedgerEntry"> | string
   studentInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  resourceInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  counsellingInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
   claimId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"LedgerEntry"> | Date | string
   transaction?: Prisma.XOR<Prisma.AccountTransactionScalarRelationFilter, Prisma.AccountTransactionWhereInput>
-  account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
+  bankAccount?: Prisma.XOR<Prisma.BankAccountScalarRelationFilter, Prisma.BankAccountWhereInput>
   studentInvoice?: Prisma.XOR<Prisma.StudentInvoiceNullableScalarRelationFilter, Prisma.StudentInvoiceWhereInput> | null
-  resourceInvoice?: Prisma.XOR<Prisma.ResourceInvoiceNullableScalarRelationFilter, Prisma.ResourceInvoiceWhereInput> | null
-  counsellingInvoice?: Prisma.XOR<Prisma.CounsellingInvoiceNullableScalarRelationFilter, Prisma.CounsellingInvoiceWhereInput> | null
   claim?: Prisma.XOR<Prisma.ClaimNullableScalarRelationFilter, Prisma.ClaimWhereInput> | null
+  utilisations?: Prisma.BudgetUtilisationListRelationFilter
 }
 
 export type LedgerEntryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
+  bankAccountId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
+  purpose?: Prisma.SortOrder
   studentInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
-  resourceInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
-  counsellingInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   claimId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   transaction?: Prisma.AccountTransactionOrderByWithRelationInput
-  account?: Prisma.AccountOrderByWithRelationInput
+  bankAccount?: Prisma.BankAccountOrderByWithRelationInput
   studentInvoice?: Prisma.StudentInvoiceOrderByWithRelationInput
-  resourceInvoice?: Prisma.ResourceInvoiceOrderByWithRelationInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceOrderByWithRelationInput
   claim?: Prisma.ClaimOrderByWithRelationInput
+  utilisations?: Prisma.BudgetUtilisationOrderByRelationAggregateInput
 }
 
 export type LedgerEntryWhereUniqueInput = Prisma.AtLeast<{
@@ -271,29 +278,30 @@ export type LedgerEntryWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.LedgerEntryWhereInput[]
   NOT?: Prisma.LedgerEntryWhereInput | Prisma.LedgerEntryWhereInput[]
   transactionId?: Prisma.StringFilter<"LedgerEntry"> | string
-  accountId?: Prisma.StringFilter<"LedgerEntry"> | string
+  bankAccountId?: Prisma.StringFilter<"LedgerEntry"> | string
   amount?: Prisma.FloatFilter<"LedgerEntry"> | number
+  direction?: Prisma.StringFilter<"LedgerEntry"> | string
+  purpose?: Prisma.StringFilter<"LedgerEntry"> | string
   studentInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  resourceInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  counsellingInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
   claimId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"LedgerEntry"> | Date | string
   transaction?: Prisma.XOR<Prisma.AccountTransactionScalarRelationFilter, Prisma.AccountTransactionWhereInput>
-  account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
+  bankAccount?: Prisma.XOR<Prisma.BankAccountScalarRelationFilter, Prisma.BankAccountWhereInput>
   studentInvoice?: Prisma.XOR<Prisma.StudentInvoiceNullableScalarRelationFilter, Prisma.StudentInvoiceWhereInput> | null
-  resourceInvoice?: Prisma.XOR<Prisma.ResourceInvoiceNullableScalarRelationFilter, Prisma.ResourceInvoiceWhereInput> | null
-  counsellingInvoice?: Prisma.XOR<Prisma.CounsellingInvoiceNullableScalarRelationFilter, Prisma.CounsellingInvoiceWhereInput> | null
   claim?: Prisma.XOR<Prisma.ClaimNullableScalarRelationFilter, Prisma.ClaimWhereInput> | null
+  utilisations?: Prisma.BudgetUtilisationListRelationFilter
 }, "id">
 
 export type LedgerEntryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
+  bankAccountId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
+  purpose?: Prisma.SortOrder
   studentInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
-  resourceInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
-  counsellingInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   claimId?: Prisma.SortOrderInput | Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.LedgerEntryCountOrderByAggregateInput
   _avg?: Prisma.LedgerEntryAvgOrderByAggregateInput
   _max?: Prisma.LedgerEntryMaxOrderByAggregateInput
@@ -307,83 +315,97 @@ export type LedgerEntryScalarWhereWithAggregatesInput = {
   NOT?: Prisma.LedgerEntryScalarWhereWithAggregatesInput | Prisma.LedgerEntryScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"LedgerEntry"> | string
   transactionId?: Prisma.StringWithAggregatesFilter<"LedgerEntry"> | string
-  accountId?: Prisma.StringWithAggregatesFilter<"LedgerEntry"> | string
+  bankAccountId?: Prisma.StringWithAggregatesFilter<"LedgerEntry"> | string
   amount?: Prisma.FloatWithAggregatesFilter<"LedgerEntry"> | number
+  direction?: Prisma.StringWithAggregatesFilter<"LedgerEntry"> | string
+  purpose?: Prisma.StringWithAggregatesFilter<"LedgerEntry"> | string
   studentInvoiceId?: Prisma.StringNullableWithAggregatesFilter<"LedgerEntry"> | string | null
-  resourceInvoiceId?: Prisma.StringNullableWithAggregatesFilter<"LedgerEntry"> | string | null
-  counsellingInvoiceId?: Prisma.StringNullableWithAggregatesFilter<"LedgerEntry"> | string | null
   claimId?: Prisma.StringNullableWithAggregatesFilter<"LedgerEntry"> | string | null
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"LedgerEntry"> | Date | string
 }
 
 export type LedgerEntryCreateInput = {
   id?: string
   amount: number
-  transaction: Prisma.AccountTransactionCreateNestedOneWithoutEntriesInput
-  account: Prisma.AccountCreateNestedOneWithoutLedgerEntriesInput
+  direction: string
+  purpose: string
+  createdAt?: Date | string
+  transaction: Prisma.AccountTransactionCreateNestedOneWithoutLedgerEntriesInput
+  bankAccount: Prisma.BankAccountCreateNestedOneWithoutLedgerEntriesInput
   studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  resourceInvoice?: Prisma.ResourceInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceCreateNestedOneWithoutLedgerEntriesInput
   claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
+  utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryUncheckedCreateInput = {
   id?: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
   claimId?: string | null
+  createdAt?: Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutEntriesNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
   studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  resourceInvoice?: Prisma.ResourceInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceUpdateOneWithoutLedgerEntriesNestedInput
   claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
+  utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryCreateManyInput = {
   id?: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
   claimId?: string | null
+  createdAt?: Date | string
 }
 
 export type LedgerEntryUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LedgerEntryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LedgerEntryListRelationFilter = {
@@ -399,12 +421,13 @@ export type LedgerEntryOrderByRelationAggregateInput = {
 export type LedgerEntryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
+  bankAccountId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
+  purpose?: Prisma.SortOrder
   studentInvoiceId?: Prisma.SortOrder
-  resourceInvoiceId?: Prisma.SortOrder
-  counsellingInvoiceId?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type LedgerEntryAvgOrderByAggregateInput = {
@@ -414,27 +437,76 @@ export type LedgerEntryAvgOrderByAggregateInput = {
 export type LedgerEntryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
+  bankAccountId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
+  purpose?: Prisma.SortOrder
   studentInvoiceId?: Prisma.SortOrder
-  resourceInvoiceId?: Prisma.SortOrder
-  counsellingInvoiceId?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type LedgerEntryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
+  bankAccountId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
+  direction?: Prisma.SortOrder
+  purpose?: Prisma.SortOrder
   studentInvoiceId?: Prisma.SortOrder
-  resourceInvoiceId?: Prisma.SortOrder
-  counsellingInvoiceId?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type LedgerEntrySumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
+}
+
+export type LedgerEntryScalarRelationFilter = {
+  is?: Prisma.LedgerEntryWhereInput
+  isNot?: Prisma.LedgerEntryWhereInput
+}
+
+export type LedgerEntryCreateNestedManyWithoutBankAccountInput = {
+  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput> | Prisma.LedgerEntryCreateWithoutBankAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput[]
+  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput[]
+  createMany?: Prisma.LedgerEntryCreateManyBankAccountInputEnvelope
+  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+}
+
+export type LedgerEntryUncheckedCreateNestedManyWithoutBankAccountInput = {
+  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput> | Prisma.LedgerEntryCreateWithoutBankAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput[]
+  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput[]
+  createMany?: Prisma.LedgerEntryCreateManyBankAccountInputEnvelope
+  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+}
+
+export type LedgerEntryUpdateManyWithoutBankAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput> | Prisma.LedgerEntryCreateWithoutBankAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput[]
+  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput[]
+  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutBankAccountInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutBankAccountInput[]
+  createMany?: Prisma.LedgerEntryCreateManyBankAccountInputEnvelope
+  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutBankAccountInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutBankAccountInput[]
+  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutBankAccountInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutBankAccountInput[]
+  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
+}
+
+export type LedgerEntryUncheckedUpdateManyWithoutBankAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput> | Prisma.LedgerEntryCreateWithoutBankAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput[]
+  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutBankAccountInput[]
+  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutBankAccountInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutBankAccountInput[]
+  createMany?: Prisma.LedgerEntryCreateManyBankAccountInputEnvelope
+  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
+  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutBankAccountInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutBankAccountInput[]
+  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutBankAccountInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutBankAccountInput[]
+  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
 }
 
 export type LedgerEntryCreateNestedManyWithoutStudentInvoiceInput = {
@@ -476,90 +548,6 @@ export type LedgerEntryUncheckedUpdateManyWithoutStudentInvoiceNestedInput = {
   connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
   update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutStudentInvoiceInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutStudentInvoiceInput[]
   updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutStudentInvoiceInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutStudentInvoiceInput[]
-  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-}
-
-export type LedgerEntryCreateNestedManyWithoutResourceInvoiceInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput> | Prisma.LedgerEntryCreateWithoutResourceInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyResourceInvoiceInputEnvelope
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-}
-
-export type LedgerEntryUncheckedCreateNestedManyWithoutResourceInvoiceInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput> | Prisma.LedgerEntryCreateWithoutResourceInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyResourceInvoiceInputEnvelope
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-}
-
-export type LedgerEntryUpdateManyWithoutResourceInvoiceNestedInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput> | Prisma.LedgerEntryCreateWithoutResourceInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput[]
-  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutResourceInvoiceInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutResourceInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyResourceInvoiceInputEnvelope
-  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutResourceInvoiceInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutResourceInvoiceInput[]
-  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutResourceInvoiceInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutResourceInvoiceInput[]
-  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-}
-
-export type LedgerEntryUncheckedUpdateManyWithoutResourceInvoiceNestedInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput> | Prisma.LedgerEntryCreateWithoutResourceInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutResourceInvoiceInput[]
-  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutResourceInvoiceInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutResourceInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyResourceInvoiceInputEnvelope
-  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutResourceInvoiceInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutResourceInvoiceInput[]
-  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutResourceInvoiceInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutResourceInvoiceInput[]
-  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-}
-
-export type LedgerEntryCreateNestedManyWithoutCounsellingInvoiceInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput> | Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyCounsellingInvoiceInputEnvelope
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-}
-
-export type LedgerEntryUncheckedCreateNestedManyWithoutCounsellingInvoiceInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput> | Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyCounsellingInvoiceInputEnvelope
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-}
-
-export type LedgerEntryUpdateManyWithoutCounsellingInvoiceNestedInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput> | Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput[]
-  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutCounsellingInvoiceInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutCounsellingInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyCounsellingInvoiceInputEnvelope
-  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutCounsellingInvoiceInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutCounsellingInvoiceInput[]
-  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutCounsellingInvoiceInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutCounsellingInvoiceInput[]
-  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-}
-
-export type LedgerEntryUncheckedUpdateManyWithoutCounsellingInvoiceNestedInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput> | Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput[] | Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput | Prisma.LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput[]
-  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutCounsellingInvoiceInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutCounsellingInvoiceInput[]
-  createMany?: Prisma.LedgerEntryCreateManyCounsellingInvoiceInputEnvelope
-  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutCounsellingInvoiceInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutCounsellingInvoiceInput[]
-  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutCounsellingInvoiceInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutCounsellingInvoiceInput[]
   deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
 }
 
@@ -605,48 +593,6 @@ export type LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput = {
   deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
 }
 
-export type LedgerEntryCreateNestedManyWithoutAccountInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutAccountInput> | Prisma.LedgerEntryCreateWithoutAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutAccountInput[]
-  createMany?: Prisma.LedgerEntryCreateManyAccountInputEnvelope
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-}
-
-export type LedgerEntryUncheckedCreateNestedManyWithoutAccountInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutAccountInput> | Prisma.LedgerEntryCreateWithoutAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutAccountInput[]
-  createMany?: Prisma.LedgerEntryCreateManyAccountInputEnvelope
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-}
-
-export type LedgerEntryUpdateManyWithoutAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutAccountInput> | Prisma.LedgerEntryCreateWithoutAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutAccountInput[]
-  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutAccountInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutAccountInput[]
-  createMany?: Prisma.LedgerEntryCreateManyAccountInputEnvelope
-  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutAccountInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutAccountInput[]
-  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutAccountInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutAccountInput[]
-  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-}
-
-export type LedgerEntryUncheckedUpdateManyWithoutAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutAccountInput> | Prisma.LedgerEntryCreateWithoutAccountInput[] | Prisma.LedgerEntryUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutAccountInput | Prisma.LedgerEntryCreateOrConnectWithoutAccountInput[]
-  upsert?: Prisma.LedgerEntryUpsertWithWhereUniqueWithoutAccountInput | Prisma.LedgerEntryUpsertWithWhereUniqueWithoutAccountInput[]
-  createMany?: Prisma.LedgerEntryCreateManyAccountInputEnvelope
-  set?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  disconnect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  delete?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  connect?: Prisma.LedgerEntryWhereUniqueInput | Prisma.LedgerEntryWhereUniqueInput[]
-  update?: Prisma.LedgerEntryUpdateWithWhereUniqueWithoutAccountInput | Prisma.LedgerEntryUpdateWithWhereUniqueWithoutAccountInput[]
-  updateMany?: Prisma.LedgerEntryUpdateManyWithWhereWithoutAccountInput | Prisma.LedgerEntryUpdateManyWithWhereWithoutAccountInput[]
-  deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-}
-
 export type LedgerEntryCreateNestedManyWithoutTransactionInput = {
   create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutTransactionInput, Prisma.LedgerEntryUncheckedCreateWithoutTransactionInput> | Prisma.LedgerEntryCreateWithoutTransactionInput[] | Prisma.LedgerEntryUncheckedCreateWithoutTransactionInput[]
   connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutTransactionInput | Prisma.LedgerEntryCreateOrConnectWithoutTransactionInput[]
@@ -689,24 +635,106 @@ export type LedgerEntryUncheckedUpdateManyWithoutTransactionNestedInput = {
   deleteMany?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
 }
 
+export type LedgerEntryCreateNestedOneWithoutUtilisationsInput = {
+  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutUtilisationsInput, Prisma.LedgerEntryUncheckedCreateWithoutUtilisationsInput>
+  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutUtilisationsInput
+  connect?: Prisma.LedgerEntryWhereUniqueInput
+}
+
+export type LedgerEntryUpdateOneRequiredWithoutUtilisationsNestedInput = {
+  create?: Prisma.XOR<Prisma.LedgerEntryCreateWithoutUtilisationsInput, Prisma.LedgerEntryUncheckedCreateWithoutUtilisationsInput>
+  connectOrCreate?: Prisma.LedgerEntryCreateOrConnectWithoutUtilisationsInput
+  upsert?: Prisma.LedgerEntryUpsertWithoutUtilisationsInput
+  connect?: Prisma.LedgerEntryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LedgerEntryUpdateToOneWithWhereWithoutUtilisationsInput, Prisma.LedgerEntryUpdateWithoutUtilisationsInput>, Prisma.LedgerEntryUncheckedUpdateWithoutUtilisationsInput>
+}
+
+export type LedgerEntryCreateWithoutBankAccountInput = {
+  id?: string
+  amount: number
+  direction: string
+  purpose: string
+  createdAt?: Date | string
+  transaction: Prisma.AccountTransactionCreateNestedOneWithoutLedgerEntriesInput
+  studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
+  claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
+  utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutLedgerEntryInput
+}
+
+export type LedgerEntryUncheckedCreateWithoutBankAccountInput = {
+  id?: string
+  transactionId: string
+  amount: number
+  direction: string
+  purpose: string
+  studentInvoiceId?: string | null
+  claimId?: string | null
+  createdAt?: Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutLedgerEntryInput
+}
+
+export type LedgerEntryCreateOrConnectWithoutBankAccountInput = {
+  where: Prisma.LedgerEntryWhereUniqueInput
+  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput>
+}
+
+export type LedgerEntryCreateManyBankAccountInputEnvelope = {
+  data: Prisma.LedgerEntryCreateManyBankAccountInput | Prisma.LedgerEntryCreateManyBankAccountInput[]
+}
+
+export type LedgerEntryUpsertWithWhereUniqueWithoutBankAccountInput = {
+  where: Prisma.LedgerEntryWhereUniqueInput
+  update: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedUpdateWithoutBankAccountInput>
+  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutBankAccountInput>
+}
+
+export type LedgerEntryUpdateWithWhereUniqueWithoutBankAccountInput = {
+  where: Prisma.LedgerEntryWhereUniqueInput
+  data: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutBankAccountInput, Prisma.LedgerEntryUncheckedUpdateWithoutBankAccountInput>
+}
+
+export type LedgerEntryUpdateManyWithWhereWithoutBankAccountInput = {
+  where: Prisma.LedgerEntryScalarWhereInput
+  data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutBankAccountInput>
+}
+
+export type LedgerEntryScalarWhereInput = {
+  AND?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
+  OR?: Prisma.LedgerEntryScalarWhereInput[]
+  NOT?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
+  id?: Prisma.StringFilter<"LedgerEntry"> | string
+  transactionId?: Prisma.StringFilter<"LedgerEntry"> | string
+  bankAccountId?: Prisma.StringFilter<"LedgerEntry"> | string
+  amount?: Prisma.FloatFilter<"LedgerEntry"> | number
+  direction?: Prisma.StringFilter<"LedgerEntry"> | string
+  purpose?: Prisma.StringFilter<"LedgerEntry"> | string
+  studentInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
+  claimId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"LedgerEntry"> | Date | string
+}
+
 export type LedgerEntryCreateWithoutStudentInvoiceInput = {
   id?: string
   amount: number
-  transaction: Prisma.AccountTransactionCreateNestedOneWithoutEntriesInput
-  account: Prisma.AccountCreateNestedOneWithoutLedgerEntriesInput
-  resourceInvoice?: Prisma.ResourceInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceCreateNestedOneWithoutLedgerEntriesInput
+  direction: string
+  purpose: string
+  createdAt?: Date | string
+  transaction: Prisma.AccountTransactionCreateNestedOneWithoutLedgerEntriesInput
+  bankAccount: Prisma.BankAccountCreateNestedOneWithoutLedgerEntriesInput
   claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
+  utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryUncheckedCreateWithoutStudentInvoiceInput = {
   id?: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
+  direction: string
+  purpose: string
   claimId?: string | null
+  createdAt?: Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryCreateOrConnectWithoutStudentInvoiceInput = {
@@ -734,128 +762,28 @@ export type LedgerEntryUpdateManyWithWhereWithoutStudentInvoiceInput = {
   data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutStudentInvoiceInput>
 }
 
-export type LedgerEntryScalarWhereInput = {
-  AND?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-  OR?: Prisma.LedgerEntryScalarWhereInput[]
-  NOT?: Prisma.LedgerEntryScalarWhereInput | Prisma.LedgerEntryScalarWhereInput[]
-  id?: Prisma.StringFilter<"LedgerEntry"> | string
-  transactionId?: Prisma.StringFilter<"LedgerEntry"> | string
-  accountId?: Prisma.StringFilter<"LedgerEntry"> | string
-  amount?: Prisma.FloatFilter<"LedgerEntry"> | number
-  studentInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  resourceInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  counsellingInvoiceId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-  claimId?: Prisma.StringNullableFilter<"LedgerEntry"> | string | null
-}
-
-export type LedgerEntryCreateWithoutResourceInvoiceInput = {
-  id?: string
-  amount: number
-  transaction: Prisma.AccountTransactionCreateNestedOneWithoutEntriesInput
-  account: Prisma.AccountCreateNestedOneWithoutLedgerEntriesInput
-  studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
-}
-
-export type LedgerEntryUncheckedCreateWithoutResourceInvoiceInput = {
-  id?: string
-  transactionId: string
-  accountId: string
-  amount: number
-  studentInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
-  claimId?: string | null
-}
-
-export type LedgerEntryCreateOrConnectWithoutResourceInvoiceInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput>
-}
-
-export type LedgerEntryCreateManyResourceInvoiceInputEnvelope = {
-  data: Prisma.LedgerEntryCreateManyResourceInvoiceInput | Prisma.LedgerEntryCreateManyResourceInvoiceInput[]
-}
-
-export type LedgerEntryUpsertWithWhereUniqueWithoutResourceInvoiceInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  update: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedUpdateWithoutResourceInvoiceInput>
-  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutResourceInvoiceInput>
-}
-
-export type LedgerEntryUpdateWithWhereUniqueWithoutResourceInvoiceInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  data: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutResourceInvoiceInput, Prisma.LedgerEntryUncheckedUpdateWithoutResourceInvoiceInput>
-}
-
-export type LedgerEntryUpdateManyWithWhereWithoutResourceInvoiceInput = {
-  where: Prisma.LedgerEntryScalarWhereInput
-  data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutResourceInvoiceInput>
-}
-
-export type LedgerEntryCreateWithoutCounsellingInvoiceInput = {
-  id?: string
-  amount: number
-  transaction: Prisma.AccountTransactionCreateNestedOneWithoutEntriesInput
-  account: Prisma.AccountCreateNestedOneWithoutLedgerEntriesInput
-  studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  resourceInvoice?: Prisma.ResourceInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
-}
-
-export type LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput = {
-  id?: string
-  transactionId: string
-  accountId: string
-  amount: number
-  studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  claimId?: string | null
-}
-
-export type LedgerEntryCreateOrConnectWithoutCounsellingInvoiceInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput>
-}
-
-export type LedgerEntryCreateManyCounsellingInvoiceInputEnvelope = {
-  data: Prisma.LedgerEntryCreateManyCounsellingInvoiceInput | Prisma.LedgerEntryCreateManyCounsellingInvoiceInput[]
-}
-
-export type LedgerEntryUpsertWithWhereUniqueWithoutCounsellingInvoiceInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  update: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedUpdateWithoutCounsellingInvoiceInput>
-  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedCreateWithoutCounsellingInvoiceInput>
-}
-
-export type LedgerEntryUpdateWithWhereUniqueWithoutCounsellingInvoiceInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  data: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutCounsellingInvoiceInput, Prisma.LedgerEntryUncheckedUpdateWithoutCounsellingInvoiceInput>
-}
-
-export type LedgerEntryUpdateManyWithWhereWithoutCounsellingInvoiceInput = {
-  where: Prisma.LedgerEntryScalarWhereInput
-  data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutCounsellingInvoiceInput>
-}
-
 export type LedgerEntryCreateWithoutClaimInput = {
   id?: string
   amount: number
-  transaction: Prisma.AccountTransactionCreateNestedOneWithoutEntriesInput
-  account: Prisma.AccountCreateNestedOneWithoutLedgerEntriesInput
+  direction: string
+  purpose: string
+  createdAt?: Date | string
+  transaction: Prisma.AccountTransactionCreateNestedOneWithoutLedgerEntriesInput
+  bankAccount: Prisma.BankAccountCreateNestedOneWithoutLedgerEntriesInput
   studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  resourceInvoice?: Prisma.ResourceInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceCreateNestedOneWithoutLedgerEntriesInput
+  utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryUncheckedCreateWithoutClaimInput = {
   id?: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
+  createdAt?: Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryCreateOrConnectWithoutClaimInput = {
@@ -883,69 +811,28 @@ export type LedgerEntryUpdateManyWithWhereWithoutClaimInput = {
   data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimInput>
 }
 
-export type LedgerEntryCreateWithoutAccountInput = {
-  id?: string
-  amount: number
-  transaction: Prisma.AccountTransactionCreateNestedOneWithoutEntriesInput
-  studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  resourceInvoice?: Prisma.ResourceInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
-}
-
-export type LedgerEntryUncheckedCreateWithoutAccountInput = {
-  id?: string
-  transactionId: string
-  amount: number
-  studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
-  claimId?: string | null
-}
-
-export type LedgerEntryCreateOrConnectWithoutAccountInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutAccountInput>
-}
-
-export type LedgerEntryCreateManyAccountInputEnvelope = {
-  data: Prisma.LedgerEntryCreateManyAccountInput | Prisma.LedgerEntryCreateManyAccountInput[]
-}
-
-export type LedgerEntryUpsertWithWhereUniqueWithoutAccountInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  update: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutAccountInput, Prisma.LedgerEntryUncheckedUpdateWithoutAccountInput>
-  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutAccountInput, Prisma.LedgerEntryUncheckedCreateWithoutAccountInput>
-}
-
-export type LedgerEntryUpdateWithWhereUniqueWithoutAccountInput = {
-  where: Prisma.LedgerEntryWhereUniqueInput
-  data: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutAccountInput, Prisma.LedgerEntryUncheckedUpdateWithoutAccountInput>
-}
-
-export type LedgerEntryUpdateManyWithWhereWithoutAccountInput = {
-  where: Prisma.LedgerEntryScalarWhereInput
-  data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutAccountInput>
-}
-
 export type LedgerEntryCreateWithoutTransactionInput = {
   id?: string
   amount: number
-  account: Prisma.AccountCreateNestedOneWithoutLedgerEntriesInput
+  direction: string
+  purpose: string
+  createdAt?: Date | string
+  bankAccount: Prisma.BankAccountCreateNestedOneWithoutLedgerEntriesInput
   studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  resourceInvoice?: Prisma.ResourceInvoiceCreateNestedOneWithoutLedgerEntriesInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceCreateNestedOneWithoutLedgerEntriesInput
   claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
+  utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryUncheckedCreateWithoutTransactionInput = {
   id?: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
   claimId?: string | null
+  createdAt?: Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutLedgerEntryInput
 }
 
 export type LedgerEntryCreateOrConnectWithoutTransactionInput = {
@@ -973,333 +860,366 @@ export type LedgerEntryUpdateManyWithWhereWithoutTransactionInput = {
   data: Prisma.XOR<Prisma.LedgerEntryUpdateManyMutationInput, Prisma.LedgerEntryUncheckedUpdateManyWithoutTransactionInput>
 }
 
+export type LedgerEntryCreateWithoutUtilisationsInput = {
+  id?: string
+  amount: number
+  direction: string
+  purpose: string
+  createdAt?: Date | string
+  transaction: Prisma.AccountTransactionCreateNestedOneWithoutLedgerEntriesInput
+  bankAccount: Prisma.BankAccountCreateNestedOneWithoutLedgerEntriesInput
+  studentInvoice?: Prisma.StudentInvoiceCreateNestedOneWithoutLedgerEntriesInput
+  claim?: Prisma.ClaimCreateNestedOneWithoutLedgerEntriesInput
+}
+
+export type LedgerEntryUncheckedCreateWithoutUtilisationsInput = {
+  id?: string
+  transactionId: string
+  bankAccountId: string
+  amount: number
+  direction: string
+  purpose: string
+  studentInvoiceId?: string | null
+  claimId?: string | null
+  createdAt?: Date | string
+}
+
+export type LedgerEntryCreateOrConnectWithoutUtilisationsInput = {
+  where: Prisma.LedgerEntryWhereUniqueInput
+  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutUtilisationsInput, Prisma.LedgerEntryUncheckedCreateWithoutUtilisationsInput>
+}
+
+export type LedgerEntryUpsertWithoutUtilisationsInput = {
+  update: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutUtilisationsInput, Prisma.LedgerEntryUncheckedUpdateWithoutUtilisationsInput>
+  create: Prisma.XOR<Prisma.LedgerEntryCreateWithoutUtilisationsInput, Prisma.LedgerEntryUncheckedCreateWithoutUtilisationsInput>
+  where?: Prisma.LedgerEntryWhereInput
+}
+
+export type LedgerEntryUpdateToOneWithWhereWithoutUtilisationsInput = {
+  where?: Prisma.LedgerEntryWhereInput
+  data: Prisma.XOR<Prisma.LedgerEntryUpdateWithoutUtilisationsInput, Prisma.LedgerEntryUncheckedUpdateWithoutUtilisationsInput>
+}
+
+export type LedgerEntryUpdateWithoutUtilisationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
+  claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
+}
+
+export type LedgerEntryUncheckedUpdateWithoutUtilisationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LedgerEntryCreateManyBankAccountInput = {
+  id?: string
+  transactionId: string
+  amount: number
+  direction: string
+  purpose: string
+  studentInvoiceId?: string | null
+  claimId?: string | null
+  createdAt?: Date | string
+}
+
+export type LedgerEntryUpdateWithoutBankAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
+  claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
+  utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutLedgerEntryNestedInput
+}
+
+export type LedgerEntryUncheckedUpdateWithoutBankAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutLedgerEntryNestedInput
+}
+
+export type LedgerEntryUncheckedUpdateManyWithoutBankAccountInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type LedgerEntryCreateManyStudentInvoiceInput = {
   id?: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
+  direction: string
+  purpose: string
   claimId?: string | null
+  createdAt?: Date | string
 }
 
 export type LedgerEntryUpdateWithoutStudentInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutEntriesNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
-  resourceInvoice?: Prisma.ResourceInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceUpdateOneWithoutLedgerEntriesNestedInput
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
   claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
+  utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateWithoutStudentInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateManyWithoutStudentInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type LedgerEntryCreateManyResourceInvoiceInput = {
-  id?: string
-  transactionId: string
-  accountId: string
-  amount: number
-  studentInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
-  claimId?: string | null
-}
-
-export type LedgerEntryUpdateWithoutResourceInvoiceInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutEntriesNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
-  studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
-}
-
-export type LedgerEntryUncheckedUpdateWithoutResourceInvoiceInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type LedgerEntryUncheckedUpdateManyWithoutResourceInvoiceInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type LedgerEntryCreateManyCounsellingInvoiceInput = {
-  id?: string
-  transactionId: string
-  accountId: string
-  amount: number
-  studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  claimId?: string | null
-}
-
-export type LedgerEntryUpdateWithoutCounsellingInvoiceInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutEntriesNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
-  studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  resourceInvoice?: Prisma.ResourceInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
-}
-
-export type LedgerEntryUncheckedUpdateWithoutCounsellingInvoiceInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type LedgerEntryUncheckedUpdateManyWithoutCounsellingInvoiceInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LedgerEntryCreateManyClaimInput = {
   id?: string
   transactionId: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
+  createdAt?: Date | string
 }
 
 export type LedgerEntryUpdateWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutEntriesNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
   studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  resourceInvoice?: Prisma.ResourceInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceUpdateOneWithoutLedgerEntriesNestedInput
+  utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateManyWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type LedgerEntryCreateManyAccountInput = {
-  id?: string
-  transactionId: string
-  amount: number
-  studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
-  claimId?: string | null
-}
-
-export type LedgerEntryUpdateWithoutAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  transaction?: Prisma.AccountTransactionUpdateOneRequiredWithoutEntriesNestedInput
-  studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  resourceInvoice?: Prisma.ResourceInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
-}
-
-export type LedgerEntryUncheckedUpdateWithoutAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type LedgerEntryUncheckedUpdateManyWithoutAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LedgerEntryCreateManyTransactionInput = {
   id?: string
-  accountId: string
+  bankAccountId: string
   amount: number
+  direction: string
+  purpose: string
   studentInvoiceId?: string | null
-  resourceInvoiceId?: string | null
-  counsellingInvoiceId?: string | null
   claimId?: string | null
+  createdAt?: Date | string
 }
 
 export type LedgerEntryUpdateWithoutTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  account?: Prisma.AccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutLedgerEntriesNestedInput
   studentInvoice?: Prisma.StudentInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  resourceInvoice?: Prisma.ResourceInvoiceUpdateOneWithoutLedgerEntriesNestedInput
-  counsellingInvoice?: Prisma.CounsellingInvoiceUpdateOneWithoutLedgerEntriesNestedInput
   claim?: Prisma.ClaimUpdateOneWithoutLedgerEntriesNestedInput
+  utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateWithoutTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutLedgerEntryNestedInput
 }
 
 export type LedgerEntryUncheckedUpdateManyWithoutTransactionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  direction?: Prisma.StringFieldUpdateOperationsInput | string
+  purpose?: Prisma.StringFieldUpdateOperationsInput | string
   studentInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  resourceInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  counsellingInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type LedgerEntryCountOutputType
+ */
+
+export type LedgerEntryCountOutputType = {
+  utilisations: number
+}
+
+export type LedgerEntryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  utilisations?: boolean | LedgerEntryCountOutputTypeCountUtilisationsArgs
+}
+
+/**
+ * LedgerEntryCountOutputType without action
+ */
+export type LedgerEntryCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LedgerEntryCountOutputType
+   */
+  select?: Prisma.LedgerEntryCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * LedgerEntryCountOutputType without action
+ */
+export type LedgerEntryCountOutputTypeCountUtilisationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BudgetUtilisationWhereInput
+}
 
 
 export type LedgerEntrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
-  accountId?: boolean
+  bankAccountId?: boolean
   amount?: boolean
+  direction?: boolean
+  purpose?: boolean
   studentInvoiceId?: boolean
-  resourceInvoiceId?: boolean
-  counsellingInvoiceId?: boolean
   claimId?: boolean
+  createdAt?: boolean
   transaction?: boolean | Prisma.AccountTransactionDefaultArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   studentInvoice?: boolean | Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>
-  resourceInvoice?: boolean | Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>
-  counsellingInvoice?: boolean | Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>
   claim?: boolean | Prisma.LedgerEntry$claimArgs<ExtArgs>
+  utilisations?: boolean | Prisma.LedgerEntry$utilisationsArgs<ExtArgs>
+  _count?: boolean | Prisma.LedgerEntryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ledgerEntry"]>
 
 export type LedgerEntrySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
-  accountId?: boolean
+  bankAccountId?: boolean
   amount?: boolean
+  direction?: boolean
+  purpose?: boolean
   studentInvoiceId?: boolean
-  resourceInvoiceId?: boolean
-  counsellingInvoiceId?: boolean
   claimId?: boolean
+  createdAt?: boolean
   transaction?: boolean | Prisma.AccountTransactionDefaultArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   studentInvoice?: boolean | Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>
-  resourceInvoice?: boolean | Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>
-  counsellingInvoice?: boolean | Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>
   claim?: boolean | Prisma.LedgerEntry$claimArgs<ExtArgs>
 }, ExtArgs["result"]["ledgerEntry"]>
 
 export type LedgerEntrySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
-  accountId?: boolean
+  bankAccountId?: boolean
   amount?: boolean
+  direction?: boolean
+  purpose?: boolean
   studentInvoiceId?: boolean
-  resourceInvoiceId?: boolean
-  counsellingInvoiceId?: boolean
   claimId?: boolean
+  createdAt?: boolean
   transaction?: boolean | Prisma.AccountTransactionDefaultArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   studentInvoice?: boolean | Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>
-  resourceInvoice?: boolean | Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>
-  counsellingInvoice?: boolean | Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>
   claim?: boolean | Prisma.LedgerEntry$claimArgs<ExtArgs>
 }, ExtArgs["result"]["ledgerEntry"]>
 
 export type LedgerEntrySelectScalar = {
   id?: boolean
   transactionId?: boolean
-  accountId?: boolean
+  bankAccountId?: boolean
   amount?: boolean
+  direction?: boolean
+  purpose?: boolean
   studentInvoiceId?: boolean
-  resourceInvoiceId?: boolean
-  counsellingInvoiceId?: boolean
   claimId?: boolean
+  createdAt?: boolean
 }
 
-export type LedgerEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "accountId" | "amount" | "studentInvoiceId" | "resourceInvoiceId" | "counsellingInvoiceId" | "claimId", ExtArgs["result"]["ledgerEntry"]>
+export type LedgerEntryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "bankAccountId" | "amount" | "direction" | "purpose" | "studentInvoiceId" | "claimId" | "createdAt", ExtArgs["result"]["ledgerEntry"]>
 export type LedgerEntryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.AccountTransactionDefaultArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   studentInvoice?: boolean | Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>
-  resourceInvoice?: boolean | Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>
-  counsellingInvoice?: boolean | Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>
   claim?: boolean | Prisma.LedgerEntry$claimArgs<ExtArgs>
+  utilisations?: boolean | Prisma.LedgerEntry$utilisationsArgs<ExtArgs>
+  _count?: boolean | Prisma.LedgerEntryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LedgerEntryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.AccountTransactionDefaultArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   studentInvoice?: boolean | Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>
-  resourceInvoice?: boolean | Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>
-  counsellingInvoice?: boolean | Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>
   claim?: boolean | Prisma.LedgerEntry$claimArgs<ExtArgs>
 }
 export type LedgerEntryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.AccountTransactionDefaultArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   studentInvoice?: boolean | Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>
-  resourceInvoice?: boolean | Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>
-  counsellingInvoice?: boolean | Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>
   claim?: boolean | Prisma.LedgerEntry$claimArgs<ExtArgs>
 }
 
@@ -1307,21 +1227,21 @@ export type $LedgerEntryPayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "LedgerEntry"
   objects: {
     transaction: Prisma.$AccountTransactionPayload<ExtArgs>
-    account: Prisma.$AccountPayload<ExtArgs>
+    bankAccount: Prisma.$BankAccountPayload<ExtArgs>
     studentInvoice: Prisma.$StudentInvoicePayload<ExtArgs> | null
-    resourceInvoice: Prisma.$ResourceInvoicePayload<ExtArgs> | null
-    counsellingInvoice: Prisma.$CounsellingInvoicePayload<ExtArgs> | null
     claim: Prisma.$ClaimPayload<ExtArgs> | null
+    utilisations: Prisma.$BudgetUtilisationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     transactionId: string
-    accountId: string
+    bankAccountId: string
     amount: number
+    direction: string
+    purpose: string
     studentInvoiceId: string | null
-    resourceInvoiceId: string | null
-    counsellingInvoiceId: string | null
     claimId: string | null
+    createdAt: Date
   }, ExtArgs["result"]["ledgerEntry"]>
   composites: {}
 }
@@ -1717,11 +1637,10 @@ readonly fields: LedgerEntryFieldRefs;
 export interface Prisma__LedgerEntryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   transaction<T extends Prisma.AccountTransactionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountTransactionDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountTransactionClient<runtime.Types.Result.GetResult<Prisma.$AccountTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  account<T extends Prisma.AccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  bankAccount<T extends Prisma.BankAccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BankAccountDefaultArgs<ExtArgs>>): Prisma.Prisma__BankAccountClient<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   studentInvoice<T extends Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LedgerEntry$studentInvoiceArgs<ExtArgs>>): Prisma.Prisma__StudentInvoiceClient<runtime.Types.Result.GetResult<Prisma.$StudentInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  resourceInvoice<T extends Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LedgerEntry$resourceInvoiceArgs<ExtArgs>>): Prisma.Prisma__ResourceInvoiceClient<runtime.Types.Result.GetResult<Prisma.$ResourceInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  counsellingInvoice<T extends Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LedgerEntry$counsellingInvoiceArgs<ExtArgs>>): Prisma.Prisma__CounsellingInvoiceClient<runtime.Types.Result.GetResult<Prisma.$CounsellingInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   claim<T extends Prisma.LedgerEntry$claimArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LedgerEntry$claimArgs<ExtArgs>>): Prisma.Prisma__ClaimClient<runtime.Types.Result.GetResult<Prisma.$ClaimPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  utilisations<T extends Prisma.LedgerEntry$utilisationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LedgerEntry$utilisationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BudgetUtilisationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1753,12 +1672,13 @@ export interface Prisma__LedgerEntryClient<T, Null = never, ExtArgs extends runt
 export interface LedgerEntryFieldRefs {
   readonly id: Prisma.FieldRef<"LedgerEntry", 'String'>
   readonly transactionId: Prisma.FieldRef<"LedgerEntry", 'String'>
-  readonly accountId: Prisma.FieldRef<"LedgerEntry", 'String'>
+  readonly bankAccountId: Prisma.FieldRef<"LedgerEntry", 'String'>
   readonly amount: Prisma.FieldRef<"LedgerEntry", 'Float'>
+  readonly direction: Prisma.FieldRef<"LedgerEntry", 'String'>
+  readonly purpose: Prisma.FieldRef<"LedgerEntry", 'String'>
   readonly studentInvoiceId: Prisma.FieldRef<"LedgerEntry", 'String'>
-  readonly resourceInvoiceId: Prisma.FieldRef<"LedgerEntry", 'String'>
-  readonly counsellingInvoiceId: Prisma.FieldRef<"LedgerEntry", 'String'>
   readonly claimId: Prisma.FieldRef<"LedgerEntry", 'String'>
+  readonly createdAt: Prisma.FieldRef<"LedgerEntry", 'DateTime'>
 }
     
 
@@ -2177,44 +2097,6 @@ export type LedgerEntry$studentInvoiceArgs<ExtArgs extends runtime.Types.Extensi
 }
 
 /**
- * LedgerEntry.resourceInvoice
- */
-export type LedgerEntry$resourceInvoiceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ResourceInvoice
-   */
-  select?: Prisma.ResourceInvoiceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ResourceInvoice
-   */
-  omit?: Prisma.ResourceInvoiceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ResourceInvoiceInclude<ExtArgs> | null
-  where?: Prisma.ResourceInvoiceWhereInput
-}
-
-/**
- * LedgerEntry.counsellingInvoice
- */
-export type LedgerEntry$counsellingInvoiceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the CounsellingInvoice
-   */
-  select?: Prisma.CounsellingInvoiceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the CounsellingInvoice
-   */
-  omit?: Prisma.CounsellingInvoiceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CounsellingInvoiceInclude<ExtArgs> | null
-  where?: Prisma.CounsellingInvoiceWhereInput
-}
-
-/**
  * LedgerEntry.claim
  */
 export type LedgerEntry$claimArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2231,6 +2113,30 @@ export type LedgerEntry$claimArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.ClaimInclude<ExtArgs> | null
   where?: Prisma.ClaimWhereInput
+}
+
+/**
+ * LedgerEntry.utilisations
+ */
+export type LedgerEntry$utilisationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BudgetUtilisation
+   */
+  select?: Prisma.BudgetUtilisationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BudgetUtilisation
+   */
+  omit?: Prisma.BudgetUtilisationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BudgetUtilisationInclude<ExtArgs> | null
+  where?: Prisma.BudgetUtilisationWhereInput
+  orderBy?: Prisma.BudgetUtilisationOrderByWithRelationInput | Prisma.BudgetUtilisationOrderByWithRelationInput[]
+  cursor?: Prisma.BudgetUtilisationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BudgetUtilisationScalarFieldEnum | Prisma.BudgetUtilisationScalarFieldEnum[]
 }
 
 /**

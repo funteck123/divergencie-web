@@ -27,72 +27,72 @@ export type AggregateCurrencyRate = {
 }
 
 export type CurrencyRateAvgAggregateOutputType = {
-  toINR: number | null
-  fromINR: number | null
+  rate: number | null
+  reverseRate: number | null
 }
 
 export type CurrencyRateSumAggregateOutputType = {
-  toINR: number | null
-  fromINR: number | null
+  rate: number | null
+  reverseRate: number | null
 }
 
 export type CurrencyRateMinAggregateOutputType = {
   id: string | null
-  currency: string | null
-  toINR: number | null
-  fromINR: number | null
+  fromCurrency: string | null
+  rate: number | null
+  reverseRate: number | null
   updatedAt: Date | null
 }
 
 export type CurrencyRateMaxAggregateOutputType = {
   id: string | null
-  currency: string | null
-  toINR: number | null
-  fromINR: number | null
+  fromCurrency: string | null
+  rate: number | null
+  reverseRate: number | null
   updatedAt: Date | null
 }
 
 export type CurrencyRateCountAggregateOutputType = {
   id: number
-  currency: number
-  toINR: number
-  fromINR: number
+  fromCurrency: number
+  rate: number
+  reverseRate: number
   updatedAt: number
   _all: number
 }
 
 
 export type CurrencyRateAvgAggregateInputType = {
-  toINR?: true
-  fromINR?: true
+  rate?: true
+  reverseRate?: true
 }
 
 export type CurrencyRateSumAggregateInputType = {
-  toINR?: true
-  fromINR?: true
+  rate?: true
+  reverseRate?: true
 }
 
 export type CurrencyRateMinAggregateInputType = {
   id?: true
-  currency?: true
-  toINR?: true
-  fromINR?: true
+  fromCurrency?: true
+  rate?: true
+  reverseRate?: true
   updatedAt?: true
 }
 
 export type CurrencyRateMaxAggregateInputType = {
   id?: true
-  currency?: true
-  toINR?: true
-  fromINR?: true
+  fromCurrency?: true
+  rate?: true
+  reverseRate?: true
   updatedAt?: true
 }
 
 export type CurrencyRateCountAggregateInputType = {
   id?: true
-  currency?: true
-  toINR?: true
-  fromINR?: true
+  fromCurrency?: true
+  rate?: true
+  reverseRate?: true
   updatedAt?: true
   _all?: true
 }
@@ -185,9 +185,9 @@ export type CurrencyRateGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type CurrencyRateGroupByOutputType = {
   id: string
-  currency: string
-  toINR: number
-  fromINR: number
+  fromCurrency: string
+  rate: number
+  reverseRate: number
   updatedAt: Date
   _count: CurrencyRateCountAggregateOutputType | null
   _avg: CurrencyRateAvgAggregateOutputType | null
@@ -216,36 +216,36 @@ export type CurrencyRateWhereInput = {
   OR?: Prisma.CurrencyRateWhereInput[]
   NOT?: Prisma.CurrencyRateWhereInput | Prisma.CurrencyRateWhereInput[]
   id?: Prisma.StringFilter<"CurrencyRate"> | string
-  currency?: Prisma.StringFilter<"CurrencyRate"> | string
-  toINR?: Prisma.FloatFilter<"CurrencyRate"> | number
-  fromINR?: Prisma.FloatFilter<"CurrencyRate"> | number
+  fromCurrency?: Prisma.StringFilter<"CurrencyRate"> | string
+  rate?: Prisma.FloatFilter<"CurrencyRate"> | number
+  reverseRate?: Prisma.FloatFilter<"CurrencyRate"> | number
   updatedAt?: Prisma.DateTimeFilter<"CurrencyRate"> | Date | string
 }
 
 export type CurrencyRateOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  currency?: Prisma.SortOrder
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  fromCurrency?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CurrencyRateWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  currency?: string
+  fromCurrency?: string
   AND?: Prisma.CurrencyRateWhereInput | Prisma.CurrencyRateWhereInput[]
   OR?: Prisma.CurrencyRateWhereInput[]
   NOT?: Prisma.CurrencyRateWhereInput | Prisma.CurrencyRateWhereInput[]
-  toINR?: Prisma.FloatFilter<"CurrencyRate"> | number
-  fromINR?: Prisma.FloatFilter<"CurrencyRate"> | number
+  rate?: Prisma.FloatFilter<"CurrencyRate"> | number
+  reverseRate?: Prisma.FloatFilter<"CurrencyRate"> | number
   updatedAt?: Prisma.DateTimeFilter<"CurrencyRate"> | Date | string
-}, "id" | "currency">
+}, "id" | "fromCurrency">
 
 export type CurrencyRateOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  currency?: Prisma.SortOrder
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  fromCurrency?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CurrencyRateCountOrderByAggregateInput
   _avg?: Prisma.CurrencyRateAvgOrderByAggregateInput
@@ -259,146 +259,146 @@ export type CurrencyRateScalarWhereWithAggregatesInput = {
   OR?: Prisma.CurrencyRateScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CurrencyRateScalarWhereWithAggregatesInput | Prisma.CurrencyRateScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CurrencyRate"> | string
-  currency?: Prisma.StringWithAggregatesFilter<"CurrencyRate"> | string
-  toINR?: Prisma.FloatWithAggregatesFilter<"CurrencyRate"> | number
-  fromINR?: Prisma.FloatWithAggregatesFilter<"CurrencyRate"> | number
+  fromCurrency?: Prisma.StringWithAggregatesFilter<"CurrencyRate"> | string
+  rate?: Prisma.FloatWithAggregatesFilter<"CurrencyRate"> | number
+  reverseRate?: Prisma.FloatWithAggregatesFilter<"CurrencyRate"> | number
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CurrencyRate"> | Date | string
 }
 
 export type CurrencyRateCreateInput = {
   id?: string
-  currency: string
-  toINR: number
-  fromINR: number
+  fromCurrency: string
+  rate: number
+  reverseRate: number
   updatedAt?: Date | string
 }
 
 export type CurrencyRateUncheckedCreateInput = {
   id?: string
-  currency: string
-  toINR: number
-  fromINR: number
+  fromCurrency: string
+  rate: number
+  reverseRate: number
   updatedAt?: Date | string
 }
 
 export type CurrencyRateUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  currency?: Prisma.StringFieldUpdateOperationsInput | string
-  toINR?: Prisma.FloatFieldUpdateOperationsInput | number
-  fromINR?: Prisma.FloatFieldUpdateOperationsInput | number
+  fromCurrency?: Prisma.StringFieldUpdateOperationsInput | string
+  rate?: Prisma.FloatFieldUpdateOperationsInput | number
+  reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CurrencyRateUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  currency?: Prisma.StringFieldUpdateOperationsInput | string
-  toINR?: Prisma.FloatFieldUpdateOperationsInput | number
-  fromINR?: Prisma.FloatFieldUpdateOperationsInput | number
+  fromCurrency?: Prisma.StringFieldUpdateOperationsInput | string
+  rate?: Prisma.FloatFieldUpdateOperationsInput | number
+  reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CurrencyRateCreateManyInput = {
   id?: string
-  currency: string
-  toINR: number
-  fromINR: number
+  fromCurrency: string
+  rate: number
+  reverseRate: number
   updatedAt?: Date | string
 }
 
 export type CurrencyRateUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  currency?: Prisma.StringFieldUpdateOperationsInput | string
-  toINR?: Prisma.FloatFieldUpdateOperationsInput | number
-  fromINR?: Prisma.FloatFieldUpdateOperationsInput | number
+  fromCurrency?: Prisma.StringFieldUpdateOperationsInput | string
+  rate?: Prisma.FloatFieldUpdateOperationsInput | number
+  reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CurrencyRateUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  currency?: Prisma.StringFieldUpdateOperationsInput | string
-  toINR?: Prisma.FloatFieldUpdateOperationsInput | number
-  fromINR?: Prisma.FloatFieldUpdateOperationsInput | number
+  fromCurrency?: Prisma.StringFieldUpdateOperationsInput | string
+  rate?: Prisma.FloatFieldUpdateOperationsInput | number
+  reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CurrencyRateCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  currency?: Prisma.SortOrder
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  fromCurrency?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CurrencyRateAvgOrderByAggregateInput = {
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
 }
 
 export type CurrencyRateMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  currency?: Prisma.SortOrder
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  fromCurrency?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CurrencyRateMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  currency?: Prisma.SortOrder
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  fromCurrency?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CurrencyRateSumOrderByAggregateInput = {
-  toINR?: Prisma.SortOrder
-  fromINR?: Prisma.SortOrder
+  rate?: Prisma.SortOrder
+  reverseRate?: Prisma.SortOrder
 }
 
 
 
 export type CurrencyRateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  currency?: boolean
-  toINR?: boolean
-  fromINR?: boolean
+  fromCurrency?: boolean
+  rate?: boolean
+  reverseRate?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["currencyRate"]>
 
 export type CurrencyRateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  currency?: boolean
-  toINR?: boolean
-  fromINR?: boolean
+  fromCurrency?: boolean
+  rate?: boolean
+  reverseRate?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["currencyRate"]>
 
 export type CurrencyRateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  currency?: boolean
-  toINR?: boolean
-  fromINR?: boolean
+  fromCurrency?: boolean
+  rate?: boolean
+  reverseRate?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["currencyRate"]>
 
 export type CurrencyRateSelectScalar = {
   id?: boolean
-  currency?: boolean
-  toINR?: boolean
-  fromINR?: boolean
+  fromCurrency?: boolean
+  rate?: boolean
+  reverseRate?: boolean
   updatedAt?: boolean
 }
 
-export type CurrencyRateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "currency" | "toINR" | "fromINR" | "updatedAt", ExtArgs["result"]["currencyRate"]>
+export type CurrencyRateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fromCurrency" | "rate" | "reverseRate" | "updatedAt", ExtArgs["result"]["currencyRate"]>
 
 export type $CurrencyRatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CurrencyRate"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    currency: string
-    toINR: number
-    fromINR: number
+    fromCurrency: string
+    rate: number
+    reverseRate: number
     updatedAt: Date
   }, ExtArgs["result"]["currencyRate"]>
   composites: {}
@@ -824,9 +824,9 @@ export interface Prisma__CurrencyRateClient<T, Null = never, ExtArgs extends run
  */
 export interface CurrencyRateFieldRefs {
   readonly id: Prisma.FieldRef<"CurrencyRate", 'String'>
-  readonly currency: Prisma.FieldRef<"CurrencyRate", 'String'>
-  readonly toINR: Prisma.FieldRef<"CurrencyRate", 'Float'>
-  readonly fromINR: Prisma.FieldRef<"CurrencyRate", 'Float'>
+  readonly fromCurrency: Prisma.FieldRef<"CurrencyRate", 'String'>
+  readonly rate: Prisma.FieldRef<"CurrencyRate", 'Float'>
+  readonly reverseRate: Prisma.FieldRef<"CurrencyRate", 'Float'>
   readonly updatedAt: Prisma.FieldRef<"CurrencyRate", 'DateTime'>
 }
     

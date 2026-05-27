@@ -32,6 +32,8 @@ export type MeetingMinAggregateOutputType = {
   status: string | null
   link: string | null
   dept: string | null
+  meetingType: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -43,6 +45,8 @@ export type MeetingMaxAggregateOutputType = {
   status: string | null
   link: string | null
   dept: string | null
+  meetingType: string | null
+  isActive: boolean | null
   createdAt: Date | null
 }
 
@@ -54,6 +58,8 @@ export type MeetingCountAggregateOutputType = {
   status: number
   link: number
   dept: number
+  meetingType: number
+  isActive: number
   createdAt: number
   _all: number
 }
@@ -67,6 +73,8 @@ export type MeetingMinAggregateInputType = {
   status?: true
   link?: true
   dept?: true
+  meetingType?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -78,6 +86,8 @@ export type MeetingMaxAggregateInputType = {
   status?: true
   link?: true
   dept?: true
+  meetingType?: true
+  isActive?: true
   createdAt?: true
 }
 
@@ -89,6 +99,8 @@ export type MeetingCountAggregateInputType = {
   status?: true
   link?: true
   dept?: true
+  meetingType?: true
+  isActive?: true
   createdAt?: true
   _all?: true
 }
@@ -173,6 +185,8 @@ export type MeetingGroupByOutputType = {
   status: string
   link: string | null
   dept: string | null
+  meetingType: string | null
+  isActive: boolean
   createdAt: Date
   _count: MeetingCountAggregateOutputType | null
   _min: MeetingMinAggregateOutputType | null
@@ -205,6 +219,8 @@ export type MeetingWhereInput = {
   status?: Prisma.StringFilter<"Meeting"> | string
   link?: Prisma.StringNullableFilter<"Meeting"> | string | null
   dept?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  meetingType?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  isActive?: Prisma.BoolFilter<"Meeting"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Meeting"> | Date | string
   participants?: Prisma.MeetingParticipantListRelationFilter
 }
@@ -217,6 +233,8 @@ export type MeetingOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   link?: Prisma.SortOrderInput | Prisma.SortOrder
   dept?: Prisma.SortOrderInput | Prisma.SortOrder
+  meetingType?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   participants?: Prisma.MeetingParticipantOrderByRelationAggregateInput
 }
@@ -232,6 +250,8 @@ export type MeetingWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Meeting"> | string
   link?: Prisma.StringNullableFilter<"Meeting"> | string | null
   dept?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  meetingType?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  isActive?: Prisma.BoolFilter<"Meeting"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Meeting"> | Date | string
   participants?: Prisma.MeetingParticipantListRelationFilter
 }, "id">
@@ -244,6 +264,8 @@ export type MeetingOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   link?: Prisma.SortOrderInput | Prisma.SortOrder
   dept?: Prisma.SortOrderInput | Prisma.SortOrder
+  meetingType?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MeetingCountOrderByAggregateInput
   _max?: Prisma.MeetingMaxOrderByAggregateInput
@@ -261,6 +283,8 @@ export type MeetingScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"Meeting"> | string
   link?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
   dept?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
+  meetingType?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
+  isActive?: Prisma.BoolWithAggregatesFilter<"Meeting"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Meeting"> | Date | string
 }
 
@@ -272,6 +296,8 @@ export type MeetingCreateInput = {
   status?: string
   link?: string | null
   dept?: string | null
+  meetingType?: string | null
+  isActive?: boolean
   createdAt?: Date | string
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutMeetingInput
 }
@@ -284,6 +310,8 @@ export type MeetingUncheckedCreateInput = {
   status?: string
   link?: string | null
   dept?: string | null
+  meetingType?: string | null
+  isActive?: boolean
   createdAt?: Date | string
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutMeetingInput
 }
@@ -296,6 +324,8 @@ export type MeetingUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.MeetingParticipantUpdateManyWithoutMeetingNestedInput
 }
@@ -308,6 +338,8 @@ export type MeetingUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutMeetingNestedInput
 }
@@ -320,6 +352,8 @@ export type MeetingCreateManyInput = {
   status?: string
   link?: string | null
   dept?: string | null
+  meetingType?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -331,6 +365,8 @@ export type MeetingUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -342,6 +378,8 @@ export type MeetingUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -353,6 +391,8 @@ export type MeetingCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   link?: Prisma.SortOrder
   dept?: Prisma.SortOrder
+  meetingType?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -364,6 +404,8 @@ export type MeetingMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   link?: Prisma.SortOrder
   dept?: Prisma.SortOrder
+  meetingType?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -375,6 +417,8 @@ export type MeetingMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   link?: Prisma.SortOrder
   dept?: Prisma.SortOrder
+  meetingType?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -405,6 +449,8 @@ export type MeetingCreateWithoutParticipantsInput = {
   status?: string
   link?: string | null
   dept?: string | null
+  meetingType?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -416,6 +462,8 @@ export type MeetingUncheckedCreateWithoutParticipantsInput = {
   status?: string
   link?: string | null
   dept?: string | null
+  meetingType?: string | null
+  isActive?: boolean
   createdAt?: Date | string
 }
 
@@ -443,6 +491,8 @@ export type MeetingUpdateWithoutParticipantsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -454,6 +504,8 @@ export type MeetingUncheckedUpdateWithoutParticipantsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -496,6 +548,8 @@ export type MeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   link?: boolean
   dept?: boolean
+  meetingType?: boolean
+  isActive?: boolean
   createdAt?: boolean
   participants?: boolean | Prisma.Meeting$participantsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
@@ -509,6 +563,8 @@ export type MeetingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   link?: boolean
   dept?: boolean
+  meetingType?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["meeting"]>
 
@@ -520,6 +576,8 @@ export type MeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   status?: boolean
   link?: boolean
   dept?: boolean
+  meetingType?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["meeting"]>
 
@@ -531,10 +589,12 @@ export type MeetingSelectScalar = {
   status?: boolean
   link?: boolean
   dept?: boolean
+  meetingType?: boolean
+  isActive?: boolean
   createdAt?: boolean
 }
 
-export type MeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "dateTime" | "agenda" | "status" | "link" | "dept" | "createdAt", ExtArgs["result"]["meeting"]>
+export type MeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "dateTime" | "agenda" | "status" | "link" | "dept" | "meetingType" | "isActive" | "createdAt", ExtArgs["result"]["meeting"]>
 export type MeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participants?: boolean | Prisma.Meeting$participantsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
@@ -555,6 +615,8 @@ export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     status: string
     link: string | null
     dept: string | null
+    meetingType: string | null
+    isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["meeting"]>
   composites: {}
@@ -987,6 +1049,8 @@ export interface MeetingFieldRefs {
   readonly status: Prisma.FieldRef<"Meeting", 'String'>
   readonly link: Prisma.FieldRef<"Meeting", 'String'>
   readonly dept: Prisma.FieldRef<"Meeting", 'String'>
+  readonly meetingType: Prisma.FieldRef<"Meeting", 'String'>
+  readonly isActive: Prisma.FieldRef<"Meeting", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Meeting", 'DateTime'>
 }
     

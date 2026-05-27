@@ -27,11 +27,11 @@ export type AggregateAttendance = {
 }
 
 export type AttendanceAvgAggregateOutputType = {
-  duration: number | null
+  durationMinutes: number | null
 }
 
 export type AttendanceSumAggregateOutputType = {
-  duration: number | null
+  durationMinutes: number | null
 }
 
 export type AttendanceMinAggregateOutputType = {
@@ -39,9 +39,8 @@ export type AttendanceMinAggregateOutputType = {
   sessionId: string | null
   studentId: string | null
   status: string | null
-  duration: number | null
+  durationMinutes: number | null
   notes: string | null
-  wbLink: string | null
   markedAt: Date | null
 }
 
@@ -50,9 +49,8 @@ export type AttendanceMaxAggregateOutputType = {
   sessionId: string | null
   studentId: string | null
   status: string | null
-  duration: number | null
+  durationMinutes: number | null
   notes: string | null
-  wbLink: string | null
   markedAt: Date | null
 }
 
@@ -61,20 +59,19 @@ export type AttendanceCountAggregateOutputType = {
   sessionId: number
   studentId: number
   status: number
-  duration: number
+  durationMinutes: number
   notes: number
-  wbLink: number
   markedAt: number
   _all: number
 }
 
 
 export type AttendanceAvgAggregateInputType = {
-  duration?: true
+  durationMinutes?: true
 }
 
 export type AttendanceSumAggregateInputType = {
-  duration?: true
+  durationMinutes?: true
 }
 
 export type AttendanceMinAggregateInputType = {
@@ -82,9 +79,8 @@ export type AttendanceMinAggregateInputType = {
   sessionId?: true
   studentId?: true
   status?: true
-  duration?: true
+  durationMinutes?: true
   notes?: true
-  wbLink?: true
   markedAt?: true
 }
 
@@ -93,9 +89,8 @@ export type AttendanceMaxAggregateInputType = {
   sessionId?: true
   studentId?: true
   status?: true
-  duration?: true
+  durationMinutes?: true
   notes?: true
-  wbLink?: true
   markedAt?: true
 }
 
@@ -104,9 +99,8 @@ export type AttendanceCountAggregateInputType = {
   sessionId?: true
   studentId?: true
   status?: true
-  duration?: true
+  durationMinutes?: true
   notes?: true
-  wbLink?: true
   markedAt?: true
   _all?: true
 }
@@ -202,9 +196,8 @@ export type AttendanceGroupByOutputType = {
   sessionId: string
   studentId: string
   status: string
-  duration: number | null
+  durationMinutes: number | null
   notes: string | null
-  wbLink: string | null
   markedAt: Date
   _count: AttendanceCountAggregateOutputType | null
   _avg: AttendanceAvgAggregateOutputType | null
@@ -236,12 +229,11 @@ export type AttendanceWhereInput = {
   sessionId?: Prisma.StringFilter<"Attendance"> | string
   studentId?: Prisma.StringFilter<"Attendance"> | string
   status?: Prisma.StringFilter<"Attendance"> | string
-  duration?: Prisma.IntNullableFilter<"Attendance"> | number | null
+  durationMinutes?: Prisma.IntNullableFilter<"Attendance"> | number | null
   notes?: Prisma.StringNullableFilter<"Attendance"> | string | null
-  wbLink?: Prisma.StringNullableFilter<"Attendance"> | string | null
   markedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
-  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   session?: Prisma.XOR<Prisma.AcademicSessionScalarRelationFilter, Prisma.AcademicSessionWhereInput>
+  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type AttendanceOrderByWithRelationInput = {
@@ -249,38 +241,36 @@ export type AttendanceOrderByWithRelationInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  duration?: Prisma.SortOrderInput | Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
-  wbLink?: Prisma.SortOrderInput | Prisma.SortOrder
   markedAt?: Prisma.SortOrder
-  student?: Prisma.UserOrderByWithRelationInput
   session?: Prisma.AcademicSessionOrderByWithRelationInput
+  student?: Prisma.UserOrderByWithRelationInput
 }
 
 export type AttendanceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  sessionId_studentId?: Prisma.AttendanceSessionIdStudentIdCompoundUniqueInput
   AND?: Prisma.AttendanceWhereInput | Prisma.AttendanceWhereInput[]
   OR?: Prisma.AttendanceWhereInput[]
   NOT?: Prisma.AttendanceWhereInput | Prisma.AttendanceWhereInput[]
   sessionId?: Prisma.StringFilter<"Attendance"> | string
   studentId?: Prisma.StringFilter<"Attendance"> | string
   status?: Prisma.StringFilter<"Attendance"> | string
-  duration?: Prisma.IntNullableFilter<"Attendance"> | number | null
+  durationMinutes?: Prisma.IntNullableFilter<"Attendance"> | number | null
   notes?: Prisma.StringNullableFilter<"Attendance"> | string | null
-  wbLink?: Prisma.StringNullableFilter<"Attendance"> | string | null
   markedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
-  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   session?: Prisma.XOR<Prisma.AcademicSessionScalarRelationFilter, Prisma.AcademicSessionWhereInput>
-}, "id">
+  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+}, "id" | "sessionId_studentId">
 
 export type AttendanceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  duration?: Prisma.SortOrderInput | Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
-  wbLink?: Prisma.SortOrderInput | Prisma.SortOrder
   markedAt?: Prisma.SortOrder
   _count?: Prisma.AttendanceCountOrderByAggregateInput
   _avg?: Prisma.AttendanceAvgOrderByAggregateInput
@@ -297,21 +287,19 @@ export type AttendanceScalarWhereWithAggregatesInput = {
   sessionId?: Prisma.StringWithAggregatesFilter<"Attendance"> | string
   studentId?: Prisma.StringWithAggregatesFilter<"Attendance"> | string
   status?: Prisma.StringWithAggregatesFilter<"Attendance"> | string
-  duration?: Prisma.IntNullableWithAggregatesFilter<"Attendance"> | number | null
+  durationMinutes?: Prisma.IntNullableWithAggregatesFilter<"Attendance"> | number | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Attendance"> | string | null
-  wbLink?: Prisma.StringNullableWithAggregatesFilter<"Attendance"> | string | null
   markedAt?: Prisma.DateTimeWithAggregatesFilter<"Attendance"> | Date | string
 }
 
 export type AttendanceCreateInput = {
   id?: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
-  student: Prisma.UserCreateNestedOneWithoutAttendancesInput
   session: Prisma.AcademicSessionCreateNestedOneWithoutAttendancesInput
+  student: Prisma.UserCreateNestedOneWithoutAttendancesInput
 }
 
 export type AttendanceUncheckedCreateInput = {
@@ -319,21 +307,19 @@ export type AttendanceUncheckedCreateInput = {
   sessionId: string
   studentId: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
 }
 
 export type AttendanceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  student?: Prisma.UserUpdateOneRequiredWithoutAttendancesNestedInput
   session?: Prisma.AcademicSessionUpdateOneRequiredWithoutAttendancesNestedInput
+  student?: Prisma.UserUpdateOneRequiredWithoutAttendancesNestedInput
 }
 
 export type AttendanceUncheckedUpdateInput = {
@@ -341,9 +327,8 @@ export type AttendanceUncheckedUpdateInput = {
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -352,18 +337,16 @@ export type AttendanceCreateManyInput = {
   sessionId: string
   studentId: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
 }
 
 export type AttendanceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -372,9 +355,8 @@ export type AttendanceUncheckedUpdateManyInput = {
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -388,19 +370,23 @@ export type AttendanceOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type AttendanceSessionIdStudentIdCompoundUniqueInput = {
+  sessionId: string
+  studentId: string
+}
+
 export type AttendanceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  duration?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
   notes?: Prisma.SortOrder
-  wbLink?: Prisma.SortOrder
   markedAt?: Prisma.SortOrder
 }
 
 export type AttendanceAvgOrderByAggregateInput = {
-  duration?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
 }
 
 export type AttendanceMaxOrderByAggregateInput = {
@@ -408,9 +394,8 @@ export type AttendanceMaxOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  duration?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
   notes?: Prisma.SortOrder
-  wbLink?: Prisma.SortOrder
   markedAt?: Prisma.SortOrder
 }
 
@@ -419,14 +404,13 @@ export type AttendanceMinOrderByAggregateInput = {
   sessionId?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  duration?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
   notes?: Prisma.SortOrder
-  wbLink?: Prisma.SortOrder
   markedAt?: Prisma.SortOrder
 }
 
 export type AttendanceSumOrderByAggregateInput = {
-  duration?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
 }
 
 export type AttendanceCreateNestedManyWithoutStudentInput = {
@@ -516,9 +500,8 @@ export type AttendanceUncheckedUpdateManyWithoutSessionNestedInput = {
 export type AttendanceCreateWithoutStudentInput = {
   id?: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
   session: Prisma.AcademicSessionCreateNestedOneWithoutAttendancesInput
 }
@@ -527,9 +510,8 @@ export type AttendanceUncheckedCreateWithoutStudentInput = {
   id?: string
   sessionId: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
 }
 
@@ -566,18 +548,16 @@ export type AttendanceScalarWhereInput = {
   sessionId?: Prisma.StringFilter<"Attendance"> | string
   studentId?: Prisma.StringFilter<"Attendance"> | string
   status?: Prisma.StringFilter<"Attendance"> | string
-  duration?: Prisma.IntNullableFilter<"Attendance"> | number | null
+  durationMinutes?: Prisma.IntNullableFilter<"Attendance"> | number | null
   notes?: Prisma.StringNullableFilter<"Attendance"> | string | null
-  wbLink?: Prisma.StringNullableFilter<"Attendance"> | string | null
   markedAt?: Prisma.DateTimeFilter<"Attendance"> | Date | string
 }
 
 export type AttendanceCreateWithoutSessionInput = {
   id?: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
   student: Prisma.UserCreateNestedOneWithoutAttendancesInput
 }
@@ -586,9 +566,8 @@ export type AttendanceUncheckedCreateWithoutSessionInput = {
   id?: string
   studentId: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
 }
 
@@ -621,18 +600,16 @@ export type AttendanceCreateManyStudentInput = {
   id?: string
   sessionId: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
 }
 
 export type AttendanceUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.AcademicSessionUpdateOneRequiredWithoutAttendancesNestedInput
 }
@@ -641,9 +618,8 @@ export type AttendanceUncheckedUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -651,9 +627,8 @@ export type AttendanceUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sessionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -661,18 +636,16 @@ export type AttendanceCreateManySessionInput = {
   id?: string
   studentId: string
   status?: string
-  duration?: number | null
+  durationMinutes?: number | null
   notes?: string | null
-  wbLink?: string | null
   markedAt?: Date | string
 }
 
 export type AttendanceUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.UserUpdateOneRequiredWithoutAttendancesNestedInput
 }
@@ -681,9 +654,8 @@ export type AttendanceUncheckedUpdateWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -691,9 +663,8 @@ export type AttendanceUncheckedUpdateManyWithoutSessionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  duration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   markedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -704,12 +675,11 @@ export type AttendanceSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
-  duration?: boolean
+  durationMinutes?: boolean
   notes?: boolean
-  wbLink?: boolean
   markedAt?: boolean
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   session?: boolean | Prisma.AcademicSessionDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["attendance"]>
 
 export type AttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -717,12 +687,11 @@ export type AttendanceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
-  duration?: boolean
+  durationMinutes?: boolean
   notes?: boolean
-  wbLink?: boolean
   markedAt?: boolean
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   session?: boolean | Prisma.AcademicSessionDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["attendance"]>
 
 export type AttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -730,12 +699,11 @@ export type AttendanceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
-  duration?: boolean
+  durationMinutes?: boolean
   notes?: boolean
-  wbLink?: boolean
   markedAt?: boolean
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   session?: boolean | Prisma.AcademicSessionDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["attendance"]>
 
 export type AttendanceSelectScalar = {
@@ -743,40 +711,38 @@ export type AttendanceSelectScalar = {
   sessionId?: boolean
   studentId?: boolean
   status?: boolean
-  duration?: boolean
+  durationMinutes?: boolean
   notes?: boolean
-  wbLink?: boolean
   markedAt?: boolean
 }
 
-export type AttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "studentId" | "status" | "duration" | "notes" | "wbLink" | "markedAt", ExtArgs["result"]["attendance"]>
+export type AttendanceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "studentId" | "status" | "durationMinutes" | "notes" | "markedAt", ExtArgs["result"]["attendance"]>
 export type AttendanceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   session?: boolean | Prisma.AcademicSessionDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type AttendanceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   session?: boolean | Prisma.AcademicSessionDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type AttendanceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   session?: boolean | Prisma.AcademicSessionDefaultArgs<ExtArgs>
+  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $AttendancePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Attendance"
   objects: {
-    student: Prisma.$UserPayload<ExtArgs>
     session: Prisma.$AcademicSessionPayload<ExtArgs>
+    student: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     sessionId: string
     studentId: string
     status: string
-    duration: number | null
+    durationMinutes: number | null
     notes: string | null
-    wbLink: string | null
     markedAt: Date
   }, ExtArgs["result"]["attendance"]>
   composites: {}
@@ -1172,8 +1138,8 @@ readonly fields: AttendanceFieldRefs;
  */
 export interface Prisma__AttendanceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   session<T extends Prisma.AcademicSessionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSessionDefaultArgs<ExtArgs>>): Prisma.Prisma__AcademicSessionClient<runtime.Types.Result.GetResult<Prisma.$AcademicSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1207,9 +1173,8 @@ export interface AttendanceFieldRefs {
   readonly sessionId: Prisma.FieldRef<"Attendance", 'String'>
   readonly studentId: Prisma.FieldRef<"Attendance", 'String'>
   readonly status: Prisma.FieldRef<"Attendance", 'String'>
-  readonly duration: Prisma.FieldRef<"Attendance", 'Int'>
+  readonly durationMinutes: Prisma.FieldRef<"Attendance", 'Int'>
   readonly notes: Prisma.FieldRef<"Attendance", 'String'>
-  readonly wbLink: Prisma.FieldRef<"Attendance", 'String'>
   readonly markedAt: Prisma.FieldRef<"Attendance", 'DateTime'>
 }
     

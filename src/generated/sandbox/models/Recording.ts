@@ -168,11 +168,11 @@ export type RecordingGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 export type RecordingGroupByOutputType = {
   id: string
   title: string
-  subject: string
+  subject: string | null
   videoUrl: string
   date: Date
-  duration: string
-  category: string
+  duration: string | null
+  category: string | null
   createdAt: Date
   _count: RecordingCountAggregateOutputType | null
   _min: RecordingMinAggregateOutputType | null
@@ -200,22 +200,22 @@ export type RecordingWhereInput = {
   NOT?: Prisma.RecordingWhereInput | Prisma.RecordingWhereInput[]
   id?: Prisma.StringFilter<"Recording"> | string
   title?: Prisma.StringFilter<"Recording"> | string
-  subject?: Prisma.StringFilter<"Recording"> | string
+  subject?: Prisma.StringNullableFilter<"Recording"> | string | null
   videoUrl?: Prisma.StringFilter<"Recording"> | string
   date?: Prisma.DateTimeFilter<"Recording"> | Date | string
-  duration?: Prisma.StringFilter<"Recording"> | string
-  category?: Prisma.StringFilter<"Recording"> | string
+  duration?: Prisma.StringNullableFilter<"Recording"> | string | null
+  category?: Prisma.StringNullableFilter<"Recording"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Recording"> | Date | string
 }
 
 export type RecordingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  subject?: Prisma.SortOrderInput | Prisma.SortOrder
   videoUrl?: Prisma.SortOrder
   date?: Prisma.SortOrder
-  duration?: Prisma.SortOrder
-  category?: Prisma.SortOrder
+  duration?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -225,22 +225,22 @@ export type RecordingWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.RecordingWhereInput[]
   NOT?: Prisma.RecordingWhereInput | Prisma.RecordingWhereInput[]
   title?: Prisma.StringFilter<"Recording"> | string
-  subject?: Prisma.StringFilter<"Recording"> | string
+  subject?: Prisma.StringNullableFilter<"Recording"> | string | null
   videoUrl?: Prisma.StringFilter<"Recording"> | string
   date?: Prisma.DateTimeFilter<"Recording"> | Date | string
-  duration?: Prisma.StringFilter<"Recording"> | string
-  category?: Prisma.StringFilter<"Recording"> | string
+  duration?: Prisma.StringNullableFilter<"Recording"> | string | null
+  category?: Prisma.StringNullableFilter<"Recording"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Recording"> | Date | string
 }, "id">
 
 export type RecordingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  subject?: Prisma.SortOrderInput | Prisma.SortOrder
   videoUrl?: Prisma.SortOrder
   date?: Prisma.SortOrder
-  duration?: Prisma.SortOrder
-  category?: Prisma.SortOrder
+  duration?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.RecordingCountOrderByAggregateInput
   _max?: Prisma.RecordingMaxOrderByAggregateInput
@@ -253,88 +253,88 @@ export type RecordingScalarWhereWithAggregatesInput = {
   NOT?: Prisma.RecordingScalarWhereWithAggregatesInput | Prisma.RecordingScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Recording"> | string
   title?: Prisma.StringWithAggregatesFilter<"Recording"> | string
-  subject?: Prisma.StringWithAggregatesFilter<"Recording"> | string
+  subject?: Prisma.StringNullableWithAggregatesFilter<"Recording"> | string | null
   videoUrl?: Prisma.StringWithAggregatesFilter<"Recording"> | string
   date?: Prisma.DateTimeWithAggregatesFilter<"Recording"> | Date | string
-  duration?: Prisma.StringWithAggregatesFilter<"Recording"> | string
-  category?: Prisma.StringWithAggregatesFilter<"Recording"> | string
+  duration?: Prisma.StringNullableWithAggregatesFilter<"Recording"> | string | null
+  category?: Prisma.StringNullableWithAggregatesFilter<"Recording"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Recording"> | Date | string
 }
 
 export type RecordingCreateInput = {
   id?: string
   title: string
-  subject: string
+  subject?: string | null
   videoUrl: string
   date: Date | string
-  duration: string
-  category: string
+  duration?: string | null
+  category?: string | null
   createdAt?: Date | string
 }
 
 export type RecordingUncheckedCreateInput = {
   id?: string
   title: string
-  subject: string
+  subject?: string | null
   videoUrl: string
   date: Date | string
-  duration: string
-  category: string
+  duration?: string | null
+  category?: string | null
   createdAt?: Date | string
 }
 
 export type RecordingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  duration?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RecordingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  duration?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RecordingCreateManyInput = {
   id?: string
   title: string
-  subject: string
+  subject?: string | null
   videoUrl: string
   date: Date | string
-  duration: string
-  category: string
+  duration?: string | null
+  category?: string | null
   createdAt?: Date | string
 }
 
 export type RecordingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  duration?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RecordingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   videoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  duration?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -425,11 +425,11 @@ export type $RecordingPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
-    subject: string
+    subject: string | null
     videoUrl: string
     date: Date
-    duration: string
-    category: string
+    duration: string | null
+    category: string | null
     createdAt: Date
   }, ExtArgs["result"]["recording"]>
   composites: {}

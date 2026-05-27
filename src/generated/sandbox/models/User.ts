@@ -20,18 +20,8 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
-  _avg: UserAvgAggregateOutputType | null
-  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
-}
-
-export type UserAvgAggregateOutputType = {
-  hourlyRate: number | null
-}
-
-export type UserSumAggregateOutputType = {
-  hourlyRate: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -41,21 +31,14 @@ export type UserMinAggregateOutputType = {
   role: string | null
   dept: string | null
   supervisor: boolean | null
-  subGroup: string | null
-  subject: string | null
-  active: boolean | null
+  financeApprovedFlag: boolean | null
+  isActive: boolean | null
   passwordHash: string | null
   referralCode: string | null
-  phone: string | null
-  address: string | null
-  bio: string | null
-  grade: string | null
-  board: string | null
-  targetUni: string | null
-  hourlyRate: number | null
-  specialization: string | null
-  parentId: string | null
+  detectedCountry: string | null
+  billingAddress: string | null
   createdAt: Date | null
+  parentId: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -65,21 +48,14 @@ export type UserMaxAggregateOutputType = {
   role: string | null
   dept: string | null
   supervisor: boolean | null
-  subGroup: string | null
-  subject: string | null
-  active: boolean | null
+  financeApprovedFlag: boolean | null
+  isActive: boolean | null
   passwordHash: string | null
   referralCode: string | null
-  phone: string | null
-  address: string | null
-  bio: string | null
-  grade: string | null
-  board: string | null
-  targetUni: string | null
-  hourlyRate: number | null
-  specialization: string | null
-  parentId: string | null
+  detectedCountry: string | null
+  billingAddress: string | null
   createdAt: Date | null
+  parentId: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -89,32 +65,17 @@ export type UserCountAggregateOutputType = {
   role: number
   dept: number
   supervisor: number
-  subGroup: number
-  subject: number
-  active: number
+  financeApprovedFlag: number
+  isActive: number
   passwordHash: number
   referralCode: number
-  phone: number
-  address: number
-  bio: number
-  grade: number
-  board: number
-  targetUni: number
-  hourlyRate: number
-  specialization: number
-  parentId: number
+  detectedCountry: number
+  billingAddress: number
   createdAt: number
+  parentId: number
   _all: number
 }
 
-
-export type UserAvgAggregateInputType = {
-  hourlyRate?: true
-}
-
-export type UserSumAggregateInputType = {
-  hourlyRate?: true
-}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -123,21 +84,14 @@ export type UserMinAggregateInputType = {
   role?: true
   dept?: true
   supervisor?: true
-  subGroup?: true
-  subject?: true
-  active?: true
+  financeApprovedFlag?: true
+  isActive?: true
   passwordHash?: true
   referralCode?: true
-  phone?: true
-  address?: true
-  bio?: true
-  grade?: true
-  board?: true
-  targetUni?: true
-  hourlyRate?: true
-  specialization?: true
-  parentId?: true
+  detectedCountry?: true
+  billingAddress?: true
   createdAt?: true
+  parentId?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -147,21 +101,14 @@ export type UserMaxAggregateInputType = {
   role?: true
   dept?: true
   supervisor?: true
-  subGroup?: true
-  subject?: true
-  active?: true
+  financeApprovedFlag?: true
+  isActive?: true
   passwordHash?: true
   referralCode?: true
-  phone?: true
-  address?: true
-  bio?: true
-  grade?: true
-  board?: true
-  targetUni?: true
-  hourlyRate?: true
-  specialization?: true
-  parentId?: true
+  detectedCountry?: true
+  billingAddress?: true
   createdAt?: true
+  parentId?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -171,21 +118,14 @@ export type UserCountAggregateInputType = {
   role?: true
   dept?: true
   supervisor?: true
-  subGroup?: true
-  subject?: true
-  active?: true
+  financeApprovedFlag?: true
+  isActive?: true
   passwordHash?: true
   referralCode?: true
-  phone?: true
-  address?: true
-  bio?: true
-  grade?: true
-  board?: true
-  targetUni?: true
-  hourlyRate?: true
-  specialization?: true
-  parentId?: true
+  detectedCountry?: true
+  billingAddress?: true
   createdAt?: true
+  parentId?: true
   _all?: true
 }
 
@@ -227,18 +167,6 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: UserAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: UserSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -269,8 +197,6 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
-  _avg?: UserAvgAggregateInputType
-  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -282,24 +208,15 @@ export type UserGroupByOutputType = {
   role: string
   dept: string | null
   supervisor: boolean
-  subGroup: string | null
-  subject: string | null
-  active: boolean
+  financeApprovedFlag: boolean
+  isActive: boolean
   passwordHash: string | null
   referralCode: string | null
-  phone: string | null
-  address: string | null
-  bio: string | null
-  grade: string | null
-  board: string | null
-  targetUni: string | null
-  hourlyRate: number | null
-  specialization: string | null
-  parentId: string | null
+  detectedCountry: string | null
+  billingAddress: string | null
   createdAt: Date
+  parentId: string | null
   _count: UserCountAggregateOutputType | null
-  _avg: UserAvgAggregateOutputType | null
-  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -329,47 +246,39 @@ export type UserWhereInput = {
   role?: Prisma.StringFilter<"User"> | string
   dept?: Prisma.StringNullableFilter<"User"> | string | null
   supervisor?: Prisma.BoolFilter<"User"> | boolean
-  subGroup?: Prisma.StringNullableFilter<"User"> | string | null
-  subject?: Prisma.StringNullableFilter<"User"> | string | null
-  active?: Prisma.BoolFilter<"User"> | boolean
+  financeApprovedFlag?: Prisma.BoolFilter<"User"> | boolean
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
   referralCode?: Prisma.StringNullableFilter<"User"> | string | null
-  phone?: Prisma.StringNullableFilter<"User"> | string | null
-  address?: Prisma.StringNullableFilter<"User"> | string | null
-  bio?: Prisma.StringNullableFilter<"User"> | string | null
-  grade?: Prisma.StringNullableFilter<"User"> | string | null
-  board?: Prisma.StringNullableFilter<"User"> | string | null
-  targetUni?: Prisma.StringNullableFilter<"User"> | string | null
-  hourlyRate?: Prisma.FloatNullableFilter<"User"> | number | null
-  specialization?: Prisma.StringNullableFilter<"User"> | string | null
-  parentId?: Prisma.StringNullableFilter<"User"> | string | null
+  detectedCountry?: Prisma.StringNullableFilter<"User"> | string | null
+  billingAddress?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  parentId?: Prisma.StringNullableFilter<"User"> | string | null
   parent?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-  students?: Prisma.UserListRelationFilter
-  teacherGroups?: Prisma.GroupListRelationFilter
-  studentGroups?: Prisma.GroupListRelationFilter
-  teacherSessions?: Prisma.AcademicSessionListRelationFilter
-  studentSessions?: Prisma.AcademicSessionListRelationFilter
+  children?: Prisma.UserListRelationFilter
+  studentProfile?: Prisma.XOR<Prisma.StudentProfileNullableScalarRelationFilter, Prisma.StudentProfileWhereInput> | null
+  teacherProfile?: Prisma.XOR<Prisma.TeacherProfileNullableScalarRelationFilter, Prisma.TeacherProfileWhereInput> | null
+  staffProfile?: Prisma.XOR<Prisma.StaffProfileNullableScalarRelationFilter, Prisma.StaffProfileWhereInput> | null
+  parentProfile?: Prisma.XOR<Prisma.ParentProfileNullableScalarRelationFilter, Prisma.ParentProfileWhereInput> | null
+  ambassadorProfile?: Prisma.XOR<Prisma.AmbassadorProfileNullableScalarRelationFilter, Prisma.AmbassadorProfileWhereInput> | null
+  bankAccounts?: Prisma.BankAccountListRelationFilter
+  services?: Prisma.ServiceListRelationFilter
+  enrollments?: Prisma.EnrollmentListRelationFilter
+  taughtSessions?: Prisma.AcademicSessionListRelationFilter
   attendances?: Prisma.AttendanceListRelationFilter
   assignments?: Prisma.AssignmentListRelationFilter
   mockResults?: Prisma.MockResultListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
-  referrals?: Prisma.ReferralListRelationFilter
-  meetings?: Prisma.MeetingParticipantListRelationFilter
-  assignedTickets?: Prisma.TicketListRelationFilter
-  ticketsCreated?: Prisma.TicketListRelationFilter
-  history?: Prisma.TicketHistoryListRelationFilter
-  messages?: Prisma.TicketMessageListRelationFilter
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentListRelationFilter
-  studentRateOverrides?: Prisma.StudentRateOverrideListRelationFilter
-  resourceInvoices?: Prisma.ResourceInvoiceListRelationFilter
-  counsellingInvoices?: Prisma.CounsellingInvoiceListRelationFilter
+  studentProgress?: Prisma.StudentProgressListRelationFilter
+  invoices?: Prisma.StudentInvoiceListRelationFilter
   claims?: Prisma.ClaimListRelationFilter
-  staffProfile?: Prisma.XOR<Prisma.StaffProfileNullableScalarRelationFilter, Prisma.StaffProfileWhereInput> | null
-  teacherProfile?: Prisma.XOR<Prisma.TeacherProfileNullableScalarRelationFilter, Prisma.TeacherProfileWhereInput> | null
-  studentProfile?: Prisma.XOR<Prisma.StudentProfileNullableScalarRelationFilter, Prisma.StudentProfileWhereInput> | null
-  parentProfile?: Prisma.XOR<Prisma.ParentProfileNullableScalarRelationFilter, Prisma.ParentProfileWhereInput> | null
-  ambassadorProfile?: Prisma.XOR<Prisma.AmbassadorProfileNullableScalarRelationFilter, Prisma.AmbassadorProfileWhereInput> | null
+  referralsGiven?: Prisma.ReferralListRelationFilter
+  ticketsCreated?: Prisma.TicketListRelationFilter
+  ticketsAssigned?: Prisma.TicketListRelationFilter
+  ticketMessages?: Prisma.TicketMessageListRelationFilter
+  ticketHistory?: Prisma.TicketHistoryListRelationFilter
+  meetingParticipants?: Prisma.MeetingParticipantListRelationFilter
+  contentBankItems?: Prisma.ContentBankItemListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -379,47 +288,39 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   dept?: Prisma.SortOrderInput | Prisma.SortOrder
   supervisor?: Prisma.SortOrder
-  subGroup?: Prisma.SortOrderInput | Prisma.SortOrder
-  subject?: Prisma.SortOrderInput | Prisma.SortOrder
-  active?: Prisma.SortOrder
+  financeApprovedFlag?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   referralCode?: Prisma.SortOrderInput | Prisma.SortOrder
-  phone?: Prisma.SortOrderInput | Prisma.SortOrder
-  address?: Prisma.SortOrderInput | Prisma.SortOrder
-  bio?: Prisma.SortOrderInput | Prisma.SortOrder
-  grade?: Prisma.SortOrderInput | Prisma.SortOrder
-  board?: Prisma.SortOrderInput | Prisma.SortOrder
-  targetUni?: Prisma.SortOrderInput | Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrderInput | Prisma.SortOrder
-  specialization?: Prisma.SortOrderInput | Prisma.SortOrder
-  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  detectedCountry?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   parent?: Prisma.UserOrderByWithRelationInput
-  students?: Prisma.UserOrderByRelationAggregateInput
-  teacherGroups?: Prisma.GroupOrderByRelationAggregateInput
-  studentGroups?: Prisma.GroupOrderByRelationAggregateInput
-  teacherSessions?: Prisma.AcademicSessionOrderByRelationAggregateInput
-  studentSessions?: Prisma.AcademicSessionOrderByRelationAggregateInput
+  children?: Prisma.UserOrderByRelationAggregateInput
+  studentProfile?: Prisma.StudentProfileOrderByWithRelationInput
+  teacherProfile?: Prisma.TeacherProfileOrderByWithRelationInput
+  staffProfile?: Prisma.StaffProfileOrderByWithRelationInput
+  parentProfile?: Prisma.ParentProfileOrderByWithRelationInput
+  ambassadorProfile?: Prisma.AmbassadorProfileOrderByWithRelationInput
+  bankAccounts?: Prisma.BankAccountOrderByRelationAggregateInput
+  services?: Prisma.ServiceOrderByRelationAggregateInput
+  enrollments?: Prisma.EnrollmentOrderByRelationAggregateInput
+  taughtSessions?: Prisma.AcademicSessionOrderByRelationAggregateInput
   attendances?: Prisma.AttendanceOrderByRelationAggregateInput
   assignments?: Prisma.AssignmentOrderByRelationAggregateInput
   mockResults?: Prisma.MockResultOrderByRelationAggregateInput
   doubts?: Prisma.DoubtOrderByRelationAggregateInput
-  referrals?: Prisma.ReferralOrderByRelationAggregateInput
-  meetings?: Prisma.MeetingParticipantOrderByRelationAggregateInput
-  assignedTickets?: Prisma.TicketOrderByRelationAggregateInput
-  ticketsCreated?: Prisma.TicketOrderByRelationAggregateInput
-  history?: Prisma.TicketHistoryOrderByRelationAggregateInput
-  messages?: Prisma.TicketMessageOrderByRelationAggregateInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentOrderByRelationAggregateInput
-  studentRateOverrides?: Prisma.StudentRateOverrideOrderByRelationAggregateInput
-  resourceInvoices?: Prisma.ResourceInvoiceOrderByRelationAggregateInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceOrderByRelationAggregateInput
+  studentProgress?: Prisma.StudentProgressOrderByRelationAggregateInput
+  invoices?: Prisma.StudentInvoiceOrderByRelationAggregateInput
   claims?: Prisma.ClaimOrderByRelationAggregateInput
-  staffProfile?: Prisma.StaffProfileOrderByWithRelationInput
-  teacherProfile?: Prisma.TeacherProfileOrderByWithRelationInput
-  studentProfile?: Prisma.StudentProfileOrderByWithRelationInput
-  parentProfile?: Prisma.ParentProfileOrderByWithRelationInput
-  ambassadorProfile?: Prisma.AmbassadorProfileOrderByWithRelationInput
+  referralsGiven?: Prisma.ReferralOrderByRelationAggregateInput
+  ticketsCreated?: Prisma.TicketOrderByRelationAggregateInput
+  ticketsAssigned?: Prisma.TicketOrderByRelationAggregateInput
+  ticketMessages?: Prisma.TicketMessageOrderByRelationAggregateInput
+  ticketHistory?: Prisma.TicketHistoryOrderByRelationAggregateInput
+  meetingParticipants?: Prisma.MeetingParticipantOrderByRelationAggregateInput
+  contentBankItems?: Prisma.ContentBankItemOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -433,46 +334,38 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.StringFilter<"User"> | string
   dept?: Prisma.StringNullableFilter<"User"> | string | null
   supervisor?: Prisma.BoolFilter<"User"> | boolean
-  subGroup?: Prisma.StringNullableFilter<"User"> | string | null
-  subject?: Prisma.StringNullableFilter<"User"> | string | null
-  active?: Prisma.BoolFilter<"User"> | boolean
+  financeApprovedFlag?: Prisma.BoolFilter<"User"> | boolean
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
-  phone?: Prisma.StringNullableFilter<"User"> | string | null
-  address?: Prisma.StringNullableFilter<"User"> | string | null
-  bio?: Prisma.StringNullableFilter<"User"> | string | null
-  grade?: Prisma.StringNullableFilter<"User"> | string | null
-  board?: Prisma.StringNullableFilter<"User"> | string | null
-  targetUni?: Prisma.StringNullableFilter<"User"> | string | null
-  hourlyRate?: Prisma.FloatNullableFilter<"User"> | number | null
-  specialization?: Prisma.StringNullableFilter<"User"> | string | null
-  parentId?: Prisma.StringNullableFilter<"User"> | string | null
+  detectedCountry?: Prisma.StringNullableFilter<"User"> | string | null
+  billingAddress?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  parentId?: Prisma.StringNullableFilter<"User"> | string | null
   parent?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-  students?: Prisma.UserListRelationFilter
-  teacherGroups?: Prisma.GroupListRelationFilter
-  studentGroups?: Prisma.GroupListRelationFilter
-  teacherSessions?: Prisma.AcademicSessionListRelationFilter
-  studentSessions?: Prisma.AcademicSessionListRelationFilter
+  children?: Prisma.UserListRelationFilter
+  studentProfile?: Prisma.XOR<Prisma.StudentProfileNullableScalarRelationFilter, Prisma.StudentProfileWhereInput> | null
+  teacherProfile?: Prisma.XOR<Prisma.TeacherProfileNullableScalarRelationFilter, Prisma.TeacherProfileWhereInput> | null
+  staffProfile?: Prisma.XOR<Prisma.StaffProfileNullableScalarRelationFilter, Prisma.StaffProfileWhereInput> | null
+  parentProfile?: Prisma.XOR<Prisma.ParentProfileNullableScalarRelationFilter, Prisma.ParentProfileWhereInput> | null
+  ambassadorProfile?: Prisma.XOR<Prisma.AmbassadorProfileNullableScalarRelationFilter, Prisma.AmbassadorProfileWhereInput> | null
+  bankAccounts?: Prisma.BankAccountListRelationFilter
+  services?: Prisma.ServiceListRelationFilter
+  enrollments?: Prisma.EnrollmentListRelationFilter
+  taughtSessions?: Prisma.AcademicSessionListRelationFilter
   attendances?: Prisma.AttendanceListRelationFilter
   assignments?: Prisma.AssignmentListRelationFilter
   mockResults?: Prisma.MockResultListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
-  referrals?: Prisma.ReferralListRelationFilter
-  meetings?: Prisma.MeetingParticipantListRelationFilter
-  assignedTickets?: Prisma.TicketListRelationFilter
-  ticketsCreated?: Prisma.TicketListRelationFilter
-  history?: Prisma.TicketHistoryListRelationFilter
-  messages?: Prisma.TicketMessageListRelationFilter
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentListRelationFilter
-  studentRateOverrides?: Prisma.StudentRateOverrideListRelationFilter
-  resourceInvoices?: Prisma.ResourceInvoiceListRelationFilter
-  counsellingInvoices?: Prisma.CounsellingInvoiceListRelationFilter
+  studentProgress?: Prisma.StudentProgressListRelationFilter
+  invoices?: Prisma.StudentInvoiceListRelationFilter
   claims?: Prisma.ClaimListRelationFilter
-  staffProfile?: Prisma.XOR<Prisma.StaffProfileNullableScalarRelationFilter, Prisma.StaffProfileWhereInput> | null
-  teacherProfile?: Prisma.XOR<Prisma.TeacherProfileNullableScalarRelationFilter, Prisma.TeacherProfileWhereInput> | null
-  studentProfile?: Prisma.XOR<Prisma.StudentProfileNullableScalarRelationFilter, Prisma.StudentProfileWhereInput> | null
-  parentProfile?: Prisma.XOR<Prisma.ParentProfileNullableScalarRelationFilter, Prisma.ParentProfileWhereInput> | null
-  ambassadorProfile?: Prisma.XOR<Prisma.AmbassadorProfileNullableScalarRelationFilter, Prisma.AmbassadorProfileWhereInput> | null
+  referralsGiven?: Prisma.ReferralListRelationFilter
+  ticketsCreated?: Prisma.TicketListRelationFilter
+  ticketsAssigned?: Prisma.TicketListRelationFilter
+  ticketMessages?: Prisma.TicketMessageListRelationFilter
+  ticketHistory?: Prisma.TicketHistoryListRelationFilter
+  meetingParticipants?: Prisma.MeetingParticipantListRelationFilter
+  contentBankItems?: Prisma.ContentBankItemListRelationFilter
 }, "id" | "email" | "referralCode">
 
 export type UserOrderByWithAggregationInput = {
@@ -482,26 +375,17 @@ export type UserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   dept?: Prisma.SortOrderInput | Prisma.SortOrder
   supervisor?: Prisma.SortOrder
-  subGroup?: Prisma.SortOrderInput | Prisma.SortOrder
-  subject?: Prisma.SortOrderInput | Prisma.SortOrder
-  active?: Prisma.SortOrder
+  financeApprovedFlag?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
   referralCode?: Prisma.SortOrderInput | Prisma.SortOrder
-  phone?: Prisma.SortOrderInput | Prisma.SortOrder
-  address?: Prisma.SortOrderInput | Prisma.SortOrder
-  bio?: Prisma.SortOrderInput | Prisma.SortOrder
-  grade?: Prisma.SortOrderInput | Prisma.SortOrder
-  board?: Prisma.SortOrderInput | Prisma.SortOrder
-  targetUni?: Prisma.SortOrderInput | Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrderInput | Prisma.SortOrder
-  specialization?: Prisma.SortOrderInput | Prisma.SortOrder
-  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  detectedCountry?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
-  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
-  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -514,21 +398,14 @@ export type UserScalarWhereWithAggregatesInput = {
   role?: Prisma.StringWithAggregatesFilter<"User"> | string
   dept?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   supervisor?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
-  subGroup?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  subject?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  active?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  financeApprovedFlag?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   passwordHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   referralCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  phone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  address?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  bio?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  grade?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  board?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  targetUni?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  hourlyRate?: Prisma.FloatNullableWithAggregatesFilter<"User"> | number | null
-  specialization?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
-  parentId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  detectedCountry?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  billingAddress?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  parentId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -538,46 +415,38 @@ export type UserCreateInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -587,46 +456,38 @@ export type UserUncheckedCreateInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type UserUpdateInput = {
@@ -636,46 +497,38 @@ export type UserUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -685,46 +538,38 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -734,21 +579,14 @@ export type UserCreateManyInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
+  parentId?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -758,19 +596,12 @@ export type UserUpdateManyMutationInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -781,21 +612,14 @@ export type UserUncheckedUpdateManyInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserNullableScalarRelationFilter = {
@@ -820,25 +644,14 @@ export type UserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   dept?: Prisma.SortOrder
   supervisor?: Prisma.SortOrder
-  subGroup?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  active?: Prisma.SortOrder
+  financeApprovedFlag?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   referralCode?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  address?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  board?: Prisma.SortOrder
-  targetUni?: Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
-  specialization?: Prisma.SortOrder
-  parentId?: Prisma.SortOrder
+  detectedCountry?: Prisma.SortOrder
+  billingAddress?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-}
-
-export type UserAvgOrderByAggregateInput = {
-  hourlyRate?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -848,21 +661,14 @@ export type UserMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   dept?: Prisma.SortOrder
   supervisor?: Prisma.SortOrder
-  subGroup?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  active?: Prisma.SortOrder
+  financeApprovedFlag?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   referralCode?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  address?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  board?: Prisma.SortOrder
-  targetUni?: Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
-  specialization?: Prisma.SortOrder
-  parentId?: Prisma.SortOrder
+  detectedCountry?: Prisma.SortOrder
+  billingAddress?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -872,25 +678,14 @@ export type UserMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   dept?: Prisma.SortOrder
   supervisor?: Prisma.SortOrder
-  subGroup?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
-  active?: Prisma.SortOrder
+  financeApprovedFlag?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   referralCode?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
-  address?: Prisma.SortOrder
-  bio?: Prisma.SortOrder
-  grade?: Prisma.SortOrder
-  board?: Prisma.SortOrder
-  targetUni?: Prisma.SortOrder
-  hourlyRate?: Prisma.SortOrder
-  specialization?: Prisma.SortOrder
-  parentId?: Prisma.SortOrder
+  detectedCountry?: Prisma.SortOrder
+  billingAddress?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-}
-
-export type UserSumOrderByAggregateInput = {
-  hourlyRate?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -898,9 +693,9 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
-export type UserCreateNestedOneWithoutStudentsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentsInput, Prisma.UserUncheckedCreateWithoutStudentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentsInput
+export type UserCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutChildrenInput, Prisma.UserUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutChildrenInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
@@ -930,26 +725,18 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type NullableFloatFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
-export type UserUpdateOneWithoutStudentsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentsInput, Prisma.UserUncheckedCreateWithoutStudentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentsInput
-  upsert?: Prisma.UserUpsertWithoutStudentsInput
+export type UserUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutChildrenInput, Prisma.UserUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutChildrenInput
+  upsert?: Prisma.UserUpsertWithoutChildrenInput
   disconnect?: Prisma.UserWhereInput | boolean
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentsInput, Prisma.UserUpdateWithoutStudentsInput>, Prisma.UserUncheckedUpdateWithoutStudentsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChildrenInput, Prisma.UserUpdateWithoutChildrenInput>, Prisma.UserUncheckedUpdateWithoutChildrenInput>
 }
 
 export type UserUpdateManyWithoutParentNestedInput = {
@@ -980,310 +767,18 @@ export type UserUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
-export type UserCreateNestedOneWithoutTeacherGroupsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTeacherGroupsInput, Prisma.UserUncheckedCreateWithoutTeacherGroupsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTeacherGroupsInput
+export type UserCreateNestedOneWithoutStudentProfileInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProfileInput, Prisma.UserUncheckedCreateWithoutStudentProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProfileInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserCreateNestedManyWithoutStudentGroupsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentGroupsInput, Prisma.UserUncheckedCreateWithoutStudentGroupsInput> | Prisma.UserCreateWithoutStudentGroupsInput[] | Prisma.UserUncheckedCreateWithoutStudentGroupsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentGroupsInput | Prisma.UserCreateOrConnectWithoutStudentGroupsInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-}
-
-export type UserUncheckedCreateNestedManyWithoutStudentGroupsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentGroupsInput, Prisma.UserUncheckedCreateWithoutStudentGroupsInput> | Prisma.UserCreateWithoutStudentGroupsInput[] | Prisma.UserUncheckedCreateWithoutStudentGroupsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentGroupsInput | Prisma.UserCreateOrConnectWithoutStudentGroupsInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-}
-
-export type UserUpdateOneRequiredWithoutTeacherGroupsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTeacherGroupsInput, Prisma.UserUncheckedCreateWithoutTeacherGroupsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTeacherGroupsInput
-  upsert?: Prisma.UserUpsertWithoutTeacherGroupsInput
+export type UserUpdateOneRequiredWithoutStudentProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProfileInput, Prisma.UserUncheckedCreateWithoutStudentProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProfileInput
+  upsert?: Prisma.UserUpsertWithoutStudentProfileInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTeacherGroupsInput, Prisma.UserUpdateWithoutTeacherGroupsInput>, Prisma.UserUncheckedUpdateWithoutTeacherGroupsInput>
-}
-
-export type UserUpdateManyWithoutStudentGroupsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentGroupsInput, Prisma.UserUncheckedCreateWithoutStudentGroupsInput> | Prisma.UserCreateWithoutStudentGroupsInput[] | Prisma.UserUncheckedCreateWithoutStudentGroupsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentGroupsInput | Prisma.UserCreateOrConnectWithoutStudentGroupsInput[]
-  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutStudentGroupsInput | Prisma.UserUpsertWithWhereUniqueWithoutStudentGroupsInput[]
-  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  update?: Prisma.UserUpdateWithWhereUniqueWithoutStudentGroupsInput | Prisma.UserUpdateWithWhereUniqueWithoutStudentGroupsInput[]
-  updateMany?: Prisma.UserUpdateManyWithWhereWithoutStudentGroupsInput | Prisma.UserUpdateManyWithWhereWithoutStudentGroupsInput[]
-  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
-}
-
-export type UserUncheckedUpdateManyWithoutStudentGroupsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentGroupsInput, Prisma.UserUncheckedCreateWithoutStudentGroupsInput> | Prisma.UserCreateWithoutStudentGroupsInput[] | Prisma.UserUncheckedCreateWithoutStudentGroupsInput[]
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentGroupsInput | Prisma.UserCreateOrConnectWithoutStudentGroupsInput[]
-  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutStudentGroupsInput | Prisma.UserUpsertWithWhereUniqueWithoutStudentGroupsInput[]
-  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
-  update?: Prisma.UserUpdateWithWhereUniqueWithoutStudentGroupsInput | Prisma.UserUpdateWithWhereUniqueWithoutStudentGroupsInput[]
-  updateMany?: Prisma.UserUpdateManyWithWhereWithoutStudentGroupsInput | Prisma.UserUpdateManyWithWhereWithoutStudentGroupsInput[]
-  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
-}
-
-export type UserCreateNestedOneWithoutStudentRateOverridesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentRateOverridesInput, Prisma.UserUncheckedCreateWithoutStudentRateOverridesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentRateOverridesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutStudentRateOverridesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentRateOverridesInput, Prisma.UserUncheckedCreateWithoutStudentRateOverridesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentRateOverridesInput
-  upsert?: Prisma.UserUpsertWithoutStudentRateOverridesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentRateOverridesInput, Prisma.UserUpdateWithoutStudentRateOverridesInput>, Prisma.UserUncheckedUpdateWithoutStudentRateOverridesInput>
-}
-
-export type UserCreateNestedOneWithoutStudentMonthlyEnrollmentsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUncheckedCreateWithoutStudentMonthlyEnrollmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentMonthlyEnrollmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutStudentMonthlyEnrollmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUncheckedCreateWithoutStudentMonthlyEnrollmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentMonthlyEnrollmentsInput
-  upsert?: Prisma.UserUpsertWithoutStudentMonthlyEnrollmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUpdateWithoutStudentMonthlyEnrollmentsInput>, Prisma.UserUncheckedUpdateWithoutStudentMonthlyEnrollmentsInput>
-}
-
-export type UserCreateNestedOneWithoutResourceInvoicesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutResourceInvoicesInput, Prisma.UserUncheckedCreateWithoutResourceInvoicesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutResourceInvoicesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutResourceInvoicesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutResourceInvoicesInput, Prisma.UserUncheckedCreateWithoutResourceInvoicesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutResourceInvoicesInput
-  upsert?: Prisma.UserUpsertWithoutResourceInvoicesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutResourceInvoicesInput, Prisma.UserUpdateWithoutResourceInvoicesInput>, Prisma.UserUncheckedUpdateWithoutResourceInvoicesInput>
-}
-
-export type UserCreateNestedOneWithoutCounsellingInvoicesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutCounsellingInvoicesInput, Prisma.UserUncheckedCreateWithoutCounsellingInvoicesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCounsellingInvoicesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutCounsellingInvoicesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutCounsellingInvoicesInput, Prisma.UserUncheckedCreateWithoutCounsellingInvoicesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCounsellingInvoicesInput
-  upsert?: Prisma.UserUpsertWithoutCounsellingInvoicesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCounsellingInvoicesInput, Prisma.UserUpdateWithoutCounsellingInvoicesInput>, Prisma.UserUncheckedUpdateWithoutCounsellingInvoicesInput>
-}
-
-export type UserCreateNestedOneWithoutClaimsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClaimsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutClaimsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClaimsInput
-  upsert?: Prisma.UserUpsertWithoutClaimsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutClaimsInput, Prisma.UserUpdateWithoutClaimsInput>, Prisma.UserUncheckedUpdateWithoutClaimsInput>
-}
-
-export type UserCreateNestedOneWithoutTeacherSessionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTeacherSessionsInput, Prisma.UserUncheckedCreateWithoutTeacherSessionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTeacherSessionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserCreateNestedOneWithoutStudentSessionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentSessionsInput, Prisma.UserUncheckedCreateWithoutStudentSessionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentSessionsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutTeacherSessionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTeacherSessionsInput, Prisma.UserUncheckedCreateWithoutTeacherSessionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTeacherSessionsInput
-  upsert?: Prisma.UserUpsertWithoutTeacherSessionsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTeacherSessionsInput, Prisma.UserUpdateWithoutTeacherSessionsInput>, Prisma.UserUncheckedUpdateWithoutTeacherSessionsInput>
-}
-
-export type UserUpdateOneRequiredWithoutStudentSessionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentSessionsInput, Prisma.UserUncheckedCreateWithoutStudentSessionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentSessionsInput
-  upsert?: Prisma.UserUpsertWithoutStudentSessionsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentSessionsInput, Prisma.UserUpdateWithoutStudentSessionsInput>, Prisma.UserUncheckedUpdateWithoutStudentSessionsInput>
-}
-
-export type UserCreateNestedOneWithoutAttendancesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendancesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutAttendancesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendancesInput
-  upsert?: Prisma.UserUpsertWithoutAttendancesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAttendancesInput, Prisma.UserUpdateWithoutAttendancesInput>, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
-}
-
-export type UserCreateNestedOneWithoutAssignmentsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutAssignmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignmentsInput
-  upsert?: Prisma.UserUpsertWithoutAssignmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignmentsInput, Prisma.UserUpdateWithoutAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
-}
-
-export type UserCreateNestedOneWithoutDoubtsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDoubtsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutDoubtsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDoubtsInput
-  upsert?: Prisma.UserUpsertWithoutDoubtsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDoubtsInput, Prisma.UserUpdateWithoutDoubtsInput>, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
-}
-
-export type UserCreateNestedOneWithoutAssignedTicketsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedTicketsInput, Prisma.UserUncheckedCreateWithoutAssignedTicketsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedTicketsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserCreateNestedOneWithoutTicketsCreatedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsCreatedInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneWithoutAssignedTicketsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignedTicketsInput, Prisma.UserUncheckedCreateWithoutAssignedTicketsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignedTicketsInput
-  upsert?: Prisma.UserUpsertWithoutAssignedTicketsInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignedTicketsInput, Prisma.UserUpdateWithoutAssignedTicketsInput>, Prisma.UserUncheckedUpdateWithoutAssignedTicketsInput>
-}
-
-export type UserUpdateOneRequiredWithoutTicketsCreatedNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsCreatedInput
-  upsert?: Prisma.UserUpsertWithoutTicketsCreatedInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTicketsCreatedInput, Prisma.UserUpdateWithoutTicketsCreatedInput>, Prisma.UserUncheckedUpdateWithoutTicketsCreatedInput>
-}
-
-export type UserCreateNestedOneWithoutMessagesInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutMessagesNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesInput
-  upsert?: Prisma.UserUpsertWithoutMessagesInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessagesInput, Prisma.UserUpdateWithoutMessagesInput>, Prisma.UserUncheckedUpdateWithoutMessagesInput>
-}
-
-export type UserCreateNestedOneWithoutHistoryInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutHistoryInput, Prisma.UserUncheckedCreateWithoutHistoryInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHistoryInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutHistoryNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutHistoryInput, Prisma.UserUncheckedCreateWithoutHistoryInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutHistoryInput
-  upsert?: Prisma.UserUpsertWithoutHistoryInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutHistoryInput, Prisma.UserUpdateWithoutHistoryInput>, Prisma.UserUncheckedUpdateWithoutHistoryInput>
-}
-
-export type UserCreateNestedOneWithoutReferralsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutReferralsInput, Prisma.UserUncheckedCreateWithoutReferralsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReferralsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutReferralsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutReferralsInput, Prisma.UserUncheckedCreateWithoutReferralsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReferralsInput
-  upsert?: Prisma.UserUpsertWithoutReferralsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReferralsInput, Prisma.UserUpdateWithoutReferralsInput>, Prisma.UserUncheckedUpdateWithoutReferralsInput>
-}
-
-export type UserCreateNestedOneWithoutMeetingsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMeetingsInput, Prisma.UserUncheckedCreateWithoutMeetingsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMeetingsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutMeetingsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMeetingsInput, Prisma.UserUncheckedCreateWithoutMeetingsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMeetingsInput
-  upsert?: Prisma.UserUpsertWithoutMeetingsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMeetingsInput, Prisma.UserUpdateWithoutMeetingsInput>, Prisma.UserUncheckedUpdateWithoutMeetingsInput>
-}
-
-export type UserCreateNestedOneWithoutMockResultsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMockResultsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutMockResultsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMockResultsInput
-  upsert?: Prisma.UserUpsertWithoutMockResultsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMockResultsInput, Prisma.UserUpdateWithoutMockResultsInput>, Prisma.UserUncheckedUpdateWithoutMockResultsInput>
-}
-
-export type UserCreateNestedOneWithoutStaffProfileInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStaffProfileInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutStaffProfileNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStaffProfileInput
-  upsert?: Prisma.UserUpsertWithoutStaffProfileInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStaffProfileInput, Prisma.UserUpdateWithoutStaffProfileInput>, Prisma.UserUncheckedUpdateWithoutStaffProfileInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentProfileInput, Prisma.UserUpdateWithoutStudentProfileInput>, Prisma.UserUncheckedUpdateWithoutStudentProfileInput>
 }
 
 export type UserCreateNestedOneWithoutTeacherProfileInput = {
@@ -1300,18 +795,18 @@ export type UserUpdateOneRequiredWithoutTeacherProfileNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTeacherProfileInput, Prisma.UserUpdateWithoutTeacherProfileInput>, Prisma.UserUncheckedUpdateWithoutTeacherProfileInput>
 }
 
-export type UserCreateNestedOneWithoutStudentProfileInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProfileInput, Prisma.UserUncheckedCreateWithoutStudentProfileInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProfileInput
+export type UserCreateNestedOneWithoutStaffProfileInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStaffProfileInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutStudentProfileNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProfileInput, Prisma.UserUncheckedCreateWithoutStudentProfileInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProfileInput
-  upsert?: Prisma.UserUpsertWithoutStudentProfileInput
+export type UserUpdateOneRequiredWithoutStaffProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStaffProfileInput
+  upsert?: Prisma.UserUpsertWithoutStaffProfileInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentProfileInput, Prisma.UserUpdateWithoutStudentProfileInput>, Prisma.UserUncheckedUpdateWithoutStudentProfileInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStaffProfileInput, Prisma.UserUpdateWithoutStaffProfileInput>, Prisma.UserUncheckedUpdateWithoutStaffProfileInput>
 }
 
 export type UserCreateNestedOneWithoutParentProfileInput = {
@@ -1342,105 +837,343 @@ export type UserUpdateOneRequiredWithoutAmbassadorProfileNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAmbassadorProfileInput, Prisma.UserUpdateWithoutAmbassadorProfileInput>, Prisma.UserUncheckedUpdateWithoutAmbassadorProfileInput>
 }
 
-export type UserCreateWithoutStudentsInput = {
+export type UserCreateNestedOneWithoutBankAccountsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBankAccountsInput, Prisma.UserUncheckedCreateWithoutBankAccountsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBankAccountsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBankAccountsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBankAccountsInput, Prisma.UserUncheckedCreateWithoutBankAccountsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBankAccountsInput
+  upsert?: Prisma.UserUpsertWithoutBankAccountsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBankAccountsInput, Prisma.UserUpdateWithoutBankAccountsInput>, Prisma.UserUncheckedUpdateWithoutBankAccountsInput>
+}
+
+export type UserCreateNestedOneWithoutServicesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutServicesInput, Prisma.UserUncheckedCreateWithoutServicesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutServicesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutServicesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutServicesInput, Prisma.UserUncheckedCreateWithoutServicesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutServicesInput
+  upsert?: Prisma.UserUpsertWithoutServicesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutServicesInput, Prisma.UserUpdateWithoutServicesInput>, Prisma.UserUncheckedUpdateWithoutServicesInput>
+}
+
+export type UserCreateNestedOneWithoutEnrollmentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEnrollmentsInput, Prisma.UserUncheckedCreateWithoutEnrollmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEnrollmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutEnrollmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEnrollmentsInput, Prisma.UserUncheckedCreateWithoutEnrollmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEnrollmentsInput
+  upsert?: Prisma.UserUpsertWithoutEnrollmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEnrollmentsInput, Prisma.UserUpdateWithoutEnrollmentsInput>, Prisma.UserUncheckedUpdateWithoutEnrollmentsInput>
+}
+
+export type UserCreateNestedOneWithoutTaughtSessionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTaughtSessionsInput, Prisma.UserUncheckedCreateWithoutTaughtSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaughtSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTaughtSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTaughtSessionsInput, Prisma.UserUncheckedCreateWithoutTaughtSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaughtSessionsInput
+  upsert?: Prisma.UserUpsertWithoutTaughtSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTaughtSessionsInput, Prisma.UserUpdateWithoutTaughtSessionsInput>, Prisma.UserUncheckedUpdateWithoutTaughtSessionsInput>
+}
+
+export type UserCreateNestedOneWithoutAttendancesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendancesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAttendancesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendancesInput
+  upsert?: Prisma.UserUpsertWithoutAttendancesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAttendancesInput, Prisma.UserUpdateWithoutAttendancesInput>, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
+}
+
+export type UserCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvoicesInput, Prisma.UserUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvoicesInput, Prisma.UserUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.UserUpsertWithoutInvoicesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInvoicesInput, Prisma.UserUpdateWithoutInvoicesInput>, Prisma.UserUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type UserCreateNestedOneWithoutClaimsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClaimsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutClaimsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutClaimsInput
+  upsert?: Prisma.UserUpsertWithoutClaimsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutClaimsInput, Prisma.UserUpdateWithoutClaimsInput>, Prisma.UserUncheckedUpdateWithoutClaimsInput>
+}
+
+export type UserCreateNestedOneWithoutTicketsCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutTicketsAssignedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsAssignedInput, Prisma.UserUncheckedCreateWithoutTicketsAssignedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsAssignedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTicketsCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsCreatedInput
+  upsert?: Prisma.UserUpsertWithoutTicketsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTicketsCreatedInput, Prisma.UserUpdateWithoutTicketsCreatedInput>, Prisma.UserUncheckedUpdateWithoutTicketsCreatedInput>
+}
+
+export type UserUpdateOneWithoutTicketsAssignedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketsAssignedInput, Prisma.UserUncheckedCreateWithoutTicketsAssignedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketsAssignedInput
+  upsert?: Prisma.UserUpsertWithoutTicketsAssignedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTicketsAssignedInput, Prisma.UserUpdateWithoutTicketsAssignedInput>, Prisma.UserUncheckedUpdateWithoutTicketsAssignedInput>
+}
+
+export type UserCreateNestedOneWithoutTicketMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketMessagesInput, Prisma.UserUncheckedCreateWithoutTicketMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTicketMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketMessagesInput, Prisma.UserUncheckedCreateWithoutTicketMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketMessagesInput
+  upsert?: Prisma.UserUpsertWithoutTicketMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTicketMessagesInput, Prisma.UserUpdateWithoutTicketMessagesInput>, Prisma.UserUncheckedUpdateWithoutTicketMessagesInput>
+}
+
+export type UserCreateNestedOneWithoutTicketHistoryInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketHistoryInput, Prisma.UserUncheckedCreateWithoutTicketHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTicketHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTicketHistoryInput, Prisma.UserUncheckedCreateWithoutTicketHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTicketHistoryInput
+  upsert?: Prisma.UserUpsertWithoutTicketHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTicketHistoryInput, Prisma.UserUpdateWithoutTicketHistoryInput>, Prisma.UserUncheckedUpdateWithoutTicketHistoryInput>
+}
+
+export type UserCreateNestedOneWithoutStudentProgressInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProgressInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutStudentProgressNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProgressInput
+  upsert?: Prisma.UserUpsertWithoutStudentProgressInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentProgressInput, Prisma.UserUpdateWithoutStudentProgressInput>, Prisma.UserUncheckedUpdateWithoutStudentProgressInput>
+}
+
+export type UserCreateNestedOneWithoutDoubtsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDoubtsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDoubtsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDoubtsInput
+  upsert?: Prisma.UserUpsertWithoutDoubtsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDoubtsInput, Prisma.UserUpdateWithoutDoubtsInput>, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
+}
+
+export type UserCreateNestedOneWithoutMockResultsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMockResultsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMockResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMockResultsInput
+  upsert?: Prisma.UserUpsertWithoutMockResultsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMockResultsInput, Prisma.UserUpdateWithoutMockResultsInput>, Prisma.UserUncheckedUpdateWithoutMockResultsInput>
+}
+
+export type UserCreateNestedOneWithoutAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignmentsInput
+  upsert?: Prisma.UserUpsertWithoutAssignmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignmentsInput, Prisma.UserUpdateWithoutAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
+}
+
+export type UserCreateNestedOneWithoutMeetingParticipantsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipantsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipantsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMeetingParticipantsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMeetingParticipantsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipantsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipantsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMeetingParticipantsInput
+  upsert?: Prisma.UserUpsertWithoutMeetingParticipantsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMeetingParticipantsInput, Prisma.UserUpdateWithoutMeetingParticipantsInput>, Prisma.UserUncheckedUpdateWithoutMeetingParticipantsInput>
+}
+
+export type UserCreateNestedOneWithoutReferralsGivenInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReferralsGivenInput, Prisma.UserUncheckedCreateWithoutReferralsGivenInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReferralsGivenInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutReferralsGivenNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutReferralsGivenInput, Prisma.UserUncheckedCreateWithoutReferralsGivenInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutReferralsGivenInput
+  upsert?: Prisma.UserUpsertWithoutReferralsGivenInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReferralsGivenInput, Prisma.UserUpdateWithoutReferralsGivenInput>, Prisma.UserUncheckedUpdateWithoutReferralsGivenInput>
+}
+
+export type UserCreateNestedOneWithoutContentBankItemsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContentBankItemsInput, Prisma.UserUncheckedCreateWithoutContentBankItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContentBankItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutContentBankItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContentBankItemsInput, Prisma.UserUncheckedCreateWithoutContentBankItemsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContentBankItemsInput
+  upsert?: Prisma.UserUpsertWithoutContentBankItemsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContentBankItemsInput, Prisma.UserUpdateWithoutContentBankItemsInput>, Prisma.UserUncheckedUpdateWithoutContentBankItemsInput>
+}
+
+export type UserCreateWithoutChildrenInput = {
   id?: string
   email: string
   name: string
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
 }
 
-export type UserUncheckedCreateWithoutStudentsInput = {
+export type UserUncheckedCreateWithoutChildrenInput = {
   id?: string
   email: string
   name: string
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  parentId?: string | null
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
 }
 
-export type UserCreateOrConnectWithoutStudentsInput = {
+export type UserCreateOrConnectWithoutChildrenInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentsInput, Prisma.UserUncheckedCreateWithoutStudentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutChildrenInput, Prisma.UserUncheckedCreateWithoutChildrenInput>
 }
 
 export type UserCreateWithoutParentInput = {
@@ -1450,45 +1183,37 @@ export type UserCreateWithoutParentInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
 }
 
 export type UserUncheckedCreateWithoutParentInput = {
@@ -1498,45 +1223,37 @@ export type UserUncheckedCreateWithoutParentInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type UserCreateOrConnectWithoutParentInput = {
@@ -1548,111 +1265,95 @@ export type UserCreateManyParentInputEnvelope = {
   data: Prisma.UserCreateManyParentInput | Prisma.UserCreateManyParentInput[]
 }
 
-export type UserUpsertWithoutStudentsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentsInput, Prisma.UserUncheckedUpdateWithoutStudentsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentsInput, Prisma.UserUncheckedCreateWithoutStudentsInput>
+export type UserUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutChildrenInput, Prisma.UserUncheckedUpdateWithoutChildrenInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutChildrenInput, Prisma.UserUncheckedCreateWithoutChildrenInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutStudentsInput = {
+export type UserUpdateToOneWithWhereWithoutChildrenInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentsInput, Prisma.UserUncheckedUpdateWithoutStudentsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutChildrenInput, Prisma.UserUncheckedUpdateWithoutChildrenInput>
 }
 
-export type UserUpdateWithoutStudentsInput = {
+export type UserUpdateWithoutChildrenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutStudentsInput = {
+export type UserUncheckedUpdateWithoutChildrenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutParentInput = {
@@ -1681,4298 +1382,14 @@ export type UserScalarWhereInput = {
   role?: Prisma.StringFilter<"User"> | string
   dept?: Prisma.StringNullableFilter<"User"> | string | null
   supervisor?: Prisma.BoolFilter<"User"> | boolean
-  subGroup?: Prisma.StringNullableFilter<"User"> | string | null
-  subject?: Prisma.StringNullableFilter<"User"> | string | null
-  active?: Prisma.BoolFilter<"User"> | boolean
+  financeApprovedFlag?: Prisma.BoolFilter<"User"> | boolean
+  isActive?: Prisma.BoolFilter<"User"> | boolean
   passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
   referralCode?: Prisma.StringNullableFilter<"User"> | string | null
-  phone?: Prisma.StringNullableFilter<"User"> | string | null
-  address?: Prisma.StringNullableFilter<"User"> | string | null
-  bio?: Prisma.StringNullableFilter<"User"> | string | null
-  grade?: Prisma.StringNullableFilter<"User"> | string | null
-  board?: Prisma.StringNullableFilter<"User"> | string | null
-  targetUni?: Prisma.StringNullableFilter<"User"> | string | null
-  hourlyRate?: Prisma.FloatNullableFilter<"User"> | number | null
-  specialization?: Prisma.StringNullableFilter<"User"> | string | null
-  parentId?: Prisma.StringNullableFilter<"User"> | string | null
+  detectedCountry?: Prisma.StringNullableFilter<"User"> | string | null
+  billingAddress?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-}
-
-export type UserCreateWithoutTeacherGroupsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutTeacherGroupsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutTeacherGroupsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherGroupsInput, Prisma.UserUncheckedCreateWithoutTeacherGroupsInput>
-}
-
-export type UserCreateWithoutStudentGroupsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutStudentGroupsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutStudentGroupsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentGroupsInput, Prisma.UserUncheckedCreateWithoutStudentGroupsInput>
-}
-
-export type UserUpsertWithoutTeacherGroupsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTeacherGroupsInput, Prisma.UserUncheckedUpdateWithoutTeacherGroupsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherGroupsInput, Prisma.UserUncheckedCreateWithoutTeacherGroupsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutTeacherGroupsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTeacherGroupsInput, Prisma.UserUncheckedUpdateWithoutTeacherGroupsInput>
-}
-
-export type UserUpdateWithoutTeacherGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutTeacherGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserUpsertWithWhereUniqueWithoutStudentGroupsInput = {
-  where: Prisma.UserWhereUniqueInput
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentGroupsInput, Prisma.UserUncheckedUpdateWithoutStudentGroupsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentGroupsInput, Prisma.UserUncheckedCreateWithoutStudentGroupsInput>
-}
-
-export type UserUpdateWithWhereUniqueWithoutStudentGroupsInput = {
-  where: Prisma.UserWhereUniqueInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentGroupsInput, Prisma.UserUncheckedUpdateWithoutStudentGroupsInput>
-}
-
-export type UserUpdateManyWithWhereWithoutStudentGroupsInput = {
-  where: Prisma.UserScalarWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutStudentGroupsInput>
-}
-
-export type UserCreateWithoutStudentRateOverridesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutStudentRateOverridesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutStudentRateOverridesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentRateOverridesInput, Prisma.UserUncheckedCreateWithoutStudentRateOverridesInput>
-}
-
-export type UserUpsertWithoutStudentRateOverridesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentRateOverridesInput, Prisma.UserUncheckedUpdateWithoutStudentRateOverridesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentRateOverridesInput, Prisma.UserUncheckedCreateWithoutStudentRateOverridesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutStudentRateOverridesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentRateOverridesInput, Prisma.UserUncheckedUpdateWithoutStudentRateOverridesInput>
-}
-
-export type UserUpdateWithoutStudentRateOverridesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutStudentRateOverridesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutStudentMonthlyEnrollmentsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutStudentMonthlyEnrollmentsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutStudentMonthlyEnrollmentsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUncheckedCreateWithoutStudentMonthlyEnrollmentsInput>
-}
-
-export type UserUpsertWithoutStudentMonthlyEnrollmentsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUncheckedUpdateWithoutStudentMonthlyEnrollmentsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUncheckedCreateWithoutStudentMonthlyEnrollmentsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutStudentMonthlyEnrollmentsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentMonthlyEnrollmentsInput, Prisma.UserUncheckedUpdateWithoutStudentMonthlyEnrollmentsInput>
-}
-
-export type UserUpdateWithoutStudentMonthlyEnrollmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutStudentMonthlyEnrollmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutResourceInvoicesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutResourceInvoicesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutResourceInvoicesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutResourceInvoicesInput, Prisma.UserUncheckedCreateWithoutResourceInvoicesInput>
-}
-
-export type UserUpsertWithoutResourceInvoicesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutResourceInvoicesInput, Prisma.UserUncheckedUpdateWithoutResourceInvoicesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutResourceInvoicesInput, Prisma.UserUncheckedCreateWithoutResourceInvoicesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutResourceInvoicesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutResourceInvoicesInput, Prisma.UserUncheckedUpdateWithoutResourceInvoicesInput>
-}
-
-export type UserUpdateWithoutResourceInvoicesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutResourceInvoicesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutCounsellingInvoicesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutCounsellingInvoicesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutCounsellingInvoicesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutCounsellingInvoicesInput, Prisma.UserUncheckedCreateWithoutCounsellingInvoicesInput>
-}
-
-export type UserUpsertWithoutCounsellingInvoicesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutCounsellingInvoicesInput, Prisma.UserUncheckedUpdateWithoutCounsellingInvoicesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutCounsellingInvoicesInput, Prisma.UserUncheckedCreateWithoutCounsellingInvoicesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutCounsellingInvoicesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutCounsellingInvoicesInput, Prisma.UserUncheckedUpdateWithoutCounsellingInvoicesInput>
-}
-
-export type UserUpdateWithoutCounsellingInvoicesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutCounsellingInvoicesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutClaimsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutClaimsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutClaimsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
-}
-
-export type UserUpsertWithoutClaimsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutClaimsInput, Prisma.UserUncheckedUpdateWithoutClaimsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutClaimsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutClaimsInput, Prisma.UserUncheckedUpdateWithoutClaimsInput>
-}
-
-export type UserUpdateWithoutClaimsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutClaimsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutTeacherSessionsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutTeacherSessionsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutTeacherSessionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherSessionsInput, Prisma.UserUncheckedCreateWithoutTeacherSessionsInput>
-}
-
-export type UserCreateWithoutStudentSessionsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutStudentSessionsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutStudentSessionsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentSessionsInput, Prisma.UserUncheckedCreateWithoutStudentSessionsInput>
-}
-
-export type UserUpsertWithoutTeacherSessionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTeacherSessionsInput, Prisma.UserUncheckedUpdateWithoutTeacherSessionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherSessionsInput, Prisma.UserUncheckedCreateWithoutTeacherSessionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutTeacherSessionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTeacherSessionsInput, Prisma.UserUncheckedUpdateWithoutTeacherSessionsInput>
-}
-
-export type UserUpdateWithoutTeacherSessionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutTeacherSessionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserUpsertWithoutStudentSessionsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentSessionsInput, Prisma.UserUncheckedUpdateWithoutStudentSessionsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentSessionsInput, Prisma.UserUncheckedCreateWithoutStudentSessionsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutStudentSessionsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentSessionsInput, Prisma.UserUncheckedUpdateWithoutStudentSessionsInput>
-}
-
-export type UserUpdateWithoutStudentSessionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutStudentSessionsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutAttendancesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutAttendancesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutAttendancesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
-}
-
-export type UserUpsertWithoutAttendancesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAttendancesInput, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutAttendancesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAttendancesInput, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
-}
-
-export type UserUpdateWithoutAttendancesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutAttendancesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutAssignmentsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutAssignmentsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutAssignmentsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-}
-
-export type UserUpsertWithoutAssignmentsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAssignmentsInput, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutAssignmentsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAssignmentsInput, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
-}
-
-export type UserUpdateWithoutAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutDoubtsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutDoubtsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutDoubtsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
-}
-
-export type UserUpsertWithoutDoubtsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutDoubtsInput, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutDoubtsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutDoubtsInput, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
-}
-
-export type UserUpdateWithoutDoubtsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutDoubtsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutAssignedTicketsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutAssignedTicketsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutAssignedTicketsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAssignedTicketsInput, Prisma.UserUncheckedCreateWithoutAssignedTicketsInput>
-}
-
-export type UserCreateWithoutTicketsCreatedInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutTicketsCreatedInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutTicketsCreatedInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
-}
-
-export type UserUpsertWithoutAssignedTicketsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAssignedTicketsInput, Prisma.UserUncheckedUpdateWithoutAssignedTicketsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAssignedTicketsInput, Prisma.UserUncheckedCreateWithoutAssignedTicketsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutAssignedTicketsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAssignedTicketsInput, Prisma.UserUncheckedUpdateWithoutAssignedTicketsInput>
-}
-
-export type UserUpdateWithoutAssignedTicketsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutAssignedTicketsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserUpsertWithoutTicketsCreatedInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTicketsCreatedInput, Prisma.UserUncheckedUpdateWithoutTicketsCreatedInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutTicketsCreatedInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTicketsCreatedInput, Prisma.UserUncheckedUpdateWithoutTicketsCreatedInput>
-}
-
-export type UserUpdateWithoutTicketsCreatedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutTicketsCreatedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutMessagesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutMessagesInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutMessagesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
-}
-
-export type UserUpsertWithoutMessagesInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMessagesInput, Prisma.UserUncheckedUpdateWithoutMessagesInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesInput, Prisma.UserUncheckedCreateWithoutMessagesInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutMessagesInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMessagesInput, Prisma.UserUncheckedUpdateWithoutMessagesInput>
-}
-
-export type UserUpdateWithoutMessagesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutMessagesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutHistoryInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutHistoryInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutHistoryInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutHistoryInput, Prisma.UserUncheckedCreateWithoutHistoryInput>
-}
-
-export type UserUpsertWithoutHistoryInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutHistoryInput, Prisma.UserUncheckedUpdateWithoutHistoryInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutHistoryInput, Prisma.UserUncheckedCreateWithoutHistoryInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutHistoryInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutHistoryInput, Prisma.UserUncheckedUpdateWithoutHistoryInput>
-}
-
-export type UserUpdateWithoutHistoryInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutHistoryInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutReferralsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutReferralsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutReferralsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutReferralsInput, Prisma.UserUncheckedCreateWithoutReferralsInput>
-}
-
-export type UserUpsertWithoutReferralsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutReferralsInput, Prisma.UserUncheckedUpdateWithoutReferralsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutReferralsInput, Prisma.UserUncheckedCreateWithoutReferralsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutReferralsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutReferralsInput, Prisma.UserUncheckedUpdateWithoutReferralsInput>
-}
-
-export type UserUpdateWithoutReferralsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutReferralsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutMeetingsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutMeetingsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutMeetingsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMeetingsInput, Prisma.UserUncheckedCreateWithoutMeetingsInput>
-}
-
-export type UserUpsertWithoutMeetingsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMeetingsInput, Prisma.UserUncheckedUpdateWithoutMeetingsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMeetingsInput, Prisma.UserUncheckedCreateWithoutMeetingsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutMeetingsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMeetingsInput, Prisma.UserUncheckedUpdateWithoutMeetingsInput>
-}
-
-export type UserUpdateWithoutMeetingsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutMeetingsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutMockResultsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutMockResultsInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutMockResultsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
-}
-
-export type UserUpsertWithoutMockResultsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutMockResultsInput, Prisma.UserUncheckedUpdateWithoutMockResultsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutMockResultsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutMockResultsInput, Prisma.UserUncheckedUpdateWithoutMockResultsInput>
-}
-
-export type UserUpdateWithoutMockResultsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutMockResultsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutStaffProfileInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutStaffProfileInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutStaffProfileInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
-}
-
-export type UserUpsertWithoutStaffProfileInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStaffProfileInput, Prisma.UserUncheckedUpdateWithoutStaffProfileInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutStaffProfileInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStaffProfileInput, Prisma.UserUncheckedUpdateWithoutStaffProfileInput>
-}
-
-export type UserUpdateWithoutStaffProfileInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutStaffProfileInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserCreateWithoutTeacherProfileInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutTeacherProfileInput = {
-  id?: string
-  email: string
-  name: string
-  role: string
-  dept?: string | null
-  supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
-  passwordHash?: string | null
-  referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
-  createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutTeacherProfileInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherProfileInput, Prisma.UserUncheckedCreateWithoutTeacherProfileInput>
-}
-
-export type UserUpsertWithoutTeacherProfileInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutTeacherProfileInput, Prisma.UserUncheckedUpdateWithoutTeacherProfileInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherProfileInput, Prisma.UserUncheckedCreateWithoutTeacherProfileInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutTeacherProfileInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutTeacherProfileInput, Prisma.UserUncheckedUpdateWithoutTeacherProfileInput>
-}
-
-export type UserUpdateWithoutTeacherProfileInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutTeacherProfileInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentId?: Prisma.StringNullableFilter<"User"> | string | null
 }
 
 export type UserCreateWithoutStudentProfileInput = {
@@ -5982,45 +1399,37 @@ export type UserCreateWithoutStudentProfileInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -6030,45 +1439,37 @@ export type UserUncheckedCreateWithoutStudentProfileInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -6094,45 +1495,37 @@ export type UserUpdateWithoutStudentProfileInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -6142,45 +1535,389 @@ export type UserUncheckedUpdateWithoutStudentProfileInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutTeacherProfileInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutTeacherProfileInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutTeacherProfileInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherProfileInput, Prisma.UserUncheckedCreateWithoutTeacherProfileInput>
+}
+
+export type UserUpsertWithoutTeacherProfileInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTeacherProfileInput, Prisma.UserUncheckedUpdateWithoutTeacherProfileInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTeacherProfileInput, Prisma.UserUncheckedCreateWithoutTeacherProfileInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTeacherProfileInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTeacherProfileInput, Prisma.UserUncheckedUpdateWithoutTeacherProfileInput>
+}
+
+export type UserUpdateWithoutTeacherProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTeacherProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
   staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutStaffProfileInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutStaffProfileInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutStaffProfileInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
+}
+
+export type UserUpsertWithoutStaffProfileInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStaffProfileInput, Prisma.UserUncheckedUpdateWithoutStaffProfileInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStaffProfileInput, Prisma.UserUncheckedCreateWithoutStaffProfileInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutStaffProfileInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStaffProfileInput, Prisma.UserUncheckedUpdateWithoutStaffProfileInput>
+}
+
+export type UserUpdateWithoutStaffProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutStaffProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
   teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
   parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
   ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserCreateWithoutParentProfileInput = {
@@ -6190,45 +1927,37 @@ export type UserCreateWithoutParentProfileInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
 }
 
 export type UserUncheckedCreateWithoutParentProfileInput = {
@@ -6238,45 +1967,37 @@ export type UserUncheckedCreateWithoutParentProfileInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type UserCreateOrConnectWithoutParentProfileInput = {
@@ -6302,45 +2023,37 @@ export type UserUpdateWithoutParentProfileInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParentProfileInput = {
@@ -6350,45 +2063,37 @@ export type UserUncheckedUpdateWithoutParentProfileInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorProfileInput = {
@@ -6398,45 +2103,37 @@ export type UserCreateWithoutAmbassadorProfileInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutStudentsInput
-  students?: Prisma.UserCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorProfileInput = {
@@ -6446,45 +2143,37 @@ export type UserUncheckedCreateWithoutAmbassadorProfileInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
-  parentId?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
-  students?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  teacherGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  meetings?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  assignedTickets?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  history?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  messages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedCreateNestedManyWithoutStudentInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedCreateNestedManyWithoutStudentInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
   claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorProfileInput = {
@@ -6510,45 +2199,37 @@ export type UserUpdateWithoutAmbassadorProfileInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorProfileInput = {
@@ -6558,45 +2239,3205 @@ export type UserUncheckedUpdateWithoutAmbassadorProfileInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutBankAccountsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutBankAccountsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutBankAccountsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBankAccountsInput, Prisma.UserUncheckedCreateWithoutBankAccountsInput>
+}
+
+export type UserUpsertWithoutBankAccountsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBankAccountsInput, Prisma.UserUncheckedUpdateWithoutBankAccountsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBankAccountsInput, Prisma.UserUncheckedCreateWithoutBankAccountsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBankAccountsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBankAccountsInput, Prisma.UserUncheckedUpdateWithoutBankAccountsInput>
+}
+
+export type UserUpdateWithoutBankAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBankAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
   studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
   parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutServicesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutServicesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutServicesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutServicesInput, Prisma.UserUncheckedCreateWithoutServicesInput>
+}
+
+export type UserUpsertWithoutServicesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutServicesInput, Prisma.UserUncheckedUpdateWithoutServicesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutServicesInput, Prisma.UserUncheckedCreateWithoutServicesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutServicesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutServicesInput, Prisma.UserUncheckedUpdateWithoutServicesInput>
+}
+
+export type UserUpdateWithoutServicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutServicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutEnrollmentsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutEnrollmentsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutEnrollmentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEnrollmentsInput, Prisma.UserUncheckedCreateWithoutEnrollmentsInput>
+}
+
+export type UserUpsertWithoutEnrollmentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEnrollmentsInput, Prisma.UserUncheckedUpdateWithoutEnrollmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEnrollmentsInput, Prisma.UserUncheckedCreateWithoutEnrollmentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEnrollmentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEnrollmentsInput, Prisma.UserUncheckedUpdateWithoutEnrollmentsInput>
+}
+
+export type UserUpdateWithoutEnrollmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEnrollmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutTaughtSessionsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutTaughtSessionsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutTaughtSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTaughtSessionsInput, Prisma.UserUncheckedCreateWithoutTaughtSessionsInput>
+}
+
+export type UserUpsertWithoutTaughtSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTaughtSessionsInput, Prisma.UserUncheckedUpdateWithoutTaughtSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTaughtSessionsInput, Prisma.UserUncheckedCreateWithoutTaughtSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTaughtSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTaughtSessionsInput, Prisma.UserUncheckedUpdateWithoutTaughtSessionsInput>
+}
+
+export type UserUpdateWithoutTaughtSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTaughtSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutAttendancesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutAttendancesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutAttendancesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+}
+
+export type UserUpsertWithoutAttendancesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAttendancesInput, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAttendancesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAttendancesInput, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
+}
+
+export type UserUpdateWithoutAttendancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAttendancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutInvoicesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutInvoicesInput, Prisma.UserUncheckedCreateWithoutInvoicesInput>
+}
+
+export type UserUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutInvoicesInput, Prisma.UserUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutInvoicesInput, Prisma.UserUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutInvoicesInput, Prisma.UserUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type UserUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutClaimsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutClaimsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutClaimsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
+}
+
+export type UserUpsertWithoutClaimsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutClaimsInput, Prisma.UserUncheckedUpdateWithoutClaimsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutClaimsInput, Prisma.UserUncheckedCreateWithoutClaimsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutClaimsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutClaimsInput, Prisma.UserUncheckedUpdateWithoutClaimsInput>
+}
+
+export type UserUpdateWithoutClaimsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutClaimsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutTicketsCreatedInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutTicketsCreatedInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutTicketsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
+}
+
+export type UserCreateWithoutTicketsAssignedInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutTicketsAssignedInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutTicketsAssignedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketsAssignedInput, Prisma.UserUncheckedCreateWithoutTicketsAssignedInput>
+}
+
+export type UserUpsertWithoutTicketsCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTicketsCreatedInput, Prisma.UserUncheckedUpdateWithoutTicketsCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketsCreatedInput, Prisma.UserUncheckedCreateWithoutTicketsCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTicketsCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTicketsCreatedInput, Prisma.UserUncheckedUpdateWithoutTicketsCreatedInput>
+}
+
+export type UserUpdateWithoutTicketsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTicketsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUpsertWithoutTicketsAssignedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTicketsAssignedInput, Prisma.UserUncheckedUpdateWithoutTicketsAssignedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketsAssignedInput, Prisma.UserUncheckedCreateWithoutTicketsAssignedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTicketsAssignedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTicketsAssignedInput, Prisma.UserUncheckedUpdateWithoutTicketsAssignedInput>
+}
+
+export type UserUpdateWithoutTicketsAssignedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTicketsAssignedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutTicketMessagesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutTicketMessagesInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutTicketMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketMessagesInput, Prisma.UserUncheckedCreateWithoutTicketMessagesInput>
+}
+
+export type UserUpsertWithoutTicketMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTicketMessagesInput, Prisma.UserUncheckedUpdateWithoutTicketMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketMessagesInput, Prisma.UserUncheckedCreateWithoutTicketMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTicketMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTicketMessagesInput, Prisma.UserUncheckedUpdateWithoutTicketMessagesInput>
+}
+
+export type UserUpdateWithoutTicketMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTicketMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutTicketHistoryInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutTicketHistoryInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutTicketHistoryInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketHistoryInput, Prisma.UserUncheckedCreateWithoutTicketHistoryInput>
+}
+
+export type UserUpsertWithoutTicketHistoryInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTicketHistoryInput, Prisma.UserUncheckedUpdateWithoutTicketHistoryInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTicketHistoryInput, Prisma.UserUncheckedCreateWithoutTicketHistoryInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTicketHistoryInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTicketHistoryInput, Prisma.UserUncheckedUpdateWithoutTicketHistoryInput>
+}
+
+export type UserUpdateWithoutTicketHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTicketHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutStudentProgressInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutStudentProgressInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutStudentProgressInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
+}
+
+export type UserUpsertWithoutStudentProgressInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentProgressInput, Prisma.UserUncheckedUpdateWithoutStudentProgressInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutStudentProgressInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentProgressInput, Prisma.UserUncheckedUpdateWithoutStudentProgressInput>
+}
+
+export type UserUpdateWithoutStudentProgressInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutStudentProgressInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutDoubtsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutDoubtsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutDoubtsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
+}
+
+export type UserUpsertWithoutDoubtsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDoubtsInput, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDoubtsInput, Prisma.UserUncheckedCreateWithoutDoubtsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDoubtsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDoubtsInput, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
+}
+
+export type UserUpdateWithoutDoubtsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDoubtsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutMockResultsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutMockResultsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutMockResultsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
+}
+
+export type UserUpsertWithoutMockResultsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMockResultsInput, Prisma.UserUncheckedUpdateWithoutMockResultsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMockResultsInput, Prisma.UserUncheckedCreateWithoutMockResultsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMockResultsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMockResultsInput, Prisma.UserUncheckedUpdateWithoutMockResultsInput>
+}
+
+export type UserUpdateWithoutMockResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMockResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutAssignmentsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutAssignmentsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutAssignmentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
+}
+
+export type UserUpsertWithoutAssignmentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAssignmentsInput, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAssignmentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAssignmentsInput, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
+}
+
+export type UserUpdateWithoutAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutMeetingParticipantsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutMeetingParticipantsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutMeetingParticipantsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipantsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipantsInput>
+}
+
+export type UserUpsertWithoutMeetingParticipantsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMeetingParticipantsInput, Prisma.UserUncheckedUpdateWithoutMeetingParticipantsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMeetingParticipantsInput, Prisma.UserUncheckedCreateWithoutMeetingParticipantsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMeetingParticipantsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMeetingParticipantsInput, Prisma.UserUncheckedUpdateWithoutMeetingParticipantsInput>
+}
+
+export type UserUpdateWithoutMeetingParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMeetingParticipantsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutReferralsGivenInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+}
+
+export type UserUncheckedCreateWithoutReferralsGivenInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type UserCreateOrConnectWithoutReferralsGivenInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutReferralsGivenInput, Prisma.UserUncheckedCreateWithoutReferralsGivenInput>
+}
+
+export type UserUpsertWithoutReferralsGivenInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutReferralsGivenInput, Prisma.UserUncheckedUpdateWithoutReferralsGivenInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutReferralsGivenInput, Prisma.UserUncheckedCreateWithoutReferralsGivenInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutReferralsGivenInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutReferralsGivenInput, Prisma.UserUncheckedUpdateWithoutReferralsGivenInput>
+}
+
+export type UserUpdateWithoutReferralsGivenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutReferralsGivenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type UserCreateWithoutContentBankItemsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutContentBankItemsInput = {
+  id?: string
+  email: string
+  name: string
+  role: string
+  dept?: string | null
+  supervisor?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
+  passwordHash?: string | null
+  referralCode?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutStudentInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutStudentInput
+  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
+  invoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  referralsGiven?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutContentBankItemsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContentBankItemsInput, Prisma.UserUncheckedCreateWithoutContentBankItemsInput>
+}
+
+export type UserUpsertWithoutContentBankItemsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContentBankItemsInput, Prisma.UserUncheckedUpdateWithoutContentBankItemsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContentBankItemsInput, Prisma.UserUncheckedCreateWithoutContentBankItemsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContentBankItemsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContentBankItemsInput, Prisma.UserUncheckedUpdateWithoutContentBankItemsInput>
+}
+
+export type UserUpdateWithoutContentBankItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContentBankItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyParentInput = {
@@ -6606,19 +5447,12 @@ export type UserCreateManyParentInput = {
   role: string
   dept?: string | null
   supervisor?: boolean
-  subGroup?: string | null
-  subject?: string | null
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: string | null
   referralCode?: string | null
-  phone?: string | null
-  address?: string | null
-  bio?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  hourlyRate?: number | null
-  specialization?: string | null
+  detectedCountry?: string | null
+  billingAddress?: string | null
   createdAt?: Date | string
 }
 
@@ -6629,45 +5463,37 @@ export type UserUpdateWithoutParentInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParentInput = {
@@ -6677,45 +5503,37 @@ export type UserUncheckedUpdateWithoutParentInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentGroups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutStudentNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
+  invoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
   claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  referralsGiven?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutParentInput = {
@@ -6725,139 +5543,12 @@ export type UserUncheckedUpdateManyWithoutParentInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserUpdateWithoutStudentGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutStudentsNestedInput
-  students?: Prisma.UserUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  teacherSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutStudentGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  students?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  teacherGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  teacherSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  meetings?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  assignedTickets?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  history?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  messages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  studentMonthlyEnrollments?: Prisma.StudentMonthlyEnrollmentUncheckedUpdateManyWithoutStudentNestedInput
-  studentRateOverrides?: Prisma.StudentRateOverrideUncheckedUpdateManyWithoutStudentNestedInput
-  resourceInvoices?: Prisma.ResourceInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  counsellingInvoices?: Prisma.CounsellingInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateManyWithoutStudentGroupsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  detectedCountry?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -6867,49 +5558,47 @@ export type UserUncheckedUpdateManyWithoutStudentGroupsInput = {
  */
 
 export type UserCountOutputType = {
-  students: number
-  teacherGroups: number
-  studentGroups: number
-  teacherSessions: number
-  studentSessions: number
+  children: number
+  bankAccounts: number
+  services: number
+  enrollments: number
+  taughtSessions: number
   attendances: number
   assignments: number
   mockResults: number
   doubts: number
-  referrals: number
-  meetings: number
-  assignedTickets: number
-  ticketsCreated: number
-  history: number
-  messages: number
-  studentMonthlyEnrollments: number
-  studentRateOverrides: number
-  resourceInvoices: number
-  counsellingInvoices: number
+  studentProgress: number
+  invoices: number
   claims: number
+  referralsGiven: number
+  ticketsCreated: number
+  ticketsAssigned: number
+  ticketMessages: number
+  ticketHistory: number
+  meetingParticipants: number
+  contentBankItems: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  students?: boolean | UserCountOutputTypeCountStudentsArgs
-  teacherGroups?: boolean | UserCountOutputTypeCountTeacherGroupsArgs
-  studentGroups?: boolean | UserCountOutputTypeCountStudentGroupsArgs
-  teacherSessions?: boolean | UserCountOutputTypeCountTeacherSessionsArgs
-  studentSessions?: boolean | UserCountOutputTypeCountStudentSessionsArgs
+  children?: boolean | UserCountOutputTypeCountChildrenArgs
+  bankAccounts?: boolean | UserCountOutputTypeCountBankAccountsArgs
+  services?: boolean | UserCountOutputTypeCountServicesArgs
+  enrollments?: boolean | UserCountOutputTypeCountEnrollmentsArgs
+  taughtSessions?: boolean | UserCountOutputTypeCountTaughtSessionsArgs
   attendances?: boolean | UserCountOutputTypeCountAttendancesArgs
   assignments?: boolean | UserCountOutputTypeCountAssignmentsArgs
   mockResults?: boolean | UserCountOutputTypeCountMockResultsArgs
   doubts?: boolean | UserCountOutputTypeCountDoubtsArgs
-  referrals?: boolean | UserCountOutputTypeCountReferralsArgs
-  meetings?: boolean | UserCountOutputTypeCountMeetingsArgs
-  assignedTickets?: boolean | UserCountOutputTypeCountAssignedTicketsArgs
-  ticketsCreated?: boolean | UserCountOutputTypeCountTicketsCreatedArgs
-  history?: boolean | UserCountOutputTypeCountHistoryArgs
-  messages?: boolean | UserCountOutputTypeCountMessagesArgs
-  studentMonthlyEnrollments?: boolean | UserCountOutputTypeCountStudentMonthlyEnrollmentsArgs
-  studentRateOverrides?: boolean | UserCountOutputTypeCountStudentRateOverridesArgs
-  resourceInvoices?: boolean | UserCountOutputTypeCountResourceInvoicesArgs
-  counsellingInvoices?: boolean | UserCountOutputTypeCountCounsellingInvoicesArgs
+  studentProgress?: boolean | UserCountOutputTypeCountStudentProgressArgs
+  invoices?: boolean | UserCountOutputTypeCountInvoicesArgs
   claims?: boolean | UserCountOutputTypeCountClaimsArgs
+  referralsGiven?: boolean | UserCountOutputTypeCountReferralsGivenArgs
+  ticketsCreated?: boolean | UserCountOutputTypeCountTicketsCreatedArgs
+  ticketsAssigned?: boolean | UserCountOutputTypeCountTicketsAssignedArgs
+  ticketMessages?: boolean | UserCountOutputTypeCountTicketMessagesArgs
+  ticketHistory?: boolean | UserCountOutputTypeCountTicketHistoryArgs
+  meetingParticipants?: boolean | UserCountOutputTypeCountMeetingParticipantsArgs
+  contentBankItems?: boolean | UserCountOutputTypeCountContentBankItemsArgs
 }
 
 /**
@@ -6925,35 +5614,35 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountStudentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.UserWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountTeacherGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.GroupWhereInput
+export type UserCountOutputTypeCountBankAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BankAccountWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountStudentGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.GroupWhereInput
+export type UserCountOutputTypeCountServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountTeacherSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AcademicSessionWhereInput
+export type UserCountOutputTypeCountEnrollmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EnrollmentWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountStudentSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountTaughtSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AcademicSessionWhereInput
 }
 
@@ -6988,22 +5677,29 @@ export type UserCountOutputTypeCountDoubtsArgs<ExtArgs extends runtime.Types.Ext
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountReferralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountStudentProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentProgressWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentInvoiceWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountClaimsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClaimWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountReferralsGivenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ReferralWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountMeetingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MeetingParticipantWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountAssignedTicketsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TicketWhereInput
 }
 
 /**
@@ -7016,50 +5712,36 @@ export type UserCountOutputTypeCountTicketsCreatedArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TicketHistoryWhereInput
+export type UserCountOutputTypeCountTicketsAssignedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TicketWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountTicketMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.TicketMessageWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountStudentMonthlyEnrollmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentMonthlyEnrollmentWhereInput
+export type UserCountOutputTypeCountTicketHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TicketHistoryWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountStudentRateOverridesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentRateOverrideWhereInput
+export type UserCountOutputTypeCountMeetingParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingParticipantWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountResourceInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ResourceInvoiceWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountCounsellingInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CounsellingInvoiceWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountClaimsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ClaimWhereInput
+export type UserCountOutputTypeCountContentBankItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentBankItemWhereInput
 }
 
 
@@ -7070,47 +5752,39 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   dept?: boolean
   supervisor?: boolean
-  subGroup?: boolean
-  subject?: boolean
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: boolean
   referralCode?: boolean
-  phone?: boolean
-  address?: boolean
-  bio?: boolean
-  grade?: boolean
-  board?: boolean
-  targetUni?: boolean
-  hourlyRate?: boolean
-  specialization?: boolean
-  parentId?: boolean
+  detectedCountry?: boolean
+  billingAddress?: boolean
   createdAt?: boolean
+  parentId?: boolean
   parent?: boolean | Prisma.User$parentArgs<ExtArgs>
-  students?: boolean | Prisma.User$studentsArgs<ExtArgs>
-  teacherGroups?: boolean | Prisma.User$teacherGroupsArgs<ExtArgs>
-  studentGroups?: boolean | Prisma.User$studentGroupsArgs<ExtArgs>
-  teacherSessions?: boolean | Prisma.User$teacherSessionsArgs<ExtArgs>
-  studentSessions?: boolean | Prisma.User$studentSessionsArgs<ExtArgs>
+  children?: boolean | Prisma.User$childrenArgs<ExtArgs>
+  studentProfile?: boolean | Prisma.User$studentProfileArgs<ExtArgs>
+  teacherProfile?: boolean | Prisma.User$teacherProfileArgs<ExtArgs>
+  staffProfile?: boolean | Prisma.User$staffProfileArgs<ExtArgs>
+  parentProfile?: boolean | Prisma.User$parentProfileArgs<ExtArgs>
+  ambassadorProfile?: boolean | Prisma.User$ambassadorProfileArgs<ExtArgs>
+  bankAccounts?: boolean | Prisma.User$bankAccountsArgs<ExtArgs>
+  services?: boolean | Prisma.User$servicesArgs<ExtArgs>
+  enrollments?: boolean | Prisma.User$enrollmentsArgs<ExtArgs>
+  taughtSessions?: boolean | Prisma.User$taughtSessionsArgs<ExtArgs>
   attendances?: boolean | Prisma.User$attendancesArgs<ExtArgs>
   assignments?: boolean | Prisma.User$assignmentsArgs<ExtArgs>
   mockResults?: boolean | Prisma.User$mockResultsArgs<ExtArgs>
   doubts?: boolean | Prisma.User$doubtsArgs<ExtArgs>
-  referrals?: boolean | Prisma.User$referralsArgs<ExtArgs>
-  meetings?: boolean | Prisma.User$meetingsArgs<ExtArgs>
-  assignedTickets?: boolean | Prisma.User$assignedTicketsArgs<ExtArgs>
-  ticketsCreated?: boolean | Prisma.User$ticketsCreatedArgs<ExtArgs>
-  history?: boolean | Prisma.User$historyArgs<ExtArgs>
-  messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
-  studentMonthlyEnrollments?: boolean | Prisma.User$studentMonthlyEnrollmentsArgs<ExtArgs>
-  studentRateOverrides?: boolean | Prisma.User$studentRateOverridesArgs<ExtArgs>
-  resourceInvoices?: boolean | Prisma.User$resourceInvoicesArgs<ExtArgs>
-  counsellingInvoices?: boolean | Prisma.User$counsellingInvoicesArgs<ExtArgs>
+  studentProgress?: boolean | Prisma.User$studentProgressArgs<ExtArgs>
+  invoices?: boolean | Prisma.User$invoicesArgs<ExtArgs>
   claims?: boolean | Prisma.User$claimsArgs<ExtArgs>
-  staffProfile?: boolean | Prisma.User$staffProfileArgs<ExtArgs>
-  teacherProfile?: boolean | Prisma.User$teacherProfileArgs<ExtArgs>
-  studentProfile?: boolean | Prisma.User$studentProfileArgs<ExtArgs>
-  parentProfile?: boolean | Prisma.User$parentProfileArgs<ExtArgs>
-  ambassadorProfile?: boolean | Prisma.User$ambassadorProfileArgs<ExtArgs>
+  referralsGiven?: boolean | Prisma.User$referralsGivenArgs<ExtArgs>
+  ticketsCreated?: boolean | Prisma.User$ticketsCreatedArgs<ExtArgs>
+  ticketsAssigned?: boolean | Prisma.User$ticketsAssignedArgs<ExtArgs>
+  ticketMessages?: boolean | Prisma.User$ticketMessagesArgs<ExtArgs>
+  ticketHistory?: boolean | Prisma.User$ticketHistoryArgs<ExtArgs>
+  meetingParticipants?: boolean | Prisma.User$meetingParticipantsArgs<ExtArgs>
+  contentBankItems?: boolean | Prisma.User$contentBankItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7121,21 +5795,14 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   dept?: boolean
   supervisor?: boolean
-  subGroup?: boolean
-  subject?: boolean
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: boolean
   referralCode?: boolean
-  phone?: boolean
-  address?: boolean
-  bio?: boolean
-  grade?: boolean
-  board?: boolean
-  targetUni?: boolean
-  hourlyRate?: boolean
-  specialization?: boolean
-  parentId?: boolean
+  detectedCountry?: boolean
+  billingAddress?: boolean
   createdAt?: boolean
+  parentId?: boolean
   parent?: boolean | Prisma.User$parentArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7146,21 +5813,14 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   dept?: boolean
   supervisor?: boolean
-  subGroup?: boolean
-  subject?: boolean
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: boolean
   referralCode?: boolean
-  phone?: boolean
-  address?: boolean
-  bio?: boolean
-  grade?: boolean
-  board?: boolean
-  targetUni?: boolean
-  hourlyRate?: boolean
-  specialization?: boolean
-  parentId?: boolean
+  detectedCountry?: boolean
+  billingAddress?: boolean
   createdAt?: boolean
+  parentId?: boolean
   parent?: boolean | Prisma.User$parentArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -7171,51 +5831,43 @@ export type UserSelectScalar = {
   role?: boolean
   dept?: boolean
   supervisor?: boolean
-  subGroup?: boolean
-  subject?: boolean
-  active?: boolean
+  financeApprovedFlag?: boolean
+  isActive?: boolean
   passwordHash?: boolean
   referralCode?: boolean
-  phone?: boolean
-  address?: boolean
-  bio?: boolean
-  grade?: boolean
-  board?: boolean
-  targetUni?: boolean
-  hourlyRate?: boolean
-  specialization?: boolean
-  parentId?: boolean
+  detectedCountry?: boolean
+  billingAddress?: boolean
   createdAt?: boolean
+  parentId?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "role" | "dept" | "supervisor" | "subGroup" | "subject" | "active" | "passwordHash" | "referralCode" | "phone" | "address" | "bio" | "grade" | "board" | "targetUni" | "hourlyRate" | "specialization" | "parentId" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "role" | "dept" | "supervisor" | "financeApprovedFlag" | "isActive" | "passwordHash" | "referralCode" | "detectedCountry" | "billingAddress" | "createdAt" | "parentId", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   parent?: boolean | Prisma.User$parentArgs<ExtArgs>
-  students?: boolean | Prisma.User$studentsArgs<ExtArgs>
-  teacherGroups?: boolean | Prisma.User$teacherGroupsArgs<ExtArgs>
-  studentGroups?: boolean | Prisma.User$studentGroupsArgs<ExtArgs>
-  teacherSessions?: boolean | Prisma.User$teacherSessionsArgs<ExtArgs>
-  studentSessions?: boolean | Prisma.User$studentSessionsArgs<ExtArgs>
+  children?: boolean | Prisma.User$childrenArgs<ExtArgs>
+  studentProfile?: boolean | Prisma.User$studentProfileArgs<ExtArgs>
+  teacherProfile?: boolean | Prisma.User$teacherProfileArgs<ExtArgs>
+  staffProfile?: boolean | Prisma.User$staffProfileArgs<ExtArgs>
+  parentProfile?: boolean | Prisma.User$parentProfileArgs<ExtArgs>
+  ambassadorProfile?: boolean | Prisma.User$ambassadorProfileArgs<ExtArgs>
+  bankAccounts?: boolean | Prisma.User$bankAccountsArgs<ExtArgs>
+  services?: boolean | Prisma.User$servicesArgs<ExtArgs>
+  enrollments?: boolean | Prisma.User$enrollmentsArgs<ExtArgs>
+  taughtSessions?: boolean | Prisma.User$taughtSessionsArgs<ExtArgs>
   attendances?: boolean | Prisma.User$attendancesArgs<ExtArgs>
   assignments?: boolean | Prisma.User$assignmentsArgs<ExtArgs>
   mockResults?: boolean | Prisma.User$mockResultsArgs<ExtArgs>
   doubts?: boolean | Prisma.User$doubtsArgs<ExtArgs>
-  referrals?: boolean | Prisma.User$referralsArgs<ExtArgs>
-  meetings?: boolean | Prisma.User$meetingsArgs<ExtArgs>
-  assignedTickets?: boolean | Prisma.User$assignedTicketsArgs<ExtArgs>
-  ticketsCreated?: boolean | Prisma.User$ticketsCreatedArgs<ExtArgs>
-  history?: boolean | Prisma.User$historyArgs<ExtArgs>
-  messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
-  studentMonthlyEnrollments?: boolean | Prisma.User$studentMonthlyEnrollmentsArgs<ExtArgs>
-  studentRateOverrides?: boolean | Prisma.User$studentRateOverridesArgs<ExtArgs>
-  resourceInvoices?: boolean | Prisma.User$resourceInvoicesArgs<ExtArgs>
-  counsellingInvoices?: boolean | Prisma.User$counsellingInvoicesArgs<ExtArgs>
+  studentProgress?: boolean | Prisma.User$studentProgressArgs<ExtArgs>
+  invoices?: boolean | Prisma.User$invoicesArgs<ExtArgs>
   claims?: boolean | Prisma.User$claimsArgs<ExtArgs>
-  staffProfile?: boolean | Prisma.User$staffProfileArgs<ExtArgs>
-  teacherProfile?: boolean | Prisma.User$teacherProfileArgs<ExtArgs>
-  studentProfile?: boolean | Prisma.User$studentProfileArgs<ExtArgs>
-  parentProfile?: boolean | Prisma.User$parentProfileArgs<ExtArgs>
-  ambassadorProfile?: boolean | Prisma.User$ambassadorProfileArgs<ExtArgs>
+  referralsGiven?: boolean | Prisma.User$referralsGivenArgs<ExtArgs>
+  ticketsCreated?: boolean | Prisma.User$ticketsCreatedArgs<ExtArgs>
+  ticketsAssigned?: boolean | Prisma.User$ticketsAssignedArgs<ExtArgs>
+  ticketMessages?: boolean | Prisma.User$ticketMessagesArgs<ExtArgs>
+  ticketHistory?: boolean | Prisma.User$ticketHistoryArgs<ExtArgs>
+  meetingParticipants?: boolean | Prisma.User$meetingParticipantsArgs<ExtArgs>
+  contentBankItems?: boolean | Prisma.User$contentBankItemsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7229,31 +5881,30 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     parent: Prisma.$UserPayload<ExtArgs> | null
-    students: Prisma.$UserPayload<ExtArgs>[]
-    teacherGroups: Prisma.$GroupPayload<ExtArgs>[]
-    studentGroups: Prisma.$GroupPayload<ExtArgs>[]
-    teacherSessions: Prisma.$AcademicSessionPayload<ExtArgs>[]
-    studentSessions: Prisma.$AcademicSessionPayload<ExtArgs>[]
+    children: Prisma.$UserPayload<ExtArgs>[]
+    studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null
+    teacherProfile: Prisma.$TeacherProfilePayload<ExtArgs> | null
+    staffProfile: Prisma.$StaffProfilePayload<ExtArgs> | null
+    parentProfile: Prisma.$ParentProfilePayload<ExtArgs> | null
+    ambassadorProfile: Prisma.$AmbassadorProfilePayload<ExtArgs> | null
+    bankAccounts: Prisma.$BankAccountPayload<ExtArgs>[]
+    services: Prisma.$ServicePayload<ExtArgs>[]
+    enrollments: Prisma.$EnrollmentPayload<ExtArgs>[]
+    taughtSessions: Prisma.$AcademicSessionPayload<ExtArgs>[]
     attendances: Prisma.$AttendancePayload<ExtArgs>[]
     assignments: Prisma.$AssignmentPayload<ExtArgs>[]
     mockResults: Prisma.$MockResultPayload<ExtArgs>[]
     doubts: Prisma.$DoubtPayload<ExtArgs>[]
-    referrals: Prisma.$ReferralPayload<ExtArgs>[]
-    meetings: Prisma.$MeetingParticipantPayload<ExtArgs>[]
-    assignedTickets: Prisma.$TicketPayload<ExtArgs>[]
-    ticketsCreated: Prisma.$TicketPayload<ExtArgs>[]
-    history: Prisma.$TicketHistoryPayload<ExtArgs>[]
-    messages: Prisma.$TicketMessagePayload<ExtArgs>[]
-    studentMonthlyEnrollments: Prisma.$StudentMonthlyEnrollmentPayload<ExtArgs>[]
-    studentRateOverrides: Prisma.$StudentRateOverridePayload<ExtArgs>[]
-    resourceInvoices: Prisma.$ResourceInvoicePayload<ExtArgs>[]
-    counsellingInvoices: Prisma.$CounsellingInvoicePayload<ExtArgs>[]
+    studentProgress: Prisma.$StudentProgressPayload<ExtArgs>[]
+    invoices: Prisma.$StudentInvoicePayload<ExtArgs>[]
     claims: Prisma.$ClaimPayload<ExtArgs>[]
-    staffProfile: Prisma.$StaffProfilePayload<ExtArgs> | null
-    teacherProfile: Prisma.$TeacherProfilePayload<ExtArgs> | null
-    studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null
-    parentProfile: Prisma.$ParentProfilePayload<ExtArgs> | null
-    ambassadorProfile: Prisma.$AmbassadorProfilePayload<ExtArgs> | null
+    referralsGiven: Prisma.$ReferralPayload<ExtArgs>[]
+    ticketsCreated: Prisma.$TicketPayload<ExtArgs>[]
+    ticketsAssigned: Prisma.$TicketPayload<ExtArgs>[]
+    ticketMessages: Prisma.$TicketMessagePayload<ExtArgs>[]
+    ticketHistory: Prisma.$TicketHistoryPayload<ExtArgs>[]
+    meetingParticipants: Prisma.$MeetingParticipantPayload<ExtArgs>[]
+    contentBankItems: Prisma.$ContentBankItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -7262,21 +5913,14 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     role: string
     dept: string | null
     supervisor: boolean
-    subGroup: string | null
-    subject: string | null
-    active: boolean
+    financeApprovedFlag: boolean
+    isActive: boolean
     passwordHash: string | null
     referralCode: string | null
-    phone: string | null
-    address: string | null
-    bio: string | null
-    grade: string | null
-    board: string | null
-    targetUni: string | null
-    hourlyRate: number | null
-    specialization: string | null
-    parentId: string | null
+    detectedCountry: string | null
+    billingAddress: string | null
     createdAt: Date
+    parentId: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -7672,31 +6316,30 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   parent<T extends Prisma.User$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$parentArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  students<T extends Prisma.User$studentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  teacherGroups<T extends Prisma.User$teacherGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$teacherGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  studentGroups<T extends Prisma.User$studentGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  teacherSessions<T extends Prisma.User$teacherSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$teacherSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AcademicSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  studentSessions<T extends Prisma.User$studentSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AcademicSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  children<T extends Prisma.User$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  studentProfile<T extends Prisma.User$studentProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentProfileArgs<ExtArgs>>): Prisma.Prisma__StudentProfileClient<runtime.Types.Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  teacherProfile<T extends Prisma.User$teacherProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$teacherProfileArgs<ExtArgs>>): Prisma.Prisma__TeacherProfileClient<runtime.Types.Result.GetResult<Prisma.$TeacherProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  staffProfile<T extends Prisma.User$staffProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$staffProfileArgs<ExtArgs>>): Prisma.Prisma__StaffProfileClient<runtime.Types.Result.GetResult<Prisma.$StaffProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  parentProfile<T extends Prisma.User$parentProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$parentProfileArgs<ExtArgs>>): Prisma.Prisma__ParentProfileClient<runtime.Types.Result.GetResult<Prisma.$ParentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  ambassadorProfile<T extends Prisma.User$ambassadorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ambassadorProfileArgs<ExtArgs>>): Prisma.Prisma__AmbassadorProfileClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bankAccounts<T extends Prisma.User$bankAccountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bankAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  services<T extends Prisma.User$servicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  enrollments<T extends Prisma.User$enrollmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$enrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taughtSessions<T extends Prisma.User$taughtSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$taughtSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AcademicSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attendances<T extends Prisma.User$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignments<T extends Prisma.User$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mockResults<T extends Prisma.User$mockResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mockResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   doubts<T extends Prisma.User$doubtsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$doubtsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoubtPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  referrals<T extends Prisma.User$referralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  meetings<T extends Prisma.User$meetingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$meetingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  assignedTickets<T extends Prisma.User$assignedTicketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedTicketsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  ticketsCreated<T extends Prisma.User$ticketsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ticketsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  history<T extends Prisma.User$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  studentMonthlyEnrollments<T extends Prisma.User$studentMonthlyEnrollmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentMonthlyEnrollmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentMonthlyEnrollmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  studentRateOverrides<T extends Prisma.User$studentRateOverridesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentRateOverridesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentRateOverridePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  resourceInvoices<T extends Prisma.User$resourceInvoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$resourceInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ResourceInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  counsellingInvoices<T extends Prisma.User$counsellingInvoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$counsellingInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CounsellingInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  studentProgress<T extends Prisma.User$studentProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentProgressArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.User$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   claims<T extends Prisma.User$claimsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$claimsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClaimPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  staffProfile<T extends Prisma.User$staffProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$staffProfileArgs<ExtArgs>>): Prisma.Prisma__StaffProfileClient<runtime.Types.Result.GetResult<Prisma.$StaffProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  teacherProfile<T extends Prisma.User$teacherProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$teacherProfileArgs<ExtArgs>>): Prisma.Prisma__TeacherProfileClient<runtime.Types.Result.GetResult<Prisma.$TeacherProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  studentProfile<T extends Prisma.User$studentProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentProfileArgs<ExtArgs>>): Prisma.Prisma__StudentProfileClient<runtime.Types.Result.GetResult<Prisma.$StudentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  parentProfile<T extends Prisma.User$parentProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$parentProfileArgs<ExtArgs>>): Prisma.Prisma__ParentProfileClient<runtime.Types.Result.GetResult<Prisma.$ParentProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  ambassadorProfile<T extends Prisma.User$ambassadorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ambassadorProfileArgs<ExtArgs>>): Prisma.Prisma__AmbassadorProfileClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  referralsGiven<T extends Prisma.User$referralsGivenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralsGivenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ticketsCreated<T extends Prisma.User$ticketsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ticketsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ticketsAssigned<T extends Prisma.User$ticketsAssignedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ticketsAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ticketMessages<T extends Prisma.User$ticketMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ticketMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ticketHistory<T extends Prisma.User$ticketHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ticketHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TicketHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  meetingParticipants<T extends Prisma.User$meetingParticipantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$meetingParticipantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contentBankItems<T extends Prisma.User$contentBankItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contentBankItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentBankItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7732,21 +6375,14 @@ export interface UserFieldRefs {
   readonly role: Prisma.FieldRef<"User", 'String'>
   readonly dept: Prisma.FieldRef<"User", 'String'>
   readonly supervisor: Prisma.FieldRef<"User", 'Boolean'>
-  readonly subGroup: Prisma.FieldRef<"User", 'String'>
-  readonly subject: Prisma.FieldRef<"User", 'String'>
-  readonly active: Prisma.FieldRef<"User", 'Boolean'>
+  readonly financeApprovedFlag: Prisma.FieldRef<"User", 'Boolean'>
+  readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly referralCode: Prisma.FieldRef<"User", 'String'>
-  readonly phone: Prisma.FieldRef<"User", 'String'>
-  readonly address: Prisma.FieldRef<"User", 'String'>
-  readonly bio: Prisma.FieldRef<"User", 'String'>
-  readonly grade: Prisma.FieldRef<"User", 'String'>
-  readonly board: Prisma.FieldRef<"User", 'String'>
-  readonly targetUni: Prisma.FieldRef<"User", 'String'>
-  readonly hourlyRate: Prisma.FieldRef<"User", 'Float'>
-  readonly specialization: Prisma.FieldRef<"User", 'String'>
-  readonly parentId: Prisma.FieldRef<"User", 'String'>
+  readonly detectedCountry: Prisma.FieldRef<"User", 'String'>
+  readonly billingAddress: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly parentId: Prisma.FieldRef<"User", 'String'>
 }
     
 
@@ -8165,9 +6801,9 @@ export type User$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 /**
- * User.students
+ * User.children
  */
-export type User$studentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$childrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the User
    */
@@ -8189,81 +6825,176 @@ export type User$studentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.teacherGroups
+ * User.studentProfile
  */
-export type User$teacherGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$studentProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Group
+   * Select specific fields to fetch from the StudentProfile
    */
-  select?: Prisma.GroupSelect<ExtArgs> | null
+  select?: Prisma.StudentProfileSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Group
+   * Omit specific fields from the StudentProfile
    */
-  omit?: Prisma.GroupOmit<ExtArgs> | null
+  omit?: Prisma.StudentProfileOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.GroupInclude<ExtArgs> | null
-  where?: Prisma.GroupWhereInput
-  orderBy?: Prisma.GroupOrderByWithRelationInput | Prisma.GroupOrderByWithRelationInput[]
-  cursor?: Prisma.GroupWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.GroupScalarFieldEnum | Prisma.GroupScalarFieldEnum[]
+  include?: Prisma.StudentProfileInclude<ExtArgs> | null
+  where?: Prisma.StudentProfileWhereInput
 }
 
 /**
- * User.studentGroups
+ * User.teacherProfile
  */
-export type User$studentGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$teacherProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Group
+   * Select specific fields to fetch from the TeacherProfile
    */
-  select?: Prisma.GroupSelect<ExtArgs> | null
+  select?: Prisma.TeacherProfileSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Group
+   * Omit specific fields from the TeacherProfile
    */
-  omit?: Prisma.GroupOmit<ExtArgs> | null
+  omit?: Prisma.TeacherProfileOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.GroupInclude<ExtArgs> | null
-  where?: Prisma.GroupWhereInput
-  orderBy?: Prisma.GroupOrderByWithRelationInput | Prisma.GroupOrderByWithRelationInput[]
-  cursor?: Prisma.GroupWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.GroupScalarFieldEnum | Prisma.GroupScalarFieldEnum[]
+  include?: Prisma.TeacherProfileInclude<ExtArgs> | null
+  where?: Prisma.TeacherProfileWhereInput
 }
 
 /**
- * User.teacherSessions
+ * User.staffProfile
  */
-export type User$teacherSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$staffProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the AcademicSession
+   * Select specific fields to fetch from the StaffProfile
    */
-  select?: Prisma.AcademicSessionSelect<ExtArgs> | null
+  select?: Prisma.StaffProfileSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the AcademicSession
+   * Omit specific fields from the StaffProfile
    */
-  omit?: Prisma.AcademicSessionOmit<ExtArgs> | null
+  omit?: Prisma.StaffProfileOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AcademicSessionInclude<ExtArgs> | null
-  where?: Prisma.AcademicSessionWhereInput
-  orderBy?: Prisma.AcademicSessionOrderByWithRelationInput | Prisma.AcademicSessionOrderByWithRelationInput[]
-  cursor?: Prisma.AcademicSessionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AcademicSessionScalarFieldEnum | Prisma.AcademicSessionScalarFieldEnum[]
+  include?: Prisma.StaffProfileInclude<ExtArgs> | null
+  where?: Prisma.StaffProfileWhereInput
 }
 
 /**
- * User.studentSessions
+ * User.parentProfile
  */
-export type User$studentSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$parentProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ParentProfile
+   */
+  select?: Prisma.ParentProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ParentProfile
+   */
+  omit?: Prisma.ParentProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ParentProfileInclude<ExtArgs> | null
+  where?: Prisma.ParentProfileWhereInput
+}
+
+/**
+ * User.ambassadorProfile
+ */
+export type User$ambassadorProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AmbassadorProfile
+   */
+  select?: Prisma.AmbassadorProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AmbassadorProfile
+   */
+  omit?: Prisma.AmbassadorProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorProfileInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorProfileWhereInput
+}
+
+/**
+ * User.bankAccounts
+ */
+export type User$bankAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BankAccount
+   */
+  select?: Prisma.BankAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BankAccount
+   */
+  omit?: Prisma.BankAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BankAccountInclude<ExtArgs> | null
+  where?: Prisma.BankAccountWhereInput
+  orderBy?: Prisma.BankAccountOrderByWithRelationInput | Prisma.BankAccountOrderByWithRelationInput[]
+  cursor?: Prisma.BankAccountWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BankAccountScalarFieldEnum | Prisma.BankAccountScalarFieldEnum[]
+}
+
+/**
+ * User.services
+ */
+export type User$servicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Service
+   */
+  select?: Prisma.ServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Service
+   */
+  omit?: Prisma.ServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceInclude<ExtArgs> | null
+  where?: Prisma.ServiceWhereInput
+  orderBy?: Prisma.ServiceOrderByWithRelationInput | Prisma.ServiceOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceScalarFieldEnum | Prisma.ServiceScalarFieldEnum[]
+}
+
+/**
+ * User.enrollments
+ */
+export type User$enrollmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Enrollment
+   */
+  select?: Prisma.EnrollmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Enrollment
+   */
+  omit?: Prisma.EnrollmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EnrollmentInclude<ExtArgs> | null
+  where?: Prisma.EnrollmentWhereInput
+  orderBy?: Prisma.EnrollmentOrderByWithRelationInput | Prisma.EnrollmentOrderByWithRelationInput[]
+  cursor?: Prisma.EnrollmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EnrollmentScalarFieldEnum | Prisma.EnrollmentScalarFieldEnum[]
+}
+
+/**
+ * User.taughtSessions
+ */
+export type User$taughtSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the AcademicSession
    */
@@ -8381,243 +7112,51 @@ export type User$doubtsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 /**
- * User.referrals
+ * User.studentProgress
  */
-export type User$referralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$studentProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Referral
+   * Select specific fields to fetch from the StudentProgress
    */
-  select?: Prisma.ReferralSelect<ExtArgs> | null
+  select?: Prisma.StudentProgressSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Referral
+   * Omit specific fields from the StudentProgress
    */
-  omit?: Prisma.ReferralOmit<ExtArgs> | null
+  omit?: Prisma.StudentProgressOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ReferralInclude<ExtArgs> | null
-  where?: Prisma.ReferralWhereInput
-  orderBy?: Prisma.ReferralOrderByWithRelationInput | Prisma.ReferralOrderByWithRelationInput[]
-  cursor?: Prisma.ReferralWhereUniqueInput
+  include?: Prisma.StudentProgressInclude<ExtArgs> | null
+  where?: Prisma.StudentProgressWhereInput
+  orderBy?: Prisma.StudentProgressOrderByWithRelationInput | Prisma.StudentProgressOrderByWithRelationInput[]
+  cursor?: Prisma.StudentProgressWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ReferralScalarFieldEnum | Prisma.ReferralScalarFieldEnum[]
+  distinct?: Prisma.StudentProgressScalarFieldEnum | Prisma.StudentProgressScalarFieldEnum[]
 }
 
 /**
- * User.meetings
+ * User.invoices
  */
-export type User$meetingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the MeetingParticipant
+   * Select specific fields to fetch from the StudentInvoice
    */
-  select?: Prisma.MeetingParticipantSelect<ExtArgs> | null
+  select?: Prisma.StudentInvoiceSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the MeetingParticipant
+   * Omit specific fields from the StudentInvoice
    */
-  omit?: Prisma.MeetingParticipantOmit<ExtArgs> | null
+  omit?: Prisma.StudentInvoiceOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.MeetingParticipantInclude<ExtArgs> | null
-  where?: Prisma.MeetingParticipantWhereInput
-  orderBy?: Prisma.MeetingParticipantOrderByWithRelationInput | Prisma.MeetingParticipantOrderByWithRelationInput[]
-  cursor?: Prisma.MeetingParticipantWhereUniqueInput
+  include?: Prisma.StudentInvoiceInclude<ExtArgs> | null
+  where?: Prisma.StudentInvoiceWhereInput
+  orderBy?: Prisma.StudentInvoiceOrderByWithRelationInput | Prisma.StudentInvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.StudentInvoiceWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.MeetingParticipantScalarFieldEnum | Prisma.MeetingParticipantScalarFieldEnum[]
-}
-
-/**
- * User.assignedTickets
- */
-export type User$assignedTicketsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Ticket
-   */
-  select?: Prisma.TicketSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Ticket
-   */
-  omit?: Prisma.TicketOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TicketInclude<ExtArgs> | null
-  where?: Prisma.TicketWhereInput
-  orderBy?: Prisma.TicketOrderByWithRelationInput | Prisma.TicketOrderByWithRelationInput[]
-  cursor?: Prisma.TicketWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TicketScalarFieldEnum | Prisma.TicketScalarFieldEnum[]
-}
-
-/**
- * User.ticketsCreated
- */
-export type User$ticketsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Ticket
-   */
-  select?: Prisma.TicketSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Ticket
-   */
-  omit?: Prisma.TicketOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TicketInclude<ExtArgs> | null
-  where?: Prisma.TicketWhereInput
-  orderBy?: Prisma.TicketOrderByWithRelationInput | Prisma.TicketOrderByWithRelationInput[]
-  cursor?: Prisma.TicketWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TicketScalarFieldEnum | Prisma.TicketScalarFieldEnum[]
-}
-
-/**
- * User.history
- */
-export type User$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TicketHistory
-   */
-  select?: Prisma.TicketHistorySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TicketHistory
-   */
-  omit?: Prisma.TicketHistoryOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TicketHistoryInclude<ExtArgs> | null
-  where?: Prisma.TicketHistoryWhereInput
-  orderBy?: Prisma.TicketHistoryOrderByWithRelationInput | Prisma.TicketHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.TicketHistoryWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TicketHistoryScalarFieldEnum | Prisma.TicketHistoryScalarFieldEnum[]
-}
-
-/**
- * User.messages
- */
-export type User$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TicketMessage
-   */
-  select?: Prisma.TicketMessageSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TicketMessage
-   */
-  omit?: Prisma.TicketMessageOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TicketMessageInclude<ExtArgs> | null
-  where?: Prisma.TicketMessageWhereInput
-  orderBy?: Prisma.TicketMessageOrderByWithRelationInput | Prisma.TicketMessageOrderByWithRelationInput[]
-  cursor?: Prisma.TicketMessageWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TicketMessageScalarFieldEnum | Prisma.TicketMessageScalarFieldEnum[]
-}
-
-/**
- * User.studentMonthlyEnrollments
- */
-export type User$studentMonthlyEnrollmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StudentMonthlyEnrollment
-   */
-  select?: Prisma.StudentMonthlyEnrollmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StudentMonthlyEnrollment
-   */
-  omit?: Prisma.StudentMonthlyEnrollmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StudentMonthlyEnrollmentInclude<ExtArgs> | null
-  where?: Prisma.StudentMonthlyEnrollmentWhereInput
-  orderBy?: Prisma.StudentMonthlyEnrollmentOrderByWithRelationInput | Prisma.StudentMonthlyEnrollmentOrderByWithRelationInput[]
-  cursor?: Prisma.StudentMonthlyEnrollmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StudentMonthlyEnrollmentScalarFieldEnum | Prisma.StudentMonthlyEnrollmentScalarFieldEnum[]
-}
-
-/**
- * User.studentRateOverrides
- */
-export type User$studentRateOverridesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the StudentRateOverride
-   */
-  select?: Prisma.StudentRateOverrideSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the StudentRateOverride
-   */
-  omit?: Prisma.StudentRateOverrideOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.StudentRateOverrideInclude<ExtArgs> | null
-  where?: Prisma.StudentRateOverrideWhereInput
-  orderBy?: Prisma.StudentRateOverrideOrderByWithRelationInput | Prisma.StudentRateOverrideOrderByWithRelationInput[]
-  cursor?: Prisma.StudentRateOverrideWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.StudentRateOverrideScalarFieldEnum | Prisma.StudentRateOverrideScalarFieldEnum[]
-}
-
-/**
- * User.resourceInvoices
- */
-export type User$resourceInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ResourceInvoice
-   */
-  select?: Prisma.ResourceInvoiceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ResourceInvoice
-   */
-  omit?: Prisma.ResourceInvoiceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ResourceInvoiceInclude<ExtArgs> | null
-  where?: Prisma.ResourceInvoiceWhereInput
-  orderBy?: Prisma.ResourceInvoiceOrderByWithRelationInput | Prisma.ResourceInvoiceOrderByWithRelationInput[]
-  cursor?: Prisma.ResourceInvoiceWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ResourceInvoiceScalarFieldEnum | Prisma.ResourceInvoiceScalarFieldEnum[]
-}
-
-/**
- * User.counsellingInvoices
- */
-export type User$counsellingInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the CounsellingInvoice
-   */
-  select?: Prisma.CounsellingInvoiceSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the CounsellingInvoice
-   */
-  omit?: Prisma.CounsellingInvoiceOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.CounsellingInvoiceInclude<ExtArgs> | null
-  where?: Prisma.CounsellingInvoiceWhereInput
-  orderBy?: Prisma.CounsellingInvoiceOrderByWithRelationInput | Prisma.CounsellingInvoiceOrderByWithRelationInput[]
-  cursor?: Prisma.CounsellingInvoiceWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.CounsellingInvoiceScalarFieldEnum | Prisma.CounsellingInvoiceScalarFieldEnum[]
+  distinct?: Prisma.StudentInvoiceScalarFieldEnum | Prisma.StudentInvoiceScalarFieldEnum[]
 }
 
 /**
@@ -8645,98 +7184,171 @@ export type User$claimsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 /**
- * User.staffProfile
+ * User.referralsGiven
  */
-export type User$staffProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$referralsGivenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StaffProfile
+   * Select specific fields to fetch from the Referral
    */
-  select?: Prisma.StaffProfileSelect<ExtArgs> | null
+  select?: Prisma.ReferralSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StaffProfile
+   * Omit specific fields from the Referral
    */
-  omit?: Prisma.StaffProfileOmit<ExtArgs> | null
+  omit?: Prisma.ReferralOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StaffProfileInclude<ExtArgs> | null
-  where?: Prisma.StaffProfileWhereInput
+  include?: Prisma.ReferralInclude<ExtArgs> | null
+  where?: Prisma.ReferralWhereInput
+  orderBy?: Prisma.ReferralOrderByWithRelationInput | Prisma.ReferralOrderByWithRelationInput[]
+  cursor?: Prisma.ReferralWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReferralScalarFieldEnum | Prisma.ReferralScalarFieldEnum[]
 }
 
 /**
- * User.teacherProfile
+ * User.ticketsCreated
  */
-export type User$teacherProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$ticketsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the TeacherProfile
+   * Select specific fields to fetch from the Ticket
    */
-  select?: Prisma.TeacherProfileSelect<ExtArgs> | null
+  select?: Prisma.TicketSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the TeacherProfile
+   * Omit specific fields from the Ticket
    */
-  omit?: Prisma.TeacherProfileOmit<ExtArgs> | null
+  omit?: Prisma.TicketOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TeacherProfileInclude<ExtArgs> | null
-  where?: Prisma.TeacherProfileWhereInput
+  include?: Prisma.TicketInclude<ExtArgs> | null
+  where?: Prisma.TicketWhereInput
+  orderBy?: Prisma.TicketOrderByWithRelationInput | Prisma.TicketOrderByWithRelationInput[]
+  cursor?: Prisma.TicketWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TicketScalarFieldEnum | Prisma.TicketScalarFieldEnum[]
 }
 
 /**
- * User.studentProfile
+ * User.ticketsAssigned
  */
-export type User$studentProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$ticketsAssignedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StudentProfile
+   * Select specific fields to fetch from the Ticket
    */
-  select?: Prisma.StudentProfileSelect<ExtArgs> | null
+  select?: Prisma.TicketSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StudentProfile
+   * Omit specific fields from the Ticket
    */
-  omit?: Prisma.StudentProfileOmit<ExtArgs> | null
+  omit?: Prisma.TicketOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StudentProfileInclude<ExtArgs> | null
-  where?: Prisma.StudentProfileWhereInput
+  include?: Prisma.TicketInclude<ExtArgs> | null
+  where?: Prisma.TicketWhereInput
+  orderBy?: Prisma.TicketOrderByWithRelationInput | Prisma.TicketOrderByWithRelationInput[]
+  cursor?: Prisma.TicketWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TicketScalarFieldEnum | Prisma.TicketScalarFieldEnum[]
 }
 
 /**
- * User.parentProfile
+ * User.ticketMessages
  */
-export type User$parentProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$ticketMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ParentProfile
+   * Select specific fields to fetch from the TicketMessage
    */
-  select?: Prisma.ParentProfileSelect<ExtArgs> | null
+  select?: Prisma.TicketMessageSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ParentProfile
+   * Omit specific fields from the TicketMessage
    */
-  omit?: Prisma.ParentProfileOmit<ExtArgs> | null
+  omit?: Prisma.TicketMessageOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ParentProfileInclude<ExtArgs> | null
-  where?: Prisma.ParentProfileWhereInput
+  include?: Prisma.TicketMessageInclude<ExtArgs> | null
+  where?: Prisma.TicketMessageWhereInput
+  orderBy?: Prisma.TicketMessageOrderByWithRelationInput | Prisma.TicketMessageOrderByWithRelationInput[]
+  cursor?: Prisma.TicketMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TicketMessageScalarFieldEnum | Prisma.TicketMessageScalarFieldEnum[]
 }
 
 /**
- * User.ambassadorProfile
+ * User.ticketHistory
  */
-export type User$ambassadorProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$ticketHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the AmbassadorProfile
+   * Select specific fields to fetch from the TicketHistory
    */
-  select?: Prisma.AmbassadorProfileSelect<ExtArgs> | null
+  select?: Prisma.TicketHistorySelect<ExtArgs> | null
   /**
-   * Omit specific fields from the AmbassadorProfile
+   * Omit specific fields from the TicketHistory
    */
-  omit?: Prisma.AmbassadorProfileOmit<ExtArgs> | null
+  omit?: Prisma.TicketHistoryOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AmbassadorProfileInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorProfileWhereInput
+  include?: Prisma.TicketHistoryInclude<ExtArgs> | null
+  where?: Prisma.TicketHistoryWhereInput
+  orderBy?: Prisma.TicketHistoryOrderByWithRelationInput | Prisma.TicketHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.TicketHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TicketHistoryScalarFieldEnum | Prisma.TicketHistoryScalarFieldEnum[]
+}
+
+/**
+ * User.meetingParticipants
+ */
+export type User$meetingParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingParticipant
+   */
+  select?: Prisma.MeetingParticipantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MeetingParticipant
+   */
+  omit?: Prisma.MeetingParticipantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingParticipantInclude<ExtArgs> | null
+  where?: Prisma.MeetingParticipantWhereInput
+  orderBy?: Prisma.MeetingParticipantOrderByWithRelationInput | Prisma.MeetingParticipantOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingParticipantWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MeetingParticipantScalarFieldEnum | Prisma.MeetingParticipantScalarFieldEnum[]
+}
+
+/**
+ * User.contentBankItems
+ */
+export type User$contentBankItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentBankItem
+   */
+  select?: Prisma.ContentBankItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentBankItem
+   */
+  omit?: Prisma.ContentBankItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentBankItemInclude<ExtArgs> | null
+  where?: Prisma.ContentBankItemWhereInput
+  orderBy?: Prisma.ContentBankItemOrderByWithRelationInput | Prisma.ContentBankItemOrderByWithRelationInput[]
+  cursor?: Prisma.ContentBankItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentBankItemScalarFieldEnum | Prisma.ContentBankItemScalarFieldEnum[]
 }
 
 /**

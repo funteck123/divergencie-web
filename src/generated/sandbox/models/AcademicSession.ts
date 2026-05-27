@@ -20,88 +20,148 @@ export type AcademicSessionModel = runtime.Types.Result.DefaultSelection<Prisma.
 
 export type AggregateAcademicSession = {
   _count: AcademicSessionCountAggregateOutputType | null
+  _avg: AcademicSessionAvgAggregateOutputType | null
+  _sum: AcademicSessionSumAggregateOutputType | null
   _min: AcademicSessionMinAggregateOutputType | null
   _max: AcademicSessionMaxAggregateOutputType | null
 }
 
+export type AcademicSessionAvgAggregateOutputType = {
+  durationMinutes: number | null
+}
+
+export type AcademicSessionSumAggregateOutputType = {
+  durationMinutes: number | null
+}
+
 export type AcademicSessionMinAggregateOutputType = {
   id: string | null
-  subject: string | null
+  groupId: string | null
+  teacherId: string | null
+  serviceId: string | null
   topic: string | null
   startTime: Date | null
   endTime: Date | null
+  durationMinutes: number | null
   zoomLink: string | null
+  wbLink: string | null
+  wbName: string | null
+  recordingLink: string | null
   status: string | null
-  teacherId: string | null
-  studentId: string | null
-  groupId: string | null
+  timesheetSubmissionStatus: string | null
+  timesheetSubmittedAt: Date | null
+  isActive: boolean | null
+  createdAt: Date | null
 }
 
 export type AcademicSessionMaxAggregateOutputType = {
   id: string | null
-  subject: string | null
+  groupId: string | null
+  teacherId: string | null
+  serviceId: string | null
   topic: string | null
   startTime: Date | null
   endTime: Date | null
+  durationMinutes: number | null
   zoomLink: string | null
+  wbLink: string | null
+  wbName: string | null
+  recordingLink: string | null
   status: string | null
-  teacherId: string | null
-  studentId: string | null
-  groupId: string | null
+  timesheetSubmissionStatus: string | null
+  timesheetSubmittedAt: Date | null
+  isActive: boolean | null
+  createdAt: Date | null
 }
 
 export type AcademicSessionCountAggregateOutputType = {
   id: number
-  subject: number
+  groupId: number
+  teacherId: number
+  serviceId: number
   topic: number
   startTime: number
   endTime: number
+  durationMinutes: number
   zoomLink: number
+  wbLink: number
+  wbName: number
+  recordingLink: number
   status: number
-  teacherId: number
-  studentId: number
-  groupId: number
+  timesheetSubmissionStatus: number
+  timesheetSubmittedAt: number
+  isActive: number
+  createdAt: number
   _all: number
 }
 
 
+export type AcademicSessionAvgAggregateInputType = {
+  durationMinutes?: true
+}
+
+export type AcademicSessionSumAggregateInputType = {
+  durationMinutes?: true
+}
+
 export type AcademicSessionMinAggregateInputType = {
   id?: true
-  subject?: true
+  groupId?: true
+  teacherId?: true
+  serviceId?: true
   topic?: true
   startTime?: true
   endTime?: true
+  durationMinutes?: true
   zoomLink?: true
+  wbLink?: true
+  wbName?: true
+  recordingLink?: true
   status?: true
-  teacherId?: true
-  studentId?: true
-  groupId?: true
+  timesheetSubmissionStatus?: true
+  timesheetSubmittedAt?: true
+  isActive?: true
+  createdAt?: true
 }
 
 export type AcademicSessionMaxAggregateInputType = {
   id?: true
-  subject?: true
+  groupId?: true
+  teacherId?: true
+  serviceId?: true
   topic?: true
   startTime?: true
   endTime?: true
+  durationMinutes?: true
   zoomLink?: true
+  wbLink?: true
+  wbName?: true
+  recordingLink?: true
   status?: true
-  teacherId?: true
-  studentId?: true
-  groupId?: true
+  timesheetSubmissionStatus?: true
+  timesheetSubmittedAt?: true
+  isActive?: true
+  createdAt?: true
 }
 
 export type AcademicSessionCountAggregateInputType = {
   id?: true
-  subject?: true
+  groupId?: true
+  teacherId?: true
+  serviceId?: true
   topic?: true
   startTime?: true
   endTime?: true
+  durationMinutes?: true
   zoomLink?: true
+  wbLink?: true
+  wbName?: true
+  recordingLink?: true
   status?: true
-  teacherId?: true
-  studentId?: true
-  groupId?: true
+  timesheetSubmissionStatus?: true
+  timesheetSubmittedAt?: true
+  isActive?: true
+  createdAt?: true
   _all?: true
 }
 
@@ -143,6 +203,18 @@ export type AcademicSessionAggregateArgs<ExtArgs extends runtime.Types.Extension
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: AcademicSessionAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: AcademicSessionSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: AcademicSessionMinAggregateInputType
@@ -173,22 +245,33 @@ export type AcademicSessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   _count?: AcademicSessionCountAggregateInputType | true
+  _avg?: AcademicSessionAvgAggregateInputType
+  _sum?: AcademicSessionSumAggregateInputType
   _min?: AcademicSessionMinAggregateInputType
   _max?: AcademicSessionMaxAggregateInputType
 }
 
 export type AcademicSessionGroupByOutputType = {
   id: string
-  subject: string
+  groupId: string
+  teacherId: string
+  serviceId: string
   topic: string | null
   startTime: Date
   endTime: Date
+  durationMinutes: number | null
   zoomLink: string | null
+  wbLink: string | null
+  wbName: string | null
+  recordingLink: string | null
   status: string
-  teacherId: string
-  studentId: string
-  groupId: string | null
+  timesheetSubmissionStatus: string
+  timesheetSubmittedAt: Date | null
+  isActive: boolean
+  createdAt: Date
   _count: AcademicSessionCountAggregateOutputType | null
+  _avg: AcademicSessionAvgAggregateOutputType | null
+  _sum: AcademicSessionSumAggregateOutputType | null
   _min: AcademicSessionMinAggregateOutputType | null
   _max: AcademicSessionMaxAggregateOutputType | null
 }
@@ -213,35 +296,49 @@ export type AcademicSessionWhereInput = {
   OR?: Prisma.AcademicSessionWhereInput[]
   NOT?: Prisma.AcademicSessionWhereInput | Prisma.AcademicSessionWhereInput[]
   id?: Prisma.StringFilter<"AcademicSession"> | string
-  subject?: Prisma.StringFilter<"AcademicSession"> | string
+  groupId?: Prisma.StringFilter<"AcademicSession"> | string
+  teacherId?: Prisma.StringFilter<"AcademicSession"> | string
+  serviceId?: Prisma.StringFilter<"AcademicSession"> | string
   topic?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
   startTime?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
   endTime?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
+  durationMinutes?: Prisma.IntNullableFilter<"AcademicSession"> | number | null
   zoomLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  wbLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  wbName?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  recordingLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
   status?: Prisma.StringFilter<"AcademicSession"> | string
-  teacherId?: Prisma.StringFilter<"AcademicSession"> | string
-  studentId?: Prisma.StringFilter<"AcademicSession"> | string
-  groupId?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  timesheetSubmissionStatus?: Prisma.StringFilter<"AcademicSession"> | string
+  timesheetSubmittedAt?: Prisma.DateTimeNullableFilter<"AcademicSession"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"AcademicSession"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
+  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   attendances?: Prisma.AttendanceListRelationFilter
 }
 
 export type AcademicSessionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   topic?: Prisma.SortOrderInput | Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
   zoomLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  wbLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  wbName?: Prisma.SortOrderInput | Prisma.SortOrder
+  recordingLink?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
-  teacher?: Prisma.UserOrderByWithRelationInput
-  student?: Prisma.UserOrderByWithRelationInput
+  timesheetSubmissionStatus?: Prisma.SortOrder
+  timesheetSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
+  teacher?: Prisma.UserOrderByWithRelationInput
+  service?: Prisma.ServiceOrderByWithRelationInput
   attendances?: Prisma.AttendanceOrderByRelationAggregateInput
 }
 
@@ -250,35 +347,51 @@ export type AcademicSessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.AcademicSessionWhereInput | Prisma.AcademicSessionWhereInput[]
   OR?: Prisma.AcademicSessionWhereInput[]
   NOT?: Prisma.AcademicSessionWhereInput | Prisma.AcademicSessionWhereInput[]
-  subject?: Prisma.StringFilter<"AcademicSession"> | string
+  groupId?: Prisma.StringFilter<"AcademicSession"> | string
+  teacherId?: Prisma.StringFilter<"AcademicSession"> | string
+  serviceId?: Prisma.StringFilter<"AcademicSession"> | string
   topic?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
   startTime?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
   endTime?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
+  durationMinutes?: Prisma.IntNullableFilter<"AcademicSession"> | number | null
   zoomLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  wbLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  wbName?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  recordingLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
   status?: Prisma.StringFilter<"AcademicSession"> | string
-  teacherId?: Prisma.StringFilter<"AcademicSession"> | string
-  studentId?: Prisma.StringFilter<"AcademicSession"> | string
-  groupId?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  timesheetSubmissionStatus?: Prisma.StringFilter<"AcademicSession"> | string
+  timesheetSubmittedAt?: Prisma.DateTimeNullableFilter<"AcademicSession"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"AcademicSession"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
+  group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   attendances?: Prisma.AttendanceListRelationFilter
 }, "id">
 
 export type AcademicSessionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   topic?: Prisma.SortOrderInput | Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
   zoomLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  wbLink?: Prisma.SortOrderInput | Prisma.SortOrder
+  wbName?: Prisma.SortOrderInput | Prisma.SortOrder
+  recordingLink?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  timesheetSubmissionStatus?: Prisma.SortOrder
+  timesheetSubmittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
   _count?: Prisma.AcademicSessionCountOrderByAggregateInput
+  _avg?: Prisma.AcademicSessionAvgOrderByAggregateInput
   _max?: Prisma.AcademicSessionMaxOrderByAggregateInput
   _min?: Prisma.AcademicSessionMinOrderByAggregateInput
+  _sum?: Prisma.AcademicSessionSumOrderByAggregateInput
 }
 
 export type AcademicSessionScalarWhereWithAggregatesInput = {
@@ -286,107 +399,163 @@ export type AcademicSessionScalarWhereWithAggregatesInput = {
   OR?: Prisma.AcademicSessionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AcademicSessionScalarWhereWithAggregatesInput | Prisma.AcademicSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
-  subject?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
+  groupId?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
+  teacherId?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
+  serviceId?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
   topic?: Prisma.StringNullableWithAggregatesFilter<"AcademicSession"> | string | null
   startTime?: Prisma.DateTimeWithAggregatesFilter<"AcademicSession"> | Date | string
   endTime?: Prisma.DateTimeWithAggregatesFilter<"AcademicSession"> | Date | string
+  durationMinutes?: Prisma.IntNullableWithAggregatesFilter<"AcademicSession"> | number | null
   zoomLink?: Prisma.StringNullableWithAggregatesFilter<"AcademicSession"> | string | null
+  wbLink?: Prisma.StringNullableWithAggregatesFilter<"AcademicSession"> | string | null
+  wbName?: Prisma.StringNullableWithAggregatesFilter<"AcademicSession"> | string | null
+  recordingLink?: Prisma.StringNullableWithAggregatesFilter<"AcademicSession"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
-  teacherId?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
-  studentId?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
-  groupId?: Prisma.StringNullableWithAggregatesFilter<"AcademicSession"> | string | null
+  timesheetSubmissionStatus?: Prisma.StringWithAggregatesFilter<"AcademicSession"> | string
+  timesheetSubmittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AcademicSession"> | Date | string | null
+  isActive?: Prisma.BoolWithAggregatesFilter<"AcademicSession"> | boolean
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"AcademicSession"> | Date | string
 }
 
 export type AcademicSessionCreateInput = {
   id?: string
-  subject: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherSessionsInput
-  student: Prisma.UserCreateNestedOneWithoutStudentSessionsInput
-  group?: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  teacher: Prisma.UserCreateNestedOneWithoutTaughtSessionsInput
+  service: Prisma.ServiceCreateNestedOneWithoutSessionsInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateInput = {
   id?: string
-  subject: string
+  groupId: string
+  teacherId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacherId: string
-  studentId: string
-  groupId?: string | null
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherSessionsNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutStudentSessionsNestedInput
-  group?: Prisma.GroupUpdateOneWithoutSessionsNestedInput
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutSessionsNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutTaughtSessionsNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutSessionsNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateManyInput = {
   id?: string
-  subject: string
+  groupId: string
+  teacherId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacherId: string
-  studentId: string
-  groupId?: string | null
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
 }
 
 export type AcademicSessionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AcademicSessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AcademicSessionListRelationFilter = {
@@ -401,41 +570,70 @@ export type AcademicSessionOrderByRelationAggregateInput = {
 
 export type AcademicSessionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   topic?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
   zoomLink?: Prisma.SortOrder
+  wbLink?: Prisma.SortOrder
+  wbName?: Prisma.SortOrder
+  recordingLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  timesheetSubmissionStatus?: Prisma.SortOrder
+  timesheetSubmittedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+}
+
+export type AcademicSessionAvgOrderByAggregateInput = {
+  durationMinutes?: Prisma.SortOrder
 }
 
 export type AcademicSessionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   topic?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
   zoomLink?: Prisma.SortOrder
+  wbLink?: Prisma.SortOrder
+  wbName?: Prisma.SortOrder
+  recordingLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  timesheetSubmissionStatus?: Prisma.SortOrder
+  timesheetSubmittedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
 }
 
 export type AcademicSessionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  subject?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  teacherId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
   topic?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  durationMinutes?: Prisma.SortOrder
   zoomLink?: Prisma.SortOrder
+  wbLink?: Prisma.SortOrder
+  wbName?: Prisma.SortOrder
+  recordingLink?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  teacherId?: Prisma.SortOrder
-  studentId?: Prisma.SortOrder
-  groupId?: Prisma.SortOrder
+  timesheetSubmissionStatus?: Prisma.SortOrder
+  timesheetSubmittedAt?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+}
+
+export type AcademicSessionSumOrderByAggregateInput = {
+  durationMinutes?: Prisma.SortOrder
 }
 
 export type AcademicSessionScalarRelationFilter = {
@@ -450,24 +648,10 @@ export type AcademicSessionCreateNestedManyWithoutTeacherInput = {
   connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
 }
 
-export type AcademicSessionCreateNestedManyWithoutStudentInput = {
-  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStudentInput, Prisma.AcademicSessionUncheckedCreateWithoutStudentInput> | Prisma.AcademicSessionCreateWithoutStudentInput[] | Prisma.AcademicSessionUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutStudentInput | Prisma.AcademicSessionCreateOrConnectWithoutStudentInput[]
-  createMany?: Prisma.AcademicSessionCreateManyStudentInputEnvelope
-  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-}
-
 export type AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput = {
   create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutTeacherInput, Prisma.AcademicSessionUncheckedCreateWithoutTeacherInput> | Prisma.AcademicSessionCreateWithoutTeacherInput[] | Prisma.AcademicSessionUncheckedCreateWithoutTeacherInput[]
   connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutTeacherInput | Prisma.AcademicSessionCreateOrConnectWithoutTeacherInput[]
   createMany?: Prisma.AcademicSessionCreateManyTeacherInputEnvelope
-  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-}
-
-export type AcademicSessionUncheckedCreateNestedManyWithoutStudentInput = {
-  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStudentInput, Prisma.AcademicSessionUncheckedCreateWithoutStudentInput> | Prisma.AcademicSessionCreateWithoutStudentInput[] | Prisma.AcademicSessionUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutStudentInput | Prisma.AcademicSessionCreateOrConnectWithoutStudentInput[]
-  createMany?: Prisma.AcademicSessionCreateManyStudentInputEnvelope
   connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
 }
 
@@ -485,20 +669,6 @@ export type AcademicSessionUpdateManyWithoutTeacherNestedInput = {
   deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
 }
 
-export type AcademicSessionUpdateManyWithoutStudentNestedInput = {
-  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStudentInput, Prisma.AcademicSessionUncheckedCreateWithoutStudentInput> | Prisma.AcademicSessionCreateWithoutStudentInput[] | Prisma.AcademicSessionUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutStudentInput | Prisma.AcademicSessionCreateOrConnectWithoutStudentInput[]
-  upsert?: Prisma.AcademicSessionUpsertWithWhereUniqueWithoutStudentInput | Prisma.AcademicSessionUpsertWithWhereUniqueWithoutStudentInput[]
-  createMany?: Prisma.AcademicSessionCreateManyStudentInputEnvelope
-  set?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  disconnect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  delete?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  update?: Prisma.AcademicSessionUpdateWithWhereUniqueWithoutStudentInput | Prisma.AcademicSessionUpdateWithWhereUniqueWithoutStudentInput[]
-  updateMany?: Prisma.AcademicSessionUpdateManyWithWhereWithoutStudentInput | Prisma.AcademicSessionUpdateManyWithWhereWithoutStudentInput[]
-  deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
-}
-
 export type AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput = {
   create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutTeacherInput, Prisma.AcademicSessionUncheckedCreateWithoutTeacherInput> | Prisma.AcademicSessionCreateWithoutTeacherInput[] | Prisma.AcademicSessionUncheckedCreateWithoutTeacherInput[]
   connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutTeacherInput | Prisma.AcademicSessionCreateOrConnectWithoutTeacherInput[]
@@ -510,20 +680,6 @@ export type AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput = {
   connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
   update?: Prisma.AcademicSessionUpdateWithWhereUniqueWithoutTeacherInput | Prisma.AcademicSessionUpdateWithWhereUniqueWithoutTeacherInput[]
   updateMany?: Prisma.AcademicSessionUpdateManyWithWhereWithoutTeacherInput | Prisma.AcademicSessionUpdateManyWithWhereWithoutTeacherInput[]
-  deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
-}
-
-export type AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput = {
-  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStudentInput, Prisma.AcademicSessionUncheckedCreateWithoutStudentInput> | Prisma.AcademicSessionCreateWithoutStudentInput[] | Prisma.AcademicSessionUncheckedCreateWithoutStudentInput[]
-  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutStudentInput | Prisma.AcademicSessionCreateOrConnectWithoutStudentInput[]
-  upsert?: Prisma.AcademicSessionUpsertWithWhereUniqueWithoutStudentInput | Prisma.AcademicSessionUpsertWithWhereUniqueWithoutStudentInput[]
-  createMany?: Prisma.AcademicSessionCreateManyStudentInputEnvelope
-  set?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  disconnect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  delete?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
-  update?: Prisma.AcademicSessionUpdateWithWhereUniqueWithoutStudentInput | Prisma.AcademicSessionUpdateWithWhereUniqueWithoutStudentInput[]
-  updateMany?: Prisma.AcademicSessionUpdateManyWithWhereWithoutStudentInput | Prisma.AcademicSessionUpdateManyWithWhereWithoutStudentInput[]
   deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
 }
 
@@ -569,6 +725,56 @@ export type AcademicSessionUncheckedUpdateManyWithoutGroupNestedInput = {
   deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
 }
 
+export type AcademicSessionCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutServiceInput, Prisma.AcademicSessionUncheckedCreateWithoutServiceInput> | Prisma.AcademicSessionCreateWithoutServiceInput[] | Prisma.AcademicSessionUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutServiceInput | Prisma.AcademicSessionCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.AcademicSessionCreateManyServiceInputEnvelope
+  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+}
+
+export type AcademicSessionUncheckedCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutServiceInput, Prisma.AcademicSessionUncheckedCreateWithoutServiceInput> | Prisma.AcademicSessionCreateWithoutServiceInput[] | Prisma.AcademicSessionUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutServiceInput | Prisma.AcademicSessionCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.AcademicSessionCreateManyServiceInputEnvelope
+  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+}
+
+export type AcademicSessionUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutServiceInput, Prisma.AcademicSessionUncheckedCreateWithoutServiceInput> | Prisma.AcademicSessionCreateWithoutServiceInput[] | Prisma.AcademicSessionUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutServiceInput | Prisma.AcademicSessionCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.AcademicSessionUpsertWithWhereUniqueWithoutServiceInput | Prisma.AcademicSessionUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.AcademicSessionCreateManyServiceInputEnvelope
+  set?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  disconnect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  delete?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  update?: Prisma.AcademicSessionUpdateWithWhereUniqueWithoutServiceInput | Prisma.AcademicSessionUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.AcademicSessionUpdateManyWithWhereWithoutServiceInput | Prisma.AcademicSessionUpdateManyWithWhereWithoutServiceInput[]
+  deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
+}
+
+export type AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutServiceInput, Prisma.AcademicSessionUncheckedCreateWithoutServiceInput> | Prisma.AcademicSessionCreateWithoutServiceInput[] | Prisma.AcademicSessionUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutServiceInput | Prisma.AcademicSessionCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.AcademicSessionUpsertWithWhereUniqueWithoutServiceInput | Prisma.AcademicSessionUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.AcademicSessionCreateManyServiceInputEnvelope
+  set?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  disconnect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  delete?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  connect?: Prisma.AcademicSessionWhereUniqueInput | Prisma.AcademicSessionWhereUniqueInput[]
+  update?: Prisma.AcademicSessionUpdateWithWhereUniqueWithoutServiceInput | Prisma.AcademicSessionUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.AcademicSessionUpdateManyWithWhereWithoutServiceInput | Prisma.AcademicSessionUpdateManyWithWhereWithoutServiceInput[]
+  deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type AcademicSessionCreateNestedOneWithoutAttendancesInput = {
   create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutAttendancesInput, Prisma.AcademicSessionUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutAttendancesInput
@@ -585,27 +791,41 @@ export type AcademicSessionUpdateOneRequiredWithoutAttendancesNestedInput = {
 
 export type AcademicSessionCreateWithoutTeacherInput = {
   id?: string
-  subject: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  student: Prisma.UserCreateNestedOneWithoutStudentSessionsInput
-  group?: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  service: Prisma.ServiceCreateNestedOneWithoutSessionsInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutTeacherInput = {
   id?: string
-  subject: string
+  groupId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  studentId: string
-  groupId?: string | null
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutSessionInput
 }
 
@@ -616,41 +836,6 @@ export type AcademicSessionCreateOrConnectWithoutTeacherInput = {
 
 export type AcademicSessionCreateManyTeacherInputEnvelope = {
   data: Prisma.AcademicSessionCreateManyTeacherInput | Prisma.AcademicSessionCreateManyTeacherInput[]
-}
-
-export type AcademicSessionCreateWithoutStudentInput = {
-  id?: string
-  subject: string
-  topic?: string | null
-  startTime: Date | string
-  endTime: Date | string
-  zoomLink?: string | null
-  status?: string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherSessionsInput
-  group?: Prisma.GroupCreateNestedOneWithoutSessionsInput
-  attendances?: Prisma.AttendanceCreateNestedManyWithoutSessionInput
-}
-
-export type AcademicSessionUncheckedCreateWithoutStudentInput = {
-  id?: string
-  subject: string
-  topic?: string | null
-  startTime: Date | string
-  endTime: Date | string
-  zoomLink?: string | null
-  status?: string
-  teacherId: string
-  groupId?: string | null
-  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutSessionInput
-}
-
-export type AcademicSessionCreateOrConnectWithoutStudentInput = {
-  where: Prisma.AcademicSessionWhereUniqueInput
-  create: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStudentInput, Prisma.AcademicSessionUncheckedCreateWithoutStudentInput>
-}
-
-export type AcademicSessionCreateManyStudentInputEnvelope = {
-  data: Prisma.AcademicSessionCreateManyStudentInput | Prisma.AcademicSessionCreateManyStudentInput[]
 }
 
 export type AcademicSessionUpsertWithWhereUniqueWithoutTeacherInput = {
@@ -674,56 +859,61 @@ export type AcademicSessionScalarWhereInput = {
   OR?: Prisma.AcademicSessionScalarWhereInput[]
   NOT?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
   id?: Prisma.StringFilter<"AcademicSession"> | string
-  subject?: Prisma.StringFilter<"AcademicSession"> | string
+  groupId?: Prisma.StringFilter<"AcademicSession"> | string
+  teacherId?: Prisma.StringFilter<"AcademicSession"> | string
+  serviceId?: Prisma.StringFilter<"AcademicSession"> | string
   topic?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
   startTime?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
   endTime?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
+  durationMinutes?: Prisma.IntNullableFilter<"AcademicSession"> | number | null
   zoomLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  wbLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  wbName?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
+  recordingLink?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
   status?: Prisma.StringFilter<"AcademicSession"> | string
-  teacherId?: Prisma.StringFilter<"AcademicSession"> | string
-  studentId?: Prisma.StringFilter<"AcademicSession"> | string
-  groupId?: Prisma.StringNullableFilter<"AcademicSession"> | string | null
-}
-
-export type AcademicSessionUpsertWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.AcademicSessionWhereUniqueInput
-  update: Prisma.XOR<Prisma.AcademicSessionUpdateWithoutStudentInput, Prisma.AcademicSessionUncheckedUpdateWithoutStudentInput>
-  create: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStudentInput, Prisma.AcademicSessionUncheckedCreateWithoutStudentInput>
-}
-
-export type AcademicSessionUpdateWithWhereUniqueWithoutStudentInput = {
-  where: Prisma.AcademicSessionWhereUniqueInput
-  data: Prisma.XOR<Prisma.AcademicSessionUpdateWithoutStudentInput, Prisma.AcademicSessionUncheckedUpdateWithoutStudentInput>
-}
-
-export type AcademicSessionUpdateManyWithWhereWithoutStudentInput = {
-  where: Prisma.AcademicSessionScalarWhereInput
-  data: Prisma.XOR<Prisma.AcademicSessionUpdateManyMutationInput, Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentInput>
+  timesheetSubmissionStatus?: Prisma.StringFilter<"AcademicSession"> | string
+  timesheetSubmittedAt?: Prisma.DateTimeNullableFilter<"AcademicSession"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"AcademicSession"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"AcademicSession"> | Date | string
 }
 
 export type AcademicSessionCreateWithoutGroupInput = {
   id?: string
-  subject: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherSessionsInput
-  student: Prisma.UserCreateNestedOneWithoutStudentSessionsInput
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  teacher: Prisma.UserCreateNestedOneWithoutTaughtSessionsInput
+  service: Prisma.ServiceCreateNestedOneWithoutSessionsInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutGroupInput = {
   id?: string
-  subject: string
+  teacherId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacherId: string
-  studentId: string
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutSessionInput
 }
 
@@ -752,30 +942,109 @@ export type AcademicSessionUpdateManyWithWhereWithoutGroupInput = {
   data: Prisma.XOR<Prisma.AcademicSessionUpdateManyMutationInput, Prisma.AcademicSessionUncheckedUpdateManyWithoutGroupInput>
 }
 
-export type AcademicSessionCreateWithoutAttendancesInput = {
+export type AcademicSessionCreateWithoutServiceInput = {
   id?: string
-  subject: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacher: Prisma.UserCreateNestedOneWithoutTeacherSessionsInput
-  student: Prisma.UserCreateNestedOneWithoutStudentSessionsInput
-  group?: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  teacher: Prisma.UserCreateNestedOneWithoutTaughtSessionsInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutSessionInput
+}
+
+export type AcademicSessionUncheckedCreateWithoutServiceInput = {
+  id?: string
+  groupId: string
+  teacherId: string
+  topic?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  durationMinutes?: number | null
+  zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
+  status?: string
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutSessionInput
+}
+
+export type AcademicSessionCreateOrConnectWithoutServiceInput = {
+  where: Prisma.AcademicSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicSessionCreateWithoutServiceInput, Prisma.AcademicSessionUncheckedCreateWithoutServiceInput>
+}
+
+export type AcademicSessionCreateManyServiceInputEnvelope = {
+  data: Prisma.AcademicSessionCreateManyServiceInput | Prisma.AcademicSessionCreateManyServiceInput[]
+}
+
+export type AcademicSessionUpsertWithWhereUniqueWithoutServiceInput = {
+  where: Prisma.AcademicSessionWhereUniqueInput
+  update: Prisma.XOR<Prisma.AcademicSessionUpdateWithoutServiceInput, Prisma.AcademicSessionUncheckedUpdateWithoutServiceInput>
+  create: Prisma.XOR<Prisma.AcademicSessionCreateWithoutServiceInput, Prisma.AcademicSessionUncheckedCreateWithoutServiceInput>
+}
+
+export type AcademicSessionUpdateWithWhereUniqueWithoutServiceInput = {
+  where: Prisma.AcademicSessionWhereUniqueInput
+  data: Prisma.XOR<Prisma.AcademicSessionUpdateWithoutServiceInput, Prisma.AcademicSessionUncheckedUpdateWithoutServiceInput>
+}
+
+export type AcademicSessionUpdateManyWithWhereWithoutServiceInput = {
+  where: Prisma.AcademicSessionScalarWhereInput
+  data: Prisma.XOR<Prisma.AcademicSessionUpdateManyMutationInput, Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceInput>
+}
+
+export type AcademicSessionCreateWithoutAttendancesInput = {
+  id?: string
+  topic?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  durationMinutes?: number | null
+  zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
+  status?: string
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  teacher: Prisma.UserCreateNestedOneWithoutTaughtSessionsInput
+  service: Prisma.ServiceCreateNestedOneWithoutSessionsInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutAttendancesInput = {
   id?: string
-  subject: string
+  groupId: string
+  teacherId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacherId: string
-  studentId: string
-  groupId?: string | null
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
 }
 
 export type AcademicSessionCreateOrConnectWithoutAttendancesInput = {
@@ -796,178 +1065,276 @@ export type AcademicSessionUpdateToOneWithWhereWithoutAttendancesInput = {
 
 export type AcademicSessionUpdateWithoutAttendancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherSessionsNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutStudentSessionsNestedInput
-  group?: Prisma.GroupUpdateOneWithoutSessionsNestedInput
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutSessionsNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutTaughtSessionsNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutSessionsNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutAttendancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AcademicSessionCreateManyTeacherInput = {
   id?: string
-  subject: string
+  groupId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  studentId: string
-  groupId?: string | null
-}
-
-export type AcademicSessionCreateManyStudentInput = {
-  id?: string
-  subject: string
-  topic?: string | null
-  startTime: Date | string
-  endTime: Date | string
-  zoomLink?: string | null
-  status?: string
-  teacherId: string
-  groupId?: string | null
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
 }
 
 export type AcademicSessionUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  student?: Prisma.UserUpdateOneRequiredWithoutStudentSessionsNestedInput
-  group?: Prisma.GroupUpdateOneWithoutSessionsNestedInput
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutSessionsNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutSessionsNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutTeacherInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type AcademicSessionUpdateWithoutStudentInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherSessionsNestedInput
-  group?: Prisma.GroupUpdateOneWithoutSessionsNestedInput
-  attendances?: Prisma.AttendanceUpdateManyWithoutSessionNestedInput
-}
-
-export type AcademicSessionUncheckedUpdateWithoutStudentInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutSessionNestedInput
-}
-
-export type AcademicSessionUncheckedUpdateManyWithoutStudentInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
-  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type AcademicSessionCreateManyGroupInput = {
   id?: string
-  subject: string
+  teacherId: string
+  serviceId: string
   topic?: string | null
   startTime: Date | string
   endTime: Date | string
+  durationMinutes?: number | null
   zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
   status?: string
-  teacherId: string
-  studentId: string
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
 }
 
 export type AcademicSessionUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacher?: Prisma.UserUpdateOneRequiredWithoutTeacherSessionsNestedInput
-  student?: Prisma.UserUpdateOneRequiredWithoutStudentSessionsNestedInput
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  teacher?: Prisma.UserUpdateOneRequiredWithoutTaughtSessionsNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutSessionsNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AcademicSessionCreateManyServiceInput = {
+  id?: string
+  groupId: string
+  teacherId: string
+  topic?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  durationMinutes?: number | null
+  zoomLink?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  recordingLink?: string | null
+  status?: string
+  timesheetSubmissionStatus?: string
+  timesheetSubmittedAt?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+}
+
+export type AcademicSessionUpdateWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutSessionsNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutTaughtSessionsNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutSessionNestedInput
+}
+
+export type AcademicSessionUncheckedUpdateWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
   teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  studentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutSessionNestedInput
+}
+
+export type AcademicSessionUncheckedUpdateManyWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  timesheetSubmittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -1003,105 +1370,140 @@ export type AcademicSessionCountOutputTypeCountAttendancesArgs<ExtArgs extends r
 
 export type AcademicSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  subject?: boolean
+  groupId?: boolean
+  teacherId?: boolean
+  serviceId?: boolean
   topic?: boolean
   startTime?: boolean
   endTime?: boolean
+  durationMinutes?: boolean
   zoomLink?: boolean
+  wbLink?: boolean
+  wbName?: boolean
+  recordingLink?: boolean
   status?: boolean
-  teacherId?: boolean
-  studentId?: boolean
-  groupId?: boolean
+  timesheetSubmissionStatus?: boolean
+  timesheetSubmittedAt?: boolean
+  isActive?: boolean
+  createdAt?: boolean
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  group?: boolean | Prisma.AcademicSession$groupArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   attendances?: boolean | Prisma.AcademicSession$attendancesArgs<ExtArgs>
   _count?: boolean | Prisma.AcademicSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["academicSession"]>
 
 export type AcademicSessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  subject?: boolean
+  groupId?: boolean
+  teacherId?: boolean
+  serviceId?: boolean
   topic?: boolean
   startTime?: boolean
   endTime?: boolean
+  durationMinutes?: boolean
   zoomLink?: boolean
+  wbLink?: boolean
+  wbName?: boolean
+  recordingLink?: boolean
   status?: boolean
-  teacherId?: boolean
-  studentId?: boolean
-  groupId?: boolean
+  timesheetSubmissionStatus?: boolean
+  timesheetSubmittedAt?: boolean
+  isActive?: boolean
+  createdAt?: boolean
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  group?: boolean | Prisma.AcademicSession$groupArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["academicSession"]>
 
 export type AcademicSessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  subject?: boolean
+  groupId?: boolean
+  teacherId?: boolean
+  serviceId?: boolean
   topic?: boolean
   startTime?: boolean
   endTime?: boolean
+  durationMinutes?: boolean
   zoomLink?: boolean
+  wbLink?: boolean
+  wbName?: boolean
+  recordingLink?: boolean
   status?: boolean
-  teacherId?: boolean
-  studentId?: boolean
-  groupId?: boolean
+  timesheetSubmissionStatus?: boolean
+  timesheetSubmittedAt?: boolean
+  isActive?: boolean
+  createdAt?: boolean
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  group?: boolean | Prisma.AcademicSession$groupArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["academicSession"]>
 
 export type AcademicSessionSelectScalar = {
   id?: boolean
-  subject?: boolean
+  groupId?: boolean
+  teacherId?: boolean
+  serviceId?: boolean
   topic?: boolean
   startTime?: boolean
   endTime?: boolean
+  durationMinutes?: boolean
   zoomLink?: boolean
+  wbLink?: boolean
+  wbName?: boolean
+  recordingLink?: boolean
   status?: boolean
-  teacherId?: boolean
-  studentId?: boolean
-  groupId?: boolean
+  timesheetSubmissionStatus?: boolean
+  timesheetSubmittedAt?: boolean
+  isActive?: boolean
+  createdAt?: boolean
 }
 
-export type AcademicSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "subject" | "topic" | "startTime" | "endTime" | "zoomLink" | "status" | "teacherId" | "studentId" | "groupId", ExtArgs["result"]["academicSession"]>
+export type AcademicSessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "teacherId" | "serviceId" | "topic" | "startTime" | "endTime" | "durationMinutes" | "zoomLink" | "wbLink" | "wbName" | "recordingLink" | "status" | "timesheetSubmissionStatus" | "timesheetSubmittedAt" | "isActive" | "createdAt", ExtArgs["result"]["academicSession"]>
 export type AcademicSessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  group?: boolean | Prisma.AcademicSession$groupArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   attendances?: boolean | Prisma.AcademicSession$attendancesArgs<ExtArgs>
   _count?: boolean | Prisma.AcademicSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AcademicSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  group?: boolean | Prisma.AcademicSession$groupArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 export type AcademicSessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  group?: boolean | Prisma.AcademicSession$groupArgs<ExtArgs>
+  service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 
 export type $AcademicSessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AcademicSession"
   objects: {
+    group: Prisma.$GroupPayload<ExtArgs>
     teacher: Prisma.$UserPayload<ExtArgs>
-    student: Prisma.$UserPayload<ExtArgs>
-    group: Prisma.$GroupPayload<ExtArgs> | null
+    service: Prisma.$ServicePayload<ExtArgs>
     attendances: Prisma.$AttendancePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    subject: string
+    groupId: string
+    teacherId: string
+    serviceId: string
     topic: string | null
     startTime: Date
     endTime: Date
+    durationMinutes: number | null
     zoomLink: string | null
+    wbLink: string | null
+    wbName: string | null
+    recordingLink: string | null
     status: string
-    teacherId: string
-    studentId: string
-    groupId: string | null
+    timesheetSubmissionStatus: string
+    timesheetSubmittedAt: Date | null
+    isActive: boolean
+    createdAt: Date
   }, ExtArgs["result"]["academicSession"]>
   composites: {}
 }
@@ -1496,9 +1898,9 @@ readonly fields: AcademicSessionFieldRefs;
  */
 export interface Prisma__AcademicSessionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   teacher<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  group<T extends Prisma.AcademicSession$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSession$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   attendances<T extends Prisma.AcademicSession$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSession$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1530,15 +1932,22 @@ export interface Prisma__AcademicSessionClient<T, Null = never, ExtArgs extends 
  */
 export interface AcademicSessionFieldRefs {
   readonly id: Prisma.FieldRef<"AcademicSession", 'String'>
-  readonly subject: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly groupId: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly teacherId: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly serviceId: Prisma.FieldRef<"AcademicSession", 'String'>
   readonly topic: Prisma.FieldRef<"AcademicSession", 'String'>
   readonly startTime: Prisma.FieldRef<"AcademicSession", 'DateTime'>
   readonly endTime: Prisma.FieldRef<"AcademicSession", 'DateTime'>
+  readonly durationMinutes: Prisma.FieldRef<"AcademicSession", 'Int'>
   readonly zoomLink: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly wbLink: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly wbName: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly recordingLink: Prisma.FieldRef<"AcademicSession", 'String'>
   readonly status: Prisma.FieldRef<"AcademicSession", 'String'>
-  readonly teacherId: Prisma.FieldRef<"AcademicSession", 'String'>
-  readonly studentId: Prisma.FieldRef<"AcademicSession", 'String'>
-  readonly groupId: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly timesheetSubmissionStatus: Prisma.FieldRef<"AcademicSession", 'String'>
+  readonly timesheetSubmittedAt: Prisma.FieldRef<"AcademicSession", 'DateTime'>
+  readonly isActive: Prisma.FieldRef<"AcademicSession", 'Boolean'>
+  readonly createdAt: Prisma.FieldRef<"AcademicSession", 'DateTime'>
 }
     
 
@@ -1935,25 +2344,6 @@ export type AcademicSessionDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many AcademicSessions to delete.
    */
   limit?: number
-}
-
-/**
- * AcademicSession.group
- */
-export type AcademicSession$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Group
-   */
-  select?: Prisma.GroupSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Group
-   */
-  omit?: Prisma.GroupOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.GroupInclude<ExtArgs> | null
-  where?: Prisma.GroupWhereInput
 }
 
 /**
