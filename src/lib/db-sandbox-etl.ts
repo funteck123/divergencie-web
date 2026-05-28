@@ -333,15 +333,34 @@ export async function runSandboxETL() {
 
     for (const row of servicesRows) {
       const batchCode = row["Batch"]?.toString().trim();
-      const subjectCode = row["Subject Code"]?.toString().trim();
-      const subjectName = row["Subject Name"]?.toString().trim();
+      let subjectCode = row["Subject Code"]?.toString().trim() || null;
+      let subjectName = row["Subject Name"]?.toString().trim();
       const courseClass = row["Course/Class"]?.toString().trim();
       const board = row["Board"]?.toString().trim();
       const instructor = row["Instructor"]?.toString().trim();
       const currency = row["Currency"]?.toString().trim();
       const rate = parseFloat(row["Rate"]) || 0;
 
-      if (!batchCode || !subjectCode || !currency) continue;
+      if (!batchCode || !currency) continue;
+
+      // Manual correction for Batch T4 Cambridge IGCSE subject codes
+      if (batchCode === "T4" && board === "Cambridge" && courseClass === "IGCSE") {
+        if (subjectName === "English") {
+          subjectCode = "0510";
+        } else if (subjectName === "Mathematics") {
+          subjectCode = "0580";
+        } else if (subjectName === "Science") {
+          subjectCode = null; // Science isn't a real subject, keep null
+        }
+      }
+
+      // If subjectName is empty, assign a robust fallback
+      if (!subjectName) {
+        if (row["Full Subject Name"]) {
+          subjectName = row["Full Subject Name"].toString().replace(`${batchCode} ${board || ""} ${courseClass || ""}`, "").replace(`- ${currency}`, "").trim();
+        }
+        subjectName = subjectName || "Tuition";
+      }
 
       let group = await tx.group.findUnique({ where: { code: batchCode } });
       if (!group) {
@@ -377,7 +396,10 @@ export async function runSandboxETL() {
           isActive: true
         }
       });
-      const key = `${batchCode}_${subjectCode}`.toLowerCase();
+      
+      const key = subjectCode 
+        ? `${batchCode}_${subjectCode}`.toLowerCase() 
+        : `${batchCode}_${subjectName}`.toLowerCase();
       serviceMap.set(key, createdService);
     }
 
@@ -388,8 +410,36 @@ export async function runSandboxETL() {
       for (const row of rows) {
         const name = row["NAME"]?.toString().trim();
         if (!name) continue;
-        const position = row["INTERVIEW POSITION"]?.toString().trim() || "teacher";
-        const email = row["EMAIL"]?.toString().trim() || `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.recruit@divergencie.co.uk`;
+        
+        let position = row["INTERVIEW POSITION"]?.toString().trim() || "teacher";
+        
+        // Mapped candidate email & role corrections based on user instructions
+        const RECRUIT_EMAILS: Record<string, string> = {
+          "Emelisa P.": "emelisa.p+teacher.email@gmail.com",
+          "Heidi A.": "heidi.a+teacher.email@gmail.com",
+          "Syed Arqam": "syed.arqam+teacher.email@gmail.com",
+          "Chirag Kar": "chirag.kar+teacher.email@gmail.com",
+          "Devin": "devin+teacher.email@gmail.com",
+          "Mahrukh Altaf": "mahrukh.altaf+staff.email@gmail.com",
+          "Seher Imtiaz": "seher.imtiaz+staff.email@gmail.com",
+          "Maryam": "maryam+teacher.email@gmail.com",
+          "Atiqa Fatima": "atiqachattani@gmail.com"
+        };
+        
+        let email = row["EMAIL"]?.toString().trim();
+        if (!email && RECRUIT_EMAILS[name]) {
+          email = RECRUIT_EMAILS[name];
+        }
+        if (!email) {
+          email = `${name.toLowerCase().replace(/[^a-z0-9]/g, "")}.recruit@divergencie.co.uk`;
+        }
+
+        // Align candidate position role
+        if (name === "Mahrukh Altaf" || name === "Seher Imtiaz" || name === "Atiqa Fatima") {
+          position = "staff";
+        } else if (name === "Emelisa P." || name === "Heidi A." || name === "Syed Arqam" || name === "Chirag Kar" || name === "Devin" || name === "Maryam") {
+          position = "teacher";
+        }
         const statusRaw = row["STATUS"]?.toString().trim() || "Unavailable";
         const status = statusRaw.toLowerCase() === "available" ? "active" : "inactive";
 
@@ -713,9 +763,20 @@ export async function runSandboxETL() {
         // Resolve student
         let student = userCache.get(studentName.toLowerCase()) || userCache.get(`${studentName.toLowerCase()}_student`);
         if (!student) {
+          // Generate unique email based on user's manual formula
+          const parts = studentName.split(/\s+/);
+          const firstName = parts[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+          const lastName = parts.slice(1).join("").toLowerCase().replace(/[^a-z0-9]/g, "");
+          let email = "";
+          if (lastName) {
+            email = `${firstName}.${lastName}+student.email@divergencie.co.uk`;
+          } else {
+            email = `${firstName}+student.email@divergencie.co.uk`;
+          }
+
           student = await tx.user.create({
             data: {
-              email: `${studentName.toLowerCase().replace(/[^a-z0-9]/g, "")}@divergencie.co.uk`,
+              email,
               name: studentName,
               role: "student",
               isActive: status === "Active"
@@ -780,7 +841,12 @@ export async function runSandboxETL() {
             const batchPrefix = subTrimmed.split(" ")[0];
             const subjectCodeMatch = subTrimmed.match(/\b(\d{4})\b/);
             const subjectCode = subjectCodeMatch ? subjectCodeMatch[1] : "";
-            const key = `${batchPrefix}_${subjectCode}`.toLowerCase();
+            
+            let key = `${batchPrefix}_${subjectCode}`.toLowerCase();
+            if (!subjectCode) {
+              const namePart = subTrimmed.replace(batchPrefix, "").trim();
+              key = `${batchPrefix}_${namePart}`.toLowerCase();
+            }
 
             // Find catalogue service
             let service = serviceMap.get(key);
