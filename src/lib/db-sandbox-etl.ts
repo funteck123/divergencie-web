@@ -261,7 +261,7 @@ export async function runSandboxETL() {
     });
 
     // 3. PARSE XLSX WORKBOOK SHEETS DIRECTLY
-    const xlsxPath = "Data/DC Database 2026.xlsx";
+    const xlsxPath = "Data/DC Database 2026_Cleaned_2026-05-29.xlsx";
     if (!fs.existsSync(xlsxPath)) {
       throw new Error(`XLSX ground truth not found at: ${xlsxPath}`);
     }
@@ -927,7 +927,7 @@ export async function runSandboxETL() {
 
     // 5. PARSE STAFF PAYMENTS OPERATIONAL DATA (GROUND TRUTH)
     console.log("[ETL] Reading Staff Claims operational ground truth...");
-    const claimSheet = wb.Sheets["Copy of Staff_Payments"];
+    const claimSheet = wb.Sheets["Staff_Payments"];
     if (claimSheet) {
       const staffRows = XLSX.utils.sheet_to_json<any[]>(claimSheet, { header: 1, defval: "" });
       let currentMonth = "December_of_2023";
