@@ -113,7 +113,7 @@ export async function GET(req: Request) {
     const counts = {
       users: await sandboxPrisma.user.count(),
       groups: await sandboxPrisma.group.count(),
-      enrollments: await sandboxPrisma.enrollment.count(),
+      enrollments: await sandboxPrisma.studentEnrolmentItem.count(),
       packageItems: await sandboxPrisma.invoiceLineItem.count(),
       studentInvoices: await sandboxPrisma.studentInvoice.count(),
       claims: await sandboxPrisma.claim.count(),
@@ -121,7 +121,7 @@ export async function GET(req: Request) {
       transactions: await sandboxPrisma.accountTransaction.count(),
       ledgerEntries: await sandboxPrisma.ledgerEntry.count(),
       summaries: await sandboxPrisma.deptBudget.count(),
-      attendance: await sandboxPrisma.attendance.count(),
+      attendance: await sandboxPrisma.sessionAttendance.count(),
       sessions: await sandboxPrisma.academicSession.count(),
       tickets: await sandboxPrisma.ticket.count(),
       meetings: await sandboxPrisma.meeting.count(),
@@ -146,7 +146,7 @@ export async function GET(req: Request) {
       include: { bankAccount: { select: { label: true } } },
       orderBy: { id: "desc" }
     });
-    const meetings = await sandboxPrisma.meeting.findMany({
+    const meetings = await sandboxPrisma.generalMeeting.findMany({
       take: 10,
       include: { participants: { include: { user: { select: { name: true, role: true } } } } },
       orderBy: { dateTime: "desc" }
@@ -254,10 +254,24 @@ export async function POST(req: Request) {
         const activeService = await sandboxPrisma.service.findFirst({ where: { isActive: true } });
         if (!activeService) continue;
 
-        const enrollment = await sandboxPrisma.enrollment.upsert({
-          where: { studentId_serviceId: { studentId: student.id, serviceId: activeService.id } },
-          update: { status: "active" },
-          create: { studentId: student.id, serviceId: activeService.id, status: "active" }
+        let enrolmentList = await sandboxPrisma.studentEnrolmentList.findFirst({
+          where: { studentId: student.id }
+        });
+        if (!enrolmentList) {
+          enrolmentList = await sandboxPrisma.studentEnrolmentList.create({
+            data: { studentId: student.id, serviceType: "TUITION" }
+          });
+        }
+
+        const enrollment = await sandboxPrisma.studentEnrolmentItem.findFirst({
+          where: { studentId: student.id, serviceId: activeService.id }
+        }) || await sandboxPrisma.studentEnrolmentItem.create({
+          data: {
+            enrolmentListId: enrolmentList.id,
+            studentId: student.id,
+            serviceId: activeService.id,
+            status: "ACTIVE"
+          }
         });
 
         const invoice = await sandboxPrisma.studentInvoice.create({
@@ -276,8 +290,8 @@ export async function POST(req: Request) {
         await sandboxPrisma.invoiceLineItem.create({
           data: {
             invoiceId: invoice.id,
-            enrollmentId: enrollment.id,
-            serviceType: "batch_tuition",
+            enrolmentItemId: enrollment.id,
+            lineType: "batch_tuition",
             serviceNameSnapshot: activeService.fullSubjectName,
             teacherNameSnapshot: activeService.instructorNameSnapshot,
             currency: "INR",
@@ -301,12 +315,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, message: "No unpaid invoices found to simulate cancellation." });
       }
 
-      const activeEnrollment = await sandboxPrisma.enrollment.findFirst({
+      const activeEnrollment = await sandboxPrisma.studentEnrolmentItem.findFirst({
         where: { studentId: unpaidInvoice.studentId }
       });
 
       if (activeEnrollment) {
-        await sandboxPrisma.enrollment.update({
+        await sandboxPrisma.studentEnrolmentItem.update({
           where: { id: activeEnrollment.id },
           data: { status: "paused" }
         });

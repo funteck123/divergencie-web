@@ -13,13 +13,13 @@ const prisma = new PrismaClient({
 async function main() {
   console.log("=== SandBox Database Verification ===");
   const models = [
-    "user", "group", "academicSession", "attendance", "assignment", "syllabusItem",
+    "user", "group", "academicSession", "sessionAttendance", "assignment", "syllabusItem",
     "studentProgress", "doubt", "recording", "ticket", "ticketCategory", "ticketMessage",
-    "ticketHistory", "ticketPermission", "referral", "meeting", "meetingParticipant",
+    "ticketHistory", "ticketPermission", "referral", "generalMeeting", "meetingParticipant",
     "candidate", "lead", "announcement", "accessLog", "mockResult",
     "studentProfile", "teacherProfile", "staffProfile", "parentProfile", "ambassadorProfile",
     "invoiceMonth", "studentStatus", "canvaDesign", "booklet", "gcrClassroom", "backlogItem", "sprintItem",
-    "currencyRate", "textFormat", "bankAccount", "service", "enrollment", "discount",
+    "currencyRate", "textFormat", "bankAccount", "service", "studentEnrolmentItem", "discount",
     "studentInvoice", "invoiceLineItem", "claim", "accountTransaction", "ledgerEntry",
     "deptBudget", "budgetSubCategory", "budgetUtilisation", "ambassadorDeliverable", "ambassadorEarning", "contentBankItem"
   ];

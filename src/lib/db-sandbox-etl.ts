@@ -77,15 +77,26 @@ export async function runSandboxETL() {
 
   const tablenames = [
     "BudgetUtilisation", "BudgetSubCategory", "DeptBudget",
-    "LedgerEntry", "AccountTransaction", "BankAccount",
-    "InvoiceLineItem", "StudentInvoice", "Enrollment", "Discount",
-    "Attendance", "AcademicSession", "Assignment", "MockResult", "StudentProgress", "Doubt",
-    "TicketMessage", "TicketHistory", "Ticket", "TicketCategory", "TicketPermission",
-    "AmbassadorDeliverable", "AmbassadorEarning", "Referral",
-    "MeetingParticipant", "Meeting", "ContentBankItem",
+    "LedgerEntry", "AccountTransaction", "BankAccount", "PaymentMethod", "PaymentMethodType",
+    "InvoiceLineItem", "StudentInvoice", "Discount",
+    "SessionAttendance", "AcademicSession", "Assignment", "MockResult", "StudentProgress", "Doubt",
+    "TicketMessage", "TicketHistory", "Ticket", "TicketCategory", "TicketPermission", "UserTicketCategory",
+    "AmbassadorDeliverable", "AmbassadorEarning", "Referral", "ReferralClick",
+    "MeetingParticipant", "Meeting", "MeetingAttendance",
+    "AmbassadorMeeting", "AmbassadorMeetingAttendance", "CalendarItem",
     "StudentProfile", "TeacherProfile", "StaffProfile", "ParentProfile", "AmbassadorProfile",
     "Service", "Group", "User", "SyllabusItem", "Candidate", "Lead", "Recording", "MarketingPost", "AccessLog", "Announcement",
-    "CanvaDesign", "Booklet", "GcrClassroom", "StudentStatus", "BacklogItem", "SprintItem", "CurrencyRate", "TextFormat", "InvoiceMonth"
+    "CanvaDesign", "Booklet", "GcrClassroom", "StudentStatus", "BacklogItem", "SprintItem", "CurrencyRate", "TextFormat", "InvoiceMonth",
+    "ContentBankItem", "ContentType", "KnowledgeBankDomain", "KnowledgeBankList", "KnowledgeBankItem", "OrgBacklogBank", "BacklogItemChangeLog",
+    "MeetingSprintList", "MeetingSprintItem", "MeetingBacklogList", "MeetingBacklogItem", "GeneralMeeting",
+    "StudentEnrolmentList", "StudentEnrolmentItem", "StudentEnrolmentItemStatusHistory",
+    "TeacherEnrolmentList", "TeacherEnrolmentItem", "TeacherEnrolmentItemStatusHistory",
+    "StaffEnrolmentList", "StaffEnrolmentItem", "StaffEnrolmentItemStatusHistory",
+    "AmbassadorEnrolmentList", "AmbassadorEnrolmentItem", "AmbassadorEnrolmentItemStatusHistory",
+    "AmbassadorCommissionList", "AmbassadorCommissionItem", "AmbassadorCommissionItemStatusHistory", "AmbassadorCommissionRateChangeLog",
+    "ServiceSchedule", "ScheduleOccurrence", "ScheduleOccurrenceStatusHistory", "ScheduleChangeRequest",
+    "StaffServiceSchedule", "StaffScheduleOccurrence", "StaffScheduleOccurrenceStatusHistory", "StaffScheduleChangeRequest",
+    "AmbassadorServiceSchedule", "AmbassadorScheduleOccurrence", "AmbassadorScheduleOccurrenceStatusHistory", "AmbassadorScheduleChangeRequest"
   ];
 
   for (const table of tablenames) {
@@ -113,16 +124,52 @@ export async function runSandboxETL() {
           role: u.role,
           dept: u.dept || null,
           supervisor: u.supervisor || false,
-          financeApprovedFlag: false,
           isActive: u.active ?? true,
           passwordHash: u.passwordHash || null,
           referralCode: u.referralCode || null,
-          detectedCountry: null,
-          billingAddress: u.address || null,
+          country: null,
           parentId: null,
           createdAt: u.createdAt || new Date()
         }
       });
+
+      // Create corresponding profiles
+      if (u.role === "student") {
+        await tx.studentProfile.create({
+          data: {
+            userId: u.id,
+            status: "ACTIVE"
+          }
+        });
+      } else if (u.role === "teacher") {
+        await tx.teacherProfile.create({
+          data: {
+            userId: u.id
+          }
+        });
+      } else if (u.role === "staff") {
+        await tx.staffProfile.create({
+          data: {
+            userId: u.id,
+            status: "ACTIVE",
+            roleTitle: "Staff",
+            dept: u.dept || "PR",
+            isSupervisor: u.supervisor || false
+          }
+        });
+      } else if (u.role === "management") {
+        // Management has both teacher and staff profiles for full system actions
+        await tx.teacherProfile.create({ data: { userId: u.id } });
+        await tx.staffProfile.create({
+          data: {
+            userId: u.id,
+            status: "ACTIVE",
+            roleTitle: "Management",
+            dept: u.dept || "Management",
+            isSupervisor: true
+          }
+        });
+      }
     }
 
     // Update parentIds for self-join mapping after all users exist
@@ -203,8 +250,10 @@ export async function runSandboxETL() {
     const allUsersInit = await tx.user.findMany();
     const userCache = new Map<string, any>();
     for (const u of allUsersInit) {
-      userCache.set(u.name.toLowerCase(), u);
-      userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
+      if (u.name) {
+        userCache.set(u.name.toLowerCase(), u);
+        userCache.set(`${u.name.toLowerCase()}_${u.role}`, u);
+      }
     }
     const managementUser = allUsersInit.find(u => u.role === "management") || allUsersInit[0];
 
@@ -226,8 +275,8 @@ export async function runSandboxETL() {
 
     // Seed BankAccounts for Atiqa & Akhtar
     console.log("[ETL] Seeding standard BankAccounts (Atiqa & Akhtar)...");
-    const atiqaUser = allUsersInit.find(u => u.name.toLowerCase().includes("atiqa")) || managementUser;
-    const akhtarUser = allUsersInit.find(u => u.name.toLowerCase().includes("akhtar")) || managementUser;
+    const atiqaUser = allUsersInit.find(u => u.name?.toLowerCase().includes("atiqa")) || managementUser;
+    const akhtarUser = allUsersInit.find(u => u.name?.toLowerCase().includes("akhtar")) || managementUser;
 
     const atiqaBank = await tx.bankAccount.create({
       data: {
@@ -673,10 +722,10 @@ export async function runSandboxETL() {
               whatsappNumber: row["WhatsApp Number"]?.toString().trim() || null,
               parentWhatsappNumber: row["Parent WhatsApp Number"]?.toString().trim() || null,
               timeZone: row["Time Zone"]?.toString().trim() || null,
-              timesheetUrl: row["Timesheet"]?.toString().trim() || null,
+              timesheetURL: row["Timesheet"]?.toString().trim() || null,
               gcrLink: row["GCR"]?.toString().trim() || null,
-              scheduleLink: row["Schedule"]?.toString().trim() || null,
-              progressTrackerLink: row["Progress Tracker"]?.toString().trim() || null,
+              scheduleURL: row["Schedule"]?.toString().trim() || null,
+              progressTrackerURL: row["Progress Tracker"]?.toString().trim() || null,
               location: row["Location"]?.toString().trim() || null,
               notes: row["Notes"]?.toString().trim() || null
             },
@@ -688,10 +737,10 @@ export async function runSandboxETL() {
               whatsappNumber: row["WhatsApp Number"]?.toString().trim() || null,
               parentWhatsappNumber: row["Parent WhatsApp Number"]?.toString().trim() || null,
               timeZone: row["Time Zone"]?.toString().trim() || null,
-              timesheetUrl: row["Timesheet"]?.toString().trim() || null,
+              timesheetURL: row["Timesheet"]?.toString().trim() || null,
               gcrLink: row["GCR"]?.toString().trim() || null,
-              scheduleLink: row["Schedule"]?.toString().trim() || null,
-              progressTrackerLink: row["Progress Tracker"]?.toString().trim() || null,
+              scheduleURL: row["Schedule"]?.toString().trim() || null,
+              progressTrackerURL: row["Progress Tracker"]?.toString().trim() || null,
               location: row["Location"]?.toString().trim() || null,
               notes: row["Notes"]?.toString().trim() || null
             }
@@ -707,6 +756,8 @@ export async function runSandboxETL() {
       const invoiceRows = XLSX.utils.sheet_to_json<any[]>(invoiceSheet, { header: 1, defval: "" });
       let currentMonth = "Apr_of_2026";
       const enrollmentCache = new Map<string, any>();
+      const enrolmentListCache = new Map<string, any>();
+      const enrolmentItemCache = new Map<string, any>();
 
       for (let i = 0; i < invoiceRows.length; i++) {
         const cells = invoiceRows[i].map(c => String(c).trim());
@@ -865,28 +916,43 @@ export async function runSandboxETL() {
               serviceMap.set(key, service);
             }
 
-            // Student enrollment
-            const enrollKey = `${student.id}_${service.id}`;
-            let enrollment = enrollmentCache.get(enrollKey);
-            if (!enrollment) {
-              enrollment = await tx.enrollment.create({
+            // Student enrollment v6 mapping
+            const enrolmentListKey = `${student.id}_${service.serviceType || "batch_tuition"}`;
+            let enrolmentList = enrolmentListCache.get(enrolmentListKey);
+            if (!enrolmentList) {
+              enrolmentList = await tx.studentEnrolmentList.create({
                 data: {
                   studentId: student.id,
-                  serviceId: service.id,
-                  status: status === "Active" ? "active" : "paused",
-                  startDate: billingStart,
-                  endDate: billingEnd
+                  serviceType: service.serviceType || "batch_tuition",
+                  isActive: true
                 }
               });
-              enrollmentCache.set(enrollKey, enrollment);
+              enrolmentListCache.set(enrolmentListKey, enrolmentList);
             }
 
-            // Billed line item
+            const enrollKey = `${student.id}_${service.id}`;
+            let enrolmentItem = enrolmentItemCache.get(enrollKey);
+            if (!enrolmentItem) {
+              enrolmentItem = await tx.studentEnrolmentItem.create({
+                data: {
+                  enrolmentListId: enrolmentList.id,
+                  studentId: student.id,
+                  serviceId: service.id,
+                  status: status === "Active" ? "ACTIVE" : "CANCELLED",
+                  startDate: billingStart || new Date(),
+                  endDate: billingEnd || new Date(),
+                  isActive: true
+                }
+              });
+              enrolmentItemCache.set(enrollKey, enrolmentItem);
+            }
+
+            // Billed line item v6
             await tx.invoiceLineItem.create({
               data: {
                 invoiceId: invoice.id,
-                enrollmentId: enrollment.id,
-                serviceType: service.serviceType,
+                enrolmentItemId: enrolmentItem.id,
+                lineType: service.serviceType || "batch_tuition",
                 serviceNameSnapshot: service.fullSubjectName,
                 teacherNameSnapshot: service.instructorNameSnapshot || "Staff",
                 groupCodeSnapshot: batchPrefix,
@@ -1143,16 +1209,7 @@ export async function runSandboxETL() {
       }
     }
 
-    const syllabusItems = await tx.syllabusItem.findMany();
-    for (const sy of syllabusItems) {
-      const match = activeServicesList[0];
-      if (match) {
-        await tx.syllabusItem.update({
-          where: { id: sy.id },
-          data: { serviceId: match.id }
-        });
-      }
-    }
+
 
     console.log("[ETL] Populating ticket permissions standard stencils...");
     const depts = ["PR", "HR", "Finance", "Marketing", "IT", "Management"];
