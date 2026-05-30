@@ -76,4 +76,6 @@ export async function getMonthlyStats(userEmail: string, month: string) {
   return { events: attendances.length, hours, estimatedAmount: Math.round(hours * rate * 100) / 100, hourlyRate: rate };
 }
 
-export const getTeacherClaims = getClaims;
+export async function getTeacherClaims(userId?: string) {
+  return await getClaims(userId);
+}

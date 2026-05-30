@@ -151,7 +151,9 @@ export async function getStudentsForTeacher(teacherEmail: string) {
   return Array.from(studentsMap.values());
 }
 
-export const logAttendance = submitAttendance;
+export async function logAttendance(formData: FormData) {
+  return await submitAttendance(formData);
+}
 
 export async function getTeacherAttendance(teacherEmail: string) {
   const session = await auth();

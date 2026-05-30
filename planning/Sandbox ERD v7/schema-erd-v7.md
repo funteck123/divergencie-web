@@ -109,10 +109,13 @@ erDiagram
     string cvLink
     string docsLink
     string notes
-    string outreachSource
+    cuid outreachSourceId FK
     string outreachStatus
     string trialTaskLink
     datetime interviewAt
+    cuid jobPostingId FK
+    string offerLetterLink
+    string rejectionReason
     cuid convertedToUserId FK
     bool isActive
   }
@@ -817,8 +820,9 @@ erDiagram
   CurriculumList ||--|| TaskList : "has"
   CurriculumList ||--|| MockList : "has"
   CurriculumList ||--|| CourseTimelineList : "has"
-  SyllabusList ||--o{ SyllabusItem : "contains"
+  SyllabusList ||--o{ SyllabusChapter : "contains"
   SyllabusList ||--o{ SyllabusListStatusHistory : "history"
+  SyllabusChapter ||--o{ SyllabusItem : "contains"
   SyllabusItem ||--o{ StudentSyllabusProgress : "tracked by"
   SyllabusItem ||--o{ Doubt : "tagged"
   TaskList ||--o{ TaskItem : "contains"
@@ -859,9 +863,7 @@ erDiagram
 
   SyllabusItem {
     cuid id PK
-    cuid syllabusListId FK
-    string chapterNum
-    string chapterTitle
+    cuid syllabusChapterId FK
     string topicCode
     string topicTitle
     string level
@@ -942,7 +944,7 @@ erDiagram
     cuid mockListId FK
     cuid sessionId FK
     cuid syllabusItemId FK
-    string mockType
+    cuid mockTypeId FK
     string paperCode
     string paperLink
     datetime scheduledDate
@@ -986,11 +988,11 @@ erDiagram
 
   AmbassadorService ||--|| AmbassadorServiceSchedule : "has"
   AmbassadorService ||--|| AmbassadorProgrammeList : "has"
-  AmbassadorProgrammeList ||--|| AmbassadorProgrammeList : "has"
+  AmbassadorProgrammeList ||--o{ AmbassadorProgrammeContentList : "has"
   AmbassadorProgrammeList ||--|| AmbassadorTestList : "has"
   AmbassadorProgrammeList ||--|| AmbassadorProgrammeTimelineList : "has"
-  AmbassadorProgrammeList ||--o{ AmbassadorProgrammeItem : "contains"
-  AmbassadorProgrammeList ||--o{ AmbassadorProgrammeListStatusHistory : "history"
+  AmbassadorProgrammeContentList ||--o{ AmbassadorProgrammeItem : "contains"
+  AmbassadorProgrammeContentList ||--o{ AmbassadorProgrammeContentListStatusHistory : "history"
   AmbassadorProgrammeItem ||--o{ AmbassadorProgrammeProgress : "tracked by"
   AmbassadorTestList ||--o{ AmbassadorTestItem : "contains"
   AmbassadorTestItem ||--o{ AmbassadorTestResult : "results"
@@ -1011,7 +1013,7 @@ erDiagram
     bool isActive
   }
 
-  AmbassadorProgrammeList {
+  AmbassadorProgrammeContentList {
     cuid id PK
     cuid programmeListId FK
     string name
@@ -1023,9 +1025,9 @@ erDiagram
     bool isActive
   }
 
-  AmbassadorProgrammeListStatusHistory {
+  AmbassadorProgrammeContentListStatusHistory {
     cuid id PK
-    cuid programmeListId FK
+    cuid contentListId FK
     string fromStatus
     string toStatus
     datetime changedAt
@@ -1035,7 +1037,7 @@ erDiagram
 
   AmbassadorProgrammeItem {
     cuid id PK
-    cuid programmeListId FK
+    cuid contentListId FK
     string programmeCode
     string programmeTitle
     string level
@@ -1064,7 +1066,7 @@ erDiagram
     cuid testListId FK
     cuid meetingId FK
     cuid programmeItemId FK
-    string testType
+    cuid testTypeId FK
     string paperLink
     datetime scheduledDate
     float totalMarks
@@ -1525,7 +1527,7 @@ erDiagram
     cuid assigneeId FK
     string department
     string originalDept
-    string ticketType
+    cuid ticketTypeId FK
     string attachmentLink
     bool isConfidential
     bool isActive
@@ -1572,7 +1574,7 @@ erDiagram
   StaffRecord {
     cuid id PK
     cuid userId FK
-    string recordType
+    cuid recordTypeId FK
     cuid triggeredByTicketId FK
     cuid issuedByUserId FK
     string notes
@@ -1584,7 +1586,7 @@ erDiagram
     cuid id PK
     cuid studentId FK
     cuid flaggedByUserId FK
-    string flagType
+    cuid flagTypeId FK
     string flagSource
     string notes
     bool resolved
@@ -1636,7 +1638,9 @@ erDiagram
     string dept
     string name
     string url
+    string description
     cuid addedByUserId FK
+    datetime createdAt
     bool isActive
   }
 
@@ -1658,6 +1662,7 @@ erDiagram
     cuid id PK
     cuid serviceId FK
     cuid sessionId FK
+    cuid meetingId FK
     string title
     string subject
     string videoUrl
@@ -1698,7 +1703,10 @@ erDiagram
     cuid syllabusItemId FK
     string body
     string response
+    cuid answeredByUserId FK
     string status
+    datetime createdAt
+    datetime answeredAt
   }
 
   CurrencyRate {
@@ -1711,13 +1719,16 @@ erDiagram
 
   MarketingPost {
     cuid id PK
-    string contentType
-    string status
+    cuid platformTypeId FK
+    cuid postTypeId FK
+    cuid contentTypeId FK
+    string postName
+    string postDesc
+    string postCaption
     string canvaLink
     string driveLink
-    string caption
     datetime scheduledDate
-    string campaignTag
+    string status
     bool isActive
   }
 
@@ -1730,6 +1741,7 @@ erDiagram
     string status
     string notes
     bool passedToPR
+    cuid handoffTicketId FK
     bool isActive
   }
 
@@ -1741,41 +1753,6 @@ erDiagram
     string alternateText2
     date dateAdded
     string use
-  }
-
-  BacklogItem {
-    cuid id PK
-    int serialNo
-    string addedToCalendar
-    string addedToCalendar2
-    string event
-    string desc
-  }
-
-  SprintItem {
-    cuid id PK
-    int serialNo
-    string addedToCalendar
-    string addedToCalendar2
-    string event
-    string desc
-  }
-
-  AmbassadorDeliverable {
-    cuid id PK
-    cuid ambassadorId FK
-    string title
-    float score
-    string status
-  }
-
-  AmbassadorEarning {
-    cuid id PK
-    cuid ambassadorId FK
-    string earningType
-    float amount
-    string currency
-    string payoutStatus
   }
 
   %% ─── ROLE RECORDS ────────────────────────────────────────────────
@@ -1791,7 +1768,7 @@ erDiagram
   StudentRecord {
     cuid id PK
     cuid userId FK
-    string recordType
+    cuid recordTypeId FK
     cuid triggeredByTicketId FK
     cuid issuedByUserId FK
     string notes
@@ -1802,7 +1779,7 @@ erDiagram
   TeacherRecord {
     cuid id PK
     cuid userId FK
-    string recordType
+    cuid recordTypeId FK
     cuid triggeredByTicketId FK
     cuid issuedByUserId FK
     string notes
@@ -1813,7 +1790,7 @@ erDiagram
   AmbassadorRecord {
     cuid id PK
     cuid userId FK
-    string recordType
+    cuid recordTypeId FK
     cuid triggeredByTicketId FK
     cuid issuedByUserId FK
     string notes
@@ -1821,7 +1798,39 @@ erDiagram
     datetime issuedAt
   }
 
+  User ||--o{ AccessLog : "owns"
+  User ||--o{ Announcement : "targeted"
+  Ticket ||--o| Lead : "handoff"
+  TaskType ||--o{ TaskItem : "types"
+  User ||--o{ CalendarItem : "has"
+  User ||--o{ StaffService : "provides"
+  StaffService ||--o{ StaffEnrolmentItem : "has"
+  StaffService ||--|| StaffServiceSchedule : "has"
+  StaffService ||--o{ Meeting : "covers"
+  StaffService ||--o{ MeetingAttendance : "tracks"
+
+  StaffService {
+    cuid id PK
+    cuid staffId FK
+    string serviceType
+    string title
+    string dept
+    string currency
+    float rate
+    bool isActive
+  }
+
   %% ─── LOOKUP TABLES ───────────────────────────────────────────────
+
+  TicketType ||--o{ Ticket : "types"
+  FlagType ||--o{ StudentFlag : "types"
+  RecordType ||--o{ StudentRecord : "types"
+  RecordType ||--o{ TeacherRecord : "types"
+  RecordType ||--o{ StaffRecord : "types"
+  RecordType ||--o{ AmbassadorRecord : "types"
+  MockType ||--o{ MockItem : "types"
+  AmbassadorTestType ||--o{ AmbassadorTestItem : "types"
+  OutreachSource ||--o{ Candidate : "types"
 
   TicketType {
     cuid id PK
@@ -2013,20 +2022,6 @@ erDiagram
     bool isActive
   }
 
-  MarketingPost {
-    cuid id PK
-    cuid platformTypeId FK
-    cuid postTypeId FK
-    string postName
-    string postDesc
-    string postCaption
-    string canvaLink
-    string driveLink
-    datetime scheduledDate
-    string status
-    bool isActive
-  }
-
   %% ─── OUTREACH & EXHIBITION ──────────────────────────────────────
 
   OutreachType ||--o{ OutreachItem : "types"
@@ -2185,5 +2180,83 @@ erDiagram
     string notes
     bool pushedToBank
     datetime pushedAt
+  }
+
+  %% ─── SYLLABUS CHAPTER ───────────────────────────────────────────
+
+  SyllabusChapter ||--|| ChapterRecordingList : "has"
+  ChapterRecordingList ||--o{ ChapterRecordingItem : "contains"
+  ChapterRecordingItem ||--|| Recording : "references"
+
+  SyllabusChapter {
+    cuid id PK
+    cuid syllabusListId FK
+    string chapterNum
+    string chapterTitle
+    int order
+    bool isActive
+  }
+
+  ChapterRecordingList {
+    cuid id PK
+    cuid syllabusChapterId UK
+    bool isActive
+  }
+
+  ChapterRecordingItem {
+    cuid id PK
+    cuid chapterRecordingListId FK
+    cuid recordingId FK
+    string notes
+    int order
+    bool isActive
+  }
+
+  %% ─── METRIC SNAPSHOTS & PROGRESS REPORTS ────────────────────────
+
+  MetricSnapshot ||--o{ ProgressReport : "generates"
+  User ||--o{ ProgressReport : "receives"
+  ProgressReport ||--o{ Notification : "triggers"
+
+  MetricSnapshot {
+    cuid id PK
+    string entityType
+    cuid entityId
+    string month
+    json metrics
+    datetime snapshotAt
+  }
+
+  ProgressReport {
+    cuid id PK
+    cuid studentId FK
+    cuid metricSnapshotId FK
+    string month
+    string pdfLink
+    string staffComments
+    string status
+    cuid reviewedByUserId FK
+    datetime reviewedAt
+    datetime sentAt
+    bool isActive
+  }
+
+  %% ─── PORTAL RBAC ─────────────────────────────────────────────────
+
+  User ||--o{ PortalPermission : "has override"
+
+  PortalPermission {
+    cuid id PK
+    string role
+    string dept
+    cuid userId FK
+    string resource
+    bool canView
+    bool canCreate
+    bool canEdit
+    bool canDelete
+    bool canApprove
+    cuid updatedByUserId FK
+    datetime updatedAt
   }
 ```
