@@ -2273,3 +2273,259 @@ Status sync:
 
 #### GeneralMeeting also gets sprint/backlog lists
 `MeetingSprintList` and `MeetingBacklogList` link to `meetingId` — this covers both payroll `Meeting` and `GeneralMeeting`. The `meetingId` field should reference whichever meeting type is relevant (polymorphic via `meetingType` + `meetingId`, or separate lists per meeting type — keep as-is since GeneralMeeting is the primary context for sprint/backlog work).
+
+---
+
+## 36. Syllabus Chapter Structure + Recording Connections
+
+### Syllabus restructure
+`SyllabusItem` no longer holds `chapterNum` / `chapterTitle` — those move to `SyllabusChapter`.
+
+```
+SyllabusList
+  └── SyllabusChapter (NEW)
+        e.g. "1 Motion Forces and Energy" | "2 Thermal Physics"
+        └── SyllabusItem
+              e.g. "1.1.3 Define acceleration"
+              └── StudentSyllabusProgress (per student)
+```
+
+```
+SyllabusChapter {
+  cuid id PK
+  cuid syllabusListId FK
+  string chapterNum         // "1" | "2" | "3"
+  string chapterTitle       // "Motion Forces and Energy"
+  int order
+  bool isActive
+}
+```
+
+`SyllabusItem` updated:
+- Remove `chapterNum`, `chapterTitle`
+- Add `cuid syllabusChapterId FK`
+
+### Recording — updated connections
+```
+Recording {
+  cuid id PK
+  cuid serviceId FK           // always set; which service
+  cuid sessionId FK           // nullable; which AcademicSession
+  cuid meetingId FK           // nullable; which Meeting
+                              // at least one of sessionId or meetingId must be set
+  string title
+  string subject
+  string videoUrl
+  datetime date
+  float durationHours
+  string category
+  bool isActive
+}
+```
+
+### ChapterRecordingList + ChapterRecordingItem
+One curated recording list per SyllabusChapter. Teacher/staff tags relevant recordings to chapters after sessions. One recording can appear in multiple chapters.
+
+```
+ChapterRecordingList {
+  cuid id PK
+  cuid syllabusChapterId UK   // one per chapter
+  bool isActive
+}
+
+ChapterRecordingItem {
+  cuid id PK
+  cuid chapterRecordingListId FK
+  cuid recordingId FK
+  string notes                // nullable; e.g. "covers section 1.2.3 onwards"
+  int order
+  bool isActive
+}
+```
+
+---
+
+## 37. Performance Metrics & Progress Reports
+
+### MetricSnapshot
+Auto-computed on 1st of each month from live data. Stored for historical comparison (Aug vs Sep etc).
+
+```
+MetricSnapshot {
+  cuid id PK
+  string entityType           // "STUDENT" | "TEACHER" | "STAFF" | "AMBASSADOR" |
+                              //  "SERVICE" | "ORG"
+  cuid entityId               // nullable for ORG type
+  string month                // "Aug_2024"
+  json metrics                // all computed values (see below per type)
+  datetime snapshotAt
+}
+```
+
+### Metrics per entity type
+
+**STUDENT metrics (stored in json):**
+```
+{
+  attendanceRate,             // sessions present / total sessions that month
+  syllabusCompletion,         // % SyllabusItems with status COMPLETED
+  avgMasteryPct,              // avg masteryPct across all SyllabusItems
+  taskCompletionRate,         // TaskSubmissions submitted / total assigned
+  avgTaskScore,               // avg marksScored/totalMarks across TaskSubmissions
+  avgMockScore,               // avg MockResult marksScored/marksAvailable
+  noShowCount,                // ABSENT_NO_SHOW count that month
+  paymentStatus               // "PAID" | "PARTIALLY_PAID" | "UNPAID" | "OVERDUE"
+}
+```
+
+**TEACHER metrics:**
+```
+{
+  sessionsDelivered,          // AcademicSessions with status COMPLETED
+  hoursLogged,                // sum of teacherLoggedHours on SessionAttendance
+  avgFeedbackStars,           // avg feedbackStars from SessionAttendance
+  submissionComplianceRate,   // sessions with wbLink+recordingUrl submitted on time / total
+  noShowCount
+}
+```
+
+**STAFF metrics:**
+```
+{
+  meetingsAttended,
+  hoursLogged,
+  tasksCompleted,             // TaskSubmissions or ChecklistItemEntry completed
+  noShowCount
+}
+```
+
+**AMBASSADOR metrics:**
+```
+{
+  referralClicks,             // ReferralClick count that month
+  referralsConverted,         // ReferralClick.convertedToEnrolment = true
+  commissionEarned,           // AmbassadorClaimLineItem totals
+  meetingsAttended,
+  programmeProgress           // % AmbassadorProgrammeItems COMPLETED
+}
+```
+
+**ORG metrics (rollup):**
+```
+{
+  totalActiveStudents,
+  totalRevenue,               // sum of confirmed PaymentRecords incoming
+  totalClaimsPaid,            // sum of confirmed PaymentRecords outgoing
+  avgStudentAttendance,
+  avgTeacherCompliance,       // avg submissionComplianceRate across teachers
+  newEnrolments,              // StudentEnrolmentItems activated that month
+  cancellations,              // StudentEnrolmentItems cancelled that month
+  netEnrolmentChange          // newEnrolments - cancellations
+}
+```
+
+---
+
+### ProgressReport
+Auto-generated monthly PDF per student. Staff can add comments before it is sent.
+
+```
+ProgressReport {
+  cuid id PK
+  cuid studentId FK
+  cuid metricSnapshotId FK    // the snapshot this report is based on
+  string month
+  string pdfLink              // auto-generated PDF stored in Drive
+  string staffComments        // nullable; staff adds before sending
+  string status               // "GENERATED" | "REVIEWED" | "SENT"
+  cuid reviewedByUserId FK    // nullable
+  datetime reviewedAt         // nullable
+  datetime sentAt             // nullable
+  bool isActive
+}
+```
+
+Flow:
+```
+1st of month
+  → MetricSnapshot computed and stored
+  → ProgressReport auto-generated (PDF created, status: GENERATED)
+  → Staff reviews, adds comments → status: REVIEWED
+  → Staff sends to student/parent → status: SENT
+  → Notification triggered to student + parent
+```
+
+---
+
+## 38. Portal-Wide RBAC (Role-Based Access Control)
+
+Managed by IT dept. Hybrid model: code defines default permissions per role; DB stores overrides only.
+
+### PortalPermission (override table)
+```
+PortalPermission {
+  cuid id PK
+  string role                 // "STUDENT" | "PARENT" | "TEACHER" | "STAFF" |
+                              //  "AMBASSADOR" | "MANAGEMENT"
+  string dept                 // nullable; for STAFF role dept-level overrides
+  cuid userId FK              // nullable; for individual user overrides
+  string resource             // "INVOICES" | "SCHEDULES" | "CURRICULUM" |
+                              //  "CLAIMS" | "REPORTS" | "CANDIDATES" |
+                              //  "TICKETS" | "CONTENT_BANK" | "KNOWLEDGE_BANK" |
+                              //  "BACKLOG" | "CAMPAIGNS" | "ANALYTICS" |
+                              //  "ADMIN_LOOKUPS" | "PAYROLL" | "BUDGET"
+  bool canView
+  bool canCreate
+  bool canEdit
+  bool canDelete
+  bool canApprove
+  cuid updatedByUserId FK
+  datetime updatedAt
+}
+```
+
+### Rules
+```
+Resolution order (most specific wins):
+  1. Individual user override (userId set)
+  2. Dept-level override (role + dept set, userId null)
+  3. Role-level override (role set, dept + userId null)
+  4. Code default (no DB row = falls back to hardcoded defaults)
+
+IT dept manages rows via admin panel
+Management can request changes via ticket → IT applies
+No override row = code default applies (no DB row needed for normal cases)
+```
+
+### Default permissions (code-defined; not in DB)
+```
+STUDENT:    view own schedule, curriculum, invoices, progress reports
+PARENT:     view student schedule, invoices, progress reports
+TEACHER:    view+edit own sessions, curriculum, claims; view students in their services
+STAFF:      varies by dept (finance sees payroll; hr sees candidates; pr sees tickets+leads)
+AMBASSADOR: view own programme, referrals, commission, meetings
+MANAGEMENT: full access to all resources
+```
+
+---
+
+## 39. Schema Fixes (v7 final pass)
+
+- `AmbassadorProgrammeList` collision fixed — versioned content list renamed to `AmbassadorProgrammeContentList`; mirrors `SyllabusList` pattern exactly
+- `SyllabusItem` — removed `chapterNum`/`chapterTitle`; now uses `syllabusChapterId FK`
+- `SyllabusList → SyllabusChapter → SyllabusItem` chain corrected; duplicate relationship removed
+- `Recording` — added `meetingId FK` (nullable; at least one of sessionId or meetingId must be set)
+- Old flat `BacklogItem` and `SprintItem` tables removed; replaced by `OrgBacklogBank → BacklogItem` system
+- `MarketingPost` — old version with string `contentType`/`campaignTag` replaced; now uses `platformTypeId FK`, `postTypeId FK`, `contentTypeId FK`
+- `Candidate` — `outreachSource` string → `outreachSourceId FK`; added `jobPostingId`, `offerLetterLink`, `rejectionReason`
+- `Lead` — added `handoffTicketId FK`
+- `ContentBankItem` — added `description` and `createdAt`
+- `Ticket.ticketType` string → `ticketTypeId FK`
+- `MockItem.mockType` string → `mockTypeId FK`
+- `AmbassadorTestItem.testType` string → `testTypeId FK`
+- `StudentFlag.flagType` string → `flagTypeId FK`
+- All four XRecord tables `.recordType` string → `recordTypeId FK`
+- All lookup tables now have proper ERD relationship declarations
+- `Doubt` — added `createdAt`, `answeredByUserId FK`, `answeredAt`
+- `AmbassadorDeliverable` and `AmbassadorEarning` removed — superseded by `AmbassadorCommissionItem` and `AmbassadorClaim`
+- `ProgressReport` connected to `Notification` — triggers notification to student + parent when sent
