@@ -134,7 +134,35 @@ export async function GET(req: Request) {
       sprintItems: await sandboxPrisma.sprintItem.count()
     };
 
-    const billingSummaries = await sandboxPrisma.deptBudget.findMany({ orderBy: { quarter: "asc" } });
+    const months = await sandboxPrisma.invoiceMonth.findMany({
+      include: {
+        invoices: true
+      },
+      orderBy: { serialNo: "asc" }
+    });
+
+    const billingSummaries = months.map(m => {
+      const invoices = m.invoices || [];
+      const paidInvoices = invoices.filter((i: any) => i.paymentDone).length;
+      const dueInvoices = invoices.filter((i: any) => !i.paymentDone).length;
+      const studentCount = new Set(invoices.map((i: any) => i.studentId)).size;
+      const totalLocalFees = invoices.reduce((s: number, i: any) => s + (i.currency !== "INR" ? i.netAmount : 0), 0);
+      const totalINR = invoices.reduce((s: number, i: any) => s + (i.currency === "INR" ? i.netAmount : i.netAmount * 22), 0);
+      const totalDueINR = invoices.reduce((s: number, i: any) => s + (i.currency === "INR" ? i.dueAmount : i.dueAmount * 22), 0);
+      const paidRatio = invoices.length > 0 ? paidInvoices / invoices.length : 0;
+
+      return {
+        id: m.id,
+        month: m.month,
+        studentCount,
+        totalLocalFees,
+        totalINR,
+        totalDueINR,
+        paidInvoices,
+        dueInvoices,
+        paidRatio
+      };
+    });
     const chartOfAccounts = await sandboxPrisma.bankAccount.findMany({ orderBy: { label: "asc" } });
     const recentInvoices = await sandboxPrisma.studentInvoice.findMany({
       take: 10,
