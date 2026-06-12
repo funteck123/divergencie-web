@@ -39,7 +39,7 @@ export default function Nav() {
         ? "border-b border-[var(--border-subtle)] bg-[var(--bg-primary)]/80 backdrop-blur-md" 
         : "bg-transparent"
     }`}>
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 -translate-y-[2px]">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <Image src="/assets/images/logo.jpg" alt="DivergenCIE logo icon" width={40} height={40} className="h-8 w-8 rounded-sm object-cover"
