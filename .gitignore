@@ -11,3 +11,15 @@ sandbox.db
 tsconfig.tsbuildinfo
 build_log*.txt
 redo_db.log
+
+# Cookie / session files
+cookies.txt
+cookies-test.txt
+jar
+
+# Windows Zone.Identifier junk
+*Zone.Identifier*
+
+# Compiled scratch artifacts
+scratch/*.cjs
+scratch/*.mjs
