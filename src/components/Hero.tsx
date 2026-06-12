@@ -21,7 +21,7 @@ export default function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/80 to-transparent"></div>
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center -translate-y-10">
+      <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center -translate-y-6">
         {/* Eyebrow */}
         <p className="text-xs font-black text-[var(--gold)] tracking-[0.3em] uppercase mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           divergencie.co.uk
