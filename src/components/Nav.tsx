@@ -34,14 +34,14 @@ export default function Nav() {
   ];
 
   return (
-    <nav className={`fixed top-0 z-50 w-full h-16 ${
+    <nav className={`fixed top-0 z-50 w-full h-16 transition-colors duration-300 ${
       isScrolled 
         ? "border-b border-[var(--border-subtle)] bg-[var(--bg-primary)]/80 backdrop-blur-md" 
         : "bg-transparent"
     }`}>
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 -translate-y-[2px]">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 group -translate-y-[2px]">
           <Image src="/assets/images/logo.jpg" alt="DivergenCIE logo icon" width={40} height={40} className="h-8 w-8 rounded-sm object-cover"
           />
           <span className={`text-xl font-black transition-colors ${
@@ -52,7 +52,7 @@ export default function Nav() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex md:items-center md:gap-8">
+        <div className="hidden md:flex md:items-center md:gap-8 -translate-y-[2px]">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -67,7 +67,7 @@ export default function Nav() {
         </div>
 
         {/* Desktop Right */}
-        <div className="hidden md:flex md:items-center md:gap-4">
+        <div className="hidden md:flex md:items-center md:gap-4 translate-x-3">
           <button
             onClick={toggle}
             className={`p-2 rounded-full transition-colors ${
