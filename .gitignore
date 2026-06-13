@@ -38,3 +38,4 @@ data/
 
 # Generated Prisma clients
 src/generated/
+.vercel
