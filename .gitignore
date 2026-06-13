@@ -36,6 +36,6 @@ planning/trash/
 # Real data exports
 data/
 
-# Generated Prisma clients
-src/generated/
+# Generated clients — only exclude sandbox (large wasm); prisma client is regenerated via postinstall
+src/generated/sandbox/
 .vercel
