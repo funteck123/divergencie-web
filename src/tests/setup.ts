@@ -58,6 +58,72 @@ vi.mock("@/lib/db", () => {
     },
     academicSession: {
       findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      create: vi.fn(),
+    },
+    sessionAttendance: {
+      create: vi.fn(),
+      upsert: vi.fn(),
+    },
+    studentProfile: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      upsert: vi.fn(),
+    },
+    studentEnrolmentList: {
+      findMany: vi.fn(),
+    },
+    studentEnrolmentItem: {
+      findMany: vi.fn(),
+    },
+    discount: {
+      findMany: vi.fn(),
+    },
+    rateCard: {
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    paymentRecord: {
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    ledgerEntry: {
+      create: vi.fn(),
+    },
+    bankAccount: {
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    invoiceMonth: {
+      upsert: vi.fn(),
+    },
+    notificationType: {
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+    },
+    notification: {
+      create: vi.fn(),
+    },
+    studentInvoice: {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+    studentInvoiceStatusChangeLog: {
+      create: vi.fn(),
+    },
+    group: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+    },
+    service: {
+      findUnique: vi.fn(),
     },
     $transaction: vi.fn(async (fn: any) => fn(mockPrisma)),
   };
