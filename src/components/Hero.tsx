@@ -28,7 +28,7 @@ export default function Hero() {
         </p>
 
         {/* Heading */}
-        <h1 className="text-6xl md:text-8xl font-black text-white leading-[0.85] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        <h1 className="text-4xl md:text-8xl font-black text-white leading-[0.85] mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
           LET US HELP YOU<br />
           <span className="text-[var(--gold)]">
             ACHIEVE A*!
@@ -61,7 +61,7 @@ export default function Hero() {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-[-75px] left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce z-20">
+      <div className="absolute bottom-8 md:bottom-[-75px] left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce z-20">
         <span className="text-[9px] font-black tracking-[0.4em] uppercase text-[var(--gold)] mb-2">SCROLL</span>
         <div className="w-0.5 h-24 bg-[var(--gold)]"></div>
       </div>

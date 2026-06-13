@@ -81,7 +81,7 @@ const paymentMethods = [
   { flagUrl: "https://flagcdn.com/w80/sg.png", country: "Singapore", methods: ["Stripe Visa", "PayPal", "PayNow"] },
   { flagUrl: "https://flagcdn.com/w80/my.png", country: "Malaysia", methods: ["FPX", "DuitNow", "Online Banking"] },
   { flagUrl: "https://flagcdn.com/w80/in.png", country: "India", methods: ["Razorpay", "UPI", "Net Banking"] },
-  { flagUrl: "https://flagcdn.com/sa.png", country: "Saudi Arabia", methods: ["Al Rajhi Bank", "STC Pay", "Mada", "Western Union"] },
+  { flagUrl: "https://flagcdn.com/w80/sa.png", country: "Saudi Arabia", methods: ["Al Rajhi Bank", "STC Pay", "Mada", "Western Union"] },
   { flagUrl: "https://flagcdn.com/w80/pk.png", country: "Pakistan", methods: ["EasyPaisa", "JazzCash", "Bank Transfer"] },
   { isGlobal: true, country: "International", methods: ["Wise", "PayPal", "SWIFT Transfer"] },
 ];

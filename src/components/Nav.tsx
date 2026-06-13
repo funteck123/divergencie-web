@@ -116,34 +116,44 @@ export default function Nav() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — absolute overlay so it doesn't push page content */}
       {isOpen && (
-        <div className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-6 space-y-4 animate-in slide-in-from-top duration-300">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className="block text-lg font-semibold text-[var(--text-primary)]"
-            >
-              {link.name}
-            </Link>
-          ))}
-          <div className="pt-4 flex flex-col gap-3">
-            <Link
-              href="/auth/login"
-              className="w-full text-center py-3 rounded-xl border border-[var(--border-subtle)] font-semibold text-[var(--text-primary)]"
-            >
-              Portal Login
-            </Link>
-            <Link
-              href="/contact"
-              className="w-full text-center py-3 rounded-xl bg-[var(--gold)] font-bold text-white shadow-lg"
-            >
-              Get Started
-            </Link>
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 top-20 z-40 bg-black/40 md:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+          {/* Drawer */}
+          <div className="absolute top-full left-0 right-0 z-50 md:hidden max-h-[80vh] overflow-y-auto border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-6 space-y-4 animate-in slide-in-from-top duration-300 shadow-xl">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className="block text-lg font-semibold text-[var(--text-primary)]"
+              >
+                {link.name}
+              </Link>
+            ))}
+            <div className="pt-4 flex flex-col gap-3">
+              <Link
+                href="/auth/login"
+                onClick={() => setIsOpen(false)}
+                className="w-full text-center py-3 rounded-xl border border-[var(--border-subtle)] font-semibold text-[var(--text-primary)]"
+              >
+                Portal Login
+              </Link>
+              <Link
+                href="/contact"
+                onClick={() => setIsOpen(false)}
+                className="w-full text-center py-3 rounded-xl bg-[var(--gold)] font-bold text-white shadow-lg"
+              >
+                Get Started
+              </Link>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </nav>
   );
