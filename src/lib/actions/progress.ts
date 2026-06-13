@@ -33,7 +33,7 @@ export async function getStudentProgressStats(studentEmail: string) {
     totalSessions > 0 ? Math.round((presentSessions / totalSessions) * 100) : 0;
 
   const latestMock = user.mockResults[0];
-  const mockScore = latestMock?.score ?? 0;
+  const mockScore = latestMock?.marksScored ?? 0;
 
   const bySubject: Record<string, { done: number; total: number }> = {};
   for (const p of progressItems) {

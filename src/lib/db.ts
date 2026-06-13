@@ -1,24 +1,22 @@
 import "dotenv/config";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import Prisma from "@prisma/client";
-
-const { PrismaClient } = Prisma;
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: InstanceType<typeof PrismaClient> | undefined;
+  prisma: PrismaClient | undefined;
 };
 
-const url = process.env.DATABASE_URL || "file:./dev.db";
-
-if (!process.env.DATABASE_URL) {
-  console.error("[DB] DATABASE_URL is missing in .env!");
-}
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL!;
+const pool = new pg.Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
 const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter: new PrismaBetterSqlite3({ url }),
-  } as any);
+    adapter,
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+  });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

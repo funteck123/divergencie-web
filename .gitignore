@@ -20,6 +20,11 @@ jar
 # Windows Zone.Identifier junk
 *Zone.Identifier*
 
+# Secrets / keys
+planning/keys.md
+
 # Compiled scratch artifacts
 scratch/*.cjs
 scratch/*.mjs
+planning/keys.md
+src/generated/

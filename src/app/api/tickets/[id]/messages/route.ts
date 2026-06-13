@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Internal notes only for staff/management
     const setInternal = isInternal && (role === "staff" || role === "management");
 
-    const message = await prisma.$transaction(async (tx) => {
+    const message = await prisma.$transaction(async (tx: any) => {
       const m = await tx.ticketMessage.create({
         data: {
           ticketId: id,

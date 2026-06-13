@@ -15,13 +15,21 @@ async function requireFinanceAccess() {
 export async function getInvoices(query?: string) {
   await requireFinanceAccess();
 
-  const all = await prisma.invoice.findMany({
+  const all = await prisma.studentInvoice.findMany({
     orderBy: { issuedAt: "desc" },
+    include: { student: true },
     take: 500,
   });
-  if (!query) return all;
-  return all.filter(
+
+  const mapped = all.map((inv: any) => ({
+    ...inv,
+    amount: inv.netAmount,
+  }));
+
+  if (!query) return mapped;
+  return mapped.filter(
     (inv: any) =>
+      inv.student?.name?.toLowerCase().includes(query.toLowerCase()) ||
       inv.studentId?.toLowerCase().includes(query.toLowerCase()) ||
       inv.status.toLowerCase().includes(query.toLowerCase())
   );
@@ -35,31 +43,47 @@ export async function createInvoice(data: {
 }) {
   await requireFinanceAccess();
 
-  const inv = await prisma.invoice.create({
-    data: { ...data, status: data.status ?? "due" },
+  const inv = await prisma.studentInvoice.create({
+    data: {
+      studentId: data.studentId,
+      month: data.month,
+      netAmount: data.amount,
+      dueAmount: data.amount,
+      currency: "GBP",
+      status: data.status ?? "draft",
+    },
   });
   revalidatePath("/portal/staff/finance/invoices");
   revalidatePath("/portal/parent/fees");
-  return inv;
+  return {
+    ...inv,
+    amount: inv.netAmount,
+  };
 }
 
 export async function updateInvoiceStatus(id: string, status: string) {
   await requireFinanceAccess();
 
-  const inv = await prisma.invoice.update({ where: { id }, data: { status } });
+  const inv = await prisma.studentInvoice.update({
+    where: { id },
+    data: { status },
+  });
   revalidatePath("/portal/staff/finance/invoices");
   revalidatePath("/portal/parent/fees");
-  return inv;
+  return {
+    ...inv,
+    amount: inv.netAmount,
+  };
 }
 
 export async function getInvoiceStats() {
   await requireFinanceAccess();
 
-  const invoices = await prisma.invoice.findMany({ take: 1000 });
-  const total = invoices.reduce((s: number, i: any) => s + i.amount, 0);
+  const invoices = await prisma.studentInvoice.findMany({ take: 1000 });
+  const total = invoices.reduce((s: number, i: any) => s + i.netAmount, 0);
   const collected = invoices
     .filter((i: any) => i.status === "paid")
-    .reduce((s: number, i: any) => s + i.amount, 0);
+    .reduce((s: number, i: any) => s + i.netAmount, 0);
   const overdue = invoices.filter((i: any) => i.status === "overdue").length;
   return { total, collected, pending: total - collected, overdue };
 }
@@ -101,11 +125,15 @@ export async function getParentInvoices(parentId: string) {
     select: { id: true },
   });
   const ids = students.map((s: any) => s.id);
-  return await prisma.invoice.findMany({
+  const invoices = await prisma.studentInvoice.findMany({
     where: { studentId: { in: ids } },
     orderBy: { issuedAt: "desc" },
     take: 200,
   });
+  return invoices.map((i: any) => ({
+    ...i,
+    amount: i.netAmount,
+  }));
 }
 
 export async function getClaimsForApproval() {
@@ -149,7 +177,7 @@ export async function getBudgetOverview() {
     prisma.claim.findMany({
       where: { status: { in: ["approved", "paid"] }, createdAt: { gte: cutoff } },
     }),
-    prisma.invoice.findMany({ where: { issuedAt: { gte: cutoff } }, take: 1000 }),
+    prisma.studentInvoice.findMany({ where: { issuedAt: { gte: cutoff } }, take: 1000 }),
   ]);
   const totalPaid = claims
     .filter((c: any) => c.status === "paid")
@@ -159,10 +187,10 @@ export async function getBudgetOverview() {
     .reduce((s: number, c: any) => s + c.amount, 0);
   const revenue = invoices
     .filter((i: any) => i.status === "paid")
-    .reduce((s: number, i: any) => s + i.amount, 0);
+    .reduce((s: number, i: any) => s + i.netAmount, 0);
   const pending = invoices
     .filter((i: any) => i.status !== "paid")
-    .reduce((s: number, i: any) => s + i.amount, 0);
+    .reduce((s: number, i: any) => s + i.netAmount, 0);
   return { totalPaid, totalApproved, totalClaimsPending: totalApproved - totalPaid, revenue, pendingRevenue: pending };
 }
 
@@ -202,19 +230,22 @@ const WA_REMINDER_STAGES = [
 export async function advanceReminderStage(invoiceId: string) {
   await requireFinanceAccess();
 
-  const inv = await prisma.invoice.findUnique({ where: { id: invoiceId } });
+  const inv = await prisma.studentInvoice.findUnique({
+    where: { id: invoiceId },
+    include: { student: true },
+  });
   if (!inv) throw new Error("Invoice not found");
-  const nextStage = Math.min(5, ((inv as any).reminderStage ?? 0) + 1);
-  await prisma.invoice.update({ where: { id: invoiceId }, data: { reminderStage: nextStage } });
+  const nextStage = Math.min(5, (inv.reminderStage ?? 0) + 1);
+  await prisma.studentInvoice.update({ where: { id: invoiceId }, data: { reminderStage: nextStage } });
   revalidatePath("/portal/staff/finance/invoices");
   const stageData = WA_REMINDER_STAGES[nextStage - 1];
   return {
     stage: nextStage,
     label: stageData.label,
     waMessage: stageData.msg(
-      (inv as any).student?.name ?? "Student",
-      (inv as any).amount,
-      (inv as any).month
+      inv.student?.name ?? "Student",
+      inv.netAmount,
+      inv.month
     ),
   };
 }

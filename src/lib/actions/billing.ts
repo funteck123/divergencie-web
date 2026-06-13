@@ -10,7 +10,7 @@ export async function payInvoice(invoiceId: string) {
   const actor = session.user as any;
   if (actor.role !== "staff" && actor.role !== "management") throw new Error("Forbidden");
 
-  const invoice = await prisma.invoice.update({
+  const invoice = await prisma.studentInvoice.update({
     where: { id: invoiceId },
     data: { status: "paid" },
   });
@@ -24,7 +24,7 @@ export async function getStudentInvoices(studentId: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  return await prisma.invoice.findMany({
+  return await prisma.studentInvoice.findMany({
     where: { studentId },
     orderBy: { issuedAt: "desc" },
     take: 200,

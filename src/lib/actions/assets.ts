@@ -15,13 +15,38 @@ async function requireStaffAccess() {
 export async function getAssets(dept?: string, query?: string) {
   await requireStaffAccess();
 
-  return await prisma.asset.findMany({
+  const items = await prisma.contentBankItem.findMany({
     where: {
+      isActive: true,
       ...(dept && dept !== "all" ? { dept } : {}),
-      ...(query ? { OR: [{ name: { contains: query } }, { type: { contains: query } }] } : {}),
+      ...(query ? { OR: [{ name: { contains: query, mode: "insensitive" } }, { description: { contains: query, mode: "insensitive" } }] } : {}),
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { dateAdded: "desc" },
     take: 200,
+  });
+
+  return items.map(item => {
+    let type = "Other";
+    let campaignTag = "";
+    try {
+      if (item.description) {
+        const parsed = JSON.parse(item.description);
+        type = parsed.type || "Other";
+        campaignTag = parsed.campaignTag || "";
+      }
+    } catch {
+      type = item.description || "Other";
+    }
+
+    return {
+      id: item.id,
+      name: item.name,
+      type,
+      driveLink: item.url,
+      dept: item.dept,
+      campaignTag,
+      createdAt: item.dateAdded || new Date(),
+    };
   });
 }
 
@@ -32,17 +57,35 @@ export async function createAsset(data: {
   dept: string;
   campaignTag?: string;
 }) {
-  await requireStaffAccess();
+  const actor = await requireStaffAccess();
 
-  const asset = await prisma.asset.create({ data });
+  const asset = await prisma.contentBankItem.create({
+    data: {
+      name: data.name,
+      url: data.driveLink,
+      dept: data.dept,
+      description: JSON.stringify({ type: data.type, campaignTag: data.campaignTag || "" }),
+      addedByUserId: actor.id,
+      dateAdded: new Date(),
+    }
+  });
+
   revalidatePath("/portal/staff/shared/content-bank");
   revalidatePath("/portal/management");
-  return asset;
+  return {
+    id: asset.id,
+    name: asset.name,
+    type: data.type,
+    driveLink: asset.url,
+    dept: asset.dept,
+    campaignTag: data.campaignTag,
+    createdAt: asset.dateAdded || new Date(),
+  };
 }
 
 export async function deleteAsset(id: string) {
   await requireStaffAccess();
 
-  await prisma.asset.delete({ where: { id } });
+  await prisma.contentBankItem.delete({ where: { id } });
   revalidatePath("/portal/staff/shared/content-bank");
 }

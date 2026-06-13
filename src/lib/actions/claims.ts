@@ -20,8 +20,15 @@ export async function submitClaim(formData: FormData) {
 
   if (!userId || !month || isNaN(amount)) throw new Error("Missing required fields");
 
+  // Fetch the user's department for budget accounting
+  const claimant = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { dept: true }
+  });
+  const dept = claimant?.dept || "Finance";
+
   const claim = await prisma.claim.create({
-    data: { userId, month, amount, notes, status: "pending" },
+    data: { userId, month, amount, notes, status: "pending", dept },
   });
 
   revalidatePath("/portal/staff/finance/claims");
@@ -67,11 +74,12 @@ export async function getMonthlyStats(userEmail: string, month: string) {
   const start = new Date(parseInt(year), monthIndex, 1);
   const end = new Date(parseInt(year), monthIndex + 1, 0, 23, 59, 59);
 
-  const attendances = await prisma.attendance.findMany({
-    where: { studentId: user.id, status: "present", markedAt: { gte: start, lte: end } },
+  const attendances = await prisma.sessionAttendance.findMany({
+    where: { studentId: user.id, status: "PRESENT", markedAt: { gte: start, lte: end } },
+    include: { session: true },
   });
-  const totalMinutes = attendances.reduce((s: number, a: any) => s + (a.duration ?? 0), 0);
-  const hours = Math.round((totalMinutes / 60) * 100) / 100;
+  const totalHours = attendances.reduce((s: number, a: any) => s + (a.session?.durationHours ?? 1.0), 0);
+  const hours = Math.round(totalHours * 100) / 100;
   const rate = user.hourlyRate ?? BUSINESS.DEFAULT_TEACHER_HOURLY_RATE;
   return { events: attendances.length, hours, estimatedAmount: Math.round(hours * rate * 100) / 100, hourlyRate: rate };
 }

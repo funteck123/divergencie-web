@@ -199,7 +199,7 @@ export async function PATCH(
         return NextResponse.json({ error: "Invalid Action" }, { status: 400 });
     }
 
-    const updated = await prisma.$transaction(async (tx) => {
+    const updated = await prisma.$transaction(async (tx: any) => {
       const t = await tx.ticket.update({ where: { id }, data: updateData });
       await tx.ticketHistory.create({
         data: {

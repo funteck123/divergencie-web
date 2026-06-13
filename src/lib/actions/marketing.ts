@@ -88,11 +88,22 @@ export async function passLeadToPR(id: string, creatorEmail: string) {
 export async function getMarketingPosts(status?: string) {
   await requireMarketingAccess();
 
-  return await prisma.marketingPost.findMany({
+  const posts = await prisma.marketingPost.findMany({
     where: status ? { status } : undefined,
-    orderBy: { scheduledAt: "asc" },
+    orderBy: { scheduledDate: "asc" },
     take: 200,
   });
+
+  return posts.map(p => ({
+    id: p.id,
+    contentType: p.contentType,
+    status: p.status,
+    canvaLink: p.canvaLink,
+    driveLink: p.driveLink,
+    caption: p.caption,
+    scheduledAt: p.scheduledDate,
+    campaignTag: p.campaignTag,
+  }));
 }
 
 export async function createMarketingPost(data: {
@@ -105,9 +116,22 @@ export async function createMarketingPost(data: {
 }) {
   await requireMarketingAccess();
 
-  const post = await prisma.marketingPost.create({ data });
+  const post = await prisma.marketingPost.create({
+    data: {
+      canvaLink: data.canvaLink,
+      driveLink: data.driveLink,
+      caption: data.caption,
+      scheduledDate: data.scheduledAt,
+      contentType: data.contentType,
+      campaignTag: data.campaignTag,
+    }
+  });
+
   revalidatePath("/portal/staff/marketing/calendar");
-  return post;
+  return {
+    ...post,
+    scheduledAt: post.scheduledDate,
+  };
 }
 
 export async function updatePostStatus(id: string, status: string) {
@@ -115,7 +139,10 @@ export async function updatePostStatus(id: string, status: string) {
 
   const post = await prisma.marketingPost.update({ where: { id }, data: { status } });
   revalidatePath("/portal/staff/marketing/calendar");
-  return post;
+  return {
+    ...post,
+    scheduledAt: post.scheduledDate,
+  };
 }
 
 export async function getMarketingStats() {

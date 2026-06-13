@@ -13,10 +13,7 @@ const DEPT_CATEGORIES = {
 
 async function main() {
   const url = process.env.DATABASE_URL!;
-  console.log("Seeding to:", url);
-  
-  const adapter = new PrismaBetterSqlite3({ url });
-  // prisma imported from db singleton above
+  console.log("Seeding to:", url ? "PostgreSQL database" : "undefined");
 
   console.log("Seeding ticket categories...");
   for (const [dept, cats] of Object.entries(DEPT_CATEGORIES)) {
@@ -28,10 +25,10 @@ async function main() {
       });
     }
   }
-  
+
   const count = await prisma.ticketCategory.count();
   console.log("Seeding complete. Total categories:", count);
-  
+
   await prisma.$disconnect();
 }
 

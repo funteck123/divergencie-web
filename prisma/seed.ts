@@ -60,7 +60,7 @@ async function main() {
   const group = await prisma.group.upsert({
     where: { code: "B8-MATHS" },
     update: {},
-    create: { code: "B8-MATHS", subject: "IGCSE Mathematics", teacherId: teacher.id },
+    create: { code: "B8-MATHS", subject: "IGCSE Mathematics", teacherId: teacher.id, groupCategory: "B_GROUP" },
   });
   if (student) {
     await prisma.group.update({ where: { id: group.id }, data: { students: { connect: { id: student.id } } } });
@@ -68,21 +68,61 @@ async function main() {
 
   // Syllabus
   const chapters = [
-    { subject: "IGCSE Mathematics", chapterNum: "01", title: "Number & Operations", milestone: "core", order: 1 },
-    { subject: "IGCSE Mathematics", chapterNum: "02", title: "Algebraic Manipulation", milestone: "core", order: 2 },
-    { subject: "IGCSE Mathematics", chapterNum: "03", title: "Quadratic Equations", milestone: "a*", order: 3 },
-    { subject: "IGCSE Mathematics", chapterNum: "04", title: "Coordinate Geometry", milestone: "a*", order: 4 },
-    { subject: "IGCSE Mathematics", chapterNum: "05", title: "Trigonometry", milestone: "topper", order: 5 },
-    { subject: "A Level Chemistry", chapterNum: "01", title: "Atomic Structure & Bonding", milestone: "core", order: 1 },
-    { subject: "A Level Chemistry", chapterNum: "02", title: "Energetics & Kinetics", milestone: "core", order: 2 },
-    { subject: "A Level Chemistry", chapterNum: "03", title: "Chemical Equilibrium", milestone: "a*", order: 3 },
-    { subject: "IGCSE Physics", chapterNum: "01", title: "Forces & Motion", milestone: "core", order: 1 },
-    { subject: "IGCSE Physics", chapterNum: "02", title: "Waves & Optics", milestone: "core", order: 2 },
-    { subject: "IGCSE Physics", chapterNum: "03", title: "Electricity & Magnetism", milestone: "a*", order: 3 },
+    { subject: "IGCSE Mathematics", chapterNum: "01", chapterTitle: "Number & Operations", topicTitle: "Number & Operations", level: "IGCSE", order: 1 },
+    { subject: "IGCSE Mathematics", chapterNum: "02", chapterTitle: "Algebraic Manipulation", topicTitle: "Algebraic Manipulation", level: "IGCSE", order: 2 },
+    { subject: "IGCSE Mathematics", chapterNum: "03", chapterTitle: "Quadratic Equations", topicTitle: "Quadratic Equations", level: "IGCSE", order: 3 },
+    { subject: "IGCSE Mathematics", chapterNum: "04", chapterTitle: "Coordinate Geometry", topicTitle: "Coordinate Geometry", level: "IGCSE", order: 4 },
+    { subject: "IGCSE Mathematics", chapterNum: "05", chapterTitle: "Trigonometry", topicTitle: "Trigonometry", level: "IGCSE", order: 5 },
+    { subject: "A Level Chemistry", chapterNum: "01", chapterTitle: "Atomic Structure & Bonding", topicTitle: "Atomic Structure & Bonding", level: "A Level", order: 1 },
+    { subject: "A Level Chemistry", chapterNum: "02", chapterTitle: "Energetics & Kinetics", topicTitle: "Energetics & Kinetics", level: "A Level", order: 2 },
+    { subject: "A Level Chemistry", chapterNum: "03", chapterTitle: "Chemical Equilibrium", topicTitle: "Chemical Equilibrium", level: "A Level", order: 3 },
+    { subject: "IGCSE Physics", chapterNum: "01", chapterTitle: "Forces & Motion", topicTitle: "Forces & Motion", level: "IGCSE", order: 1 },
+    { subject: "IGCSE Physics", chapterNum: "02", chapterTitle: "Waves & Optics", topicTitle: "Waves & Optics", level: "IGCSE", order: 2 },
+    { subject: "IGCSE Physics", chapterNum: "03", chapterTitle: "Electricity & Magnetism", topicTitle: "Electricity & Magnetism", level: "IGCSE", order: 3 },
   ];
   const syllabusItems: any[] = [];
+  // Ensure we clean old ones to prevent unique constraint failures on re-run
+  await prisma.syllabusItem.deleteMany({});
   for (const ch of chapters) {
-    const item = await prisma.syllabusItem.create({ data: ch });
+    // SyllabusList is required in schema, so let's check or mock one
+    let list = await prisma.syllabusList.findFirst();
+    if (!list) {
+      // Find or create curriculum list
+      let service = await prisma.service.findFirst();
+      if (!service) {
+        service = await prisma.service.create({
+          data: {
+            subjectName: ch.subject,
+            teacherId: teacher.id,
+            serviceType: "MONTHLY",
+          }
+        });
+      }
+      let currList = await prisma.curriculumList.findUnique({ where: { serviceId: service.id } });
+      if (!currList) {
+        currList = await prisma.curriculumList.create({ data: { serviceId: service.id } });
+      }
+      list = await prisma.syllabusList.create({
+        data: {
+          curriculumListId: currList.id,
+          name: ch.subject,
+          version: "1.0",
+          level: ch.level,
+        }
+      });
+    }
+
+    const item = await prisma.syllabusItem.create({
+      data: {
+        syllabusListId: list.id,
+        subject: ch.subject,
+        chapterNum: ch.chapterNum,
+        chapterTitle: ch.chapterTitle,
+        topicTitle: ch.topicTitle,
+        level: ch.level,
+        order: ch.order,
+      }
+    });
     syllabusItems.push(item);
   }
 
@@ -113,7 +153,9 @@ async function main() {
       subject: "IGCSE Mathematics", topic: "Quadratic Equations",
       startTime: past1, endTime: new Date(past1.getTime() + 3600000),
       teacherId: teacher.id, studentId: student.id, groupId: group.id,
-      status: "completed", zoomLink: "https://zoom.us/j/123456789",
+      status: "COMPLETED", zoomLink: "https://zoom.us/j/123456789",
+      wbLink: "https://miro.com/board/example1",
+      durationHours: 1.0,
     }
   });
   const sess2 = await prisma.academicSession.create({
@@ -121,7 +163,9 @@ async function main() {
       subject: "A Level Chemistry", topic: "Chemical Equilibrium",
       startTime: past2, endTime: new Date(past2.getTime() + 5400000),
       teacherId: teacher.id, studentId: student.id,
-      status: "completed", zoomLink: "https://zoom.us/j/987654321",
+      status: "COMPLETED", zoomLink: "https://zoom.us/j/987654321",
+      wbLink: "https://miro.com/board/example2",
+      durationHours: 1.5,
     }
   });
   await prisma.academicSession.create({
@@ -129,29 +173,93 @@ async function main() {
       subject: "IGCSE Mathematics", topic: "Coordinate Geometry",
       startTime: future, endTime: new Date(future.getTime() + 3600000),
       teacherId: teacher.id, studentId: student.id, groupId: group.id,
-      status: "scheduled", zoomLink: "https://zoom.us/j/111222333",
+      status: "SCHEDULED", zoomLink: "https://zoom.us/j/111222333",
+      durationHours: 1.0,
     }
   });
 
   // Attendance
-  await prisma.attendance.create({ data: { sessionId: sess1.id, studentId: student.id, status: "present", duration: 60, wbLink: "https://miro.com/board/example1" } });
-  await prisma.attendance.create({ data: { sessionId: sess2.id, studentId: student.id, status: "present", duration: 90, wbLink: "https://miro.com/board/example2" } });
+  await prisma.sessionAttendance.create({
+    data: {
+      sessionId: sess1.id,
+      studentId: student.id,
+      status: "PRESENT",
+      markedAt: now,
+    }
+  });
+  await prisma.sessionAttendance.create({
+    data: {
+      sessionId: sess2.id,
+      studentId: student.id,
+      status: "PRESENT",
+      markedAt: now,
+    }
+  });
 
   // Recordings
-  await prisma.recording.upsert({ where: { id: "rec-seed-1" }, update: {}, create: { id: "rec-seed-1", title: "IGCSE Mathematics — Quadratic Equations", subject: "IGCSE Mathematics", videoUrl: "https://miro.com/board/example1", date: sess1.startTime, duration: "1h 0m", category: "class" } });
-  await prisma.recording.upsert({ where: { id: "rec-seed-2" }, update: {}, create: { id: "rec-seed-2", title: "A Level Chemistry — Chemical Equilibrium", subject: "A Level Chemistry", videoUrl: "https://miro.com/board/example2", date: sess2.startTime, duration: "1h 30m", category: "class" } });
+  await prisma.recording.upsert({
+    where: { id: "rec-seed-1" },
+    update: {},
+    create: {
+      id: "rec-seed-1",
+      title: "IGCSE Mathematics — Quadratic Equations",
+      videoUrl: "https://miro.com/board/example1",
+      academicSessionId: sess1.id,
+    }
+  });
+  await prisma.recording.upsert({
+    where: { id: "rec-seed-2" },
+    update: {},
+    create: {
+      id: "rec-seed-2",
+      title: "A Level Chemistry — Chemical Equilibrium",
+      videoUrl: "https://miro.com/board/example2",
+      academicSessionId: sess2.id,
+    }
+  });
 
   // Assignments
-  await prisma.assignment.create({ data: { title: "Quadratics Past Paper", subject: "IGCSE Mathematics", studentId: student.id, dueDate: new Date(now.getTime() + 3 * 86400000), status: "pending" } });
-  await prisma.assignment.create({ data: { title: "Equilibrium Problem Set", subject: "A Level Chemistry", studentId: student.id, dueDate: new Date(now.getTime() + 6 * 86400000), status: "pending" } });
-  await prisma.assignment.create({ data: { title: "Number Revision Sheet", subject: "IGCSE Mathematics", studentId: student.id, dueDate: new Date(now.getTime() - 2 * 86400000), status: "submitted" } });
+  await prisma.assignment.create({ data: { title: "Quadratics Past Paper", studentId: student.id, dueDate: new Date(now.getTime() + 3 * 86400000), status: "pending" } });
+  await prisma.assignment.create({ data: { title: "Equilibrium Problem Set", studentId: student.id, dueDate: new Date(now.getTime() + 6 * 86400000), status: "pending" } });
+  await prisma.assignment.create({ data: { title: "Number Revision Sheet", studentId: student.id, dueDate: new Date(now.getTime() - 2 * 86400000), status: "submitted" } });
 
   // Mock result
-  await prisma.mockResult.create({ data: { studentId: student.id, subject: "IGCSE Mathematics", level: "IGCSE", diff: "medium", score: 76, grade: "A", timeTaken: 45 } });
+  await prisma.mockResult.create({
+    data: {
+      studentId: student.id,
+      subject: "IGCSE Mathematics",
+      level: "IGCSE",
+      diff: "medium",
+      score: 76,
+      grade: "A",
+      timeTaken: 45,
+      completed: true,
+      marksScored: 76,
+      marksAvailable: 100,
+    }
+  });
 
   // Invoices
-  await prisma.invoice.create({ data: { studentId: student.id, month: "2026-05", amount: 450, status: "due" } });
-  await prisma.invoice.create({ data: { studentId: student.id, month: "2026-04", amount: 450, status: "paid" } });
+  await prisma.studentInvoice.create({
+    data: {
+      studentId: student.id,
+      month: "2026-05",
+      netAmount: 450,
+      dueAmount: 450,
+      currency: "GBP",
+      status: "due",
+    }
+  });
+  await prisma.studentInvoice.create({
+    data: {
+      studentId: student.id,
+      month: "2026-04",
+      netAmount: 450,
+      dueAmount: 0,
+      currency: "GBP",
+      status: "paid",
+    }
+  });
 
   // Rate cards
   for (const r of [
@@ -166,9 +274,34 @@ async function main() {
   }
 
   // Marketing posts
-  await prisma.marketingPost.create({ data: { canvaLink: "https://canva.com/example1", caption: "A* results — our students deliver! #DivergenCIE", scheduledAt: new Date(now.getTime() + 2 * 86400000), status: "scheduled", contentType: "post", campaignTag: "Results2026" } });
-  await prisma.marketingPost.create({ data: { driveLink: "https://drive.google.com/example1", caption: "Meet our tutors.", scheduledAt: new Date(now.getTime() - 86400000), status: "posted", contentType: "reel", campaignTag: "TeamSpotlight" } });
-  await prisma.marketingPost.create({ data: { scheduledAt: new Date(now.getTime() - 5 * 86400000), status: "missed", contentType: "story", campaignTag: "WeeklyStudyTip" } });
+  await prisma.marketingPost.create({
+    data: {
+      canvaLink: "https://canva.com/example1",
+      caption: "A* results — our students deliver! #DivergenCIE",
+      scheduledDate: new Date(now.getTime() + 2 * 86400000),
+      status: "scheduled",
+      contentType: "post",
+      campaignTag: "Results2026",
+    }
+  });
+  await prisma.marketingPost.create({
+    data: {
+      driveLink: "https://drive.google.com/example1",
+      caption: "Meet our tutors.",
+      scheduledDate: new Date(now.getTime() - 86400000),
+      status: "posted",
+      contentType: "reel",
+      campaignTag: "TeamSpotlight",
+    }
+  });
+  await prisma.marketingPost.create({
+    data: {
+      scheduledDate: new Date(now.getTime() - 5 * 86400000),
+      status: "missed",
+      contentType: "story",
+      campaignTag: "WeeklyStudyTip",
+    }
+  });
 
   // Leads
   await prisma.lead.create({ data: { name: "Fatimah Al-Rashid", email: "fatimah@example.com", source: "Instagram", status: "new", notes: "Interested in IGCSE Maths 1-on-1" } });
@@ -177,18 +310,43 @@ async function main() {
   // HR candidates
   await prisma.candidate.upsert({ where: { email: "sarah.miller@example.com" }, update: {}, create: { name: "Sarah Miller", email: "sarah.miller@example.com", role: "A Level Teacher", status: "Interview", cvLink: "https://drive.google.com/cv-sarah", notes: "Strong Imperial background", outreach: "LinkedIn" } });
   await prisma.candidate.upsert({ where: { email: "linda.chen@example.com" }, update: {}, create: { name: "Linda Chen", email: "linda.chen@example.com", role: "IGCSE Maths Teacher", status: "Offer Sent", cvLink: "https://drive.google.com/cv-linda", notes: "Expected join June 1", outreach: "IG" } });
+  
   // Access logs
   await prisma.accessLog.create({ data: { staffName: "Ms Priya Sharma", toolName: "Zoom", credential: "host-key-xxx", notes: "Granted on onboarding" } });
   await prisma.accessLog.create({ data: { staffName: "Ms Priya Sharma", toolName: "Google Classroom", notes: "Co-teacher B8-MATHS" } });
 
-  // Assets
-  await prisma.asset.create({ data: { name: "Teacher Onboarding Protocol v2", type: "Protocol", driveLink: "https://drive.google.com/onboarding-protocol", dept: "PR", campaignTag: "Onboarding" } });
-  await prisma.asset.create({ data: { name: "May 2026 Course Catalogue", type: "Catalogue", driveLink: "https://drive.google.com/course-catalogue-may", dept: "Marketing", campaignTag: "Catalogue" } });
-  await prisma.asset.create({ data: { name: "Finance Claim Guidebook", type: "Guidebook", driveLink: "https://drive.google.com/claim-guidebook", dept: "Finance" } });
+  // Assets (ContentBankItem)
+  await prisma.contentBankItem.create({
+    data: {
+      name: "Teacher Onboarding Protocol v2",
+      url: "https://drive.google.com/onboarding-protocol",
+      dept: "PR",
+      addedByUserId: prStaff.id,
+      description: JSON.stringify({ type: "Protocol", campaignTag: "Onboarding" }),
+    }
+  });
+  await prisma.contentBankItem.create({
+    data: {
+      name: "May 2026 Course Catalogue",
+      url: "https://drive.google.com/course-catalogue-may",
+      dept: "Marketing",
+      addedByUserId: prStaff.id,
+      description: JSON.stringify({ type: "Catalogue", campaignTag: "Catalogue" }),
+    }
+  });
+  await prisma.contentBankItem.create({
+    data: {
+      name: "Finance Claim Guidebook",
+      url: "https://drive.google.com/claim-guidebook",
+      dept: "Finance",
+      addedByUserId: prStaff.id,
+      description: JSON.stringify({ type: "Guidebook" }),
+    }
+  });
 
   // Claims
-  await prisma.claim.create({ data: { userId: teacher.id, month: "2026-04", sessions: 32, hours: 32, amount: 640, status: "approved" } });
-  await prisma.claim.create({ data: { userId: teacher.id, month: "2026-05", sessions: 18, hours: 18, amount: 360, status: "pending" } });
+  await prisma.claim.create({ data: { userId: teacher.id, month: "2026-04", sessions: 32, hours: 32, amount: 640, status: "approved", dept: "PR" } });
+  await prisma.claim.create({ data: { userId: teacher.id, month: "2026-05", sessions: 18, hours: 18, amount: 360, status: "pending", dept: "PR" } });
 
   // Announcements
   await prisma.announcement.create({ data: { title: "May Mock Exam Schedule", body: "Timed mocks start 19 May. Results shared within 48h via portal.", targetRole: "all", priority: "high" } });
@@ -200,7 +358,7 @@ async function main() {
   }
 
   // Meeting
-  await prisma.meeting.create({
+  await prisma.generalMeeting.create({
     data: {
       title: "Bimonthly Teacher Training Workshop",
       dateTime: new Date(now.getTime() + 5 * 86400000),

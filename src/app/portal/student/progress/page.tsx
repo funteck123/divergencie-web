@@ -28,10 +28,11 @@ export default function StudentProgressPage() {
       for (const p of progress) { progMap[p.syllabusItemId] = p.completed; }
       const subjMap: Record<string, { total: number; done: number; items: any[] }> = {};
       for (const item of syllabus) {
-        if (!subjMap[item.subject]) subjMap[item.subject] = { total: 0, done: 0, items: [] };
-        subjMap[item.subject].total++;
-        if (progMap[item.id]) subjMap[item.subject].done++;
-        subjMap[item.subject].items.push({ ...item, completed: progMap[item.id] ?? false });
+        const subjectName = item.subject || "General";
+        if (!subjMap[subjectName]) subjMap[subjectName] = { total: 0, done: 0, items: [] };
+        subjMap[subjectName].total++;
+        if (progMap[item.id]) subjMap[subjectName].done++;
+        subjMap[subjectName].items.push({ ...item, completed: progMap[item.id] ?? false });
       }
 
       const COLORS = ['#3b82f6','var(--gold)','#f43f5e','#a855f7','#10b981'];

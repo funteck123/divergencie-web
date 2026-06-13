@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ticket = await prisma.$transaction(async (tx) => {
+    const ticket = await prisma.$transaction(async (tx: any) => {
       // Generate displayId — use prefix match to avoid date range mutation bug and race condition
       const now = new Date();
       const yyyy = now.getFullYear();

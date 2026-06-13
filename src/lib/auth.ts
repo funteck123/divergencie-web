@@ -45,11 +45,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             id:         user.id,
             email:      user.email,
             name:       user.name,
-            role:       user.role,
-            dept:       user.dept,
-            subGroup:   user.subGroup,
+            role:       user.role || "",
+            dept:       user.dept || null,
+            subGroup:   user.subGroup || null,
             supervisor: user.supervisor,
-          };
+          } as any;
         } catch (error) {
           if (error instanceof CredentialsSignin) throw error;
           console.error("[AUTH] DB error:", error);
