@@ -56,6 +56,11 @@ export async function POST(
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
+    const studentId = sessionRecord.studentId;
+    if (!studentId) {
+      return NextResponse.json({ error: "Session does not have a student assigned" }, { status: 400 });
+    }
+
     // Teachers can only log attendance for their own assigned sessions
     if (role === "teacher" && sessionRecord.teacherId !== user.id) {
       return NextResponse.json({
@@ -72,7 +77,7 @@ export async function POST(
       where: {
         sessionId_studentId: {
           sessionId,
-          studentId: sessionRecord.studentId
+          studentId
         }
       },
       update: {
@@ -85,7 +90,7 @@ export async function POST(
       },
       create: {
         sessionId,
-        studentId: sessionRecord.studentId,
+        studentId,
         status: normalizedStatus,
         teacherLoggedHours: finalHours,
         notes,
