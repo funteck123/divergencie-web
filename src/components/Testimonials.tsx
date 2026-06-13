@@ -67,7 +67,7 @@ export default function Testimonials() {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative overflow-hidden">
           <div 
             className="flex transition-transform duration-700 ease-in-out" 
             style={{ transform: `translateX(-${current * 100}%)` }}
