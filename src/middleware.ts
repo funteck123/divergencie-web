@@ -1,11 +1,10 @@
-// src/proxy.ts — Next.js 16 (proxy.ts replaces middleware.ts)
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
-export const proxy = auth((req) => {
+export const middleware = auth((req) => {
   const isLoggedIn = !!req.auth;
   const user = req.auth?.user as any;
   const { pathname } = req.nextUrl;
@@ -31,7 +30,6 @@ export const proxy = auth((req) => {
       return NextResponse.redirect(new URL("/unauthorized", req.nextUrl));
     }
 
-    // Fix: ambassador route was missing a guard
     if (pathname.startsWith("/portal/ambassador") && role !== "ambassador") {
       return NextResponse.redirect(new URL("/unauthorized", req.nextUrl));
     }
