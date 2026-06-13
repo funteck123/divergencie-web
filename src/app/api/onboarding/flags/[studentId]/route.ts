@@ -23,3 +23,10 @@ export async function PATCH(
     return NextResponse.json({ error: error.message }, { status });
   }
 }
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ studentId: string }> }
+) {
+  return PATCH(req, { params });
+}
