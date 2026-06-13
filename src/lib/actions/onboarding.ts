@@ -20,14 +20,20 @@ export async function checkAndActivateStudent(studentId: string) {
       data: { status: "ACTIVE" }
     });
 
-    await prisma.notification.create({
-      data: {
-        userId: studentId,
-        type: "ONBOARDING_COMPLETE",
-        title: "Account Activated",
-        message: "Your onboarding is complete and your portal is now active!"
-      }
+    const notificationType = await prisma.notificationType.findUnique({
+      where: { name: "ONBOARDING_COMPLETE" }
     });
+
+    if (notificationType) {
+      await prisma.notification.create({
+        data: {
+          userId: studentId,
+          notificationTypeId: notificationType.id,
+          title: "Account Activated",
+          body: "Your onboarding is complete and your portal is now active!"
+        }
+      });
+    }
 
     return true;
   }
