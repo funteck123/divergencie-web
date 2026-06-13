@@ -37,8 +37,16 @@ export async function createMapping(formData: FormData) {
       throw new Error(`Group ${batchCode} is already assigned to another teacher.`);
     }
   } else {
+    const categoryMap: Record<string, string> = {
+      B: "B_GROUP",
+      C: "C_GROUP",
+      T: "T_GROUP",
+    };
+    const firstChar = batchCode.trim().charAt(0).toUpperCase();
+    const groupCategory = categoryMap[firstChar] || "B_GROUP";
+
     group = await prisma.group.create({
-      data: { code: batchCode, subject, teacherId: teacher.id },
+      data: { code: batchCode, subject, teacherId: teacher.id, groupCategory },
     });
   }
 
@@ -69,9 +77,9 @@ export async function getMappings() {
         id: `${group.id}-${student.id}`,
         student: student.name,
         studentEmail: student.email,
-        subject: group.subject,
-        teacher: group.teacher.name,
-        teacherEmail: group.teacher.email,
+        subject: group.subject || "General",
+        teacher: group.teacher?.name || "No Teacher",
+        teacherEmail: group.teacher?.email || "N/A",
         batch: group.code,
         date: group.createdAt.toISOString().split("T")[0],
       });

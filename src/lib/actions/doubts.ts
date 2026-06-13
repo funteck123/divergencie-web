@@ -29,7 +29,7 @@ export async function getDoubts(studentId?: string) {
   return await prisma.doubt.findMany({
     where: studentId ? { studentId } : {},
     include: { syllabusItem: true, student: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { id: "desc" },
     take: 100,
   });
 }
@@ -60,8 +60,8 @@ export async function getStudentDoubts(studentEmail: string) {
   if (!user) return [];
   return await prisma.doubt.findMany({
     where: { studentId: user.id },
-    include: { syllabusItem: { select: { subject: true, title: true, chapterNum: true } } },
-    orderBy: { createdAt: "desc" },
+    include: { syllabusItem: { select: { subject: true, chapterTitle: true, topicTitle: true, chapterNum: true } } },
+    orderBy: { id: "desc" },
     take: 100,
   });
 }

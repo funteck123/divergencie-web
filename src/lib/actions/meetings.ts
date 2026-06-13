@@ -24,7 +24,7 @@ export async function requestMeeting(formData: FormData) {
 
   const dateTime = new Date(`${date}T${time}`);
 
-  const meeting = await prisma.meeting.create({
+  const meeting = await prisma.generalMeeting.create({
     data: {
       title,
       dept,
@@ -45,7 +45,7 @@ export async function updateMeetingStatus(meetingId: string, status: string) {
   const actor = session.user as any;
   if (actor.role !== "staff" && actor.role !== "management") throw new Error("Forbidden");
 
-  const meeting = await prisma.meeting.update({ where: { id: meetingId }, data: { status } });
+  const meeting = await prisma.generalMeeting.update({ where: { id: meetingId }, data: { status } });
   revalidatePath("/portal/staff/shared/meetings");
   return meeting;
 }
@@ -54,7 +54,7 @@ export async function getMeetings(dept?: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  return await prisma.meeting.findMany({
+  return await prisma.generalMeeting.findMany({
     where: dept ? { OR: [{ dept }, { dept: "All Staff" }] } : {},
     include: { participants: { include: { user: true } } },
     orderBy: { dateTime: "asc" },

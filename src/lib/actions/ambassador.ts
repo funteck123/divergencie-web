@@ -21,7 +21,8 @@ export async function getAmbassadorData(email: string) {
   if (!user) return null;
 
   if (!user.referralCode) {
-    const code = `DC-${user.name.split(" ")[0].toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const namePart = (user.name || "Ambassador").split(" ")[0].toUpperCase();
+    const code = `DC-${namePart}-${Math.floor(1000 + Math.random() * 9000)}`;
     await prisma.user.update({ where: { email }, data: { referralCode: code } });
     user.referralCode = code;
   }

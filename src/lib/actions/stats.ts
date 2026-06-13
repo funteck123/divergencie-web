@@ -191,7 +191,7 @@ export async function getManagementMetrics() {
     prisma.ticket.count({ where: { status: { in: ["OPEN", "REOPENED"] } } }),
     prisma.claim.count({ where: { status: { in: ["pending", "submitted"] } } }),
     prisma.academicSession.count({ where: { status: "completed" } }),
-    prisma.attendance.count({ where: { status: "present" } }),
+    prisma.sessionAttendance.count({ where: { status: "present" } }),
     prisma.lead.count({ where: { passedToPR: false } }),
     prisma.marketingPost.count({ where: { status: "missed" } }),
     prisma.user.count({ where: { role: "ambassador", active: true } }),

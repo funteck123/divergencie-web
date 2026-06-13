@@ -35,7 +35,7 @@ export default function ManagementUsersPage() {
     setStats({
       total: all.length,
       students: all.filter(u => u.role === "student").length,
-      staff: all.filter(u => ["staff", "teacher", "management"].includes(u.role)).length,
+      staff: all.filter(u => u.role && ["staff", "teacher", "management"].includes(u.role)).length,
       ambassadors: all.filter(u => u.role === "ambassador").length,
     });
     setLoading(false);

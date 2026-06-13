@@ -25,7 +25,7 @@ export async function getCandidates(query?: string) {
           ],
         }
       : undefined,
-    orderBy: { createdAt: "desc" },
+    orderBy: { id: "desc" },
     take: 200,
   });
 }

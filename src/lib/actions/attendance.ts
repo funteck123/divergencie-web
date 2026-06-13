@@ -59,8 +59,8 @@ export async function submitAttendance(formData: FormData) {
     const sess = await prisma.academicSession.findUnique({ where: { id: sessionId } });
     if (!sess) throw new Error("Session not found");
     if (sess.teacherId !== teacher.id) throw new Error("Unauthorized: not your session");
-    studentId = sess.studentId;
-    sessSubject = sess.subject;
+    studentId = sess.studentId || "";
+    sessSubject = sess.subject || "Session";
     sessStartTime = sess.startTime;
 
     await prisma.academicSession.update({
@@ -69,14 +69,12 @@ export async function submitAttendance(formData: FormData) {
     });
   }
 
-  const attendance = await prisma.attendance.create({
+  const attendance = await prisma.sessionAttendance.create({
     data: {
       sessionId: actualSessionId,
       studentId,
-      duration,
       notes,
-      wbLink: wbLink || undefined,
-      status: status === "present" ? "present" : "absent",
+      status: status === "present" ? "PRESENT" : "ABSENT_NO_SHOW",
     },
   });
 
@@ -121,7 +119,7 @@ export async function getAttendanceHistory(teacherEmail: string) {
   const teacher = await prisma.user.findUnique({ where: { email: teacherEmail } });
   if (!teacher) return [];
 
-  return await prisma.attendance.findMany({
+  return await prisma.sessionAttendance.findMany({
     where: { session: { teacherId: teacher.id } },
     include: { session: true, student: { select: { name: true } } },
     orderBy: { markedAt: "desc" },
@@ -147,7 +145,7 @@ export async function getStudentsForTeacher(teacherEmail: string) {
   });
 
   const studentsMap = new Map();
-  groups.forEach((g) => g.students.forEach((s) => studentsMap.set(s.id, s)));
+  groups.forEach((g: any) => g.students.forEach((s: any) => studentsMap.set(s.id, s)));
   return Array.from(studentsMap.values());
 }
 
@@ -161,8 +159,8 @@ export async function getTeacherAttendance(teacherEmail: string) {
 
   const teacher = await prisma.user.findUnique({ where: { email: teacherEmail } });
   if (!teacher) return [];
-  return await prisma.attendance.findMany({
-    where: { session: { teacherId: teacher.id }, status: "present" },
+  return await prisma.sessionAttendance.findMany({
+    where: { session: { teacherId: teacher.id }, status: "PRESENT" },
     include: { session: { select: { subject: true, startTime: true, endTime: true } } },
     orderBy: { markedAt: "desc" },
     take: 200,
@@ -175,7 +173,7 @@ export async function getStaffAttendanceLogs(userEmail: string) {
 
   const user = await prisma.user.findUnique({ where: { email: userEmail } });
   if (!user) return [];
-  return await prisma.attendance.findMany({
+  return await prisma.sessionAttendance.findMany({
     where: { studentId: user.id },
     include: { session: true },
     orderBy: { markedAt: "desc" },
@@ -207,12 +205,11 @@ export async function logStaffAttendance(data: {
       status: "completed",
     },
   });
-  const log = await prisma.attendance.create({
+  const log = await prisma.sessionAttendance.create({
     data: {
       sessionId: sess.id,
       studentId: user.id,
-      status: "present",
-      duration: Math.round(data.duration * 60),
+      status: "PRESENT",
       notes: data.notes,
     },
   });
@@ -227,7 +224,7 @@ export async function getAllSubmissions() {
   const actor = session.user as any;
   if (actor.role !== "staff" && actor.role !== "management") throw new Error("Forbidden");
 
-  return await prisma.attendance.findMany({
+  return await prisma.sessionAttendance.findMany({
     include: {
       student: { select: { name: true, role: true, dept: true } },
       session: { select: { subject: true, startTime: true, teacher: { select: { name: true } } } },
