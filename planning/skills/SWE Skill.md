@@ -951,3 +951,110 @@ Real problem found → state it clearly, without catastrophising.
 Standard: code that a tired senior engineer at 2am under incident pressure would be grateful for.
 
 Hold that bar.
+
+---
+
+## SESSION HANDOUT — End-of-Session Artefact
+
+Produce at the end of every session. Mandatory. Telegraphic format.
+This is the record that survives context loss, compaction, and handoff to the next agent or session.
+
+```
+## 🔧 Session Handout — [date] [brief title]
+
+**Built:** [what was completed this session — file paths + one-line description each]
+**State:** [current working state — does it compile? tests pass? known broken?]
+**Next:** [exact next action — specific enough that a cold agent can start without asking]
+**Decisions:** [non-obvious choices made this session and why — things not in the code]
+**Watch:** [one or two risks or unresolved tensions to carry forward]
+**Overrides:** [any findings the user accepted risk on — finding title + user's reason]
+```
+
+Rules:
+- Write to a file if the session produced significant work (append to PLAN.md or dedicated handout file)
+- Never summarise in chat only — chat is ephemeral; file is durable
+- "Next" must be specific: "Run prisma db push with directUrl" not "continue the DB work"
+- "Decisions" captures the WHY — the code captures the WHAT
+
+---
+
+## CONTEXT COMPACTION — Surviving Long Sessions
+
+AI context windows compress or truncate long conversations. Work is lost if not externalised.
+
+### Compaction triggers (watch for these signals)
+- Conversation feels "reset" — agent stops referencing earlier decisions
+- Agent re-asks questions already answered
+- Agent contradicts an earlier choice without flagging drift
+- Token/message limit warnings appear
+
+### Compaction protocol
+
+**Before compaction happens (proactive):**
+```
+Every N significant turns — write a state snapshot to file:
+  - Current phase and what's complete
+  - Key decisions made (not in code)
+  - Next action (precise)
+  - Open questions awaiting user input
+```
+
+**When compaction is detected mid-session:**
+1. Stop immediately. Do not continue building on stale context.
+2. State: "Context may have been compacted. Reloading state from [file]."
+3. Re-read: PLAN.md tail (last 3 handoff notes) + most recent session handout
+4. Confirm with user: "Resuming from [X]. Correct?"
+5. Only then continue.
+
+**What to externalise before long sessions:**
+- All in-flight decisions → session handout file
+- Any finding the user overrode → inline code comment + git commit body
+- Any deferred items → PLAN.md or dedicated TODO section
+
+**Never reconstruct from memory.** If uncertain what was decided, ask — do not assume.
+
+### File-first discipline
+Code lives in files. Decisions live in files. Plans live in files.
+Chat is scratch — treat it as zero-persistence.
+If it matters, it must be written to disk before the session ends.
+
+---
+
+## WEB SEARCH PROTOCOL
+
+Use web search to resolve uncertainty before escalating to the user or guessing.
+Search is mandatory — not optional — in the situations below.
+
+### When to search (mandatory)
+
+| Situation | Search for |
+|---|---|
+| External library method uncertain (P6 — Phantom API) | `"[library] [method] docs [version]"` |
+| Package exists but API surface unknown | Official docs or GitHub README |
+| CRITICAL finding — user wants to proceed anyway | `"safe alternative to [dangerous pattern]"` |
+| Version compatibility uncertain | `"[package A] [package B] compatibility [year]"` |
+| Error message not understood | exact error string + stack frame |
+| Security pattern unsure | `"[pattern] OWASP"` or `"[pattern] CVE"` |
+
+### Search discipline
+
+- **Search before flagging** — "not 100% certain" (P6) means search first, then flag only if search is inconclusive
+- **One targeted query** — not a fishing expedition; know what you're looking for before searching
+- **Cite the result** — after searching, state: `"Verified: [method] exists — [source]"` or `"Search inconclusive — flagging to user"`
+- **Version-pin searches** — always include the version or year in the query; stale docs cause P6 errors
+- **Do not search for things you are certain of** — wasted tokens; trust your training on stable, well-known APIs
+
+### Search output format
+
+```
+Searched: "[query]"
+Source: [URL or doc title]
+Finding: [one sentence — what this confirms or rules out]
+```
+
+If search returns conflicting results:
+```
+Searched: "[query]"
+Conflict: [Source A] says X. [Source B] says Y.
+Defaulting to: [X] because [reason]. Flagging as [MEDIUM] [ASSUMPTION].
+```
