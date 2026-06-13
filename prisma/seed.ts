@@ -25,7 +25,7 @@ async function seedUsers() {
     { email: "swe-intern@divergencie.com", name: "SWE Intern", role: "staff", dept: "IT", subGroup: "IT_MEM", supervisor: false, active: true },
   ] as const;
 
-  const hash = await bcrypt.hash("demo123", 10);
+  const hash = await bcrypt.hash("demo", 10);
 
   const upserted: Record<string, any> = {};
   for (const u of USERS) {
@@ -368,7 +368,7 @@ async function main() {
   }).catch(() => { });
 
   console.log("\n═══ Seed complete ═══");
-  console.log("Login with any email above, password: demo123\n");
+  console.log("Login with any email above, password: demo\n");
 }
 
 main()
