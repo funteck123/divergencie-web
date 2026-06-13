@@ -26,5 +26,15 @@ planning/keys.md
 # Compiled scratch artifacts
 scratch/*.cjs
 scratch/*.mjs
+
+# Secrets / planning sensitive files
 planning/keys.md
+planning/PORTAL_CREDENTIALS.md
+planning/invoice generator/
+planning/trash/
+
+# Real data exports
+data/
+
+# Generated Prisma clients
 src/generated/
