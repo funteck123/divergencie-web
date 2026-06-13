@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
-export const middleware = auth((req) => {
+export const proxy = auth((req) => {
   const isLoggedIn = !!req.auth;
   const user = req.auth?.user as any;
   const { pathname } = req.nextUrl;
