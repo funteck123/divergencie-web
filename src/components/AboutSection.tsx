@@ -28,7 +28,7 @@ const traits = [
 
 export default function AboutSection() {
   return (
-    <section className="py-24 bg-[var(--bg-primary)]">
+    <section className="py-24 bg-[var(--bg-primary)] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           {/* Left: Content */}
