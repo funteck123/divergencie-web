@@ -65,6 +65,9 @@ vi.mock("@/lib/db", () => {
     sessionAttendance: {
       create: vi.fn(),
       upsert: vi.fn(),
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
     },
     studentProfile: {
       findUnique: vi.fn(),
@@ -164,6 +167,9 @@ vi.mock("@/lib/db", () => {
       deleteMany: vi.fn(),
     },
     studentInvoiceStatusChangeLog: {
+      create: vi.fn(),
+    },
+    scheduleChangeRequest: {
       create: vi.fn(),
     },
     group: {
