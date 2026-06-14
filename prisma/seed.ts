@@ -1,6 +1,34 @@
 import "dotenv/config";
 import * as bcrypt from "bcryptjs";
+import { createClient } from "@supabase/supabase-js";
 import prisma from "../src/lib/db.js";
+
+// Supabase admin client for creating Auth users
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+);
+
+async function ensureSupabaseAuthUser(email: string, password: string, name: string, role: string, dept?: string) {
+  // Try to create; if already exists, update password
+  const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
+  const found = existing?.users?.find((u: any) => u.email === email);
+  if (found) {
+    await supabaseAdmin.auth.admin.updateUserById(found.id, {
+      password,
+      user_metadata: { name, role, dept: dept ?? "" },
+      email_confirm: true,
+    });
+  } else {
+    await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      user_metadata: { name, role, dept: dept ?? "" },
+      email_confirm: true,
+    });
+  }
+}
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
@@ -165,6 +193,13 @@ async function seedUsers(lookups: Record<string, any>) {
       create: { ...(u as any), passwordHash: hash },
     });
     upserted[u.email] = user;
+    // Ensure Supabase Auth user exists with same credentials
+    const dept = (u as any).subGroup
+      ? (u as any).subGroup.split("_")[0].toLowerCase()
+      : (u as any).dept ?? "";
+    await ensureSupabaseAuthUser(u.email, "Demo@1234", u.name, u.role, dept).catch((e: any) =>
+      console.warn(`  ⚠ Supabase Auth for ${u.email}: ${e.message}`)
+    );
     console.log(`  ✓ ${u.email}`);
   }
 
