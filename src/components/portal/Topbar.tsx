@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, User, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { NotificationBell } from "@/components/shared/NotificationBell";
+import { RoleBadge } from "@/components/shared/RoleBadge";
 import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sidebar } from "./Sidebar";
@@ -83,9 +84,7 @@ export function Topbar() {
                     {user.dept}
                   </span>
                 )}
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[var(--gold)]">
-                  {user?.role || "Student"}
-                </p>
+                <RoleBadge role={user?.role || "Student"} />
               </div>
             </div>
             <div className="w-9 h-9 rounded-full bg-[var(--gold-light-bg)] dark:bg-white/5 border border-[var(--border-subtle)] flex items-center justify-center text-[var(--gold)]">

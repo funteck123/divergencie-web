@@ -177,15 +177,15 @@ export function Sidebar({ onMobileClose }: { onMobileClose?: () => void }) {
               key={item.label}
               href={item.href}
               onClick={onMobileClose}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold transition-all group ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-r-lg text-sm font-bold transition-all group border-l-4 ${
                 isActive 
-                  ? "bg-[var(--gold)] text-black" 
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  ? "border-[var(--gold)] text-[var(--gold)] bg-[var(--gold-light-bg)] dark:bg-white/5" 
+                  : "border-transparent text-white/60 hover:text-white hover:bg-white/5"
               }`}
             >
-              <item.icon size={18} className={isActive ? "text-black" : "text-[var(--gold)] group-hover:scale-110 transition-transform"} />
+              <item.icon size={18} className={isActive ? "text-[var(--gold)]" : "text-white/40 group-hover:text-white group-hover:scale-110 transition-transform"} />
               {item.label}
-              {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-black" />}
+              {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--gold)]" />}
             </Link>
           );
         })}
