@@ -33,6 +33,9 @@ export default function TicketCreateForm({ creatorId, onSuccess, onClose }: Prop
   const allPossibleDepts = ["PR", "IT", "HR", "Finance", "Marketing", "Management"];
   const availableDepts = user?.role === "candidate" ? ["HR"] : allPossibleDepts.filter(d => {
     if (user?.role === "management") return true;
+    if (!isInternal) {
+      return d !== "Management";
+    }
     if (!deptPerm) {
       // If permissions aren't loaded yet OR this dept isn't in the matrix
       // Default to permissive for staff unless restricted
@@ -77,10 +80,11 @@ export default function TicketCreateForm({ creatorId, onSuccess, onClose }: Prop
     return dbCategories.filter(c => c.department === dept).map(c => c.name);
   };
 
-  // Compute filtered staff list
+  // Compute filtered staff list - staff can only assign to own department members
   const filteredStaff = allStaff.filter(s => 
     (selectedDept === "Management" ? s.role === "management" : s.dept === selectedDept) &&
-    s.id !== user?.id
+    s.id !== user?.id &&
+    (user?.role === "management" || s.dept === user?.dept)
   );
 
   // Compute filtered external users list
