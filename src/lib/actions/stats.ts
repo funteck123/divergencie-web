@@ -151,7 +151,13 @@ export async function getTeacherDashboardData(emailOrId: string) {
     select: { id: true },
   });
   const userId = user?.id ?? emailOrId;
-  const [tickets, announcements, lastClaim] = await Promise.all([
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const [tickets, announcements, lastClaim, todaySessions] = await Promise.all([
     prisma.ticket.findMany({
       where: { creatorId: userId },
       orderBy: { createdAt: "desc" },
@@ -163,9 +169,19 @@ export async function getTeacherDashboardData(emailOrId: string) {
       take: 5,
     }),
     prisma.claim.findFirst({ where: { userId }, orderBy: { createdAt: "desc" } }),
+    prisma.academicSession.findMany({
+      where: {
+        teacherId: userId,
+        startTime: { gte: todayStart, lte: todayEnd }
+      },
+      include: {
+        student: { select: { name: true } }
+      },
+      orderBy: { startTime: "asc" }
+    })
   ]);
 
-  return { tickets, announcements, lastClaim };
+  return { tickets, announcements, lastClaim, todaySessions };
 }
 
 export async function getManagementMetrics() {

@@ -30,7 +30,7 @@ function TeacherDashboardInner() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   
-  const [data, setData] = useState<{ tickets: any[], announcements: any[], lastClaim?: any }>({ tickets: [], announcements: [] });
+  const [data, setData] = useState<{ tickets: any[], announcements: any[], lastClaim?: any, todaySessions?: any[] }>({ tickets: [], announcements: [], todaySessions: [] });
   const [checklist, setChecklist] = useState({
     rec: false,
     breakout: false,
@@ -102,7 +102,7 @@ function TeacherDashboardInner() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Today's Classes", val: "3", sub: "Next: IGCSE Maths @ 4 PM", icon: Video, color: "text-amber-500", bg: "bg-amber-100 dark:bg-amber-500/20" },
+          { label: "Today's Classes", val: (data.todaySessions?.length ?? 0).toString(), sub: "Classes scheduled for today", icon: Video, color: "text-amber-500", bg: "bg-amber-100 dark:bg-amber-500/20" },
           { label: "Pending Attendance", val: pendingSessions.length, sub: "Unsubmitted sessions", icon: ClipboardCheck, color: "text-red-500", bg: "bg-red-100 dark:bg-red-500/20" },
           { label: "Open Tickets", val: data.tickets.length, sub: "Assigned to me", icon: Ticket, color: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-500/20" },
           { label: "Performance", val: "A*", sub: "Quality Score: 98%", icon: TrendingUp, color: "text-emerald-500", bg: "bg-emerald-100 dark:bg-emerald-500/20" },
@@ -132,29 +132,64 @@ function TeacherDashboardInner() {
               <Video size={16} className="text-[var(--gold)]" /> Today's Classes
             </h3>
             <div className="space-y-4">
-              {[
-                { subject: 'IGCSE Maths', student: 'Priya Mehta', time: '3:00 PM – 4:00 PM BST', status: 'In Session', color: 'bg-[var(--gold)]' },
-                { subject: 'A Level Chemistry', student: 'Rohan Sharma', time: '4:30 PM – 5:30 PM BST', status: 'Upcoming', color: 'bg-blue-500' },
-                { subject: 'IGCSE Physics', student: 'Aanya Sharma', time: '6:00 PM – 7:00 PM BST', status: 'Upcoming', color: 'bg-red-500' },
-              ].map((c, i) => (
-                <div key={i} className="p-5 bg-[var(--bg-secondary)] dark:bg-white/10 border border-[var(--border-subtle)] rounded-2xl group hover:border-[var(--gold)] transition-all flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-1.5 h-10 ${c.color} rounded-full`}></div>
-                    <div>
-                      <p className="text-xs font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{c.subject}</p>
-                      <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-1">{c.student} · {c.time}</p>
+              {!data.todaySessions || data.todaySessions.length === 0 ? (
+                <p className="text-[10px] font-black text-[var(--text-muted)] uppercase text-center py-8 italic opacity-50">No classes scheduled for today.</p>
+              ) : (
+                data.todaySessions.map((c: any) => {
+                  const start = new Date(c.startTime);
+                  const end = new Date(c.endTime);
+                  const now = new Date();
+                  
+                  let status = "Upcoming";
+                  let color = "bg-blue-500";
+                  if (now >= start && now <= end) {
+                    status = "In Session";
+                    color = "bg-[var(--gold)]";
+                  } else if (now > end) {
+                    status = "Completed";
+                    color = "bg-emerald-500";
+                  }
+                  
+                  const startStr = start.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+                  const endStr = end.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+                  const timeStr = `${startStr} – ${endStr}`;
+                  const studentName = c.student?.name || "Student";
+                  
+                  return (
+                    <div key={c.id} className="p-5 bg-[var(--bg-secondary)] dark:bg-white/10 border border-[var(--border-subtle)] rounded-2xl group hover:border-[var(--gold)] transition-all flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-1.5 h-10 ${color} rounded-full`}></div>
+                        <div>
+                          <p className="text-xs font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{c.subject || "Academic Session"}</p>
+                          <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-1">
+                            {studentName} · {timeStr} ({status})
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {c.zoomLink ? (
+                          <a href={c.zoomLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#2D8CFF] text-white text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 hover:opacity-90">
+                            Zoom
+                          </a>
+                        ) : (
+                          <button disabled className="px-4 py-2 bg-[#2D8CFF]/40 text-white/60 text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 cursor-not-allowed">
+                            Zoom
+                          </button>
+                        )}
+                        {c.wbLink ? (
+                          <a href={c.wbLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-white dark:bg-white/10 border border-[var(--border-subtle)] text-[var(--navy)] dark:text-white text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 hover:border-[var(--gold)]">
+                            Board
+                          </a>
+                        ) : (
+                          <button disabled className="px-4 py-2 bg-white/20 dark:bg-white/5 border border-[var(--border-subtle)] text-[var(--text-muted)] text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 cursor-not-allowed">
+                            Board
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-[#2D8CFF] text-white text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 hover:opacity-90">
-                      Zoom
-                    </button>
-                    <button className="px-4 py-2 bg-white dark:bg-white/10 border border-[var(--border-subtle)] text-[var(--navy)] dark:text-white text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 hover:border-[var(--gold)]">
-                      Board
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              )}
             </div>
           </div>
 

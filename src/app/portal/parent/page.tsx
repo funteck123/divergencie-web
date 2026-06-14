@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { getLinkedChildren } from "@/lib/actions/profile";
 import { getParentInvoices } from "@/lib/actions/finance";
+import { getStudentAnnouncements } from "@/lib/actions/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   BarChart2, 
@@ -33,6 +34,7 @@ export default function ParentDashboard() {
   const [selectedChild, setSelectedChild] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [overdueInvoices, setOverdueInvoices] = useState<any[]>([]);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [tz, setTz] = useState("UTC+0");
 
@@ -51,10 +53,12 @@ export default function ParentDashboard() {
     Promise.all([
       getLinkedChildren(session.user.email),
       getParentInvoices(u.id),
-    ]).then(([kids, invs]) => {
+      getStudentAnnouncements(),
+    ]).then(([kids, invs, anns]) => {
       setChildren(kids);
       if (kids.length > 0) setSelectedChild(kids[0]);
       setOverdueInvoices(invs.filter((i: any) => i.status === 'overdue' || i.status === 'due'));
+      setAnnouncements(anns);
       setLoading(false);
     });
   }, [session]);
@@ -237,14 +241,14 @@ export default function ParentDashboard() {
                     <Megaphone size={16} className="text-[var(--gold)]" /> DC Announcements
                   </h3>
                   <div className="space-y-6">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-tight text-[var(--gold)]">May Mock Exam Schedule</p>
-                      <p className="text-[11px] text-white/60 mt-1 leading-relaxed">Timed mocks start 19 May. Results shared within 48h via portal.</p>
-                    </div>
-                    <div className="pt-6 border-t border-white/10">
-                      <p className="text-xs font-black uppercase tracking-tight text-white/80">System Maintenance</p>
-                      <p className="text-[11px] text-white/60 mt-1 leading-relaxed">Scheduled update on 12 May (2 AM - 4 AM UTC).</p>
-                    </div>
+                    {announcements.length === 0 ? (
+                      <p className="text-xs font-bold text-white/40 uppercase tracking-widest">No active announcements.</p>
+                    ) : announcements.map((n, i) => (
+                      <div key={n.id} className={i > 0 ? "pt-6 border-t border-white/10" : ""}>
+                        <p className="text-xs font-black uppercase tracking-tight text-[var(--gold)]">{n.title}</p>
+                        <p className="text-[11px] text-white/60 mt-1 leading-relaxed">{n.body}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="absolute -right-20 -top-20 w-64 h-64 bg-[var(--gold)] opacity-10 rounded-full blur-3xl group-hover:scale-110 transition-transform"></div>

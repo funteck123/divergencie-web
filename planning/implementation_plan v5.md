@@ -20,193 +20,82 @@
 
 ---
 
-## Database Migration Path (Supabase PostgreSQL)
+## Proposed Changes — Phase 2 Implementation Tasks
 
-### 1. schema.prisma Update
-Prisma configuration in `prisma/schema.prisma` is updated to define both `url` and `directUrl` pointing to Supabase:
-```prisma
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
-```
+### Component 1: Webhook & Manual Approval Notifications (Priority 1)
 
-### 2. db.ts Singleton Update
-The database connection string in `src/lib/db.ts` utilizes the PostgreSQL pool adapter to connect to Supabase:
-```ts
-import "dotenv/config";
-import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
+Ensure both Stripe webhook checkout completions and manual payment approvals trigger a user-facing notification.
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+#### [MODIFY] [src/app/api/payments/webhook/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/payments/webhook/route.ts)
+- Find the `NotificationType` with `name: "PAYMENT_RECEIVED"`.
+- Create a `Notification` record for the student (`invoice.studentId`) with payment details.
+- If the student has a `parentId`, create an identical notification for the parent.
 
-const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL!;
-const pool = new pg.Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-
-const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  });
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
-export default prisma;
-```
+#### [MODIFY] [src/app/api/payments/[recordId]/approve/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/payments/[recordId]/approve/route.ts)
+- Find the `NotificationType` with `name: "PAYMENT_RECEIVED"`.
+- Create a `Notification` record for the student and parent upon manual approval success.
 
 ---
 
-## Authentication & Session Architecture
+### Component 2: WhatsApp Reminder Stage Tracker (Priority 2)
 
-NextAuth has been completely replaced with a lightweight custom middleware/session provider using `@supabase/ssr`.
+#### [NEW] [src/lib/whatsapp.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/whatsapp.ts)
+- Implement `generateWhatsAppLink(invoice, user, stage)` helper:
+  - Generates the URL-encoded WhatsApp text templates for Stages 1 to 5.
+  - Formats:
+    - **Stage 1 (Due Soon):** Friendly reminder that invoice is due soon.
+    - **Stage 2 (Overdue - Deactivate 3d):** Warning that account will be deactivated in 3 days.
+    - **Stage 3 (Deactivated):** Account deactivated notification.
+    - **Stage 4 (Receipt Acknowledged):** Settle payment confirmation received.
+    - **Stage 5 (Payment Plan):** Flexible payment plans negotiation nudge.
+  - Matches the recipient's phone number (`user.whatsappNumber` or fallback to parent's).
+  - Returns `https://wa.me/[Phone]?text=[Message]`.
 
-### Session Helper (`src/lib/auth.ts`)
-The `getSession` function reads cookies, retrieves the user from Supabase Auth, and resolves metadata (roles, department, subgroups) from the database:
-```ts
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import prisma from "@/lib/db";
-
-export async function getSession() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // Safe to ignore in Server Components
-          }
-        },
-      },
-    }
-  );
-  
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-
-  const dbUser = await prisma.user.findUnique({
-    where: { email: user.email! },
-    select: { id: true, role: true, dept: true, name: true, subGroup: true, supervisor: true },
-  });
-  if (!dbUser) return null;
-
-  return {
-    user: {
-      id: dbUser.id,
-      email: user.email,
-      role: dbUser.role,
-      dept: dbUser.dept,
-      name: dbUser.name,
-      subGroup: dbUser.subGroup,
-      supervisor: dbUser.supervisor,
-    },
-  };
-}
-
-export const auth = getSession; // Alias to minimize router rewrites
-```
+#### [NEW] [src/app/api/invoices/[id]/whatsapp-reminder/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/invoices/[id]/whatsapp-reminder/route.ts)
+- **GET**: Fetch invoice by ID, check permissions, retrieve parent/student whatsapp details, and call `generateWhatsAppLink` for the current `reminderStage`.
+- **PATCH**: Accepts `{ stage: number }` to update the `reminderStage` in the database. Prevents skipping stages arbitrarily (e.g. must go sequentially `currentStage + 1` or stay at same).
 
 ---
 
-## Resolved Schema & Mismatch Audits
+### Component 3: Conflict Detection System (Priority 2)
 
-Several schema mismatch type errors have been corrected during implementation to match the ground truth database structure:
-- **Doubt Model:** The schema lacks `teacherId`, `createdAt`, `question`, and `context`. Student questions are stored in `body`. Doubts are queried by matching the `syllabusItem`'s parent `service` teacher ID. Answers are saved in the `response` field.
-- **Notification Model:** Uses the standard `read` boolean property rather than `isRead` and `readAt`.
-- **SyllabusList Include:** Query trees map `syllabusItems` instead of `chapters` and fetch `taskLists` and `mockLists` directly from the parent `CurriculumList` container.
-- **Lookup Model:** department, staffRole, and userType lookups are mapped to static configuration lists because they do not have separate database tables.
-- **Metrics Model:** The snapshot endpoint returns `snapshot: null` since no `metricSnapshot` table exists in the schema.
-- **ScheduleChangeRequest:** The non-existent `reason` field is omitted from database create inputs.
+#### [NEW] [src/lib/conflict.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/conflict.ts)
+- Implement `detectScheduleConflict(serviceId, proposedOccurrence)` helper:
+  - Finds the teacher and students associated with the given `serviceId`.
+  - Queries active occurrences (`isActive: true, status: "ACTIVE"`) for the teacher and students across all other services.
+  - Checks if the proposed day of the week matches any active schedule.
+  - If days match, checks time overlap by converting time components of `startTime` and `endTime` to minutes-from-midnight and checking `S1 < E2 && S2 < E1`.
 
----
-
-## Completed API Routes
-
-All Next.js API routes are fully implemented and return JSON. Authentication is gated on `getSession()`.
-
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/auth/login` | POST | Authenticates user with email/password against Supabase and sets session cookies |
-| `/api/auth/logout` | POST | Revokes session and deletes cookies |
-| `/api/upload/receipt` | POST | Validates receipts (<5MB, JPEG/PNG/WEBP/PDF) and uploads directly to Supabase Storage |
-| `/api/enrolments/student/[studentId]` | GET | Role-filtered student enrolment items listing |
-| `/api/enrolments/student` | POST | Creates student enrolment items |
-| `/api/enrolments/student/item/[itemId]` | PATCH | Enrolment item status update + history logging |
-| `/api/sessions` | GET/POST | Role-filtered session list & creation |
-| `/api/sessions/[id]` | PATCH | Session status & timesheet logging |
-| `/api/sessions/[id]/attendance` | POST | Log session attendance status |
-| `/api/schedules/[serviceId]` | GET | Fetch schedules and active occurrences |
-| `/api/schedules/[serviceId]/occurrences` | POST | Create occurrences |
-| `/api/schedules/occurrences/[id]` | PATCH | Update occurrence status |
-| `/api/schedules/occurrences/[id]/change-request` | POST | Propose schedule reschedule/change |
-| `/api/curriculum/[serviceId]` | GET | Retreive full syllabus tree, tasks, and mocks |
-| `/api/curriculum/doubts` | GET/POST | Query doubts or raise a new student doubt |
-| `/api/curriculum/doubts/[id]` | PATCH | Teacher answers doubt (response field) |
-| `/api/curriculum/progress/[studentId]` | GET/PATCH | Track syllabus mastery percentages |
-| `/api/invoices/generate` | POST | Batch-generate monthly invoices |
-| `/api/invoices/[id]/status` | PATCH | Finance workflow approval + ledger entries |
-| `/api/claims` | GET/POST | Submit teacher/staff monthly logged hour claims |
-| `/api/claims/[id]/status` | PATCH | Claims approval workflow (auto-creates Paychecks) |
-| `/api/payments/receipt` | POST | Stores receipt url & creates PaymentRecord |
-| `/api/payments/[recordId]/approve` | PATCH | Approves manual payments, updates invoice, creates Ledger Entry |
-| `/api/payments/stripe/checkout` | POST | Creates Stripe PaymentIntent checkout sessions |
-| `/api/payments/webhook` | POST | Handles Stripe success webhooks (creates LedgerEntry + Notification) |
-| `/api/onboarding/flags/[studentId]` | GET/PATCH | Gates student access based on 4 checklist flags |
-| `/api/notifications` | GET | List unread user notifications |
-| `/api/notifications/[id]/read` | PATCH | Mark single notification as read |
-| `/api/notifications/mark-all-read` | POST | Bulk mark all notifications as read |
-| `/api/lookup/[table]` | GET | Fetch lookup configurations via dynamic lookup map |
-| `/api/metrics/snapshot` | GET | Fetch aggregate operational stats |
-| `/api/metrics/student/[studentId]` | GET | Aggregates individual student attendance & syllabus mastery |
+#### [NEW] [src/app/api/schedules/[serviceId]/conflict-check/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/schedules/[serviceId]/conflict-check/route.ts)
+- **POST**: Accepts `{ dayOfWeek, startTime, endTime, recurrenceType, oneOffDate }` and evaluates conflict status. Returns `{ conflict: boolean, details: Array<{ type, userName, occurrence }> }`.
 
 ---
 
-## Remaining Implementation List
+### Component 4: Frontend Portal Dashboard Wiring (Priority 3)
 
-### Priority 1: Webhook Completeness
-- [ ] Implement LedgerEntry + Notification creation on Stripe webhook checkout completion.
+Remove static mockup placeholders and plug portals directly into server actions.
 
-### Priority 2: System Logic Triggers
-- [ ] WhatsApp reminder generation utility (`generateWhatsAppLink` helper for invoice stages 1-5).
-- [ ] WhatsApp reminder API route `/api/invoices/[id]/whatsapp-reminder`.
-- [ ] Conflict detection utility (`detectScheduleConflict` queries overlapping schedules).
-- [ ] Conflict check API endpoint `/api/schedules/[serviceId]/conflict-check`.
+#### [MODIFY] [src/app/portal/student/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/student/page.tsx)
+- Dynamically fetch user profile details (`name`) and replace "Alex" header.
+- Wire today's classes to real `AcademicSession` records.
+- Retrieve student announcements via `getStudentAnnouncements()`.
+- Add deactivation checkpoint: Redirect paused/inactive students to onboarding checklist page.
 
-### Priority 3: Frontend Wiring
-- [ ] Wire frontend portal dashboards (Student, Parent, Teacher, Staff, Management) to real API endpoints instead of static mock files.
-- [ ] Redirect paused/inactive students to the `/portal/student/onboarding` checklist flow.
+#### [MODIFY] [src/app/portal/parent/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/page.tsx)
+- Wire children select option, real invoices list, and parent announcements.
+
+#### [MODIFY] [src/app/portal/teacher/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/teacher/page.tsx)
+- Wire active classes summary and doubts/questions queue.
 
 ---
 
-## Brutally Honest Coverage Score
+## Verification Plan
 
-We evaluate the system coverage using a weighted analysis of database entities, backend routes, operational system logic, and frontend portal wiring:
+### Automated Tests
+- Run `node ./node_modules/typescript/bin/tsc --noEmit` to confirm no TypeScript compilation errors exist.
+- Run vitest tests via node command.
 
-### **OVERALL PLATFORM IMPLEMENTATION SCORE: 73 / 100**
-
-### Score Breakdown & Rationale:
-
-1. **Database Schema Configuration: 99 / 100** *(Weight: 30%)*
-   - **Rationale:** 169 models have been fully implemented in `schema.prisma` covering almost the entirety of the complex ERD v23 (~170 entities). Relationships are fully mapped, constraints are strictly set, and SQLite fallback has been cleanly swapped to production-grade Supabase PostgreSQL.
-
-2. **Backend API Routes: 92 / 100** *(Weight: 40%)*
-   - **Rationale:** All 22 missing API routes from the implementation plan, plus full login, logout, and receipt upload modules, are fully implemented. Session controls are unified. TypeScript type checks compile with zero errors, and all 144 unit tests pass successfully. The only minor missing features are webhook finalization.
-
-3. **Core Business Logic & Triggers: 50 / 100** *(Weight: 15%)*
-   - **Rationale:** Operational flows such as manual payment approvals (auto-ledger write), claims approval (auto-paycheck generation), and onboarding flags are implemented. However, automated no-show strike escalation, Google Calendar synchronization, and automated cron jobs are currently stubbed.
-
-4. **Frontend Portal Wiring: 10 / 100** *(Weight: 15%)*
-   - **Rationale:** Portal pages (parent, student, teacher, staff, management) compile successfully, but their dashboard UI views are currently driven by hardcoded mock data. They are not fully integrated with the 30+ completed backend endpoints.
+### Manual Verification
+- Settle checkout sessions and verify `Notification` items populate in database.
+- Request WhatsApp links and inspect final generated strings.
+- Submit conflicting times to check detection response.

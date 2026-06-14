@@ -21,15 +21,19 @@ import {
   AlertTriangle,
   GraduationCap
 } from "lucide-react";
-import { getStudentProgressStats, getStudentAssignments, getStudentAnnouncements } from "@/lib/actions/progress";
+import { getStudentProgressStats, getStudentAssignments, getStudentAnnouncements, getStudentSessions } from "@/lib/actions/progress";
+import { getStudentProfileStatus } from "@/lib/actions/profile";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function StudentDashboard() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [tz, setTz] = useState("UTC+0");
   const [stats, setStats] = useState<any>(null);
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [assignments, setAssignments] = useState<any[]>([]);
+  const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,22 +44,57 @@ export default function StudentDashboard() {
     } catch(e) {}
 
     if (session?.user?.email) {
-      Promise.all([
-        getStudentProgressStats(session.user.email),
-        getStudentAssignments(session.user.email)
-      ]).then(([s, a]) => {
-        setStats(s);
-        setAssignments(a);
-        setLoading(false);
+      // 1. Check profile status & finance approval
+      getStudentProfileStatus(session.user.email).then((statusInfo) => {
+        if (statusInfo) {
+          if (!statusInfo.financeApproved || statusInfo.status !== "ACTIVE") {
+            router.push("/portal/student/awaiting-approval");
+            return;
+          }
+        }
+        
+        // 2. If approved, load dashboard data
+        Promise.all([
+          getStudentProgressStats(session.user.email),
+          getStudentAssignments(session.user.email),
+          getStudentAnnouncements(),
+          getStudentSessions(session.user.email)
+        ]).then(([s, a, ann, sess]) => {
+          setStats(s);
+          setAssignments(a);
+          setAnnouncements(ann);
+          setSessions(sess);
+          setLoading(false);
+        });
       });
     }
-  }, [session]);
+  }, [session, router]);
+
+  const getThisWeeksClassesCount = () => {
+    const startOfWeek = new Date();
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+    
+    return sessions.filter(s => {
+      const d = new Date(s.startTime);
+      return d >= startOfWeek && d < endOfWeek;
+    }).length;
+  };
+
+  const getTodaysSessions = () => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    return sessions.filter(s => new Date(s.startTime).toISOString().split("T")[0] === todayStr);
+  };
+
+  const todaysSessions = getTodaysSessions();
 
   const statsGrid = stats ? [
-    { label: "Classes This Week", val: "8", sub: "↑ 2 more than last week", icon: Calendar, color: "text-blue-500", bg: "bg-blue-50" },
+    { label: "Classes This Week", val: getThisWeeksClassesCount().toString(), sub: "Active weekly target", icon: Calendar, color: "text-blue-500", bg: "bg-blue-50" },
     { label: "Attendance Rate", val: `${stats.attendanceRate}%`, sub: "✅ Above target (90%)", icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
     { label: "Avg Mock Score", val: `${stats.mockScore}%`, sub: "A* gap: 4% — close!", icon: Target, color: "text-[var(--gold)]", bg: "bg-amber-50" },
-    { label: "Chapters Done", val: `${stats.chaptersDone}/${stats.totalChapters}`, sub: "60% curriculum done", icon: BookOpen, color: "text-purple-500", bg: "bg-purple-50" },
+    { label: "Chapters Done", val: `${stats.chaptersDone}/${stats.totalChapters}`, sub: `${stats.totalChapters > 0 ? Math.round((stats.chaptersDone / stats.totalChapters) * 100) : 0}% curriculum done`, icon: BookOpen, color: "text-purple-500", bg: "bg-purple-50" },
   ] : [];
 
   return (
@@ -64,9 +103,9 @@ export default function StudentDashboard() {
       <div className="bg-[var(--navy)] text-white rounded-3xl p-8 relative overflow-hidden group">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Welcome back, <span className="text-[var(--gold)]">Alex</span> 👋</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Welcome back, <span className="text-[var(--gold)]">{session?.user?.name || "Student"}</span> 👋</h2>
             <p className="text-white/60 font-medium max-w-md leading-relaxed">
-              You have <strong>2 classes</strong> today and <strong>3 assignments</strong> due this week. Your performance is tracking towards an <span className="text-[var(--gold)]">A*</span>.
+              You have <strong>{todaysSessions.length} classes</strong> today and <strong>{assignments.filter(a => a.status === 'pending').length} assignments</strong> pending.
             </p>
             <div className="flex gap-3 mt-6">
               <button className="px-5 py-2.5 bg-[var(--gold)] text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all">View Schedule</button>
@@ -124,22 +163,27 @@ export default function StudentDashboard() {
             </div>
             
             <div className="space-y-4">
-              {[
-                { time: '09:00 – 10:00', subject: 'IGCSE Mathematics', topic: 'Quadratics', teacher: 'Mr. Aryan Shah', color: 'bg-blue-500' },
-                { time: '14:00 – 15:30', subject: 'A Level Chemistry', topic: 'Equilibrium', teacher: 'Ms. Priya Nair', color: 'bg-[var(--gold)]' },
-              ].map((c, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 hover:bg-[var(--bg-secondary)] dark:hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-[var(--border-subtle)] group">
-                  <div className={`w-1.5 h-12 ${c.color} rounded-full`}></div>
-                  <div className="flex-1">
-                    <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">{c.time}</p>
-                    <p className="text-sm font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{c.subject}</p>
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mt-0.5">{c.teacher} · {c.topic}</p>
+              {todaysSessions.length === 0 ? (
+                <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest p-4">No classes scheduled for today.</p>
+              ) : todaysSessions.map((c, i) => {
+                const startStr = new Date(c.startTime).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+                const endStr = new Date(c.endTime).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+                return (
+                  <div key={i} className="flex items-center gap-4 p-4 hover:bg-[var(--bg-secondary)] dark:hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-[var(--border-subtle)] group">
+                    <div className="w-1.5 h-12 bg-blue-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">{startStr} – {endStr}</p>
+                      <p className="text-sm font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{c.subject}</p>
+                      <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mt-0.5">{c.teacher?.name || "Teacher"} · {c.topic || "Regular Class"}</p>
+                    </div>
+                    {c.zoomLink && (
+                      <a href={c.zoomLink} target="_blank" rel="noreferrer" className="px-4 py-2 bg-[#2D8CFF] text-white text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 hover:opacity-90 transition-all">
+                        <Video size={14} /> Join
+                      </a>
+                    )}
                   </div>
-                  <button className="px-4 py-2 bg-[#2D8CFF] text-white text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 hover:opacity-90 transition-all">
-                    <Video size={14} /> Join
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <button className="w-full mt-6 py-3 text-[10px] font-black text-[var(--gold)] uppercase tracking-widest hover:underline flex items-center justify-center gap-2">
               Full Weekly Schedule <ArrowRight size={14} />
@@ -152,19 +196,32 @@ export default function StudentDashboard() {
               <CheckSquare size={16} className="text-[var(--gold)]" /> Assignments Due
             </h3>
             <div className="space-y-3">
-              {assignments.map((a, i) => (
-                <div key={i} className="flex items-center justify-between p-4 bg-[var(--bg-secondary)] dark:bg-white/10 rounded-xl group border border-transparent hover:border-[var(--border-subtle)] transition-all">
-                  <div>
-                    <p className="text-xs font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{a.title}</p>
-                    <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase mt-0.5 tracking-tight">{a.sub}</p>
+              {assignments.length === 0 ? (
+                <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest p-4">No assignments due.</p>
+              ) : assignments.map((a, i) => {
+                const dueStr = new Date(a.dueDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+                const isOverdue = new Date(a.dueDate) < new Date() && a.status === "pending";
+                const badgeColor = a.status === "graded" ? "bg-emerald-100 text-emerald-800" 
+                                 : a.status === "submitted" ? "bg-blue-100 text-blue-800" 
+                                 : isOverdue ? "bg-rose-100 text-rose-800" 
+                                 : "bg-amber-100 text-amber-800";
+                const badgeText = a.status === "graded" ? "Graded" 
+                                : a.status === "submitted" ? "Submitted" 
+                                : isOverdue ? "Overdue" 
+                                : "Pending";
+                return (
+                  <div key={i} className="flex items-center justify-between p-4 bg-[var(--bg-secondary)] dark:bg-white/10 rounded-xl group border border-transparent hover:border-[var(--border-subtle)] transition-all">
+                    <div>
+                      <p className="text-xs font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{a.title}</p>
+                      <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase mt-0.5 tracking-tight">Due: {dueStr}</p>
+                    </div>
+                    <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${badgeColor}`}>
+                      {badgeText}
+                    </span>
                   </div>
-                  <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${a.badgeColor}`}>
-                    {a.badge}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
-
           </div>
         </div>
 
