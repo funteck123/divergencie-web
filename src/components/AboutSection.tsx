@@ -36,7 +36,7 @@ export default function AboutSection() {
             <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">
               WE&apos;RE A BUNCH OF ODDBALLS
             </p>
-            <h2 className="text-4xl sm:text-6xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-8 break-words w-full">
+            <h2 className="text-5xl sm:text-7xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-8 break-words w-full">
               ARE<br />YOU?
             </h2>
             <p className="text-sm font-black tracking-[0.15em] text-[var(--text-muted)] uppercase mb-12 max-w-md leading-relaxed">

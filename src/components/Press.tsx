@@ -21,7 +21,7 @@ export default function Press() {
           <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">
             THE PAPARAZZI
           </p>
-          <h2 className="text-7xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-6">
+          <h2 className="text-5xl sm:text-7xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-6">
             THEY&apos;RE<br /><span className="text-[var(--gold)]">WATCHING.</span>
           </h2>
           <p className="text-sm font-black tracking-[0.2em] text-[var(--text-muted)] uppercase">
