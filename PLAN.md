@@ -253,7 +253,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 | P0-4 | Lookup tables CRUD (management) — Ticket/Notification/Flag/Record/Mock/AmbassadorTest types, OutreachSource, SocialPlatform/PostType, CampaignTag, ContentType, Outreach/Exhibition types | §28, §34, §35 | `api/lookup/[table]`, `portal/management/database/` | ✅ |
 | P0-5 | Notifications — Notification + NotificationType, read/readAt, mark-all-read, bell + feed UI | §29 | `api/notifications/**`, `components/shared/` | ✅ |
 | P0-6 | CalendarItem (org-wide) — per-user rows on every session/meeting/task; GCal sync flag; calendar view | §14 | `api/calendar/**`, shared calendar component | ✅ |
-| P0-7 | Shared layout — role-aware Nav (theme toggle, role badges, active-nav), Footer, DataGrid primitive, form primitives; `@theme` brand tokens | brand tokens | `components/shared/**`, `app/globals.css` | ⬜ |
+| P0-7 | Shared layout — role-aware Nav (theme toggle, role badges, active-nav), Footer, DataGrid primitive, form primitives; `@theme` brand tokens | brand tokens | `components/shared/**`, `app/globals.css` | ✅ |
 | P0-8 | Data + API conventions — single Prisma client (pg adapter), zod validation layer, standard API response/error shape, fail-loud | — | `src/lib/db.ts`, `src/lib/validation/**` | ⬜ |
 
 #### PHASE A — Student
