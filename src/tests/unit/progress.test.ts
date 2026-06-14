@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import {
   getStudentAssignments,
   submitAssignment,
+  getSyllabusChapters,
 } from "@/lib/actions/progress";
 
 const db = prisma as any;
@@ -64,5 +65,52 @@ describe("submitAssignment", () => {
     db.taskAssignment.findUnique.mockRejectedValue(new Error("DB error"));
 
     await expect(submitAssignment("bad-id", "text")).rejects.toThrow("DB error");
+  });
+});
+
+describe("getSyllabusChapters", () => {
+  it("throws when not authenticated", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce(null as any);
+
+    await expect(getSyllabusChapters("IGCSE Mathematics")).rejects.toThrow("Unauthorized");
+  });
+
+  it("queries chapters with proper subject filter and includes items and recordings", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({ user: { id: "stu-id", email: "student@test.com" } } as any);
+    db.syllabusChapter.findMany.mockResolvedValue([
+      {
+        id: "c1",
+        chapterNum: "01",
+        chapterTitle: "Algebra",
+        syllabusItems: [
+          { id: "si-1", topicTitle: "Equations", subject: "IGCSE Mathematics" },
+        ],
+        recordingList: {
+          items: [
+            { id: "cri-1", recording: { title: "Session Video 1", videoUrl: "http://..." } },
+          ],
+        },
+      },
+    ]);
+
+    const result = await getSyllabusChapters("IGCSE Mathematics");
+
+    expect(db.syllabusChapter.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          syllabusItems: expect.objectContaining({
+            some: expect.objectContaining({
+              subject: "IGCSE Mathematics",
+              isActive: true,
+            }),
+          }),
+          isActive: true,
+        }),
+      })
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].chapterTitle).toBe("Algebra");
   });
 });

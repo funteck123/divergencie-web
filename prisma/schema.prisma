@@ -1260,6 +1260,8 @@ model SyllabusItem {
   id                 String                    @id @default(cuid())
   syllabusListId     String
   syllabusList       SyllabusList              @relation(fields: [syllabusListId], references: [id], onDelete: Cascade)
+  syllabusChapterId  String?
+  syllabusChapter    SyllabusChapter?          @relation(fields: [syllabusChapterId], references: [id], onDelete: SetNull)
   subject            String?
   chapterNum         String
   chapterTitle       String
@@ -1292,6 +1294,7 @@ model SyllabusChapter {
   isActive       Boolean               @default(true)
 
   recordingList  ChapterRecordingList?
+  syllabusItems  SyllabusItem[]
 }
 
 model ChapterRecordingList {

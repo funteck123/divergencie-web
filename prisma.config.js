@@ -13,6 +13,6 @@ export default defineConfig({
     directUrl,
   },
   migrations: {
-    seed: "node ./node_modules/tsx/dist/cli.mjs prisma/seed.ts",
+    seed: "npx tsx prisma/seed.ts",
   },
 });

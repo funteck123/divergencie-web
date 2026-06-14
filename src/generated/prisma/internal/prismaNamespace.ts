@@ -15416,6 +15416,7 @@ export type SyllabusListStatusChangeLogScalarFieldEnum = (typeof SyllabusListSta
 export const SyllabusItemScalarFieldEnum = {
   id: 'id',
   syllabusListId: 'syllabusListId',
+  syllabusChapterId: 'syllabusChapterId',
   subject: 'subject',
   chapterNum: 'chapterNum',
   chapterTitle: 'chapterTitle',
