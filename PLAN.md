@@ -1,17 +1,16 @@
-# DivergenCIE Coaching — Build Plan & Session Tracker
+﻿# DivergenCIE Coaching — Build Plan & Session Tracker
 
 ## INTRO
 
 **Domain:** divergencie.co.uk
-**Stack:** Next.js 15 · App Router · TypeScript · Prisma · SQLite · NextAuth v5 · Tailwind v4 · Lucide React · Satoshi Font · Lottie 
-**HTML source (reference for all M-phase ports):** `planning/legacy/html-source/`
-**Legacy HTML plan:** `planning/legacy/PLAN_HTML_LEGACY.md`
+**Stack:** Next.js 15 · App Router · TypeScript · Prisma · Supabase for Auth, DB and Storage · Tailwind v4 · Lucide React · Satoshi Font · Lottie
 
-**Reference:** Athena Education homepage (https://athenaeducation.co.in/) — clone layout, rebrand for DivergenCIE ·  Altacademy (https://altacademy.org/) for relevant inspiration 
+**Reference:** Athena Education homepage (https://athenaeducation.co.in/) — clone layout, rebrand for DivergenCIE · Altacademy (https://altacademy.org/) for relevant inspiration
 **Real social links:** Instagram: https://www.instagram.com/divergencie_coaching/ · LinkedIn: https://www.linkedin.com/company/divergencie-coaching/ · WhatsApp: +919650675507
 
-Pathing Rule: Assets in /public/assets/. Reference as /assets/... (Next.js root-relative).
-Theme Strategy: Light mode default. Use next-themes (class strategy). Apply Tailwind dark: variants to all components. Persist via dc-theme key. Ensure Sun/Moon toggle is in the shared Nav component. Do NOT create tailwind.config.ts. All customizations (Gold accent, Satoshi font-family) must be defined inside app/globals.css using the @theme block to comply with Tailwind v4 standards.
+**Pathing Rule:** Assets in /public/assets/. Reference as /assets/... (Next.js root-relative).
+**Theme Strategy:** Light mode default. Use next-themes (class strategy). Apply Tailwind dark: variants to all components. Persist via dc-theme key. Ensure Sun/Moon toggle is in the shared Nav component. Do NOT create tailwind.config.ts. All customizations (Gold accent, Satoshi font-family) must be defined inside app/globals.css using the @theme block to comply with Tailwind v4 standards.
+
 ---
 
 ## 🤖 AGENT PERSONA
@@ -22,86 +21,88 @@ You are **Cleo** — Senior FullStack Engineer at DivergenCIE. You ship verified
 
 ## 📦 INPUTS — READ ON EVERY SESSION
 
-You will receive two files each session:
-1. **`divergencie-web-v[N].zip`** — the live build (HTML, CSS, JS, assets) 
-2. **`Product_Outcome_Plan_Documents.rar`** — full product spec docs
-
 **Session startup sequence (mandatory):**
-1. Extract both archives 
-2. Read PLAN.md Head (Intro through Rules) + Phase M Build Order table + Tail (last 3 handoff notes). The Build Order table is the source of truth for progress; update ⬜ to ✅ in the PLAN.md file at the end of each session.
-3. Study `Product_Outcome_Plan_Documents/` carefully — especially:
-   - `06_UJM_User_Journey_Map_v2.md` (user journey — most important)
+
+1. `git log --oneline -5` — understand current state before touching anything
+2. Read PLAN.md: Head (Intro through Rules) + Build Order table + last status
+3. Ground truth — implement exactly, never edit:
+   - `planning/schema-erd-v23.md`
+   - `planning/system-logic-handoff-v23.md`
+4. Additional reference in `planning/` (ERD + system logic take precedence):
+   - `06_UJM_User_Journey_Map_v3.md` (user journey — most important)
    - `03_PRD_Product_Requirements_Document_v2.md` (requirements)
    - `01_BDG_Brand_Design_Guidelines_v1.md` (brand rules)
-   - `12_MU_Mockup_Guide_v3.md` (brand rules)
-4. Cross-reference the next `⬜ TODO` section against the spec docs before writing any code 
-5. Then proceed with build instructions below
+   - `12_MU_Mockup_Guide_v3.md` (mockup guide)
+5. Cross-reference the next `⬜ TODO` task against spec docs before writing any code
+6. Then proceed
 
-—
+---
 
 ## 🔋 TOKEN EFFICIENCY — AGENT RULES (CAVEMAN)
 
 **Every token counts. Quality over quantity — always.**
 
-- **Caveman rule:** Strip all filler. No "I will now", "please note", "as you can see". Short words win. Write like telegram. Subject → verb → object. "Build nav" not "I am going to proceed to build the navigation component". Every word earns its place or gets cut. Handout follows caveman rule.
+- **Caveman rule:** Strip all filler. No "I will now", "please note", "as you can see". Short words win. Write like telegram. Subject → verb → object. "Build nav" not "I am going to proceed to build the navigation component". Every word earns its place or gets cut.
 - **No session startup narration** — skip "I will now read PLAN.md…"; just act
-- **Code only when asked.** Never paste code into chat — it lives in files - — reference filename + line range only
-- **Confirmations = 1 line.** e.g. `✅ Section 4 done — ZIP ready.` Nothing more.
-- **UJM/PRD cross-ref** — extract only sections relevant to page being built, not full doc read
+- **Code only when asked.** Never paste code into chat — it lives in files — reference filename + line range only
+- **Confirmations = 1 line.** e.g. `✅ Task P3-1 done.` Nothing more.
+- **UJM/PRD cross-ref** — extract only sections relevant to task being built, not full doc read
 - **Never `cat` large files** — use `grep -n "keyword" file` or `sed -n 'X,Yp'` to target sections
-- **No handoff recap in chat** — PLAN.md is the record; don't repeat it in chat
 - **Skill files** — read once per session; never re-read same skill
-- **ZIP output only** — don't list files added to ZIP in chat
 - **High quality is non-negotiable.** Brevity never means cutting corners on the build.
 
-NOTE: DONT READ WHOLE DOCS IN CONTEXT AND CLEAR/COMPACT CONTEXT IF NEEDED.
+## NOTE: DONT READ WHOLE DOCS IN CONTEXT AND CLEAR/COMPACT CONTEXT IF NEEDED.
+
 ---
 
 ## ⚠️ AGENT INSTRUCTIONS (READ FIRST EVERY SESSION)
 
-1. Read this `PLAN.md` — find the next `⬜ TODO` section
-2. Read `divergencie-v[N].zip` files to understand current state
-3. Build one page or module per session. Respect Next.js architecture: use app/globals.css for theme variables, and component-level styles only if strictly necessary. Place shared logic in src/lib/ and shared UI (Nav/Footer/Cards) in src/components/. Keep page-specific logic inside the respective page.tsx.
+1. Read this `PLAN.md` — find the next `⬜ TODO` task
+2. Read `git log --oneline -5` to understand what was last built
+3. Build one task per session. Respect Next.js architecture: use app/globals.css for theme variables, component-level styles only if strictly necessary. Shared logic in `src/lib/`, shared UI in `src/components/`. Page-specific logic inside respective `page.tsx`.
 4. **Global Components:** When building inner pages or portals, use a "Source of Truth" for Nav and Footers.
 5. **Universal Theme Support:** Every page defaults to **light mode**. When building any section, you MUST apply both light and dark styles.
-6. Before ZIPping, update `PLAN.md`
-7. **ZIP integrity:** Before ZIPping, run `unzip -l divergencie-v[N-1].zip | wc -l` on the source ZIP and confirm new ZIP has ≥ same file count — never ZIP from a partial extract.
-8. **ZIP immediately:** `cd /home/claude && zip -r divergencie-v[N].zip divergencie/`
-9. Present ZIP to user - ensure this!
-10. Verify the build (check mobile responsiveness, 404 links, and JS console errors). Once confirmed working, mark section ✅ Done.
-11. **STOP** — wait for user to say "continue"
+6. After completing a task, update `⬜` to `✅` in the Build Order table, then commit:
+   ```
+   git add -A
+   git commit -m "<type>(<task-id>): <what was built>"
+   ```
+7. Verify the build (mobile responsiveness, 404 links, TS compile errors). Mark ✅ only after verified.
+8. Move to next `⬜ TODO` task autonomously — no need to stop and wait.
+
+### 🔁 GIT COMMIT RULES
+
+- Commit after every completed task — no exceptions
+- Format: `<type>(<task-id>): <description>`
+  - Types: `feat` · `fix` · `chore` · `refactor` · `style` · `docs`
+  - Example: `feat(P3-1): add Department, StaffRole, UserType, PortalPermission models`
+  - Example: `feat(M3): auth — NextAuth v5 credentials + middleware + login page`
+- Commit message IS the handoff. Write it so the next agent understands state cold.
+- No push — local commit only.
 
 ### 🚨 PLAN.md INTEGRITY RULES — NON-NEGOTIABLE
-- **NEVER edit `PLAN.md` unless explicitly instructed by the user.** The only permitted write to `PLAN.md` per session is appending a new ` Handoff Notes` block at the bottom.
-- **NEVER shorten, summarise, compress, or remove any existing content from `PLAN.md`.** This file is the single source of truth. 
-- **APPEND ONLY for Handoff Notes.** Never overwrite or delete previous handoff blocks. Treat it like a git log.
-- **Do not "clean up", "reorganise", or "expand" `PLAN.md`** unless the user has explicitly asked for that specific change in that session.
-- If you notice an error in `PLAN.md`, flag it to the user in chat — do NOT silently fix it.
 
-
-### Handoff Notes Format
-**APPEND** this block at the bottom of `PLAN.md` before every ZIP. 
-
-
+- **NEVER edit `PLAN.md` unless explicitly instructed by the user.**
+- **NEVER shorten, summarise, compress, or remove any existing content from `PLAN.md`.**
+- The only permitted writes per session: update `⬜` to `✅` in the Build Order table.
+- **Do not "clean up", "reorganise", or "expand" `PLAN.md`** unless the user has explicitly asked.
+- If you notice an error in `PLAN.md`, flag it in chat — do NOT silently fix it.
 
 ---
+
 ## ⚙️ SESSION OUTPUT RULES
 
+1. One task per session
+2. Complete task → verify → update status → commit → move to next task
+3. Session flow: `git log` → Read PLAN.md → Build → Verify → Commit → Next task
+4. Git log is the record. No handoff notes needed — commit messages carry the state.
 
-1. ZIP at end of every meaningful code change — do not wait until session end
-2. ZIP naming: `divergencie-web-v[N].zip` — increment N each ZIP
-3. ZIP command: `cd /home/claude && zip -r divergencie-web-reboot_1-v[N].zip divergencie/ --exclude "divergencie/node_modules/*" --exclude "divergencie/.next/*" --exclude "divergencie/prisma/dev.db"`
-4. Present ZIP immediately after creating
-5. One page or one component per session
-6. Session flow: Read (PLAN.md tail + relevant HTML) → Write → ZIP → Present → STOP
-
-
-Every ZIP is a checkpoint. The next agent must be able to pick up cold with zero context loss.
 ---
 
 ## 🎨 BRAND TOKENS
 
 ### Dark Mode (activated by Sun/Moon toggle — stores in localStorage key `dc-theme`)
+
 | Token | Value |
 |-------|-------|
 | Primary bg | `#0a0a0a` |
@@ -114,6 +115,7 @@ Every ZIP is a checkpoint. The next agent must be able to pick up cold with zero
 | Border subtle | `rgba(255,255,255,0.08)` |
 
 ### Light Mode (default on ALL pages — including homepage)
+
 | Token | Value |
 |-------|-------|
 | Primary bg | `#ffffff` |
@@ -131,6 +133,7 @@ Every ZIP is a checkpoint. The next agent must be able to pick up cold with zero
 | Info bg | `#d5e8f0` |
 
 ### Typography
+
 | Usage | Font |
 |-------|------|
 | Web headings/UI | Satoshi (900/700/500/400) |
@@ -138,11 +141,12 @@ Every ZIP is a checkpoint. The next agent must be able to pick up cold with zero
 | Academic body | Merriweather — Google Fonts |
 | Monospace | JetBrains Mono |
 
-**Logo:** `assets/images/logo.jpg` — book icon with coloured tabs + bold serif wordmark  
-**Accreditation logos:** Cambridge Assessment International Education + CollegeBoard  
+**Logo:** `assets/images/logo.jpg` — book icon with coloured tabs + bold serif wordmark
+**Accreditation logos:** Cambridge Assessment International Education + CollegeBoard
 **UK context:** Replace Ivy League → Oxford, Cambridge, LSE, Imperial, UCL, Durham, Warwick, Edinburgh
 
 ### CDN Links (exact, do not change)
+
 ```
 Tailwind:  https://cdn.tailwindcss.com
 Lucide:    https://unpkg.com/lucide@latest
@@ -159,143 +163,190 @@ Inter:     https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&d
 
 ## 🗂️ FILE STRUCTURE (target)
 
-// missing add it for whole website - every functionality - check html legacy - check ujm
-
----
-
-
-## 🏛️ ROLE ARCHITECTURE
-
-
-| Portal | Role | Access |
-|--------|------|--------|
-| `portal/management/` | Management | All portals, all tickets, all metrics, approve claims |
-| `portal/staff/` | Staff (all depts) | Own dept tickets, interdept forward, escalate, content bank, claims |
-| `portal/teacher/` | Teacher | Own schedule, timesheet, hour-based claims, reply tickets only |
-| `portal/ambassador/` | Ambassador | Raise tickets to DC staff only — zero student data |
-| `portal/parent/` | Parent | Child progress, fees, raise tickets |
-| `portal/student/` | Student | Classes, progress, assignments, recordings, raise tickets |
-
-#rebuild this
-
-### Staff Dept Structure
-Depts: **PR** · **HR** · **Finance** · **Marketing** · **IT**
-Every dept: Members (own tickets) + Supervisor/HOD (all dept tickets, assign tasks, dept metrics).
-
-
-### Ticket System
-**Attributes:** Title · Dept · Assignee · Creator · Deadline · Priority (Low/Med/High/Urgent) · Status (Open/In Progress/Pending Reply/Resolved/Closed) · Comments · Files · Links · Dates
-
-#rebuild this - dont mention here but mentio nthe file
-
-**Routing:**
-- Student/Parent → select dept → staff sees can reply → PR can forward to Teacher (Other staff can forward to PR to forward to teacher. → Teacher included in ticket can reply -> Student may reply further -> Staff closes
-- Staff → internal ticket, assign in dept, forward interdept, or escalate to Mgmt
-- Supervisor of each dept get tickets addressed to dept then they assign tickets to dept members to see in their portal and resolve
-- Ambassador → can make same tickets but not to management
-- Management → all tickets, create/assign/close any
-
-#rebuild this - dont mention here but mentio nthe file
-
-### Claims
-| Role | Type |
-|------|------|
-| Teacher | Hour-based timesheet |
-| Staff | Meeting/event attendance-based |
-| Management | Approves all |
-#rebuild this - dont mention here but mentio nthe file
-
-### Management Metrics
-Productivity · Attendance · Financial · Activity · Workload · Quality — all filterable by dept/member/date range with weekly line charts.
-
-#rebuild this - dont mention here but mentio nthe file
----
-
-
-## 🏗️ PHASE M — Next.js + SQLite Migration
-
-
-**Goal:** Port static HTML 1-to-1 into Next.js App Router + SQLite/Prisma. Same brand, same UI, same flows. No improvements in this phase — pixel-perfect port only.
-
-
-**Stack:** Next.js 15 App Router · TypeScript · SQLite via Prisma · NextAuth v5 · Tailwind v4 CSS vars · Satoshi via Fontshare · Lucide React
-
-
-**DB:** All localStorage mock data moves to SQLite. Seed = same dummy accounts as legacy. No real integrations — stub data only.
-
-#rebuild this - 
-### Migration Build Order
-
-Agent Note: When a task is finished, update the Status column in this table before generating the ZIP.
-
-| # | Task | Next.js path | Legacy source | Status |
-|---|------|-------------|---------------|--------|
-| M1 | **Project scaffold** — Next.js init, deps, Prisma+SQLite, brand tokens → globals.css, Satoshi font, ThemeProvider | / | css/shared.css, js/theme.js | ✅ Done |
-| M2 | **Prisma schema + seed** — all models, SQLite provider, seed with legacy dummy accounts | prisma/ | auth/login.html | ✅ Done |
-| M3 | **Auth** — NextAuth credentials (NextAuth v5 (Auth.js) with Middleware-based protection. Extend Session type to include 'role' and 'dept' for Client/Server-side checks.), email+role detection matching legacy ROLE_MAP, JWT role+dept, middleware /portal/*, login page 1:1 split layout | app/auth/login/ | auth/login.html, auth/forgot-password.html | ⬜ |
-| M4 | **Shared components** — Sidebar (role-aware nav, gold active, role badges), Topbar (title, timezone, bell, Sun/Moon), PortalLayout, ThemeProvider | app/components/ | css/portal.css, js/portal.js | ⬜ |
-| M5 | **Student portal** — dashboard, classes, assignments, recordings, progress, curriculum, support (7 pages) | app/portal/student/ | portal/student/*.html | ⬜ |
-| M6 | **Parent portal** — dashboard, progress, fees (3 pages) | app/portal/parent/ | portal/parent/*.html | ⬜ |
-| M7 | **Teacher portal** — dashboard, attendance, payment-claims, tickets (4 pages) | app/portal/teacher/ | portal/teacher/*.html | ⬜ |
-| M8 | **Staff portal shared** — dashboard, tickets, content-bank, meetings, schedule (5 pages) | app/portal/staff/ | portal/staff/dashboard.html + shared/*.html | ⬜ |
-| M9 | **Staff — PR** — attendance, mapping, compliance (3 pages) | app/portal/staff/pr/ | portal/staff/pr/*.html | ⬜ |
-| M10 | **Staff — HR** — candidates (1 page) | app/portal/staff/hr/ | portal/staff/hr/candidates.html | ⬜ |
-| M11 | **Staff — Finance** — rates, invoices, claims (3 pages) | app/portal/staff/finance/ | portal/staff/finance/*.html | ⬜ |
-| M12 | **Staff — Marketing** — calendar, leads (2 pages) | app/portal/staff/marketing/ | portal/staff/marketing/*.html | ⬜ |
-| M13 | **Staff — IT** — access (1 page) | app/portal/staff/it/ | portal/staff/it/access.html | ⬜ |
-| M14 | **Management portal** — dashboard, users, metrics, tickets, budget (5 pages) | app/portal/management/ | portal/management/*.html | ⬜ |
-| M15 | **Ambassador portal** — dashboard, tickets (2 pages) | app/portal/ambassador/ | portal/ambassador/*.html | ⬜ |
-| M16 | **Public pages** — index, about, services hub, 6 service sub-pages, pricing, resources, careers, contact, mock (16 pages) | app/(public)/ | *.html, services/*.html, mock.html | ⬜ |
-
-#rebuild this 
-**After M16 → Phase N: improvements.md audit + verification pass**
-
-
----
-
-
-
-## 📖 Handoff Notes Format (3 lines — append before every ZIP)
-
+> Canonical tree. Every portal, page, component, lib, API route, and the data/seed/test layer.
+> Source of truth for placement: ground-truth `schema-erd-v23.md` + `system-logic-handoff-v23.md`.
+> Data access = Prisma over Supabase Postgres. Auth = Supabase Auth + RBAC middleware. Storage = Supabase buckets. Payments = Stripe.
 
 ```
-## 📖 Handoff Notes — v[N]
-**Built:** [what]
-**Next:** [what]
-**Watch:** [one risk]
+divergencie/
+├─ prisma/
+│  ├─ schema.prisma                 # 169 models — ground-truth ERD v23 (re-verified, never freehand)
+│  └─ seed.ts                       # required seed data §53 + demo rows (Demo@1234)
+├─ src/
+│  ├─ middleware.ts                 # Supabase session + RBAC route gate (P0-1, P0-2)
+│  ├─ app/
+│  │  ├─ globals.css                # Tailwind v4 @theme block — brand tokens, Satoshi, light/dark
+│  │  ├─ layout.tsx                 # root: theme provider, fonts
+│  │  ├─ page.tsx                   # PUBLIC homepage (Athena clone, DB/CMS content)  [P-G1]
+│  │  ├─ about|services|pricing|resources|contact/   # brochure pages, DB-wired       [P-G1]
+│  │  ├─ careers/                   # job postings list + apply → Candidate/JobPosting [P-G2]
+│  │  ├─ admissions/                # public RegistrationForm intake → Candidate       [P-G2]
+│  │  ├─ r/[referralCode]/          # ambassador referral landing + ReferralClick      [P-G3]
+│  │  ├─ auth/                      # login (split layout), logout, callback           [P0-1]
+│  │  ├─ unauthorized/              # RBAC denial page
+│  │  ├─ portal/
+│  │  │  ├─ student/                # dashboard, awaiting-approval, curriculum, classes,
+│  │  │  │                          #   recordings, assignments, mock, progress, fees, support  [PHASE A]
+│  │  │  ├─ teacher/                # dashboard, attendance, doubts, claims, payment-claims, schedule, tickets  [PHASE B]
+│  │  │  ├─ staff/                  # shared/{meetings,schedule,content-bank} + depts:
+│  │  │  │                          #   finance/{invoices,claims,rates}, hr/{candidates,records},
+│  │  │  │                          #   it/{access,roadmap}, marketing/{calendar,leads}, pr/{attendance,mapping,tracker}  [PHASE C]
+│  │  │  ├─ ambassador/             # profile, programme, commission/claims, meetings, referrals, tickets  [PHASE D]
+│  │  │  ├─ parent/                 # profile, progress, fees, support (linked students)  [PHASE E]
+│  │  │  ├─ candidate/              # pre-hire pipeline self-view, profile, support
+│  │  │  └─ management/             # dashboard/metrics, users, permissions(RBAC),
+│  │  │                             #   announcements, budget, database(total-coverage admin grids)  [PHASE F]
+│  │  └─ api/                       # route handlers (one group per sub-system; all re-verified vs system-logic)
+│  │     ├─ auth/ · lookup/[table]/ · notifications/ · enrolments/ · schedules/ · sessions/
+│  │     ├─ curriculum/ · invoices/ · claims/ · payments/{stripe,webhook,receipt}/ · metrics/
+│  │     └─ onboarding/ · tickets/ · jobs/ · careers/ · management/{db,permissions}/ · users/ · referrals/
+│  ├─ components/
+│  │  ├─ shared/                    # Nav (role-aware + theme toggle), Footer, role badges, DataGrid, forms
+│  │  └─ portal/                    # per-portal widgets
+│  ├─ lib/
+│  │  ├─ db.ts                      # Prisma client (Supabase pg adapter) — single source
+│  │  ├─ auth.ts                    # Supabase Auth helpers, session, getCurrentUser
+│  │  ├─ rbac.ts                    # PortalPermission resolver + default permissions (§38)
+│  │  ├─ validation/                # zod schemas per sub-system (fail-loud input guards)
+│  │  ├─ stripe.ts · supabase.ts · whatsapp.ts · conflict.ts
+│  │  └─ actions/                   # server actions per domain (re-verified vs system-logic)
+│  └─ tests/
+│     └─ unit/ + integration/       # vitest — one suite per sub-system (DoD gate)
+└─ public/assets/                   # images, logos, lottie
 ```
 
+> **Total-coverage rule:** every one of the 169 `model` blocks in `prisma/schema.prisma` MUST be reachable through the UI. User-journey entities get bespoke portal pages; audit/log/lookup/snapshot tables (all `…StatusChangeLog`, `SiteLog`, `AccessLog`, `MetricSnapshot`, lookup tables) are surfaced via the generic admin grids under `portal/management/database/` (P-F3).
 
 ---
 
+## 🏗️ PHASES + BUILD ORDER
 
-## 📖 Handoff Notes — v69
+> **Plan philosophy (locked with user, v6):**
+> - **Sequencing:** vertical slices by role — each role shipped fully working before the next.
+> - **Baseline:** full re-verify — every task starts `⬜` regardless of existing code; re-test & re-wire end-to-end against ground truth. No assumptions about current code.
+> - **Schema is re-derived, not trusted:** before wiring a phase, re-validate that phase's Prisma models field-by-field against `schema-erd-v23.md`, correct any drift, and migrate (`prisma migrate`/`db push`). The 169-model schema is a starting point, not assumed correct.
+> - **Granularity:** one task per **sub-system** (~45 tasks). A task is a coherent capability wired end-to-end.
+> - **Scope:** total coverage — all 169 entities reachable in UI; public site (brochure + intake) in scope.
+> - **Definition of Done — per task (gates 1-5):**
+>   1. Reads pull **live Supabase data** (no mocks/hardcode).
+>   2. Writes **persist to DB** and reflect on reload (full round-trip, verified locally against live Supabase).
+>   3. RBAC enforced per `PortalPermission` (§38); unauthorized → `/unauthorized`.
+>   4. Phase's entities field-checked vs `schema-erd-v23.md`; `tsc --noEmit` clean; mobile-responsive; light + dark mode.
+>   5. **vitest** suite covers happy path + ≥1 edge case for the sub-system.
+> - **Definition of Done — per phase (gate 6):** at each phase close, **deploy to Vercel preview and smoke-test all of that phase's flows on the live URL** before starting the next phase. 9 deploy gates total (one per phase), not per task.
+> - **Spec column = section numbers in `system-logic-handoff-v23.md`.** Read those sections before building; cross-check every entity field against `schema-erd-v23.md`.
 
+### Build Order
 
-**Built:** PLAN.md amendment — SESSION OUTPUT RULES + session/token guide
-**Next:** M1 — Next.js project scaffold
-**Watch:** Free plan ~15–40 msgs/5hr. M1 is large — ZIP each file group as you go.
+Agent Note: Update ⬜ to ✅ in these tables after each completed + verified task (all 6 DoD gates), then commit. Build top-to-bottom; do not skip a phase. **Phase 0 is a hard prerequisite for all role slices.**
 
+#### PHASE 0 — Foundation (shared, blocks everything)
 
-## 📖 Handoff Notes — v70
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P0-0 | Supabase provisioning — create project, Storage buckets (+policies), env vars; `prisma db push` full schema to Supabase; verify connection round-trip. **Hard prerequisite for every other task.** | all models | `.env`, `prisma/schema.prisma`, Supabase | ⬜ |
+| P0-1 | Auth consolidation — remove `next-auth-compat` shim; pure Supabase Auth; session in middleware; login (split layout)/logout/callback | User; Supabase Auth | `src/middleware.ts`, `src/lib/auth.ts`, `src/app/auth/**` | ⬜ |
+| P0-2 | RBAC — `PortalPermission` override table + code-defined default permissions; route + menu gating; `/unauthorized` | §38 | `src/lib/rbac.ts`, `src/middleware.ts`, `src/app/unauthorized/` | ⬜ |
+| P0-3 | Required seed data — UserType (incl `ALL`), SessionType (incl staff-meeting types), Department, StaffRole, RecordType (`targetUserTypeId`), CurrencyRate, all lookups | §53, §28 | `prisma/seed.ts` | ⬜ |
+| P0-4 | Lookup tables CRUD (management) — Ticket/Notification/Flag/Record/Mock/AmbassadorTest types, OutreachSource, SocialPlatform/PostType, CampaignTag, ContentType, Outreach/Exhibition types | §28, §34, §35 | `api/lookup/[table]`, `portal/management/database/` | ⬜ |
+| P0-5 | Notifications — Notification + NotificationType, read/readAt, mark-all-read, bell + feed UI | §29 | `api/notifications/**`, `components/shared/` | ⬜ |
+| P0-6 | CalendarItem (org-wide) — per-user rows on every session/meeting/task; GCal sync flag; calendar view | §14 | `api/calendar/**`, shared calendar component | ⬜ |
+| P0-7 | Shared layout — role-aware Nav (theme toggle, role badges, active-nav), Footer, DataGrid primitive, form primitives; `@theme` brand tokens | brand tokens | `components/shared/**`, `app/globals.css` | ⬜ |
+| P0-8 | Data + API conventions — single Prisma client (pg adapter), zod validation layer, standard API response/error shape, fail-loud | — | `src/lib/db.ts`, `src/lib/validation/**` | ⬜ |
 
+#### PHASE A — Student
 
-**Built:** M1 — Next.js 15 scaffold. globals.css brand tokens, ThemeProvider, layout.tsx, prisma/schema.prisma (all models), prisma/seed.ts (19 dummy users), src/lib/auth.ts (ROLE_MAP + DEPT_MAP + PORTAL_MAP). Build passes clean.
-**Next:** M3 — Auth (NextAuth credentials, login page 1:1 split layout port)
-**Watch:** better-sqlite3 needs `npm rebuild better-sqlite3` in production. Tailwind v4 uses CSS-based config — no tailwind.config.ts.
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-A1 | Onboarding + admissions gate + enrolment — StudentProfile (+setup flags & timestamps), awaiting-approval gate, StudentEnrolmentList/Item + StatusChangeLog | §2, §6, §47, §48 | `portal/student/{awaiting-approval,profile}`, `api/onboarding`, `api/enrolments/student` | ⬜ |
+| P-A2 | Curriculum + classes + recordings + doubts — Service→CurriculumList→{SyllabusList(+SyllabusChapter), TaskList, MockList, CourseTimelineList}; ChapterRecordingList/Item; progress; Doubt | §15, §36 | `portal/student/{curriculum,classes,recordings,assignments}`, `api/curriculum/**` | ⬜ |
+| P-A3 | Scheduling + sessions + attendance — Schedule chain + recurrence, AcademicSession, SessionAttendance (trial flag, feedback stars/text), ScheduleChangeRequest | §10, §11, §5 | `portal/student/classes`, `api/schedules/**`, `api/sessions/**` | ⬜ |
+| P-A4 | Finance — StudentInvoice + BillingMonth, Discount, PaymentRecord, PaymentMethod/BankAccount, receipt upload (Supabase), Stripe checkout + webhook | §19, §20 | `portal/student/fees`, `api/invoices/**`, `api/payments/**`, `api/upload/receipt` | ⬜ |
+| P-A5 | Mock exams + progress reports + metrics — MockList/MockType, ProgressReport (PDF/md), MetricSnapshot (student metrics) | §15, §37 | `portal/student/{mock,progress}`, `api/metrics/student` | ⬜ |
+| P-A6 | Support + flags — student Tickets (raise/messages), StudentFlag/FlagType | §22, §24 | `portal/student/support`, `api/tickets/**` | ⬜ |
 
+#### PHASE B — Teacher
 
-## 📖 Handoff Notes — v71
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-B1 | Core + enrolment — TeacherProfile, TeacherEnrolmentList/Item + StatusChangeLog | §7 | `portal/teacher/{dashboard,profile}`, `api/enrolments` | ⬜ |
+| P-B2 | Sessions + attendance + doubts — AcademicSession (scheduled by teacher), SessionAttendance marking, Doubt answering | §11, §18 | `portal/teacher/{attendance,doubts}`, `api/sessions/**`, `api/curriculum/doubts` | ⬜ |
+| P-B3 | Finance — Claim (teacher), PaycheckLineItem, Paycheck → PaymentRecord; status change logs | §18 | `portal/teacher/{claims,payment-claims}`, `api/claims/**` | ⬜ |
+| P-B4 | Schedule + change requests + content bank + tickets — schedule chain, ScheduleChangeRequest, ContentBankItem, Tickets | §10, §25, §22 | `portal/teacher/{schedule,tickets}`, `api/schedules/**` | ⬜ |
 
+#### PHASE C — Staff (5 depts + shared)
 
-**Built:** New lean PLAN.md (Next.js phase only). PLAN_HTML_LEGACY.md + improvements.md → planning/legacy/. All 52 HTML source files → planning/legacy/html-source/ for M-phase reference.
-**Next:** M3 — Auth (NextAuth credentials provider, login page split layout)
-**Watch:** HTML source lives in planning/legacy/html-source/ — read from there for all M-phase ports.
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-C1 | Staff core — StaffProfile, StaffEnrolmentList/Item + StatusChangeLog, StaffRole/Department, staff schedule + StaffScheduleChangeRequest | §8, §10, §12 | `portal/staff/{profile,shared/schedule}`, `api/enrolments`, `api/schedules` | ⬜ |
+| P-C2 | Finance dept — RateList/RateItem (+RateChangeLog, RateItemStatusChangeLog), invoice oversight, claims approval, paychecks, Ledger & Budgets, CurrencyRate | §4, §18, §19, §21 | `portal/staff/finance/{invoices,claims,rates}`, `portal/management/budget`, `api/claims`, `api/invoices` | ⬜ |
+| P-C3 | HR dept — Candidate pipeline (APPLIED→…→HIRED/REJECTED), JobPosting, RegistrationForm/Entry, staff records & disciplinary, Role Records (warnings/commendations), RecordType | §3, §23, §27, §30 | `portal/staff/hr/{candidates,records}`, `api/careers/apply`, `api/jobs` | ⬜ |
+| P-C4 | IT dept — AccessLog (grant/revoke symmetry), Org Backlog Bank + Meeting Sprint/Backlog (roadmap), KnowledgeBank/Item | §35, §20 | `portal/staff/it/{access,roadmap}` | ⬜ |
+| P-C5 | Marketing dept — MarketingPost, MarketingSchedule/Occurrence(+StatusChangeLog)/PostSlot, Campaign/CampaignItem, OutreachItem, ExhibitionItem, ContentBankItem | §32, §34, §52 | `portal/staff/marketing/calendar`, `api/marketing/**` | ⬜ |
+| P-C6 | PR dept — Lead (+outreachSource FK), ReferralClick (conversion), attendance mapping/tracker, Announcements, Checklist system | §17, §25, §31 | `portal/staff/pr/{attendance,mapping,tracker}`, `portal/management/announcements` | ⬜ |
+| P-C7 | Staff shared — Meeting/MeetingAttendance, GeneralMeeting (+StatusChangeLog), Content Bank, Checklist (ChecklistEntry), staff Tickets | §12, §16, §31, §22 | `portal/staff/{shared/meetings,shared/content-bank,tickets}`, `api/tickets` | ⬜ |
 
+#### PHASE D — Ambassador
 
-## 📖 Handoff Notes — v72
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-D1 | Core + programme — AmbassadorProfile (referralCode UK), AmbassadorEnrolmentList/Item + StatusChangeLog, AmbassadorService, AmbassadorProgrammeList + ContentList | §9, §16, §17 | `portal/ambassador/{profile,programme}`, `api/enrolments` | ⬜ |
+| P-D2 | Commission + claims — AmbassadorCommissionList/Item (+StatusChangeLog), AmbassadorClaim (neutral totals + rateSnapshot allowance), AmbassadorPaycheck (netAmount) | §9, §18, §54 | `portal/ambassador/claims`, `api/claims/**` | ⬜ |
+| P-D3 | Meetings + schedule + tests + timeline — AmbassadorMeeting/Attendance, AmbassadorSchedule + ChangeRequest + OccurrenceStatusChangeLog, AmbassadorTestList, AmbassadorProgrammeTimelineList | §13, §10, §16 | `portal/ambassador/meetings`, `api/schedules/**` | ⬜ |
+| P-D4 | Referrals + tickets — Referral, ReferralClick conversion, public referral landing wiring (with P-G3), tickets (staff-only, zero student data) | §17, §22 | `portal/ambassador/{referrals,tickets}` | ⬜ |
 
-**Built:** Decoupled Supabase Auth, Webhook & Manual Approval Notifications, WhatsApp Reminder Stage Tracker, Recurrence Overlap Conflict Detection Engine, and dynamic Student, Parent, and Teacher portal wiring.
-**Next:** Verify production Vercel deployment and address the 30 unimplemented database tables from ERD v23 audit.
-**Watch:** Clear out local node_modules caches if shifting node runtime versions.
+#### PHASE E — Parent
 
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-E1 | Core + linked students — ParentProfile, linked-student relationship | §2, §40 | `portal/parent/profile` | ⬜ |
+| P-E2 | Views — child progress, fees/invoice (read), support tickets | §19, §22 | `portal/parent/{progress,fees,support}` | ⬜ |
+
+#### PHASE F — Management
+
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-F1 | Dashboard + metrics — MetricSnapshot (all entity types), staff performance metrics, finance/ticket/attendance dashboards | §37, §52 | `portal/management/metrics`, `api/metrics/**` | ⬜ |
+| P-F2 | Users + RBAC admin — User CRUD, PortalPermission editor, UserType/Department/StaffRole admin | §38, §51 | `portal/management/{users,permissions}`, `api/management/permissions`, `api/users` | ⬜ |
+| P-F3 | Database admin (TOTAL COVERAGE) — generic CRUD grids for every remaining model incl. all `…StatusChangeLog`, SiteLog, AccessLog, snapshots, junctions | all remaining models | `portal/management/database`, `api/management/db` | ⬜ |
+| P-F4 | Announcements + budget + finance oversight + content — Announcement, Discount oversight, Ledger/Budget, ContentBankItem | §17, §21, §25 | `portal/management/{announcements,budget}` | ⬜ |
+
+#### PHASE G — Public site (brochure + intake)
+
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-G1 | Brochure wired — homepage (Athena clone), services, pricing, about, resources, contact pulling Service/Group/public content from DB | §4, brand | `app/{page,about,services,pricing,resources,contact}` | ⬜ |
+| P-G2 | Public intake — admissions RegistrationForm → Candidate, careers apply → Candidate/JobPosting, Lead capture | §3, §30 | `app/{admissions,careers}`, `api/careers/apply`, `api/jobs` | ⬜ |
+| P-G3 | Ambassador referral landing + ReferralClick tracking + public ambassador services | §17 | `app/r/[referralCode]`, `api/referrals/**` | ⬜ |
+
+#### PHASE H — Hardening + production cutover
+
+| # | Task | Key entities / §Spec | Path | Status |
+|---|------|----------------------|------|--------|
+| P-H1 | Full RBAC audit — every role × every route/menu vs §38 defaults; deny-by-default verified | §38 | `src/middleware.ts`, `src/lib/rbac.ts` | ⬜ |
+| P-H2 | Full seed/demo dataset — representative live-verification rows for every portal (Demo@1234) | §53 | `prisma/seed.ts` | ⬜ |
+| P-H3 | Test suite consolidation — vitest coverage gate across all sub-systems; CI green | — | `src/tests/**` | ⬜ |
+| P-H4 | Production cutover — Vercel prod deploy, env vars, Supabase storage buckets + policies, Stripe live webhook, smoke test all roles on live URL | — | Vercel · Supabase · Stripe | ⬜ |
+
+### 📊 Coverage Ledger (170-entity total-coverage tracking)
+
+> Each ERD group MUST be fully reachable when its owning phase closes. Tick when every entity in the group is surfaced (bespoke page or `management/database` grid) and round-trips live.
+
+| ERD group | Owning phase(s) | Status |
+|-----------|-----------------|--------|
+| Users & Profiles (User, Student/Teacher/Staff/Ambassador/Parent Profile) | A,B,C,D,E,F2 | ⬜ |
+| Pre-hire (Candidate, JobPosting, RegistrationForm/Entry, Lead, ReferralClick) | C3,G2,G3 | ⬜ |
+| Services & Rates (Group, Service, Gcr*, RateList/Item, RateChangeLog, CurrencyRate) | C2,G1 | ⬜ |
+| Enrolment (Student/Teacher/Staff/Ambassador EnrolmentList/Item + StatusChangeLogs) | A1,B1,C1,D1 | ⬜ |
+| Schedules & Calendar (Schedule chain, *ScheduleChangeRequest, *OccurrenceStatusChangeLog, CalendarItem) | P0-6,A3,B4,C1,D3 | ⬜ |
+| Sessions & Attendance (AcademicSession, SessionAttendance + StatusChangeLogs) | A3,B2 | ⬜ |
+| Meetings (Meeting, GeneralMeeting, AmbassadorMeeting + Attendance + StatusChangeLogs) | C7,D3 | ⬜ |
+| Curriculum (CurriculumList, Syllabus*, TaskList, MockList, CourseTimelineList, Chapter*Recording*, Doubt) | A2,A5 | ⬜ |
+| Ambassador programme (AmbassadorProgramme*, AmbassadorTestList, *TimelineList) | D1,D3 | ⬜ |
+| Finance (Invoice, BillingMonth, Discount, Claim/AmbassadorClaim, Paycheck*, PaymentRecord/Method, BankAccount, Ledger, Budget) | A4,B3,C2,D2,F4 | ⬜ |
+| Tickets (Ticket, TicketMessage, TicketHistory, TicketType) | A6,B4,C7,D4,E2 | ⬜ |
+| HR & Records (StaffRecord, RoleRecord, RecordType, FlagType, StudentFlag) | A6,C3 | ⬜ |
+| Marketing (MarketingPost, MarketingSchedule/Occurrence/PostSlot, Campaign/Item, Outreach/Exhibition*, Social*Type) | C5 | ⬜ |
+| Content & Misc (ContentBankItem, Announcement, KnowledgeBank*, ContentType, TextFormat, Booklet) | C4,C7,F4 | ⬜ |
+| Metrics & Reports (MetricSnapshot, ProgressReport) | A5,F1 | ⬜ |
+| Audit/Lookup/RBAC (PortalPermission, SiteLog, AccessLog, all lookups, all remaining *StatusChangeLog) | P0-2,P0-4,F2,F3 | ⬜ |
