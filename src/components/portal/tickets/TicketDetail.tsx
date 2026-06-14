@@ -304,7 +304,7 @@ export default function TicketDetail({ ticket, currentUserId, currentUserRole, c
                 {ticket.description}
               </p>
               {ticket.attachmentLink && (
-                <a href={ticket.attachmentLink} target="_blank" rel="noreferrer" className="mt-4 flex items-center gap-2 text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:underline">
+                <a href={/^https?:\/\//i.test(ticket.attachmentLink) ? ticket.attachmentLink : `https://${ticket.attachmentLink}`} target="_blank" rel="noreferrer" className="mt-4 flex items-center gap-2 text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:underline">
                   <AlertCircle size={14} /> View Attachment (GDrive)
                 </a>
               )}
