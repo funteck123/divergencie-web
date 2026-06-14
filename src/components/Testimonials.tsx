@@ -46,7 +46,7 @@ export default function Testimonials() {
             <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">
               THE RECEIPTS
             </p>
-            <h2 className="text-7xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85]">
+            <h2 className="text-4xl sm:text-6xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] break-words w-full">
               DON&apos;T TAKE<br /><span className="text-[var(--gold)]">OUR WORD FOR IT.</span>
             </h2>
           </div>

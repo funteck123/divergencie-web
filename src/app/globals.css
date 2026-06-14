@@ -59,6 +59,8 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   transition: background 0.2s, color 0.2s;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 @keyframes fade-in {
