@@ -335,3 +335,37 @@ export async function deleteAnnouncement(id: string) {
   await prisma.announcement.delete({ where: { id } });
   revalidatePath("/portal/management");
 }
+
+export async function getMetricSnapshots(entityType?: string, month?: string) {
+  await requireManagementAccess();
+
+  return await prisma.metricSnapshot.findMany({
+    where: {
+      ...(entityType ? { entityType } : {}),
+      ...(month ? { month } : {}),
+    },
+    include: { progressReports: { select: { id: true, status: true, month: true } } },
+    orderBy: { snapshotAt: "desc" },
+    take: 100,
+  });
+}
+
+export async function createMetricSnapshot(data: {
+  entityType: string;
+  entityId: string;
+  month: string;
+  metrics: object;
+}) {
+  await requireManagementAccess();
+
+  const snap = await prisma.metricSnapshot.create({
+    data: {
+      entityType: data.entityType,
+      entityId: data.entityId,
+      month: data.month,
+      metrics: data.metrics,
+    },
+  });
+  revalidatePath("/portal/management/metrics");
+  return snap;
+}
