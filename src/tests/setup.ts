@@ -69,6 +69,11 @@ vi.mock("@/lib/db", () => {
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    studentFlag: {
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
     studentProfile: {
       findUnique: vi.fn(),
       update: vi.fn(),

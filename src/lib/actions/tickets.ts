@@ -183,3 +183,16 @@ export async function updateTicketStatus(ticketId: string, status: string, actor
   revalidatePath("/portal/staff/tickets");
   return ticket;
 }
+
+export async function getStudentFlags(studentEmail: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const user = await prisma.user.findUnique({ where: { email: studentEmail } });
+  if (!user) return [];
+
+  return await prisma.studentFlag.findMany({
+    where: { studentId: user.id, resolved: false },
+    orderBy: { flaggedAt: "desc" },
+  });
+}

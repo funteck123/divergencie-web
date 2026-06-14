@@ -5,7 +5,18 @@ import { useSession } from "@/lib/auth-client";
 import TicketList from "@/components/portal/tickets/TicketList";
 import TicketDetail from "@/components/portal/tickets/TicketDetail";
 import TicketCreateForm from "@/components/portal/tickets/TicketCreateForm";
-import { Plus, History, HelpCircle, PhoneCall, Inbox, CheckCircle2, SlidersHorizontal, User, UserPlus } from "lucide-react";
+import { getStudentFlags } from "@/lib/actions/tickets";
+import { 
+  Plus, 
+  History, 
+  HelpCircle, 
+  PhoneCall, 
+  Inbox, 
+  CheckCircle2, 
+  User, 
+  UserPlus,
+  AlertCircle
+} from "lucide-react";
 
 export default function StudentSupportPage() {
   const { data: session, status } = useSession();
@@ -13,6 +24,7 @@ export default function StudentSupportPage() {
   const [activeQueue, setActiveQueue] = useState<"active" | "processing" | "closed">("active");
   const [typeFilter, setTypeFilter] = useState<"all" | "created" | "received">("all");
   const [tickets, setTickets] = useState<any[]>([]);
+  const [flags, setFlags] = useState<any[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,8 +49,21 @@ export default function StudentSupportPage() {
     }
   }
 
+  async function fetchFlags() {
+    if (!user?.email) return;
+    try {
+      const data = await getStudentFlags(user.email);
+      setFlags(data);
+    } catch (err) {
+      console.error("Failed to fetch student warning flags:", err);
+    }
+  }
+
   useEffect(() => {
-    if (isLoaded) fetchTickets();
+    if (isLoaded) {
+      fetchTickets();
+      fetchFlags();
+    }
   }, [isLoaded]);
 
   const filtered = tickets.filter(t => {
@@ -73,8 +98,33 @@ export default function StudentSupportPage() {
         </div>
       </div>
 
+      {/* Warning Flags Banner */}
+      {flags.length > 0 && (
+        <div className="space-y-3">
+          {flags.map((flag: any) => (
+            <div 
+              key={flag.id} 
+              className="p-5 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-2xl flex items-start gap-4 animate-in slide-in-from-top-3 duration-300 shadow-sm"
+            >
+              <AlertCircle className="text-rose-600 dark:text-rose-400 shrink-0 mt-0.5 animate-bounce" size={18} />
+              <div className="space-y-1">
+                <h4 className="text-xs font-black uppercase text-rose-800 dark:text-rose-300 tracking-wider">
+                  Warning Flag: {flag.flagType.replace(/_/g, " ")}
+                </h4>
+                <p className="text-xs font-medium text-rose-700 dark:text-rose-400 leading-relaxed">
+                  {flag.notes || "An administrative alert is active on your profile. Please contact the PR/Support team."}
+                </p>
+                <p className="text-[8px] font-black text-rose-500 uppercase tracking-widest mt-1.5">
+                  Flagged Date: {new Date(flag.flaggedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Main Tabs */}
-      <div className="flex bg-[var(--bg-secondary)] dark:bg-white/5 p-1 rounded-2xl w-fit border border-[var(--border-subtle)]">
+      <div className="flex bg-[var(--bg-secondary)] dark:bg-white/5 p-1 rounded-2xl w-fit border border-[var(--border-subtle)] dark:border-white/10">
         {[
           { id: "history", label: "My Discussions", icon: History },
           { id: "new", label: "New Ticket", icon: Plus },
@@ -88,7 +138,7 @@ export default function StudentSupportPage() {
             className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 transition-all ${
               activeTab === tab.id 
                 ? "bg-white dark:bg-white/10 text-[var(--gold)] shadow-sm" 
-                : "text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white"
+                : "text-[var(--text-muted)] dark:text-gray-400 hover:text-[var(--navy)] dark:hover:text-white"
             }`}
           >
             <tab.icon size={14} />
@@ -101,7 +151,7 @@ export default function StudentSupportPage() {
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Status Sub-Tabs */}
-            <div className="flex bg-[var(--bg-secondary)] dark:bg-white/5 p-1 rounded-2xl w-fit border border-[var(--border-subtle)]">
+            <div className="flex bg-[var(--bg-secondary)] dark:bg-white/5 p-1 rounded-2xl w-fit border border-[var(--border-subtle)] dark:border-white/10">
               {[
                 { id: "active", label: "Action Required", icon: Inbox },
                 { id: "processing", label: "Waiting for Staff", icon: History },
@@ -116,7 +166,7 @@ export default function StudentSupportPage() {
                   className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${
                     activeQueue === s.id 
                       ? "bg-white dark:bg-white/10 text-[var(--gold)] shadow-sm" 
-                      : "text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white"
+                      : "text-[var(--text-muted)] dark:text-gray-400 hover:text-[var(--navy)] dark:hover:text-white"
                   }`}
                 >
                   <s.icon size={12} />
@@ -126,7 +176,7 @@ export default function StudentSupportPage() {
             </div>
 
             {/* Type Sub-Tabs */}
-            <div className="flex bg-[var(--bg-secondary)] dark:bg-white/5 p-1 rounded-2xl w-fit border border-[var(--border-subtle)]">
+            <div className="flex bg-[var(--bg-secondary)] dark:bg-white/5 p-1 rounded-2xl w-fit border border-[var(--border-subtle)] dark:border-white/10">
               {[
                 { id: "all", label: "All Threads", icon: History },
                 { id: "created", label: "Sent", icon: User },
@@ -141,7 +191,7 @@ export default function StudentSupportPage() {
                   className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${
                     typeFilter === t.id 
                       ? "bg-white dark:bg-white/10 text-[var(--navy)] dark:text-white shadow-sm" 
-                      : "text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white"
+                      : "text-[var(--text-muted)] dark:text-gray-400 hover:text-[var(--navy)] dark:hover:text-white"
                   }`}
                 >
                   <t.icon size={12} />
@@ -171,7 +221,7 @@ export default function StudentSupportPage() {
                   onUpdate={fetchTickets}
                 />
               ) : (
-                <div className="h-full min-h-[500px] bg-[var(--bg-secondary)] dark:bg-white/5 border-2 border-dashed border-[var(--border-subtle)] rounded-[3rem] flex flex-col items-center justify-center p-20 text-center opacity-30">
+                <div className="h-full min-h-[500px] bg-[var(--bg-secondary)] dark:bg-white/5 border border-dashed border-[var(--border-subtle)] dark:border-white/10 rounded-[3rem] flex flex-col items-center justify-center p-20 text-center opacity-30">
                   <HelpCircle size={48} className="text-[var(--text-muted)] mb-4" />
                   <h2 className="text-lg font-black text-[var(--navy)] dark:text-white uppercase tracking-widest">Discussion View</h2>
                   <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest mt-2">Select a thread to view the full discussion</p>

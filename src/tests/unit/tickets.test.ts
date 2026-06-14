@@ -1,5 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { canPerform, TicketAction } from "@/lib/ticketPermissions";
+import prisma from "@/lib/db";
+import { getStudentFlags } from "@/lib/actions/tickets";
+
+const db = prisma as any;
 
 const ALL_ACTIONS: TicketAction[] = [
   "ASSIGN", "FORWARD", "HANDBACK", "CLOSE", "REOPEN", "REPLY", "CREATE", "PROCESSING",
@@ -117,5 +121,34 @@ describe("Routing stack logic", () => {
 
     expect(dept).toBe("PR");
     expect(assigneeId).toBe("creator_1");
+  });
+});
+
+describe("getStudentFlags action", () => {
+  it("throws when not authenticated", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce(null as any);
+
+    await expect(getStudentFlags("student@test.com")).rejects.toThrow("Unauthorized");
+  });
+
+  it("queries active resolved:false flags for student email", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({ user: { id: "stu-id", email: "student@test.com" } } as any);
+
+    db.user.findUnique.mockResolvedValue({ id: "stu-id" });
+    db.studentFlag.findMany.mockResolvedValue([
+      { id: "flag-1", studentId: "stu-id", flagType: "AT_RISK", resolved: false },
+    ]);
+
+    const result = await getStudentFlags("student@test.com");
+
+    expect(db.studentFlag.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { studentId: "stu-id", resolved: false },
+      })
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].flagType).toBe("AT_RISK");
   });
 });
