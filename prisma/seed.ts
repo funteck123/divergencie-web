@@ -635,6 +635,480 @@ async function main() {
     });
   }
 
+
+  // ─── Extended Dataset (P-H2) ─────────────────────────────────────────────
+
+  const ambassador = users["ambassador@divergencie.co.uk"];
+  const parent = users["parent@divergencie.co.uk"];
+
+  // Additional Services for ServicesGrid DB wiring
+  const svcCambridge = await prisma.service.upsert({
+    where: { id: "svc-cambridge-maths" },
+    update: {},
+    create: { id: "svc-cambridge-maths", subjectName: "Mathematics", fullSubjectName: "Cambridge IGCSE Mathematics (0580)", board: "Cambridge", courseLevel: "IGCSE", serviceType: "CAMBRIDGE", teacherId: teacher.id, currency: "GBP", standardRate: 40, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-cambridge-phys" },
+    update: {},
+    create: { id: "svc-cambridge-phys", subjectName: "Physics", fullSubjectName: "Cambridge A Level Physics (9702)", board: "Cambridge", courseLevel: "A Level", serviceType: "CAMBRIDGE", teacherId: teacher.id, currency: "GBP", standardRate: 45, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-cambridge-chem" },
+    update: {},
+    create: { id: "svc-cambridge-chem", subjectName: "Chemistry", fullSubjectName: "Cambridge IGCSE Chemistry (0620)", board: "Cambridge", courseLevel: "IGCSE", serviceType: "CAMBRIDGE", teacherId: teacher.id, currency: "GBP", standardRate: 40, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-cambridge-bio" },
+    update: {},
+    create: { id: "svc-cambridge-bio", subjectName: "Biology", fullSubjectName: "Cambridge IGCSE Biology (0610)", board: "Cambridge", courseLevel: "IGCSE", serviceType: "CAMBRIDGE", teacherId: teacher.id, currency: "GBP", standardRate: 40, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-ap-calc" },
+    update: {},
+    create: { id: "svc-ap-calc", subjectName: "AP Calculus BC", fullSubjectName: "AP Calculus BC (CollegeBoard)", board: "CollegeBoard", courseLevel: "AP", serviceType: "AP", teacherId: teacher.id, currency: "USD", standardRate: 55, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-ap-phys" },
+    update: {},
+    create: { id: "svc-ap-phys", subjectName: "AP Physics C", fullSubjectName: "AP Physics C: Mechanics", board: "CollegeBoard", courseLevel: "AP", serviceType: "AP", teacherId: teacher.id, currency: "USD", standardRate: 55, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-ielts" },
+    update: {},
+    create: { id: "svc-ielts", subjectName: "Academic IELTS", fullSubjectName: "IELTS Academic (British Council)", board: "British Council", courseLevel: "Test Prep", serviceType: "IELTS", teacherId: teacher.id, currency: "GBP", standardRate: 35, isActive: true },
+  });
+  await prisma.service.upsert({
+    where: { id: "svc-toefl" },
+    update: {},
+    create: { id: "svc-toefl", subjectName: "TOEFL iBT", fullSubjectName: "TOEFL iBT (ETS)", board: "ETS", courseLevel: "Test Prep", serviceType: "IELTS", teacherId: teacher.id, currency: "USD", standardRate: 50, isActive: true },
+  });
+
+  // StudentEnrolmentList + Item
+  if (student) {
+    const selList = await prisma.studentEnrolmentList.upsert({
+      where: { id: "sel-student-cambridge" },
+      update: {},
+      create: { id: "sel-student-cambridge", studentId: student.id, serviceType: "CAMBRIDGE", isActive: true },
+    });
+    await prisma.studentEnrolmentItem.upsert({
+      where: { id: "sei-maths" },
+      update: {},
+      create: {
+        id: "sei-maths",
+        enrolmentListId: selList.id,
+        studentId: student.id,
+        serviceId: svcCambridge.id,
+        status: "ACTIVE",
+        startDate: new Date("2026-01-01"),
+        activatedAt: new Date("2026-01-01"),
+        isActive: true,
+      },
+    });
+  }
+
+  // TeacherEnrolmentList + Item
+  const telList = await prisma.teacherEnrolmentList.upsert({
+    where: { id: "tel-teacher-cambridge" },
+    update: {},
+    create: { id: "tel-teacher-cambridge", teacherId: teacher.id, serviceType: "CAMBRIDGE", isActive: true },
+  });
+  await prisma.teacherEnrolmentItem.upsert({
+    where: { id: "tei-maths" },
+    update: {},
+    create: {
+      id: "tei-maths",
+      enrolmentListId: telList.id,
+      teacherId: teacher.id,
+      serviceId: svcCambridge.id,
+      status: "ACTIVE",
+      startDate: new Date("2026-01-01"),
+      activatedAt: new Date("2026-01-01"),
+      isActive: true,
+    },
+  });
+
+  // ParentProfile
+  if (parent) {
+    await prisma.parentProfile.upsert({
+      where: { userId: parent.id },
+      update: {},
+      create: { userId: parent.id, phone: "+44 7700 900001", address: "12 Oxford Street, London, W1D 1AR" },
+    });
+  }
+
+  // AmbassadorService + ProgrammeList
+  const ambService = await prisma.ambassadorService.upsert({
+    where: { id: "amb-svc-seed" },
+    update: {},
+    create: { id: "amb-svc-seed", title: "DivergenCIE Ambassador Programme 2026", serviceType: "AMBASSADOR", currency: "GBP", rate: 0, isActive: true },
+  });
+  const ambProgramme = await prisma.ambassadorProgrammeList.upsert({
+    where: { ambassadorServiceId: ambService.id },
+    update: {},
+    create: { ambassadorServiceId: ambService.id, isActive: true },
+  });
+
+  // ContentList + Items
+  const ambContent = await prisma.ambassadorProgrammeContentList.upsert({
+    where: { id: "apc-seed-1" },
+    update: {},
+    create: { id: "apc-seed-1", programmeListId: ambProgramme.id, name: "Foundation Module", version: "1.0", status: "ACTIVE", activatedAt: new Date(), isActive: true },
+  });
+  const progItem1 = await prisma.ambassadorProgrammeItem.upsert({
+    where: { id: "api-seed-1" },
+    update: {},
+    create: { id: "api-seed-1", contentListId: ambContent.id, programmeCode: "AMB-F01", programmeTitle: "Introduction to DivergenCIE", level: "Foundation", order: 1, note: "Mandatory onboarding module", isActive: true },
+  });
+  const progItem2 = await prisma.ambassadorProgrammeItem.upsert({
+    where: { id: "api-seed-2" },
+    update: {},
+    create: { id: "api-seed-2", contentListId: ambContent.id, programmeCode: "AMB-F02", programmeTitle: "Referral Strategy & Tools", level: "Foundation", order: 2, note: "Learn the referral system", isActive: true },
+  });
+  const progItem3 = await prisma.ambassadorProgrammeItem.upsert({
+    where: { id: "api-seed-3" },
+    update: {},
+    create: { id: "api-seed-3", contentListId: ambContent.id, programmeCode: "AMB-F03", programmeTitle: "Commission Structure & Payouts", level: "Foundation", order: 3, isActive: true },
+  });
+
+  // TimelineList + Items
+  const ambTimeline = await prisma.ambassadorProgrammeTimelineList.upsert({
+    where: { id: "aptl-seed-1" },
+    update: {},
+    create: { id: "aptl-seed-1", programmeListId: ambProgramme.id, name: "2026 Programme Timeline", version: "1", status: "ACTIVE", isActive: true },
+  });
+  await prisma.ambassadorProgrammeTimelineItem.upsert({
+    where: { id: "apti-seed-1" },
+    update: {},
+    create: { id: "apti-seed-1", timelineListId: ambTimeline.id, month: "2026-01", weekNumber: 1, itemType: "ONBOARDING", programmeItemId: progItem1.id, notes: "Complete onboarding by end of week 1" },
+  });
+  await prisma.ambassadorProgrammeTimelineItem.upsert({
+    where: { id: "apti-seed-2" },
+    update: {},
+    create: { id: "apti-seed-2", timelineListId: ambTimeline.id, month: "2026-02", weekNumber: 2, itemType: "TRAINING", programmeItemId: progItem2.id, notes: "Referral tools training" },
+  });
+  await prisma.ambassadorProgrammeTimelineItem.upsert({
+    where: { id: "apti-seed-3" },
+    update: {},
+    create: { id: "apti-seed-3", timelineListId: ambTimeline.id, month: "2026-03", weekNumber: 1, itemType: "ASSESSMENT", notes: "Mid-programme check-in meeting" },
+  });
+
+  // TestList + Item + Result
+  const ambTestList = await prisma.ambassadorTestList.upsert({
+    where: { id: "atl-seed-1" },
+    update: {},
+    create: { id: "atl-seed-1", programmeListId: ambProgramme.id, name: "Foundation Assessment", version: "1", status: "ACTIVE", activatedAt: new Date(), isActive: true },
+  });
+  const ambTestItem = await prisma.ambassadorTestItem.upsert({
+    where: { id: "ati-seed-1" },
+    update: {},
+    create: { id: "ati-seed-1", testListId: ambTestList.id, programmeItemId: progItem1.id, testType: "MCQ", scheduledDate: new Date("2026-02-15"), totalMarks: 50, isActive: true },
+  });
+  if (ambassador) {
+    await prisma.ambassadorTestResult.upsert({
+      where: { testItemId_ambassadorId: { testItemId: ambTestItem.id, ambassadorId: ambassador.id } },
+      update: {},
+      create: { testItemId: ambTestItem.id, ambassadorId: ambassador.id, marksScored: 44, marksAvailable: 50, marksLost: 6, completed: true, completedAt: new Date("2026-02-15") },
+    });
+
+    // AmbassadorProgrammeProgress
+    await prisma.ambassadorProgrammeProgress.upsert({
+      where: { ambassadorId_programmeItemId: { ambassadorId: ambassador.id, programmeItemId: progItem1.id } },
+      update: {},
+      create: { ambassadorId: ambassador.id, programmeItemId: progItem1.id, status: "COMPLETED", masteryPct: 88 },
+    });
+    await prisma.ambassadorProgrammeProgress.upsert({
+      where: { ambassadorId_programmeItemId: { ambassadorId: ambassador.id, programmeItemId: progItem2.id } },
+      update: {},
+      create: { ambassadorId: ambassador.id, programmeItemId: progItem2.id, status: "IN_PROGRESS", masteryPct: 40 },
+    });
+
+    // AmbassadorEnrolmentList + Item
+    const aelList = await prisma.ambassadorEnrolmentList.upsert({
+      where: { id: "ael-seed-1" },
+      update: {},
+      create: { id: "ael-seed-1", ambassadorId: ambassador.id, serviceType: "AMBASSADOR", isActive: true },
+    });
+    const ambEnrolItem = await prisma.ambassadorEnrolmentItem.upsert({
+      where: { id: "aei-seed-1" },
+      update: {},
+      create: {
+        id: "aei-seed-1",
+        enrolmentListId: aelList.id,
+        ambassadorId: ambassador.id,
+        ambassadorServiceId: ambService.id,
+        status: "ACTIVE",
+        startDate: new Date("2026-01-01"),
+        activatedAt: new Date("2026-01-01"),
+        isActive: true,
+      },
+    });
+
+    // AmbassadorMeeting + Attendance
+    const sessionTypeMeeting = await prisma.sessionType.findFirst({ where: { name: "AMBASSADOR_MEETING" } });
+    const ambMeeting = await prisma.ambassadorMeeting.upsert({
+      where: { id: "am-seed-1" },
+      update: {},
+      create: {
+        id: "am-seed-1",
+        ambassadorServiceId: ambService.id,
+        sessionTypeId: sessionTypeMeeting?.id,
+        title: "Monthly Check-in — January 2026",
+        startTime: new Date("2026-01-15T10:00:00Z"),
+        endTime: new Date("2026-01-15T11:00:00Z"),
+        durationHours: 1,
+        status: "completed",
+        zoomLink: "https://zoom.us/j/amb-meeting-1",
+      },
+    });
+    await prisma.ambassadorMeetingAttendance.upsert({
+      where: { id: "ama-seed-1" },
+      update: {},
+      create: {
+        id: "ama-seed-1",
+        meetingId: ambMeeting.id,
+        ambassadorId: ambassador.id,
+        enrolmentItemId: ambEnrolItem.id,
+        status: "PRESENT",
+        ambassadorLoggedHours: 1,
+        managementLoggedHours: 1,
+        hoursMatch: true,
+        feedbackStars: 5,
+        feedbackText: "Great session, learned a lot about referral strategies",
+        feedbackGivenAt: new Date("2026-01-15T11:30:00Z"),
+        markedAt: new Date("2026-01-15T11:00:00Z"),
+      },
+    });
+
+    // AmbassadorServiceSchedule + Occurrence
+    const ambSchedule = await prisma.ambassadorServiceSchedule.upsert({
+      where: { ambassadorServiceId: ambService.id },
+      update: {},
+      create: { ambassadorServiceId: ambService.id, isActive: true },
+    });
+    const sessionTypeAmbMeet = await prisma.sessionType.findFirst({ where: { name: "AMBASSADOR_MEETING" } });
+    await prisma.ambassadorScheduleOccurrence.upsert({
+      where: { id: "aso-seed-1" },
+      update: {},
+      create: {
+        id: "aso-seed-1",
+        scheduleId: ambSchedule.id,
+        sessionTypeId: sessionTypeAmbMeet?.id ?? sessionTypeMeeting?.id ?? "",
+        recurrenceType: "WEEKLY",
+        dayOfWeek: "WEDNESDAY",
+        startTime: new Date("2026-01-15T10:00:00Z"),
+        endTime: new Date("2026-01-15T11:00:00Z"),
+        durationHours: 1,
+        status: "ACTIVE",
+        activatedAt: new Date("2026-01-01"),
+      },
+    });
+
+    // AmbassadorCommissionList + Item (linked to student enrolment)
+    const seiRecord = await prisma.studentEnrolmentItem.findFirst({ where: { id: "sei-maths" } });
+    if (seiRecord) {
+      const acList = await prisma.ambassadorCommissionList.upsert({
+        where: { id: "acl-seed-1" },
+        update: {},
+        create: { id: "acl-seed-1", ambassadorId: ambassador.id, isActive: true },
+      });
+      await prisma.ambassadorCommissionItem.upsert({
+        where: { id: "aci-seed-1" },
+        update: {},
+        create: {
+          id: "aci-seed-1",
+          commissionListId: acList.id,
+          studentEnrolmentItemId: seiRecord.id,
+          commissionPct: 10,
+          status: "ACTIVE",
+          activatedAt: new Date("2026-01-01"),
+          isActive: true,
+        },
+      });
+
+      // AmbassadorClaim + Paycheck
+      const ambClaim = await prisma.ambassadorClaim.upsert({
+        where: { id: "ac-seed-1" },
+        update: {},
+        create: {
+          id: "ac-seed-1",
+          ambassadorId: ambassador.id,
+          commissionListId: acList.id,
+          month: "2026-05",
+          totalStudentAmountPaid: 640,
+          commissionAmount: 64,
+          currency: "GBP",
+          status: "approved",
+          notes: "May commission from IGCSE Maths referral",
+        },
+      });
+      await prisma.ambassadorPaycheck.upsert({
+        where: { id: "apay-seed-1" },
+        update: {},
+        create: {
+          id: "apay-seed-1",
+          claimId: ambClaim.id,
+          ambassadorId: ambassador.id,
+          billingMonthId: billingMonth.id,
+          month: "2026-05",
+          subtotal: 64,
+          dueAmount: 64,
+          currency: "GBP",
+          status: "paid",
+          notes: "Paid via bank transfer",
+        },
+      });
+    }
+
+    // Referral
+    const ambProfile = await prisma.ambassadorProfile.findUnique({ where: { userId: ambassador.id } });
+    await prisma.referral.upsert({
+      where: { id: "ref-seed-1" },
+      update: {},
+      create: {
+        id: "ref-seed-1",
+        referrerId: ambassador.id,
+        code: ambProfile?.referralCode ?? "DC-AMB-SEED-01",
+        status: "active",
+        isActive: true,
+      },
+    });
+  }
+
+  // MockList + Item + Result (student)
+  if (student && currList) {
+    const mockList = await prisma.mockList.upsert({
+      where: { id: "ml-seed-1" },
+      update: {},
+      create: { id: "ml-seed-1", curriculumListId: currList.id, name: "IGCSE Mathematics Mock Series", version: "1", status: "ACTIVE", activatedAt: new Date(), isActive: true },
+    });
+    const mockItem1 = await prisma.mockItem.upsert({
+      where: { id: "mi-seed-1" },
+      update: {},
+      create: { id: "mi-seed-1", mockListId: mockList.id, serviceId: service.id, mockType: "Paper 2 (Extended)", paperCode: "0580/22/M/J/25", scheduledDate: new Date("2026-04-10"), totalMarks: 70, isActive: true },
+    });
+    const mockItem2 = await prisma.mockItem.upsert({
+      where: { id: "mi-seed-2" },
+      update: {},
+      create: { id: "mi-seed-2", mockListId: mockList.id, serviceId: service.id, mockType: "Paper 4 (Extended)", paperCode: "0580/42/M/J/25", scheduledDate: new Date("2026-04-24"), totalMarks: 130, isActive: true },
+    });
+    await prisma.mockResult.upsert({
+      where: { mockItemId_studentId: { mockItemId: mockItem1.id, studentId: student.id } },
+      update: {},
+      create: { mockItemId: mockItem1.id, studentId: student.id, marksScored: 61, marksAvailable: 70, marksLost: 9, completed: true, completedAt: new Date("2026-04-10"), serviceId: service.id, subject: "IGCSE Mathematics", level: "IGCSE", grade: "A*", score: 87 },
+    });
+    await prisma.mockResult.upsert({
+      where: { mockItemId_studentId: { mockItemId: mockItem2.id, studentId: student.id } },
+      update: {},
+      create: { mockItemId: mockItem2.id, studentId: student.id, marksScored: 118, marksAvailable: 130, marksLost: 12, completed: true, completedAt: new Date("2026-04-24"), serviceId: service.id, subject: "IGCSE Mathematics", level: "IGCSE", grade: "A*", score: 91 },
+    });
+  }
+
+  // TaskType + TaskList + TaskItem + Assignment + Submission
+  if (student && currList) {
+    
+    
+    const taskType = await prisma.taskType.findFirst({ where: { name: "HOMEWORK" } });
+    if (taskType) {
+      const taskList = await prisma.taskList.upsert({
+        where: { id: "tl-seed-1" },
+        update: {},
+        create: { id: "tl-seed-1", curriculumListId: currList.id, name: "Term 2 Homework", version: "1", status: "ACTIVE", activatedAt: new Date(), isActive: true },
+      });
+      const sylItem = syllabusItems[0];
+      const taskItem = await prisma.taskItem.upsert({
+        where: { id: "ti-seed-1" },
+        update: {},
+        create: {
+          id: "ti-seed-1",
+          taskListId: taskList.id,
+          taskTypeId: taskType.id,
+          syllabusItemId: sylItem?.id,
+          serviceId: service.id,
+          title: "Number Operations — Worksheet A",
+          description: "Complete all questions in Section 1 and 2",
+          dueDate: new Date("2026-05-30"),
+          assignedToAll: false,
+          isActive: true,
+        },
+      });
+      await prisma.taskAssignment.upsert({
+        where: { taskItemId_studentId: { taskItemId: taskItem.id, studentId: student.id } },
+        update: {},
+        create: { taskItemId: taskItem.id, studentId: student.id },
+      });
+      await prisma.taskSubmission.upsert({
+        where: { taskItemId_studentId: { taskItemId: taskItem.id, studentId: student.id } },
+        update: {},
+        create: { taskItemId: taskItem.id, studentId: student.id, status: "GRADED", totalMarks: 20, marksScored: 18, marksLost: 2, submittedAt: new Date("2026-05-28") },
+      });
+    }
+  }
+
+  // Doubt
+  if (student && syllabusItems.length > 0) {
+    await prisma.doubt.upsert({
+      where: { id: "doubt-seed-1" },
+      update: {},
+      create: { id: "doubt-seed-1", studentId: student.id, syllabusItemId: syllabusItems[2].id, body: "I don't understand how to solve quadratics using the quadratic formula when the discriminant is negative — does this mean no real solutions?", response: "Correct! When b²−4ac < 0, the discriminant is negative, meaning the quadratic has no real roots (only complex roots). For IGCSE, you just state 'no real solutions'. For A Level Further Maths you'd use complex numbers.", status: "answered" },
+    });
+  }
+
+  // Support Ticket
+  if (student) {
+    const ticket = await prisma.ticket.upsert({
+      where: { displayId: "TKT-0001" },
+      update: {},
+      create: {
+        displayId: "TKT-0001",
+        title: "Recording not available for 8 Apr session",
+        description: "The recording for the 8 April session on Quadratic Equations is not showing in my portal. I can see the session was marked COMPLETED but there's no recording link.",
+        status: "open",
+        priority: "normal",
+        creatorId: student.id,
+        department: "IT",
+        ticketType: "TECHNICAL",
+        isActive: true,
+      },
+    });
+    await prisma.ticketMessage.create({
+      data: { ticketId: ticket.id, senderId: student.id, body: "Please could you upload the recording ASAP as my exam is in 2 weeks.", isInternal: false },
+    });
+  }
+
+  // MetricSnapshot + ProgressReport
+  if (student) {
+    const snap = await prisma.metricSnapshot.upsert({
+      where: { id: "ms-seed-1" },
+      update: {},
+      create: {
+        id: "ms-seed-1",
+        entityType: "student",
+        entityId: student.id,
+        month: "2026-05",
+        metrics: { sessionsAttended: 12, avgMockScore: 89, tasksCompleted: 4, doubtsRaised: 1, syllabusProgress: 60 },
+        snapshotAt: new Date("2026-05-31T23:59:00Z"),
+      },
+    });
+    await prisma.progressReport.upsert({
+      where: { id: "pr-seed-1" },
+      update: {},
+      create: {
+        id: "pr-seed-1",
+        studentId: student.id,
+        metricSnapshotId: snap.id,
+        month: "2026-05",
+        staffComments: "Outstanding performance this month. Mock scores are consistently A*. Recommend entering for early May exam sitting.",
+        status: "published",
+        reviewedByUserId: prStaff.id,
+        reviewedAt: new Date("2026-06-01T09:00:00Z"),
+        sentAt: new Date("2026-06-01T10:00:00Z"),
+        isActive: true,
+      },
+    });
+  }
+
+  console.log("[SEED] Extended dataset seeded");
+
   console.log("\n═══ Seed complete ═══");
   console.log("Login with any email above, password: demo\n");
 }

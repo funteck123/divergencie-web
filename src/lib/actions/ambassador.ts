@@ -160,7 +160,7 @@ export async function getAmbassadorProgramme(ambassadorId: string) {
       programmeList: {
         include: {
           contentLists: { include: { items: { orderBy: { order: "asc" }, include: { progressList: { take: 1 } }, take: 30 } } },
-          timelineLists: { include: { items: { orderBy: { order: "asc" }, take: 20 } } },
+          timelineLists: { include: { items: { orderBy: { weekNumber: "asc" }, take: 20 } } },
         },
       },
     },
