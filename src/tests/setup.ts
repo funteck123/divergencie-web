@@ -137,6 +137,10 @@ vi.mock("@/lib/db", () => {
     },
     notification: {
       create: vi.fn(),
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
     },
     studentInvoice: {
       findUnique: vi.fn(),

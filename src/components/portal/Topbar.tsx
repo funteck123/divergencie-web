@@ -2,11 +2,13 @@
 
 import { useSession } from "@/lib/auth-client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Bell, Search, User, Menu } from "lucide-react";
+import { Search, User, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { NotificationBell } from "@/components/shared/NotificationBell";
 import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sidebar } from "./Sidebar";
+
 
 // Separated into its own component so useSearchParams is inside a Suspense boundary
 function TopbarSearch() {
@@ -66,10 +68,7 @@ export function Topbar() {
         <div className="flex items-center gap-4 md:gap-6">
           <ThemeToggle />
           
-          <button className="relative text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white transition-colors">
-            <Bell size={20} />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-black"></span>
-          </button>
+          <NotificationBell />
 
           <div className="hidden md:block h-8 w-px bg-[var(--border-subtle)]"></div>
 
