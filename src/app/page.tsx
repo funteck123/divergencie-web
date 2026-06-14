@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen w-full max-w-full overflow-x-hidden relative">
+    <main className="min-h-screen">
       <Nav />
       <Hero />
       <ResultsTicker />
