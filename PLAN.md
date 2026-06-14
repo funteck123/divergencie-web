@@ -325,7 +325,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-H1 | Full RBAC audit — every role × every route/menu vs §38 defaults; deny-by-default verified | §38 | `src/middleware.ts`, `src/lib/rbac.ts` | ⬜ |
+| P-H1 | Full RBAC audit — every role × every route/menu vs §38 defaults; deny-by-default verified | §38 | `src/middleware.ts`, `src/lib/rbac.ts` | ✅ |
 | P-H2 | Full seed/demo dataset — representative live-verification rows for every portal (Demo@1234) | §53 | `prisma/seed.ts` | ⬜ |
 | P-H3 | Test suite consolidation — vitest coverage gate across all sub-systems; CI green | — | `src/tests/**` | ⬜ |
 | P-H4 | Production cutover — Vercel prod deploy, env vars, Supabase storage buckets + policies, Stripe live webhook, smoke test all roles on live URL | — | Vercel · Supabase · Stripe | ⬜ |
