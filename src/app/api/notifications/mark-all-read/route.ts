@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
   const user = session.user as any;
 
   const { count } = await prisma.notification.updateMany({
-    where: { userId: user.id, isRead: false },
-    data: { isRead: true, readAt: new Date() },
+    where: { userId: user.id, read: false },
+    data: { read: true },
   });
 
   return NextResponse.json({ updated: count });
