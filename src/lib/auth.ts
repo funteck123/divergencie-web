@@ -33,7 +33,7 @@ export async function getSession() {
   // Fetch role/dept from Prisma (single source of truth)
   const dbUser = await prisma.user.findUnique({
     where: { email: user.email! },
-    select: { id: true, role: true, dept: true, name: true },
+    select: { id: true, role: true, dept: true, name: true, subGroup: true, supervisor: true },
   });
   if (!dbUser) return null;
 
@@ -44,6 +44,8 @@ export async function getSession() {
       role: dbUser.role,
       dept: dbUser.dept,
       name: dbUser.name,
+      subGroup: dbUser.subGroup,
+      supervisor: dbUser.supervisor,
     },
   };
 }
