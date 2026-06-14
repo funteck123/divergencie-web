@@ -263,7 +263,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 | P-A1 | Onboarding + admissions gate + enrolment — StudentProfile (+setup flags & timestamps), awaiting-approval gate, StudentEnrolmentList/Item + StatusChangeLog | §2, §6, §47, §48 | `portal/student/{awaiting-approval,profile}`, `api/onboarding`, `api/enrolments/student` | ✅ |
 | P-A2 | Curriculum + classes + recordings + doubts — Service→CurriculumList→{SyllabusList(+SyllabusChapter), TaskList, MockList, CourseTimelineList}; ChapterRecordingList/Item; progress; Doubt | §15, §36 | `portal/student/{curriculum,classes,recordings,assignments}`, `api/curriculum/**` | ✅ |
 | P-A3 | Scheduling + sessions + attendance — Schedule chain + recurrence, AcademicSession, SessionAttendance (trial flag, feedback stars/text), ScheduleChangeRequest | §10, §11, §5 | `portal/student/classes`, `api/schedules/**`, `api/sessions/**` | ✅ |
-| P-A4 | Finance — StudentInvoice + BillingMonth, Discount, PaymentRecord, PaymentMethod/BankAccount, receipt upload (Supabase), Stripe checkout + webhook | §19, §20 | `portal/student/fees`, `api/invoices/**`, `api/payments/**`, `api/upload/receipt` | ⬜ |
+| P-A4 | Finance — StudentInvoice + BillingMonth, Discount, PaymentRecord, PaymentMethod/BankAccount, receipt upload (Supabase), Stripe checkout + webhook | §19, §20 | `portal/student/fees`, `api/invoices/**`, `api/payments/**`, `api/upload/receipt` | ✅ |
 | P-A5 | Mock exams + progress reports + metrics — MockList/MockType, ProgressReport (PDF/md), MetricSnapshot (student metrics) | §15, §37 | `portal/student/{mock,progress}`, `api/metrics/student` | ⬜ |
 | P-A6 | Support + flags — student Tickets (raise/messages), StudentFlag/FlagType | §22, §24 | `portal/student/support`, `api/tickets/**` | ⬜ |
 
