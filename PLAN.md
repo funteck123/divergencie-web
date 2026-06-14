@@ -295,7 +295,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 | P-D1 | Core + programme — AmbassadorProfile (referralCode UK), AmbassadorEnrolmentList/Item + StatusChangeLog, AmbassadorService, AmbassadorProgrammeList + ContentList | §9, §16, §17 | `portal/ambassador/{profile,programme}`, `api/enrolments` | ✅ |
 | P-D2 | Commission + claims — AmbassadorCommissionList/Item (+StatusChangeLog), AmbassadorClaim (neutral totals + rateSnapshot allowance), AmbassadorPaycheck (netAmount) | §9, §18, §54 | `portal/ambassador/claims`, `api/claims/**` | ✅ |
 | P-D3 | Meetings + schedule + tests + timeline — AmbassadorMeeting/Attendance, AmbassadorSchedule + ChangeRequest + OccurrenceStatusChangeLog, AmbassadorTestList, AmbassadorProgrammeTimelineList | §13, §10, §16 | `portal/ambassador/meetings`, `api/schedules/**` | ✅ |
-| P-D4 | Referrals + tickets — Referral, ReferralClick conversion, public referral landing wiring (with P-G3), tickets (staff-only, zero student data) | §17, §22 | `portal/ambassador/{referrals,tickets}` | ⬜ |
+| P-D4 | Referrals + tickets — Referral, ReferralClick conversion, public referral landing wiring (with P-G3), tickets (staff-only, zero student data) | §17, §22 | `portal/ambassador/{referrals,tickets}` | ✅ |
 
 #### PHASE E — Parent
 

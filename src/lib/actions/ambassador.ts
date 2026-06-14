@@ -348,3 +348,32 @@ export async function createAmbassadorScheduleChangeRequest(data: {
   revalidatePath("/portal/ambassador/meetings");
   return req;
 }
+
+export async function getAmbassadorReferrals(referrerId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.referral.findMany({
+    where: { referrerId, isActive: true },
+    include: {
+      clicks: { orderBy: { clickedAt: "desc" }, take: 20 },
+      referrer: { select: { name: true, email: true, referralCode: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function createReferral(data: { referrerId: string; code: string }) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const referral = await prisma.referral.create({
+    data: {
+      referrerId: data.referrerId,
+      code: data.code,
+      status: "pending",
+    },
+  });
+  revalidatePath("/portal/ambassador/referrals");
+  return referral;
+}
