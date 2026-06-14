@@ -18,12 +18,13 @@ API key is in `planning/keys.md`.
 
 ```python
 import asyncio
+import os
 from google.antigravity import Agent, LocalAgentConfig
 
 config = LocalAgentConfig(
     model="gemini-3.5-flash",
     system_instructions="You are a senior software engineer. Implement tasks precisely.",
-    api_key="AQ.YOUR_GEMINI_API_KEY_HERE",
+    api_key=os.getenv("GEMINI_API_KEY"),
 )
 
 async def main():
@@ -94,9 +95,10 @@ The agent retains context within the `async with` block.
 
 ```python
 import asyncio
+import os
 from google.antigravity import Agent, LocalAgentConfig
 
-API_KEY = "AQ.YOUR_GEMINI_API_KEY_HERE"
+API_KEY = os.getenv("GEMINI_API_KEY")
 
 async def run_agent(role: str, task: str) -> str:
     config = LocalAgentConfig(
@@ -129,10 +131,11 @@ After your planning docs are ready (PRD, ERD, tickets), feed them directly to ag
 
 ```python
 import asyncio
+import os
 from pathlib import Path
 from google.antigravity import Agent, LocalAgentConfig
 
-API_KEY = "AQ.YOUR_GEMINI_API_KEY_HERE"
+API_KEY = os.getenv("GEMINI_API_KEY")
 PLANNING_DIR = Path("planning")
 
 async def implement_ticket(ticket_id: str, ticket_description: str) -> str:
