@@ -18,20 +18,26 @@ export async function GET(
       syllabusLists: {
         where: { isActive: true },
         include: {
-          chapters: {
+          syllabusItems: {
+            where: { isActive: true },
             orderBy: { order: "asc" },
+          },
+        },
+      },
+      taskLists: {
+        where: { isActive: true },
+        include: {
+          taskItems: {
             include: {
-              items: { orderBy: { order: "asc" } },
+              taskType: true,
             },
           },
-          taskLists: {
-            where: { isActive: true },
-            include: { items: true },
-          },
-          mockLists: {
-            where: { isActive: true },
-            include: { items: true },
-          },
+        },
+      },
+      mockLists: {
+        where: { isActive: true },
+        include: {
+          mockItems: true,
         },
       },
     },
