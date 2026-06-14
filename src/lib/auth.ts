@@ -37,12 +37,20 @@ export async function getSession() {
   });
   if (!dbUser) return null;
 
+  // Derive dept from subGroup when User.dept is null (seed sets subGroup, not dept)
+  const SUBGROUP_PREFIX_TO_DEPT: Record<string, string> = {
+    HR: "HR", IT: "IT", FIN: "Finance", PR: "PR", MKT: "Marketing",
+  };
+  const resolvedDept = dbUser.dept
+    ?? SUBGROUP_PREFIX_TO_DEPT[dbUser.subGroup?.split("_")[0] ?? ""]
+    ?? null;
+
   return {
     user: {
       id: dbUser.id,
       email: user.email,
       role: dbUser.role,
-      dept: dbUser.dept,
+      dept: resolvedDept,
       name: dbUser.name,
       subGroup: dbUser.subGroup,
       supervisor: dbUser.supervisor,
