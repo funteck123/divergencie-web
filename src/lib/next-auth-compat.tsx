@@ -47,13 +47,35 @@ export function useSession() {
   return useContext(SessionContext);
 }
 
-export async function signOut() {
+export async function signOut(options?: { callbackUrl?: string }) {
   await fetch("/api/auth/logout", { method: "POST" });
-  window.location.href = "/auth/login";
+  window.location.href = options?.callbackUrl || "/auth/login";
 }
 
-export async function signIn() {
+export async function signIn(provider?: string, options?: any) {
+  if (provider === "credentials" && options) {
+    const { email, password } = options;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        if (options.redirect !== false) {
+          window.location.href = options.callbackUrl || "/portal";
+        }
+        return { error: null };
+      } else {
+        const errData = await res.json();
+        return { error: errData.error || "Login failed" };
+      }
+    } catch (e: any) {
+      return { error: e.message || "Login failed" };
+    }
+  }
   window.location.href = "/auth/login";
+  return { error: null };
 }
 
 export interface NextAuthConfig {}
