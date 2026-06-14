@@ -10,21 +10,22 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-async function ensureSupabaseAuthUser(email: string, password: string, name: string, role: string, dept?: string) {
-  // Try to create; if already exists, update password
-  const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
-  const found = existing?.users?.find((u: any) => u.email === email);
+async function ensureSupabaseAuthUser(
+  email: string, password: string, name: string, role: string, dept: string,
+  cachedUsers: any[]
+) {
+  const found = cachedUsers.find((u: any) => u.email === email);
   if (found) {
     await supabaseAdmin.auth.admin.updateUserById(found.id, {
       password,
-      user_metadata: { name, role, dept: dept ?? "" },
+      user_metadata: { name, role, dept },
       email_confirm: true,
     });
   } else {
     await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      user_metadata: { name, role, dept: dept ?? "" },
+      user_metadata: { name, role, dept },
       email_confirm: true,
     });
   }
@@ -162,69 +163,81 @@ async function seedUsers(lookups: Record<string, any>) {
   const { depts, roles } = lookups;
 
   const USERS = [
-    { email: "management@divergencie.com", name: "Director Mike", role: "management", active: true, supervisor: false },
-    { email: "teacher@divergencie.com", name: "Teacher User", role: "teacher", active: true, supervisor: false, hourlyRate: 20, specialization: "IGCSE Maths | A Level Chemistry" },
-    { email: "student@divergencie.com", name: "Student User", role: "student", active: true, supervisor: false, grade: "Year 11", board: "Cambridge IGCSE", targetUni: "Imperial College London" },
-    { email: "parent@divergencie.com", name: "Parent User", role: "parent", active: true, supervisor: false },
-    { email: "ambassador@divergencie.com", name: "Ambassador User", role: "ambassador", active: true, supervisor: false, referralCode: "DC-AMB-0001" },
-    { email: "candidate@divergencie.com", name: "Candidate User", role: "candidate", active: true, supervisor: false },
-    { email: "hr@divergencie.com", name: "HR Manager", role: "staff", active: true, supervisor: true, subGroup: "HR_SUP" },
-    { email: "hr-assistant@divergencie.com", name: "HR Assistant", role: "staff", active: true, supervisor: false, subGroup: "HR_MEM" },
-    { email: "marketing@divergencie.com", name: "SM Manager", role: "staff", active: true, supervisor: true, subGroup: "MKT_SUP" },
-    { email: "marketing-assistant@divergencie.com", name: "SM Assistant", role: "staff", active: true, supervisor: false, subGroup: "MKT_MEM" },
-    { email: "finance@divergencie.com", name: "Sarah Lorde", role: "staff", active: true, supervisor: true, subGroup: "FIN_SUP" },
-    { email: "finance-assistant@divergencie.com", name: "Acct. Assistant", role: "staff", active: true, supervisor: false, subGroup: "FIN_MEM" },
-    { email: "pr@divergencie.com", name: "Assoc. PM", role: "staff", active: true, supervisor: true, subGroup: "PR_SUP" },
-    { email: "pr-assistant@divergencie.com", name: "PR Assistant", role: "staff", active: true, supervisor: false, subGroup: "PR_MEM" },
-    { email: "ta-pr@divergencie.com", name: "Teaching Asst.", role: "staff", active: true, supervisor: false, subGroup: "PR_MEM" },
-    { email: "it@divergencie.com", name: "IT Manager", role: "staff", active: true, supervisor: true, subGroup: "IT_SUP" },
-    { email: "it-assistant@divergencie.com", name: "IT Assistant", role: "staff", active: true, supervisor: false, subGroup: "IT_MEM" },
-    { email: "ai-intern@divergencie.com", name: "AI Intern", role: "staff", active: true, supervisor: false, subGroup: "IT_MEM" },
-    { email: "swe-intern@divergencie.com", name: "SWE Intern", role: "staff", active: true, supervisor: false, subGroup: "IT_MEM" },
+    { email: "management@divergencie.co.uk", name: "Director Mike", role: "management", active: true, supervisor: false },
+    { email: "teacher@divergencie.co.uk", name: "Teacher User", role: "teacher", active: true, supervisor: false, hourlyRate: 20, specialization: "IGCSE Maths | A Level Chemistry" },
+    { email: "student@divergencie.co.uk", name: "Student User", role: "student", active: true, supervisor: false, grade: "Year 11", board: "Cambridge IGCSE", targetUni: "Imperial College London" },
+    { email: "parent@divergencie.co.uk", name: "Parent User", role: "parent", active: true, supervisor: false },
+    { email: "ambassador@divergencie.co.uk", name: "Ambassador User", role: "ambassador", active: true, supervisor: false, referralCode: "DC-AMB-0001" },
+    { email: "candidate@divergencie.co.uk", name: "Candidate User", role: "candidate", active: true, supervisor: false },
+    { email: "hr@divergencie.co.uk", name: "HR Manager", role: "staff", active: true, supervisor: true, subGroup: "HR_SUP" },
+    { email: "hr-assistant@divergencie.co.uk", name: "HR Assistant", role: "staff", active: true, supervisor: false, subGroup: "HR_MEM" },
+    { email: "marketing@divergencie.co.uk", name: "SM Manager", role: "staff", active: true, supervisor: true, subGroup: "MKT_SUP" },
+    { email: "marketing-assistant@divergencie.co.uk", name: "SM Assistant", role: "staff", active: true, supervisor: false, subGroup: "MKT_MEM" },
+    { email: "finance@divergencie.co.uk", name: "Sarah Lorde", role: "staff", active: true, supervisor: true, subGroup: "FIN_SUP" },
+    { email: "finance-assistant@divergencie.co.uk", name: "Acct. Assistant", role: "staff", active: true, supervisor: false, subGroup: "FIN_MEM" },
+    { email: "pr@divergencie.co.uk", name: "Assoc. PM", role: "staff", active: true, supervisor: true, subGroup: "PR_SUP" },
+    { email: "pr-assistant@divergencie.co.uk", name: "PR Assistant", role: "staff", active: true, supervisor: false, subGroup: "PR_MEM" },
+    { email: "ta-pr@divergencie.co.uk", name: "Teaching Asst.", role: "staff", active: true, supervisor: false, subGroup: "PR_MEM" },
+    { email: "it@divergencie.co.uk", name: "IT Manager", role: "staff", active: true, supervisor: true, subGroup: "IT_SUP" },
+    { email: "it-assistant@divergencie.co.uk", name: "IT Assistant", role: "staff", active: true, supervisor: false, subGroup: "IT_MEM" },
+    { email: "ai-intern@divergencie.co.uk", name: "AI Intern", role: "staff", active: true, supervisor: false, subGroup: "IT_MEM" },
+    { email: "swe-intern@divergencie.co.uk", name: "SWE Intern", role: "staff", active: true, supervisor: false, subGroup: "IT_MEM" },
   ] as const;
 
-  const hash = await bcrypt.hash("Demo@1234", 12);
+  const [hash, { data: authData }] = await Promise.all([
+    bcrypt.hash("demo", 12),
+    supabaseAdmin.auth.admin.listUsers(),
+  ]);
+  const cachedAuthUsers: any[] = authData?.users ?? [];
   const upserted: Record<string, any> = {};
 
-  for (const u of USERS) {
-    const user = await prisma.user.upsert({
-      where: { email: u.email },
-      update: {},
-      create: { ...(u as any), passwordHash: hash },
-    });
-    upserted[u.email] = user;
-    // Ensure Supabase Auth user exists with same credentials
-    const dept = (u as any).subGroup
-      ? (u as any).subGroup.split("_")[0].toLowerCase()
-      : (u as any).dept ?? "";
-    await ensureSupabaseAuthUser(u.email, "Demo@1234", u.name, u.role, dept).catch((e: any) =>
-      console.warn(`  ⚠ Supabase Auth for ${u.email}: ${e.message}`)
-    );
-    console.log(`  ✓ ${u.email}`);
-  }
+  // Batch: all Prisma user upserts in parallel
+  await Promise.all(
+    USERS.map(async (u) => {
+      const user = await prisma.user.upsert({
+        where: { email: u.email },
+        update: { name: u.name, active: u.active, ...((u as any).referralCode ? { referralCode: (u as any).referralCode } : {}) },
+        create: { ...(u as any), passwordHash: hash },
+      });
+      upserted[u.email] = user;
+    })
+  );
+
+  // Batch: all Supabase Auth upserts in parallel (using cached list)
+  await Promise.all(
+    USERS.map(async (u) => {
+      const dept = (u as any).subGroup
+        ? (u as any).subGroup.split("_")[0].toLowerCase()
+        : (u as any).dept ?? "";
+      await ensureSupabaseAuthUser(u.email, "demo", u.name, u.role, dept, cachedAuthUsers).catch((e: any) =>
+        console.warn(`  ⚠ Supabase Auth for ${u.email}: ${e.message}`)
+      );
+      console.log(`  ✓ ${u.email}`);
+    })
+  );
 
   // Link student → parent
-  const student = upserted["student@divergencie.com"];
-  const parent = upserted["parent@divergencie.com"];
+  const student = upserted["student@divergencie.co.uk"];
+  const parent = upserted["parent@divergencie.co.uk"];
   if (student && parent && !student.parentId) {
     await prisma.user.update({ where: { id: student.id }, data: { parentId: parent.id } });
   }
 
   // StaffProfiles with FK dept/role
   const staffMappings: Array<{ email: string; deptName: string; roleName: string }> = [
-    { email: "hr@divergencie.com", deptName: "HR", roleName: "HR Manager" },
-    { email: "hr-assistant@divergencie.com", deptName: "HR", roleName: "HR Assistant" },
-    { email: "marketing@divergencie.com", deptName: "Marketing", roleName: "Marketing Manager" },
-    { email: "marketing-assistant@divergencie.com", deptName: "Marketing", roleName: "Marketing Assistant" },
-    { email: "finance@divergencie.com", deptName: "Finance", roleName: "Finance Manager" },
-    { email: "finance-assistant@divergencie.com", deptName: "Finance", roleName: "Finance Assistant" },
-    { email: "pr@divergencie.com", deptName: "PR", roleName: "PR Manager" },
-    { email: "pr-assistant@divergencie.com", deptName: "PR", roleName: "PR Associate" },
-    { email: "ta-pr@divergencie.com", deptName: "PR", roleName: "Teaching Assistant" },
-    { email: "it@divergencie.com", deptName: "IT", roleName: "IT Manager" },
-    { email: "it-assistant@divergencie.com", deptName: "IT", roleName: "IT Engineer" },
-    { email: "ai-intern@divergencie.com", deptName: "IT", roleName: "AI Engineer" },
-    { email: "swe-intern@divergencie.com", deptName: "IT", roleName: "SWE Intern" },
+    { email: "hr@divergencie.co.uk", deptName: "HR", roleName: "HR Manager" },
+    { email: "hr-assistant@divergencie.co.uk", deptName: "HR", roleName: "HR Assistant" },
+    { email: "marketing@divergencie.co.uk", deptName: "Marketing", roleName: "Marketing Manager" },
+    { email: "marketing-assistant@divergencie.co.uk", deptName: "Marketing", roleName: "Marketing Assistant" },
+    { email: "finance@divergencie.co.uk", deptName: "Finance", roleName: "Finance Manager" },
+    { email: "finance-assistant@divergencie.co.uk", deptName: "Finance", roleName: "Finance Assistant" },
+    { email: "pr@divergencie.co.uk", deptName: "PR", roleName: "PR Manager" },
+    { email: "pr-assistant@divergencie.co.uk", deptName: "PR", roleName: "PR Associate" },
+    { email: "ta-pr@divergencie.co.uk", deptName: "PR", roleName: "Teaching Assistant" },
+    { email: "it@divergencie.co.uk", deptName: "IT", roleName: "IT Manager" },
+    { email: "it-assistant@divergencie.co.uk", deptName: "IT", roleName: "IT Engineer" },
+    { email: "ai-intern@divergencie.co.uk", deptName: "IT", roleName: "AI Engineer" },
+    { email: "swe-intern@divergencie.co.uk", deptName: "IT", roleName: "SWE Intern" },
   ];
 
   for (const m of staffMappings) {
@@ -252,7 +265,7 @@ async function seedUsers(lookups: Record<string, any>) {
   }
 
   // TeacherProfile
-  const teacher = upserted["teacher@divergencie.com"];
+  const teacher = upserted["teacher@divergencie.co.uk"];
   if (teacher) {
     await prisma.teacherProfile.upsert({
       where: { userId: teacher.id },
@@ -262,7 +275,7 @@ async function seedUsers(lookups: Record<string, any>) {
   }
 
   // AmbassadorProfile
-  const ambassador = upserted["ambassador@divergencie.com"];
+  const ambassador = upserted["ambassador@divergencie.co.uk"];
   if (ambassador) {
     await prisma.ambassadorProfile.upsert({
       where: { userId: ambassador.id },
@@ -294,9 +307,9 @@ async function main() {
   );
 
   const users = await seedUsers({ depts, roles, userTypes });
-  const teacher = users["teacher@divergencie.com"];
-  const prStaff = users["pr@divergencie.com"];
-  const student = users["student@divergencie.com"];
+  const teacher = users["teacher@divergencie.co.uk"];
+  const prStaff = users["pr@divergencie.co.uk"];
+  const student = users["student@divergencie.co.uk"];
 
   // ─── Group & Service ────────────────────────────────────────────────────────
 
@@ -623,7 +636,7 @@ async function main() {
   }
 
   console.log("\n═══ Seed complete ═══");
-  console.log("Login with any email above, password: Demo@1234\n");
+  console.log("Login with any email above, password: demo\n");
 }
 
 main()

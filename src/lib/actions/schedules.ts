@@ -143,3 +143,78 @@ export async function getTeacherScheduleData(teacherEmail: string) {
 
   return { sessions, changeRequests, contentItems };
 }
+
+export async function getStaffScheduleData(staffId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  // Find StaffServiceSchedule via StaffEnrolmentItem → StaffService → StaffServiceSchedule
+  const enrolmentItems = await prisma.staffEnrolmentItem.findMany({
+    where: { staffId, isActive: true },
+    select: { staffServiceId: true },
+  });
+  const serviceIds = enrolmentItems.map((i: any) => i.staffServiceId);
+
+  const schedule = serviceIds.length > 0
+    ? await prisma.staffServiceSchedule.findFirst({
+        where: { staffServiceId: { in: serviceIds } },
+        include: {
+          occurrences: { include: { history: { orderBy: { changedAt: "desc" } } } },
+          changeRequests: { orderBy: { id: "desc" }, take: 20 },
+        },
+      })
+    : null;
+
+  return {
+    schedule,
+    occurrences: schedule?.occurrences ?? [],
+    changeRequests: schedule?.changeRequests ?? [],
+  };
+}
+
+export async function createStaffScheduleChangeRequest(data: {
+  staffId: string;
+  requestType: string;
+  recurrenceType: string;
+  proposedDayOfWeek?: string;
+  proposedStartTime?: string;
+  proposedEndTime?: string;
+  proposedDuration?: number;
+  reason?: string;
+}) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const enrolmentItems = await prisma.staffEnrolmentItem.findMany({
+    where: { staffId: data.staffId, isActive: true },
+    select: { staffServiceId: true },
+  });
+  const serviceIds = enrolmentItems.map((i: any) => i.staffServiceId);
+  if (!serviceIds.length) throw new Error("No active staff service found");
+
+  let schedule = await prisma.staffServiceSchedule.findFirst({
+    where: { staffServiceId: { in: serviceIds } },
+  });
+  if (!schedule) {
+    schedule = await prisma.staffServiceSchedule.create({
+      data: { staffServiceId: serviceIds[0], isActive: true },
+    });
+  }
+
+  const req = await prisma.staffScheduleChangeRequest.create({
+    data: {
+      scheduleId: schedule.id,
+      requestedByUserId: data.staffId,
+      requestType: data.requestType,
+      recurrenceType: data.recurrenceType,
+      proposedDayOfWeek: data.proposedDayOfWeek,
+      proposedStartTime: data.proposedStartTime ? new Date(data.proposedStartTime) : undefined,
+      proposedEndTime: data.proposedEndTime ? new Date(data.proposedEndTime) : undefined,
+      proposedDuration: data.proposedDuration,
+      status: "PENDING",
+    },
+  });
+
+  revalidatePath("/portal/staff/shared/schedule");
+  return req;
+}
