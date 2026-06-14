@@ -43,11 +43,16 @@ export type StudentProfileMinAggregateOutputType = {
   scheduleURL: string | null
   progressTrackerURL: string | null
   gcrAssigned: boolean | null
+  gcrAssignedAt: Date | null
   groupAssigned: boolean | null
+  groupAssignedAt: Date | null
   scheduleAssigned: boolean | null
+  scheduleAssignedAt: Date | null
   financeApprovedFlag: boolean | null
+  financeApprovedAt: Date | null
   registrationDate: Date | null
   cancellationReason: string | null
+  cancelledAt: Date | null
   dob: Date | null
   grade: string | null
   board: string | null
@@ -72,11 +77,16 @@ export type StudentProfileMaxAggregateOutputType = {
   scheduleURL: string | null
   progressTrackerURL: string | null
   gcrAssigned: boolean | null
+  gcrAssignedAt: Date | null
   groupAssigned: boolean | null
+  groupAssignedAt: Date | null
   scheduleAssigned: boolean | null
+  scheduleAssignedAt: Date | null
   financeApprovedFlag: boolean | null
+  financeApprovedAt: Date | null
   registrationDate: Date | null
   cancellationReason: string | null
+  cancelledAt: Date | null
   dob: Date | null
   grade: string | null
   board: string | null
@@ -101,11 +111,16 @@ export type StudentProfileCountAggregateOutputType = {
   scheduleURL: number
   progressTrackerURL: number
   gcrAssigned: number
+  gcrAssignedAt: number
   groupAssigned: number
+  groupAssignedAt: number
   scheduleAssigned: number
+  scheduleAssignedAt: number
   financeApprovedFlag: number
+  financeApprovedAt: number
   registrationDate: number
   cancellationReason: number
+  cancelledAt: number
   dob: number
   grade: number
   board: number
@@ -132,11 +147,16 @@ export type StudentProfileMinAggregateInputType = {
   scheduleURL?: true
   progressTrackerURL?: true
   gcrAssigned?: true
+  gcrAssignedAt?: true
   groupAssigned?: true
+  groupAssignedAt?: true
   scheduleAssigned?: true
+  scheduleAssignedAt?: true
   financeApprovedFlag?: true
+  financeApprovedAt?: true
   registrationDate?: true
   cancellationReason?: true
+  cancelledAt?: true
   dob?: true
   grade?: true
   board?: true
@@ -161,11 +181,16 @@ export type StudentProfileMaxAggregateInputType = {
   scheduleURL?: true
   progressTrackerURL?: true
   gcrAssigned?: true
+  gcrAssignedAt?: true
   groupAssigned?: true
+  groupAssignedAt?: true
   scheduleAssigned?: true
+  scheduleAssignedAt?: true
   financeApprovedFlag?: true
+  financeApprovedAt?: true
   registrationDate?: true
   cancellationReason?: true
+  cancelledAt?: true
   dob?: true
   grade?: true
   board?: true
@@ -190,11 +215,16 @@ export type StudentProfileCountAggregateInputType = {
   scheduleURL?: true
   progressTrackerURL?: true
   gcrAssigned?: true
+  gcrAssignedAt?: true
   groupAssigned?: true
+  groupAssignedAt?: true
   scheduleAssigned?: true
+  scheduleAssignedAt?: true
   financeApprovedFlag?: true
+  financeApprovedAt?: true
   registrationDate?: true
   cancellationReason?: true
+  cancelledAt?: true
   dob?: true
   grade?: true
   board?: true
@@ -292,11 +322,16 @@ export type StudentProfileGroupByOutputType = {
   scheduleURL: string | null
   progressTrackerURL: string | null
   gcrAssigned: boolean
+  gcrAssignedAt: Date | null
   groupAssigned: boolean
+  groupAssignedAt: Date | null
   scheduleAssigned: boolean
+  scheduleAssignedAt: Date | null
   financeApprovedFlag: boolean
+  financeApprovedAt: Date | null
   registrationDate: Date
   cancellationReason: string | null
+  cancelledAt: Date | null
   dob: Date | null
   grade: string | null
   board: string | null
@@ -342,11 +377,16 @@ export type StudentProfileWhereInput = {
   scheduleURL?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   progressTrackerURL?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   gcrAssigned?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  gcrAssignedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   groupAssigned?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  groupAssignedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   scheduleAssigned?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  scheduleAssignedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   financeApprovedFlag?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  financeApprovedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   registrationDate?: Prisma.DateTimeFilter<"StudentProfile"> | Date | string
   cancellationReason?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  cancelledAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   dob?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   grade?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   board?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
@@ -372,11 +412,16 @@ export type StudentProfileOrderByWithRelationInput = {
   scheduleURL?: Prisma.SortOrderInput | Prisma.SortOrder
   progressTrackerURL?: Prisma.SortOrderInput | Prisma.SortOrder
   gcrAssigned?: Prisma.SortOrder
+  gcrAssignedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   groupAssigned?: Prisma.SortOrder
+  groupAssignedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduleAssigned?: Prisma.SortOrder
+  scheduleAssignedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   financeApprovedFlag?: Prisma.SortOrder
+  financeApprovedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   registrationDate?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   dob?: Prisma.SortOrderInput | Prisma.SortOrder
   grade?: Prisma.SortOrderInput | Prisma.SortOrder
   board?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -405,11 +450,16 @@ export type StudentProfileWhereUniqueInput = Prisma.AtLeast<{
   scheduleURL?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   progressTrackerURL?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   gcrAssigned?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  gcrAssignedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   groupAssigned?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  groupAssignedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   scheduleAssigned?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  scheduleAssignedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   financeApprovedFlag?: Prisma.BoolFilter<"StudentProfile"> | boolean
+  financeApprovedAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   registrationDate?: Prisma.DateTimeFilter<"StudentProfile"> | Date | string
   cancellationReason?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
+  cancelledAt?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   dob?: Prisma.DateTimeNullableFilter<"StudentProfile"> | Date | string | null
   grade?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
   board?: Prisma.StringNullableFilter<"StudentProfile"> | string | null
@@ -435,11 +485,16 @@ export type StudentProfileOrderByWithAggregationInput = {
   scheduleURL?: Prisma.SortOrderInput | Prisma.SortOrder
   progressTrackerURL?: Prisma.SortOrderInput | Prisma.SortOrder
   gcrAssigned?: Prisma.SortOrder
+  gcrAssignedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   groupAssigned?: Prisma.SortOrder
+  groupAssignedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   scheduleAssigned?: Prisma.SortOrder
+  scheduleAssignedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   financeApprovedFlag?: Prisma.SortOrder
+  financeApprovedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   registrationDate?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   dob?: Prisma.SortOrderInput | Prisma.SortOrder
   grade?: Prisma.SortOrderInput | Prisma.SortOrder
   board?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -470,11 +525,16 @@ export type StudentProfileScalarWhereWithAggregatesInput = {
   scheduleURL?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
   progressTrackerURL?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
   gcrAssigned?: Prisma.BoolWithAggregatesFilter<"StudentProfile"> | boolean
+  gcrAssignedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentProfile"> | Date | string | null
   groupAssigned?: Prisma.BoolWithAggregatesFilter<"StudentProfile"> | boolean
+  groupAssignedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentProfile"> | Date | string | null
   scheduleAssigned?: Prisma.BoolWithAggregatesFilter<"StudentProfile"> | boolean
+  scheduleAssignedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentProfile"> | Date | string | null
   financeApprovedFlag?: Prisma.BoolWithAggregatesFilter<"StudentProfile"> | boolean
+  financeApprovedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentProfile"> | Date | string | null
   registrationDate?: Prisma.DateTimeWithAggregatesFilter<"StudentProfile"> | Date | string
   cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
+  cancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentProfile"> | Date | string | null
   dob?: Prisma.DateTimeNullableWithAggregatesFilter<"StudentProfile"> | Date | string | null
   grade?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
   board?: Prisma.StringNullableWithAggregatesFilter<"StudentProfile"> | string | null
@@ -498,11 +558,16 @@ export type StudentProfileCreateInput = {
   scheduleURL?: string | null
   progressTrackerURL?: string | null
   gcrAssigned?: boolean
+  gcrAssignedAt?: Date | string | null
   groupAssigned?: boolean
+  groupAssignedAt?: Date | string | null
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: Date | string | null
   financeApprovedFlag?: boolean
+  financeApprovedAt?: Date | string | null
   registrationDate?: Date | string
   cancellationReason?: string | null
+  cancelledAt?: Date | string | null
   dob?: Date | string | null
   grade?: string | null
   board?: string | null
@@ -528,11 +593,16 @@ export type StudentProfileUncheckedCreateInput = {
   scheduleURL?: string | null
   progressTrackerURL?: string | null
   gcrAssigned?: boolean
+  gcrAssignedAt?: Date | string | null
   groupAssigned?: boolean
+  groupAssignedAt?: Date | string | null
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: Date | string | null
   financeApprovedFlag?: boolean
+  financeApprovedAt?: Date | string | null
   registrationDate?: Date | string
   cancellationReason?: string | null
+  cancelledAt?: Date | string | null
   dob?: Date | string | null
   grade?: string | null
   board?: string | null
@@ -556,11 +626,16 @@ export type StudentProfileUpdateInput = {
   scheduleURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressTrackerURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gcrAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gcrAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groupAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  groupAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduleAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduleAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -586,11 +661,16 @@ export type StudentProfileUncheckedUpdateInput = {
   scheduleURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressTrackerURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gcrAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gcrAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groupAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  groupAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduleAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduleAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -615,11 +695,16 @@ export type StudentProfileCreateManyInput = {
   scheduleURL?: string | null
   progressTrackerURL?: string | null
   gcrAssigned?: boolean
+  gcrAssignedAt?: Date | string | null
   groupAssigned?: boolean
+  groupAssignedAt?: Date | string | null
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: Date | string | null
   financeApprovedFlag?: boolean
+  financeApprovedAt?: Date | string | null
   registrationDate?: Date | string
   cancellationReason?: string | null
+  cancelledAt?: Date | string | null
   dob?: Date | string | null
   grade?: string | null
   board?: string | null
@@ -643,11 +728,16 @@ export type StudentProfileUpdateManyMutationInput = {
   scheduleURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressTrackerURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gcrAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gcrAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groupAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  groupAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduleAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduleAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -672,11 +762,16 @@ export type StudentProfileUncheckedUpdateManyInput = {
   scheduleURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressTrackerURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gcrAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gcrAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groupAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  groupAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduleAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduleAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -706,11 +801,16 @@ export type StudentProfileCountOrderByAggregateInput = {
   scheduleURL?: Prisma.SortOrder
   progressTrackerURL?: Prisma.SortOrder
   gcrAssigned?: Prisma.SortOrder
+  gcrAssignedAt?: Prisma.SortOrder
   groupAssigned?: Prisma.SortOrder
+  groupAssignedAt?: Prisma.SortOrder
   scheduleAssigned?: Prisma.SortOrder
+  scheduleAssignedAt?: Prisma.SortOrder
   financeApprovedFlag?: Prisma.SortOrder
+  financeApprovedAt?: Prisma.SortOrder
   registrationDate?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrder
   dob?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   board?: Prisma.SortOrder
@@ -735,11 +835,16 @@ export type StudentProfileMaxOrderByAggregateInput = {
   scheduleURL?: Prisma.SortOrder
   progressTrackerURL?: Prisma.SortOrder
   gcrAssigned?: Prisma.SortOrder
+  gcrAssignedAt?: Prisma.SortOrder
   groupAssigned?: Prisma.SortOrder
+  groupAssignedAt?: Prisma.SortOrder
   scheduleAssigned?: Prisma.SortOrder
+  scheduleAssignedAt?: Prisma.SortOrder
   financeApprovedFlag?: Prisma.SortOrder
+  financeApprovedAt?: Prisma.SortOrder
   registrationDate?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrder
   dob?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   board?: Prisma.SortOrder
@@ -764,11 +869,16 @@ export type StudentProfileMinOrderByAggregateInput = {
   scheduleURL?: Prisma.SortOrder
   progressTrackerURL?: Prisma.SortOrder
   gcrAssigned?: Prisma.SortOrder
+  gcrAssignedAt?: Prisma.SortOrder
   groupAssigned?: Prisma.SortOrder
+  groupAssignedAt?: Prisma.SortOrder
   scheduleAssigned?: Prisma.SortOrder
+  scheduleAssignedAt?: Prisma.SortOrder
   financeApprovedFlag?: Prisma.SortOrder
+  financeApprovedAt?: Prisma.SortOrder
   registrationDate?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrder
   dob?: Prisma.SortOrder
   grade?: Prisma.SortOrder
   board?: Prisma.SortOrder
@@ -828,11 +938,16 @@ export type StudentProfileCreateWithoutUserInput = {
   scheduleURL?: string | null
   progressTrackerURL?: string | null
   gcrAssigned?: boolean
+  gcrAssignedAt?: Date | string | null
   groupAssigned?: boolean
+  groupAssignedAt?: Date | string | null
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: Date | string | null
   financeApprovedFlag?: boolean
+  financeApprovedAt?: Date | string | null
   registrationDate?: Date | string
   cancellationReason?: string | null
+  cancelledAt?: Date | string | null
   dob?: Date | string | null
   grade?: string | null
   board?: string | null
@@ -856,11 +971,16 @@ export type StudentProfileUncheckedCreateWithoutUserInput = {
   scheduleURL?: string | null
   progressTrackerURL?: string | null
   gcrAssigned?: boolean
+  gcrAssignedAt?: Date | string | null
   groupAssigned?: boolean
+  groupAssignedAt?: Date | string | null
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: Date | string | null
   financeApprovedFlag?: boolean
+  financeApprovedAt?: Date | string | null
   registrationDate?: Date | string
   cancellationReason?: string | null
+  cancelledAt?: Date | string | null
   dob?: Date | string | null
   grade?: string | null
   board?: string | null
@@ -900,11 +1020,16 @@ export type StudentProfileUpdateWithoutUserInput = {
   scheduleURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressTrackerURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gcrAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gcrAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groupAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  groupAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduleAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduleAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -928,11 +1053,16 @@ export type StudentProfileUncheckedUpdateWithoutUserInput = {
   scheduleURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   progressTrackerURL?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gcrAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gcrAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   groupAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  groupAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   scheduleAssigned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scheduleAssignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   financeApprovedFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  financeApprovedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   registrationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dob?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -959,11 +1089,16 @@ export type StudentProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   scheduleURL?: boolean
   progressTrackerURL?: boolean
   gcrAssigned?: boolean
+  gcrAssignedAt?: boolean
   groupAssigned?: boolean
+  groupAssignedAt?: boolean
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: boolean
   financeApprovedFlag?: boolean
+  financeApprovedAt?: boolean
   registrationDate?: boolean
   cancellationReason?: boolean
+  cancelledAt?: boolean
   dob?: boolean
   grade?: boolean
   board?: boolean
@@ -989,11 +1124,16 @@ export type StudentProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   scheduleURL?: boolean
   progressTrackerURL?: boolean
   gcrAssigned?: boolean
+  gcrAssignedAt?: boolean
   groupAssigned?: boolean
+  groupAssignedAt?: boolean
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: boolean
   financeApprovedFlag?: boolean
+  financeApprovedAt?: boolean
   registrationDate?: boolean
   cancellationReason?: boolean
+  cancelledAt?: boolean
   dob?: boolean
   grade?: boolean
   board?: boolean
@@ -1019,11 +1159,16 @@ export type StudentProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   scheduleURL?: boolean
   progressTrackerURL?: boolean
   gcrAssigned?: boolean
+  gcrAssignedAt?: boolean
   groupAssigned?: boolean
+  groupAssignedAt?: boolean
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: boolean
   financeApprovedFlag?: boolean
+  financeApprovedAt?: boolean
   registrationDate?: boolean
   cancellationReason?: boolean
+  cancelledAt?: boolean
   dob?: boolean
   grade?: boolean
   board?: boolean
@@ -1049,17 +1194,22 @@ export type StudentProfileSelectScalar = {
   scheduleURL?: boolean
   progressTrackerURL?: boolean
   gcrAssigned?: boolean
+  gcrAssignedAt?: boolean
   groupAssigned?: boolean
+  groupAssignedAt?: boolean
   scheduleAssigned?: boolean
+  scheduleAssignedAt?: boolean
   financeApprovedFlag?: boolean
+  financeApprovedAt?: boolean
   registrationDate?: boolean
   cancellationReason?: boolean
+  cancelledAt?: boolean
   dob?: boolean
   grade?: boolean
   board?: boolean
 }
 
-export type StudentProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "firstName" | "lastName" | "school" | "whatsappNumber" | "parentWhatsappNumber" | "gcrLink" | "location" | "mainCurrency" | "timeZone" | "notes" | "referredBy" | "timesheetURL" | "scheduleURL" | "progressTrackerURL" | "gcrAssigned" | "groupAssigned" | "scheduleAssigned" | "financeApprovedFlag" | "registrationDate" | "cancellationReason" | "dob" | "grade" | "board", ExtArgs["result"]["studentProfile"]>
+export type StudentProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "firstName" | "lastName" | "school" | "whatsappNumber" | "parentWhatsappNumber" | "gcrLink" | "location" | "mainCurrency" | "timeZone" | "notes" | "referredBy" | "timesheetURL" | "scheduleURL" | "progressTrackerURL" | "gcrAssigned" | "gcrAssignedAt" | "groupAssigned" | "groupAssignedAt" | "scheduleAssigned" | "scheduleAssignedAt" | "financeApprovedFlag" | "financeApprovedAt" | "registrationDate" | "cancellationReason" | "cancelledAt" | "dob" | "grade" | "board", ExtArgs["result"]["studentProfile"]>
 export type StudentProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -1094,11 +1244,16 @@ export type $StudentProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     scheduleURL: string | null
     progressTrackerURL: string | null
     gcrAssigned: boolean
+    gcrAssignedAt: Date | null
     groupAssigned: boolean
+    groupAssignedAt: Date | null
     scheduleAssigned: boolean
+    scheduleAssignedAt: Date | null
     financeApprovedFlag: boolean
+    financeApprovedAt: Date | null
     registrationDate: Date
     cancellationReason: string | null
+    cancelledAt: Date | null
     dob: Date | null
     grade: string | null
     board: string | null
@@ -1544,11 +1699,16 @@ export interface StudentProfileFieldRefs {
   readonly scheduleURL: Prisma.FieldRef<"StudentProfile", 'String'>
   readonly progressTrackerURL: Prisma.FieldRef<"StudentProfile", 'String'>
   readonly gcrAssigned: Prisma.FieldRef<"StudentProfile", 'Boolean'>
+  readonly gcrAssignedAt: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly groupAssigned: Prisma.FieldRef<"StudentProfile", 'Boolean'>
+  readonly groupAssignedAt: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly scheduleAssigned: Prisma.FieldRef<"StudentProfile", 'Boolean'>
+  readonly scheduleAssignedAt: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly financeApprovedFlag: Prisma.FieldRef<"StudentProfile", 'Boolean'>
+  readonly financeApprovedAt: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly registrationDate: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly cancellationReason: Prisma.FieldRef<"StudentProfile", 'String'>
+  readonly cancelledAt: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly dob: Prisma.FieldRef<"StudentProfile", 'DateTime'>
   readonly grade: Prisma.FieldRef<"StudentProfile", 'String'>
   readonly board: Prisma.FieldRef<"StudentProfile", 'String'>

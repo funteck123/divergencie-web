@@ -29,9 +29,11 @@ export async function PATCH(
     where: { id: itemId },
     data: {
       status,
-      isActive: status === "ACTIVE",
+      isActive: status === "ACTIVE" || status === "TRIAL",
       endDate: endDate ? new Date(endDate) : existing.endDate,
+      ...(status === "ACTIVE" && { activatedAt: new Date() }),
       ...(status === "CANCELLED" && { cancelledAt: new Date(), cancellationReason: notes }),
+      ...(status === "COMPLETED" && { completedAt: new Date() }),
     },
   });
 

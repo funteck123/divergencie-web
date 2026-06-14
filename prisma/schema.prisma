@@ -147,11 +147,16 @@ model StudentProfile {
   scheduleURL           String?
   progressTrackerURL    String?
   gcrAssigned           Boolean   @default(false)
+  gcrAssignedAt         DateTime?
   groupAssigned         Boolean   @default(false)
+  groupAssignedAt       DateTime?
   scheduleAssigned      Boolean   @default(false)
+  scheduleAssignedAt    DateTime?
   financeApprovedFlag   Boolean   @default(false)
+  financeApprovedAt     DateTime?
   registrationDate      DateTime  @default(now())
   cancellationReason    String?
+  cancelledAt           DateTime?
   dob                   DateTime?
   grade                 String?
   board                 String?

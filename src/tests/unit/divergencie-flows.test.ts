@@ -67,7 +67,7 @@ describe("Onboarding Gate Flows", () => {
     expect(db.studentProfile.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { userId: "stud-1" },
-        update: { gcrAssigned: true },
+        update: expect.objectContaining({ gcrAssigned: true }),
       })
     );
   });
