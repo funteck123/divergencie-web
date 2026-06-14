@@ -116,6 +116,12 @@ vi.mock("@/lib/db", () => {
       update: vi.fn(),
       delete: vi.fn(),
     },
+    calendarItem: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      create: vi.fn(),
+    },
     paymentRecord: {
       create: vi.fn(),
       update: vi.fn(),
