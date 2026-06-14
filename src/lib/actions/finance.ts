@@ -88,14 +88,34 @@ export async function getInvoiceStats() {
   return { total, collected, pending: total - collected, overdue };
 }
 
-const _getRateCardsCached = unstable_cache(
-  async () => prisma.rateCard.findMany({ orderBy: [{ course: "asc" }, { country: "asc" }] }),
-  ["rate-cards"], { revalidate: 3600 }
+const _getRateItemsCached = unstable_cache(
+  async () =>
+    prisma.rateItem.findMany({
+      orderBy: [{ rateList: { service: { subjectName: "asc" } } }, { country: "asc" }],
+      include: {
+        rateList: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    }),
+  ["rate-items"],
+  { revalidate: 3600 }
 );
+
 export async function getRateCards() {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
-  return _getRateCardsCached();
+  
+  const rateItems = await _getRateItemsCached();
+  return rateItems.map((item: any) => ({
+    id: item.id,
+    course: item.rateList?.service?.subjectName || "Coaching",
+    country: item.country,
+    groupCode: "C", // Default individual code expected by UI
+    rateGBP: item.clientRate,
+  }));
 }
 
 export async function upsertRateCard(data: {
@@ -106,14 +126,54 @@ export async function upsertRateCard(data: {
 }) {
   await requireFinanceAccess();
 
-  const existing = await prisma.rateCard.findFirst({
-    where: { course: data.course, country: data.country, groupCode: data.groupCode },
+  // Find the service first
+  const service = await prisma.service.findFirst({
+    where: { subjectName: data.course },
   });
-  const card = existing
-    ? await prisma.rateCard.update({ where: { id: existing.id }, data: { rateGBP: data.rateGBP } })
-    : await prisma.rateCard.create({ data });
+  if (!service) throw new Error(`Service not found for course: ${data.course}`);
+
+  // Find or create rateList for this service
+  let rateList = await prisma.rateList.findUnique({
+    where: { serviceId: service.id },
+  });
+  if (!rateList) {
+    rateList = await prisma.rateList.create({
+      data: { serviceId: service.id },
+    });
+  }
+
+  // Find or create rateItem
+  const existingItem = await prisma.rateItem.findFirst({
+    where: { rateListId: rateList.id, country: data.country },
+  });
+
+  let item;
+  if (existingItem) {
+    item = await prisma.rateItem.update({
+      where: { id: existingItem.id },
+      data: { clientRate: data.rateGBP },
+    });
+  } else {
+    item = await prisma.rateItem.create({
+      data: {
+        rateListId: rateList.id,
+        country: data.country,
+        currency: "GBP",
+        clientRate: data.rateGBP,
+        staffRate: 0,
+      },
+    });
+  }
+
   revalidatePath("/portal/staff/finance/rates");
-  return card;
+  
+  return {
+    id: item.id,
+    course: data.course,
+    country: item.country,
+    groupCode: data.groupCode,
+    rateGBP: item.clientRate,
+  };
 }
 
 export async function getParentInvoices(parentId: string) {

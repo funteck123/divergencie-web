@@ -46,7 +46,7 @@ export type ClaimMinAggregateOutputType = {
   enrolmentListId: string | null
   claimantType: string | null
   month: string | null
-  dept: string | null
+  deptId: string | null
   sessions: number | null
   hours: number | null
   rateApplied: number | null
@@ -61,7 +61,7 @@ export type ClaimMinAggregateOutputType = {
   paymentDate: Date | null
   isActive: boolean | null
   createdAt: Date | null
-  invoiceMonthId: string | null
+  billingMonthId: string | null
 }
 
 export type ClaimMaxAggregateOutputType = {
@@ -70,7 +70,7 @@ export type ClaimMaxAggregateOutputType = {
   enrolmentListId: string | null
   claimantType: string | null
   month: string | null
-  dept: string | null
+  deptId: string | null
   sessions: number | null
   hours: number | null
   rateApplied: number | null
@@ -85,7 +85,7 @@ export type ClaimMaxAggregateOutputType = {
   paymentDate: Date | null
   isActive: boolean | null
   createdAt: Date | null
-  invoiceMonthId: string | null
+  billingMonthId: string | null
 }
 
 export type ClaimCountAggregateOutputType = {
@@ -94,7 +94,7 @@ export type ClaimCountAggregateOutputType = {
   enrolmentListId: number
   claimantType: number
   month: number
-  dept: number
+  deptId: number
   sessions: number
   hours: number
   rateApplied: number
@@ -109,7 +109,7 @@ export type ClaimCountAggregateOutputType = {
   paymentDate: number
   isActive: number
   createdAt: number
-  invoiceMonthId: number
+  billingMonthId: number
   _all: number
 }
 
@@ -134,7 +134,7 @@ export type ClaimMinAggregateInputType = {
   enrolmentListId?: true
   claimantType?: true
   month?: true
-  dept?: true
+  deptId?: true
   sessions?: true
   hours?: true
   rateApplied?: true
@@ -149,7 +149,7 @@ export type ClaimMinAggregateInputType = {
   paymentDate?: true
   isActive?: true
   createdAt?: true
-  invoiceMonthId?: true
+  billingMonthId?: true
 }
 
 export type ClaimMaxAggregateInputType = {
@@ -158,7 +158,7 @@ export type ClaimMaxAggregateInputType = {
   enrolmentListId?: true
   claimantType?: true
   month?: true
-  dept?: true
+  deptId?: true
   sessions?: true
   hours?: true
   rateApplied?: true
@@ -173,7 +173,7 @@ export type ClaimMaxAggregateInputType = {
   paymentDate?: true
   isActive?: true
   createdAt?: true
-  invoiceMonthId?: true
+  billingMonthId?: true
 }
 
 export type ClaimCountAggregateInputType = {
@@ -182,7 +182,7 @@ export type ClaimCountAggregateInputType = {
   enrolmentListId?: true
   claimantType?: true
   month?: true
-  dept?: true
+  deptId?: true
   sessions?: true
   hours?: true
   rateApplied?: true
@@ -197,7 +197,7 @@ export type ClaimCountAggregateInputType = {
   paymentDate?: true
   isActive?: true
   createdAt?: true
-  invoiceMonthId?: true
+  billingMonthId?: true
   _all?: true
 }
 
@@ -293,7 +293,7 @@ export type ClaimGroupByOutputType = {
   enrolmentListId: string | null
   claimantType: string | null
   month: string
-  dept: string
+  deptId: string | null
   sessions: number | null
   hours: number | null
   rateApplied: number | null
@@ -308,7 +308,7 @@ export type ClaimGroupByOutputType = {
   paymentDate: Date | null
   isActive: boolean
   createdAt: Date
-  invoiceMonthId: string | null
+  billingMonthId: string | null
   _count: ClaimCountAggregateOutputType | null
   _avg: ClaimAvgAggregateOutputType | null
   _sum: ClaimSumAggregateOutputType | null
@@ -340,7 +340,7 @@ export type ClaimWhereInput = {
   enrolmentListId?: Prisma.StringNullableFilter<"Claim"> | string | null
   claimantType?: Prisma.StringNullableFilter<"Claim"> | string | null
   month?: Prisma.StringFilter<"Claim"> | string
-  dept?: Prisma.StringFilter<"Claim"> | string
+  deptId?: Prisma.StringNullableFilter<"Claim"> | string | null
   sessions?: Prisma.IntNullableFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableFilter<"Claim"> | number | null
   rateApplied?: Prisma.FloatNullableFilter<"Claim"> | number | null
@@ -355,9 +355,10 @@ export type ClaimWhereInput = {
   paymentDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Claim"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Claim"> | Date | string
-  invoiceMonthId?: Prisma.StringNullableFilter<"Claim"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"Claim"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  invoiceMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
   utilisations?: Prisma.BudgetUtilisationListRelationFilter
   history?: Prisma.ClaimStatusChangeLogListRelationFilter
@@ -370,7 +371,7 @@ export type ClaimOrderByWithRelationInput = {
   enrolmentListId?: Prisma.SortOrderInput | Prisma.SortOrder
   claimantType?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   sessions?: Prisma.SortOrderInput | Prisma.SortOrder
   hours?: Prisma.SortOrderInput | Prisma.SortOrder
   rateApplied?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -385,9 +386,10 @@ export type ClaimOrderByWithRelationInput = {
   paymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  invoiceMonth?: Prisma.InvoiceMonthOrderByWithRelationInput
+  dept?: Prisma.DepartmentOrderByWithRelationInput
+  billingMonth?: Prisma.BillingMonthOrderByWithRelationInput
   ledgerEntries?: Prisma.LedgerEntryOrderByRelationAggregateInput
   utilisations?: Prisma.BudgetUtilisationOrderByRelationAggregateInput
   history?: Prisma.ClaimStatusChangeLogOrderByRelationAggregateInput
@@ -403,7 +405,7 @@ export type ClaimWhereUniqueInput = Prisma.AtLeast<{
   enrolmentListId?: Prisma.StringNullableFilter<"Claim"> | string | null
   claimantType?: Prisma.StringNullableFilter<"Claim"> | string | null
   month?: Prisma.StringFilter<"Claim"> | string
-  dept?: Prisma.StringFilter<"Claim"> | string
+  deptId?: Prisma.StringNullableFilter<"Claim"> | string | null
   sessions?: Prisma.IntNullableFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableFilter<"Claim"> | number | null
   rateApplied?: Prisma.FloatNullableFilter<"Claim"> | number | null
@@ -418,9 +420,10 @@ export type ClaimWhereUniqueInput = Prisma.AtLeast<{
   paymentDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Claim"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Claim"> | Date | string
-  invoiceMonthId?: Prisma.StringNullableFilter<"Claim"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"Claim"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  invoiceMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
   utilisations?: Prisma.BudgetUtilisationListRelationFilter
   history?: Prisma.ClaimStatusChangeLogListRelationFilter
@@ -433,7 +436,7 @@ export type ClaimOrderByWithAggregationInput = {
   enrolmentListId?: Prisma.SortOrderInput | Prisma.SortOrder
   claimantType?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   sessions?: Prisma.SortOrderInput | Prisma.SortOrder
   hours?: Prisma.SortOrderInput | Prisma.SortOrder
   rateApplied?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -448,7 +451,7 @@ export type ClaimOrderByWithAggregationInput = {
   paymentDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ClaimCountOrderByAggregateInput
   _avg?: Prisma.ClaimAvgOrderByAggregateInput
   _max?: Prisma.ClaimMaxOrderByAggregateInput
@@ -465,7 +468,7 @@ export type ClaimScalarWhereWithAggregatesInput = {
   enrolmentListId?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
   claimantType?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
   month?: Prisma.StringWithAggregatesFilter<"Claim"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"Claim"> | string
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
   sessions?: Prisma.IntNullableWithAggregatesFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableWithAggregatesFilter<"Claim"> | number | null
   rateApplied?: Prisma.FloatNullableWithAggregatesFilter<"Claim"> | number | null
@@ -480,7 +483,7 @@ export type ClaimScalarWhereWithAggregatesInput = {
   paymentDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Claim"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Claim"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Claim"> | Date | string
-  invoiceMonthId?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
+  billingMonthId?: Prisma.StringNullableWithAggregatesFilter<"Claim"> | string | null
 }
 
 export type ClaimCreateInput = {
@@ -488,7 +491,6 @@ export type ClaimCreateInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -504,7 +506,8 @@ export type ClaimCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
@@ -517,7 +520,7 @@ export type ClaimUncheckedCreateInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -532,7 +535,7 @@ export type ClaimUncheckedCreateInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogUncheckedCreateNestedManyWithoutClaimInput
@@ -544,7 +547,6 @@ export type ClaimUpdateInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -560,7 +562,8 @@ export type ClaimUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
@@ -573,7 +576,7 @@ export type ClaimUncheckedUpdateInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -588,7 +591,7 @@ export type ClaimUncheckedUpdateInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUncheckedUpdateManyWithoutClaimNestedInput
@@ -601,7 +604,7 @@ export type ClaimCreateManyInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -616,7 +619,7 @@ export type ClaimCreateManyInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
 }
 
 export type ClaimUpdateManyMutationInput = {
@@ -624,7 +627,6 @@ export type ClaimUpdateManyMutationInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -647,7 +649,7 @@ export type ClaimUncheckedUpdateManyInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -662,7 +664,7 @@ export type ClaimUncheckedUpdateManyInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ClaimListRelationFilter = {
@@ -681,7 +683,7 @@ export type ClaimCountOrderByAggregateInput = {
   enrolmentListId?: Prisma.SortOrder
   claimantType?: Prisma.SortOrder
   month?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
   rateApplied?: Prisma.SortOrder
@@ -696,7 +698,7 @@ export type ClaimCountOrderByAggregateInput = {
   paymentDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
 }
 
 export type ClaimAvgOrderByAggregateInput = {
@@ -712,7 +714,7 @@ export type ClaimMaxOrderByAggregateInput = {
   enrolmentListId?: Prisma.SortOrder
   claimantType?: Prisma.SortOrder
   month?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
   rateApplied?: Prisma.SortOrder
@@ -727,7 +729,7 @@ export type ClaimMaxOrderByAggregateInput = {
   paymentDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
 }
 
 export type ClaimMinOrderByAggregateInput = {
@@ -736,7 +738,7 @@ export type ClaimMinOrderByAggregateInput = {
   enrolmentListId?: Prisma.SortOrder
   claimantType?: Prisma.SortOrder
   month?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   sessions?: Prisma.SortOrder
   hours?: Prisma.SortOrder
   rateApplied?: Prisma.SortOrder
@@ -751,7 +753,7 @@ export type ClaimMinOrderByAggregateInput = {
   paymentDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
 }
 
 export type ClaimSumOrderByAggregateInput = {
@@ -813,45 +815,87 @@ export type ClaimUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ClaimScalarWhereInput | Prisma.ClaimScalarWhereInput[]
 }
 
-export type ClaimCreateNestedManyWithoutInvoiceMonthInput = {
-  create?: Prisma.XOR<Prisma.ClaimCreateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput> | Prisma.ClaimCreateWithoutInvoiceMonthInput[] | Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput | Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput[]
-  createMany?: Prisma.ClaimCreateManyInvoiceMonthInputEnvelope
+export type ClaimCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutDeptInput, Prisma.ClaimUncheckedCreateWithoutDeptInput> | Prisma.ClaimCreateWithoutDeptInput[] | Prisma.ClaimUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutDeptInput | Prisma.ClaimCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.ClaimCreateManyDeptInputEnvelope
   connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
 }
 
-export type ClaimUncheckedCreateNestedManyWithoutInvoiceMonthInput = {
-  create?: Prisma.XOR<Prisma.ClaimCreateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput> | Prisma.ClaimCreateWithoutInvoiceMonthInput[] | Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput | Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput[]
-  createMany?: Prisma.ClaimCreateManyInvoiceMonthInputEnvelope
+export type ClaimUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutDeptInput, Prisma.ClaimUncheckedCreateWithoutDeptInput> | Prisma.ClaimCreateWithoutDeptInput[] | Prisma.ClaimUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutDeptInput | Prisma.ClaimCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.ClaimCreateManyDeptInputEnvelope
   connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
 }
 
-export type ClaimUpdateManyWithoutInvoiceMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.ClaimCreateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput> | Prisma.ClaimCreateWithoutInvoiceMonthInput[] | Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput | Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput[]
-  upsert?: Prisma.ClaimUpsertWithWhereUniqueWithoutInvoiceMonthInput | Prisma.ClaimUpsertWithWhereUniqueWithoutInvoiceMonthInput[]
-  createMany?: Prisma.ClaimCreateManyInvoiceMonthInputEnvelope
+export type ClaimUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutDeptInput, Prisma.ClaimUncheckedCreateWithoutDeptInput> | Prisma.ClaimCreateWithoutDeptInput[] | Prisma.ClaimUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutDeptInput | Prisma.ClaimCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.ClaimUpsertWithWhereUniqueWithoutDeptInput | Prisma.ClaimUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.ClaimCreateManyDeptInputEnvelope
   set?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
   disconnect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
   delete?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
   connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
-  update?: Prisma.ClaimUpdateWithWhereUniqueWithoutInvoiceMonthInput | Prisma.ClaimUpdateWithWhereUniqueWithoutInvoiceMonthInput[]
-  updateMany?: Prisma.ClaimUpdateManyWithWhereWithoutInvoiceMonthInput | Prisma.ClaimUpdateManyWithWhereWithoutInvoiceMonthInput[]
+  update?: Prisma.ClaimUpdateWithWhereUniqueWithoutDeptInput | Prisma.ClaimUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.ClaimUpdateManyWithWhereWithoutDeptInput | Prisma.ClaimUpdateManyWithWhereWithoutDeptInput[]
   deleteMany?: Prisma.ClaimScalarWhereInput | Prisma.ClaimScalarWhereInput[]
 }
 
-export type ClaimUncheckedUpdateManyWithoutInvoiceMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.ClaimCreateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput> | Prisma.ClaimCreateWithoutInvoiceMonthInput[] | Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput | Prisma.ClaimCreateOrConnectWithoutInvoiceMonthInput[]
-  upsert?: Prisma.ClaimUpsertWithWhereUniqueWithoutInvoiceMonthInput | Prisma.ClaimUpsertWithWhereUniqueWithoutInvoiceMonthInput[]
-  createMany?: Prisma.ClaimCreateManyInvoiceMonthInputEnvelope
+export type ClaimUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutDeptInput, Prisma.ClaimUncheckedCreateWithoutDeptInput> | Prisma.ClaimCreateWithoutDeptInput[] | Prisma.ClaimUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutDeptInput | Prisma.ClaimCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.ClaimUpsertWithWhereUniqueWithoutDeptInput | Prisma.ClaimUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.ClaimCreateManyDeptInputEnvelope
   set?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
   disconnect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
   delete?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
   connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
-  update?: Prisma.ClaimUpdateWithWhereUniqueWithoutInvoiceMonthInput | Prisma.ClaimUpdateWithWhereUniqueWithoutInvoiceMonthInput[]
-  updateMany?: Prisma.ClaimUpdateManyWithWhereWithoutInvoiceMonthInput | Prisma.ClaimUpdateManyWithWhereWithoutInvoiceMonthInput[]
+  update?: Prisma.ClaimUpdateWithWhereUniqueWithoutDeptInput | Prisma.ClaimUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.ClaimUpdateManyWithWhereWithoutDeptInput | Prisma.ClaimUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.ClaimScalarWhereInput | Prisma.ClaimScalarWhereInput[]
+}
+
+export type ClaimCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutBillingMonthInput, Prisma.ClaimUncheckedCreateWithoutBillingMonthInput> | Prisma.ClaimCreateWithoutBillingMonthInput[] | Prisma.ClaimUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutBillingMonthInput | Prisma.ClaimCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.ClaimCreateManyBillingMonthInputEnvelope
+  connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+}
+
+export type ClaimUncheckedCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutBillingMonthInput, Prisma.ClaimUncheckedCreateWithoutBillingMonthInput> | Prisma.ClaimCreateWithoutBillingMonthInput[] | Prisma.ClaimUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutBillingMonthInput | Prisma.ClaimCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.ClaimCreateManyBillingMonthInputEnvelope
+  connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+}
+
+export type ClaimUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutBillingMonthInput, Prisma.ClaimUncheckedCreateWithoutBillingMonthInput> | Prisma.ClaimCreateWithoutBillingMonthInput[] | Prisma.ClaimUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutBillingMonthInput | Prisma.ClaimCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.ClaimUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.ClaimUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.ClaimCreateManyBillingMonthInputEnvelope
+  set?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  disconnect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  delete?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  update?: Prisma.ClaimUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.ClaimUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.ClaimUpdateManyWithWhereWithoutBillingMonthInput | Prisma.ClaimUpdateManyWithWhereWithoutBillingMonthInput[]
+  deleteMany?: Prisma.ClaimScalarWhereInput | Prisma.ClaimScalarWhereInput[]
+}
+
+export type ClaimUncheckedUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.ClaimCreateWithoutBillingMonthInput, Prisma.ClaimUncheckedCreateWithoutBillingMonthInput> | Prisma.ClaimCreateWithoutBillingMonthInput[] | Prisma.ClaimUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.ClaimCreateOrConnectWithoutBillingMonthInput | Prisma.ClaimCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.ClaimUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.ClaimUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.ClaimCreateManyBillingMonthInputEnvelope
+  set?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  disconnect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  delete?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  connect?: Prisma.ClaimWhereUniqueInput | Prisma.ClaimWhereUniqueInput[]
+  update?: Prisma.ClaimUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.ClaimUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.ClaimUpdateManyWithWhereWithoutBillingMonthInput | Prisma.ClaimUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.ClaimScalarWhereInput | Prisma.ClaimScalarWhereInput[]
 }
 
@@ -922,7 +966,6 @@ export type ClaimCreateWithoutUserInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -937,7 +980,8 @@ export type ClaimCreateWithoutUserInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
@@ -949,7 +993,7 @@ export type ClaimUncheckedCreateWithoutUserInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -964,7 +1008,7 @@ export type ClaimUncheckedCreateWithoutUserInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogUncheckedCreateNestedManyWithoutClaimInput
@@ -1006,7 +1050,7 @@ export type ClaimScalarWhereInput = {
   enrolmentListId?: Prisma.StringNullableFilter<"Claim"> | string | null
   claimantType?: Prisma.StringNullableFilter<"Claim"> | string | null
   month?: Prisma.StringFilter<"Claim"> | string
-  dept?: Prisma.StringFilter<"Claim"> | string
+  deptId?: Prisma.StringNullableFilter<"Claim"> | string | null
   sessions?: Prisma.IntNullableFilter<"Claim"> | number | null
   hours?: Prisma.FloatNullableFilter<"Claim"> | number | null
   rateApplied?: Prisma.FloatNullableFilter<"Claim"> | number | null
@@ -1021,15 +1065,14 @@ export type ClaimScalarWhereInput = {
   paymentDate?: Prisma.DateTimeNullableFilter<"Claim"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Claim"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Claim"> | Date | string
-  invoiceMonthId?: Prisma.StringNullableFilter<"Claim"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"Claim"> | string | null
 }
 
-export type ClaimCreateWithoutInvoiceMonthInput = {
+export type ClaimCreateWithoutDeptInput = {
   id?: string
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1045,19 +1088,100 @@ export type ClaimCreateWithoutInvoiceMonthInput = {
   isActive?: boolean
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckCreateNestedManyWithoutClaimInput
 }
 
-export type ClaimUncheckedCreateWithoutInvoiceMonthInput = {
+export type ClaimUncheckedCreateWithoutDeptInput = {
   id?: string
   userId: string
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  sessions?: number | null
+  hours?: number | null
+  rateApplied?: number | null
+  amount: number
+  currency?: string
+  receivingPaymentMethodId?: string | null
+  status?: string
+  notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  billingMonthId?: string | null
+  ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
+  utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutClaimInput
+  history?: Prisma.ClaimStatusChangeLogUncheckedCreateNestedManyWithoutClaimInput
+  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutClaimInput
+}
+
+export type ClaimCreateOrConnectWithoutDeptInput = {
+  where: Prisma.ClaimWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClaimCreateWithoutDeptInput, Prisma.ClaimUncheckedCreateWithoutDeptInput>
+}
+
+export type ClaimCreateManyDeptInputEnvelope = {
+  data: Prisma.ClaimCreateManyDeptInput | Prisma.ClaimCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type ClaimUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.ClaimWhereUniqueInput
+  update: Prisma.XOR<Prisma.ClaimUpdateWithoutDeptInput, Prisma.ClaimUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.ClaimCreateWithoutDeptInput, Prisma.ClaimUncheckedCreateWithoutDeptInput>
+}
+
+export type ClaimUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.ClaimWhereUniqueInput
+  data: Prisma.XOR<Prisma.ClaimUpdateWithoutDeptInput, Prisma.ClaimUncheckedUpdateWithoutDeptInput>
+}
+
+export type ClaimUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.ClaimScalarWhereInput
+  data: Prisma.XOR<Prisma.ClaimUpdateManyMutationInput, Prisma.ClaimUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type ClaimCreateWithoutBillingMonthInput = {
+  id?: string
+  enrolmentListId?: string | null
+  claimantType?: string | null
+  month: string
+  sessions?: number | null
+  hours?: number | null
+  rateApplied?: number | null
+  amount: number
+  currency?: string
+  receivingPaymentMethodId?: string | null
+  status?: string
+  notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
+  utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
+  history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
+  paychecks?: Prisma.PaycheckCreateNestedManyWithoutClaimInput
+}
+
+export type ClaimUncheckedCreateWithoutBillingMonthInput = {
+  id?: string
+  userId: string
+  enrolmentListId?: string | null
+  claimantType?: string | null
+  month: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1078,30 +1202,30 @@ export type ClaimUncheckedCreateWithoutInvoiceMonthInput = {
   paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutClaimInput
 }
 
-export type ClaimCreateOrConnectWithoutInvoiceMonthInput = {
+export type ClaimCreateOrConnectWithoutBillingMonthInput = {
   where: Prisma.ClaimWhereUniqueInput
-  create: Prisma.XOR<Prisma.ClaimCreateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput>
+  create: Prisma.XOR<Prisma.ClaimCreateWithoutBillingMonthInput, Prisma.ClaimUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type ClaimCreateManyInvoiceMonthInputEnvelope = {
-  data: Prisma.ClaimCreateManyInvoiceMonthInput | Prisma.ClaimCreateManyInvoiceMonthInput[]
+export type ClaimCreateManyBillingMonthInputEnvelope = {
+  data: Prisma.ClaimCreateManyBillingMonthInput | Prisma.ClaimCreateManyBillingMonthInput[]
   skipDuplicates?: boolean
 }
 
-export type ClaimUpsertWithWhereUniqueWithoutInvoiceMonthInput = {
+export type ClaimUpsertWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.ClaimWhereUniqueInput
-  update: Prisma.XOR<Prisma.ClaimUpdateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedUpdateWithoutInvoiceMonthInput>
-  create: Prisma.XOR<Prisma.ClaimCreateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedCreateWithoutInvoiceMonthInput>
+  update: Prisma.XOR<Prisma.ClaimUpdateWithoutBillingMonthInput, Prisma.ClaimUncheckedUpdateWithoutBillingMonthInput>
+  create: Prisma.XOR<Prisma.ClaimCreateWithoutBillingMonthInput, Prisma.ClaimUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type ClaimUpdateWithWhereUniqueWithoutInvoiceMonthInput = {
+export type ClaimUpdateWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.ClaimWhereUniqueInput
-  data: Prisma.XOR<Prisma.ClaimUpdateWithoutInvoiceMonthInput, Prisma.ClaimUncheckedUpdateWithoutInvoiceMonthInput>
+  data: Prisma.XOR<Prisma.ClaimUpdateWithoutBillingMonthInput, Prisma.ClaimUncheckedUpdateWithoutBillingMonthInput>
 }
 
-export type ClaimUpdateManyWithWhereWithoutInvoiceMonthInput = {
+export type ClaimUpdateManyWithWhereWithoutBillingMonthInput = {
   where: Prisma.ClaimScalarWhereInput
-  data: Prisma.XOR<Prisma.ClaimUpdateManyMutationInput, Prisma.ClaimUncheckedUpdateManyWithoutInvoiceMonthInput>
+  data: Prisma.XOR<Prisma.ClaimUpdateManyMutationInput, Prisma.ClaimUncheckedUpdateManyWithoutBillingMonthInput>
 }
 
 export type ClaimCreateWithoutHistoryInput = {
@@ -1109,7 +1233,6 @@ export type ClaimCreateWithoutHistoryInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1125,7 +1248,8 @@ export type ClaimCreateWithoutHistoryInput = {
   isActive?: boolean
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckCreateNestedManyWithoutClaimInput
@@ -1137,7 +1261,7 @@ export type ClaimUncheckedCreateWithoutHistoryInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1152,7 +1276,7 @@ export type ClaimUncheckedCreateWithoutHistoryInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutClaimInput
@@ -1179,7 +1303,6 @@ export type ClaimUpdateWithoutHistoryInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1195,7 +1318,8 @@ export type ClaimUpdateWithoutHistoryInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUpdateManyWithoutClaimNestedInput
@@ -1207,7 +1331,7 @@ export type ClaimUncheckedUpdateWithoutHistoryInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1222,7 +1346,7 @@ export type ClaimUncheckedUpdateWithoutHistoryInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutClaimNestedInput
@@ -1233,7 +1357,6 @@ export type ClaimCreateWithoutPaychecksInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1249,7 +1372,8 @@ export type ClaimCreateWithoutPaychecksInput = {
   isActive?: boolean
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
@@ -1261,7 +1385,7 @@ export type ClaimUncheckedCreateWithoutPaychecksInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1276,7 +1400,7 @@ export type ClaimUncheckedCreateWithoutPaychecksInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
   utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogUncheckedCreateNestedManyWithoutClaimInput
@@ -1303,7 +1427,6 @@ export type ClaimUpdateWithoutPaychecksInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1319,7 +1442,8 @@ export type ClaimUpdateWithoutPaychecksInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
@@ -1331,7 +1455,7 @@ export type ClaimUncheckedUpdateWithoutPaychecksInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1346,7 +1470,7 @@ export type ClaimUncheckedUpdateWithoutPaychecksInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUncheckedUpdateManyWithoutClaimNestedInput
@@ -1357,7 +1481,6 @@ export type ClaimCreateWithoutLedgerEntriesInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1373,7 +1496,8 @@ export type ClaimCreateWithoutLedgerEntriesInput = {
   isActive?: boolean
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   utilisations?: Prisma.BudgetUtilisationCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckCreateNestedManyWithoutClaimInput
@@ -1385,7 +1509,7 @@ export type ClaimUncheckedCreateWithoutLedgerEntriesInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1400,7 +1524,7 @@ export type ClaimUncheckedCreateWithoutLedgerEntriesInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   utilisations?: Prisma.BudgetUtilisationUncheckedCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogUncheckedCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutClaimInput
@@ -1427,7 +1551,6 @@ export type ClaimUpdateWithoutLedgerEntriesInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1443,7 +1566,8 @@ export type ClaimUpdateWithoutLedgerEntriesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUpdateManyWithoutClaimNestedInput
@@ -1455,7 +1579,7 @@ export type ClaimUncheckedUpdateWithoutLedgerEntriesInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1470,7 +1594,7 @@ export type ClaimUncheckedUpdateWithoutLedgerEntriesInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUncheckedUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutClaimNestedInput
@@ -1481,7 +1605,6 @@ export type ClaimCreateWithoutUtilisationsInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1497,7 +1620,8 @@ export type ClaimCreateWithoutUtilisationsInput = {
   isActive?: boolean
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutClaimsInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutClaimsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutClaimsInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutClaimsInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckCreateNestedManyWithoutClaimInput
@@ -1509,7 +1633,7 @@ export type ClaimUncheckedCreateWithoutUtilisationsInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1524,7 +1648,7 @@ export type ClaimUncheckedCreateWithoutUtilisationsInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedCreateNestedManyWithoutClaimInput
   history?: Prisma.ClaimStatusChangeLogUncheckedCreateNestedManyWithoutClaimInput
   paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutClaimInput
@@ -1551,7 +1675,6 @@ export type ClaimUpdateWithoutUtilisationsInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1567,7 +1690,8 @@ export type ClaimUpdateWithoutUtilisationsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUpdateManyWithoutClaimNestedInput
@@ -1579,7 +1703,7 @@ export type ClaimUncheckedUpdateWithoutUtilisationsInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1594,7 +1718,7 @@ export type ClaimUncheckedUpdateWithoutUtilisationsInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUncheckedUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutClaimNestedInput
@@ -1605,7 +1729,7 @@ export type ClaimCreateManyUserInput = {
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
+  deptId?: string | null
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1620,7 +1744,7 @@ export type ClaimCreateManyUserInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
 }
 
 export type ClaimUpdateWithoutUserInput = {
@@ -1628,7 +1752,6 @@ export type ClaimUpdateWithoutUserInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1643,7 +1766,8 @@ export type ClaimUpdateWithoutUserInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
@@ -1655,7 +1779,7 @@ export type ClaimUncheckedUpdateWithoutUserInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1670,7 +1794,7 @@ export type ClaimUncheckedUpdateWithoutUserInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUncheckedUpdateManyWithoutClaimNestedInput
@@ -1682,7 +1806,7 @@ export type ClaimUncheckedUpdateManyWithoutUserInput = {
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1697,16 +1821,15 @@ export type ClaimUncheckedUpdateManyWithoutUserInput = {
   paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type ClaimCreateManyInvoiceMonthInput = {
+export type ClaimCreateManyDeptInput = {
   id?: string
   userId: string
   enrolmentListId?: string | null
   claimantType?: string | null
   month: string
-  dept: string
   sessions?: number | null
   hours?: number | null
   rateApplied?: number | null
@@ -1721,14 +1844,14 @@ export type ClaimCreateManyInvoiceMonthInput = {
   paymentDate?: Date | string | null
   isActive?: boolean
   createdAt?: Date | string
+  billingMonthId?: string | null
 }
 
-export type ClaimUpdateWithoutInvoiceMonthInput = {
+export type ClaimUpdateWithoutDeptInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1744,19 +1867,120 @@ export type ClaimUpdateWithoutInvoiceMonthInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutClaimsNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
   utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
   history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
   paychecks?: Prisma.PaycheckUpdateManyWithoutClaimNestedInput
 }
 
-export type ClaimUncheckedUpdateWithoutInvoiceMonthInput = {
+export type ClaimUncheckedUpdateWithoutDeptInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ledgerEntries?: Prisma.LedgerEntryUncheckedUpdateManyWithoutClaimNestedInput
+  utilisations?: Prisma.BudgetUtilisationUncheckedUpdateManyWithoutClaimNestedInput
+  history?: Prisma.ClaimStatusChangeLogUncheckedUpdateManyWithoutClaimNestedInput
+  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutClaimNestedInput
+}
+
+export type ClaimUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  month?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type ClaimCreateManyBillingMonthInput = {
+  id?: string
+  userId: string
+  enrolmentListId?: string | null
+  claimantType?: string | null
+  month: string
+  deptId?: string | null
+  sessions?: number | null
+  hours?: number | null
+  rateApplied?: number | null
+  amount: number
+  currency?: string
+  receivingPaymentMethodId?: string | null
+  status?: string
+  notes?: string | null
+  notes2?: string | null
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  paymentDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+}
+
+export type ClaimUpdateWithoutBillingMonthInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  month?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutClaimsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutClaimsNestedInput
+  ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutClaimNestedInput
+  utilisations?: Prisma.BudgetUtilisationUpdateManyWithoutClaimNestedInput
+  history?: Prisma.ClaimStatusChangeLogUpdateManyWithoutClaimNestedInput
+  paychecks?: Prisma.PaycheckUpdateManyWithoutClaimNestedInput
+}
+
+export type ClaimUncheckedUpdateWithoutBillingMonthInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  month?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1777,13 +2001,13 @@ export type ClaimUncheckedUpdateWithoutInvoiceMonthInput = {
   paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutClaimNestedInput
 }
 
-export type ClaimUncheckedUpdateManyWithoutInvoiceMonthInput = {
+export type ClaimUncheckedUpdateManyWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   claimantType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   hours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   rateApplied?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -1864,7 +2088,7 @@ export type ClaimSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   enrolmentListId?: boolean
   claimantType?: boolean
   month?: boolean
-  dept?: boolean
+  deptId?: boolean
   sessions?: boolean
   hours?: boolean
   rateApplied?: boolean
@@ -1879,9 +2103,10 @@ export type ClaimSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   paymentDate?: boolean
   isActive?: boolean
   createdAt?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.Claim$invoiceMonthArgs<ExtArgs>
+  dept?: boolean | Prisma.Claim$deptArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Claim$billingMonthArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.Claim$ledgerEntriesArgs<ExtArgs>
   utilisations?: boolean | Prisma.Claim$utilisationsArgs<ExtArgs>
   history?: boolean | Prisma.Claim$historyArgs<ExtArgs>
@@ -1895,7 +2120,7 @@ export type ClaimSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   enrolmentListId?: boolean
   claimantType?: boolean
   month?: boolean
-  dept?: boolean
+  deptId?: boolean
   sessions?: boolean
   hours?: boolean
   rateApplied?: boolean
@@ -1910,9 +2135,10 @@ export type ClaimSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   paymentDate?: boolean
   isActive?: boolean
   createdAt?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.Claim$invoiceMonthArgs<ExtArgs>
+  dept?: boolean | Prisma.Claim$deptArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Claim$billingMonthArgs<ExtArgs>
 }, ExtArgs["result"]["claim"]>
 
 export type ClaimSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1921,7 +2147,7 @@ export type ClaimSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   enrolmentListId?: boolean
   claimantType?: boolean
   month?: boolean
-  dept?: boolean
+  deptId?: boolean
   sessions?: boolean
   hours?: boolean
   rateApplied?: boolean
@@ -1936,9 +2162,10 @@ export type ClaimSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   paymentDate?: boolean
   isActive?: boolean
   createdAt?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.Claim$invoiceMonthArgs<ExtArgs>
+  dept?: boolean | Prisma.Claim$deptArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Claim$billingMonthArgs<ExtArgs>
 }, ExtArgs["result"]["claim"]>
 
 export type ClaimSelectScalar = {
@@ -1947,7 +2174,7 @@ export type ClaimSelectScalar = {
   enrolmentListId?: boolean
   claimantType?: boolean
   month?: boolean
-  dept?: boolean
+  deptId?: boolean
   sessions?: boolean
   hours?: boolean
   rateApplied?: boolean
@@ -1962,13 +2189,14 @@ export type ClaimSelectScalar = {
   paymentDate?: boolean
   isActive?: boolean
   createdAt?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
 }
 
-export type ClaimOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "enrolmentListId" | "claimantType" | "month" | "dept" | "sessions" | "hours" | "rateApplied" | "amount" | "currency" | "receivingPaymentMethodId" | "status" | "notes" | "notes2" | "startDate" | "endDate" | "paymentDate" | "isActive" | "createdAt" | "invoiceMonthId", ExtArgs["result"]["claim"]>
+export type ClaimOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "enrolmentListId" | "claimantType" | "month" | "deptId" | "sessions" | "hours" | "rateApplied" | "amount" | "currency" | "receivingPaymentMethodId" | "status" | "notes" | "notes2" | "startDate" | "endDate" | "paymentDate" | "isActive" | "createdAt" | "billingMonthId", ExtArgs["result"]["claim"]>
 export type ClaimInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.Claim$invoiceMonthArgs<ExtArgs>
+  dept?: boolean | Prisma.Claim$deptArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Claim$billingMonthArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.Claim$ledgerEntriesArgs<ExtArgs>
   utilisations?: boolean | Prisma.Claim$utilisationsArgs<ExtArgs>
   history?: boolean | Prisma.Claim$historyArgs<ExtArgs>
@@ -1977,18 +2205,21 @@ export type ClaimInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 }
 export type ClaimIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.Claim$invoiceMonthArgs<ExtArgs>
+  dept?: boolean | Prisma.Claim$deptArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Claim$billingMonthArgs<ExtArgs>
 }
 export type ClaimIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.Claim$invoiceMonthArgs<ExtArgs>
+  dept?: boolean | Prisma.Claim$deptArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Claim$billingMonthArgs<ExtArgs>
 }
 
 export type $ClaimPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Claim"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    invoiceMonth: Prisma.$InvoiceMonthPayload<ExtArgs> | null
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
+    billingMonth: Prisma.$BillingMonthPayload<ExtArgs> | null
     ledgerEntries: Prisma.$LedgerEntryPayload<ExtArgs>[]
     utilisations: Prisma.$BudgetUtilisationPayload<ExtArgs>[]
     history: Prisma.$ClaimStatusChangeLogPayload<ExtArgs>[]
@@ -2000,7 +2231,7 @@ export type $ClaimPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     enrolmentListId: string | null
     claimantType: string | null
     month: string
-    dept: string
+    deptId: string | null
     sessions: number | null
     hours: number | null
     rateApplied: number | null
@@ -2015,7 +2246,7 @@ export type $ClaimPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     paymentDate: Date | null
     isActive: boolean
     createdAt: Date
-    invoiceMonthId: string | null
+    billingMonthId: string | null
   }, ExtArgs["result"]["claim"]>
   composites: {}
 }
@@ -2411,7 +2642,8 @@ readonly fields: ClaimFieldRefs;
 export interface Prisma__ClaimClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  invoiceMonth<T extends Prisma.Claim$invoiceMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Claim$invoiceMonthArgs<ExtArgs>>): Prisma.Prisma__InvoiceMonthClient<runtime.Types.Result.GetResult<Prisma.$InvoiceMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dept<T extends Prisma.Claim$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Claim$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  billingMonth<T extends Prisma.Claim$billingMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Claim$billingMonthArgs<ExtArgs>>): Prisma.Prisma__BillingMonthClient<runtime.Types.Result.GetResult<Prisma.$BillingMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   ledgerEntries<T extends Prisma.Claim$ledgerEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Claim$ledgerEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LedgerEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   utilisations<T extends Prisma.Claim$utilisationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Claim$utilisationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BudgetUtilisationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   history<T extends Prisma.Claim$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Claim$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClaimStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2450,7 +2682,7 @@ export interface ClaimFieldRefs {
   readonly enrolmentListId: Prisma.FieldRef<"Claim", 'String'>
   readonly claimantType: Prisma.FieldRef<"Claim", 'String'>
   readonly month: Prisma.FieldRef<"Claim", 'String'>
-  readonly dept: Prisma.FieldRef<"Claim", 'String'>
+  readonly deptId: Prisma.FieldRef<"Claim", 'String'>
   readonly sessions: Prisma.FieldRef<"Claim", 'Int'>
   readonly hours: Prisma.FieldRef<"Claim", 'Float'>
   readonly rateApplied: Prisma.FieldRef<"Claim", 'Float'>
@@ -2465,7 +2697,7 @@ export interface ClaimFieldRefs {
   readonly paymentDate: Prisma.FieldRef<"Claim", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"Claim", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Claim", 'DateTime'>
-  readonly invoiceMonthId: Prisma.FieldRef<"Claim", 'String'>
+  readonly billingMonthId: Prisma.FieldRef<"Claim", 'String'>
 }
     
 
@@ -2867,22 +3099,41 @@ export type ClaimDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Claim.invoiceMonth
+ * Claim.dept
  */
-export type Claim$invoiceMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Claim$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the InvoiceMonth
+   * Select specific fields to fetch from the Department
    */
-  select?: Prisma.InvoiceMonthSelect<ExtArgs> | null
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the InvoiceMonth
+   * Omit specific fields from the Department
    */
-  omit?: Prisma.InvoiceMonthOmit<ExtArgs> | null
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InvoiceMonthInclude<ExtArgs> | null
-  where?: Prisma.InvoiceMonthWhereInput
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
+}
+
+/**
+ * Claim.billingMonth
+ */
+export type Claim$billingMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BillingMonth
+   */
+  select?: Prisma.BillingMonthSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BillingMonth
+   */
+  omit?: Prisma.BillingMonthOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BillingMonthInclude<ExtArgs> | null
+  where?: Prisma.BillingMonthWhereInput
 }
 
 /**

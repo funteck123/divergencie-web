@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { BarChart2, TrendingUp, Target, BookOpen, CheckCircle2, ChevronDown, Star, Download, AlertCircle, Loader2 } from "lucide-react";
 import { getStudentProgressStats, getStudentProgress, getSyllabusItems } from "@/lib/actions/progress";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 export default function StudentProgressPage() {
   const { data: session } = useSession();

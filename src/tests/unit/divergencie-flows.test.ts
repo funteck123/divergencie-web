@@ -85,7 +85,7 @@ describe("Invoice Generation API Flow", () => {
       user: { id: "fin-1", email: "finance@dc.com", role: "staff", dept: "Finance" },
     } as any);
 
-    db.invoiceMonth.upsert.mockResolvedValueOnce({ id: "month-1", month: "2026-07" });
+    db.billingMonth.upsert.mockResolvedValueOnce({ id: "month-1", month: "2026-07" });
 
     // Enrolments lists query mock
     db.studentEnrolmentList.findMany.mockResolvedValueOnce([
@@ -129,7 +129,7 @@ describe("Invoice Generation API Flow", () => {
     ]);
 
     // Rate card lookup: UK, group code C (defaults to C for individual) -> £200 rate
-    db.rateCard.findFirst.mockResolvedValueOnce({ rateGBP: 200 });
+    db.rateItem.findFirst.mockResolvedValueOnce({ clientRate: 200 });
 
     // Discounts lookup: 10% percentage discount
     db.discount.findMany.mockResolvedValueOnce([

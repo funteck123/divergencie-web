@@ -27,18 +27,36 @@ export type AggregateAmbassadorProgrammeTimelineList = {
 export type AmbassadorProgrammeTimelineListMinAggregateOutputType = {
   id: string | null
   programmeListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type AmbassadorProgrammeTimelineListMaxAggregateOutputType = {
   id: string | null
   programmeListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type AmbassadorProgrammeTimelineListCountAggregateOutputType = {
   id: number
   programmeListId: number
+  name: number
+  version: number
+  status: number
+  activatedAt: number
+  pausedAt: number
+  deactivatedAt: number
   isActive: number
   _all: number
 }
@@ -47,18 +65,36 @@ export type AmbassadorProgrammeTimelineListCountAggregateOutputType = {
 export type AmbassadorProgrammeTimelineListMinAggregateInputType = {
   id?: true
   programmeListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type AmbassadorProgrammeTimelineListMaxAggregateInputType = {
   id?: true
   programmeListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type AmbassadorProgrammeTimelineListCountAggregateInputType = {
   id?: true
   programmeListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
   _all?: true
 }
@@ -138,6 +174,12 @@ export type AmbassadorProgrammeTimelineListGroupByArgs<ExtArgs extends runtime.T
 export type AmbassadorProgrammeTimelineListGroupByOutputType = {
   id: string
   programmeListId: string
+  name: string
+  version: string
+  status: string
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean
   _count: AmbassadorProgrammeTimelineListCountAggregateOutputType | null
   _min: AmbassadorProgrammeTimelineListMinAggregateOutputType | null
@@ -165,17 +207,31 @@ export type AmbassadorProgrammeTimelineListWhereInput = {
   NOT?: Prisma.AmbassadorProgrammeTimelineListWhereInput | Prisma.AmbassadorProgrammeTimelineListWhereInput[]
   id?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
   programmeListId?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  name?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  version?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  status?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorProgrammeTimelineList"> | boolean
   programmeList?: Prisma.XOR<Prisma.AmbassadorProgrammeListScalarRelationFilter, Prisma.AmbassadorProgrammeListWhereInput>
   items?: Prisma.AmbassadorProgrammeTimelineItemListRelationFilter
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogListRelationFilter
 }
 
 export type AmbassadorProgrammeTimelineListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   programmeList?: Prisma.AmbassadorProgrammeListOrderByWithRelationInput
   items?: Prisma.AmbassadorProgrammeTimelineItemOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type AmbassadorProgrammeTimelineListWhereUniqueInput = Prisma.AtLeast<{
@@ -184,14 +240,27 @@ export type AmbassadorProgrammeTimelineListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AmbassadorProgrammeTimelineListWhereInput[]
   NOT?: Prisma.AmbassadorProgrammeTimelineListWhereInput | Prisma.AmbassadorProgrammeTimelineListWhereInput[]
   programmeListId?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  name?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  version?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  status?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorProgrammeTimelineList"> | boolean
   programmeList?: Prisma.XOR<Prisma.AmbassadorProgrammeListScalarRelationFilter, Prisma.AmbassadorProgrammeListWhereInput>
   items?: Prisma.AmbassadorProgrammeTimelineItemListRelationFilter
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogListRelationFilter
 }, "id">
 
 export type AmbassadorProgrammeTimelineListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.AmbassadorProgrammeTimelineListCountOrderByAggregateInput
   _max?: Prisma.AmbassadorProgrammeTimelineListMaxOrderByAggregateInput
@@ -204,51 +273,103 @@ export type AmbassadorProgrammeTimelineListScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AmbassadorProgrammeTimelineListScalarWhereWithAggregatesInput | Prisma.AmbassadorProgrammeTimelineListScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | string
   programmeListId?: Prisma.StringWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | string
+  name?: Prisma.StringWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | string
+  version?: Prisma.StringWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | string
+  status?: Prisma.StringWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"AmbassadorProgrammeTimelineList"> | boolean
 }
 
 export type AmbassadorProgrammeTimelineListCreateInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   programmeList: Prisma.AmbassadorProgrammeListCreateNestedOneWithoutTimelineListsInput
   items?: Prisma.AmbassadorProgrammeTimelineItemCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogCreateNestedManyWithoutTimelineListInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedCreateInput = {
   id?: string
   programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   items?: Prisma.AmbassadorProgrammeTimelineItemUncheckedCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUncheckedCreateNestedManyWithoutTimelineListInput
 }
 
 export type AmbassadorProgrammeTimelineListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   programmeList?: Prisma.AmbassadorProgrammeListUpdateOneRequiredWithoutTimelineListsNestedInput
   items?: Prisma.AmbassadorProgrammeTimelineItemUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.AmbassadorProgrammeTimelineItemUncheckedUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListCreateManyInput = {
   id?: string
   programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type AmbassadorProgrammeTimelineListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -265,18 +386,36 @@ export type AmbassadorProgrammeTimelineListOrderByRelationAggregateInput = {
 export type AmbassadorProgrammeTimelineListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type AmbassadorProgrammeTimelineListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type AmbassadorProgrammeTimelineListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -327,6 +466,20 @@ export type AmbassadorProgrammeTimelineListUncheckedUpdateManyWithoutProgrammeLi
   deleteMany?: Prisma.AmbassadorProgrammeTimelineListScalarWhereInput | Prisma.AmbassadorProgrammeTimelineListScalarWhereInput[]
 }
 
+export type AmbassadorProgrammeTimelineListCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeTimelineListCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.AmbassadorProgrammeTimelineListWhereUniqueInput
+}
+
+export type AmbassadorProgrammeTimelineListUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeTimelineListCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.AmbassadorProgrammeTimelineListUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.AmbassadorProgrammeTimelineListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUpdateWithoutStatusChangeLogsInput>, Prisma.AmbassadorProgrammeTimelineListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type AmbassadorProgrammeTimelineListCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListCreateWithoutItemsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.AmbassadorProgrammeTimelineListCreateOrConnectWithoutItemsInput
@@ -343,14 +496,28 @@ export type AmbassadorProgrammeTimelineListUpdateOneRequiredWithoutItemsNestedIn
 
 export type AmbassadorProgrammeTimelineListCreateWithoutProgrammeListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   items?: Prisma.AmbassadorProgrammeTimelineItemCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogCreateNestedManyWithoutTimelineListInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedCreateWithoutProgrammeListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   items?: Prisma.AmbassadorProgrammeTimelineItemUncheckedCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUncheckedCreateNestedManyWithoutTimelineListInput
 }
 
 export type AmbassadorProgrammeTimelineListCreateOrConnectWithoutProgrammeListInput = {
@@ -385,19 +552,107 @@ export type AmbassadorProgrammeTimelineListScalarWhereInput = {
   NOT?: Prisma.AmbassadorProgrammeTimelineListScalarWhereInput | Prisma.AmbassadorProgrammeTimelineListScalarWhereInput[]
   id?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
   programmeListId?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  name?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  version?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  status?: Prisma.StringFilter<"AmbassadorProgrammeTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorProgrammeTimelineList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorProgrammeTimelineList"> | boolean
+}
+
+export type AmbassadorProgrammeTimelineListCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  programmeList: Prisma.AmbassadorProgrammeListCreateNestedOneWithoutTimelineListsInput
+  items?: Prisma.AmbassadorProgrammeTimelineItemCreateNestedManyWithoutTimelineListInput
+}
+
+export type AmbassadorProgrammeTimelineListUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  items?: Prisma.AmbassadorProgrammeTimelineItemUncheckedCreateNestedManyWithoutTimelineListInput
+}
+
+export type AmbassadorProgrammeTimelineListCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.AmbassadorProgrammeTimelineListWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type AmbassadorProgrammeTimelineListUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListUpdateWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.AmbassadorProgrammeTimelineListWhereInput
+}
+
+export type AmbassadorProgrammeTimelineListUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.AmbassadorProgrammeTimelineListWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorProgrammeTimelineListUpdateWithoutStatusChangeLogsInput, Prisma.AmbassadorProgrammeTimelineListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type AmbassadorProgrammeTimelineListUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  programmeList?: Prisma.AmbassadorProgrammeListUpdateOneRequiredWithoutTimelineListsNestedInput
+  items?: Prisma.AmbassadorProgrammeTimelineItemUpdateManyWithoutTimelineListNestedInput
+}
+
+export type AmbassadorProgrammeTimelineListUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  items?: Prisma.AmbassadorProgrammeTimelineItemUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListCreateWithoutItemsInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   programmeList: Prisma.AmbassadorProgrammeListCreateNestedOneWithoutTimelineListsInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogCreateNestedManyWithoutTimelineListInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedCreateWithoutItemsInput = {
   id?: string
   programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUncheckedCreateNestedManyWithoutTimelineListInput
 }
 
 export type AmbassadorProgrammeTimelineListCreateOrConnectWithoutItemsInput = {
@@ -418,35 +673,75 @@ export type AmbassadorProgrammeTimelineListUpdateToOneWithWhereWithoutItemsInput
 
 export type AmbassadorProgrammeTimelineListUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   programmeList?: Prisma.AmbassadorProgrammeListUpdateOneRequiredWithoutTimelineListsNestedInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListCreateManyProgrammeListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type AmbassadorProgrammeTimelineListUpdateWithoutProgrammeListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.AmbassadorProgrammeTimelineItemUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedUpdateWithoutProgrammeListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.AmbassadorProgrammeTimelineItemUncheckedUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type AmbassadorProgrammeTimelineListUncheckedUpdateManyWithoutProgrammeListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -457,10 +752,12 @@ export type AmbassadorProgrammeTimelineListUncheckedUpdateManyWithoutProgrammeLi
 
 export type AmbassadorProgrammeTimelineListCountOutputType = {
   items: number
+  statusChangeLogs: number
 }
 
 export type AmbassadorProgrammeTimelineListCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | AmbassadorProgrammeTimelineListCountOutputTypeCountItemsArgs
+  statusChangeLogs?: boolean | AmbassadorProgrammeTimelineListCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -480,19 +777,39 @@ export type AmbassadorProgrammeTimelineListCountOutputTypeCountItemsArgs<ExtArgs
   where?: Prisma.AmbassadorProgrammeTimelineItemWhereInput
 }
 
+/**
+ * AmbassadorProgrammeTimelineListCountOutputType without action
+ */
+export type AmbassadorProgrammeTimelineListCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogWhereInput
+}
+
 
 export type AmbassadorProgrammeTimelineListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
   items?: boolean | Prisma.AmbassadorProgrammeTimelineList$itemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AmbassadorProgrammeTimelineList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorProgrammeTimelineListCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorProgrammeTimelineList"]>
 
 export type AmbassadorProgrammeTimelineListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorProgrammeTimelineList"]>
@@ -500,6 +817,12 @@ export type AmbassadorProgrammeTimelineListSelectCreateManyAndReturn<ExtArgs ext
 export type AmbassadorProgrammeTimelineListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorProgrammeTimelineList"]>
@@ -507,13 +830,20 @@ export type AmbassadorProgrammeTimelineListSelectUpdateManyAndReturn<ExtArgs ext
 export type AmbassadorProgrammeTimelineListSelectScalar = {
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
 }
 
-export type AmbassadorProgrammeTimelineListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "programmeListId" | "isActive", ExtArgs["result"]["ambassadorProgrammeTimelineList"]>
+export type AmbassadorProgrammeTimelineListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "programmeListId" | "name" | "version" | "status" | "activatedAt" | "pausedAt" | "deactivatedAt" | "isActive", ExtArgs["result"]["ambassadorProgrammeTimelineList"]>
 export type AmbassadorProgrammeTimelineListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
   items?: boolean | Prisma.AmbassadorProgrammeTimelineList$itemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AmbassadorProgrammeTimelineList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorProgrammeTimelineListCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AmbassadorProgrammeTimelineListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -528,10 +858,17 @@ export type $AmbassadorProgrammeTimelineListPayload<ExtArgs extends runtime.Type
   objects: {
     programmeList: Prisma.$AmbassadorProgrammeListPayload<ExtArgs>
     items: Prisma.$AmbassadorProgrammeTimelineItemPayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$AmbassadorProgrammeTimelineListStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     programmeListId: string
+    name: string
+    version: string
+    status: string
+    activatedAt: Date | null
+    pausedAt: Date | null
+    deactivatedAt: Date | null
     isActive: boolean
   }, ExtArgs["result"]["ambassadorProgrammeTimelineList"]>
   composites: {}
@@ -929,6 +1266,7 @@ export interface Prisma__AmbassadorProgrammeTimelineListClient<T, Null = never, 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   programmeList<T extends Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorProgrammeListClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.AmbassadorProgrammeTimelineList$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeTimelineList$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeTimelineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.AmbassadorProgrammeTimelineList$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeTimelineList$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeTimelineListStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -960,6 +1298,12 @@ export interface Prisma__AmbassadorProgrammeTimelineListClient<T, Null = never, 
 export interface AmbassadorProgrammeTimelineListFieldRefs {
   readonly id: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'String'>
   readonly programmeListId: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'String'>
+  readonly name: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'String'>
+  readonly version: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'String'>
+  readonly status: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'String'>
+  readonly activatedAt: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'DateTime'>
+  readonly pausedAt: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'DateTime'>
+  readonly deactivatedAt: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"AmbassadorProgrammeTimelineList", 'Boolean'>
 }
     
@@ -1383,6 +1727,30 @@ export type AmbassadorProgrammeTimelineList$itemsArgs<ExtArgs extends runtime.Ty
   take?: number
   skip?: number
   distinct?: Prisma.AmbassadorProgrammeTimelineItemScalarFieldEnum | Prisma.AmbassadorProgrammeTimelineItemScalarFieldEnum[]
+}
+
+/**
+ * AmbassadorProgrammeTimelineList.statusChangeLogs
+ */
+export type AmbassadorProgrammeTimelineList$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AmbassadorProgrammeTimelineListStatusChangeLog
+   */
+  select?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AmbassadorProgrammeTimelineListStatusChangeLog
+   */
+  omit?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogWhereInput
+  orderBy?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogOrderByWithRelationInput | Prisma.AmbassadorProgrammeTimelineListStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AmbassadorProgrammeTimelineListStatusChangeLogScalarFieldEnum | Prisma.AmbassadorProgrammeTimelineListStatusChangeLogScalarFieldEnum[]
 }
 
 /**

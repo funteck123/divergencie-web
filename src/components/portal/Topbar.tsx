@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Bell, Search, User, Menu } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";

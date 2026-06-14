@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { getStudentProgressStats, getStudentAssignments, getStudentAnnouncements, getStudentSessions } from "@/lib/actions/progress";
 import { getStudentProfileStatus } from "@/lib/actions/profile";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
 export default function StudentDashboard() {

@@ -269,7 +269,7 @@ export type RateItemWhereInput = {
   deactivatedAt?: Prisma.DateTimeNullableFilter<"RateItem"> | Date | string | null
   isActive?: Prisma.BoolFilter<"RateItem"> | boolean
   rateList?: Prisma.XOR<Prisma.RateListScalarRelationFilter, Prisma.RateListWhereInput>
-  history?: Prisma.RateItemStatusHistoryListRelationFilter
+  history?: Prisma.RateItemStatusChangeLogListRelationFilter
   changes?: Prisma.RateChangeLogListRelationFilter
 }
 
@@ -286,7 +286,7 @@ export type RateItemOrderByWithRelationInput = {
   deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   rateList?: Prisma.RateListOrderByWithRelationInput
-  history?: Prisma.RateItemStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.RateItemStatusChangeLogOrderByRelationAggregateInput
   changes?: Prisma.RateChangeLogOrderByRelationAggregateInput
 }
 
@@ -306,7 +306,7 @@ export type RateItemWhereUniqueInput = Prisma.AtLeast<{
   deactivatedAt?: Prisma.DateTimeNullableFilter<"RateItem"> | Date | string | null
   isActive?: Prisma.BoolFilter<"RateItem"> | boolean
   rateList?: Prisma.XOR<Prisma.RateListScalarRelationFilter, Prisma.RateListWhereInput>
-  history?: Prisma.RateItemStatusHistoryListRelationFilter
+  history?: Prisma.RateItemStatusChangeLogListRelationFilter
   changes?: Prisma.RateChangeLogListRelationFilter
 }, "id">
 
@@ -358,7 +358,7 @@ export type RateItemCreateInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   rateList: Prisma.RateListCreateNestedOneWithoutRateItemsInput
-  history?: Prisma.RateItemStatusHistoryCreateNestedManyWithoutRateItemInput
+  history?: Prisma.RateItemStatusChangeLogCreateNestedManyWithoutRateItemInput
   changes?: Prisma.RateChangeLogCreateNestedManyWithoutRateItemInput
 }
 
@@ -374,7 +374,7 @@ export type RateItemUncheckedCreateInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.RateItemStatusHistoryUncheckedCreateNestedManyWithoutRateItemInput
+  history?: Prisma.RateItemStatusChangeLogUncheckedCreateNestedManyWithoutRateItemInput
   changes?: Prisma.RateChangeLogUncheckedCreateNestedManyWithoutRateItemInput
 }
 
@@ -390,7 +390,7 @@ export type RateItemUpdateInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rateList?: Prisma.RateListUpdateOneRequiredWithoutRateItemsNestedInput
-  history?: Prisma.RateItemStatusHistoryUpdateManyWithoutRateItemNestedInput
+  history?: Prisma.RateItemStatusChangeLogUpdateManyWithoutRateItemNestedInput
   changes?: Prisma.RateChangeLogUpdateManyWithoutRateItemNestedInput
 }
 
@@ -406,7 +406,7 @@ export type RateItemUncheckedUpdateInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.RateItemStatusHistoryUncheckedUpdateManyWithoutRateItemNestedInput
+  history?: Prisma.RateItemStatusChangeLogUncheckedUpdateManyWithoutRateItemNestedInput
   changes?: Prisma.RateChangeLogUncheckedUpdateManyWithoutRateItemNestedInput
 }
 
@@ -607,7 +607,7 @@ export type RateItemCreateWithoutRateListInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.RateItemStatusHistoryCreateNestedManyWithoutRateItemInput
+  history?: Prisma.RateItemStatusChangeLogCreateNestedManyWithoutRateItemInput
   changes?: Prisma.RateChangeLogCreateNestedManyWithoutRateItemInput
 }
 
@@ -622,7 +622,7 @@ export type RateItemUncheckedCreateWithoutRateListInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.RateItemStatusHistoryUncheckedCreateNestedManyWithoutRateItemInput
+  history?: Prisma.RateItemStatusChangeLogUncheckedCreateNestedManyWithoutRateItemInput
   changes?: Prisma.RateChangeLogUncheckedCreateNestedManyWithoutRateItemInput
 }
 
@@ -757,7 +757,7 @@ export type RateItemCreateWithoutChangesInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   rateList: Prisma.RateListCreateNestedOneWithoutRateItemsInput
-  history?: Prisma.RateItemStatusHistoryCreateNestedManyWithoutRateItemInput
+  history?: Prisma.RateItemStatusChangeLogCreateNestedManyWithoutRateItemInput
 }
 
 export type RateItemUncheckedCreateWithoutChangesInput = {
@@ -772,7 +772,7 @@ export type RateItemUncheckedCreateWithoutChangesInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.RateItemStatusHistoryUncheckedCreateNestedManyWithoutRateItemInput
+  history?: Prisma.RateItemStatusChangeLogUncheckedCreateNestedManyWithoutRateItemInput
 }
 
 export type RateItemCreateOrConnectWithoutChangesInput = {
@@ -803,7 +803,7 @@ export type RateItemUpdateWithoutChangesInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rateList?: Prisma.RateListUpdateOneRequiredWithoutRateItemsNestedInput
-  history?: Prisma.RateItemStatusHistoryUpdateManyWithoutRateItemNestedInput
+  history?: Prisma.RateItemStatusChangeLogUpdateManyWithoutRateItemNestedInput
 }
 
 export type RateItemUncheckedUpdateWithoutChangesInput = {
@@ -818,7 +818,7 @@ export type RateItemUncheckedUpdateWithoutChangesInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.RateItemStatusHistoryUncheckedUpdateManyWithoutRateItemNestedInput
+  history?: Prisma.RateItemStatusChangeLogUncheckedUpdateManyWithoutRateItemNestedInput
 }
 
 export type RateItemCreateManyRateListInput = {
@@ -845,7 +845,7 @@ export type RateItemUpdateWithoutRateListInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.RateItemStatusHistoryUpdateManyWithoutRateItemNestedInput
+  history?: Prisma.RateItemStatusChangeLogUpdateManyWithoutRateItemNestedInput
   changes?: Prisma.RateChangeLogUpdateManyWithoutRateItemNestedInput
 }
 
@@ -860,7 +860,7 @@ export type RateItemUncheckedUpdateWithoutRateListInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.RateItemStatusHistoryUncheckedUpdateManyWithoutRateItemNestedInput
+  history?: Prisma.RateItemStatusChangeLogUncheckedUpdateManyWithoutRateItemNestedInput
   changes?: Prisma.RateChangeLogUncheckedUpdateManyWithoutRateItemNestedInput
 }
 
@@ -906,7 +906,7 @@ export type RateItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  * RateItemCountOutputType without action
  */
 export type RateItemCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.RateItemStatusHistoryWhereInput
+  where?: Prisma.RateItemStatusChangeLogWhereInput
 }
 
 /**
@@ -997,7 +997,7 @@ export type $RateItemPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "RateItem"
   objects: {
     rateList: Prisma.$RateListPayload<ExtArgs>
-    history: Prisma.$RateItemStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$RateItemStatusChangeLogPayload<ExtArgs>[]
     changes: Prisma.$RateChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1407,7 +1407,7 @@ readonly fields: RateItemFieldRefs;
 export interface Prisma__RateItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   rateList<T extends Prisma.RateListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RateListDefaultArgs<ExtArgs>>): Prisma.Prisma__RateListClient<runtime.Types.Result.GetResult<Prisma.$RateListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.RateItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RateItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RateItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.RateItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RateItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RateItemStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   changes<T extends Prisma.RateItem$changesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RateItem$changesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RateChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1854,23 +1854,23 @@ export type RateItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
  */
 export type RateItem$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the RateItemStatusHistory
+   * Select specific fields to fetch from the RateItemStatusChangeLog
    */
-  select?: Prisma.RateItemStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.RateItemStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the RateItemStatusHistory
+   * Omit specific fields from the RateItemStatusChangeLog
    */
-  omit?: Prisma.RateItemStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.RateItemStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.RateItemStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.RateItemStatusHistoryWhereInput
-  orderBy?: Prisma.RateItemStatusHistoryOrderByWithRelationInput | Prisma.RateItemStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.RateItemStatusHistoryWhereUniqueInput
+  include?: Prisma.RateItemStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.RateItemStatusChangeLogWhereInput
+  orderBy?: Prisma.RateItemStatusChangeLogOrderByWithRelationInput | Prisma.RateItemStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.RateItemStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.RateItemStatusHistoryScalarFieldEnum | Prisma.RateItemStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.RateItemStatusChangeLogScalarFieldEnum | Prisma.RateItemStatusChangeLogScalarFieldEnum[]
 }
 
 /**

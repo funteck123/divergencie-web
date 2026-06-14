@@ -313,7 +313,7 @@ export type SyllabusItemWhereInput = {
   note?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   isActive?: Prisma.BoolFilter<"SyllabusItem"> | boolean
   syllabusList?: Prisma.XOR<Prisma.SyllabusListScalarRelationFilter, Prisma.SyllabusListWhereInput>
-  progressList?: Prisma.StudentProgressListRelationFilter
+  progressList?: Prisma.StudentSyllabusProgressListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
   mockItems?: Prisma.MockItemListRelationFilter
@@ -338,7 +338,7 @@ export type SyllabusItemOrderByWithRelationInput = {
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   syllabusList?: Prisma.SyllabusListOrderByWithRelationInput
-  progressList?: Prisma.StudentProgressOrderByRelationAggregateInput
+  progressList?: Prisma.StudentSyllabusProgressOrderByRelationAggregateInput
   doubts?: Prisma.DoubtOrderByRelationAggregateInput
   taskItems?: Prisma.TaskItemOrderByRelationAggregateInput
   mockItems?: Prisma.MockItemOrderByRelationAggregateInput
@@ -366,7 +366,7 @@ export type SyllabusItemWhereUniqueInput = Prisma.AtLeast<{
   note?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   isActive?: Prisma.BoolFilter<"SyllabusItem"> | boolean
   syllabusList?: Prisma.XOR<Prisma.SyllabusListScalarRelationFilter, Prisma.SyllabusListWhereInput>
-  progressList?: Prisma.StudentProgressListRelationFilter
+  progressList?: Prisma.StudentSyllabusProgressListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
   mockItems?: Prisma.MockItemListRelationFilter
@@ -436,7 +436,7 @@ export type SyllabusItemCreateInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
-  progressList?: Prisma.StudentProgressCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
@@ -460,7 +460,7 @@ export type SyllabusItemUncheckedCreateInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSyllabusItemInput
@@ -484,7 +484,7 @@ export type SyllabusItemUpdateInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
-  progressList?: Prisma.StudentProgressUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
@@ -508,7 +508,7 @@ export type SyllabusItemUncheckedUpdateInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
@@ -794,7 +794,7 @@ export type SyllabusItemCreateWithoutSyllabusListInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
@@ -817,7 +817,7 @@ export type SyllabusItemUncheckedCreateWithoutSyllabusListInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSyllabusItemInput
@@ -997,7 +997,7 @@ export type SyllabusItemCreateWithoutTaskItemsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
-  progressList?: Prisma.StudentProgressCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
   courseTimelineItems?: Prisma.CourseTimelineItemCreateNestedManyWithoutSyllabusItemInput
@@ -1020,7 +1020,7 @@ export type SyllabusItemUncheckedCreateWithoutTaskItemsInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   courseTimelineItems?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutSyllabusItemInput
@@ -1059,7 +1059,7 @@ export type SyllabusItemUpdateWithoutTaskItemsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
-  progressList?: Prisma.StudentProgressUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
   courseTimelineItems?: Prisma.CourseTimelineItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1082,7 +1082,7 @@ export type SyllabusItemUncheckedUpdateWithoutTaskItemsInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   courseTimelineItems?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
@@ -1105,7 +1105,7 @@ export type SyllabusItemCreateWithoutMockItemsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
-  progressList?: Prisma.StudentProgressCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   courseTimelineItems?: Prisma.CourseTimelineItemCreateNestedManyWithoutSyllabusItemInput
@@ -1128,7 +1128,7 @@ export type SyllabusItemUncheckedCreateWithoutMockItemsInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   courseTimelineItems?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutSyllabusItemInput
@@ -1167,7 +1167,7 @@ export type SyllabusItemUpdateWithoutMockItemsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
-  progressList?: Prisma.StudentProgressUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   courseTimelineItems?: Prisma.CourseTimelineItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1190,7 +1190,7 @@ export type SyllabusItemUncheckedUpdateWithoutMockItemsInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   courseTimelineItems?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
@@ -1213,7 +1213,7 @@ export type SyllabusItemCreateWithoutCourseTimelineItemsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
-  progressList?: Prisma.StudentProgressCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
@@ -1236,7 +1236,7 @@ export type SyllabusItemUncheckedCreateWithoutCourseTimelineItemsInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSyllabusItemInput
@@ -1275,7 +1275,7 @@ export type SyllabusItemUpdateWithoutCourseTimelineItemsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
-  progressList?: Prisma.StudentProgressUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1298,7 +1298,7 @@ export type SyllabusItemUncheckedUpdateWithoutCourseTimelineItemsInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
@@ -1321,7 +1321,7 @@ export type SyllabusItemCreateWithoutDoubtsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
-  progressList?: Prisma.StudentProgressCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
   courseTimelineItems?: Prisma.CourseTimelineItemCreateNestedManyWithoutSyllabusItemInput
@@ -1344,7 +1344,7 @@ export type SyllabusItemUncheckedCreateWithoutDoubtsInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
-  progressList?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSyllabusItemInput
   courseTimelineItems?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutSyllabusItemInput
@@ -1383,7 +1383,7 @@ export type SyllabusItemUpdateWithoutDoubtsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
-  progressList?: Prisma.StudentProgressUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
   courseTimelineItems?: Prisma.CourseTimelineItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1406,7 +1406,7 @@ export type SyllabusItemUncheckedUpdateWithoutDoubtsInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   courseTimelineItems?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
@@ -1446,7 +1446,7 @@ export type SyllabusItemUpdateWithoutSyllabusListInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1469,7 +1469,7 @@ export type SyllabusItemUncheckedUpdateWithoutSyllabusListInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  progressList?: Prisma.StudentProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
@@ -1529,7 +1529,7 @@ export type SyllabusItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
  * SyllabusItemCountOutputType without action
  */
 export type SyllabusItemCountOutputTypeCountProgressListArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentProgressWhereInput
+  where?: Prisma.StudentSyllabusProgressWhereInput
 }
 
 /**
@@ -1667,7 +1667,7 @@ export type $SyllabusItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "SyllabusItem"
   objects: {
     syllabusList: Prisma.$SyllabusListPayload<ExtArgs>
-    progressList: Prisma.$StudentProgressPayload<ExtArgs>[]
+    progressList: Prisma.$StudentSyllabusProgressPayload<ExtArgs>[]
     doubts: Prisma.$DoubtPayload<ExtArgs>[]
     taskItems: Prisma.$TaskItemPayload<ExtArgs>[]
     mockItems: Prisma.$MockItemPayload<ExtArgs>[]
@@ -2085,7 +2085,7 @@ readonly fields: SyllabusItemFieldRefs;
 export interface Prisma__SyllabusItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   syllabusList<T extends Prisma.SyllabusListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusListDefaultArgs<ExtArgs>>): Prisma.Prisma__SyllabusListClient<runtime.Types.Result.GetResult<Prisma.$SyllabusListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  progressList<T extends Prisma.SyllabusItem$progressListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$progressListArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  progressList<T extends Prisma.SyllabusItem$progressListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$progressListArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentSyllabusProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   doubts<T extends Prisma.SyllabusItem$doubtsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$doubtsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoubtPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskItems<T extends Prisma.SyllabusItem$taskItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$taskItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mockItems<T extends Prisma.SyllabusItem$mockItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$mockItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2540,23 +2540,23 @@ export type SyllabusItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
  */
 export type SyllabusItem$progressListArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StudentProgress
+   * Select specific fields to fetch from the StudentSyllabusProgress
    */
-  select?: Prisma.StudentProgressSelect<ExtArgs> | null
+  select?: Prisma.StudentSyllabusProgressSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StudentProgress
+   * Omit specific fields from the StudentSyllabusProgress
    */
-  omit?: Prisma.StudentProgressOmit<ExtArgs> | null
+  omit?: Prisma.StudentSyllabusProgressOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StudentProgressInclude<ExtArgs> | null
-  where?: Prisma.StudentProgressWhereInput
-  orderBy?: Prisma.StudentProgressOrderByWithRelationInput | Prisma.StudentProgressOrderByWithRelationInput[]
-  cursor?: Prisma.StudentProgressWhereUniqueInput
+  include?: Prisma.StudentSyllabusProgressInclude<ExtArgs> | null
+  where?: Prisma.StudentSyllabusProgressWhereInput
+  orderBy?: Prisma.StudentSyllabusProgressOrderByWithRelationInput | Prisma.StudentSyllabusProgressOrderByWithRelationInput[]
+  cursor?: Prisma.StudentSyllabusProgressWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StudentProgressScalarFieldEnum | Prisma.StudentProgressScalarFieldEnum[]
+  distinct?: Prisma.StudentSyllabusProgressScalarFieldEnum | Prisma.StudentSyllabusProgressScalarFieldEnum[]
 }
 
 /**

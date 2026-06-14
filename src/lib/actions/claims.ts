@@ -20,15 +20,10 @@ export async function submitClaim(formData: FormData) {
 
   if (!userId || !month || isNaN(amount)) throw new Error("Missing required fields");
 
-  // Fetch the user's department for budget accounting
-  const claimant = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { dept: true }
-  });
-  const dept = claimant?.dept || "Finance";
+  const deptRecord = await prisma.department.findFirst({ where: { name: "Finance" } });
 
   const claim = await prisma.claim.create({
-    data: { userId, month, amount, notes, status: "pending", dept },
+    data: { userId, month, amount, currency: "GBP", notes, status: "pending", deptId: deptRecord?.id ?? null },
   });
 
   revalidatePath("/portal/staff/finance/claims");

@@ -12,7 +12,7 @@ import {
   Search
 } from "lucide-react";
 import { getLeads, createLead, updateLeadStatus, passLeadToPR } from "@/lib/actions/marketing";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { motion, AnimatePresence } from "framer-motion";
 
 function MarketingLeadsPageInner() {

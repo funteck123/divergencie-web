@@ -28,8 +28,8 @@ export type CandidateMinAggregateOutputType = {
   id: string | null
   email: string | null
   name: string | null
-  candidateType: string | null
-  role: string | null
+  candidateUserTypeId: string | null
+  staffRoleId: string | null
   status: string | null
   cvLink: string | null
   docsLink: string | null
@@ -59,8 +59,8 @@ export type CandidateMaxAggregateOutputType = {
   id: string | null
   email: string | null
   name: string | null
-  candidateType: string | null
-  role: string | null
+  candidateUserTypeId: string | null
+  staffRoleId: string | null
   status: string | null
   cvLink: string | null
   docsLink: string | null
@@ -90,8 +90,8 @@ export type CandidateCountAggregateOutputType = {
   id: number
   email: number
   name: number
-  candidateType: number
-  role: number
+  candidateUserTypeId: number
+  staffRoleId: number
   status: number
   cvLink: number
   docsLink: number
@@ -123,8 +123,8 @@ export type CandidateMinAggregateInputType = {
   id?: true
   email?: true
   name?: true
-  candidateType?: true
-  role?: true
+  candidateUserTypeId?: true
+  staffRoleId?: true
   status?: true
   cvLink?: true
   docsLink?: true
@@ -154,8 +154,8 @@ export type CandidateMaxAggregateInputType = {
   id?: true
   email?: true
   name?: true
-  candidateType?: true
-  role?: true
+  candidateUserTypeId?: true
+  staffRoleId?: true
   status?: true
   cvLink?: true
   docsLink?: true
@@ -185,8 +185,8 @@ export type CandidateCountAggregateInputType = {
   id?: true
   email?: true
   name?: true
-  candidateType?: true
-  role?: true
+  candidateUserTypeId?: true
+  staffRoleId?: true
   status?: true
   cvLink?: true
   docsLink?: true
@@ -289,8 +289,8 @@ export type CandidateGroupByOutputType = {
   id: string
   email: string
   name: string
-  candidateType: string | null
-  role: string
+  candidateUserTypeId: string | null
+  staffRoleId: string | null
   status: string
   cvLink: string | null
   docsLink: string | null
@@ -341,8 +341,8 @@ export type CandidateWhereInput = {
   id?: Prisma.StringFilter<"Candidate"> | string
   email?: Prisma.StringFilter<"Candidate"> | string
   name?: Prisma.StringFilter<"Candidate"> | string
-  candidateType?: Prisma.StringNullableFilter<"Candidate"> | string | null
-  role?: Prisma.StringFilter<"Candidate"> | string
+  candidateUserTypeId?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  staffRoleId?: Prisma.StringNullableFilter<"Candidate"> | string | null
   status?: Prisma.StringFilter<"Candidate"> | string
   cvLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
   docsLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
@@ -366,6 +366,8 @@ export type CandidateWhereInput = {
   classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
   workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  candidateUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
+  staffRole?: Prisma.XOR<Prisma.StaffRoleNullableScalarRelationFilter, Prisma.StaffRoleWhereInput> | null
   registrationEntries?: Prisma.RegistrationFormEntryListRelationFilter
 }
 
@@ -373,8 +375,8 @@ export type CandidateOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  candidateType?: Prisma.SortOrderInput | Prisma.SortOrder
-  role?: Prisma.SortOrder
+  candidateUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   cvLink?: Prisma.SortOrderInput | Prisma.SortOrder
   docsLink?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -398,6 +400,8 @@ export type CandidateOrderByWithRelationInput = {
   classSchedule?: Prisma.SortOrderInput | Prisma.SortOrder
   workFolder?: Prisma.SortOrderInput | Prisma.SortOrder
   interviewRequestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  candidateUserType?: Prisma.UserTypeOrderByWithRelationInput
+  staffRole?: Prisma.StaffRoleOrderByWithRelationInput
   registrationEntries?: Prisma.RegistrationFormEntryOrderByRelationAggregateInput
 }
 
@@ -408,8 +412,8 @@ export type CandidateWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CandidateWhereInput[]
   NOT?: Prisma.CandidateWhereInput | Prisma.CandidateWhereInput[]
   name?: Prisma.StringFilter<"Candidate"> | string
-  candidateType?: Prisma.StringNullableFilter<"Candidate"> | string | null
-  role?: Prisma.StringFilter<"Candidate"> | string
+  candidateUserTypeId?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  staffRoleId?: Prisma.StringNullableFilter<"Candidate"> | string | null
   status?: Prisma.StringFilter<"Candidate"> | string
   cvLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
   docsLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
@@ -433,6 +437,8 @@ export type CandidateWhereUniqueInput = Prisma.AtLeast<{
   classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
   workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
   interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  candidateUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
+  staffRole?: Prisma.XOR<Prisma.StaffRoleNullableScalarRelationFilter, Prisma.StaffRoleWhereInput> | null
   registrationEntries?: Prisma.RegistrationFormEntryListRelationFilter
 }, "id" | "email">
 
@@ -440,8 +446,8 @@ export type CandidateOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  candidateType?: Prisma.SortOrderInput | Prisma.SortOrder
-  role?: Prisma.SortOrder
+  candidateUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   cvLink?: Prisma.SortOrderInput | Prisma.SortOrder
   docsLink?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -477,8 +483,8 @@ export type CandidateScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Candidate"> | string
   email?: Prisma.StringWithAggregatesFilter<"Candidate"> | string
   name?: Prisma.StringWithAggregatesFilter<"Candidate"> | string
-  candidateType?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
-  role?: Prisma.StringWithAggregatesFilter<"Candidate"> | string
+  candidateUserTypeId?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
+  staffRoleId?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Candidate"> | string
   cvLink?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
   docsLink?: Prisma.StringNullableWithAggregatesFilter<"Candidate"> | string | null
@@ -508,8 +514,6 @@ export type CandidateCreateInput = {
   id?: string
   email: string
   name: string
-  candidateType?: string | null
-  role: string
   status?: string
   cvLink?: string | null
   docsLink?: string | null
@@ -533,6 +537,8 @@ export type CandidateCreateInput = {
   classSchedule?: string | null
   workFolder?: string | null
   interviewRequestedAt?: Date | string | null
+  candidateUserType?: Prisma.UserTypeCreateNestedOneWithoutCandidatesInput
+  staffRole?: Prisma.StaffRoleCreateNestedOneWithoutCandidatesInput
   registrationEntries?: Prisma.RegistrationFormEntryCreateNestedManyWithoutConvertedToCandidateInput
 }
 
@@ -540,8 +546,8 @@ export type CandidateUncheckedCreateInput = {
   id?: string
   email: string
   name: string
-  candidateType?: string | null
-  role: string
+  candidateUserTypeId?: string | null
+  staffRoleId?: string | null
   status?: string
   cvLink?: string | null
   docsLink?: string | null
@@ -572,8 +578,6 @@ export type CandidateUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  candidateType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -597,6 +601,8 @@ export type CandidateUpdateInput = {
   classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  candidateUserType?: Prisma.UserTypeUpdateOneWithoutCandidatesNestedInput
+  staffRole?: Prisma.StaffRoleUpdateOneWithoutCandidatesNestedInput
   registrationEntries?: Prisma.RegistrationFormEntryUpdateManyWithoutConvertedToCandidateNestedInput
 }
 
@@ -604,8 +610,8 @@ export type CandidateUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  candidateType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -636,8 +642,8 @@ export type CandidateCreateManyInput = {
   id?: string
   email: string
   name: string
-  candidateType?: string | null
-  role: string
+  candidateUserTypeId?: string | null
+  staffRoleId?: string | null
   status?: string
   cvLink?: string | null
   docsLink?: string | null
@@ -667,8 +673,6 @@ export type CandidateUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  candidateType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -698,8 +702,8 @@ export type CandidateUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  candidateType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -725,12 +729,22 @@ export type CandidateUncheckedUpdateManyInput = {
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+export type CandidateListRelationFilter = {
+  every?: Prisma.CandidateWhereInput
+  some?: Prisma.CandidateWhereInput
+  none?: Prisma.CandidateWhereInput
+}
+
+export type CandidateOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type CandidateCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  candidateType?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  candidateUserTypeId?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   cvLink?: Prisma.SortOrder
   docsLink?: Prisma.SortOrder
@@ -760,8 +774,8 @@ export type CandidateMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  candidateType?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  candidateUserTypeId?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   cvLink?: Prisma.SortOrder
   docsLink?: Prisma.SortOrder
@@ -791,8 +805,8 @@ export type CandidateMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  candidateType?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  candidateUserTypeId?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   cvLink?: Prisma.SortOrder
   docsLink?: Prisma.SortOrder
@@ -823,6 +837,90 @@ export type CandidateNullableScalarRelationFilter = {
   isNot?: Prisma.CandidateWhereInput | null
 }
 
+export type CandidateCreateNestedManyWithoutStaffRoleInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutStaffRoleInput, Prisma.CandidateUncheckedCreateWithoutStaffRoleInput> | Prisma.CandidateCreateWithoutStaffRoleInput[] | Prisma.CandidateUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutStaffRoleInput | Prisma.CandidateCreateOrConnectWithoutStaffRoleInput[]
+  createMany?: Prisma.CandidateCreateManyStaffRoleInputEnvelope
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+}
+
+export type CandidateUncheckedCreateNestedManyWithoutStaffRoleInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutStaffRoleInput, Prisma.CandidateUncheckedCreateWithoutStaffRoleInput> | Prisma.CandidateCreateWithoutStaffRoleInput[] | Prisma.CandidateUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutStaffRoleInput | Prisma.CandidateCreateOrConnectWithoutStaffRoleInput[]
+  createMany?: Prisma.CandidateCreateManyStaffRoleInputEnvelope
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+}
+
+export type CandidateUpdateManyWithoutStaffRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutStaffRoleInput, Prisma.CandidateUncheckedCreateWithoutStaffRoleInput> | Prisma.CandidateCreateWithoutStaffRoleInput[] | Prisma.CandidateUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutStaffRoleInput | Prisma.CandidateCreateOrConnectWithoutStaffRoleInput[]
+  upsert?: Prisma.CandidateUpsertWithWhereUniqueWithoutStaffRoleInput | Prisma.CandidateUpsertWithWhereUniqueWithoutStaffRoleInput[]
+  createMany?: Prisma.CandidateCreateManyStaffRoleInputEnvelope
+  set?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  disconnect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  delete?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  update?: Prisma.CandidateUpdateWithWhereUniqueWithoutStaffRoleInput | Prisma.CandidateUpdateWithWhereUniqueWithoutStaffRoleInput[]
+  updateMany?: Prisma.CandidateUpdateManyWithWhereWithoutStaffRoleInput | Prisma.CandidateUpdateManyWithWhereWithoutStaffRoleInput[]
+  deleteMany?: Prisma.CandidateScalarWhereInput | Prisma.CandidateScalarWhereInput[]
+}
+
+export type CandidateUncheckedUpdateManyWithoutStaffRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutStaffRoleInput, Prisma.CandidateUncheckedCreateWithoutStaffRoleInput> | Prisma.CandidateCreateWithoutStaffRoleInput[] | Prisma.CandidateUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutStaffRoleInput | Prisma.CandidateCreateOrConnectWithoutStaffRoleInput[]
+  upsert?: Prisma.CandidateUpsertWithWhereUniqueWithoutStaffRoleInput | Prisma.CandidateUpsertWithWhereUniqueWithoutStaffRoleInput[]
+  createMany?: Prisma.CandidateCreateManyStaffRoleInputEnvelope
+  set?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  disconnect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  delete?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  update?: Prisma.CandidateUpdateWithWhereUniqueWithoutStaffRoleInput | Prisma.CandidateUpdateWithWhereUniqueWithoutStaffRoleInput[]
+  updateMany?: Prisma.CandidateUpdateManyWithWhereWithoutStaffRoleInput | Prisma.CandidateUpdateManyWithWhereWithoutStaffRoleInput[]
+  deleteMany?: Prisma.CandidateScalarWhereInput | Prisma.CandidateScalarWhereInput[]
+}
+
+export type CandidateCreateNestedManyWithoutCandidateUserTypeInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput> | Prisma.CandidateCreateWithoutCandidateUserTypeInput[] | Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput | Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput[]
+  createMany?: Prisma.CandidateCreateManyCandidateUserTypeInputEnvelope
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+}
+
+export type CandidateUncheckedCreateNestedManyWithoutCandidateUserTypeInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput> | Prisma.CandidateCreateWithoutCandidateUserTypeInput[] | Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput | Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput[]
+  createMany?: Prisma.CandidateCreateManyCandidateUserTypeInputEnvelope
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+}
+
+export type CandidateUpdateManyWithoutCandidateUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput> | Prisma.CandidateCreateWithoutCandidateUserTypeInput[] | Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput | Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput[]
+  upsert?: Prisma.CandidateUpsertWithWhereUniqueWithoutCandidateUserTypeInput | Prisma.CandidateUpsertWithWhereUniqueWithoutCandidateUserTypeInput[]
+  createMany?: Prisma.CandidateCreateManyCandidateUserTypeInputEnvelope
+  set?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  disconnect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  delete?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  update?: Prisma.CandidateUpdateWithWhereUniqueWithoutCandidateUserTypeInput | Prisma.CandidateUpdateWithWhereUniqueWithoutCandidateUserTypeInput[]
+  updateMany?: Prisma.CandidateUpdateManyWithWhereWithoutCandidateUserTypeInput | Prisma.CandidateUpdateManyWithWhereWithoutCandidateUserTypeInput[]
+  deleteMany?: Prisma.CandidateScalarWhereInput | Prisma.CandidateScalarWhereInput[]
+}
+
+export type CandidateUncheckedUpdateManyWithoutCandidateUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.CandidateCreateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput> | Prisma.CandidateCreateWithoutCandidateUserTypeInput[] | Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput[]
+  connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput | Prisma.CandidateCreateOrConnectWithoutCandidateUserTypeInput[]
+  upsert?: Prisma.CandidateUpsertWithWhereUniqueWithoutCandidateUserTypeInput | Prisma.CandidateUpsertWithWhereUniqueWithoutCandidateUserTypeInput[]
+  createMany?: Prisma.CandidateCreateManyCandidateUserTypeInputEnvelope
+  set?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  disconnect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  delete?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  connect?: Prisma.CandidateWhereUniqueInput | Prisma.CandidateWhereUniqueInput[]
+  update?: Prisma.CandidateUpdateWithWhereUniqueWithoutCandidateUserTypeInput | Prisma.CandidateUpdateWithWhereUniqueWithoutCandidateUserTypeInput[]
+  updateMany?: Prisma.CandidateUpdateManyWithWhereWithoutCandidateUserTypeInput | Prisma.CandidateUpdateManyWithWhereWithoutCandidateUserTypeInput[]
+  deleteMany?: Prisma.CandidateScalarWhereInput | Prisma.CandidateScalarWhereInput[]
+}
+
 export type CandidateCreateNestedOneWithoutRegistrationEntriesInput = {
   create?: Prisma.XOR<Prisma.CandidateCreateWithoutRegistrationEntriesInput, Prisma.CandidateUncheckedCreateWithoutRegistrationEntriesInput>
   connectOrCreate?: Prisma.CandidateCreateOrConnectWithoutRegistrationEntriesInput
@@ -839,12 +937,10 @@ export type CandidateUpdateOneWithoutRegistrationEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CandidateUpdateToOneWithWhereWithoutRegistrationEntriesInput, Prisma.CandidateUpdateWithoutRegistrationEntriesInput>, Prisma.CandidateUncheckedUpdateWithoutRegistrationEntriesInput>
 }
 
-export type CandidateCreateWithoutRegistrationEntriesInput = {
+export type CandidateCreateWithoutStaffRoleInput = {
   id?: string
   email: string
   name: string
-  candidateType?: string | null
-  role: string
   status?: string
   cvLink?: string | null
   docsLink?: string | null
@@ -868,14 +964,226 @@ export type CandidateCreateWithoutRegistrationEntriesInput = {
   classSchedule?: string | null
   workFolder?: string | null
   interviewRequestedAt?: Date | string | null
+  candidateUserType?: Prisma.UserTypeCreateNestedOneWithoutCandidatesInput
+  registrationEntries?: Prisma.RegistrationFormEntryCreateNestedManyWithoutConvertedToCandidateInput
+}
+
+export type CandidateUncheckedCreateWithoutStaffRoleInput = {
+  id?: string
+  email: string
+  name: string
+  candidateUserTypeId?: string | null
+  status?: string
+  cvLink?: string | null
+  docsLink?: string | null
+  notes?: string | null
+  outreachSource?: string | null
+  outreachStatus?: string | null
+  trialTaskLink?: string | null
+  interviewAt?: Date | string | null
+  convertedToUserId?: string | null
+  isActive?: boolean
+  outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
+  interviewRequestedAt?: Date | string | null
+  registrationEntries?: Prisma.RegistrationFormEntryUncheckedCreateNestedManyWithoutConvertedToCandidateInput
+}
+
+export type CandidateCreateOrConnectWithoutStaffRoleInput = {
+  where: Prisma.CandidateWhereUniqueInput
+  create: Prisma.XOR<Prisma.CandidateCreateWithoutStaffRoleInput, Prisma.CandidateUncheckedCreateWithoutStaffRoleInput>
+}
+
+export type CandidateCreateManyStaffRoleInputEnvelope = {
+  data: Prisma.CandidateCreateManyStaffRoleInput | Prisma.CandidateCreateManyStaffRoleInput[]
+  skipDuplicates?: boolean
+}
+
+export type CandidateUpsertWithWhereUniqueWithoutStaffRoleInput = {
+  where: Prisma.CandidateWhereUniqueInput
+  update: Prisma.XOR<Prisma.CandidateUpdateWithoutStaffRoleInput, Prisma.CandidateUncheckedUpdateWithoutStaffRoleInput>
+  create: Prisma.XOR<Prisma.CandidateCreateWithoutStaffRoleInput, Prisma.CandidateUncheckedCreateWithoutStaffRoleInput>
+}
+
+export type CandidateUpdateWithWhereUniqueWithoutStaffRoleInput = {
+  where: Prisma.CandidateWhereUniqueInput
+  data: Prisma.XOR<Prisma.CandidateUpdateWithoutStaffRoleInput, Prisma.CandidateUncheckedUpdateWithoutStaffRoleInput>
+}
+
+export type CandidateUpdateManyWithWhereWithoutStaffRoleInput = {
+  where: Prisma.CandidateScalarWhereInput
+  data: Prisma.XOR<Prisma.CandidateUpdateManyMutationInput, Prisma.CandidateUncheckedUpdateManyWithoutStaffRoleInput>
+}
+
+export type CandidateScalarWhereInput = {
+  AND?: Prisma.CandidateScalarWhereInput | Prisma.CandidateScalarWhereInput[]
+  OR?: Prisma.CandidateScalarWhereInput[]
+  NOT?: Prisma.CandidateScalarWhereInput | Prisma.CandidateScalarWhereInput[]
+  id?: Prisma.StringFilter<"Candidate"> | string
+  email?: Prisma.StringFilter<"Candidate"> | string
+  name?: Prisma.StringFilter<"Candidate"> | string
+  candidateUserTypeId?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  staffRoleId?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  status?: Prisma.StringFilter<"Candidate"> | string
+  cvLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  docsLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  notes?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  outreachSource?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  outreachStatus?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  trialTaskLink?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  interviewAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  convertedToUserId?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  isActive?: Prisma.BoolFilter<"Candidate"> | boolean
+  outreach?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  skills?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  extraSkills?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  qualifications?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  expectedRate?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  timeZone?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  interviewTime?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  startDate?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+  offerLetterStatus?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  gcrAccess?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  classSchedule?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  workFolder?: Prisma.StringNullableFilter<"Candidate"> | string | null
+  interviewRequestedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
+}
+
+export type CandidateCreateWithoutCandidateUserTypeInput = {
+  id?: string
+  email: string
+  name: string
+  status?: string
+  cvLink?: string | null
+  docsLink?: string | null
+  notes?: string | null
+  outreachSource?: string | null
+  outreachStatus?: string | null
+  trialTaskLink?: string | null
+  interviewAt?: Date | string | null
+  convertedToUserId?: string | null
+  isActive?: boolean
+  outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
+  interviewRequestedAt?: Date | string | null
+  staffRole?: Prisma.StaffRoleCreateNestedOneWithoutCandidatesInput
+  registrationEntries?: Prisma.RegistrationFormEntryCreateNestedManyWithoutConvertedToCandidateInput
+}
+
+export type CandidateUncheckedCreateWithoutCandidateUserTypeInput = {
+  id?: string
+  email: string
+  name: string
+  staffRoleId?: string | null
+  status?: string
+  cvLink?: string | null
+  docsLink?: string | null
+  notes?: string | null
+  outreachSource?: string | null
+  outreachStatus?: string | null
+  trialTaskLink?: string | null
+  interviewAt?: Date | string | null
+  convertedToUserId?: string | null
+  isActive?: boolean
+  outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
+  interviewRequestedAt?: Date | string | null
+  registrationEntries?: Prisma.RegistrationFormEntryUncheckedCreateNestedManyWithoutConvertedToCandidateInput
+}
+
+export type CandidateCreateOrConnectWithoutCandidateUserTypeInput = {
+  where: Prisma.CandidateWhereUniqueInput
+  create: Prisma.XOR<Prisma.CandidateCreateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput>
+}
+
+export type CandidateCreateManyCandidateUserTypeInputEnvelope = {
+  data: Prisma.CandidateCreateManyCandidateUserTypeInput | Prisma.CandidateCreateManyCandidateUserTypeInput[]
+  skipDuplicates?: boolean
+}
+
+export type CandidateUpsertWithWhereUniqueWithoutCandidateUserTypeInput = {
+  where: Prisma.CandidateWhereUniqueInput
+  update: Prisma.XOR<Prisma.CandidateUpdateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedUpdateWithoutCandidateUserTypeInput>
+  create: Prisma.XOR<Prisma.CandidateCreateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedCreateWithoutCandidateUserTypeInput>
+}
+
+export type CandidateUpdateWithWhereUniqueWithoutCandidateUserTypeInput = {
+  where: Prisma.CandidateWhereUniqueInput
+  data: Prisma.XOR<Prisma.CandidateUpdateWithoutCandidateUserTypeInput, Prisma.CandidateUncheckedUpdateWithoutCandidateUserTypeInput>
+}
+
+export type CandidateUpdateManyWithWhereWithoutCandidateUserTypeInput = {
+  where: Prisma.CandidateScalarWhereInput
+  data: Prisma.XOR<Prisma.CandidateUpdateManyMutationInput, Prisma.CandidateUncheckedUpdateManyWithoutCandidateUserTypeInput>
+}
+
+export type CandidateCreateWithoutRegistrationEntriesInput = {
+  id?: string
+  email: string
+  name: string
+  status?: string
+  cvLink?: string | null
+  docsLink?: string | null
+  notes?: string | null
+  outreachSource?: string | null
+  outreachStatus?: string | null
+  trialTaskLink?: string | null
+  interviewAt?: Date | string | null
+  convertedToUserId?: string | null
+  isActive?: boolean
+  outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
+  interviewRequestedAt?: Date | string | null
+  candidateUserType?: Prisma.UserTypeCreateNestedOneWithoutCandidatesInput
+  staffRole?: Prisma.StaffRoleCreateNestedOneWithoutCandidatesInput
 }
 
 export type CandidateUncheckedCreateWithoutRegistrationEntriesInput = {
   id?: string
   email: string
   name: string
-  candidateType?: string | null
-  role: string
+  candidateUserTypeId?: string | null
+  staffRoleId?: string | null
   status?: string
   cvLink?: string | null
   docsLink?: string | null
@@ -921,8 +1229,39 @@ export type CandidateUpdateWithoutRegistrationEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  candidateType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialTaskLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  candidateUserType?: Prisma.UserTypeUpdateOneWithoutCandidatesNestedInput
+  staffRole?: Prisma.StaffRoleUpdateOneWithoutCandidatesNestedInput
+}
+
+export type CandidateUncheckedUpdateWithoutRegistrationEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -948,12 +1287,225 @@ export type CandidateUpdateWithoutRegistrationEntriesInput = {
   interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
-export type CandidateUncheckedUpdateWithoutRegistrationEntriesInput = {
+export type CandidateCreateManyStaffRoleInput = {
+  id?: string
+  email: string
+  name: string
+  candidateUserTypeId?: string | null
+  status?: string
+  cvLink?: string | null
+  docsLink?: string | null
+  notes?: string | null
+  outreachSource?: string | null
+  outreachStatus?: string | null
+  trialTaskLink?: string | null
+  interviewAt?: Date | string | null
+  convertedToUserId?: string | null
+  isActive?: boolean
+  outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
+  interviewRequestedAt?: Date | string | null
+}
+
+export type CandidateUpdateWithoutStaffRoleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  candidateType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialTaskLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  candidateUserType?: Prisma.UserTypeUpdateOneWithoutCandidatesNestedInput
+  registrationEntries?: Prisma.RegistrationFormEntryUpdateManyWithoutConvertedToCandidateNestedInput
+}
+
+export type CandidateUncheckedUpdateWithoutStaffRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialTaskLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registrationEntries?: Prisma.RegistrationFormEntryUncheckedUpdateManyWithoutConvertedToCandidateNestedInput
+}
+
+export type CandidateUncheckedUpdateManyWithoutStaffRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  candidateUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialTaskLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type CandidateCreateManyCandidateUserTypeInput = {
+  id?: string
+  email: string
+  name: string
+  staffRoleId?: string | null
+  status?: string
+  cvLink?: string | null
+  docsLink?: string | null
+  notes?: string | null
+  outreachSource?: string | null
+  outreachStatus?: string | null
+  trialTaskLink?: string | null
+  interviewAt?: Date | string | null
+  convertedToUserId?: string | null
+  isActive?: boolean
+  outreach?: string | null
+  skills?: string | null
+  extraSkills?: string | null
+  qualifications?: string | null
+  expectedRate?: string | null
+  timeZone?: string | null
+  interviewTime?: string | null
+  startDate?: Date | string | null
+  offerLetterStatus?: string | null
+  gcrAccess?: string | null
+  classSchedule?: string | null
+  workFolder?: string | null
+  interviewRequestedAt?: Date | string | null
+}
+
+export type CandidateUpdateWithoutCandidateUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialTaskLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  staffRole?: Prisma.StaffRoleUpdateOneWithoutCandidatesNestedInput
+  registrationEntries?: Prisma.RegistrationFormEntryUpdateManyWithoutConvertedToCandidateNestedInput
+}
+
+export type CandidateUncheckedUpdateWithoutCandidateUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachSource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  outreachStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialTaskLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  convertedToUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  outreach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  extraSkills?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qualifications?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedRate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  offerLetterStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrAccess?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classSchedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workFolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interviewRequestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registrationEntries?: Prisma.RegistrationFormEntryUncheckedUpdateManyWithoutConvertedToCandidateNestedInput
+}
+
+export type CandidateUncheckedUpdateManyWithoutCandidateUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   cvLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   docsLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1014,8 +1566,8 @@ export type CandidateSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   email?: boolean
   name?: boolean
-  candidateType?: boolean
-  role?: boolean
+  candidateUserTypeId?: boolean
+  staffRoleId?: boolean
   status?: boolean
   cvLink?: boolean
   docsLink?: boolean
@@ -1039,6 +1591,8 @@ export type CandidateSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  candidateUserType?: boolean | Prisma.Candidate$candidateUserTypeArgs<ExtArgs>
+  staffRole?: boolean | Prisma.Candidate$staffRoleArgs<ExtArgs>
   registrationEntries?: boolean | Prisma.Candidate$registrationEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.CandidateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["candidate"]>
@@ -1047,8 +1601,8 @@ export type CandidateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   email?: boolean
   name?: boolean
-  candidateType?: boolean
-  role?: boolean
+  candidateUserTypeId?: boolean
+  staffRoleId?: boolean
   status?: boolean
   cvLink?: boolean
   docsLink?: boolean
@@ -1072,14 +1626,16 @@ export type CandidateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  candidateUserType?: boolean | Prisma.Candidate$candidateUserTypeArgs<ExtArgs>
+  staffRole?: boolean | Prisma.Candidate$staffRoleArgs<ExtArgs>
 }, ExtArgs["result"]["candidate"]>
 
 export type CandidateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
   name?: boolean
-  candidateType?: boolean
-  role?: boolean
+  candidateUserTypeId?: boolean
+  staffRoleId?: boolean
   status?: boolean
   cvLink?: boolean
   docsLink?: boolean
@@ -1103,14 +1659,16 @@ export type CandidateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   classSchedule?: boolean
   workFolder?: boolean
   interviewRequestedAt?: boolean
+  candidateUserType?: boolean | Prisma.Candidate$candidateUserTypeArgs<ExtArgs>
+  staffRole?: boolean | Prisma.Candidate$staffRoleArgs<ExtArgs>
 }, ExtArgs["result"]["candidate"]>
 
 export type CandidateSelectScalar = {
   id?: boolean
   email?: boolean
   name?: boolean
-  candidateType?: boolean
-  role?: boolean
+  candidateUserTypeId?: boolean
+  staffRoleId?: boolean
   status?: boolean
   cvLink?: boolean
   docsLink?: boolean
@@ -1136,25 +1694,35 @@ export type CandidateSelectScalar = {
   interviewRequestedAt?: boolean
 }
 
-export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "candidateType" | "role" | "status" | "cvLink" | "docsLink" | "notes" | "outreachSource" | "outreachStatus" | "trialTaskLink" | "interviewAt" | "convertedToUserId" | "isActive" | "outreach" | "skills" | "extraSkills" | "qualifications" | "expectedRate" | "timeZone" | "interviewTime" | "startDate" | "offerLetterStatus" | "gcrAccess" | "classSchedule" | "workFolder" | "interviewRequestedAt", ExtArgs["result"]["candidate"]>
+export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "name" | "candidateUserTypeId" | "staffRoleId" | "status" | "cvLink" | "docsLink" | "notes" | "outreachSource" | "outreachStatus" | "trialTaskLink" | "interviewAt" | "convertedToUserId" | "isActive" | "outreach" | "skills" | "extraSkills" | "qualifications" | "expectedRate" | "timeZone" | "interviewTime" | "startDate" | "offerLetterStatus" | "gcrAccess" | "classSchedule" | "workFolder" | "interviewRequestedAt", ExtArgs["result"]["candidate"]>
 export type CandidateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  candidateUserType?: boolean | Prisma.Candidate$candidateUserTypeArgs<ExtArgs>
+  staffRole?: boolean | Prisma.Candidate$staffRoleArgs<ExtArgs>
   registrationEntries?: boolean | Prisma.Candidate$registrationEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.CandidateCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type CandidateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type CandidateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CandidateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  candidateUserType?: boolean | Prisma.Candidate$candidateUserTypeArgs<ExtArgs>
+  staffRole?: boolean | Prisma.Candidate$staffRoleArgs<ExtArgs>
+}
+export type CandidateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  candidateUserType?: boolean | Prisma.Candidate$candidateUserTypeArgs<ExtArgs>
+  staffRole?: boolean | Prisma.Candidate$staffRoleArgs<ExtArgs>
+}
 
 export type $CandidatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Candidate"
   objects: {
+    candidateUserType: Prisma.$UserTypePayload<ExtArgs> | null
+    staffRole: Prisma.$StaffRolePayload<ExtArgs> | null
     registrationEntries: Prisma.$RegistrationFormEntryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
     name: string
-    candidateType: string | null
-    role: string
+    candidateUserTypeId: string | null
+    staffRoleId: string | null
     status: string
     cvLink: string | null
     docsLink: string | null
@@ -1572,6 +2140,8 @@ readonly fields: CandidateFieldRefs;
  */
 export interface Prisma__CandidateClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  candidateUserType<T extends Prisma.Candidate$candidateUserTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Candidate$candidateUserTypeArgs<ExtArgs>>): Prisma.Prisma__UserTypeClient<runtime.Types.Result.GetResult<Prisma.$UserTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  staffRole<T extends Prisma.Candidate$staffRoleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Candidate$staffRoleArgs<ExtArgs>>): Prisma.Prisma__StaffRoleClient<runtime.Types.Result.GetResult<Prisma.$StaffRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   registrationEntries<T extends Prisma.Candidate$registrationEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Candidate$registrationEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationFormEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1605,8 +2175,8 @@ export interface CandidateFieldRefs {
   readonly id: Prisma.FieldRef<"Candidate", 'String'>
   readonly email: Prisma.FieldRef<"Candidate", 'String'>
   readonly name: Prisma.FieldRef<"Candidate", 'String'>
-  readonly candidateType: Prisma.FieldRef<"Candidate", 'String'>
-  readonly role: Prisma.FieldRef<"Candidate", 'String'>
+  readonly candidateUserTypeId: Prisma.FieldRef<"Candidate", 'String'>
+  readonly staffRoleId: Prisma.FieldRef<"Candidate", 'String'>
   readonly status: Prisma.FieldRef<"Candidate", 'String'>
   readonly cvLink: Prisma.FieldRef<"Candidate", 'String'>
   readonly docsLink: Prisma.FieldRef<"Candidate", 'String'>
@@ -1884,6 +2454,10 @@ export type CandidateCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    */
   data: Prisma.CandidateCreateManyInput | Prisma.CandidateCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CandidateIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1954,6 +2528,10 @@ export type CandidateUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many Candidates to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CandidateIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2020,6 +2598,44 @@ export type CandidateDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many Candidates to delete.
    */
   limit?: number
+}
+
+/**
+ * Candidate.candidateUserType
+ */
+export type Candidate$candidateUserTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserType
+   */
+  select?: Prisma.UserTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserType
+   */
+  omit?: Prisma.UserTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTypeInclude<ExtArgs> | null
+  where?: Prisma.UserTypeWhereInput
+}
+
+/**
+ * Candidate.staffRole
+ */
+export type Candidate$staffRoleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffRole
+   */
+  select?: Prisma.StaffRoleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffRole
+   */
+  omit?: Prisma.StaffRoleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffRoleInclude<ExtArgs> | null
+  where?: Prisma.StaffRoleWhereInput
 }
 
 /**

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { BarChart2, TrendingUp, Target, Download, BookOpen, UserCheck, MessageSquare, ChevronDown, ArrowUpRight, Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { getLinkedChildren } from "@/lib/actions/profile";
 
 const COLORS = ['#4a9fd4','#e8a832','#f43f5e','#a855f7','#10b981'];

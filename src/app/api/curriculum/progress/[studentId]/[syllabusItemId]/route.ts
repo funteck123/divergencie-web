@@ -16,7 +16,7 @@ export async function PATCH(
   try {
     const { completed, masteryPct } = await req.json();
 
-    const progress = await prisma.studentProgress.upsert({
+    const progress = await prisma.studentSyllabusProgress.upsert({
       where: {
         studentId_syllabusItemId: { studentId, syllabusItemId }
       },

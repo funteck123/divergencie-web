@@ -290,7 +290,7 @@ export type StudentEnrolmentItemWhereInput = {
   isActive?: Prisma.BoolFilter<"StudentEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.StudentEnrolmentListScalarRelationFilter, Prisma.StudentEnrolmentListWhereInput>
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
-  history?: Prisma.StudentEnrolmentItemStatusHistoryListRelationFilter
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogListRelationFilter
   discounts?: Prisma.DiscountListRelationFilter
   attendances?: Prisma.SessionAttendanceListRelationFilter
   invoiceLineItems?: Prisma.InvoiceLineItemListRelationFilter
@@ -314,7 +314,7 @@ export type StudentEnrolmentItemOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   enrolmentList?: Prisma.StudentEnrolmentListOrderByWithRelationInput
   service?: Prisma.ServiceOrderByWithRelationInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogOrderByRelationAggregateInput
   discounts?: Prisma.DiscountOrderByRelationAggregateInput
   attendances?: Prisma.SessionAttendanceOrderByRelationAggregateInput
   invoiceLineItems?: Prisma.InvoiceLineItemOrderByRelationAggregateInput
@@ -341,7 +341,7 @@ export type StudentEnrolmentItemWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"StudentEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.StudentEnrolmentListScalarRelationFilter, Prisma.StudentEnrolmentListWhereInput>
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
-  history?: Prisma.StudentEnrolmentItemStatusHistoryListRelationFilter
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogListRelationFilter
   discounts?: Prisma.DiscountListRelationFilter
   attendances?: Prisma.SessionAttendanceListRelationFilter
   invoiceLineItems?: Prisma.InvoiceLineItemListRelationFilter
@@ -405,7 +405,7 @@ export type StudentEnrolmentItemCreateInput = {
   isActive?: boolean
   enrolmentList: Prisma.StudentEnrolmentListCreateNestedOneWithoutItemsInput
   service: Prisma.ServiceCreateNestedOneWithoutStudentEnrolmentItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutEnrolmentItemInput
@@ -427,7 +427,7 @@ export type StudentEnrolmentItemUncheckedCreateInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedCreateNestedManyWithoutEnrolmentItemInput
@@ -449,7 +449,7 @@ export type StudentEnrolmentItemUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StudentEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutStudentEnrolmentItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUpdateManyWithoutEnrolmentItemNestedInput
@@ -471,7 +471,7 @@ export type StudentEnrolmentItemUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedUpdateManyWithoutEnrolmentItemNestedInput
@@ -780,7 +780,7 @@ export type StudentEnrolmentItemCreateWithoutServiceInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.StudentEnrolmentListCreateNestedOneWithoutItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutEnrolmentItemInput
@@ -801,7 +801,7 @@ export type StudentEnrolmentItemUncheckedCreateWithoutServiceInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedCreateNestedManyWithoutEnrolmentItemInput
@@ -868,7 +868,7 @@ export type StudentEnrolmentItemCreateWithoutEnrolmentListInput = {
   cancellationReason?: string | null
   isActive?: boolean
   service: Prisma.ServiceCreateNestedOneWithoutStudentEnrolmentItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutEnrolmentItemInput
@@ -889,7 +889,7 @@ export type StudentEnrolmentItemUncheckedCreateWithoutEnrolmentListInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedCreateNestedManyWithoutEnrolmentItemInput
@@ -1037,7 +1037,7 @@ export type StudentEnrolmentItemCreateWithoutDiscountsInput = {
   isActive?: boolean
   enrolmentList: Prisma.StudentEnrolmentListCreateNestedOneWithoutItemsInput
   service: Prisma.ServiceCreateNestedOneWithoutStudentEnrolmentItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutEnrolmentItemInput
   commissionItems?: Prisma.AmbassadorCommissionItemCreateNestedManyWithoutStudentEnrolmentItemInput
@@ -1058,7 +1058,7 @@ export type StudentEnrolmentItemUncheckedCreateWithoutDiscountsInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedCreateNestedManyWithoutEnrolmentItemInput
   commissionItems?: Prisma.AmbassadorCommissionItemUncheckedCreateNestedManyWithoutStudentEnrolmentItemInput
@@ -1095,7 +1095,7 @@ export type StudentEnrolmentItemUpdateWithoutDiscountsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StudentEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutStudentEnrolmentItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUpdateManyWithoutEnrolmentItemNestedInput
   commissionItems?: Prisma.AmbassadorCommissionItemUpdateManyWithoutStudentEnrolmentItemNestedInput
@@ -1116,7 +1116,7 @@ export type StudentEnrolmentItemUncheckedUpdateWithoutDiscountsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   commissionItems?: Prisma.AmbassadorCommissionItemUncheckedUpdateManyWithoutStudentEnrolmentItemNestedInput
@@ -1137,7 +1137,7 @@ export type StudentEnrolmentItemCreateWithoutCommissionItemsInput = {
   isActive?: boolean
   enrolmentList: Prisma.StudentEnrolmentListCreateNestedOneWithoutItemsInput
   service: Prisma.ServiceCreateNestedOneWithoutStudentEnrolmentItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutEnrolmentItemInput
@@ -1158,7 +1158,7 @@ export type StudentEnrolmentItemUncheckedCreateWithoutCommissionItemsInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedCreateNestedManyWithoutEnrolmentItemInput
@@ -1195,7 +1195,7 @@ export type StudentEnrolmentItemUpdateWithoutCommissionItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StudentEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutStudentEnrolmentItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUpdateManyWithoutEnrolmentItemNestedInput
@@ -1216,7 +1216,7 @@ export type StudentEnrolmentItemUncheckedUpdateWithoutCommissionItemsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedUpdateManyWithoutEnrolmentItemNestedInput
@@ -1237,7 +1237,7 @@ export type StudentEnrolmentItemCreateWithoutAttendancesInput = {
   isActive?: boolean
   enrolmentList: Prisma.StudentEnrolmentListCreateNestedOneWithoutItemsInput
   service: Prisma.ServiceCreateNestedOneWithoutStudentEnrolmentItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutEnrolmentItemInput
   commissionItems?: Prisma.AmbassadorCommissionItemCreateNestedManyWithoutStudentEnrolmentItemInput
@@ -1258,7 +1258,7 @@ export type StudentEnrolmentItemUncheckedCreateWithoutAttendancesInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutEnrolmentItemInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedCreateNestedManyWithoutEnrolmentItemInput
   commissionItems?: Prisma.AmbassadorCommissionItemUncheckedCreateNestedManyWithoutStudentEnrolmentItemInput
@@ -1295,7 +1295,7 @@ export type StudentEnrolmentItemUpdateWithoutAttendancesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StudentEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutStudentEnrolmentItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUpdateManyWithoutEnrolmentItemNestedInput
   commissionItems?: Prisma.AmbassadorCommissionItemUpdateManyWithoutStudentEnrolmentItemNestedInput
@@ -1316,7 +1316,7 @@ export type StudentEnrolmentItemUncheckedUpdateWithoutAttendancesInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   commissionItems?: Prisma.AmbassadorCommissionItemUncheckedUpdateManyWithoutStudentEnrolmentItemNestedInput
@@ -1337,7 +1337,7 @@ export type StudentEnrolmentItemCreateWithoutInvoiceLineItemsInput = {
   isActive?: boolean
   enrolmentList: Prisma.StudentEnrolmentListCreateNestedOneWithoutItemsInput
   service: Prisma.ServiceCreateNestedOneWithoutStudentEnrolmentItemsInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutEnrolmentItemInput
   commissionItems?: Prisma.AmbassadorCommissionItemCreateNestedManyWithoutStudentEnrolmentItemInput
@@ -1358,7 +1358,7 @@ export type StudentEnrolmentItemUncheckedCreateWithoutInvoiceLineItemsInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   discounts?: Prisma.DiscountUncheckedCreateNestedManyWithoutEnrolmentItemInput
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
   commissionItems?: Prisma.AmbassadorCommissionItemUncheckedCreateNestedManyWithoutStudentEnrolmentItemInput
@@ -1395,7 +1395,7 @@ export type StudentEnrolmentItemUpdateWithoutInvoiceLineItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StudentEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutStudentEnrolmentItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutEnrolmentItemNestedInput
   commissionItems?: Prisma.AmbassadorCommissionItemUpdateManyWithoutStudentEnrolmentItemNestedInput
@@ -1416,7 +1416,7 @@ export type StudentEnrolmentItemUncheckedUpdateWithoutInvoiceLineItemsInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   commissionItems?: Prisma.AmbassadorCommissionItemUncheckedUpdateManyWithoutStudentEnrolmentItemNestedInput
@@ -1452,7 +1452,7 @@ export type StudentEnrolmentItemUpdateWithoutServiceInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StudentEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUpdateManyWithoutEnrolmentItemNestedInput
@@ -1473,7 +1473,7 @@ export type StudentEnrolmentItemUncheckedUpdateWithoutServiceInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedUpdateManyWithoutEnrolmentItemNestedInput
@@ -1526,7 +1526,7 @@ export type StudentEnrolmentItemUpdateWithoutEnrolmentListInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   service?: Prisma.ServiceUpdateOneRequiredWithoutStudentEnrolmentItemsNestedInput
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUpdateManyWithoutEnrolmentItemNestedInput
@@ -1547,7 +1547,7 @@ export type StudentEnrolmentItemUncheckedUpdateWithoutEnrolmentListInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StudentEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StudentEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   discounts?: Prisma.DiscountUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   invoiceLineItems?: Prisma.InvoiceLineItemUncheckedUpdateManyWithoutEnrolmentItemNestedInput
@@ -1605,7 +1605,7 @@ export type StudentEnrolmentItemCountOutputTypeDefaultArgs<ExtArgs extends runti
  * StudentEnrolmentItemCountOutputType without action
  */
 export type StudentEnrolmentItemCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentEnrolmentItemStatusHistoryWhereInput
+  where?: Prisma.StudentEnrolmentItemStatusChangeLogWhereInput
 }
 
 /**
@@ -1742,7 +1742,7 @@ export type $StudentEnrolmentItemPayload<ExtArgs extends runtime.Types.Extension
   objects: {
     enrolmentList: Prisma.$StudentEnrolmentListPayload<ExtArgs>
     service: Prisma.$ServicePayload<ExtArgs>
-    history: Prisma.$StudentEnrolmentItemStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$StudentEnrolmentItemStatusChangeLogPayload<ExtArgs>[]
     discounts: Prisma.$DiscountPayload<ExtArgs>[]
     attendances: Prisma.$SessionAttendancePayload<ExtArgs>[]
     invoiceLineItems: Prisma.$InvoiceLineItemPayload<ExtArgs>[]
@@ -2159,7 +2159,7 @@ export interface Prisma__StudentEnrolmentItemClient<T, Null = never, ExtArgs ext
   readonly [Symbol.toStringTag]: "PrismaPromise"
   enrolmentList<T extends Prisma.StudentEnrolmentListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentListDefaultArgs<ExtArgs>>): Prisma.Prisma__StudentEnrolmentListClient<runtime.Types.Result.GetResult<Prisma.$StudentEnrolmentListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.StudentEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentEnrolmentItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.StudentEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentEnrolmentItemStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   discounts<T extends Prisma.StudentEnrolmentItem$discountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentItem$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attendances<T extends Prisma.StudentEnrolmentItem$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentItem$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoiceLineItems<T extends Prisma.StudentEnrolmentItem$invoiceLineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentItem$invoiceLineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2612,23 +2612,23 @@ export type StudentEnrolmentItemDeleteManyArgs<ExtArgs extends runtime.Types.Ext
  */
 export type StudentEnrolmentItem$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StudentEnrolmentItemStatusHistory
+   * Select specific fields to fetch from the StudentEnrolmentItemStatusChangeLog
    */
-  select?: Prisma.StudentEnrolmentItemStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.StudentEnrolmentItemStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StudentEnrolmentItemStatusHistory
+   * Omit specific fields from the StudentEnrolmentItemStatusChangeLog
    */
-  omit?: Prisma.StudentEnrolmentItemStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.StudentEnrolmentItemStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StudentEnrolmentItemStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.StudentEnrolmentItemStatusHistoryWhereInput
-  orderBy?: Prisma.StudentEnrolmentItemStatusHistoryOrderByWithRelationInput | Prisma.StudentEnrolmentItemStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.StudentEnrolmentItemStatusHistoryWhereUniqueInput
+  include?: Prisma.StudentEnrolmentItemStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.StudentEnrolmentItemStatusChangeLogWhereInput
+  orderBy?: Prisma.StudentEnrolmentItemStatusChangeLogOrderByWithRelationInput | Prisma.StudentEnrolmentItemStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.StudentEnrolmentItemStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StudentEnrolmentItemStatusHistoryScalarFieldEnum | Prisma.StudentEnrolmentItemStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.StudentEnrolmentItemStatusChangeLogScalarFieldEnum | Prisma.StudentEnrolmentItemStatusChangeLogScalarFieldEnum[]
 }
 
 /**

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { CalendarCheck, Clock, Users, History, Plus, CheckCircle2, AlertCircle, Loader2, Send } from "lucide-react";
 import { logStaffAttendance, getStaffAttendanceLogs, getAllSubmissions } from "@/lib/actions/attendance";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 const SESSION_TYPES = ["Meeting","Training","Workshop","PR Review","Student Check-in","Other"];
 

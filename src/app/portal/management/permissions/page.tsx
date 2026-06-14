@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { ShieldCheck, Save, RefreshCcw, Info, Globe, Shield, Users, UserCheck, GraduationCap, UserCircle } from "lucide-react";
 
 export default function TicketPermissionsPage() {

@@ -199,7 +199,6 @@ export type ReferralWhereInput = {
   isActive?: Prisma.BoolFilter<"Referral"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Referral"> | Date | string
   referrer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  earnings?: Prisma.AmbassadorEarningListRelationFilter
   clicks?: Prisma.ReferralClickListRelationFilter
 }
 
@@ -212,7 +211,6 @@ export type ReferralOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   referrer?: Prisma.UserOrderByWithRelationInput
-  earnings?: Prisma.AmbassadorEarningOrderByRelationAggregateInput
   clicks?: Prisma.ReferralClickOrderByRelationAggregateInput
 }
 
@@ -228,7 +226,6 @@ export type ReferralWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"Referral"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Referral"> | Date | string
   referrer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  earnings?: Prisma.AmbassadorEarningListRelationFilter
   clicks?: Prisma.ReferralClickListRelationFilter
 }, "id">
 
@@ -266,7 +263,6 @@ export type ReferralCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   referrer: Prisma.UserCreateNestedOneWithoutReferralsInput
-  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutReferralInput
   clicks?: Prisma.ReferralClickCreateNestedManyWithoutReferralInput
 }
 
@@ -278,7 +274,6 @@ export type ReferralUncheckedCreateInput = {
   status?: string
   isActive?: boolean
   createdAt?: Date | string
-  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutReferralInput
   clicks?: Prisma.ReferralClickUncheckedCreateNestedManyWithoutReferralInput
 }
 
@@ -290,7 +285,6 @@ export type ReferralUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   referrer?: Prisma.UserUpdateOneRequiredWithoutReferralsNestedInput
-  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutReferralNestedInput
   clicks?: Prisma.ReferralClickUpdateManyWithoutReferralNestedInput
 }
 
@@ -302,7 +296,6 @@ export type ReferralUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutReferralNestedInput
   clicks?: Prisma.ReferralClickUncheckedUpdateManyWithoutReferralNestedInput
 }
 
@@ -380,11 +373,6 @@ export type ReferralScalarRelationFilter = {
   isNot?: Prisma.ReferralWhereInput
 }
 
-export type ReferralNullableScalarRelationFilter = {
-  is?: Prisma.ReferralWhereInput | null
-  isNot?: Prisma.ReferralWhereInput | null
-}
-
 export type ReferralCreateNestedManyWithoutReferrerInput = {
   create?: Prisma.XOR<Prisma.ReferralCreateWithoutReferrerInput, Prisma.ReferralUncheckedCreateWithoutReferrerInput> | Prisma.ReferralCreateWithoutReferrerInput[] | Prisma.ReferralUncheckedCreateWithoutReferrerInput[]
   connectOrCreate?: Prisma.ReferralCreateOrConnectWithoutReferrerInput | Prisma.ReferralCreateOrConnectWithoutReferrerInput[]
@@ -441,22 +429,6 @@ export type ReferralUpdateOneRequiredWithoutClicksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ReferralUpdateToOneWithWhereWithoutClicksInput, Prisma.ReferralUpdateWithoutClicksInput>, Prisma.ReferralUncheckedUpdateWithoutClicksInput>
 }
 
-export type ReferralCreateNestedOneWithoutEarningsInput = {
-  create?: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
-  connectOrCreate?: Prisma.ReferralCreateOrConnectWithoutEarningsInput
-  connect?: Prisma.ReferralWhereUniqueInput
-}
-
-export type ReferralUpdateOneWithoutEarningsNestedInput = {
-  create?: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
-  connectOrCreate?: Prisma.ReferralCreateOrConnectWithoutEarningsInput
-  upsert?: Prisma.ReferralUpsertWithoutEarningsInput
-  disconnect?: Prisma.ReferralWhereInput | boolean
-  delete?: Prisma.ReferralWhereInput | boolean
-  connect?: Prisma.ReferralWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ReferralUpdateToOneWithWhereWithoutEarningsInput, Prisma.ReferralUpdateWithoutEarningsInput>, Prisma.ReferralUncheckedUpdateWithoutEarningsInput>
-}
-
 export type ReferralCreateWithoutReferrerInput = {
   id?: string
   referredStudentId?: string | null
@@ -464,7 +436,6 @@ export type ReferralCreateWithoutReferrerInput = {
   status?: string
   isActive?: boolean
   createdAt?: Date | string
-  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutReferralInput
   clicks?: Prisma.ReferralClickCreateNestedManyWithoutReferralInput
 }
 
@@ -475,7 +446,6 @@ export type ReferralUncheckedCreateWithoutReferrerInput = {
   status?: string
   isActive?: boolean
   createdAt?: Date | string
-  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutReferralInput
   clicks?: Prisma.ReferralClickUncheckedCreateNestedManyWithoutReferralInput
 }
 
@@ -526,7 +496,6 @@ export type ReferralCreateWithoutClicksInput = {
   isActive?: boolean
   createdAt?: Date | string
   referrer: Prisma.UserCreateNestedOneWithoutReferralsInput
-  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutReferralInput
 }
 
 export type ReferralUncheckedCreateWithoutClicksInput = {
@@ -537,7 +506,6 @@ export type ReferralUncheckedCreateWithoutClicksInput = {
   status?: string
   isActive?: boolean
   createdAt?: Date | string
-  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutReferralInput
 }
 
 export type ReferralCreateOrConnectWithoutClicksInput = {
@@ -564,7 +532,6 @@ export type ReferralUpdateWithoutClicksInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   referrer?: Prisma.UserUpdateOneRequiredWithoutReferralsNestedInput
-  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutReferralNestedInput
 }
 
 export type ReferralUncheckedUpdateWithoutClicksInput = {
@@ -575,67 +542,6 @@ export type ReferralUncheckedUpdateWithoutClicksInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutReferralNestedInput
-}
-
-export type ReferralCreateWithoutEarningsInput = {
-  id?: string
-  referredStudentId?: string | null
-  code: string
-  status?: string
-  isActive?: boolean
-  createdAt?: Date | string
-  referrer: Prisma.UserCreateNestedOneWithoutReferralsInput
-  clicks?: Prisma.ReferralClickCreateNestedManyWithoutReferralInput
-}
-
-export type ReferralUncheckedCreateWithoutEarningsInput = {
-  id?: string
-  referrerId: string
-  referredStudentId?: string | null
-  code: string
-  status?: string
-  isActive?: boolean
-  createdAt?: Date | string
-  clicks?: Prisma.ReferralClickUncheckedCreateNestedManyWithoutReferralInput
-}
-
-export type ReferralCreateOrConnectWithoutEarningsInput = {
-  where: Prisma.ReferralWhereUniqueInput
-  create: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
-}
-
-export type ReferralUpsertWithoutEarningsInput = {
-  update: Prisma.XOR<Prisma.ReferralUpdateWithoutEarningsInput, Prisma.ReferralUncheckedUpdateWithoutEarningsInput>
-  create: Prisma.XOR<Prisma.ReferralCreateWithoutEarningsInput, Prisma.ReferralUncheckedCreateWithoutEarningsInput>
-  where?: Prisma.ReferralWhereInput
-}
-
-export type ReferralUpdateToOneWithWhereWithoutEarningsInput = {
-  where?: Prisma.ReferralWhereInput
-  data: Prisma.XOR<Prisma.ReferralUpdateWithoutEarningsInput, Prisma.ReferralUncheckedUpdateWithoutEarningsInput>
-}
-
-export type ReferralUpdateWithoutEarningsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  referrer?: Prisma.UserUpdateOneRequiredWithoutReferralsNestedInput
-  clicks?: Prisma.ReferralClickUpdateManyWithoutReferralNestedInput
-}
-
-export type ReferralUncheckedUpdateWithoutEarningsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  referrerId?: Prisma.StringFieldUpdateOperationsInput | string
-  referredStudentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  code?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  clicks?: Prisma.ReferralClickUncheckedUpdateManyWithoutReferralNestedInput
 }
 
 export type ReferralCreateManyReferrerInput = {
@@ -654,7 +560,6 @@ export type ReferralUpdateWithoutReferrerInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutReferralNestedInput
   clicks?: Prisma.ReferralClickUpdateManyWithoutReferralNestedInput
 }
 
@@ -665,7 +570,6 @@ export type ReferralUncheckedUpdateWithoutReferrerInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutReferralNestedInput
   clicks?: Prisma.ReferralClickUncheckedUpdateManyWithoutReferralNestedInput
 }
 
@@ -684,12 +588,10 @@ export type ReferralUncheckedUpdateManyWithoutReferrerInput = {
  */
 
 export type ReferralCountOutputType = {
-  earnings: number
   clicks: number
 }
 
 export type ReferralCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  earnings?: boolean | ReferralCountOutputTypeCountEarningsArgs
   clicks?: boolean | ReferralCountOutputTypeCountClicksArgs
 }
 
@@ -701,13 +603,6 @@ export type ReferralCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
    * Select specific fields to fetch from the ReferralCountOutputType
    */
   select?: Prisma.ReferralCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * ReferralCountOutputType without action
- */
-export type ReferralCountOutputTypeCountEarningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorEarningWhereInput
 }
 
 /**
@@ -727,7 +622,6 @@ export type ReferralSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   isActive?: boolean
   createdAt?: boolean
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  earnings?: boolean | Prisma.Referral$earningsArgs<ExtArgs>
   clicks?: boolean | Prisma.Referral$clicksArgs<ExtArgs>
   _count?: boolean | Prisma.ReferralCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["referral"]>
@@ -767,7 +661,6 @@ export type ReferralSelectScalar = {
 export type ReferralOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "referrerId" | "referredStudentId" | "code" | "status" | "isActive" | "createdAt", ExtArgs["result"]["referral"]>
 export type ReferralInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   referrer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  earnings?: boolean | Prisma.Referral$earningsArgs<ExtArgs>
   clicks?: boolean | Prisma.Referral$clicksArgs<ExtArgs>
   _count?: boolean | Prisma.ReferralCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -782,7 +675,6 @@ export type $ReferralPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Referral"
   objects: {
     referrer: Prisma.$UserPayload<ExtArgs>
-    earnings: Prisma.$AmbassadorEarningPayload<ExtArgs>[]
     clicks: Prisma.$ReferralClickPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1188,7 +1080,6 @@ readonly fields: ReferralFieldRefs;
 export interface Prisma__ReferralClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   referrer<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  earnings<T extends Prisma.Referral$earningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Referral$earningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorEarningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clicks<T extends Prisma.Referral$clicksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Referral$clicksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1624,30 +1515,6 @@ export type ReferralDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Referrals to delete.
    */
   limit?: number
-}
-
-/**
- * Referral.earnings
- */
-export type Referral$earningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AmbassadorEarning
-   */
-  select?: Prisma.AmbassadorEarningSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AmbassadorEarning
-   */
-  omit?: Prisma.AmbassadorEarningOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AmbassadorEarningInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorEarningWhereInput
-  orderBy?: Prisma.AmbassadorEarningOrderByWithRelationInput | Prisma.AmbassadorEarningOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorEarningWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AmbassadorEarningScalarFieldEnum | Prisma.AmbassadorEarningScalarFieldEnum[]
 }
 
 /**

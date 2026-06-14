@@ -6,7 +6,7 @@ import { Breadcrumbs } from "@/components/portal/Breadcrumbs";
 import * as motion from "framer-motion/client";
 import { MotionConfig } from "framer-motion";
 import { APP_CONFIG } from "@/lib/config";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { Suspense } from "react";
 
 export default function PortalLayout({

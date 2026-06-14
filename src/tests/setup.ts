@@ -71,6 +71,19 @@ vi.mock("@/lib/db", () => {
       update: vi.fn(),
       upsert: vi.fn(),
     },
+    studentSyllabusProgress: {
+      findFirst: vi.fn(),
+      upsert: vi.fn(),
+      findMany: vi.fn(),
+    },
+    taskAssignment: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+    taskSubmission: {
+      upsert: vi.fn(),
+    },
     studentEnrolmentList: {
       findMany: vi.fn(),
     },
@@ -86,6 +99,16 @@ vi.mock("@/lib/db", () => {
       create: vi.fn(),
       update: vi.fn(),
     },
+    rateItem: {
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    rateList: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
     paymentRecord: {
       create: vi.fn(),
       update: vi.fn(),
@@ -98,7 +121,7 @@ vi.mock("@/lib/db", () => {
       create: vi.fn(),
       update: vi.fn(),
     },
-    invoiceMonth: {
+    billingMonth: {
       upsert: vi.fn(),
     },
     notificationType: {

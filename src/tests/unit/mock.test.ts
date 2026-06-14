@@ -36,12 +36,12 @@ describe("saveMockResult", () => {
   it("upserts StudentProgress when a matching syllabus item exists", async () => {
     db.mockResult.create.mockResolvedValue({ id: "mr-2" });
     db.syllabusItem.findFirst.mockResolvedValue({ id: "syl-1" });
-    db.studentProgress.findFirst.mockResolvedValue({ id: "sp-1" });
-    db.studentProgress.upsert.mockResolvedValue({});
+    db.studentSyllabusProgress.findFirst.mockResolvedValue({ id: "sp-1" });
+    db.studentSyllabusProgress.upsert.mockResolvedValue({});
 
     await saveMockResult(SAMPLE_RESULT);
 
-    expect(db.studentProgress.upsert).toHaveBeenCalled();
+    expect(db.studentSyllabusProgress.upsert).toHaveBeenCalled();
   });
 
   it("returns failure when user is not authenticated", async () => {

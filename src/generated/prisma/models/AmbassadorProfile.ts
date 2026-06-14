@@ -223,8 +223,6 @@ export type AmbassadorProfileWhereInput = {
   certificateLink?: Prisma.StringNullableFilter<"AmbassadorProfile"> | string | null
   linkedInBadgeLink?: Prisma.StringNullableFilter<"AmbassadorProfile"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  deliverables?: Prisma.AmbassadorDeliverableListRelationFilter
-  earnings?: Prisma.AmbassadorEarningListRelationFilter
 }
 
 export type AmbassadorProfileOrderByWithRelationInput = {
@@ -239,8 +237,6 @@ export type AmbassadorProfileOrderByWithRelationInput = {
   certificateLink?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedInBadgeLink?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  deliverables?: Prisma.AmbassadorDeliverableOrderByRelationAggregateInput
-  earnings?: Prisma.AmbassadorEarningOrderByRelationAggregateInput
 }
 
 export type AmbassadorProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -258,8 +254,6 @@ export type AmbassadorProfileWhereUniqueInput = Prisma.AtLeast<{
   certificateLink?: Prisma.StringNullableFilter<"AmbassadorProfile"> | string | null
   linkedInBadgeLink?: Prisma.StringNullableFilter<"AmbassadorProfile"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  deliverables?: Prisma.AmbassadorDeliverableListRelationFilter
-  earnings?: Prisma.AmbassadorEarningListRelationFilter
 }, "id" | "userId" | "referralCode">
 
 export type AmbassadorProfileOrderByWithAggregationInput = {
@@ -305,8 +299,6 @@ export type AmbassadorProfileCreateInput = {
   certificateLink?: string | null
   linkedInBadgeLink?: string | null
   user: Prisma.UserCreateNestedOneWithoutAmbassadorProfileInput
-  deliverables?: Prisma.AmbassadorDeliverableCreateNestedManyWithoutAmbassadorInput
-  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutAmbassadorInput
 }
 
 export type AmbassadorProfileUncheckedCreateInput = {
@@ -320,8 +312,6 @@ export type AmbassadorProfileUncheckedCreateInput = {
   completionStatus?: string | null
   certificateLink?: string | null
   linkedInBadgeLink?: string | null
-  deliverables?: Prisma.AmbassadorDeliverableUncheckedCreateNestedManyWithoutAmbassadorInput
-  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutAmbassadorInput
 }
 
 export type AmbassadorProfileUpdateInput = {
@@ -335,8 +325,6 @@ export type AmbassadorProfileUpdateInput = {
   certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutAmbassadorProfileNestedInput
-  deliverables?: Prisma.AmbassadorDeliverableUpdateManyWithoutAmbassadorNestedInput
-  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutAmbassadorNestedInput
 }
 
 export type AmbassadorProfileUncheckedUpdateInput = {
@@ -350,8 +338,6 @@ export type AmbassadorProfileUncheckedUpdateInput = {
   completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deliverables?: Prisma.AmbassadorDeliverableUncheckedUpdateManyWithoutAmbassadorNestedInput
-  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutAmbassadorNestedInput
 }
 
 export type AmbassadorProfileCreateManyInput = {
@@ -436,11 +422,6 @@ export type AmbassadorProfileMinOrderByAggregateInput = {
   linkedInBadgeLink?: Prisma.SortOrder
 }
 
-export type AmbassadorProfileScalarRelationFilter = {
-  is?: Prisma.AmbassadorProfileWhereInput
-  isNot?: Prisma.AmbassadorProfileWhereInput
-}
-
 export type AmbassadorProfileCreateNestedOneWithoutUserInput = {
   create?: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutUserInput, Prisma.AmbassadorProfileUncheckedCreateWithoutUserInput>
   connectOrCreate?: Prisma.AmbassadorProfileCreateOrConnectWithoutUserInput
@@ -473,34 +454,6 @@ export type AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProfileUpdateToOneWithWhereWithoutUserInput, Prisma.AmbassadorProfileUpdateWithoutUserInput>, Prisma.AmbassadorProfileUncheckedUpdateWithoutUserInput>
 }
 
-export type AmbassadorProfileCreateNestedOneWithoutDeliverablesInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutDeliverablesInput, Prisma.AmbassadorProfileUncheckedCreateWithoutDeliverablesInput>
-  connectOrCreate?: Prisma.AmbassadorProfileCreateOrConnectWithoutDeliverablesInput
-  connect?: Prisma.AmbassadorProfileWhereUniqueInput
-}
-
-export type AmbassadorProfileUpdateOneRequiredWithoutDeliverablesNestedInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutDeliverablesInput, Prisma.AmbassadorProfileUncheckedCreateWithoutDeliverablesInput>
-  connectOrCreate?: Prisma.AmbassadorProfileCreateOrConnectWithoutDeliverablesInput
-  upsert?: Prisma.AmbassadorProfileUpsertWithoutDeliverablesInput
-  connect?: Prisma.AmbassadorProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProfileUpdateToOneWithWhereWithoutDeliverablesInput, Prisma.AmbassadorProfileUpdateWithoutDeliverablesInput>, Prisma.AmbassadorProfileUncheckedUpdateWithoutDeliverablesInput>
-}
-
-export type AmbassadorProfileCreateNestedOneWithoutEarningsInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutEarningsInput, Prisma.AmbassadorProfileUncheckedCreateWithoutEarningsInput>
-  connectOrCreate?: Prisma.AmbassadorProfileCreateOrConnectWithoutEarningsInput
-  connect?: Prisma.AmbassadorProfileWhereUniqueInput
-}
-
-export type AmbassadorProfileUpdateOneRequiredWithoutEarningsNestedInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutEarningsInput, Prisma.AmbassadorProfileUncheckedCreateWithoutEarningsInput>
-  connectOrCreate?: Prisma.AmbassadorProfileCreateOrConnectWithoutEarningsInput
-  upsert?: Prisma.AmbassadorProfileUpsertWithoutEarningsInput
-  connect?: Prisma.AmbassadorProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProfileUpdateToOneWithWhereWithoutEarningsInput, Prisma.AmbassadorProfileUpdateWithoutEarningsInput>, Prisma.AmbassadorProfileUncheckedUpdateWithoutEarningsInput>
-}
-
 export type AmbassadorProfileCreateWithoutUserInput = {
   id?: string
   cohort?: string | null
@@ -511,8 +464,6 @@ export type AmbassadorProfileCreateWithoutUserInput = {
   completionStatus?: string | null
   certificateLink?: string | null
   linkedInBadgeLink?: string | null
-  deliverables?: Prisma.AmbassadorDeliverableCreateNestedManyWithoutAmbassadorInput
-  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutAmbassadorInput
 }
 
 export type AmbassadorProfileUncheckedCreateWithoutUserInput = {
@@ -525,8 +476,6 @@ export type AmbassadorProfileUncheckedCreateWithoutUserInput = {
   completionStatus?: string | null
   certificateLink?: string | null
   linkedInBadgeLink?: string | null
-  deliverables?: Prisma.AmbassadorDeliverableUncheckedCreateNestedManyWithoutAmbassadorInput
-  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutAmbassadorInput
 }
 
 export type AmbassadorProfileCreateOrConnectWithoutUserInput = {
@@ -555,8 +504,6 @@ export type AmbassadorProfileUpdateWithoutUserInput = {
   completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deliverables?: Prisma.AmbassadorDeliverableUpdateManyWithoutAmbassadorNestedInput
-  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutAmbassadorNestedInput
 }
 
 export type AmbassadorProfileUncheckedUpdateWithoutUserInput = {
@@ -569,192 +516,8 @@ export type AmbassadorProfileUncheckedUpdateWithoutUserInput = {
   completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deliverables?: Prisma.AmbassadorDeliverableUncheckedUpdateManyWithoutAmbassadorNestedInput
-  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutAmbassadorNestedInput
 }
 
-export type AmbassadorProfileCreateWithoutDeliverablesInput = {
-  id?: string
-  cohort?: string | null
-  referralCode?: string | null
-  programmeDuration?: string | null
-  programmeStart?: Date | string | null
-  programmeEnd?: Date | string | null
-  completionStatus?: string | null
-  certificateLink?: string | null
-  linkedInBadgeLink?: string | null
-  user: Prisma.UserCreateNestedOneWithoutAmbassadorProfileInput
-  earnings?: Prisma.AmbassadorEarningCreateNestedManyWithoutAmbassadorInput
-}
-
-export type AmbassadorProfileUncheckedCreateWithoutDeliverablesInput = {
-  id?: string
-  userId: string
-  cohort?: string | null
-  referralCode?: string | null
-  programmeDuration?: string | null
-  programmeStart?: Date | string | null
-  programmeEnd?: Date | string | null
-  completionStatus?: string | null
-  certificateLink?: string | null
-  linkedInBadgeLink?: string | null
-  earnings?: Prisma.AmbassadorEarningUncheckedCreateNestedManyWithoutAmbassadorInput
-}
-
-export type AmbassadorProfileCreateOrConnectWithoutDeliverablesInput = {
-  where: Prisma.AmbassadorProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutDeliverablesInput, Prisma.AmbassadorProfileUncheckedCreateWithoutDeliverablesInput>
-}
-
-export type AmbassadorProfileUpsertWithoutDeliverablesInput = {
-  update: Prisma.XOR<Prisma.AmbassadorProfileUpdateWithoutDeliverablesInput, Prisma.AmbassadorProfileUncheckedUpdateWithoutDeliverablesInput>
-  create: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutDeliverablesInput, Prisma.AmbassadorProfileUncheckedCreateWithoutDeliverablesInput>
-  where?: Prisma.AmbassadorProfileWhereInput
-}
-
-export type AmbassadorProfileUpdateToOneWithWhereWithoutDeliverablesInput = {
-  where?: Prisma.AmbassadorProfileWhereInput
-  data: Prisma.XOR<Prisma.AmbassadorProfileUpdateWithoutDeliverablesInput, Prisma.AmbassadorProfileUncheckedUpdateWithoutDeliverablesInput>
-}
-
-export type AmbassadorProfileUpdateWithoutDeliverablesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  cohort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeDuration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  programmeEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  user?: Prisma.UserUpdateOneRequiredWithoutAmbassadorProfileNestedInput
-  earnings?: Prisma.AmbassadorEarningUpdateManyWithoutAmbassadorNestedInput
-}
-
-export type AmbassadorProfileUncheckedUpdateWithoutDeliverablesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  cohort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeDuration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  programmeEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  earnings?: Prisma.AmbassadorEarningUncheckedUpdateManyWithoutAmbassadorNestedInput
-}
-
-export type AmbassadorProfileCreateWithoutEarningsInput = {
-  id?: string
-  cohort?: string | null
-  referralCode?: string | null
-  programmeDuration?: string | null
-  programmeStart?: Date | string | null
-  programmeEnd?: Date | string | null
-  completionStatus?: string | null
-  certificateLink?: string | null
-  linkedInBadgeLink?: string | null
-  user: Prisma.UserCreateNestedOneWithoutAmbassadorProfileInput
-  deliverables?: Prisma.AmbassadorDeliverableCreateNestedManyWithoutAmbassadorInput
-}
-
-export type AmbassadorProfileUncheckedCreateWithoutEarningsInput = {
-  id?: string
-  userId: string
-  cohort?: string | null
-  referralCode?: string | null
-  programmeDuration?: string | null
-  programmeStart?: Date | string | null
-  programmeEnd?: Date | string | null
-  completionStatus?: string | null
-  certificateLink?: string | null
-  linkedInBadgeLink?: string | null
-  deliverables?: Prisma.AmbassadorDeliverableUncheckedCreateNestedManyWithoutAmbassadorInput
-}
-
-export type AmbassadorProfileCreateOrConnectWithoutEarningsInput = {
-  where: Prisma.AmbassadorProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutEarningsInput, Prisma.AmbassadorProfileUncheckedCreateWithoutEarningsInput>
-}
-
-export type AmbassadorProfileUpsertWithoutEarningsInput = {
-  update: Prisma.XOR<Prisma.AmbassadorProfileUpdateWithoutEarningsInput, Prisma.AmbassadorProfileUncheckedUpdateWithoutEarningsInput>
-  create: Prisma.XOR<Prisma.AmbassadorProfileCreateWithoutEarningsInput, Prisma.AmbassadorProfileUncheckedCreateWithoutEarningsInput>
-  where?: Prisma.AmbassadorProfileWhereInput
-}
-
-export type AmbassadorProfileUpdateToOneWithWhereWithoutEarningsInput = {
-  where?: Prisma.AmbassadorProfileWhereInput
-  data: Prisma.XOR<Prisma.AmbassadorProfileUpdateWithoutEarningsInput, Prisma.AmbassadorProfileUncheckedUpdateWithoutEarningsInput>
-}
-
-export type AmbassadorProfileUpdateWithoutEarningsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  cohort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeDuration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  programmeEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  user?: Prisma.UserUpdateOneRequiredWithoutAmbassadorProfileNestedInput
-  deliverables?: Prisma.AmbassadorDeliverableUpdateManyWithoutAmbassadorNestedInput
-}
-
-export type AmbassadorProfileUncheckedUpdateWithoutEarningsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  cohort?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeDuration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  programmeStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  programmeEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  completionStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  certificateLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedInBadgeLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deliverables?: Prisma.AmbassadorDeliverableUncheckedUpdateManyWithoutAmbassadorNestedInput
-}
-
-
-/**
- * Count Type AmbassadorProfileCountOutputType
- */
-
-export type AmbassadorProfileCountOutputType = {
-  deliverables: number
-  earnings: number
-}
-
-export type AmbassadorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  deliverables?: boolean | AmbassadorProfileCountOutputTypeCountDeliverablesArgs
-  earnings?: boolean | AmbassadorProfileCountOutputTypeCountEarningsArgs
-}
-
-/**
- * AmbassadorProfileCountOutputType without action
- */
-export type AmbassadorProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AmbassadorProfileCountOutputType
-   */
-  select?: Prisma.AmbassadorProfileCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * AmbassadorProfileCountOutputType without action
- */
-export type AmbassadorProfileCountOutputTypeCountDeliverablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorDeliverableWhereInput
-}
-
-/**
- * AmbassadorProfileCountOutputType without action
- */
-export type AmbassadorProfileCountOutputTypeCountEarningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorEarningWhereInput
-}
 
 
 export type AmbassadorProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -769,9 +532,6 @@ export type AmbassadorProfileSelect<ExtArgs extends runtime.Types.Extensions.Int
   certificateLink?: boolean
   linkedInBadgeLink?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  deliverables?: boolean | Prisma.AmbassadorProfile$deliverablesArgs<ExtArgs>
-  earnings?: boolean | Prisma.AmbassadorProfile$earningsArgs<ExtArgs>
-  _count?: boolean | Prisma.AmbassadorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorProfile"]>
 
 export type AmbassadorProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -818,9 +578,6 @@ export type AmbassadorProfileSelectScalar = {
 export type AmbassadorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "cohort" | "referralCode" | "programmeDuration" | "programmeStart" | "programmeEnd" | "completionStatus" | "certificateLink" | "linkedInBadgeLink", ExtArgs["result"]["ambassadorProfile"]>
 export type AmbassadorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  deliverables?: boolean | Prisma.AmbassadorProfile$deliverablesArgs<ExtArgs>
-  earnings?: boolean | Prisma.AmbassadorProfile$earningsArgs<ExtArgs>
-  _count?: boolean | Prisma.AmbassadorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AmbassadorProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -833,8 +590,6 @@ export type $AmbassadorProfilePayload<ExtArgs extends runtime.Types.Extensions.I
   name: "AmbassadorProfile"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    deliverables: Prisma.$AmbassadorDeliverablePayload<ExtArgs>[]
-    earnings: Prisma.$AmbassadorEarningPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1242,8 +997,6 @@ readonly fields: AmbassadorProfileFieldRefs;
 export interface Prisma__AmbassadorProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  deliverables<T extends Prisma.AmbassadorProfile$deliverablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProfile$deliverablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorDeliverablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  earnings<T extends Prisma.AmbassadorProfile$earningsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProfile$earningsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorEarningPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1681,54 +1434,6 @@ export type AmbassadorProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many AmbassadorProfiles to delete.
    */
   limit?: number
-}
-
-/**
- * AmbassadorProfile.deliverables
- */
-export type AmbassadorProfile$deliverablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AmbassadorDeliverable
-   */
-  select?: Prisma.AmbassadorDeliverableSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AmbassadorDeliverable
-   */
-  omit?: Prisma.AmbassadorDeliverableOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AmbassadorDeliverableInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorDeliverableWhereInput
-  orderBy?: Prisma.AmbassadorDeliverableOrderByWithRelationInput | Prisma.AmbassadorDeliverableOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorDeliverableWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AmbassadorDeliverableScalarFieldEnum | Prisma.AmbassadorDeliverableScalarFieldEnum[]
-}
-
-/**
- * AmbassadorProfile.earnings
- */
-export type AmbassadorProfile$earningsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the AmbassadorEarning
-   */
-  select?: Prisma.AmbassadorEarningSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the AmbassadorEarning
-   */
-  omit?: Prisma.AmbassadorEarningOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AmbassadorEarningInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorEarningWhereInput
-  orderBy?: Prisma.AmbassadorEarningOrderByWithRelationInput | Prisma.AmbassadorEarningOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorEarningWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AmbassadorEarningScalarFieldEnum | Prisma.AmbassadorEarningScalarFieldEnum[]
 }
 
 /**

@@ -15,7 +15,7 @@ import {
   Banknote
 } from "lucide-react";
 import { getClaims, submitClaim, getMonthlyStats } from "@/lib/actions/claims";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { useEffect } from "react";
 
 export default function StaffClaimsPage() {

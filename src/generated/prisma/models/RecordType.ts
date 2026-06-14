@@ -28,18 +28,21 @@ export type RecordTypeMinAggregateOutputType = {
   id: string | null
   name: string | null
   isActive: boolean | null
+  targetUserTypeId: string | null
 }
 
 export type RecordTypeMaxAggregateOutputType = {
   id: string | null
   name: string | null
   isActive: boolean | null
+  targetUserTypeId: string | null
 }
 
 export type RecordTypeCountAggregateOutputType = {
   id: number
   name: number
   isActive: number
+  targetUserTypeId: number
   _all: number
 }
 
@@ -48,18 +51,21 @@ export type RecordTypeMinAggregateInputType = {
   id?: true
   name?: true
   isActive?: true
+  targetUserTypeId?: true
 }
 
 export type RecordTypeMaxAggregateInputType = {
   id?: true
   name?: true
   isActive?: true
+  targetUserTypeId?: true
 }
 
 export type RecordTypeCountAggregateInputType = {
   id?: true
   name?: true
   isActive?: true
+  targetUserTypeId?: true
   _all?: true
 }
 
@@ -139,6 +145,7 @@ export type RecordTypeGroupByOutputType = {
   id: string
   name: string
   isActive: boolean
+  targetUserTypeId: string | null
   _count: RecordTypeCountAggregateOutputType | null
   _min: RecordTypeMinAggregateOutputType | null
   _max: RecordTypeMaxAggregateOutputType | null
@@ -166,12 +173,16 @@ export type RecordTypeWhereInput = {
   id?: Prisma.StringFilter<"RecordType"> | string
   name?: Prisma.StringFilter<"RecordType"> | string
   isActive?: Prisma.BoolFilter<"RecordType"> | boolean
+  targetUserTypeId?: Prisma.StringNullableFilter<"RecordType"> | string | null
+  targetUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
 }
 
 export type RecordTypeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  targetUserType?: Prisma.UserTypeOrderByWithRelationInput
 }
 
 export type RecordTypeWhereUniqueInput = Prisma.AtLeast<{
@@ -181,12 +192,15 @@ export type RecordTypeWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.RecordTypeWhereInput[]
   NOT?: Prisma.RecordTypeWhereInput | Prisma.RecordTypeWhereInput[]
   isActive?: Prisma.BoolFilter<"RecordType"> | boolean
+  targetUserTypeId?: Prisma.StringNullableFilter<"RecordType"> | string | null
+  targetUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
 }, "id" | "name">
 
 export type RecordTypeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.RecordTypeCountOrderByAggregateInput
   _max?: Prisma.RecordTypeMaxOrderByAggregateInput
   _min?: Prisma.RecordTypeMinOrderByAggregateInput
@@ -199,36 +213,42 @@ export type RecordTypeScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"RecordType"> | string
   name?: Prisma.StringWithAggregatesFilter<"RecordType"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"RecordType"> | boolean
+  targetUserTypeId?: Prisma.StringNullableWithAggregatesFilter<"RecordType"> | string | null
 }
 
 export type RecordTypeCreateInput = {
   id?: string
   name: string
   isActive?: boolean
+  targetUserType?: Prisma.UserTypeCreateNestedOneWithoutRecordTypesInput
 }
 
 export type RecordTypeUncheckedCreateInput = {
   id?: string
   name: string
   isActive?: boolean
+  targetUserTypeId?: string | null
 }
 
 export type RecordTypeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserType?: Prisma.UserTypeUpdateOneWithoutRecordTypesNestedInput
 }
 
 export type RecordTypeUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type RecordTypeCreateManyInput = {
   id?: string
   name: string
   isActive?: boolean
+  targetUserTypeId?: string | null
 }
 
 export type RecordTypeUpdateManyMutationInput = {
@@ -241,24 +261,152 @@ export type RecordTypeUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type RecordTypeListRelationFilter = {
+  every?: Prisma.RecordTypeWhereInput
+  some?: Prisma.RecordTypeWhereInput
+  none?: Prisma.RecordTypeWhereInput
+}
+
+export type RecordTypeOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type RecordTypeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
 }
 
 export type RecordTypeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
 }
 
 export type RecordTypeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
+}
+
+export type RecordTypeCreateNestedManyWithoutTargetUserTypeInput = {
+  create?: Prisma.XOR<Prisma.RecordTypeCreateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RecordTypeCreateWithoutTargetUserTypeInput[] | Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput | Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RecordTypeCreateManyTargetUserTypeInputEnvelope
+  connect?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+}
+
+export type RecordTypeUncheckedCreateNestedManyWithoutTargetUserTypeInput = {
+  create?: Prisma.XOR<Prisma.RecordTypeCreateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RecordTypeCreateWithoutTargetUserTypeInput[] | Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput | Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RecordTypeCreateManyTargetUserTypeInputEnvelope
+  connect?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+}
+
+export type RecordTypeUpdateManyWithoutTargetUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.RecordTypeCreateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RecordTypeCreateWithoutTargetUserTypeInput[] | Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput | Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput[]
+  upsert?: Prisma.RecordTypeUpsertWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RecordTypeUpsertWithWhereUniqueWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RecordTypeCreateManyTargetUserTypeInputEnvelope
+  set?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  disconnect?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  delete?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  connect?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  update?: Prisma.RecordTypeUpdateWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RecordTypeUpdateWithWhereUniqueWithoutTargetUserTypeInput[]
+  updateMany?: Prisma.RecordTypeUpdateManyWithWhereWithoutTargetUserTypeInput | Prisma.RecordTypeUpdateManyWithWhereWithoutTargetUserTypeInput[]
+  deleteMany?: Prisma.RecordTypeScalarWhereInput | Prisma.RecordTypeScalarWhereInput[]
+}
+
+export type RecordTypeUncheckedUpdateManyWithoutTargetUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.RecordTypeCreateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RecordTypeCreateWithoutTargetUserTypeInput[] | Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput | Prisma.RecordTypeCreateOrConnectWithoutTargetUserTypeInput[]
+  upsert?: Prisma.RecordTypeUpsertWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RecordTypeUpsertWithWhereUniqueWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RecordTypeCreateManyTargetUserTypeInputEnvelope
+  set?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  disconnect?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  delete?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  connect?: Prisma.RecordTypeWhereUniqueInput | Prisma.RecordTypeWhereUniqueInput[]
+  update?: Prisma.RecordTypeUpdateWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RecordTypeUpdateWithWhereUniqueWithoutTargetUserTypeInput[]
+  updateMany?: Prisma.RecordTypeUpdateManyWithWhereWithoutTargetUserTypeInput | Prisma.RecordTypeUpdateManyWithWhereWithoutTargetUserTypeInput[]
+  deleteMany?: Prisma.RecordTypeScalarWhereInput | Prisma.RecordTypeScalarWhereInput[]
+}
+
+export type RecordTypeCreateWithoutTargetUserTypeInput = {
+  id?: string
+  name: string
+  isActive?: boolean
+}
+
+export type RecordTypeUncheckedCreateWithoutTargetUserTypeInput = {
+  id?: string
+  name: string
+  isActive?: boolean
+}
+
+export type RecordTypeCreateOrConnectWithoutTargetUserTypeInput = {
+  where: Prisma.RecordTypeWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecordTypeCreateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput>
+}
+
+export type RecordTypeCreateManyTargetUserTypeInputEnvelope = {
+  data: Prisma.RecordTypeCreateManyTargetUserTypeInput | Prisma.RecordTypeCreateManyTargetUserTypeInput[]
+  skipDuplicates?: boolean
+}
+
+export type RecordTypeUpsertWithWhereUniqueWithoutTargetUserTypeInput = {
+  where: Prisma.RecordTypeWhereUniqueInput
+  update: Prisma.XOR<Prisma.RecordTypeUpdateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedUpdateWithoutTargetUserTypeInput>
+  create: Prisma.XOR<Prisma.RecordTypeCreateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedCreateWithoutTargetUserTypeInput>
+}
+
+export type RecordTypeUpdateWithWhereUniqueWithoutTargetUserTypeInput = {
+  where: Prisma.RecordTypeWhereUniqueInput
+  data: Prisma.XOR<Prisma.RecordTypeUpdateWithoutTargetUserTypeInput, Prisma.RecordTypeUncheckedUpdateWithoutTargetUserTypeInput>
+}
+
+export type RecordTypeUpdateManyWithWhereWithoutTargetUserTypeInput = {
+  where: Prisma.RecordTypeScalarWhereInput
+  data: Prisma.XOR<Prisma.RecordTypeUpdateManyMutationInput, Prisma.RecordTypeUncheckedUpdateManyWithoutTargetUserTypeInput>
+}
+
+export type RecordTypeScalarWhereInput = {
+  AND?: Prisma.RecordTypeScalarWhereInput | Prisma.RecordTypeScalarWhereInput[]
+  OR?: Prisma.RecordTypeScalarWhereInput[]
+  NOT?: Prisma.RecordTypeScalarWhereInput | Prisma.RecordTypeScalarWhereInput[]
+  id?: Prisma.StringFilter<"RecordType"> | string
+  name?: Prisma.StringFilter<"RecordType"> | string
+  isActive?: Prisma.BoolFilter<"RecordType"> | boolean
+  targetUserTypeId?: Prisma.StringNullableFilter<"RecordType"> | string | null
+}
+
+export type RecordTypeCreateManyTargetUserTypeInput = {
+  id?: string
+  name: string
+  isActive?: boolean
+}
+
+export type RecordTypeUpdateWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type RecordTypeUncheckedUpdateWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type RecordTypeUncheckedUpdateManyWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -267,35 +415,54 @@ export type RecordTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   name?: boolean
   isActive?: boolean
+  targetUserTypeId?: boolean
+  targetUserType?: boolean | Prisma.RecordType$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["recordType"]>
 
 export type RecordTypeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   isActive?: boolean
+  targetUserTypeId?: boolean
+  targetUserType?: boolean | Prisma.RecordType$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["recordType"]>
 
 export type RecordTypeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   isActive?: boolean
+  targetUserTypeId?: boolean
+  targetUserType?: boolean | Prisma.RecordType$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["recordType"]>
 
 export type RecordTypeSelectScalar = {
   id?: boolean
   name?: boolean
   isActive?: boolean
+  targetUserTypeId?: boolean
 }
 
-export type RecordTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "isActive", ExtArgs["result"]["recordType"]>
+export type RecordTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "isActive" | "targetUserTypeId", ExtArgs["result"]["recordType"]>
+export type RecordTypeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.RecordType$targetUserTypeArgs<ExtArgs>
+}
+export type RecordTypeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.RecordType$targetUserTypeArgs<ExtArgs>
+}
+export type RecordTypeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.RecordType$targetUserTypeArgs<ExtArgs>
+}
 
 export type $RecordTypePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RecordType"
-  objects: {}
+  objects: {
+    targetUserType: Prisma.$UserTypePayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     isActive: boolean
+    targetUserTypeId: string | null
   }, ExtArgs["result"]["recordType"]>
   composites: {}
 }
@@ -690,6 +857,7 @@ readonly fields: RecordTypeFieldRefs;
  */
 export interface Prisma__RecordTypeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  targetUserType<T extends Prisma.RecordType$targetUserTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecordType$targetUserTypeArgs<ExtArgs>>): Prisma.Prisma__UserTypeClient<runtime.Types.Result.GetResult<Prisma.$UserTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -722,6 +890,7 @@ export interface RecordTypeFieldRefs {
   readonly id: Prisma.FieldRef<"RecordType", 'String'>
   readonly name: Prisma.FieldRef<"RecordType", 'String'>
   readonly isActive: Prisma.FieldRef<"RecordType", 'Boolean'>
+  readonly targetUserTypeId: Prisma.FieldRef<"RecordType", 'String'>
 }
     
 
@@ -738,6 +907,10 @@ export type RecordTypeFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the RecordType
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
   /**
    * Filter, which RecordType to fetch.
    */
@@ -757,6 +930,10 @@ export type RecordTypeFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
+  /**
    * Filter, which RecordType to fetch.
    */
   where: Prisma.RecordTypeWhereUniqueInput
@@ -774,6 +951,10 @@ export type RecordTypeFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the RecordType
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
   /**
    * Filter, which RecordType to fetch.
    */
@@ -823,6 +1004,10 @@ export type RecordTypeFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
+  /**
    * Filter, which RecordType to fetch.
    */
   where?: Prisma.RecordTypeWhereInput
@@ -870,6 +1055,10 @@ export type RecordTypeFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the RecordType
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
   /**
    * Filter, which RecordTypes to fetch.
    */
@@ -919,6 +1108,10 @@ export type RecordTypeCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
+  /**
    * The data needed to create a RecordType.
    */
   data: Prisma.XOR<Prisma.RecordTypeCreateInput, Prisma.RecordTypeUncheckedCreateInput>
@@ -952,6 +1145,10 @@ export type RecordTypeCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    */
   data: Prisma.RecordTypeCreateManyInput | Prisma.RecordTypeCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -966,6 +1163,10 @@ export type RecordTypeUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the RecordType
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
   /**
    * The data needed to update a RecordType.
    */
@@ -1018,6 +1219,10 @@ export type RecordTypeUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many RecordTypes to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1032,6 +1237,10 @@ export type RecordTypeUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the RecordType
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
   /**
    * The filter to search for the RecordType to update in case it exists.
    */
@@ -1059,6 +1268,10 @@ export type RecordTypeDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
+  /**
    * Filter which RecordType to delete.
    */
   where: Prisma.RecordTypeWhereUniqueInput
@@ -1079,6 +1292,25 @@ export type RecordTypeDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * RecordType.targetUserType
+ */
+export type RecordType$targetUserTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserType
+   */
+  select?: Prisma.UserTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserType
+   */
+  omit?: Prisma.UserTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTypeInclude<ExtArgs> | null
+  where?: Prisma.UserTypeWhereInput
+}
+
+/**
  * RecordType without action
  */
 export type RecordTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1090,4 +1322,8 @@ export type RecordTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the RecordType
    */
   omit?: Prisma.RecordTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecordTypeInclude<ExtArgs> | null
 }

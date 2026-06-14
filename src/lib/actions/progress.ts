@@ -21,7 +21,7 @@ export async function getStudentProgressStats(studentEmail: string) {
 
   if (!user) return null;
 
-  const progressItems = await prisma.studentProgress.findMany({
+  const progressItems = await prisma.studentSyllabusProgress.findMany({
     where: { studentId: user.id },
     include: { syllabusItem: true },
   });
@@ -64,7 +64,7 @@ export async function toggleChapterComplete(
   const user = await prisma.user.findUnique({ where: { email: studentEmail } });
   if (!user) throw new Error("User not found");
 
-  await prisma.studentProgress.upsert({
+  await prisma.studentSyllabusProgress.upsert({
     where: { studentId_syllabusItemId: { studentId: user.id, syllabusItemId } },
     update: { completed },
     create: { studentId: user.id, syllabusItemId, completed },
@@ -80,23 +80,42 @@ export async function getStudentAssignments(studentEmail: string) {
 
   const user = await prisma.user.findUnique({ where: { email: studentEmail } });
   if (!user) return [];
-  return await prisma.assignment.findMany({
+  // Use TaskAssignment + TaskItem as the ERD v23 replacement for the removed Assignment model
+  return await prisma.taskAssignment.findMany({
     where: { studentId: user.id },
-    orderBy: { dueDate: "asc" },
+    include: { taskItem: true },
+    orderBy: { taskItem: { dueDate: "asc" } },
     take: 100,
   });
 }
 
-export async function submitAssignment(assignmentId: string, submission: string) {
+export async function submitAssignment(taskAssignmentId: string, _submission: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  const a = await prisma.assignment.update({
-    where: { id: assignmentId },
-    data: { submission, status: "submitted" },
+  // TaskSubmission is the ERD v23 submission model — create/upsert it
+  const ta = await prisma.taskAssignment.findUnique({
+    where: { id: taskAssignmentId },
+    select: { taskItemId: true, studentId: true },
   });
+  if (!ta) throw new Error("Assignment not found");
+
+  await prisma.taskSubmission.upsert({
+    where: { taskItemId_studentId: { taskItemId: ta.taskItemId, studentId: ta.studentId } },
+    update: { status: "submitted", submittedAt: new Date() },
+    create: {
+      taskItemId: ta.taskItemId,
+      studentId: ta.studentId,
+      status: "submitted",
+      totalMarks: 0,
+      marksScored: 0,
+      marksLost: 0,
+      submittedAt: new Date(),
+    },
+  });
+
   revalidatePath("/portal/student/assignments");
-  return a;
+  return { id: taskAssignmentId };
 }
 
 const _getSyllabusAll = unstable_cache(
@@ -118,7 +137,7 @@ export async function getStudentProgress(studentEmail: string) {
 
   const user = await prisma.user.findUnique({ where: { email: studentEmail } });
   if (!user) return [];
-  return await prisma.studentProgress.findMany({
+  return await prisma.studentSyllabusProgress.findMany({
     where: { studentId: user.id },
     include: { syllabusItem: true },
   });

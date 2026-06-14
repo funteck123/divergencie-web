@@ -274,6 +274,7 @@ export type RecordingWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Recording"> | Date | string
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
   session?: Prisma.XOR<Prisma.AcademicSessionNullableScalarRelationFilter, Prisma.AcademicSessionWhereInput> | null
+  chapterItems?: Prisma.ChapterRecordingItemListRelationFilter
 }
 
 export type RecordingOrderByWithRelationInput = {
@@ -291,6 +292,7 @@ export type RecordingOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   service?: Prisma.ServiceOrderByWithRelationInput
   session?: Prisma.AcademicSessionOrderByWithRelationInput
+  chapterItems?: Prisma.ChapterRecordingItemOrderByRelationAggregateInput
 }
 
 export type RecordingWhereUniqueInput = Prisma.AtLeast<{
@@ -311,6 +313,7 @@ export type RecordingWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Recording"> | Date | string
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
   session?: Prisma.XOR<Prisma.AcademicSessionNullableScalarRelationFilter, Prisma.AcademicSessionWhereInput> | null
+  chapterItems?: Prisma.ChapterRecordingItemListRelationFilter
 }, "id">
 
 export type RecordingOrderByWithAggregationInput = {
@@ -364,6 +367,7 @@ export type RecordingCreateInput = {
   createdAt?: Date | string
   service?: Prisma.ServiceCreateNestedOneWithoutRecordingsInput
   session?: Prisma.AcademicSessionCreateNestedOneWithoutRecordingsInput
+  chapterItems?: Prisma.ChapterRecordingItemCreateNestedManyWithoutRecordingInput
 }
 
 export type RecordingUncheckedCreateInput = {
@@ -379,6 +383,7 @@ export type RecordingUncheckedCreateInput = {
   category?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  chapterItems?: Prisma.ChapterRecordingItemUncheckedCreateNestedManyWithoutRecordingInput
 }
 
 export type RecordingUpdateInput = {
@@ -394,6 +399,7 @@ export type RecordingUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   service?: Prisma.ServiceUpdateOneWithoutRecordingsNestedInput
   session?: Prisma.AcademicSessionUpdateOneWithoutRecordingsNestedInput
+  chapterItems?: Prisma.ChapterRecordingItemUpdateManyWithoutRecordingNestedInput
 }
 
 export type RecordingUncheckedUpdateInput = {
@@ -409,6 +415,7 @@ export type RecordingUncheckedUpdateInput = {
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  chapterItems?: Prisma.ChapterRecordingItemUncheckedUpdateManyWithoutRecordingNestedInput
 }
 
 export type RecordingCreateManyInput = {
@@ -462,6 +469,11 @@ export type RecordingListRelationFilter = {
 
 export type RecordingOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type RecordingScalarRelationFilter = {
+  is?: Prisma.RecordingWhereInput
+  isNot?: Prisma.RecordingWhereInput
 }
 
 export type RecordingCountOrderByAggregateInput = {
@@ -601,6 +613,20 @@ export type RecordingUncheckedUpdateManyWithoutSessionNestedInput = {
   deleteMany?: Prisma.RecordingScalarWhereInput | Prisma.RecordingScalarWhereInput[]
 }
 
+export type RecordingCreateNestedOneWithoutChapterItemsInput = {
+  create?: Prisma.XOR<Prisma.RecordingCreateWithoutChapterItemsInput, Prisma.RecordingUncheckedCreateWithoutChapterItemsInput>
+  connectOrCreate?: Prisma.RecordingCreateOrConnectWithoutChapterItemsInput
+  connect?: Prisma.RecordingWhereUniqueInput
+}
+
+export type RecordingUpdateOneRequiredWithoutChapterItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.RecordingCreateWithoutChapterItemsInput, Prisma.RecordingUncheckedCreateWithoutChapterItemsInput>
+  connectOrCreate?: Prisma.RecordingCreateOrConnectWithoutChapterItemsInput
+  upsert?: Prisma.RecordingUpsertWithoutChapterItemsInput
+  connect?: Prisma.RecordingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecordingUpdateToOneWithWhereWithoutChapterItemsInput, Prisma.RecordingUpdateWithoutChapterItemsInput>, Prisma.RecordingUncheckedUpdateWithoutChapterItemsInput>
+}
+
 export type RecordingCreateWithoutServiceInput = {
   id?: string
   title: string
@@ -613,6 +639,7 @@ export type RecordingCreateWithoutServiceInput = {
   isActive?: boolean
   createdAt?: Date | string
   session?: Prisma.AcademicSessionCreateNestedOneWithoutRecordingsInput
+  chapterItems?: Prisma.ChapterRecordingItemCreateNestedManyWithoutRecordingInput
 }
 
 export type RecordingUncheckedCreateWithoutServiceInput = {
@@ -627,6 +654,7 @@ export type RecordingUncheckedCreateWithoutServiceInput = {
   category?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  chapterItems?: Prisma.ChapterRecordingItemUncheckedCreateNestedManyWithoutRecordingInput
 }
 
 export type RecordingCreateOrConnectWithoutServiceInput = {
@@ -685,6 +713,7 @@ export type RecordingCreateWithoutSessionInput = {
   isActive?: boolean
   createdAt?: Date | string
   service?: Prisma.ServiceCreateNestedOneWithoutRecordingsInput
+  chapterItems?: Prisma.ChapterRecordingItemCreateNestedManyWithoutRecordingInput
 }
 
 export type RecordingUncheckedCreateWithoutSessionInput = {
@@ -699,6 +728,7 @@ export type RecordingUncheckedCreateWithoutSessionInput = {
   category?: string | null
   isActive?: boolean
   createdAt?: Date | string
+  chapterItems?: Prisma.ChapterRecordingItemUncheckedCreateNestedManyWithoutRecordingInput
 }
 
 export type RecordingCreateOrConnectWithoutSessionInput = {
@@ -727,6 +757,82 @@ export type RecordingUpdateManyWithWhereWithoutSessionInput = {
   data: Prisma.XOR<Prisma.RecordingUpdateManyMutationInput, Prisma.RecordingUncheckedUpdateManyWithoutSessionInput>
 }
 
+export type RecordingCreateWithoutChapterItemsInput = {
+  id?: string
+  title: string
+  subject?: string | null
+  videoUrl: string
+  date: Date | string
+  durationHours?: number | null
+  duration?: string | null
+  category?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  service?: Prisma.ServiceCreateNestedOneWithoutRecordingsInput
+  session?: Prisma.AcademicSessionCreateNestedOneWithoutRecordingsInput
+}
+
+export type RecordingUncheckedCreateWithoutChapterItemsInput = {
+  id?: string
+  serviceId?: string | null
+  sessionId?: string | null
+  title: string
+  subject?: string | null
+  videoUrl: string
+  date: Date | string
+  durationHours?: number | null
+  duration?: string | null
+  category?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+}
+
+export type RecordingCreateOrConnectWithoutChapterItemsInput = {
+  where: Prisma.RecordingWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecordingCreateWithoutChapterItemsInput, Prisma.RecordingUncheckedCreateWithoutChapterItemsInput>
+}
+
+export type RecordingUpsertWithoutChapterItemsInput = {
+  update: Prisma.XOR<Prisma.RecordingUpdateWithoutChapterItemsInput, Prisma.RecordingUncheckedUpdateWithoutChapterItemsInput>
+  create: Prisma.XOR<Prisma.RecordingCreateWithoutChapterItemsInput, Prisma.RecordingUncheckedCreateWithoutChapterItemsInput>
+  where?: Prisma.RecordingWhereInput
+}
+
+export type RecordingUpdateToOneWithWhereWithoutChapterItemsInput = {
+  where?: Prisma.RecordingWhereInput
+  data: Prisma.XOR<Prisma.RecordingUpdateWithoutChapterItemsInput, Prisma.RecordingUncheckedUpdateWithoutChapterItemsInput>
+}
+
+export type RecordingUpdateWithoutChapterItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service?: Prisma.ServiceUpdateOneWithoutRecordingsNestedInput
+  session?: Prisma.AcademicSessionUpdateOneWithoutRecordingsNestedInput
+}
+
+export type RecordingUncheckedUpdateWithoutChapterItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  durationHours?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  duration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type RecordingCreateManyServiceInput = {
   id?: string
   sessionId?: string | null
@@ -753,6 +859,7 @@ export type RecordingUpdateWithoutServiceInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   session?: Prisma.AcademicSessionUpdateOneWithoutRecordingsNestedInput
+  chapterItems?: Prisma.ChapterRecordingItemUpdateManyWithoutRecordingNestedInput
 }
 
 export type RecordingUncheckedUpdateWithoutServiceInput = {
@@ -767,6 +874,7 @@ export type RecordingUncheckedUpdateWithoutServiceInput = {
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  chapterItems?: Prisma.ChapterRecordingItemUncheckedUpdateManyWithoutRecordingNestedInput
 }
 
 export type RecordingUncheckedUpdateManyWithoutServiceInput = {
@@ -809,6 +917,7 @@ export type RecordingUpdateWithoutSessionInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   service?: Prisma.ServiceUpdateOneWithoutRecordingsNestedInput
+  chapterItems?: Prisma.ChapterRecordingItemUpdateManyWithoutRecordingNestedInput
 }
 
 export type RecordingUncheckedUpdateWithoutSessionInput = {
@@ -823,6 +932,7 @@ export type RecordingUncheckedUpdateWithoutSessionInput = {
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  chapterItems?: Prisma.ChapterRecordingItemUncheckedUpdateManyWithoutRecordingNestedInput
 }
 
 export type RecordingUncheckedUpdateManyWithoutSessionInput = {
@@ -840,6 +950,35 @@ export type RecordingUncheckedUpdateManyWithoutSessionInput = {
 }
 
 
+/**
+ * Count Type RecordingCountOutputType
+ */
+
+export type RecordingCountOutputType = {
+  chapterItems: number
+}
+
+export type RecordingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  chapterItems?: boolean | RecordingCountOutputTypeCountChapterItemsArgs
+}
+
+/**
+ * RecordingCountOutputType without action
+ */
+export type RecordingCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecordingCountOutputType
+   */
+  select?: Prisma.RecordingCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RecordingCountOutputType without action
+ */
+export type RecordingCountOutputTypeCountChapterItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ChapterRecordingItemWhereInput
+}
+
 
 export type RecordingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -856,6 +995,8 @@ export type RecordingSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdAt?: boolean
   service?: boolean | Prisma.Recording$serviceArgs<ExtArgs>
   session?: boolean | Prisma.Recording$sessionArgs<ExtArgs>
+  chapterItems?: boolean | Prisma.Recording$chapterItemsArgs<ExtArgs>
+  _count?: boolean | Prisma.RecordingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recording"]>
 
 export type RecordingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -911,6 +1052,8 @@ export type RecordingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type RecordingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   service?: boolean | Prisma.Recording$serviceArgs<ExtArgs>
   session?: boolean | Prisma.Recording$sessionArgs<ExtArgs>
+  chapterItems?: boolean | Prisma.Recording$chapterItemsArgs<ExtArgs>
+  _count?: boolean | Prisma.RecordingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecordingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   service?: boolean | Prisma.Recording$serviceArgs<ExtArgs>
@@ -926,6 +1069,7 @@ export type $RecordingPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     service: Prisma.$ServicePayload<ExtArgs> | null
     session: Prisma.$AcademicSessionPayload<ExtArgs> | null
+    chapterItems: Prisma.$ChapterRecordingItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1336,6 +1480,7 @@ export interface Prisma__RecordingClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   service<T extends Prisma.Recording$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Recording$serviceArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   session<T extends Prisma.Recording$sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Recording$sessionArgs<ExtArgs>>): Prisma.Prisma__AcademicSessionClient<runtime.Types.Result.GetResult<Prisma.$AcademicSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  chapterItems<T extends Prisma.Recording$chapterItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Recording$chapterItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChapterRecordingItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1813,6 +1958,30 @@ export type Recording$sessionArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.AcademicSessionInclude<ExtArgs> | null
   where?: Prisma.AcademicSessionWhereInput
+}
+
+/**
+ * Recording.chapterItems
+ */
+export type Recording$chapterItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ChapterRecordingItem
+   */
+  select?: Prisma.ChapterRecordingItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ChapterRecordingItem
+   */
+  omit?: Prisma.ChapterRecordingItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChapterRecordingItemInclude<ExtArgs> | null
+  where?: Prisma.ChapterRecordingItemWhereInput
+  orderBy?: Prisma.ChapterRecordingItemOrderByWithRelationInput | Prisma.ChapterRecordingItemOrderByWithRelationInput[]
+  cursor?: Prisma.ChapterRecordingItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ChapterRecordingItemScalarFieldEnum | Prisma.ChapterRecordingItemScalarFieldEnum[]
 }
 
 /**

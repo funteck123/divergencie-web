@@ -59,7 +59,7 @@ export type MeetingMinAggregateOutputType = {
   recordingUrl: string | null
   transcriptUrl: string | null
   summaryUrl: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
 }
 
@@ -88,7 +88,7 @@ export type MeetingMaxAggregateOutputType = {
   recordingUrl: string | null
   transcriptUrl: string | null
   summaryUrl: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
 }
 
@@ -117,7 +117,7 @@ export type MeetingCountAggregateOutputType = {
   recordingUrl: number
   transcriptUrl: number
   summaryUrl: number
-  dept: number
+  deptId: number
   isActive: number
   _all: number
 }
@@ -156,7 +156,7 @@ export type MeetingMinAggregateInputType = {
   recordingUrl?: true
   transcriptUrl?: true
   summaryUrl?: true
-  dept?: true
+  deptId?: true
   isActive?: true
 }
 
@@ -185,7 +185,7 @@ export type MeetingMaxAggregateInputType = {
   recordingUrl?: true
   transcriptUrl?: true
   summaryUrl?: true
-  dept?: true
+  deptId?: true
   isActive?: true
 }
 
@@ -214,7 +214,7 @@ export type MeetingCountAggregateInputType = {
   recordingUrl?: true
   transcriptUrl?: true
   summaryUrl?: true
-  dept?: true
+  deptId?: true
   isActive?: true
   _all?: true
 }
@@ -330,7 +330,7 @@ export type MeetingGroupByOutputType = {
   recordingUrl: string | null
   transcriptUrl: string | null
   summaryUrl: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean
   _count: MeetingCountAggregateOutputType | null
   _avg: MeetingAvgAggregateOutputType | null
@@ -382,10 +382,12 @@ export type MeetingWhereInput = {
   recordingUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
   transcriptUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
   summaryUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
-  dept?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"Meeting"> | string | null
   isActive?: Prisma.BoolFilter<"Meeting"> | boolean
   sessionType?: Prisma.XOR<Prisma.SessionTypeNullableScalarRelationFilter, Prisma.SessionTypeWhereInput> | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   attendances?: Prisma.MeetingAttendanceListRelationFilter
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogListRelationFilter
 }
 
 export type MeetingOrderByWithRelationInput = {
@@ -413,10 +415,12 @@ export type MeetingOrderByWithRelationInput = {
   recordingUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   transcriptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   summaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  dept?: Prisma.SortOrderInput | Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sessionType?: Prisma.SessionTypeOrderByWithRelationInput
+  dept?: Prisma.DepartmentOrderByWithRelationInput
   attendances?: Prisma.MeetingAttendanceOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type MeetingWhereUniqueInput = Prisma.AtLeast<{
@@ -447,10 +451,12 @@ export type MeetingWhereUniqueInput = Prisma.AtLeast<{
   recordingUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
   transcriptUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
   summaryUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
-  dept?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"Meeting"> | string | null
   isActive?: Prisma.BoolFilter<"Meeting"> | boolean
   sessionType?: Prisma.XOR<Prisma.SessionTypeNullableScalarRelationFilter, Prisma.SessionTypeWhereInput> | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   attendances?: Prisma.MeetingAttendanceListRelationFilter
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogListRelationFilter
 }, "id">
 
 export type MeetingOrderByWithAggregationInput = {
@@ -478,7 +484,7 @@ export type MeetingOrderByWithAggregationInput = {
   recordingUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   transcriptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   summaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  dept?: Prisma.SortOrderInput | Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.MeetingCountOrderByAggregateInput
   _avg?: Prisma.MeetingAvgOrderByAggregateInput
@@ -515,7 +521,7 @@ export type MeetingScalarWhereWithAggregatesInput = {
   recordingUrl?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
   transcriptUrl?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
   summaryUrl?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
-  dept?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"Meeting"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Meeting"> | boolean
 }
 
@@ -543,10 +549,11 @@ export type MeetingCreateInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
   isActive?: boolean
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutMeetingsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutMeetingsInput
   attendances?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUncheckedCreateInput = {
@@ -574,9 +581,10 @@ export type MeetingUncheckedCreateInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   attendances?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUpdateInput = {
@@ -603,10 +611,11 @@ export type MeetingUpdateInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionType?: Prisma.SessionTypeUpdateOneWithoutMeetingsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutMeetingsNestedInput
   attendances?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateInput = {
@@ -634,9 +643,10 @@ export type MeetingUncheckedUpdateInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingCreateManyInput = {
@@ -664,7 +674,7 @@ export type MeetingCreateManyInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
 }
 
@@ -692,7 +702,6 @@ export type MeetingUpdateManyMutationInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -721,7 +730,7 @@ export type MeetingUncheckedUpdateManyInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -760,7 +769,7 @@ export type MeetingCountOrderByAggregateInput = {
   recordingUrl?: Prisma.SortOrder
   transcriptUrl?: Prisma.SortOrder
   summaryUrl?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -793,7 +802,7 @@ export type MeetingMaxOrderByAggregateInput = {
   recordingUrl?: Prisma.SortOrder
   transcriptUrl?: Prisma.SortOrder
   summaryUrl?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -822,7 +831,7 @@ export type MeetingMinOrderByAggregateInput = {
   recordingUrl?: Prisma.SortOrder
   transcriptUrl?: Prisma.SortOrder
   summaryUrl?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -833,6 +842,48 @@ export type MeetingSumOrderByAggregateInput = {
 export type MeetingScalarRelationFilter = {
   is?: Prisma.MeetingWhereInput
   isNot?: Prisma.MeetingWhereInput
+}
+
+export type MeetingCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutDeptInput, Prisma.MeetingUncheckedCreateWithoutDeptInput> | Prisma.MeetingCreateWithoutDeptInput[] | Prisma.MeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutDeptInput | Prisma.MeetingCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.MeetingCreateManyDeptInputEnvelope
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+}
+
+export type MeetingUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutDeptInput, Prisma.MeetingUncheckedCreateWithoutDeptInput> | Prisma.MeetingCreateWithoutDeptInput[] | Prisma.MeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutDeptInput | Prisma.MeetingCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.MeetingCreateManyDeptInputEnvelope
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+}
+
+export type MeetingUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutDeptInput, Prisma.MeetingUncheckedCreateWithoutDeptInput> | Prisma.MeetingCreateWithoutDeptInput[] | Prisma.MeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutDeptInput | Prisma.MeetingCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.MeetingUpsertWithWhereUniqueWithoutDeptInput | Prisma.MeetingUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.MeetingCreateManyDeptInputEnvelope
+  set?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  disconnect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  delete?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  update?: Prisma.MeetingUpdateWithWhereUniqueWithoutDeptInput | Prisma.MeetingUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.MeetingUpdateManyWithWhereWithoutDeptInput | Prisma.MeetingUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
+}
+
+export type MeetingUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutDeptInput, Prisma.MeetingUncheckedCreateWithoutDeptInput> | Prisma.MeetingCreateWithoutDeptInput[] | Prisma.MeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutDeptInput | Prisma.MeetingCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.MeetingUpsertWithWhereUniqueWithoutDeptInput | Prisma.MeetingUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.MeetingCreateManyDeptInputEnvelope
+  set?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  disconnect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  delete?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  connect?: Prisma.MeetingWhereUniqueInput | Prisma.MeetingWhereUniqueInput[]
+  update?: Prisma.MeetingUpdateWithWhereUniqueWithoutDeptInput | Prisma.MeetingUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.MeetingUpdateManyWithWhereWithoutDeptInput | Prisma.MeetingUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
 }
 
 export type MeetingCreateNestedManyWithoutSessionTypeInput = {
@@ -877,6 +928,20 @@ export type MeetingUncheckedUpdateManyWithoutSessionTypeNestedInput = {
   deleteMany?: Prisma.MeetingScalarWhereInput | Prisma.MeetingScalarWhereInput[]
 }
 
+export type MeetingCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutStatusChangeLogsInput, Prisma.MeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.MeetingWhereUniqueInput
+}
+
+export type MeetingUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingCreateWithoutStatusChangeLogsInput, Prisma.MeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.MeetingUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.MeetingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.MeetingUpdateWithoutStatusChangeLogsInput>, Prisma.MeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type MeetingCreateNestedOneWithoutAttendancesInput = {
   create?: Prisma.XOR<Prisma.MeetingCreateWithoutAttendancesInput, Prisma.MeetingUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.MeetingCreateOrConnectWithoutAttendancesInput
@@ -891,7 +956,7 @@ export type MeetingUpdateOneRequiredWithoutAttendancesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MeetingUpdateToOneWithWhereWithoutAttendancesInput, Prisma.MeetingUpdateWithoutAttendancesInput>, Prisma.MeetingUncheckedUpdateWithoutAttendancesInput>
 }
 
-export type MeetingCreateWithoutSessionTypeInput = {
+export type MeetingCreateWithoutDeptInput = {
   id?: string
   staffServiceId?: string | null
   staffServiceScheduleId?: string | null
@@ -915,17 +980,19 @@ export type MeetingCreateWithoutSessionTypeInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
   isActive?: boolean
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutMeetingsInput
   attendances?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
-export type MeetingUncheckedCreateWithoutSessionTypeInput = {
+export type MeetingUncheckedCreateWithoutDeptInput = {
   id?: string
   staffServiceId?: string | null
   staffServiceScheduleId?: string | null
   occurrenceId?: string | null
   scheduledByUserId?: string | null
+  sessionTypeId?: string | null
   title: string
   agenda?: string | null
   startTime: Date | string
@@ -944,35 +1011,35 @@ export type MeetingUncheckedCreateWithoutSessionTypeInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
   isActive?: boolean
   attendances?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
-export type MeetingCreateOrConnectWithoutSessionTypeInput = {
+export type MeetingCreateOrConnectWithoutDeptInput = {
   where: Prisma.MeetingWhereUniqueInput
-  create: Prisma.XOR<Prisma.MeetingCreateWithoutSessionTypeInput, Prisma.MeetingUncheckedCreateWithoutSessionTypeInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutDeptInput, Prisma.MeetingUncheckedCreateWithoutDeptInput>
 }
 
-export type MeetingCreateManySessionTypeInputEnvelope = {
-  data: Prisma.MeetingCreateManySessionTypeInput | Prisma.MeetingCreateManySessionTypeInput[]
+export type MeetingCreateManyDeptInputEnvelope = {
+  data: Prisma.MeetingCreateManyDeptInput | Prisma.MeetingCreateManyDeptInput[]
   skipDuplicates?: boolean
 }
 
-export type MeetingUpsertWithWhereUniqueWithoutSessionTypeInput = {
+export type MeetingUpsertWithWhereUniqueWithoutDeptInput = {
   where: Prisma.MeetingWhereUniqueInput
-  update: Prisma.XOR<Prisma.MeetingUpdateWithoutSessionTypeInput, Prisma.MeetingUncheckedUpdateWithoutSessionTypeInput>
-  create: Prisma.XOR<Prisma.MeetingCreateWithoutSessionTypeInput, Prisma.MeetingUncheckedCreateWithoutSessionTypeInput>
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutDeptInput, Prisma.MeetingUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutDeptInput, Prisma.MeetingUncheckedCreateWithoutDeptInput>
 }
 
-export type MeetingUpdateWithWhereUniqueWithoutSessionTypeInput = {
+export type MeetingUpdateWithWhereUniqueWithoutDeptInput = {
   where: Prisma.MeetingWhereUniqueInput
-  data: Prisma.XOR<Prisma.MeetingUpdateWithoutSessionTypeInput, Prisma.MeetingUncheckedUpdateWithoutSessionTypeInput>
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutDeptInput, Prisma.MeetingUncheckedUpdateWithoutDeptInput>
 }
 
-export type MeetingUpdateManyWithWhereWithoutSessionTypeInput = {
+export type MeetingUpdateManyWithWhereWithoutDeptInput = {
   where: Prisma.MeetingScalarWhereInput
-  data: Prisma.XOR<Prisma.MeetingUpdateManyMutationInput, Prisma.MeetingUncheckedUpdateManyWithoutSessionTypeInput>
+  data: Prisma.XOR<Prisma.MeetingUpdateManyMutationInput, Prisma.MeetingUncheckedUpdateManyWithoutDeptInput>
 }
 
 export type MeetingScalarWhereInput = {
@@ -1003,8 +1070,230 @@ export type MeetingScalarWhereInput = {
   recordingUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
   transcriptUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
   summaryUrl?: Prisma.StringNullableFilter<"Meeting"> | string | null
-  dept?: Prisma.StringNullableFilter<"Meeting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"Meeting"> | string | null
   isActive?: Prisma.BoolFilter<"Meeting"> | boolean
+}
+
+export type MeetingCreateWithoutSessionTypeInput = {
+  id?: string
+  staffServiceId?: string | null
+  staffServiceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutMeetingsInput
+  attendances?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingUncheckedCreateWithoutSessionTypeInput = {
+  id?: string
+  staffServiceId?: string | null
+  staffServiceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  deptId?: string | null
+  isActive?: boolean
+  attendances?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingCreateOrConnectWithoutSessionTypeInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutSessionTypeInput, Prisma.MeetingUncheckedCreateWithoutSessionTypeInput>
+}
+
+export type MeetingCreateManySessionTypeInputEnvelope = {
+  data: Prisma.MeetingCreateManySessionTypeInput | Prisma.MeetingCreateManySessionTypeInput[]
+  skipDuplicates?: boolean
+}
+
+export type MeetingUpsertWithWhereUniqueWithoutSessionTypeInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutSessionTypeInput, Prisma.MeetingUncheckedUpdateWithoutSessionTypeInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutSessionTypeInput, Prisma.MeetingUncheckedCreateWithoutSessionTypeInput>
+}
+
+export type MeetingUpdateWithWhereUniqueWithoutSessionTypeInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutSessionTypeInput, Prisma.MeetingUncheckedUpdateWithoutSessionTypeInput>
+}
+
+export type MeetingUpdateManyWithWhereWithoutSessionTypeInput = {
+  where: Prisma.MeetingScalarWhereInput
+  data: Prisma.XOR<Prisma.MeetingUpdateManyMutationInput, Prisma.MeetingUncheckedUpdateManyWithoutSessionTypeInput>
+}
+
+export type MeetingCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  staffServiceId?: string | null
+  staffServiceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutMeetingsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutMeetingsInput
+  attendances?: Prisma.MeetingAttendanceCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  staffServiceId?: string | null
+  staffServiceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  sessionTypeId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  deptId?: string | null
+  isActive?: boolean
+  attendances?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type MeetingCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.MeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutStatusChangeLogsInput, Prisma.MeetingUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type MeetingUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.MeetingUpdateWithoutStatusChangeLogsInput, Prisma.MeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.MeetingCreateWithoutStatusChangeLogsInput, Prisma.MeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.MeetingWhereInput
+}
+
+export type MeetingUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.MeetingWhereInput
+  data: Prisma.XOR<Prisma.MeetingUpdateWithoutStatusChangeLogsInput, Prisma.MeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type MeetingUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffServiceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutMeetingsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutMeetingsNestedInput
+  attendances?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffServiceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingCreateWithoutAttendancesInput = {
@@ -1031,9 +1320,10 @@ export type MeetingCreateWithoutAttendancesInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
   isActive?: boolean
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutMeetingsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutMeetingsInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingUncheckedCreateWithoutAttendancesInput = {
@@ -1061,8 +1351,9 @@ export type MeetingUncheckedCreateWithoutAttendancesInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type MeetingCreateOrConnectWithoutAttendancesInput = {
@@ -1105,9 +1396,10 @@ export type MeetingUpdateWithoutAttendancesInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionType?: Prisma.SessionTypeUpdateOneWithoutMeetingsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutMeetingsNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateWithoutAttendancesInput = {
@@ -1135,7 +1427,124 @@ export type MeetingUncheckedUpdateWithoutAttendancesInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingCreateManyDeptInput = {
+  id?: string
+  staffServiceId?: string | null
+  staffServiceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  sessionTypeId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+}
+
+export type MeetingUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffServiceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutMeetingsNestedInput
+  attendances?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffServiceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type MeetingUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffServiceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -1163,7 +1572,7 @@ export type MeetingCreateManySessionTypeInput = {
   recordingUrl?: string | null
   transcriptUrl?: string | null
   summaryUrl?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
 }
 
@@ -1191,9 +1600,10 @@ export type MeetingUpdateWithoutSessionTypeInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutMeetingsNestedInput
   attendances?: Prisma.MeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateWithoutSessionTypeInput = {
@@ -1220,9 +1630,10 @@ export type MeetingUncheckedUpdateWithoutSessionTypeInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.MeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type MeetingUncheckedUpdateManyWithoutSessionTypeInput = {
@@ -1249,7 +1660,7 @@ export type MeetingUncheckedUpdateManyWithoutSessionTypeInput = {
   recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -1260,10 +1671,12 @@ export type MeetingUncheckedUpdateManyWithoutSessionTypeInput = {
 
 export type MeetingCountOutputType = {
   attendances: number
+  statusChangeLogs: number
 }
 
 export type MeetingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attendances?: boolean | MeetingCountOutputTypeCountAttendancesArgs
+  statusChangeLogs?: boolean | MeetingCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -1281,6 +1694,13 @@ export type MeetingCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
  */
 export type MeetingCountOutputTypeCountAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MeetingAttendanceWhereInput
+}
+
+/**
+ * MeetingCountOutputType without action
+ */
+export type MeetingCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MeetingStatusChangeLogWhereInput
 }
 
 
@@ -1309,10 +1729,12 @@ export type MeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   recordingUrl?: boolean
   transcriptUrl?: boolean
   summaryUrl?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionType?: boolean | Prisma.Meeting$sessionTypeArgs<ExtArgs>
+  dept?: boolean | Prisma.Meeting$deptArgs<ExtArgs>
   attendances?: boolean | Prisma.Meeting$attendancesArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.Meeting$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
 
@@ -1341,9 +1763,10 @@ export type MeetingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   recordingUrl?: boolean
   transcriptUrl?: boolean
   summaryUrl?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionType?: boolean | Prisma.Meeting$sessionTypeArgs<ExtArgs>
+  dept?: boolean | Prisma.Meeting$deptArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
 
 export type MeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1371,9 +1794,10 @@ export type MeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   recordingUrl?: boolean
   transcriptUrl?: boolean
   summaryUrl?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionType?: boolean | Prisma.Meeting$sessionTypeArgs<ExtArgs>
+  dept?: boolean | Prisma.Meeting$deptArgs<ExtArgs>
 }, ExtArgs["result"]["meeting"]>
 
 export type MeetingSelectScalar = {
@@ -1401,28 +1825,34 @@ export type MeetingSelectScalar = {
   recordingUrl?: boolean
   transcriptUrl?: boolean
   summaryUrl?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
 }
 
-export type MeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "staffServiceId" | "staffServiceScheduleId" | "occurrenceId" | "scheduledByUserId" | "sessionTypeId" | "title" | "agenda" | "startTime" | "endTime" | "originalStartTime" | "originalEndTime" | "durationHours" | "isTrial" | "status" | "sessionMode" | "zoomLink" | "zoomId" | "zoomPasscode" | "addedToCalendar" | "calendarSyncedAt" | "recordingUrl" | "transcriptUrl" | "summaryUrl" | "dept" | "isActive", ExtArgs["result"]["meeting"]>
+export type MeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "staffServiceId" | "staffServiceScheduleId" | "occurrenceId" | "scheduledByUserId" | "sessionTypeId" | "title" | "agenda" | "startTime" | "endTime" | "originalStartTime" | "originalEndTime" | "durationHours" | "isTrial" | "status" | "sessionMode" | "zoomLink" | "zoomId" | "zoomPasscode" | "addedToCalendar" | "calendarSyncedAt" | "recordingUrl" | "transcriptUrl" | "summaryUrl" | "deptId" | "isActive", ExtArgs["result"]["meeting"]>
 export type MeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessionType?: boolean | Prisma.Meeting$sessionTypeArgs<ExtArgs>
+  dept?: boolean | Prisma.Meeting$deptArgs<ExtArgs>
   attendances?: boolean | Prisma.Meeting$attendancesArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.Meeting$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.MeetingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MeetingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessionType?: boolean | Prisma.Meeting$sessionTypeArgs<ExtArgs>
+  dept?: boolean | Prisma.Meeting$deptArgs<ExtArgs>
 }
 export type MeetingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessionType?: boolean | Prisma.Meeting$sessionTypeArgs<ExtArgs>
+  dept?: boolean | Prisma.Meeting$deptArgs<ExtArgs>
 }
 
 export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Meeting"
   objects: {
     sessionType: Prisma.$SessionTypePayload<ExtArgs> | null
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
     attendances: Prisma.$MeetingAttendancePayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$MeetingStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1449,7 +1879,7 @@ export type $MeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     recordingUrl: string | null
     transcriptUrl: string | null
     summaryUrl: string | null
-    dept: string | null
+    deptId: string | null
     isActive: boolean
   }, ExtArgs["result"]["meeting"]>
   composites: {}
@@ -1846,7 +2276,9 @@ readonly fields: MeetingFieldRefs;
 export interface Prisma__MeetingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   sessionType<T extends Prisma.Meeting$sessionTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$sessionTypeArgs<ExtArgs>>): Prisma.Prisma__SessionTypeClient<runtime.Types.Result.GetResult<Prisma.$SessionTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dept<T extends Prisma.Meeting$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   attendances<T extends Prisma.Meeting$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.Meeting$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Meeting$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1900,7 +2332,7 @@ export interface MeetingFieldRefs {
   readonly recordingUrl: Prisma.FieldRef<"Meeting", 'String'>
   readonly transcriptUrl: Prisma.FieldRef<"Meeting", 'String'>
   readonly summaryUrl: Prisma.FieldRef<"Meeting", 'String'>
-  readonly dept: Prisma.FieldRef<"Meeting", 'String'>
+  readonly deptId: Prisma.FieldRef<"Meeting", 'String'>
   readonly isActive: Prisma.FieldRef<"Meeting", 'Boolean'>
 }
     
@@ -2322,6 +2754,25 @@ export type Meeting$sessionTypeArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
+ * Meeting.dept
+ */
+export type Meeting$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
+}
+
+/**
  * Meeting.attendances
  */
 export type Meeting$attendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2343,6 +2794,30 @@ export type Meeting$attendancesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.MeetingAttendanceScalarFieldEnum | Prisma.MeetingAttendanceScalarFieldEnum[]
+}
+
+/**
+ * Meeting.statusChangeLogs
+ */
+export type Meeting$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MeetingStatusChangeLog
+   */
+  select?: Prisma.MeetingStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MeetingStatusChangeLog
+   */
+  omit?: Prisma.MeetingStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.MeetingStatusChangeLogWhereInput
+  orderBy?: Prisma.MeetingStatusChangeLogOrderByWithRelationInput | Prisma.MeetingStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.MeetingStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MeetingStatusChangeLogScalarFieldEnum | Prisma.MeetingStatusChangeLogScalarFieldEnum[]
 }
 
 /**

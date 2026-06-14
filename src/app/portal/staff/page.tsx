@@ -31,7 +31,7 @@ import {
   Banknote as BanknoteIcon
 } from "lucide-react";
 
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 import { getStaffDashboardData } from "@/lib/actions/stats";
 

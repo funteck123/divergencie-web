@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import TicketList from "@/components/portal/tickets/TicketList";
 import TicketDetail from "@/components/portal/tickets/TicketDetail";
 import TicketCreateForm from "@/components/portal/tickets/TicketCreateForm";

@@ -28,7 +28,7 @@ export type ChecklistTemplateMinAggregateOutputType = {
   id: string | null
   name: string | null
   entityType: string | null
-  targetRole: string | null
+  targetUserTypeId: string | null
   isActive: boolean | null
 }
 
@@ -36,7 +36,7 @@ export type ChecklistTemplateMaxAggregateOutputType = {
   id: string | null
   name: string | null
   entityType: string | null
-  targetRole: string | null
+  targetUserTypeId: string | null
   isActive: boolean | null
 }
 
@@ -44,7 +44,7 @@ export type ChecklistTemplateCountAggregateOutputType = {
   id: number
   name: number
   entityType: number
-  targetRole: number
+  targetUserTypeId: number
   isActive: number
   _all: number
 }
@@ -54,7 +54,7 @@ export type ChecklistTemplateMinAggregateInputType = {
   id?: true
   name?: true
   entityType?: true
-  targetRole?: true
+  targetUserTypeId?: true
   isActive?: true
 }
 
@@ -62,7 +62,7 @@ export type ChecklistTemplateMaxAggregateInputType = {
   id?: true
   name?: true
   entityType?: true
-  targetRole?: true
+  targetUserTypeId?: true
   isActive?: true
 }
 
@@ -70,7 +70,7 @@ export type ChecklistTemplateCountAggregateInputType = {
   id?: true
   name?: true
   entityType?: true
-  targetRole?: true
+  targetUserTypeId?: true
   isActive?: true
   _all?: true
 }
@@ -151,7 +151,7 @@ export type ChecklistTemplateGroupByOutputType = {
   id: string
   name: string
   entityType: string
-  targetRole: string
+  targetUserTypeId: string | null
   isActive: boolean
   _count: ChecklistTemplateCountAggregateOutputType | null
   _min: ChecklistTemplateMinAggregateOutputType | null
@@ -180,8 +180,9 @@ export type ChecklistTemplateWhereInput = {
   id?: Prisma.StringFilter<"ChecklistTemplate"> | string
   name?: Prisma.StringFilter<"ChecklistTemplate"> | string
   entityType?: Prisma.StringFilter<"ChecklistTemplate"> | string
-  targetRole?: Prisma.StringFilter<"ChecklistTemplate"> | string
+  targetUserTypeId?: Prisma.StringNullableFilter<"ChecklistTemplate"> | string | null
   isActive?: Prisma.BoolFilter<"ChecklistTemplate"> | boolean
+  targetUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
   items?: Prisma.ChecklistTemplateItemListRelationFilter
   entries?: Prisma.ChecklistEntryListRelationFilter
 }
@@ -190,8 +191,9 @@ export type ChecklistTemplateOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserType?: Prisma.UserTypeOrderByWithRelationInput
   items?: Prisma.ChecklistTemplateItemOrderByRelationAggregateInput
   entries?: Prisma.ChecklistEntryOrderByRelationAggregateInput
 }
@@ -203,8 +205,9 @@ export type ChecklistTemplateWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ChecklistTemplateWhereInput | Prisma.ChecklistTemplateWhereInput[]
   name?: Prisma.StringFilter<"ChecklistTemplate"> | string
   entityType?: Prisma.StringFilter<"ChecklistTemplate"> | string
-  targetRole?: Prisma.StringFilter<"ChecklistTemplate"> | string
+  targetUserTypeId?: Prisma.StringNullableFilter<"ChecklistTemplate"> | string | null
   isActive?: Prisma.BoolFilter<"ChecklistTemplate"> | boolean
+  targetUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
   items?: Prisma.ChecklistTemplateItemListRelationFilter
   entries?: Prisma.ChecklistEntryListRelationFilter
 }, "id">
@@ -213,7 +216,7 @@ export type ChecklistTemplateOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.ChecklistTemplateCountOrderByAggregateInput
   _max?: Prisma.ChecklistTemplateMaxOrderByAggregateInput
@@ -227,7 +230,7 @@ export type ChecklistTemplateScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"ChecklistTemplate"> | string
   name?: Prisma.StringWithAggregatesFilter<"ChecklistTemplate"> | string
   entityType?: Prisma.StringWithAggregatesFilter<"ChecklistTemplate"> | string
-  targetRole?: Prisma.StringWithAggregatesFilter<"ChecklistTemplate"> | string
+  targetUserTypeId?: Prisma.StringNullableWithAggregatesFilter<"ChecklistTemplate"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"ChecklistTemplate"> | boolean
 }
 
@@ -235,8 +238,8 @@ export type ChecklistTemplateCreateInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
   isActive?: boolean
+  targetUserType?: Prisma.UserTypeCreateNestedOneWithoutChecklistTemplatesInput
   items?: Prisma.ChecklistTemplateItemCreateNestedManyWithoutTemplateInput
   entries?: Prisma.ChecklistEntryCreateNestedManyWithoutTemplateInput
 }
@@ -245,7 +248,7 @@ export type ChecklistTemplateUncheckedCreateInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
+  targetUserTypeId?: string | null
   isActive?: boolean
   items?: Prisma.ChecklistTemplateItemUncheckedCreateNestedManyWithoutTemplateInput
   entries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutTemplateInput
@@ -255,8 +258,8 @@ export type ChecklistTemplateUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserType?: Prisma.UserTypeUpdateOneWithoutChecklistTemplatesNestedInput
   items?: Prisma.ChecklistTemplateItemUpdateManyWithoutTemplateNestedInput
   entries?: Prisma.ChecklistEntryUpdateManyWithoutTemplateNestedInput
 }
@@ -265,7 +268,7 @@ export type ChecklistTemplateUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.ChecklistTemplateItemUncheckedUpdateManyWithoutTemplateNestedInput
   entries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutTemplateNestedInput
@@ -275,7 +278,7 @@ export type ChecklistTemplateCreateManyInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
+  targetUserTypeId?: string | null
   isActive?: boolean
 }
 
@@ -283,7 +286,6 @@ export type ChecklistTemplateUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -291,15 +293,25 @@ export type ChecklistTemplateUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type ChecklistTemplateListRelationFilter = {
+  every?: Prisma.ChecklistTemplateWhereInput
+  some?: Prisma.ChecklistTemplateWhereInput
+  none?: Prisma.ChecklistTemplateWhereInput
+}
+
+export type ChecklistTemplateOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ChecklistTemplateCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -307,7 +319,7 @@ export type ChecklistTemplateMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -315,13 +327,55 @@ export type ChecklistTemplateMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   entityType?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type ChecklistTemplateScalarRelationFilter = {
   is?: Prisma.ChecklistTemplateWhereInput
   isNot?: Prisma.ChecklistTemplateWhereInput
+}
+
+export type ChecklistTemplateCreateNestedManyWithoutTargetUserTypeInput = {
+  create?: Prisma.XOR<Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput> | Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput[] | Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput | Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput[]
+  createMany?: Prisma.ChecklistTemplateCreateManyTargetUserTypeInputEnvelope
+  connect?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+}
+
+export type ChecklistTemplateUncheckedCreateNestedManyWithoutTargetUserTypeInput = {
+  create?: Prisma.XOR<Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput> | Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput[] | Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput | Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput[]
+  createMany?: Prisma.ChecklistTemplateCreateManyTargetUserTypeInputEnvelope
+  connect?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+}
+
+export type ChecklistTemplateUpdateManyWithoutTargetUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput> | Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput[] | Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput | Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput[]
+  upsert?: Prisma.ChecklistTemplateUpsertWithWhereUniqueWithoutTargetUserTypeInput | Prisma.ChecklistTemplateUpsertWithWhereUniqueWithoutTargetUserTypeInput[]
+  createMany?: Prisma.ChecklistTemplateCreateManyTargetUserTypeInputEnvelope
+  set?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  disconnect?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  delete?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  connect?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  update?: Prisma.ChecklistTemplateUpdateWithWhereUniqueWithoutTargetUserTypeInput | Prisma.ChecklistTemplateUpdateWithWhereUniqueWithoutTargetUserTypeInput[]
+  updateMany?: Prisma.ChecklistTemplateUpdateManyWithWhereWithoutTargetUserTypeInput | Prisma.ChecklistTemplateUpdateManyWithWhereWithoutTargetUserTypeInput[]
+  deleteMany?: Prisma.ChecklistTemplateScalarWhereInput | Prisma.ChecklistTemplateScalarWhereInput[]
+}
+
+export type ChecklistTemplateUncheckedUpdateManyWithoutTargetUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput> | Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput[] | Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput | Prisma.ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput[]
+  upsert?: Prisma.ChecklistTemplateUpsertWithWhereUniqueWithoutTargetUserTypeInput | Prisma.ChecklistTemplateUpsertWithWhereUniqueWithoutTargetUserTypeInput[]
+  createMany?: Prisma.ChecklistTemplateCreateManyTargetUserTypeInputEnvelope
+  set?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  disconnect?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  delete?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  connect?: Prisma.ChecklistTemplateWhereUniqueInput | Prisma.ChecklistTemplateWhereUniqueInput[]
+  update?: Prisma.ChecklistTemplateUpdateWithWhereUniqueWithoutTargetUserTypeInput | Prisma.ChecklistTemplateUpdateWithWhereUniqueWithoutTargetUserTypeInput[]
+  updateMany?: Prisma.ChecklistTemplateUpdateManyWithWhereWithoutTargetUserTypeInput | Prisma.ChecklistTemplateUpdateManyWithWhereWithoutTargetUserTypeInput[]
+  deleteMany?: Prisma.ChecklistTemplateScalarWhereInput | Prisma.ChecklistTemplateScalarWhereInput[]
 }
 
 export type ChecklistTemplateCreateNestedOneWithoutItemsInput = {
@@ -352,12 +406,67 @@ export type ChecklistTemplateUpdateOneRequiredWithoutEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ChecklistTemplateUpdateToOneWithWhereWithoutEntriesInput, Prisma.ChecklistTemplateUpdateWithoutEntriesInput>, Prisma.ChecklistTemplateUncheckedUpdateWithoutEntriesInput>
 }
 
+export type ChecklistTemplateCreateWithoutTargetUserTypeInput = {
+  id?: string
+  name: string
+  entityType: string
+  isActive?: boolean
+  items?: Prisma.ChecklistTemplateItemCreateNestedManyWithoutTemplateInput
+  entries?: Prisma.ChecklistEntryCreateNestedManyWithoutTemplateInput
+}
+
+export type ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput = {
+  id?: string
+  name: string
+  entityType: string
+  isActive?: boolean
+  items?: Prisma.ChecklistTemplateItemUncheckedCreateNestedManyWithoutTemplateInput
+  entries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutTemplateInput
+}
+
+export type ChecklistTemplateCreateOrConnectWithoutTargetUserTypeInput = {
+  where: Prisma.ChecklistTemplateWhereUniqueInput
+  create: Prisma.XOR<Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput>
+}
+
+export type ChecklistTemplateCreateManyTargetUserTypeInputEnvelope = {
+  data: Prisma.ChecklistTemplateCreateManyTargetUserTypeInput | Prisma.ChecklistTemplateCreateManyTargetUserTypeInput[]
+  skipDuplicates?: boolean
+}
+
+export type ChecklistTemplateUpsertWithWhereUniqueWithoutTargetUserTypeInput = {
+  where: Prisma.ChecklistTemplateWhereUniqueInput
+  update: Prisma.XOR<Prisma.ChecklistTemplateUpdateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedUpdateWithoutTargetUserTypeInput>
+  create: Prisma.XOR<Prisma.ChecklistTemplateCreateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedCreateWithoutTargetUserTypeInput>
+}
+
+export type ChecklistTemplateUpdateWithWhereUniqueWithoutTargetUserTypeInput = {
+  where: Prisma.ChecklistTemplateWhereUniqueInput
+  data: Prisma.XOR<Prisma.ChecklistTemplateUpdateWithoutTargetUserTypeInput, Prisma.ChecklistTemplateUncheckedUpdateWithoutTargetUserTypeInput>
+}
+
+export type ChecklistTemplateUpdateManyWithWhereWithoutTargetUserTypeInput = {
+  where: Prisma.ChecklistTemplateScalarWhereInput
+  data: Prisma.XOR<Prisma.ChecklistTemplateUpdateManyMutationInput, Prisma.ChecklistTemplateUncheckedUpdateManyWithoutTargetUserTypeInput>
+}
+
+export type ChecklistTemplateScalarWhereInput = {
+  AND?: Prisma.ChecklistTemplateScalarWhereInput | Prisma.ChecklistTemplateScalarWhereInput[]
+  OR?: Prisma.ChecklistTemplateScalarWhereInput[]
+  NOT?: Prisma.ChecklistTemplateScalarWhereInput | Prisma.ChecklistTemplateScalarWhereInput[]
+  id?: Prisma.StringFilter<"ChecklistTemplate"> | string
+  name?: Prisma.StringFilter<"ChecklistTemplate"> | string
+  entityType?: Prisma.StringFilter<"ChecklistTemplate"> | string
+  targetUserTypeId?: Prisma.StringNullableFilter<"ChecklistTemplate"> | string | null
+  isActive?: Prisma.BoolFilter<"ChecklistTemplate"> | boolean
+}
+
 export type ChecklistTemplateCreateWithoutItemsInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
   isActive?: boolean
+  targetUserType?: Prisma.UserTypeCreateNestedOneWithoutChecklistTemplatesInput
   entries?: Prisma.ChecklistEntryCreateNestedManyWithoutTemplateInput
 }
 
@@ -365,7 +474,7 @@ export type ChecklistTemplateUncheckedCreateWithoutItemsInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
+  targetUserTypeId?: string | null
   isActive?: boolean
   entries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutTemplateInput
 }
@@ -390,8 +499,8 @@ export type ChecklistTemplateUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserType?: Prisma.UserTypeUpdateOneWithoutChecklistTemplatesNestedInput
   entries?: Prisma.ChecklistEntryUpdateManyWithoutTemplateNestedInput
 }
 
@@ -399,7 +508,7 @@ export type ChecklistTemplateUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   entries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutTemplateNestedInput
 }
@@ -408,8 +517,8 @@ export type ChecklistTemplateCreateWithoutEntriesInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
   isActive?: boolean
+  targetUserType?: Prisma.UserTypeCreateNestedOneWithoutChecklistTemplatesInput
   items?: Prisma.ChecklistTemplateItemCreateNestedManyWithoutTemplateInput
 }
 
@@ -417,7 +526,7 @@ export type ChecklistTemplateUncheckedCreateWithoutEntriesInput = {
   id?: string
   name: string
   entityType: string
-  targetRole: string
+  targetUserTypeId?: string | null
   isActive?: boolean
   items?: Prisma.ChecklistTemplateItemUncheckedCreateNestedManyWithoutTemplateInput
 }
@@ -442,8 +551,8 @@ export type ChecklistTemplateUpdateWithoutEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserType?: Prisma.UserTypeUpdateOneWithoutChecklistTemplatesNestedInput
   items?: Prisma.ChecklistTemplateItemUpdateManyWithoutTemplateNestedInput
 }
 
@@ -451,9 +560,41 @@ export type ChecklistTemplateUncheckedUpdateWithoutEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   entityType?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.ChecklistTemplateItemUncheckedUpdateManyWithoutTemplateNestedInput
+}
+
+export type ChecklistTemplateCreateManyTargetUserTypeInput = {
+  id?: string
+  name: string
+  entityType: string
+  isActive?: boolean
+}
+
+export type ChecklistTemplateUpdateWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  entityType?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  items?: Prisma.ChecklistTemplateItemUpdateManyWithoutTemplateNestedInput
+  entries?: Prisma.ChecklistEntryUpdateManyWithoutTemplateNestedInput
+}
+
+export type ChecklistTemplateUncheckedUpdateWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  entityType?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  items?: Prisma.ChecklistTemplateItemUncheckedUpdateManyWithoutTemplateNestedInput
+  entries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutTemplateNestedInput
+}
+
+export type ChecklistTemplateUncheckedUpdateManyWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  entityType?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -500,8 +641,9 @@ export type ChecklistTemplateSelect<ExtArgs extends runtime.Types.Extensions.Int
   id?: boolean
   name?: boolean
   entityType?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   isActive?: boolean
+  targetUserType?: boolean | Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>
   items?: boolean | Prisma.ChecklistTemplate$itemsArgs<ExtArgs>
   entries?: boolean | Prisma.ChecklistTemplate$entriesArgs<ExtArgs>
   _count?: boolean | Prisma.ChecklistTemplateCountOutputTypeDefaultArgs<ExtArgs>
@@ -511,38 +653,46 @@ export type ChecklistTemplateSelectCreateManyAndReturn<ExtArgs extends runtime.T
   id?: boolean
   name?: boolean
   entityType?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   isActive?: boolean
+  targetUserType?: boolean | Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["checklistTemplate"]>
 
 export type ChecklistTemplateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   entityType?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   isActive?: boolean
+  targetUserType?: boolean | Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["checklistTemplate"]>
 
 export type ChecklistTemplateSelectScalar = {
   id?: boolean
   name?: boolean
   entityType?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   isActive?: boolean
 }
 
-export type ChecklistTemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "entityType" | "targetRole" | "isActive", ExtArgs["result"]["checklistTemplate"]>
+export type ChecklistTemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "entityType" | "targetUserTypeId" | "isActive", ExtArgs["result"]["checklistTemplate"]>
 export type ChecklistTemplateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>
   items?: boolean | Prisma.ChecklistTemplate$itemsArgs<ExtArgs>
   entries?: boolean | Prisma.ChecklistTemplate$entriesArgs<ExtArgs>
   _count?: boolean | Prisma.ChecklistTemplateCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ChecklistTemplateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ChecklistTemplateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ChecklistTemplateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>
+}
+export type ChecklistTemplateIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>
+}
 
 export type $ChecklistTemplatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ChecklistTemplate"
   objects: {
+    targetUserType: Prisma.$UserTypePayload<ExtArgs> | null
     items: Prisma.$ChecklistTemplateItemPayload<ExtArgs>[]
     entries: Prisma.$ChecklistEntryPayload<ExtArgs>[]
   }
@@ -550,7 +700,7 @@ export type $ChecklistTemplatePayload<ExtArgs extends runtime.Types.Extensions.I
     id: string
     name: string
     entityType: string
-    targetRole: string
+    targetUserTypeId: string | null
     isActive: boolean
   }, ExtArgs["result"]["checklistTemplate"]>
   composites: {}
@@ -946,6 +1096,7 @@ readonly fields: ChecklistTemplateFieldRefs;
  */
 export interface Prisma__ChecklistTemplateClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  targetUserType<T extends Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChecklistTemplate$targetUserTypeArgs<ExtArgs>>): Prisma.Prisma__UserTypeClient<runtime.Types.Result.GetResult<Prisma.$UserTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.ChecklistTemplate$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChecklistTemplate$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChecklistTemplateItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   entries<T extends Prisma.ChecklistTemplate$entriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ChecklistTemplate$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChecklistEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -980,7 +1131,7 @@ export interface ChecklistTemplateFieldRefs {
   readonly id: Prisma.FieldRef<"ChecklistTemplate", 'String'>
   readonly name: Prisma.FieldRef<"ChecklistTemplate", 'String'>
   readonly entityType: Prisma.FieldRef<"ChecklistTemplate", 'String'>
-  readonly targetRole: Prisma.FieldRef<"ChecklistTemplate", 'String'>
+  readonly targetUserTypeId: Prisma.FieldRef<"ChecklistTemplate", 'String'>
   readonly isActive: Prisma.FieldRef<"ChecklistTemplate", 'Boolean'>
 }
     
@@ -1236,6 +1387,10 @@ export type ChecklistTemplateCreateManyAndReturnArgs<ExtArgs extends runtime.Typ
    */
   data: Prisma.ChecklistTemplateCreateManyInput | Prisma.ChecklistTemplateCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChecklistTemplateIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1306,6 +1461,10 @@ export type ChecklistTemplateUpdateManyAndReturnArgs<ExtArgs extends runtime.Typ
    * Limit how many ChecklistTemplates to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ChecklistTemplateIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1372,6 +1531,25 @@ export type ChecklistTemplateDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many ChecklistTemplates to delete.
    */
   limit?: number
+}
+
+/**
+ * ChecklistTemplate.targetUserType
+ */
+export type ChecklistTemplate$targetUserTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserType
+   */
+  select?: Prisma.UserTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserType
+   */
+  omit?: Prisma.UserTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTypeInclude<ExtArgs> | null
+  where?: Prisma.UserTypeWhereInput
 }
 
 /**

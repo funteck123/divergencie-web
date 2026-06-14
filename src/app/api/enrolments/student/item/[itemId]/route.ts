@@ -35,7 +35,7 @@ export async function PATCH(
     },
   });
 
-  await prisma.studentEnrolmentItemStatusHistory.create({
+  await prisma.studentEnrolmentItemStatusChangeLog.create({
     data: {
       enrolmentItemId: itemId,
       fromStatus: existing.status,

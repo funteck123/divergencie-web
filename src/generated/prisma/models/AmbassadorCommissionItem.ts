@@ -250,7 +250,7 @@ export type AmbassadorCommissionItemWhereInput = {
   isActive?: Prisma.BoolFilter<"AmbassadorCommissionItem"> | boolean
   commissionList?: Prisma.XOR<Prisma.AmbassadorCommissionListScalarRelationFilter, Prisma.AmbassadorCommissionListWhereInput>
   studentEnrolmentItem?: Prisma.XOR<Prisma.StudentEnrolmentItemScalarRelationFilter, Prisma.StudentEnrolmentItemWhereInput>
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryListRelationFilter
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogListRelationFilter
   changes?: Prisma.AmbassadorCommissionRateChangeLogListRelationFilter
 }
 
@@ -266,7 +266,7 @@ export type AmbassadorCommissionItemOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   commissionList?: Prisma.AmbassadorCommissionListOrderByWithRelationInput
   studentEnrolmentItem?: Prisma.StudentEnrolmentItemOrderByWithRelationInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogOrderByRelationAggregateInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogOrderByRelationAggregateInput
 }
 
@@ -285,7 +285,7 @@ export type AmbassadorCommissionItemWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"AmbassadorCommissionItem"> | boolean
   commissionList?: Prisma.XOR<Prisma.AmbassadorCommissionListScalarRelationFilter, Prisma.AmbassadorCommissionListWhereInput>
   studentEnrolmentItem?: Prisma.XOR<Prisma.StudentEnrolmentItemScalarRelationFilter, Prisma.StudentEnrolmentItemWhereInput>
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryListRelationFilter
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogListRelationFilter
   changes?: Prisma.AmbassadorCommissionRateChangeLogListRelationFilter
 }, "id">
 
@@ -331,7 +331,7 @@ export type AmbassadorCommissionItemCreateInput = {
   isActive?: boolean
   commissionList: Prisma.AmbassadorCommissionListCreateNestedOneWithoutItemsInput
   studentEnrolmentItem: Prisma.StudentEnrolmentItemCreateNestedOneWithoutCommissionItemsInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogCreateNestedManyWithoutCommissionItemInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogCreateNestedManyWithoutCommissionItemInput
 }
 
@@ -345,7 +345,7 @@ export type AmbassadorCommissionItemUncheckedCreateInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
 }
 
@@ -359,7 +359,7 @@ export type AmbassadorCommissionItemUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   commissionList?: Prisma.AmbassadorCommissionListUpdateOneRequiredWithoutItemsNestedInput
   studentEnrolmentItem?: Prisma.StudentEnrolmentItemUpdateOneRequiredWithoutCommissionItemsNestedInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUpdateManyWithoutCommissionItemNestedInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUpdateManyWithoutCommissionItemNestedInput
 }
 
@@ -373,7 +373,7 @@ export type AmbassadorCommissionItemUncheckedUpdateInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
 }
 
@@ -591,7 +591,7 @@ export type AmbassadorCommissionItemCreateWithoutStudentEnrolmentItemInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   commissionList: Prisma.AmbassadorCommissionListCreateNestedOneWithoutItemsInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogCreateNestedManyWithoutCommissionItemInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogCreateNestedManyWithoutCommissionItemInput
 }
 
@@ -604,7 +604,7 @@ export type AmbassadorCommissionItemUncheckedCreateWithoutStudentEnrolmentItemIn
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
 }
 
@@ -658,7 +658,7 @@ export type AmbassadorCommissionItemCreateWithoutCommissionListInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   studentEnrolmentItem: Prisma.StudentEnrolmentItemCreateNestedOneWithoutCommissionItemsInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogCreateNestedManyWithoutCommissionItemInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogCreateNestedManyWithoutCommissionItemInput
 }
 
@@ -671,7 +671,7 @@ export type AmbassadorCommissionItemUncheckedCreateWithoutCommissionListInput = 
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
 }
 
@@ -779,7 +779,7 @@ export type AmbassadorCommissionItemCreateWithoutChangesInput = {
   isActive?: boolean
   commissionList: Prisma.AmbassadorCommissionListCreateNestedOneWithoutItemsInput
   studentEnrolmentItem: Prisma.StudentEnrolmentItemCreateNestedOneWithoutCommissionItemsInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogCreateNestedManyWithoutCommissionItemInput
 }
 
 export type AmbassadorCommissionItemUncheckedCreateWithoutChangesInput = {
@@ -792,7 +792,7 @@ export type AmbassadorCommissionItemUncheckedCreateWithoutChangesInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedCreateNestedManyWithoutCommissionItemInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedCreateNestedManyWithoutCommissionItemInput
 }
 
 export type AmbassadorCommissionItemCreateOrConnectWithoutChangesInput = {
@@ -821,7 +821,7 @@ export type AmbassadorCommissionItemUpdateWithoutChangesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   commissionList?: Prisma.AmbassadorCommissionListUpdateOneRequiredWithoutItemsNestedInput
   studentEnrolmentItem?: Prisma.StudentEnrolmentItemUpdateOneRequiredWithoutCommissionItemsNestedInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUpdateManyWithoutCommissionItemNestedInput
 }
 
 export type AmbassadorCommissionItemUncheckedUpdateWithoutChangesInput = {
@@ -834,7 +834,7 @@ export type AmbassadorCommissionItemUncheckedUpdateWithoutChangesInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
 }
 
 export type AmbassadorCommissionItemCreateManyStudentEnrolmentItemInput = {
@@ -857,7 +857,7 @@ export type AmbassadorCommissionItemUpdateWithoutStudentEnrolmentItemInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   commissionList?: Prisma.AmbassadorCommissionListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUpdateManyWithoutCommissionItemNestedInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUpdateManyWithoutCommissionItemNestedInput
 }
 
@@ -870,7 +870,7 @@ export type AmbassadorCommissionItemUncheckedUpdateWithoutStudentEnrolmentItemIn
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
 }
 
@@ -905,7 +905,7 @@ export type AmbassadorCommissionItemUpdateWithoutCommissionListInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   studentEnrolmentItem?: Prisma.StudentEnrolmentItemUpdateOneRequiredWithoutCommissionItemsNestedInput
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUpdateManyWithoutCommissionItemNestedInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUpdateManyWithoutCommissionItemNestedInput
 }
 
@@ -918,7 +918,7 @@ export type AmbassadorCommissionItemUncheckedUpdateWithoutCommissionListInput = 
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorCommissionItemStatusHistoryUncheckedUpdateManyWithoutCommissionItemNestedInput
+  history?: Prisma.AmbassadorCommissionItemStatusChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
   changes?: Prisma.AmbassadorCommissionRateChangeLogUncheckedUpdateManyWithoutCommissionItemNestedInput
 }
 
@@ -962,7 +962,7 @@ export type AmbassadorCommissionItemCountOutputTypeDefaultArgs<ExtArgs extends r
  * AmbassadorCommissionItemCountOutputType without action
  */
 export type AmbassadorCommissionItemCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorCommissionItemStatusHistoryWhereInput
+  where?: Prisma.AmbassadorCommissionItemStatusChangeLogWhereInput
 }
 
 /**
@@ -1052,7 +1052,7 @@ export type $AmbassadorCommissionItemPayload<ExtArgs extends runtime.Types.Exten
   objects: {
     commissionList: Prisma.$AmbassadorCommissionListPayload<ExtArgs>
     studentEnrolmentItem: Prisma.$StudentEnrolmentItemPayload<ExtArgs>
-    history: Prisma.$AmbassadorCommissionItemStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$AmbassadorCommissionItemStatusChangeLogPayload<ExtArgs>[]
     changes: Prisma.$AmbassadorCommissionRateChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1461,7 +1461,7 @@ export interface Prisma__AmbassadorCommissionItemClient<T, Null = never, ExtArgs
   readonly [Symbol.toStringTag]: "PrismaPromise"
   commissionList<T extends Prisma.AmbassadorCommissionListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorCommissionListDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorCommissionListClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorCommissionListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   studentEnrolmentItem<T extends Prisma.StudentEnrolmentItemDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentEnrolmentItemDefaultArgs<ExtArgs>>): Prisma.Prisma__StudentEnrolmentItemClient<runtime.Types.Result.GetResult<Prisma.$StudentEnrolmentItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.AmbassadorCommissionItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorCommissionItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorCommissionItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.AmbassadorCommissionItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorCommissionItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorCommissionItemStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   changes<T extends Prisma.AmbassadorCommissionItem$changesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorCommissionItem$changesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorCommissionRateChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1906,23 +1906,23 @@ export type AmbassadorCommissionItemDeleteManyArgs<ExtArgs extends runtime.Types
  */
 export type AmbassadorCommissionItem$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the AmbassadorCommissionItemStatusHistory
+   * Select specific fields to fetch from the AmbassadorCommissionItemStatusChangeLog
    */
-  select?: Prisma.AmbassadorCommissionItemStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.AmbassadorCommissionItemStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the AmbassadorCommissionItemStatusHistory
+   * Omit specific fields from the AmbassadorCommissionItemStatusChangeLog
    */
-  omit?: Prisma.AmbassadorCommissionItemStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.AmbassadorCommissionItemStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AmbassadorCommissionItemStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorCommissionItemStatusHistoryWhereInput
-  orderBy?: Prisma.AmbassadorCommissionItemStatusHistoryOrderByWithRelationInput | Prisma.AmbassadorCommissionItemStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorCommissionItemStatusHistoryWhereUniqueInput
+  include?: Prisma.AmbassadorCommissionItemStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorCommissionItemStatusChangeLogWhereInput
+  orderBy?: Prisma.AmbassadorCommissionItemStatusChangeLogOrderByWithRelationInput | Prisma.AmbassadorCommissionItemStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorCommissionItemStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.AmbassadorCommissionItemStatusHistoryScalarFieldEnum | Prisma.AmbassadorCommissionItemStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.AmbassadorCommissionItemStatusChangeLogScalarFieldEnum | Prisma.AmbassadorCommissionItemStatusChangeLogScalarFieldEnum[]
 }
 
 /**

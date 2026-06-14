@@ -248,7 +248,7 @@ export type TeacherEnrolmentItemWhereInput = {
   isActive?: Prisma.BoolFilter<"TeacherEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.TeacherEnrolmentListScalarRelationFilter, Prisma.TeacherEnrolmentListWhereInput>
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryListRelationFilter
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogListRelationFilter
 }
 
 export type TeacherEnrolmentItemOrderByWithRelationInput = {
@@ -267,7 +267,7 @@ export type TeacherEnrolmentItemOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   enrolmentList?: Prisma.TeacherEnrolmentListOrderByWithRelationInput
   service?: Prisma.ServiceOrderByWithRelationInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type TeacherEnrolmentItemWhereUniqueInput = Prisma.AtLeast<{
@@ -289,7 +289,7 @@ export type TeacherEnrolmentItemWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"TeacherEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.TeacherEnrolmentListScalarRelationFilter, Prisma.TeacherEnrolmentListWhereInput>
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryListRelationFilter
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogListRelationFilter
 }, "id">
 
 export type TeacherEnrolmentItemOrderByWithAggregationInput = {
@@ -344,7 +344,7 @@ export type TeacherEnrolmentItemCreateInput = {
   isActive?: boolean
   enrolmentList: Prisma.TeacherEnrolmentListCreateNestedOneWithoutItemsInput
   service: Prisma.ServiceCreateNestedOneWithoutTeacherEnrolmentItemsInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type TeacherEnrolmentItemUncheckedCreateInput = {
@@ -361,7 +361,7 @@ export type TeacherEnrolmentItemUncheckedCreateInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type TeacherEnrolmentItemUpdateInput = {
@@ -378,7 +378,7 @@ export type TeacherEnrolmentItemUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.TeacherEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutTeacherEnrolmentItemsNestedInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type TeacherEnrolmentItemUncheckedUpdateInput = {
@@ -395,7 +395,7 @@ export type TeacherEnrolmentItemUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type TeacherEnrolmentItemCreateManyInput = {
@@ -618,7 +618,7 @@ export type TeacherEnrolmentItemCreateWithoutServiceInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.TeacherEnrolmentListCreateNestedOneWithoutItemsInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type TeacherEnrolmentItemUncheckedCreateWithoutServiceInput = {
@@ -634,7 +634,7 @@ export type TeacherEnrolmentItemUncheckedCreateWithoutServiceInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type TeacherEnrolmentItemCreateOrConnectWithoutServiceInput = {
@@ -695,7 +695,7 @@ export type TeacherEnrolmentItemCreateWithoutEnrolmentListInput = {
   cancellationReason?: string | null
   isActive?: boolean
   service: Prisma.ServiceCreateNestedOneWithoutTeacherEnrolmentItemsInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type TeacherEnrolmentItemUncheckedCreateWithoutEnrolmentListInput = {
@@ -711,7 +711,7 @@ export type TeacherEnrolmentItemUncheckedCreateWithoutEnrolmentListInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type TeacherEnrolmentItemCreateOrConnectWithoutEnrolmentListInput = {
@@ -848,7 +848,7 @@ export type TeacherEnrolmentItemUpdateWithoutServiceInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.TeacherEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type TeacherEnrolmentItemUncheckedUpdateWithoutServiceInput = {
@@ -864,7 +864,7 @@ export type TeacherEnrolmentItemUncheckedUpdateWithoutServiceInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceInput = {
@@ -910,7 +910,7 @@ export type TeacherEnrolmentItemUpdateWithoutEnrolmentListInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   service?: Prisma.ServiceUpdateOneRequiredWithoutTeacherEnrolmentItemsNestedInput
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type TeacherEnrolmentItemUncheckedUpdateWithoutEnrolmentListInput = {
@@ -926,7 +926,7 @@ export type TeacherEnrolmentItemUncheckedUpdateWithoutEnrolmentListInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.TeacherEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.TeacherEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type TeacherEnrolmentItemUncheckedUpdateManyWithoutEnrolmentListInput = {
@@ -971,7 +971,7 @@ export type TeacherEnrolmentItemCountOutputTypeDefaultArgs<ExtArgs extends runti
  * TeacherEnrolmentItemCountOutputType without action
  */
 export type TeacherEnrolmentItemCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TeacherEnrolmentItemStatusHistoryWhereInput
+  where?: Prisma.TeacherEnrolmentItemStatusChangeLogWhereInput
 }
 
 
@@ -1068,7 +1068,7 @@ export type $TeacherEnrolmentItemPayload<ExtArgs extends runtime.Types.Extension
   objects: {
     enrolmentList: Prisma.$TeacherEnrolmentListPayload<ExtArgs>
     service: Prisma.$ServicePayload<ExtArgs>
-    history: Prisma.$TeacherEnrolmentItemStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$TeacherEnrolmentItemStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1480,7 +1480,7 @@ export interface Prisma__TeacherEnrolmentItemClient<T, Null = never, ExtArgs ext
   readonly [Symbol.toStringTag]: "PrismaPromise"
   enrolmentList<T extends Prisma.TeacherEnrolmentListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherEnrolmentListDefaultArgs<ExtArgs>>): Prisma.Prisma__TeacherEnrolmentListClient<runtime.Types.Result.GetResult<Prisma.$TeacherEnrolmentListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.TeacherEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherEnrolmentItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.TeacherEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeacherEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherEnrolmentItemStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1928,23 +1928,23 @@ export type TeacherEnrolmentItemDeleteManyArgs<ExtArgs extends runtime.Types.Ext
  */
 export type TeacherEnrolmentItem$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the TeacherEnrolmentItemStatusHistory
+   * Select specific fields to fetch from the TeacherEnrolmentItemStatusChangeLog
    */
-  select?: Prisma.TeacherEnrolmentItemStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.TeacherEnrolmentItemStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the TeacherEnrolmentItemStatusHistory
+   * Omit specific fields from the TeacherEnrolmentItemStatusChangeLog
    */
-  omit?: Prisma.TeacherEnrolmentItemStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.TeacherEnrolmentItemStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TeacherEnrolmentItemStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.TeacherEnrolmentItemStatusHistoryWhereInput
-  orderBy?: Prisma.TeacherEnrolmentItemStatusHistoryOrderByWithRelationInput | Prisma.TeacherEnrolmentItemStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.TeacherEnrolmentItemStatusHistoryWhereUniqueInput
+  include?: Prisma.TeacherEnrolmentItemStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.TeacherEnrolmentItemStatusChangeLogWhereInput
+  orderBy?: Prisma.TeacherEnrolmentItemStatusChangeLogOrderByWithRelationInput | Prisma.TeacherEnrolmentItemStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.TeacherEnrolmentItemStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TeacherEnrolmentItemStatusHistoryScalarFieldEnum | Prisma.TeacherEnrolmentItemStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.TeacherEnrolmentItemStatusChangeLogScalarFieldEnum | Prisma.TeacherEnrolmentItemStatusChangeLogScalarFieldEnum[]
 }
 
 /**

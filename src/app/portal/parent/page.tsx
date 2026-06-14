@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { getLinkedChildren } from "@/lib/actions/profile";
 import { getParentInvoices } from "@/lib/actions/finance";
 import { getStudentAnnouncements } from "@/lib/actions/progress";

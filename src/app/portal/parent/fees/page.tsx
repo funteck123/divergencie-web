@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { payInvoice } from "@/lib/actions/billing";
 import { getParentInvoices } from "@/lib/actions/finance";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 const REGIONS = [
   { flag:'🇬🇧', name:'United Kingdom', currency:'GBP — British Pound',

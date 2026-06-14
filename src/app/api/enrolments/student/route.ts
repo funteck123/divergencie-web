@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  await prisma.studentEnrolmentItemStatusHistory.create({
+  await prisma.studentEnrolmentItemStatusChangeLog.create({
     data: {
       enrolmentItemId: item.id,
       fromStatus: "NONE",

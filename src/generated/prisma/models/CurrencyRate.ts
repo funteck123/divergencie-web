@@ -42,6 +42,7 @@ export type CurrencyRateMinAggregateOutputType = {
   toCurrency: string | null
   rate: number | null
   reverseRate: number | null
+  effectiveDate: Date | null
 }
 
 export type CurrencyRateMaxAggregateOutputType = {
@@ -50,6 +51,7 @@ export type CurrencyRateMaxAggregateOutputType = {
   toCurrency: string | null
   rate: number | null
   reverseRate: number | null
+  effectiveDate: Date | null
 }
 
 export type CurrencyRateCountAggregateOutputType = {
@@ -58,6 +60,7 @@ export type CurrencyRateCountAggregateOutputType = {
   toCurrency: number
   rate: number
   reverseRate: number
+  effectiveDate: number
   _all: number
 }
 
@@ -78,6 +81,7 @@ export type CurrencyRateMinAggregateInputType = {
   toCurrency?: true
   rate?: true
   reverseRate?: true
+  effectiveDate?: true
 }
 
 export type CurrencyRateMaxAggregateInputType = {
@@ -86,6 +90,7 @@ export type CurrencyRateMaxAggregateInputType = {
   toCurrency?: true
   rate?: true
   reverseRate?: true
+  effectiveDate?: true
 }
 
 export type CurrencyRateCountAggregateInputType = {
@@ -94,6 +99,7 @@ export type CurrencyRateCountAggregateInputType = {
   toCurrency?: true
   rate?: true
   reverseRate?: true
+  effectiveDate?: true
   _all?: true
 }
 
@@ -189,6 +195,7 @@ export type CurrencyRateGroupByOutputType = {
   toCurrency: string | null
   rate: number
   reverseRate: number
+  effectiveDate: Date | null
   _count: CurrencyRateCountAggregateOutputType | null
   _avg: CurrencyRateAvgAggregateOutputType | null
   _sum: CurrencyRateSumAggregateOutputType | null
@@ -220,6 +227,7 @@ export type CurrencyRateWhereInput = {
   toCurrency?: Prisma.StringNullableFilter<"CurrencyRate"> | string | null
   rate?: Prisma.FloatFilter<"CurrencyRate"> | number
   reverseRate?: Prisma.FloatFilter<"CurrencyRate"> | number
+  effectiveDate?: Prisma.DateTimeNullableFilter<"CurrencyRate"> | Date | string | null
 }
 
 export type CurrencyRateOrderByWithRelationInput = {
@@ -228,6 +236,7 @@ export type CurrencyRateOrderByWithRelationInput = {
   toCurrency?: Prisma.SortOrderInput | Prisma.SortOrder
   rate?: Prisma.SortOrder
   reverseRate?: Prisma.SortOrder
+  effectiveDate?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type CurrencyRateWhereUniqueInput = Prisma.AtLeast<{
@@ -239,6 +248,7 @@ export type CurrencyRateWhereUniqueInput = Prisma.AtLeast<{
   toCurrency?: Prisma.StringNullableFilter<"CurrencyRate"> | string | null
   rate?: Prisma.FloatFilter<"CurrencyRate"> | number
   reverseRate?: Prisma.FloatFilter<"CurrencyRate"> | number
+  effectiveDate?: Prisma.DateTimeNullableFilter<"CurrencyRate"> | Date | string | null
 }, "id" | "fromCurrency">
 
 export type CurrencyRateOrderByWithAggregationInput = {
@@ -247,6 +257,7 @@ export type CurrencyRateOrderByWithAggregationInput = {
   toCurrency?: Prisma.SortOrderInput | Prisma.SortOrder
   rate?: Prisma.SortOrder
   reverseRate?: Prisma.SortOrder
+  effectiveDate?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CurrencyRateCountOrderByAggregateInput
   _avg?: Prisma.CurrencyRateAvgOrderByAggregateInput
   _max?: Prisma.CurrencyRateMaxOrderByAggregateInput
@@ -263,6 +274,7 @@ export type CurrencyRateScalarWhereWithAggregatesInput = {
   toCurrency?: Prisma.StringNullableWithAggregatesFilter<"CurrencyRate"> | string | null
   rate?: Prisma.FloatWithAggregatesFilter<"CurrencyRate"> | number
   reverseRate?: Prisma.FloatWithAggregatesFilter<"CurrencyRate"> | number
+  effectiveDate?: Prisma.DateTimeNullableWithAggregatesFilter<"CurrencyRate"> | Date | string | null
 }
 
 export type CurrencyRateCreateInput = {
@@ -271,6 +283,7 @@ export type CurrencyRateCreateInput = {
   toCurrency?: string | null
   rate: number
   reverseRate: number
+  effectiveDate?: Date | string | null
 }
 
 export type CurrencyRateUncheckedCreateInput = {
@@ -279,6 +292,7 @@ export type CurrencyRateUncheckedCreateInput = {
   toCurrency?: string | null
   rate: number
   reverseRate: number
+  effectiveDate?: Date | string | null
 }
 
 export type CurrencyRateUpdateInput = {
@@ -287,6 +301,7 @@ export type CurrencyRateUpdateInput = {
   toCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rate?: Prisma.FloatFieldUpdateOperationsInput | number
   reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  effectiveDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CurrencyRateUncheckedUpdateInput = {
@@ -295,6 +310,7 @@ export type CurrencyRateUncheckedUpdateInput = {
   toCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rate?: Prisma.FloatFieldUpdateOperationsInput | number
   reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  effectiveDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CurrencyRateCreateManyInput = {
@@ -303,6 +319,7 @@ export type CurrencyRateCreateManyInput = {
   toCurrency?: string | null
   rate: number
   reverseRate: number
+  effectiveDate?: Date | string | null
 }
 
 export type CurrencyRateUpdateManyMutationInput = {
@@ -311,6 +328,7 @@ export type CurrencyRateUpdateManyMutationInput = {
   toCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rate?: Prisma.FloatFieldUpdateOperationsInput | number
   reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  effectiveDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CurrencyRateUncheckedUpdateManyInput = {
@@ -319,6 +337,7 @@ export type CurrencyRateUncheckedUpdateManyInput = {
   toCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rate?: Prisma.FloatFieldUpdateOperationsInput | number
   reverseRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  effectiveDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CurrencyRateCountOrderByAggregateInput = {
@@ -327,6 +346,7 @@ export type CurrencyRateCountOrderByAggregateInput = {
   toCurrency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   reverseRate?: Prisma.SortOrder
+  effectiveDate?: Prisma.SortOrder
 }
 
 export type CurrencyRateAvgOrderByAggregateInput = {
@@ -340,6 +360,7 @@ export type CurrencyRateMaxOrderByAggregateInput = {
   toCurrency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   reverseRate?: Prisma.SortOrder
+  effectiveDate?: Prisma.SortOrder
 }
 
 export type CurrencyRateMinOrderByAggregateInput = {
@@ -348,6 +369,7 @@ export type CurrencyRateMinOrderByAggregateInput = {
   toCurrency?: Prisma.SortOrder
   rate?: Prisma.SortOrder
   reverseRate?: Prisma.SortOrder
+  effectiveDate?: Prisma.SortOrder
 }
 
 export type CurrencyRateSumOrderByAggregateInput = {
@@ -363,6 +385,7 @@ export type CurrencyRateSelect<ExtArgs extends runtime.Types.Extensions.Internal
   toCurrency?: boolean
   rate?: boolean
   reverseRate?: boolean
+  effectiveDate?: boolean
 }, ExtArgs["result"]["currencyRate"]>
 
 export type CurrencyRateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -371,6 +394,7 @@ export type CurrencyRateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   toCurrency?: boolean
   rate?: boolean
   reverseRate?: boolean
+  effectiveDate?: boolean
 }, ExtArgs["result"]["currencyRate"]>
 
 export type CurrencyRateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -379,6 +403,7 @@ export type CurrencyRateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   toCurrency?: boolean
   rate?: boolean
   reverseRate?: boolean
+  effectiveDate?: boolean
 }, ExtArgs["result"]["currencyRate"]>
 
 export type CurrencyRateSelectScalar = {
@@ -387,9 +412,10 @@ export type CurrencyRateSelectScalar = {
   toCurrency?: boolean
   rate?: boolean
   reverseRate?: boolean
+  effectiveDate?: boolean
 }
 
-export type CurrencyRateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fromCurrency" | "toCurrency" | "rate" | "reverseRate", ExtArgs["result"]["currencyRate"]>
+export type CurrencyRateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fromCurrency" | "toCurrency" | "rate" | "reverseRate" | "effectiveDate", ExtArgs["result"]["currencyRate"]>
 
 export type $CurrencyRatePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CurrencyRate"
@@ -400,6 +426,7 @@ export type $CurrencyRatePayload<ExtArgs extends runtime.Types.Extensions.Intern
     toCurrency: string | null
     rate: number
     reverseRate: number
+    effectiveDate: Date | null
   }, ExtArgs["result"]["currencyRate"]>
   composites: {}
 }
@@ -828,6 +855,7 @@ export interface CurrencyRateFieldRefs {
   readonly toCurrency: Prisma.FieldRef<"CurrencyRate", 'String'>
   readonly rate: Prisma.FieldRef<"CurrencyRate", 'Float'>
   readonly reverseRate: Prisma.FieldRef<"CurrencyRate", 'Float'>
+  readonly effectiveDate: Prisma.FieldRef<"CurrencyRate", 'DateTime'>
 }
     
 

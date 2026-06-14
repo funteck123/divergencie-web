@@ -26,7 +26,7 @@ export type AggregateContentBankItem = {
 
 export type ContentBankItemMinAggregateOutputType = {
   id: string | null
-  dept: string | null
+  deptId: string | null
   name: string | null
   url: string | null
   addedByUserId: string | null
@@ -37,7 +37,7 @@ export type ContentBankItemMinAggregateOutputType = {
 
 export type ContentBankItemMaxAggregateOutputType = {
   id: string | null
-  dept: string | null
+  deptId: string | null
   name: string | null
   url: string | null
   addedByUserId: string | null
@@ -48,7 +48,7 @@ export type ContentBankItemMaxAggregateOutputType = {
 
 export type ContentBankItemCountAggregateOutputType = {
   id: number
-  dept: number
+  deptId: number
   name: number
   url: number
   addedByUserId: number
@@ -61,7 +61,7 @@ export type ContentBankItemCountAggregateOutputType = {
 
 export type ContentBankItemMinAggregateInputType = {
   id?: true
-  dept?: true
+  deptId?: true
   name?: true
   url?: true
   addedByUserId?: true
@@ -72,7 +72,7 @@ export type ContentBankItemMinAggregateInputType = {
 
 export type ContentBankItemMaxAggregateInputType = {
   id?: true
-  dept?: true
+  deptId?: true
   name?: true
   url?: true
   addedByUserId?: true
@@ -83,7 +83,7 @@ export type ContentBankItemMaxAggregateInputType = {
 
 export type ContentBankItemCountAggregateInputType = {
   id?: true
-  dept?: true
+  deptId?: true
   name?: true
   url?: true
   addedByUserId?: true
@@ -167,7 +167,7 @@ export type ContentBankItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 
 export type ContentBankItemGroupByOutputType = {
   id: string
-  dept: string
+  deptId: string | null
   name: string
   url: string
   addedByUserId: string
@@ -199,26 +199,28 @@ export type ContentBankItemWhereInput = {
   OR?: Prisma.ContentBankItemWhereInput[]
   NOT?: Prisma.ContentBankItemWhereInput | Prisma.ContentBankItemWhereInput[]
   id?: Prisma.StringFilter<"ContentBankItem"> | string
-  dept?: Prisma.StringFilter<"ContentBankItem"> | string
+  deptId?: Prisma.StringNullableFilter<"ContentBankItem"> | string | null
   name?: Prisma.StringFilter<"ContentBankItem"> | string
   url?: Prisma.StringFilter<"ContentBankItem"> | string
   addedByUserId?: Prisma.StringFilter<"ContentBankItem"> | string
   isActive?: Prisma.BoolFilter<"ContentBankItem"> | boolean
   description?: Prisma.StringNullableFilter<"ContentBankItem"> | string | null
   dateAdded?: Prisma.DateTimeNullableFilter<"ContentBankItem"> | Date | string | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   addedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   groupItems?: Prisma.ContentGroupItemListRelationFilter
 }
 
 export type ContentBankItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   addedByUserId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   dateAdded?: Prisma.SortOrderInput | Prisma.SortOrder
+  dept?: Prisma.DepartmentOrderByWithRelationInput
   addedBy?: Prisma.UserOrderByWithRelationInput
   groupItems?: Prisma.ContentGroupItemOrderByRelationAggregateInput
 }
@@ -228,20 +230,21 @@ export type ContentBankItemWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ContentBankItemWhereInput | Prisma.ContentBankItemWhereInput[]
   OR?: Prisma.ContentBankItemWhereInput[]
   NOT?: Prisma.ContentBankItemWhereInput | Prisma.ContentBankItemWhereInput[]
-  dept?: Prisma.StringFilter<"ContentBankItem"> | string
+  deptId?: Prisma.StringNullableFilter<"ContentBankItem"> | string | null
   name?: Prisma.StringFilter<"ContentBankItem"> | string
   url?: Prisma.StringFilter<"ContentBankItem"> | string
   addedByUserId?: Prisma.StringFilter<"ContentBankItem"> | string
   isActive?: Prisma.BoolFilter<"ContentBankItem"> | boolean
   description?: Prisma.StringNullableFilter<"ContentBankItem"> | string | null
   dateAdded?: Prisma.DateTimeNullableFilter<"ContentBankItem"> | Date | string | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   addedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   groupItems?: Prisma.ContentGroupItemListRelationFilter
 }, "id">
 
 export type ContentBankItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   addedByUserId?: Prisma.SortOrder
@@ -258,7 +261,7 @@ export type ContentBankItemScalarWhereWithAggregatesInput = {
   OR?: Prisma.ContentBankItemScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ContentBankItemScalarWhereWithAggregatesInput | Prisma.ContentBankItemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ContentBankItem"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"ContentBankItem"> | string
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"ContentBankItem"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"ContentBankItem"> | string
   url?: Prisma.StringWithAggregatesFilter<"ContentBankItem"> | string
   addedByUserId?: Prisma.StringWithAggregatesFilter<"ContentBankItem"> | string
@@ -269,19 +272,19 @@ export type ContentBankItemScalarWhereWithAggregatesInput = {
 
 export type ContentBankItemCreateInput = {
   id?: string
-  dept: string
   name: string
   url: string
   isActive?: boolean
   description?: string | null
   dateAdded?: Date | string | null
+  dept?: Prisma.DepartmentCreateNestedOneWithoutContentBankItemsInput
   addedBy: Prisma.UserCreateNestedOneWithoutContentBankItemsInput
   groupItems?: Prisma.ContentGroupItemCreateNestedManyWithoutContentBankItemInput
 }
 
 export type ContentBankItemUncheckedCreateInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   name: string
   url: string
   addedByUserId: string
@@ -293,19 +296,19 @@ export type ContentBankItemUncheckedCreateInput = {
 
 export type ContentBankItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dept?: Prisma.DepartmentUpdateOneWithoutContentBankItemsNestedInput
   addedBy?: Prisma.UserUpdateOneRequiredWithoutContentBankItemsNestedInput
   groupItems?: Prisma.ContentGroupItemUpdateManyWithoutContentBankItemNestedInput
 }
 
 export type ContentBankItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   addedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -317,7 +320,7 @@ export type ContentBankItemUncheckedUpdateInput = {
 
 export type ContentBankItemCreateManyInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   name: string
   url: string
   addedByUserId: string
@@ -328,7 +331,6 @@ export type ContentBankItemCreateManyInput = {
 
 export type ContentBankItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -338,7 +340,7 @@ export type ContentBankItemUpdateManyMutationInput = {
 
 export type ContentBankItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   addedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -364,7 +366,7 @@ export type ContentBankItemScalarRelationFilter = {
 
 export type ContentBankItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   addedByUserId?: Prisma.SortOrder
@@ -375,7 +377,7 @@ export type ContentBankItemCountOrderByAggregateInput = {
 
 export type ContentBankItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   addedByUserId?: Prisma.SortOrder
@@ -386,7 +388,7 @@ export type ContentBankItemMaxOrderByAggregateInput = {
 
 export type ContentBankItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   url?: Prisma.SortOrder
   addedByUserId?: Prisma.SortOrder
@@ -437,6 +439,48 @@ export type ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput = {
   deleteMany?: Prisma.ContentBankItemScalarWhereInput | Prisma.ContentBankItemScalarWhereInput[]
 }
 
+export type ContentBankItemCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.ContentBankItemCreateWithoutDeptInput, Prisma.ContentBankItemUncheckedCreateWithoutDeptInput> | Prisma.ContentBankItemCreateWithoutDeptInput[] | Prisma.ContentBankItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentBankItemCreateOrConnectWithoutDeptInput | Prisma.ContentBankItemCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.ContentBankItemCreateManyDeptInputEnvelope
+  connect?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+}
+
+export type ContentBankItemUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.ContentBankItemCreateWithoutDeptInput, Prisma.ContentBankItemUncheckedCreateWithoutDeptInput> | Prisma.ContentBankItemCreateWithoutDeptInput[] | Prisma.ContentBankItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentBankItemCreateOrConnectWithoutDeptInput | Prisma.ContentBankItemCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.ContentBankItemCreateManyDeptInputEnvelope
+  connect?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+}
+
+export type ContentBankItemUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentBankItemCreateWithoutDeptInput, Prisma.ContentBankItemUncheckedCreateWithoutDeptInput> | Prisma.ContentBankItemCreateWithoutDeptInput[] | Prisma.ContentBankItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentBankItemCreateOrConnectWithoutDeptInput | Prisma.ContentBankItemCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.ContentBankItemUpsertWithWhereUniqueWithoutDeptInput | Prisma.ContentBankItemUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.ContentBankItemCreateManyDeptInputEnvelope
+  set?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  disconnect?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  delete?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  connect?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  update?: Prisma.ContentBankItemUpdateWithWhereUniqueWithoutDeptInput | Prisma.ContentBankItemUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.ContentBankItemUpdateManyWithWhereWithoutDeptInput | Prisma.ContentBankItemUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.ContentBankItemScalarWhereInput | Prisma.ContentBankItemScalarWhereInput[]
+}
+
+export type ContentBankItemUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentBankItemCreateWithoutDeptInput, Prisma.ContentBankItemUncheckedCreateWithoutDeptInput> | Prisma.ContentBankItemCreateWithoutDeptInput[] | Prisma.ContentBankItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentBankItemCreateOrConnectWithoutDeptInput | Prisma.ContentBankItemCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.ContentBankItemUpsertWithWhereUniqueWithoutDeptInput | Prisma.ContentBankItemUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.ContentBankItemCreateManyDeptInputEnvelope
+  set?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  disconnect?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  delete?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  connect?: Prisma.ContentBankItemWhereUniqueInput | Prisma.ContentBankItemWhereUniqueInput[]
+  update?: Prisma.ContentBankItemUpdateWithWhereUniqueWithoutDeptInput | Prisma.ContentBankItemUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.ContentBankItemUpdateManyWithWhereWithoutDeptInput | Prisma.ContentBankItemUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.ContentBankItemScalarWhereInput | Prisma.ContentBankItemScalarWhereInput[]
+}
+
 export type ContentBankItemCreateNestedOneWithoutGroupItemsInput = {
   create?: Prisma.XOR<Prisma.ContentBankItemCreateWithoutGroupItemsInput, Prisma.ContentBankItemUncheckedCreateWithoutGroupItemsInput>
   connectOrCreate?: Prisma.ContentBankItemCreateOrConnectWithoutGroupItemsInput
@@ -453,18 +497,18 @@ export type ContentBankItemUpdateOneRequiredWithoutGroupItemsNestedInput = {
 
 export type ContentBankItemCreateWithoutAddedByInput = {
   id?: string
-  dept: string
   name: string
   url: string
   isActive?: boolean
   description?: string | null
   dateAdded?: Date | string | null
+  dept?: Prisma.DepartmentCreateNestedOneWithoutContentBankItemsInput
   groupItems?: Prisma.ContentGroupItemCreateNestedManyWithoutContentBankItemInput
 }
 
 export type ContentBankItemUncheckedCreateWithoutAddedByInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   name: string
   url: string
   isActive?: boolean
@@ -504,7 +548,7 @@ export type ContentBankItemScalarWhereInput = {
   OR?: Prisma.ContentBankItemScalarWhereInput[]
   NOT?: Prisma.ContentBankItemScalarWhereInput | Prisma.ContentBankItemScalarWhereInput[]
   id?: Prisma.StringFilter<"ContentBankItem"> | string
-  dept?: Prisma.StringFilter<"ContentBankItem"> | string
+  deptId?: Prisma.StringNullableFilter<"ContentBankItem"> | string | null
   name?: Prisma.StringFilter<"ContentBankItem"> | string
   url?: Prisma.StringFilter<"ContentBankItem"> | string
   addedByUserId?: Prisma.StringFilter<"ContentBankItem"> | string
@@ -513,20 +557,68 @@ export type ContentBankItemScalarWhereInput = {
   dateAdded?: Prisma.DateTimeNullableFilter<"ContentBankItem"> | Date | string | null
 }
 
-export type ContentBankItemCreateWithoutGroupItemsInput = {
+export type ContentBankItemCreateWithoutDeptInput = {
   id?: string
-  dept: string
   name: string
   url: string
   isActive?: boolean
   description?: string | null
   dateAdded?: Date | string | null
   addedBy: Prisma.UserCreateNestedOneWithoutContentBankItemsInput
+  groupItems?: Prisma.ContentGroupItemCreateNestedManyWithoutContentBankItemInput
+}
+
+export type ContentBankItemUncheckedCreateWithoutDeptInput = {
+  id?: string
+  name: string
+  url: string
+  addedByUserId: string
+  isActive?: boolean
+  description?: string | null
+  dateAdded?: Date | string | null
+  groupItems?: Prisma.ContentGroupItemUncheckedCreateNestedManyWithoutContentBankItemInput
+}
+
+export type ContentBankItemCreateOrConnectWithoutDeptInput = {
+  where: Prisma.ContentBankItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentBankItemCreateWithoutDeptInput, Prisma.ContentBankItemUncheckedCreateWithoutDeptInput>
+}
+
+export type ContentBankItemCreateManyDeptInputEnvelope = {
+  data: Prisma.ContentBankItemCreateManyDeptInput | Prisma.ContentBankItemCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type ContentBankItemUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.ContentBankItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.ContentBankItemUpdateWithoutDeptInput, Prisma.ContentBankItemUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.ContentBankItemCreateWithoutDeptInput, Prisma.ContentBankItemUncheckedCreateWithoutDeptInput>
+}
+
+export type ContentBankItemUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.ContentBankItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.ContentBankItemUpdateWithoutDeptInput, Prisma.ContentBankItemUncheckedUpdateWithoutDeptInput>
+}
+
+export type ContentBankItemUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.ContentBankItemScalarWhereInput
+  data: Prisma.XOR<Prisma.ContentBankItemUpdateManyMutationInput, Prisma.ContentBankItemUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type ContentBankItemCreateWithoutGroupItemsInput = {
+  id?: string
+  name: string
+  url: string
+  isActive?: boolean
+  description?: string | null
+  dateAdded?: Date | string | null
+  dept?: Prisma.DepartmentCreateNestedOneWithoutContentBankItemsInput
+  addedBy: Prisma.UserCreateNestedOneWithoutContentBankItemsInput
 }
 
 export type ContentBankItemUncheckedCreateWithoutGroupItemsInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   name: string
   url: string
   addedByUserId: string
@@ -553,18 +645,18 @@ export type ContentBankItemUpdateToOneWithWhereWithoutGroupItemsInput = {
 
 export type ContentBankItemUpdateWithoutGroupItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dept?: Prisma.DepartmentUpdateOneWithoutContentBankItemsNestedInput
   addedBy?: Prisma.UserUpdateOneRequiredWithoutContentBankItemsNestedInput
 }
 
 export type ContentBankItemUncheckedUpdateWithoutGroupItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   addedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -575,7 +667,7 @@ export type ContentBankItemUncheckedUpdateWithoutGroupItemsInput = {
 
 export type ContentBankItemCreateManyAddedByInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   name: string
   url: string
   isActive?: boolean
@@ -585,18 +677,18 @@ export type ContentBankItemCreateManyAddedByInput = {
 
 export type ContentBankItemUpdateWithoutAddedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dept?: Prisma.DepartmentUpdateOneWithoutContentBankItemsNestedInput
   groupItems?: Prisma.ContentGroupItemUpdateManyWithoutContentBankItemNestedInput
 }
 
 export type ContentBankItemUncheckedUpdateWithoutAddedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -607,9 +699,51 @@ export type ContentBankItemUncheckedUpdateWithoutAddedByInput = {
 
 export type ContentBankItemUncheckedUpdateManyWithoutAddedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   url?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type ContentBankItemCreateManyDeptInput = {
+  id?: string
+  name: string
+  url: string
+  addedByUserId: string
+  isActive?: boolean
+  description?: string | null
+  dateAdded?: Date | string | null
+}
+
+export type ContentBankItemUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  addedBy?: Prisma.UserUpdateOneRequiredWithoutContentBankItemsNestedInput
+  groupItems?: Prisma.ContentGroupItemUpdateManyWithoutContentBankItemNestedInput
+}
+
+export type ContentBankItemUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  addedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  groupItems?: Prisma.ContentGroupItemUncheckedUpdateManyWithoutContentBankItemNestedInput
+}
+
+export type ContentBankItemUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  addedByUserId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   dateAdded?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -648,13 +782,14 @@ export type ContentBankItemCountOutputTypeCountGroupItemsArgs<ExtArgs extends ru
 
 export type ContentBankItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   name?: boolean
   url?: boolean
   addedByUserId?: boolean
   isActive?: boolean
   description?: boolean
   dateAdded?: boolean
+  dept?: boolean | Prisma.ContentBankItem$deptArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   groupItems?: boolean | Prisma.ContentBankItem$groupItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ContentBankItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -662,31 +797,33 @@ export type ContentBankItemSelect<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type ContentBankItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   name?: boolean
   url?: boolean
   addedByUserId?: boolean
   isActive?: boolean
   description?: boolean
   dateAdded?: boolean
+  dept?: boolean | Prisma.ContentBankItem$deptArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contentBankItem"]>
 
 export type ContentBankItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   name?: boolean
   url?: boolean
   addedByUserId?: boolean
   isActive?: boolean
   description?: boolean
   dateAdded?: boolean
+  dept?: boolean | Prisma.ContentBankItem$deptArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contentBankItem"]>
 
 export type ContentBankItemSelectScalar = {
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   name?: boolean
   url?: boolean
   addedByUserId?: boolean
@@ -695,28 +832,32 @@ export type ContentBankItemSelectScalar = {
   dateAdded?: boolean
 }
 
-export type ContentBankItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dept" | "name" | "url" | "addedByUserId" | "isActive" | "description" | "dateAdded", ExtArgs["result"]["contentBankItem"]>
+export type ContentBankItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "deptId" | "name" | "url" | "addedByUserId" | "isActive" | "description" | "dateAdded", ExtArgs["result"]["contentBankItem"]>
 export type ContentBankItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.ContentBankItem$deptArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   groupItems?: boolean | Prisma.ContentBankItem$groupItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ContentBankItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContentBankItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.ContentBankItem$deptArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type ContentBankItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.ContentBankItem$deptArgs<ExtArgs>
   addedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $ContentBankItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ContentBankItem"
   objects: {
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
     addedBy: Prisma.$UserPayload<ExtArgs>
     groupItems: Prisma.$ContentGroupItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    dept: string
+    deptId: string | null
     name: string
     url: string
     addedByUserId: string
@@ -1117,6 +1258,7 @@ readonly fields: ContentBankItemFieldRefs;
  */
 export interface Prisma__ContentBankItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  dept<T extends Prisma.ContentBankItem$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentBankItem$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   addedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   groupItems<T extends Prisma.ContentBankItem$groupItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentBankItem$groupItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentGroupItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1149,7 +1291,7 @@ export interface Prisma__ContentBankItemClient<T, Null = never, ExtArgs extends 
  */
 export interface ContentBankItemFieldRefs {
   readonly id: Prisma.FieldRef<"ContentBankItem", 'String'>
-  readonly dept: Prisma.FieldRef<"ContentBankItem", 'String'>
+  readonly deptId: Prisma.FieldRef<"ContentBankItem", 'String'>
   readonly name: Prisma.FieldRef<"ContentBankItem", 'String'>
   readonly url: Prisma.FieldRef<"ContentBankItem", 'String'>
   readonly addedByUserId: Prisma.FieldRef<"ContentBankItem", 'String'>
@@ -1554,6 +1696,25 @@ export type ContentBankItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensio
    * Limit how many ContentBankItems to delete.
    */
   limit?: number
+}
+
+/**
+ * ContentBankItem.dept
+ */
+export type ContentBankItem$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
 }
 
 /**

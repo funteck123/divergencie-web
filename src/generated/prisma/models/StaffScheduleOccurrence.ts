@@ -318,7 +318,7 @@ export type StaffScheduleOccurrenceWhereInput = {
   isActive?: Prisma.BoolFilter<"StaffScheduleOccurrence"> | boolean
   schedule?: Prisma.XOR<Prisma.StaffServiceScheduleScalarRelationFilter, Prisma.StaffServiceScheduleWhereInput>
   sessionType?: Prisma.XOR<Prisma.SessionTypeScalarRelationFilter, Prisma.SessionTypeWhereInput>
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryListRelationFilter
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogListRelationFilter
 }
 
 export type StaffScheduleOccurrenceOrderByWithRelationInput = {
@@ -341,7 +341,7 @@ export type StaffScheduleOccurrenceOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   schedule?: Prisma.StaffServiceScheduleOrderByWithRelationInput
   sessionType?: Prisma.SessionTypeOrderByWithRelationInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type StaffScheduleOccurrenceWhereUniqueInput = Prisma.AtLeast<{
@@ -367,7 +367,7 @@ export type StaffScheduleOccurrenceWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"StaffScheduleOccurrence"> | boolean
   schedule?: Prisma.XOR<Prisma.StaffServiceScheduleScalarRelationFilter, Prisma.StaffServiceScheduleWhereInput>
   sessionType?: Prisma.XOR<Prisma.SessionTypeScalarRelationFilter, Prisma.SessionTypeWhereInput>
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryListRelationFilter
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogListRelationFilter
 }, "id">
 
 export type StaffScheduleOccurrenceOrderByWithAggregationInput = {
@@ -436,7 +436,7 @@ export type StaffScheduleOccurrenceCreateInput = {
   isActive?: boolean
   schedule: Prisma.StaffServiceScheduleCreateNestedOneWithoutOccurrencesInput
   sessionType: Prisma.SessionTypeCreateNestedOneWithoutStaffOccurrencesInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogCreateNestedManyWithoutOccurrenceInput
 }
 
 export type StaffScheduleOccurrenceUncheckedCreateInput = {
@@ -457,7 +457,7 @@ export type StaffScheduleOccurrenceUncheckedCreateInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUncheckedCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUncheckedCreateNestedManyWithoutOccurrenceInput
 }
 
 export type StaffScheduleOccurrenceUpdateInput = {
@@ -478,7 +478,7 @@ export type StaffScheduleOccurrenceUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   schedule?: Prisma.StaffServiceScheduleUpdateOneRequiredWithoutOccurrencesNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneRequiredWithoutStaffOccurrencesNestedInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type StaffScheduleOccurrenceUncheckedUpdateInput = {
@@ -499,7 +499,7 @@ export type StaffScheduleOccurrenceUncheckedUpdateInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUncheckedUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUncheckedUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type StaffScheduleOccurrenceCreateManyInput = {
@@ -760,7 +760,7 @@ export type StaffScheduleOccurrenceCreateWithoutSessionTypeInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   schedule: Prisma.StaffServiceScheduleCreateNestedOneWithoutOccurrencesInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogCreateNestedManyWithoutOccurrenceInput
 }
 
 export type StaffScheduleOccurrenceUncheckedCreateWithoutSessionTypeInput = {
@@ -780,7 +780,7 @@ export type StaffScheduleOccurrenceUncheckedCreateWithoutSessionTypeInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUncheckedCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUncheckedCreateNestedManyWithoutOccurrenceInput
 }
 
 export type StaffScheduleOccurrenceCreateOrConnectWithoutSessionTypeInput = {
@@ -849,7 +849,7 @@ export type StaffScheduleOccurrenceCreateWithoutScheduleInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   sessionType: Prisma.SessionTypeCreateNestedOneWithoutStaffOccurrencesInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogCreateNestedManyWithoutOccurrenceInput
 }
 
 export type StaffScheduleOccurrenceUncheckedCreateWithoutScheduleInput = {
@@ -869,7 +869,7 @@ export type StaffScheduleOccurrenceUncheckedCreateWithoutScheduleInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUncheckedCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUncheckedCreateNestedManyWithoutOccurrenceInput
 }
 
 export type StaffScheduleOccurrenceCreateOrConnectWithoutScheduleInput = {
@@ -1030,7 +1030,7 @@ export type StaffScheduleOccurrenceUpdateWithoutSessionTypeInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   schedule?: Prisma.StaffServiceScheduleUpdateOneRequiredWithoutOccurrencesNestedInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type StaffScheduleOccurrenceUncheckedUpdateWithoutSessionTypeInput = {
@@ -1050,7 +1050,7 @@ export type StaffScheduleOccurrenceUncheckedUpdateWithoutSessionTypeInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUncheckedUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUncheckedUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type StaffScheduleOccurrenceUncheckedUpdateManyWithoutSessionTypeInput = {
@@ -1108,7 +1108,7 @@ export type StaffScheduleOccurrenceUpdateWithoutScheduleInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionType?: Prisma.SessionTypeUpdateOneRequiredWithoutStaffOccurrencesNestedInput
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type StaffScheduleOccurrenceUncheckedUpdateWithoutScheduleInput = {
@@ -1128,7 +1128,7 @@ export type StaffScheduleOccurrenceUncheckedUpdateWithoutScheduleInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffScheduleOccurrenceStatusHistoryUncheckedUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.StaffScheduleOccurrenceStatusChangeLogUncheckedUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type StaffScheduleOccurrenceUncheckedUpdateManyWithoutScheduleInput = {
@@ -1177,7 +1177,7 @@ export type StaffScheduleOccurrenceCountOutputTypeDefaultArgs<ExtArgs extends ru
  * StaffScheduleOccurrenceCountOutputType without action
  */
 export type StaffScheduleOccurrenceCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StaffScheduleOccurrenceStatusHistoryWhereInput
+  where?: Prisma.StaffScheduleOccurrenceStatusChangeLogWhereInput
 }
 
 
@@ -1290,7 +1290,7 @@ export type $StaffScheduleOccurrencePayload<ExtArgs extends runtime.Types.Extens
   objects: {
     schedule: Prisma.$StaffServiceSchedulePayload<ExtArgs>
     sessionType: Prisma.$SessionTypePayload<ExtArgs>
-    history: Prisma.$StaffScheduleOccurrenceStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$StaffScheduleOccurrenceStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1706,7 +1706,7 @@ export interface Prisma__StaffScheduleOccurrenceClient<T, Null = never, ExtArgs 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   schedule<T extends Prisma.StaffServiceScheduleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffServiceScheduleDefaultArgs<ExtArgs>>): Prisma.Prisma__StaffServiceScheduleClient<runtime.Types.Result.GetResult<Prisma.$StaffServiceSchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   sessionType<T extends Prisma.SessionTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SessionTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__SessionTypeClient<runtime.Types.Result.GetResult<Prisma.$SessionTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.StaffScheduleOccurrence$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffScheduleOccurrence$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffScheduleOccurrenceStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.StaffScheduleOccurrence$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffScheduleOccurrence$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffScheduleOccurrenceStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2158,23 +2158,23 @@ export type StaffScheduleOccurrenceDeleteManyArgs<ExtArgs extends runtime.Types.
  */
 export type StaffScheduleOccurrence$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StaffScheduleOccurrenceStatusHistory
+   * Select specific fields to fetch from the StaffScheduleOccurrenceStatusChangeLog
    */
-  select?: Prisma.StaffScheduleOccurrenceStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.StaffScheduleOccurrenceStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StaffScheduleOccurrenceStatusHistory
+   * Omit specific fields from the StaffScheduleOccurrenceStatusChangeLog
    */
-  omit?: Prisma.StaffScheduleOccurrenceStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.StaffScheduleOccurrenceStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StaffScheduleOccurrenceStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.StaffScheduleOccurrenceStatusHistoryWhereInput
-  orderBy?: Prisma.StaffScheduleOccurrenceStatusHistoryOrderByWithRelationInput | Prisma.StaffScheduleOccurrenceStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.StaffScheduleOccurrenceStatusHistoryWhereUniqueInput
+  include?: Prisma.StaffScheduleOccurrenceStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.StaffScheduleOccurrenceStatusChangeLogWhereInput
+  orderBy?: Prisma.StaffScheduleOccurrenceStatusChangeLogOrderByWithRelationInput | Prisma.StaffScheduleOccurrenceStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.StaffScheduleOccurrenceStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StaffScheduleOccurrenceStatusHistoryScalarFieldEnum | Prisma.StaffScheduleOccurrenceStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.StaffScheduleOccurrenceStatusChangeLogScalarFieldEnum | Prisma.StaffScheduleOccurrenceStatusChangeLogScalarFieldEnum[]
 }
 
 /**

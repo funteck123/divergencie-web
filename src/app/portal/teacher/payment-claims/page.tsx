@@ -18,7 +18,7 @@ import {
 import { submitClaim, getTeacherClaims } from "@/lib/actions/claims";
 import { getTeacherAttendance } from "@/lib/actions/attendance";
 import { getUserProfile } from "@/lib/actions/profile";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 export default function TeacherPaymentClaimsPage() {
   const { data: session } = useSession();

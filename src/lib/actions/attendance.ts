@@ -272,11 +272,12 @@ export async function getAtRiskStudents() {
         const attRate =
           recentAtt.length > 0 ? Math.round((presentCount / recentAtt.length) * 100) : 100;
 
-        const overdueAssignments = await prisma.assignment.count({
-          where: { studentId: s.id, status: "pending", dueDate: { lt: new Date() } },
+        // Assignment model removed in ERD v23; use TaskAssignment pending count as proxy
+        const overdueAssignments = await prisma.taskAssignment.count({
+          where: { studentId: s.id, taskItem: { dueDate: { lt: new Date() } } },
         });
 
-        const allProgress = await prisma.studentProgress.findMany({ where: { studentId: s.id } });
+        const allProgress = await prisma.studentSyllabusProgress.findMany({ where: { studentId: s.id } });
         const totalProg = allProgress.length;
         const doneProg = allProgress.filter((p: any) => p.completed).length;
         const progressPct = totalProg > 0 ? Math.round((doneProg / totalProg) * 100) : 100;

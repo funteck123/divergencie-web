@@ -9,26 +9,25 @@ export async function requestMeeting(formData: FormData) {
   if (!session?.user) throw new Error("Unauthorized");
 
   const title = formData.get("title") as string;
-  const dept = formData.get("dept") as string;
+  const deptName = formData.get("dept") as string;
   const date = formData.get("date") as string;
   const time = formData.get("time") as string;
   const agenda = formData.get("agenda") as string;
   const creatorEmail = formData.get("creatorId") as string;
 
-  if (!title || !dept || !date || !time || !creatorEmail) {
-    throw new Error("Missing required fields");
-  }
+  if (!title || !deptName || !date || !time || !creatorEmail) throw new Error("Missing required fields");
 
-  const user = await prisma.user.findUnique({ where: { email: creatorEmail } });
+  const [user, deptRecord] = await Promise.all([
+    prisma.user.findUnique({ where: { email: creatorEmail } }),
+    prisma.department.findFirst({ where: { name: deptName } }),
+  ]);
   if (!user) throw new Error("User not found");
-
-  const dateTime = new Date(`${date}T${time}`);
 
   const meeting = await prisma.generalMeeting.create({
     data: {
       title,
-      dept,
-      dateTime,
+      deptId: deptRecord?.id ?? null,
+      dateTime: new Date(`${date}T${time}`),
       agenda,
       status: "pending",
       participants: { create: { userId: user.id } },
@@ -50,13 +49,19 @@ export async function updateMeetingStatus(meetingId: string, status: string) {
   return meeting;
 }
 
-export async function getMeetings(dept?: string) {
+export async function getMeetings(deptName?: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
+  let deptId: string | undefined;
+  if (deptName) {
+    const d = await prisma.department.findFirst({ where: { name: deptName } });
+    deptId = d?.id;
+  }
+
   return await prisma.generalMeeting.findMany({
-    where: dept ? { OR: [{ dept }, { dept: "All Staff" }] } : {},
-    include: { participants: { include: { user: true } } },
+    where: deptId ? { deptId } : {},
+    include: { participants: { include: { user: true } }, dept: true },
     orderBy: { dateTime: "asc" },
     take: 100,
   });

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ClipboardList, History, CheckSquare, Send, Upload, FileText, CheckCircle2, Clock, AlertCircle, X, Star, Download, Filter, Loader2 } from "lucide-react";
 import { getStudentAssignments, submitAssignment } from "@/lib/actions/progress";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-amber-100 text-amber-700",

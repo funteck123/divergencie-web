@@ -16,7 +16,7 @@ import {
   ExternalLink,
   Gift
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { getAmbassadorData } from "@/lib/actions/ambassador";
 
 export default function AmbassadorDashboard() {

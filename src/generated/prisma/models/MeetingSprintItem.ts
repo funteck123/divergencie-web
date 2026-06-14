@@ -185,13 +185,14 @@ export type MeetingSprintItemOrderByWithRelationInput = {
 
 export type MeetingSprintItemWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  sprintListId_backlogItemId?: Prisma.MeetingSprintItemSprintListIdBacklogItemIdCompoundUniqueInput
   AND?: Prisma.MeetingSprintItemWhereInput | Prisma.MeetingSprintItemWhereInput[]
   OR?: Prisma.MeetingSprintItemWhereInput[]
   NOT?: Prisma.MeetingSprintItemWhereInput | Prisma.MeetingSprintItemWhereInput[]
   sprintListId?: Prisma.StringFilter<"MeetingSprintItem"> | string
   backlogItemId?: Prisma.StringFilter<"MeetingSprintItem"> | string
   notes?: Prisma.StringNullableFilter<"MeetingSprintItem"> | string | null
-}, "id">
+}, "id" | "sprintListId_backlogItemId">
 
 export type MeetingSprintItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -260,6 +261,11 @@ export type MeetingSprintItemUncheckedUpdateManyInput = {
   sprintListId?: Prisma.StringFieldUpdateOperationsInput | string
   backlogItemId?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type MeetingSprintItemSprintListIdBacklogItemIdCompoundUniqueInput = {
+  sprintListId: string
+  backlogItemId: string
 }
 
 export type MeetingSprintItemCountOrderByAggregateInput = {
