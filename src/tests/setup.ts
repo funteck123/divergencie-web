@@ -172,6 +172,12 @@ vi.mock("@/lib/db", () => {
     scheduleChangeRequest: {
       create: vi.fn(),
     },
+    progressReport: {
+      findMany: vi.fn(),
+    },
+    metricSnapshot: {
+      findMany: vi.fn(),
+    },
     group: {
       findMany: vi.fn(),
       findUnique: vi.fn(),

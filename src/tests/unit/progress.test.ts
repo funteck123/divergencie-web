@@ -4,6 +4,7 @@ import {
   getStudentAssignments,
   submitAssignment,
   getSyllabusChapters,
+  getStudentProgressReports,
 } from "@/lib/actions/progress";
 
 const db = prisma as any;
@@ -112,5 +113,34 @@ describe("getSyllabusChapters", () => {
     );
     expect(result).toHaveLength(1);
     expect(result[0].chapterTitle).toBe("Algebra");
+  });
+});
+
+describe("getStudentProgressReports", () => {
+  it("throws when not authenticated", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce(null as any);
+
+    await expect(getStudentProgressReports("student@test.com")).rejects.toThrow("Unauthorized");
+  });
+
+  it("queries sent progress reports for a student email", async () => {
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValueOnce({ user: { id: "stu-id", email: "student@test.com" } } as any);
+
+    db.user.findUnique.mockResolvedValue({ id: "stu-id" });
+    db.progressReport.findMany.mockResolvedValue([
+      { id: "pr-1", month: "June 2026", status: "sent", metricSnapshot: { metrics: {} } },
+    ]);
+
+    const result = await getStudentProgressReports("student@test.com");
+
+    expect(db.progressReport.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { studentId: "stu-id", status: "sent", isActive: true },
+      })
+    );
+    expect(result).toHaveLength(1);
+    expect(result[0].month).toBe("June 2026");
   });
 });
