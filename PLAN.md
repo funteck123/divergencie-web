@@ -224,7 +224,8 @@ divergencie/
 > **Plan philosophy (locked with user, v6):**
 > - **Sequencing:** vertical slices by role — each role shipped fully working before the next.
 > - **Baseline:** full re-verify — every task starts `⬜` regardless of existing code; re-test & re-wire end-to-end against ground truth. No assumptions about current code.
-> - **Schema is re-derived, not trusted:** before wiring a phase, re-validate that phase's Prisma models field-by-field against `schema-erd-v23.md`, correct any drift, and sync with `prisma db push` (no migration history). The 169-model schema is a starting point, not assumed correct.
+> - **⚠️ Schema is NOT ERD-aligned — reconcile FIRST (task P0-S):** a verified diff (2026-06-14) found the current 169-model schema diverges from ERD v23 (~186 entities): ~11 tables still named `…StatusHistory` (ERD §44 mandates `…StatusChangeLog`), ~19 ERD entities missing entirely, pending renames (`InvoiceMonth`→`BillingMonth`), and ERD-contradicting extras to remove. **Full executor checklist in Appendix A.** Do NOT assume the schema is correct.
+> - **Schema re-derived per phase:** before wiring a phase, re-validate that phase's models field-by-field against `schema-erd-v23.md`, correct drift, sync with `prisma db push` (no migration history).
 > - **Granularity:** one task per **sub-system** (~45 tasks). A task is a coherent capability wired end-to-end.
 > - **Scope:** total coverage — all 169 entities reachable in UI; public site (brochure + intake) in scope.
 > - **Definition of Done — per task (gates 1-5):**
@@ -244,7 +245,8 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P0-0 | Supabase baseline (**no migrations — `db push` workflow**) — project + `.env` creds **already provisioned**; live DB **already has 170 tables**; connection **verified ✅**. Legacy sqlite migrations + sandbox deleted. REMAINING: (1) add **`DIRECT_URL`** (port 5432 non-pooling) to `.env` — `prisma.config.js` needs it for `db push`; (2) `prisma db push` to make live Supabase schema == `schema.prisma` (no migration history kept); (3) `prisma db pull`/diff to confirm zero drift; (4) create + RLS-policy Supabase Storage buckets (receipts etc); (5) `prisma generate`. **Hard prerequisite.** | all models | `.env`, `prisma/schema.prisma`, Supabase | ⬜ |
+| P0-S | **Schema reconciliation to ERD v23 (DO FIRST)** — apply Appendix A: rename 11 `…StatusHistory`→`…StatusChangeLog` (§44), add ~19 missing entities (Department/StaffRole/UserType/PortalPermission, Marketing schedule chain, SyllabusChapter+ChapterRecording, AmbassadorService+ProgrammeContentList, MetricSnapshot, ProgressReport, GcrList/Item, session/meeting/sub-list change-logs), rename `InvoiceMonth`→`BillingMonth` + FK fields, add versioning fields to 5 sub-lists, add composite UNIQUE constraints, replace string `dept`/`role`/`targetRole` with FK lookups, review+remove ERD-contradicting extras. Each change cites its § — verify before applying. | see Appendix A | `prisma/schema.prisma` | ⬜ |
+| P0-0 | Supabase baseline (**no migrations — `db push`**; runs AFTER P0-S) — project + `.env` creds **already provisioned**; connection **verified ✅**; legacy sqlite migrations + sandbox deleted. REMAINING: (1) add **`DIRECT_URL`** (port 5432 non-pooling) to `.env` — `prisma.config.js` needs it for `db push`; (2) `prisma db push` reconciled schema to live Supabase; (3) `prisma db pull`/diff → zero drift; (4) create + RLS-policy Supabase Storage buckets (receipts etc); (5) `prisma generate`; (6) `prisma/seed.ts` (P0-3) run. **Hard prerequisite.** | all models | `.env`, `prisma/schema.prisma`, Supabase | ⬜ |
 | P0-1 | Auth consolidation — remove `next-auth-compat` shim; pure Supabase Auth; session in middleware; login (split layout)/logout/callback | User; Supabase Auth | `src/middleware.ts`, `src/lib/auth.ts`, `src/app/auth/**` | ⬜ |
 | P0-2 | RBAC — `PortalPermission` override table + code-defined default permissions; route + menu gating; `/unauthorized` | §38 | `src/lib/rbac.ts`, `src/middleware.ts`, `src/app/unauthorized/` | ⬜ |
 | P0-3 | Required seed data — UserType (incl `ALL`), SessionType (incl staff-meeting types), Department, StaffRole, RecordType (`targetUserTypeId`), CurrencyRate, all lookups | §53, §28 | `prisma/seed.ts` | ⬜ |
@@ -350,3 +352,42 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 | Content & Misc (ContentBankItem, Announcement, KnowledgeBank*, ContentType, TextFormat, Booklet) | C4,C7,F4 | ⬜ |
 | Metrics & Reports (MetricSnapshot, ProgressReport) | A5,F1 | ⬜ |
 | Audit/Lookup/RBAC (PortalPermission, SiteLog, AccessLog, all lookups, all remaining *StatusChangeLog) | P0-2,P0-4,F2,F3 | ⬜ |
+
+---
+
+## 📎 APPENDIX A — Schema Reconciliation to ERD v23 (task P0-S detail)
+
+> Source: verified diff of `prisma/schema.prisma` (169 models) vs `schema-erd-v23.md` (~186 entities), 2026-06-14.
+> ERD v23 + `system-logic-handoff-v23.md` are ground truth. Every item cites its spec §; **read the § and confirm before applying** (the mermaid ERD is regex-extracted — treat counts as ~, names as authoritative-after-check). All field shapes for change-log tables: `id PK, <parent>Id FK, fromStatus, toStatus, changedAt, changedByUserId FK, reason`.
+
+### A1 — Rename `…StatusHistory` → `…StatusChangeLog` (§44, 11 tables)
+`StudentEnrolmentItemStatusHistory` · `TeacherEnrolmentItemStatusHistory` · `StaffEnrolmentItemStatusHistory` · `AmbassadorEnrolmentItemStatusHistory` · `AmbassadorCommissionItemStatusHistory` · `RateItemStatusHistory` · `ScheduleOccurrenceStatusHistory` · `StaffScheduleOccurrenceStatusHistory` · `AmbassadorScheduleOccurrenceStatusHistory` · `SyllabusListStatusHistory` · `AmbassadorProgrammeListStatusHistory` (→ `AmbassadorProgrammeContentListStatusChangeLog`). Update all FK relationship lines + actor `User` audit lines.
+
+### A2 — Add missing change-log tables (no counterpart) (§44, §46, §54)
+`TaskListStatusChangeLog` · `MockListStatusChangeLog` · `CourseTimelineListStatusChangeLog` · `AmbassadorTestListStatusChangeLog` · `AmbassadorProgrammeTimelineListStatusChangeLog` · `AcademicSessionStatusChangeLog` · `MeetingStatusChangeLog` · `AmbassadorMeetingStatusChangeLog` · `GeneralMeetingStatusChangeLog` (§46) · `MarketingScheduleOccurrenceStatusChangeLog` (§54).
+
+### A3 — Add missing lookup / config tables (§51, §38)
+`Department` `{id, name UK, isActive}` · `StaffRole` `{…}` · `UserType` `{…}` (values incl. `ALL`, §53) · `PortalPermission` (override table, §38).
+
+### A4 — Add missing domain entities
+- Marketing schedule chain (§52, §54): `MarketingSchedule` · `MarketingScheduleOccurrence` · `MarketingPostSlot`.
+- Syllabus/recording (§36): `SyllabusChapter` · `ChapterRecordingList` · `ChapterRecordingItem`.
+- Ambassador (§16, §17): `AmbassadorService` · `AmbassadorProgrammeContentList`.
+- Metrics/reports (§37): `MetricSnapshot` · `ProgressReport`.
+- Classroom (§4): `GcrList` · `GcrItem` (schema currently has `GcrClassroom` — reconcile/replace per ERD).
+
+### A5 — Renames (§44)
+`InvoiceMonth` → `BillingMonth` (used by StudentInvoice, Paycheck, AmbassadorPaycheck). Field FKs: `invoiceMonthId`→`billingMonthId` (StudentInvoice); `paycheckMonthId`→`billingMonthId` (Paycheck, AmbassadorPaycheck). Also confirm `StudentProgress` vs ERD `StudentSyllabusProgress`.
+
+### A6 — Field-level changes
+- Versioning fields on 5 sub-lists (§44): `TaskList, MockList, CourseTimelineList, AmbassadorTestList, AmbassadorProgrammeTimelineList` → `name, version, status, activatedAt, pausedAt, deactivatedAt, isActive`.
+- `CurrencyRate.effectiveDate datetime` (§44).
+- Replace string `dept`→`deptId FK` on 13 entities; `role`→`staffRoleId FK` on 4; `targetRole`/`candidateType`→`targetUserTypeId`/`candidateUserTypeId FK` (§51.2). Keep `StaffProfile.roleTitle` + `isSupervisor`.
+
+### A7 — Composite UNIQUE constraints (DB-level, §51.3)
+`TaskAssignment(taskItemId, studentId)` · `ContentGroupItem(contentGroupId, contentBankItemId)` · `ChecklistItemEntry(checklistEntryId, templateItemId)` · `MeetingSprintItem(sprintListId, backlogItemId)` · `ChapterRecordingItem(chapterRecordingListId, recordingId)`.
+
+### A8 — Review + remove ERD-contradicting extras (verify each against ERD before deleting)
+`AmbassadorDeliverable` (§52.3 — deliberately not modelled) · `AmbassadorEarning` · `AmbassadorProgramme` (vs `AmbassadorProgrammeList`) · `Assignment` · `CanvaDesign` · `RateCard` · `SprintItem` (vs `MeetingSprintItem`) · `StudentStatus` · `TicketCategory` (vs `TicketType`). Confirm not referenced by retained relations before removal.
+
+> **Exit criteria for P0-S:** `prisma validate` clean; every ERD v23 entity present with ERD naming; no `…StatusHistory` tables remain; `prisma generate` + `tsc --noEmit` clean. Then P0-0 `db push`.
