@@ -240,3 +240,111 @@ export async function createAmbassadorClaim(data: {
   revalidatePath("/portal/ambassador/claims");
   return claim;
 }
+
+export async function getAmbassadorMeetings(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.ambassadorMeetingAttendance.findMany({
+    where: { ambassadorId },
+    include: {
+      meeting: {
+        include: {
+          sessionType: { select: { name: true } },
+          statusChangeLogs: { orderBy: { changedAt: "desc" }, take: 5 },
+        },
+      },
+    },
+    orderBy: { meeting: { startTime: "desc" } },
+    take: 50,
+  });
+}
+
+export async function getAmbassadorScheduleData(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const enrolments = await prisma.ambassadorEnrolmentList.findMany({
+    where: { ambassadorId, isActive: true },
+    select: { items: { select: { ambassadorServiceId: true, isActive: true } } },
+  });
+  const serviceIds = enrolments.flatMap(e => e.items.filter(i => i.isActive).map(i => i.ambassadorServiceId));
+
+  return await prisma.ambassadorServiceSchedule.findMany({
+    where: { ambassadorServiceId: { in: serviceIds } },
+    include: {
+      ambassadorService: { select: { title: true, serviceType: true } },
+      occurrences: {
+        include: {
+          sessionType: { select: { name: true } },
+          history: { orderBy: { changedAt: "desc" }, take: 5 },
+        },
+        orderBy: { startTime: "asc" },
+      },
+      changeRequests: {
+        orderBy: { id: "desc" },
+        take: 10,
+      },
+    },
+  });
+}
+
+export async function getAmbassadorTests(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const services = await prisma.ambassadorService.findMany({
+    where: { isActive: true },
+    include: {
+      programmeList: {
+        include: {
+          testLists: {
+            include: {
+              testItems: {
+                include: {
+                  results: {
+                    where: { ambassadorId },
+                    take: 1,
+                  },
+                },
+                orderBy: { scheduledDate: "asc" },
+              },
+            },
+            where: { isActive: true },
+          },
+        },
+      },
+    },
+    take: 5,
+  });
+  return services;
+}
+
+export async function createAmbassadorScheduleChangeRequest(data: {
+  scheduleId: string;
+  requestType: string;
+  recurrenceType: string;
+  proposedDayOfWeek?: string;
+  proposedStartTime?: string;
+  proposedEndTime?: string;
+  proposedDuration?: number;
+}) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const req = await prisma.ambassadorScheduleChangeRequest.create({
+    data: {
+      scheduleId: data.scheduleId,
+      requestedByUserId: (session.user as any).id,
+      requestType: data.requestType,
+      recurrenceType: data.recurrenceType,
+      proposedDayOfWeek: data.proposedDayOfWeek,
+      proposedStartTime: data.proposedStartTime ? new Date(data.proposedStartTime) : undefined,
+      proposedEndTime: data.proposedEndTime ? new Date(data.proposedEndTime) : undefined,
+      proposedDuration: data.proposedDuration,
+      status: "PENDING",
+    },
+  });
+  revalidatePath("/portal/ambassador/meetings");
+  return req;
+}
