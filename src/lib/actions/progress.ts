@@ -270,3 +270,19 @@ export async function getStudentAnnouncements() {
     take: 10,
   });
 }
+
+export async function getStudentProgressReports(studentEmail: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const user = await prisma.user.findUnique({ where: { email: studentEmail } });
+  if (!user) return [];
+
+  return await prisma.progressReport.findMany({
+    where: { studentId: user.id, status: "sent", isActive: true },
+    include: {
+      metricSnapshot: true,
+    },
+    orderBy: { month: "desc" },
+  });
+}
