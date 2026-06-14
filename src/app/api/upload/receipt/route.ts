@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     }
 
     const user = session.user;
-    const role = user.role?.toLowerCase();
+    const role = user.role?.toLowerCase() || "";
 
     // Auth gate check
     if (!["student", "parent", "staff", "management"].includes(role)) {
