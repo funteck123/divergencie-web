@@ -159,8 +159,8 @@ export async function getAmbassadorProgramme(ambassadorId: string) {
     include: {
       programmeList: {
         include: {
-          contentList: { include: { items: { take: 20 } } },
-          timelineList: { include: { items: { take: 20 } } },
+          contentLists: { include: { items: { orderBy: { order: "asc" }, include: { progressList: { take: 1 } }, take: 30 } } },
+          timelineLists: { include: { items: { orderBy: { order: "asc" }, take: 20 } } },
         },
       },
     },
@@ -168,4 +168,75 @@ export async function getAmbassadorProgramme(ambassadorId: string) {
   });
 
   return services;
+}
+
+export async function getAmbassadorCommissions(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.ambassadorCommissionList.findMany({
+    where: { ambassadorId },
+    include: {
+      items: {
+        include: {
+          history: { orderBy: { changedAt: "desc" }, take: 5 },
+          changes: { orderBy: { changedAt: "desc" }, take: 5 },
+          studentEnrolmentItem: {
+            select: {
+              id: true,
+              status: true,
+              enrolmentList: { select: { student: { select: { name: true, email: true } } } },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+export async function getAmbassadorClaims(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.ambassadorClaim.findMany({
+    where: { ambassadorId, isActive: true },
+    include: {
+      lineItems: true,
+      history: { orderBy: { changedAt: "desc" }, take: 10 },
+      paychecks: { include: { history: { orderBy: { changedAt: "desc" }, take: 5 } } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function createAmbassadorClaim(data: {
+  ambassadorId: string;
+  month: string;
+  currency?: string;
+  notes?: string;
+  commissionAmount?: number;
+}) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const claim = await prisma.ambassadorClaim.create({
+    data: {
+      ambassadorId: data.ambassadorId,
+      month: data.month,
+      currency: data.currency ?? "MYR",
+      notes: data.notes,
+      commissionAmount: data.commissionAmount ?? 0,
+      status: "pending",
+    },
+  });
+  await prisma.ambassadorClaimStatusChangeLog.create({
+    data: {
+      claimId: claim.id,
+      fromStatus: "",
+      toStatus: "pending",
+      changedByUserId: (session.user as any).id,
+    },
+  });
+  revalidatePath("/portal/ambassador/claims");
+  return claim;
 }

@@ -74,6 +74,7 @@ const MENU_ITEMS: Record<string, any[]> = {
     { label: "Profile", icon: UserIcon, href: "/portal/ambassador/profile" },
     { label: "Programme", icon: BookOpen, href: "/portal/ambassador/programme" },
     { label: "Enrolments", icon: ClipboardCheck, href: "/portal/ambassador/enrolments" },
+    { label: "Commission", icon: CreditCard, href: "/portal/ambassador/claims" },
     { label: "Support", icon: MessageSquare, href: "/portal/ambassador/tickets" },
   ],
   candidate: [
