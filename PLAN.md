@@ -280,19 +280,19 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-C1 | Staff core — StaffProfile, StaffEnrolmentList/Item + StatusChangeLog, StaffRole/Department, staff schedule + StaffScheduleChangeRequest | §8, §10, §12 | `portal/staff/{profile,shared/schedule}`, `api/enrolments`, `api/schedules` | ⬜ |
-| P-C2 | Finance dept — RateList/RateItem (+RateChangeLog, RateItemStatusChangeLog), invoice oversight, claims approval, paychecks, Ledger & Budgets, CurrencyRate | §4, §18, §19, §21 | `portal/staff/finance/{invoices,claims,rates}`, `portal/management/budget`, `api/claims`, `api/invoices` | ⬜ |
-| P-C3 | HR dept — Candidate pipeline (APPLIED→…→HIRED/REJECTED), JobPosting, RegistrationForm/Entry, staff records & disciplinary, Role Records (warnings/commendations), RecordType | §3, §23, §27, §30 | `portal/staff/hr/{candidates,records}`, `api/careers/apply`, `api/jobs` | ⬜ |
-| P-C4 | IT dept — AccessLog (grant/revoke symmetry), Org Backlog Bank + Meeting Sprint/Backlog (roadmap), KnowledgeBank/Item | §35, §20 | `portal/staff/it/{access,roadmap}` | ⬜ |
-| P-C5 | Marketing dept — MarketingPost, MarketingSchedule/Occurrence(+StatusChangeLog)/PostSlot, Campaign/CampaignItem, OutreachItem, ExhibitionItem, ContentBankItem | §32, §34, §52 | `portal/staff/marketing/calendar`, `api/marketing/**` | ⬜ |
-| P-C6 | PR dept — Lead (+outreachSource FK), ReferralClick (conversion), attendance mapping/tracker, Announcements, Checklist system | §17, §25, §31 | `portal/staff/pr/{attendance,mapping,tracker}`, `portal/management/announcements` | ⬜ |
-| P-C7 | Staff shared — Meeting/MeetingAttendance, GeneralMeeting (+StatusChangeLog), Content Bank, Checklist (ChecklistEntry), staff Tickets | §12, §16, §31, §22 | `portal/staff/{shared/meetings,shared/content-bank,tickets}`, `api/tickets` | ⬜ |
+| P-C1 | Staff core — StaffProfile, StaffEnrolmentList/Item + StatusChangeLog, StaffRole/Department, staff schedule + StaffScheduleChangeRequest | §8, §10, §12 | `portal/staff/{profile,shared/schedule}`, `api/enrolments`, `api/schedules` | ✅ |
+| P-C2 | Finance dept — RateList/RateItem (+RateChangeLog, RateItemStatusChangeLog), invoice oversight, claims approval, paychecks, Ledger & Budgets, CurrencyRate | §4, §18, §19, §21 | `portal/staff/finance/{invoices,claims,rates}`, `portal/management/budget`, `api/claims`, `api/invoices` | ✅ |
+| P-C3 | HR dept — Candidate pipeline, JobPosting, RegistrationForm/Entry, staff records & disciplinary, Role Records, RecordType | §3, §23, §27, §30 | `portal/staff/hr/{candidates,records}`, `api/careers/apply`, `api/jobs` | ✅ |
+| P-C4 | IT dept — AccessLog (grant/revoke symmetry), Org Backlog Bank + Meeting Sprint/Backlog (roadmap), KnowledgeBank/Item | §35, §20 | `portal/staff/it/{access,roadmap}` | ✅ |
+| P-C5 | Marketing dept — MarketingPost, MarketingSchedule/Occurrence(+StatusChangeLog)/PostSlot, Campaign/CampaignItem, OutreachItem, ExhibitionItem, ContentBankItem | §32, §34, §52 | `portal/staff/marketing/calendar`, `api/marketing/**` | ✅ |
+| P-C6 | PR dept — Lead (+outreachSource FK), ReferralClick (conversion), attendance mapping/tracker, Announcements, Checklist system | §17, §25, §31 | `portal/staff/pr/{attendance,mapping,tracker}`, `portal/management/announcements` | ✅ |
+| P-C7 | Staff shared — Meeting/MeetingAttendance, GeneralMeeting (+StatusChangeLog), Content Bank, Checklist (ChecklistEntry), staff Tickets | §12, §16, §31, §22 | `portal/staff/{shared/meetings,shared/content-bank,tickets}`, `api/tickets` | ✅ |
 
 #### PHASE D — Ambassador
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-D1 | Core + programme — AmbassadorProfile (referralCode UK), AmbassadorEnrolmentList/Item + StatusChangeLog, AmbassadorService, AmbassadorProgrammeList + ContentList | §9, §16, §17 | `portal/ambassador/{profile,programme}`, `api/enrolments` | ⬜ |
+| P-D1 | Core + programme — AmbassadorProfile (referralCode UK), AmbassadorEnrolmentList/Item + StatusChangeLog, AmbassadorService, AmbassadorProgrammeList + ContentList | §9, §16, §17 | `portal/ambassador/{profile,programme}`, `api/enrolments` | ✅ |
 | P-D2 | Commission + claims — AmbassadorCommissionList/Item (+StatusChangeLog), AmbassadorClaim (neutral totals + rateSnapshot allowance), AmbassadorPaycheck (netAmount) | §9, §18, §54 | `portal/ambassador/claims`, `api/claims/**` | ⬜ |
 | P-D3 | Meetings + schedule + tests + timeline — AmbassadorMeeting/Attendance, AmbassadorSchedule + ChangeRequest + OccurrenceStatusChangeLog, AmbassadorTestList, AmbassadorProgrammeTimelineList | §13, §10, §16 | `portal/ambassador/meetings`, `api/schedules/**` | ⬜ |
 | P-D4 | Referrals + tickets — Referral, ReferralClick conversion, public referral landing wiring (with P-G3), tickets (staff-only, zero student data) | §17, §22 | `portal/ambassador/{referrals,tickets}` | ⬜ |
