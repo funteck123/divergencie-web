@@ -271,7 +271,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-B1 | Core + enrolment — TeacherProfile, TeacherEnrolmentList/Item + StatusChangeLog | §7 | `portal/teacher/{dashboard,profile}`, `api/enrolments` | ⬜ |
+| P-B1 | Core + enrolment — TeacherProfile, TeacherEnrolmentList/Item + StatusChangeLog | §7 | `portal/teacher/{dashboard,profile}`, `api/enrolments` | ✅ |
 | P-B2 | Sessions + attendance + doubts — AcademicSession (scheduled by teacher), SessionAttendance marking, Doubt answering | §11, §18 | `portal/teacher/{attendance,doubts}`, `api/sessions/**`, `api/curriculum/doubts` | ⬜ |
 | P-B3 | Finance — Claim (teacher), PaycheckLineItem, Paycheck → PaymentRecord; status change logs | §18 | `portal/teacher/{claims,payment-claims}`, `api/claims/**` | ⬜ |
 | P-B4 | Schedule + change requests + content bank + tickets — schedule chain, ScheduleChangeRequest, ContentBankItem, Tickets | §10, §25, §22 | `portal/teacher/{schedule,tickets}`, `api/schedules/**` | ⬜ |
