@@ -55,8 +55,8 @@ export default function AmbassadorProgrammePage() {
             if (!progList) return null;
             const isOpen = expanded === svc.id;
             const tab = activeTab[svc.id] ?? "content";
-            const contentLists: any[] = progList.contentList ?? [];
-            const timelineLists: any[] = progList.timelineList ?? [];
+            const contentLists: any[] = progList.contentLists ?? [];
+            const timelineLists: any[] = progList.timelineLists ?? [];
 
             return (
               <div key={svc.id} className="bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl overflow-hidden">
@@ -96,9 +96,9 @@ export default function AmbassadorProgrammePage() {
                         ) : contentLists.map((cl: any) => (
                           <div key={cl.id} className="border border-[var(--border-subtle)] rounded-xl overflow-hidden">
                             <div className="px-4 py-3 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-between">
-                              <span className="text-xs font-black uppercase tracking-widest text-[var(--navy)] dark:text-white">{cl.title ?? cl.id}</span>
-                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${COMPLETION_COLORS[cl.completionStatus ?? "NOT_STARTED"] ?? "bg-slate-100 text-slate-500"}`}>
-                                {cl.completionStatus ?? "NOT STARTED"}
+                              <span className="text-xs font-black uppercase tracking-widest text-[var(--navy)] dark:text-white">{cl.name ?? cl.id}</span>
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${COMPLETION_COLORS[cl.status ?? "NOT_STARTED"] ?? "bg-slate-100 text-slate-500"}`}>
+                                {cl.status ?? "ACTIVE"}
                               </span>
                             </div>
                             <div className="divide-y divide-[var(--border-subtle)]">
@@ -106,16 +106,13 @@ export default function AmbassadorProgrammePage() {
                                 <p className="px-4 py-3 text-xs text-[var(--text-muted)]">No items.</p>
                               ) : cl.items?.map((item: any) => (
                                 <div key={item.id} className="px-4 py-3 flex items-start gap-3">
-                                  <div className={`mt-0.5 w-4 h-4 rounded border shrink-0 flex items-center justify-center ${item.isCompleted ? "bg-[var(--gold)] border-[var(--gold)]" : "border-[var(--border-subtle)]"}`}>
-                                    {item.isCompleted && <span className="text-black text-[8px] font-black">✓</span>}
+                                  <div className={`mt-0.5 w-4 h-4 rounded border shrink-0 flex items-center justify-center border-[var(--border-subtle)]`}>
+                                    {(item.progressList?.length ?? 0) > 0 && item.progressList[0]?.status === "COMPLETED" && <span className="text-[var(--gold)] text-[8px] font-black">✓</span>}
                                   </div>
                                   <div>
-                                    <p className="text-xs font-bold text-[var(--navy)] dark:text-white">{item.title}</p>
-                                    {item.description && <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{item.description}</p>}
-                                    {item.resourceUrl && (
-                                      <a href={item.resourceUrl} target="_blank" rel="noreferrer"
-                                        className="text-[11px] text-[var(--gold)] hover:underline mt-0.5 block">Open Resource →</a>
-                                    )}
+                                    <p className="text-xs font-bold text-[var(--navy)] dark:text-white">{item.programmeTitle}</p>
+                                    <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{item.programmeCode} · Level {item.level}</p>
+                                    {item.note && <p className="text-[11px] text-[var(--text-muted)] italic mt-0.5">{item.note}</p>}
                                   </div>
                                 </div>
                               ))}
@@ -130,7 +127,7 @@ export default function AmbassadorProgrammePage() {
                         ) : timelineLists.map((tl: any) => (
                           <div key={tl.id} className="border border-[var(--border-subtle)] rounded-xl overflow-hidden">
                             <div className="px-4 py-3 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-between">
-                              <span className="text-xs font-black uppercase tracking-widest text-[var(--navy)] dark:text-white">{tl.title ?? tl.id}</span>
+                              <span className="text-xs font-black uppercase tracking-widest text-[var(--navy)] dark:text-white">{tl.name ?? tl.id}</span>
                               <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${COMPLETION_COLORS[tl.status ?? "NOT_STARTED"] ?? "bg-slate-100 text-slate-500"}`}>
                                 {tl.status ?? "NOT STARTED"}
                               </span>
@@ -146,13 +143,9 @@ export default function AmbassadorProgrammePage() {
                                     {idx < (tl.items?.length ?? 0) - 1 && <div className="w-0.5 h-6 bg-[var(--border-subtle)] mt-1" />}
                                   </div>
                                   <div className="pb-3">
-                                    <p className="text-xs font-bold text-[var(--navy)] dark:text-white">{item.title}</p>
-                                    {item.dueDate && (
-                                      <p className="text-[11px] text-[var(--text-muted)]">Due: {new Date(item.dueDate).toLocaleDateString("en-GB")}</p>
-                                    )}
-                                    {item.completedAt && (
-                                      <p className="text-[11px] text-emerald-600">Completed: {new Date(item.completedAt).toLocaleDateString("en-GB")}</p>
-                                    )}
+                                    <p className="text-xs font-bold text-[var(--navy)] dark:text-white">{item.itemType}</p>
+                                    <p className="text-[11px] text-[var(--text-muted)]">Month {item.month} · Week {item.weekNumber}</p>
+                                    {item.notes && <p className="text-[11px] text-[var(--text-muted)] italic mt-0.5">{item.notes}</p>}
                                   </div>
                                 </div>
                               ))}
