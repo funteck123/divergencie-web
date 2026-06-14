@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const notifications = await prisma.notification.findMany({
     where: {
       userId: user.id,
-      ...(unreadOnly ? { isRead: false } : {}),
+      ...(unreadOnly ? { read: false } : {}),
     },
     include: { notificationType: { select: { name: true } } },
     orderBy: { createdAt: "desc" },
