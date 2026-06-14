@@ -990,6 +990,11 @@ model AcademicSession {
   taskItems                 TaskItem[]
   mockItems                 MockItem[]
   statusChangeLogs          AcademicSessionStatusChangeLog[]
+
+  @@index([teacherId])
+  @@index([studentId])
+  @@index([groupId])
+  @@index([serviceId])
 }
 
 model AcademicSessionStatusChangeLog {
@@ -1028,6 +1033,8 @@ model SessionAttendance {
   markedAt             DateTime?
 
   @@unique([sessionId, studentId])
+  @@index([studentId])
+  @@index([enrolmentItemId])
 }
 
 // ─── CLUSTER 11B — AMBASSADOR SERVICES ──────────────────────────────────────
@@ -1791,6 +1798,8 @@ model StudentInvoice {
   history                   StudentInvoiceStatusChangeLog[]
 
   @@index([studentId])
+  @@index([status])
+  @@index([billingMonthId])
 }
 
 model StudentInvoiceStatusChangeLog {
@@ -1875,6 +1884,8 @@ model Claim {
   paychecks                Paycheck[]
 
   @@index([userId])
+  @@index([status])
+  @@index([billingMonthId])
 }
 
 model ClaimLineItem {
@@ -2244,6 +2255,10 @@ model Ticket {
   ambassadorRecords AmbassadorRecord[]
   staffRecords      StaffRecord[]
   backlogItems      BacklogItem[]
+
+  @@index([creatorId])
+  @@index([assigneeId])
+  @@index([status])
 }
 
 model TicketMessage {
