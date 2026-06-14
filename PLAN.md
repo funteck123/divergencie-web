@@ -317,9 +317,9 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-G1 | Brochure wired — homepage (Athena clone), services, pricing, about, resources, contact pulling Service/Group/public content from DB | §4, brand | `app/{page,about,services,pricing,resources,contact}` | ⬜ |
-| P-G2 | Public intake — admissions RegistrationForm → Candidate, careers apply → Candidate/JobPosting, Lead capture | §3, §30 | `app/{admissions,careers}`, `api/careers/apply`, `api/jobs` | ⬜ |
-| P-G3 | Ambassador referral landing + ReferralClick tracking + public ambassador services | §17 | `app/r/[referralCode]`, `api/referrals/**` | ⬜ |
+| P-G1 | Brochure wired — homepage (Athena clone), services, pricing, about, resources, contact pulling Service/Group/public content from DB | §4, brand | `app/{page,about,services,pricing,resources,contact}` | ✅ |
+| P-G2 | Public intake — admissions RegistrationForm → Candidate, careers apply → Candidate/JobPosting, Lead capture | §3, §30 | `app/{admissions,careers}`, `api/careers/apply`, `api/jobs` | ✅ |
+| P-G3 | Ambassador referral landing + ReferralClick tracking + public ambassador services | §17 | `app/r/[referralCode]`, `api/referrals/**` | ✅ |
 
 #### PHASE H — Hardening + production cutover
 
