@@ -60,6 +60,42 @@ export async function PATCH(
         },
       });
 
+      // Create Notifications for Student and Parent
+      const notifType = await prisma.notificationType.findUnique({
+        where: { name: "PAYMENT_RECEIVED" },
+      });
+
+      if (notifType) {
+        await prisma.notification.create({
+          data: {
+            userId: invoice.studentId,
+            notificationTypeId: notifType.id,
+            title: "Payment Received",
+            body: `Payment of ${record.amount} ${invoice.currency || "GBP"} for invoice ${invoice.month} was successfully received.`,
+            entityType: "STUDENT_INVOICE",
+            entityId: record.entityId,
+          },
+        });
+
+        const studentUser = await prisma.user.findUnique({
+          where: { id: invoice.studentId },
+          select: { parentId: true },
+        });
+
+        if (studentUser?.parentId) {
+          await prisma.notification.create({
+            data: {
+              userId: studentUser.parentId,
+              notificationTypeId: notifType.id,
+              title: "Payment Received",
+              body: `Payment of ${record.amount} ${invoice.currency || "GBP"} for your child's invoice (${invoice.month}) was successfully received.`,
+              entityType: "STUDENT_INVOICE",
+              entityId: record.entityId,
+            },
+          });
+        }
+      }
+
       // LedgerEntry
       let bankAccount = await prisma.bankAccount.findFirst({ where: { isDcAccount: true, isActive: true } });
       if (!bankAccount) {

@@ -110,6 +110,42 @@ export async function POST(req: NextRequest) {
               reason: "Payment processed successfully via Stripe Checkout",
             },
           });
+
+          // Create Notifications for Student and Parent
+          const notifType = await prisma.notificationType.findUnique({
+            where: { name: "PAYMENT_RECEIVED" },
+          });
+
+          if (notifType) {
+            await prisma.notification.create({
+              data: {
+                userId: invoice.studentId,
+                notificationTypeId: notifType.id,
+                title: "Payment Received",
+                body: `Payment of ${invoice.netAmount} ${invoice.currency || "GBP"} for invoice ${invoice.month} was successfully received.`,
+                entityType: "STUDENT_INVOICE",
+                entityId: invoiceId,
+              },
+            });
+
+            const studentUser = await prisma.user.findUnique({
+              where: { id: invoice.studentId },
+              select: { parentId: true },
+            });
+
+            if (studentUser?.parentId) {
+              await prisma.notification.create({
+                data: {
+                  userId: studentUser.parentId,
+                  notificationTypeId: notifType.id,
+                  title: "Payment Received",
+                  body: `Payment of ${invoice.netAmount} ${invoice.currency || "GBP"} for your child's invoice (${invoice.month}) was successfully received.`,
+                  entityType: "STUDENT_INVOICE",
+                  entityId: invoiceId,
+                },
+              });
+            }
+          }
         }
       } catch (dbError) {
         console.error("Error updating database for webhook event:", dbError);

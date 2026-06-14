@@ -126,3 +126,22 @@ export async function getUserProfile(email: string) {
     }
   });
 }
+
+export async function getStudentProfileStatus(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      studentProfile: {
+        select: {
+          financeApprovedFlag: true,
+          status: true
+        }
+      }
+    }
+  });
+  if (!user) return null;
+  return {
+    financeApproved: user.studentProfile?.financeApprovedFlag ?? false,
+    status: user.studentProfile?.status ?? "ACTIVE"
+  };
+}
