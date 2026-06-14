@@ -15,7 +15,7 @@ import {
   TrendingUp,
   Receipt
 } from "lucide-react";
-import { submitClaim, getTeacherClaims } from "@/lib/actions/claims";
+import { submitClaim, getTeacherClaims, getTeacherPaychecks } from "@/lib/actions/claims";
 import { getTeacherAttendance } from "@/lib/actions/attendance";
 import { getUserProfile } from "@/lib/actions/profile";
 import { useSession } from "@/lib/auth-client";
@@ -31,17 +31,21 @@ export default function TeacherPaymentClaimsPage() {
   });
   const [selectedMonth, setSelectedMonth] = useState(MONTHS[0].value);
   const [claims, setClaims] = useState<any[]>([]);
+  const [paychecks, setPaychecks] = useState<any[]>([]);
   const [attendance, setAttendance] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user?.email) {
+      const uid = (session.user as any).id;
       Promise.all([
-        getTeacherClaims((session.user as any).id),
+        getTeacherClaims(uid),
+        getTeacherPaychecks(uid),
         getTeacherAttendance(session.user.email),
         getUserProfile(session.user.email),
-      ]).then(([claimsData, attendanceData, profile]) => {
+      ]).then(([claimsData, paycheckData, attendanceData, profile]) => {
         setClaims(claimsData);
+        setPaychecks(paycheckData);
         setAttendance(attendanceData);
         if (profile?.hourlyRate) setHourlyRate(profile.hourlyRate);
       });
@@ -225,24 +229,57 @@ export default function TeacherPaymentClaimsPage() {
               <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{claims.length} claims</span>
             </div>
             <div className="divide-y divide-[var(--border-subtle)]">
+              {claims.length === 0 && <p className="p-6 text-sm text-[var(--text-muted)]">No claims yet.</p>}
               {claims.map((c, i) => (
                 <div key={i} className="p-6 flex items-center justify-between group hover:bg-[var(--bg-secondary)] dark:hover:bg-white/5 transition-colors">
                   <div className="space-y-1">
                     <h4 className="text-sm font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">{c.month}</h4>
-                    <p className="text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest">{c.id} · Submitted {c.date} · {c.sessions} sessions</p>
+                    <p className="text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest">{c.id.slice(-8)} · {c.sessions ?? 0} sessions · {c.hours ?? 0}h</p>
+                    {c.history?.[0] && <p className="text-[9px] text-[var(--text-muted)] italic">{c.history[0].reason}</p>}
                   </div>
                   <div className="text-right space-y-2">
-                    <p className={`text-lg font-black ${c.status === 'paid' ? 'text-green-600' : 'text-[var(--gold)]'}`}>£ {Number(c.amount).toFixed(2)}</p>
+                    <p className={`text-lg font-black ${c.status === 'PAID' ? 'text-green-600' : 'text-[var(--gold)]'}`}>£ {Number(c.amount).toFixed(2)}</p>
                     <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                      c.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {c.status}
-                    </span>
+                      c.status === 'PAID' ? 'bg-green-100 text-green-700' :
+                      c.status === 'PENDING' ? 'bg-sky-100 text-sky-700' :
+                      'bg-yellow-100 text-yellow-700'
+                    }`}>{c.status}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Paychecks */}
+          {paychecks.length > 0 && (
+            <div className="bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-[var(--border-subtle)] flex items-center justify-between">
+                <h3 className="text-sm font-black text-[var(--navy)] dark:text-white uppercase tracking-widest">Paychecks</h3>
+                <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">{paychecks.length} paychecks</span>
+              </div>
+              <div className="divide-y divide-[var(--border-subtle)]">
+                {paychecks.map((p, i) => (
+                  <div key={i} className="p-6 flex items-center justify-between">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-black text-[var(--navy)] dark:text-white uppercase">{p.month}</h4>
+                      <p className="text-[9px] text-[var(--text-muted)] font-black uppercase tracking-widest">
+                        Net: £{Number(p.netAmount).toFixed(2)} · Deductions: £{Number(p.deductionsApplied).toFixed(2)}
+                      </p>
+                      {p.history?.[0] && <p className="text-[9px] text-[var(--text-muted)] italic">{p.history[0].reason}</p>}
+                    </div>
+                    <div className="text-right space-y-2">
+                      <p className={`text-lg font-black ${p.status === 'PAID' ? 'text-green-600' : 'text-[var(--gold)]'}`}>
+                        £{Number(p.netAmount).toFixed(2)}
+                      </p>
+                      <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                        p.status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-sky-100 text-sky-700'
+                      }`}>{p.status}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
