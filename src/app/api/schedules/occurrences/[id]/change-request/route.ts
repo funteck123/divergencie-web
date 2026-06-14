@@ -29,7 +29,6 @@ export async function POST(
       requestedByUserId: user.id,
       requestType,
       recurrenceType: occurrence.recurrenceType,
-      reason,
       proposedStartTime: proposedStartTime ? new Date(proposedStartTime) : null,
       proposedEndTime: proposedEndTime ? new Date(proposedEndTime) : null,
       proposedDayOfWeek: proposedDayOfWeek ?? null,
