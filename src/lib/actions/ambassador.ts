@@ -82,3 +82,90 @@ export async function getAllAmbassadors() {
     earnings: a.referrals.filter((r) => r.status === "converted").length * 25 + 150,
   }));
 }
+
+export async function getAmbassadorProfile(userId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.ambassadorProfile.findUnique({
+    where: { userId },
+  });
+}
+
+export async function upsertAmbassadorProfile(userId: string, data: {
+  cohort?: string;
+  referralCode?: string;
+  programmeDuration?: string;
+  programmeStart?: string;
+  programmeEnd?: string;
+}) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const profile = await prisma.ambassadorProfile.upsert({
+    where: { userId },
+    update: {
+      cohort: data.cohort,
+      programmeDuration: data.programmeDuration,
+      programmeStart: data.programmeStart ? new Date(data.programmeStart) : undefined,
+      programmeEnd: data.programmeEnd ? new Date(data.programmeEnd) : undefined,
+    },
+    create: {
+      userId,
+      cohort: data.cohort,
+      referralCode: data.referralCode,
+      programmeDuration: data.programmeDuration,
+      programmeStart: data.programmeStart ? new Date(data.programmeStart) : undefined,
+      programmeEnd: data.programmeEnd ? new Date(data.programmeEnd) : undefined,
+    },
+  });
+  revalidatePath("/portal/ambassador/profile");
+  return profile;
+}
+
+export async function getAmbassadorEnrolments(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.ambassadorEnrolmentList.findMany({
+    where: { ambassadorId },
+    include: {
+      items: {
+        include: {
+          history: { orderBy: { changedAt: "desc" } },
+          ambassadorService: { select: { title: true, serviceType: true, rate: true, currency: true } },
+        },
+      },
+    },
+  });
+}
+
+export async function getAmbassadorServices() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.ambassadorService.findMany({
+    where: { isActive: true },
+    include: { programmeList: true },
+  });
+}
+
+export async function getAmbassadorProgramme(ambassadorId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const services = await prisma.ambassadorService.findMany({
+    where: { isActive: true },
+    include: {
+      programmeList: {
+        include: {
+          contentList: { include: { items: { take: 20 } } },
+          timelineList: { include: { items: { take: 20 } } },
+        },
+      },
+    },
+    take: 5,
+  });
+
+  return services;
+}
