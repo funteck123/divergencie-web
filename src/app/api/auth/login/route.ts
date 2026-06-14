@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,6 +42,21 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    // Sync database profile role/dept to user_metadata to be stored in the JWT for middleware checks
+    const dbUser = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+      select: { role: true, dept: true },
+    });
+
+    if (dbUser) {
+      await supabase.auth.updateUser({
+        data: {
+          role: dbUser.role || "",
+          dept: dbUser.dept || "",
+        },
+      });
     }
 
     return NextResponse.json({ user: data.user, session: data.session });
