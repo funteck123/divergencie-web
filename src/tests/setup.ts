@@ -84,6 +84,14 @@ vi.mock("@/lib/db", () => {
     taskSubmission: {
       upsert: vi.fn(),
     },
+    syllabusChapter: {
+      findMany: vi.fn(),
+    },
+    doubt: {
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
     studentEnrolmentList: {
       findMany: vi.fn(),
     },

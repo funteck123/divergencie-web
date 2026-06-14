@@ -249,13 +249,13 @@ async function main() {
 
   // Fetch lookup records for FK wiring
   const depts = Object.fromEntries(
-    (await prisma.department.findMany()).map(d => [d.name, d])
+    (await prisma.department.findMany()).map((d: any) => [d.name, d])
   );
   const roles = Object.fromEntries(
-    (await prisma.staffRole.findMany()).map(r => [r.name, r])
+    (await prisma.staffRole.findMany()).map((r: any) => [r.name, r])
   );
   const userTypes = Object.fromEntries(
-    (await prisma.userType.findMany()).map(t => [t.name, t])
+    (await prisma.userType.findMany()).map((t: any) => [t.name, t])
   );
 
   const users = await seedUsers({ depts, roles, userTypes });
@@ -296,29 +296,70 @@ async function main() {
   }
 
   const chaptersData = [
-    { chapterNum: "01", chapterTitle: "Number & Operations", topicTitle: "Number & Operations", level: "IGCSE", order: 1 },
-    { chapterNum: "02", chapterTitle: "Algebraic Manipulation", topicTitle: "Algebraic Manipulation", level: "IGCSE", order: 2 },
-    { chapterNum: "03", chapterTitle: "Quadratic Equations", topicTitle: "Quadratic Equations", level: "IGCSE", order: 3 },
-    { chapterNum: "04", chapterTitle: "Coordinate Geometry", topicTitle: "Coordinate Geometry", level: "IGCSE", order: 4 },
-    { chapterNum: "05", chapterTitle: "Trigonometry", topicTitle: "Trigonometry", level: "IGCSE", order: 5 },
+    { chapterNum: "01", chapterTitle: "Number & Operations", level: "IGCSE", order: 1 },
+    { chapterNum: "02", chapterTitle: "Algebraic Manipulation", level: "IGCSE", order: 2 },
+    { chapterNum: "03", chapterTitle: "Quadratic Equations", level: "IGCSE", order: 3 },
+    { chapterNum: "04", chapterTitle: "Coordinate Geometry", level: "IGCSE", order: 4 },
+    { chapterNum: "05", chapterTitle: "Trigonometry", level: "IGCSE", order: 5 },
   ];
 
+  await prisma.syllabusChapter.deleteMany({ where: { syllabusListId: sList.id } });
   await prisma.syllabusItem.deleteMany({ where: { syllabusListId: sList.id } });
+
   const syllabusItems: any[] = [];
+  const chapters: any[] = [];
   for (const ch of chaptersData) {
-    const item = await prisma.syllabusItem.create({
-      data: { syllabusListId: sList.id, subject: "IGCSE Mathematics", ...ch },
+    const chapter = await prisma.syllabusChapter.create({
+      data: {
+        syllabusListId: sList.id,
+        chapterNum: ch.chapterNum,
+        chapterTitle: ch.chapterTitle,
+        order: ch.order,
+        isActive: true,
+      },
     });
-    syllabusItems.push(item);
+    chapters.push(chapter);
+
+    const item1 = await prisma.syllabusItem.create({
+      data: {
+        syllabusListId: sList.id,
+        syllabusChapterId: chapter.id,
+        subject: "IGCSE Mathematics",
+        chapterNum: ch.chapterNum,
+        chapterTitle: ch.chapterTitle,
+        topicCode: `${ch.chapterNum}.1`,
+        topicTitle: `${ch.chapterTitle} Fundamentals`,
+        level: ch.level,
+        order: 1,
+        isActive: true,
+      },
+    });
+
+    const item2 = await prisma.syllabusItem.create({
+      data: {
+        syllabusListId: sList.id,
+        syllabusChapterId: chapter.id,
+        subject: "IGCSE Mathematics",
+        chapterNum: ch.chapterNum,
+        chapterTitle: ch.chapterTitle,
+        topicCode: `${ch.chapterNum}.2`,
+        topicTitle: `Advanced ${ch.chapterTitle}`,
+        level: ch.level,
+        order: 2,
+        isActive: true,
+      },
+    });
+
+    syllabusItems.push(item1, item2);
   }
 
   // StudentSyllabusProgress
   if (student) {
-    for (let i = 0; i < Math.min(5, syllabusItems.length); i++) {
+    for (let i = 0; i < Math.min(10, syllabusItems.length); i++) {
       await prisma.studentSyllabusProgress.upsert({
         where: { studentId_syllabusItemId: { studentId: student.id, syllabusItemId: syllabusItems[i].id } },
-        update: { completed: i < 3, masteryPct: i < 3 ? 80 + i * 5 : 30 },
-        create: { studentId: student.id, syllabusItemId: syllabusItems[i].id, completed: i < 3, masteryPct: i < 3 ? 80 + i * 5 : 30 },
+        update: { completed: i < 6, masteryPct: i < 6 ? 80 + i * 2 : 25 },
+        create: { studentId: student.id, syllabusItemId: syllabusItems[i].id, completed: i < 6, masteryPct: i < 6 ? 80 + i * 2 : 25 },
       });
     }
   }
@@ -383,6 +424,33 @@ async function main() {
     update: {},
     create: { id: "rec-seed-2", title: "A Level Chemistry — Chemical Equilibrium", videoUrl: "https://miro.com/board/example2", sessionId: sess2.id, date: past2, category: "session" },
   });
+
+  const quadraticChapter = await prisma.syllabusChapter.findFirst({
+    where: { chapterNum: "03" },
+  });
+  if (quadraticChapter) {
+    const recList = await prisma.chapterRecordingList.upsert({
+      where: { syllabusChapterId: quadraticChapter.id },
+      update: {},
+      create: { syllabusChapterId: quadraticChapter.id, isActive: true },
+    });
+    await prisma.chapterRecordingItem.upsert({
+      where: {
+        chapterRecordingListId_recordingId: {
+          chapterRecordingListId: recList.id,
+          recordingId: "rec-seed-1",
+        },
+      },
+      update: {},
+      create: {
+        chapterRecordingListId: recList.id,
+        recordingId: "rec-seed-1",
+        notes: "Covers standard quadratic graph sketching and calculations",
+        order: 1,
+        isActive: true,
+      },
+    });
+  }
 
   // ─── Billing & Finance ───────────────────────────────────────────────────────
 
@@ -525,4 +593,7 @@ async function main() {
 
 main()
   .catch(e => { console.error(e); process.exit(1); })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });

@@ -60,7 +60,13 @@ export async function getStudentDoubts(studentEmail: string) {
   if (!user) return [];
   return await prisma.doubt.findMany({
     where: { studentId: user.id },
-    include: { syllabusItem: { select: { subject: true, chapterTitle: true, topicTitle: true, chapterNum: true } } },
+    include: {
+      syllabusItem: {
+        include: {
+          syllabusChapter: true,
+        },
+      },
+    },
     orderBy: { id: "desc" },
     take: 100,
   });

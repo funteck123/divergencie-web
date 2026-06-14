@@ -41,6 +41,7 @@ export type SyllabusItemSumAggregateOutputType = {
 export type SyllabusItemMinAggregateOutputType = {
   id: string | null
   syllabusListId: string | null
+  syllabusChapterId: string | null
   subject: string | null
   chapterNum: string | null
   chapterTitle: string | null
@@ -60,6 +61,7 @@ export type SyllabusItemMinAggregateOutputType = {
 export type SyllabusItemMaxAggregateOutputType = {
   id: string | null
   syllabusListId: string | null
+  syllabusChapterId: string | null
   subject: string | null
   chapterNum: string | null
   chapterTitle: string | null
@@ -79,6 +81,7 @@ export type SyllabusItemMaxAggregateOutputType = {
 export type SyllabusItemCountAggregateOutputType = {
   id: number
   syllabusListId: number
+  syllabusChapterId: number
   subject: number
   chapterNum: number
   chapterTitle: number
@@ -112,6 +115,7 @@ export type SyllabusItemSumAggregateInputType = {
 export type SyllabusItemMinAggregateInputType = {
   id?: true
   syllabusListId?: true
+  syllabusChapterId?: true
   subject?: true
   chapterNum?: true
   chapterTitle?: true
@@ -131,6 +135,7 @@ export type SyllabusItemMinAggregateInputType = {
 export type SyllabusItemMaxAggregateInputType = {
   id?: true
   syllabusListId?: true
+  syllabusChapterId?: true
   subject?: true
   chapterNum?: true
   chapterTitle?: true
@@ -150,6 +155,7 @@ export type SyllabusItemMaxAggregateInputType = {
 export type SyllabusItemCountAggregateInputType = {
   id?: true
   syllabusListId?: true
+  syllabusChapterId?: true
   subject?: true
   chapterNum?: true
   chapterTitle?: true
@@ -256,6 +262,7 @@ export type SyllabusItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type SyllabusItemGroupByOutputType = {
   id: string
   syllabusListId: string
+  syllabusChapterId: string | null
   subject: string | null
   chapterNum: string
   chapterTitle: string
@@ -298,6 +305,7 @@ export type SyllabusItemWhereInput = {
   NOT?: Prisma.SyllabusItemWhereInput | Prisma.SyllabusItemWhereInput[]
   id?: Prisma.StringFilter<"SyllabusItem"> | string
   syllabusListId?: Prisma.StringFilter<"SyllabusItem"> | string
+  syllabusChapterId?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   subject?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   chapterNum?: Prisma.StringFilter<"SyllabusItem"> | string
   chapterTitle?: Prisma.StringFilter<"SyllabusItem"> | string
@@ -313,6 +321,7 @@ export type SyllabusItemWhereInput = {
   note?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   isActive?: Prisma.BoolFilter<"SyllabusItem"> | boolean
   syllabusList?: Prisma.XOR<Prisma.SyllabusListScalarRelationFilter, Prisma.SyllabusListWhereInput>
+  syllabusChapter?: Prisma.XOR<Prisma.SyllabusChapterNullableScalarRelationFilter, Prisma.SyllabusChapterWhereInput> | null
   progressList?: Prisma.StudentSyllabusProgressListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
@@ -323,6 +332,7 @@ export type SyllabusItemWhereInput = {
 export type SyllabusItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   syllabusListId?: Prisma.SortOrder
+  syllabusChapterId?: Prisma.SortOrderInput | Prisma.SortOrder
   subject?: Prisma.SortOrderInput | Prisma.SortOrder
   chapterNum?: Prisma.SortOrder
   chapterTitle?: Prisma.SortOrder
@@ -338,6 +348,7 @@ export type SyllabusItemOrderByWithRelationInput = {
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   syllabusList?: Prisma.SyllabusListOrderByWithRelationInput
+  syllabusChapter?: Prisma.SyllabusChapterOrderByWithRelationInput
   progressList?: Prisma.StudentSyllabusProgressOrderByRelationAggregateInput
   doubts?: Prisma.DoubtOrderByRelationAggregateInput
   taskItems?: Prisma.TaskItemOrderByRelationAggregateInput
@@ -351,6 +362,7 @@ export type SyllabusItemWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SyllabusItemWhereInput[]
   NOT?: Prisma.SyllabusItemWhereInput | Prisma.SyllabusItemWhereInput[]
   syllabusListId?: Prisma.StringFilter<"SyllabusItem"> | string
+  syllabusChapterId?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   subject?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   chapterNum?: Prisma.StringFilter<"SyllabusItem"> | string
   chapterTitle?: Prisma.StringFilter<"SyllabusItem"> | string
@@ -366,6 +378,7 @@ export type SyllabusItemWhereUniqueInput = Prisma.AtLeast<{
   note?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   isActive?: Prisma.BoolFilter<"SyllabusItem"> | boolean
   syllabusList?: Prisma.XOR<Prisma.SyllabusListScalarRelationFilter, Prisma.SyllabusListWhereInput>
+  syllabusChapter?: Prisma.XOR<Prisma.SyllabusChapterNullableScalarRelationFilter, Prisma.SyllabusChapterWhereInput> | null
   progressList?: Prisma.StudentSyllabusProgressListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
@@ -376,6 +389,7 @@ export type SyllabusItemWhereUniqueInput = Prisma.AtLeast<{
 export type SyllabusItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   syllabusListId?: Prisma.SortOrder
+  syllabusChapterId?: Prisma.SortOrderInput | Prisma.SortOrder
   subject?: Prisma.SortOrderInput | Prisma.SortOrder
   chapterNum?: Prisma.SortOrder
   chapterTitle?: Prisma.SortOrder
@@ -403,6 +417,7 @@ export type SyllabusItemScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SyllabusItemScalarWhereWithAggregatesInput | Prisma.SyllabusItemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"SyllabusItem"> | string
   syllabusListId?: Prisma.StringWithAggregatesFilter<"SyllabusItem"> | string
+  syllabusChapterId?: Prisma.StringNullableWithAggregatesFilter<"SyllabusItem"> | string | null
   subject?: Prisma.StringNullableWithAggregatesFilter<"SyllabusItem"> | string | null
   chapterNum?: Prisma.StringWithAggregatesFilter<"SyllabusItem"> | string
   chapterTitle?: Prisma.StringWithAggregatesFilter<"SyllabusItem"> | string
@@ -436,6 +451,7 @@ export type SyllabusItemCreateInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
@@ -446,6 +462,7 @@ export type SyllabusItemCreateInput = {
 export type SyllabusItemUncheckedCreateInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -484,6 +501,7 @@ export type SyllabusItemUpdateInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
@@ -494,6 +512,7 @@ export type SyllabusItemUpdateInput = {
 export type SyllabusItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -518,6 +537,7 @@ export type SyllabusItemUncheckedUpdateInput = {
 export type SyllabusItemCreateManyInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -555,6 +575,7 @@ export type SyllabusItemUpdateManyMutationInput = {
 export type SyllabusItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -584,6 +605,7 @@ export type SyllabusItemOrderByRelationAggregateInput = {
 export type SyllabusItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   syllabusListId?: Prisma.SortOrder
+  syllabusChapterId?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   chapterNum?: Prisma.SortOrder
   chapterTitle?: Prisma.SortOrder
@@ -609,6 +631,7 @@ export type SyllabusItemAvgOrderByAggregateInput = {
 export type SyllabusItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   syllabusListId?: Prisma.SortOrder
+  syllabusChapterId?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   chapterNum?: Prisma.SortOrder
   chapterTitle?: Prisma.SortOrder
@@ -628,6 +651,7 @@ export type SyllabusItemMaxOrderByAggregateInput = {
 export type SyllabusItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   syllabusListId?: Prisma.SortOrder
+  syllabusChapterId?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   chapterNum?: Prisma.SortOrder
   chapterTitle?: Prisma.SortOrder
@@ -699,6 +723,48 @@ export type SyllabusItemUncheckedUpdateManyWithoutSyllabusListNestedInput = {
   connect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
   update?: Prisma.SyllabusItemUpdateWithWhereUniqueWithoutSyllabusListInput | Prisma.SyllabusItemUpdateWithWhereUniqueWithoutSyllabusListInput[]
   updateMany?: Prisma.SyllabusItemUpdateManyWithWhereWithoutSyllabusListInput | Prisma.SyllabusItemUpdateManyWithWhereWithoutSyllabusListInput[]
+  deleteMany?: Prisma.SyllabusItemScalarWhereInput | Prisma.SyllabusItemScalarWhereInput[]
+}
+
+export type SyllabusItemCreateNestedManyWithoutSyllabusChapterInput = {
+  create?: Prisma.XOR<Prisma.SyllabusItemCreateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput> | Prisma.SyllabusItemCreateWithoutSyllabusChapterInput[] | Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput[]
+  connectOrCreate?: Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput | Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput[]
+  createMany?: Prisma.SyllabusItemCreateManySyllabusChapterInputEnvelope
+  connect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+}
+
+export type SyllabusItemUncheckedCreateNestedManyWithoutSyllabusChapterInput = {
+  create?: Prisma.XOR<Prisma.SyllabusItemCreateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput> | Prisma.SyllabusItemCreateWithoutSyllabusChapterInput[] | Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput[]
+  connectOrCreate?: Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput | Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput[]
+  createMany?: Prisma.SyllabusItemCreateManySyllabusChapterInputEnvelope
+  connect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+}
+
+export type SyllabusItemUpdateManyWithoutSyllabusChapterNestedInput = {
+  create?: Prisma.XOR<Prisma.SyllabusItemCreateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput> | Prisma.SyllabusItemCreateWithoutSyllabusChapterInput[] | Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput[]
+  connectOrCreate?: Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput | Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput[]
+  upsert?: Prisma.SyllabusItemUpsertWithWhereUniqueWithoutSyllabusChapterInput | Prisma.SyllabusItemUpsertWithWhereUniqueWithoutSyllabusChapterInput[]
+  createMany?: Prisma.SyllabusItemCreateManySyllabusChapterInputEnvelope
+  set?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  disconnect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  delete?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  connect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  update?: Prisma.SyllabusItemUpdateWithWhereUniqueWithoutSyllabusChapterInput | Prisma.SyllabusItemUpdateWithWhereUniqueWithoutSyllabusChapterInput[]
+  updateMany?: Prisma.SyllabusItemUpdateManyWithWhereWithoutSyllabusChapterInput | Prisma.SyllabusItemUpdateManyWithWhereWithoutSyllabusChapterInput[]
+  deleteMany?: Prisma.SyllabusItemScalarWhereInput | Prisma.SyllabusItemScalarWhereInput[]
+}
+
+export type SyllabusItemUncheckedUpdateManyWithoutSyllabusChapterNestedInput = {
+  create?: Prisma.XOR<Prisma.SyllabusItemCreateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput> | Prisma.SyllabusItemCreateWithoutSyllabusChapterInput[] | Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput[]
+  connectOrCreate?: Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput | Prisma.SyllabusItemCreateOrConnectWithoutSyllabusChapterInput[]
+  upsert?: Prisma.SyllabusItemUpsertWithWhereUniqueWithoutSyllabusChapterInput | Prisma.SyllabusItemUpsertWithWhereUniqueWithoutSyllabusChapterInput[]
+  createMany?: Prisma.SyllabusItemCreateManySyllabusChapterInputEnvelope
+  set?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  disconnect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  delete?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  connect?: Prisma.SyllabusItemWhereUniqueInput | Prisma.SyllabusItemWhereUniqueInput[]
+  update?: Prisma.SyllabusItemUpdateWithWhereUniqueWithoutSyllabusChapterInput | Prisma.SyllabusItemUpdateWithWhereUniqueWithoutSyllabusChapterInput[]
+  updateMany?: Prisma.SyllabusItemUpdateManyWithWhereWithoutSyllabusChapterInput | Prisma.SyllabusItemUpdateManyWithWhereWithoutSyllabusChapterInput[]
   deleteMany?: Prisma.SyllabusItemScalarWhereInput | Prisma.SyllabusItemScalarWhereInput[]
 }
 
@@ -794,6 +860,7 @@ export type SyllabusItemCreateWithoutSyllabusListInput = {
   difficultTopics?: string | null
   note?: string | null
   isActive?: boolean
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
@@ -803,6 +870,7 @@ export type SyllabusItemCreateWithoutSyllabusListInput = {
 
 export type SyllabusItemUncheckedCreateWithoutSyllabusListInput = {
   id?: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -856,6 +924,7 @@ export type SyllabusItemScalarWhereInput = {
   NOT?: Prisma.SyllabusItemScalarWhereInput | Prisma.SyllabusItemScalarWhereInput[]
   id?: Prisma.StringFilter<"SyllabusItem"> | string
   syllabusListId?: Prisma.StringFilter<"SyllabusItem"> | string
+  syllabusChapterId?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   subject?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   chapterNum?: Prisma.StringFilter<"SyllabusItem"> | string
   chapterTitle?: Prisma.StringFilter<"SyllabusItem"> | string
@@ -870,6 +939,80 @@ export type SyllabusItemScalarWhereInput = {
   difficultTopics?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   note?: Prisma.StringNullableFilter<"SyllabusItem"> | string | null
   isActive?: Prisma.BoolFilter<"SyllabusItem"> | boolean
+}
+
+export type SyllabusItemCreateWithoutSyllabusChapterInput = {
+  id?: string
+  subject?: string | null
+  chapterNum: string
+  chapterTitle: string
+  topicCode?: string | null
+  topicTitle: string
+  level: string
+  order: number
+  lectureCompleted?: boolean
+  pastPaperQCount?: number
+  marksLostInPPQ?: number
+  pastPaperNotesLink?: string | null
+  difficultTopics?: string | null
+  note?: string | null
+  isActive?: boolean
+  syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
+  taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
+  mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
+  courseTimelineItems?: Prisma.CourseTimelineItemCreateNestedManyWithoutSyllabusItemInput
+}
+
+export type SyllabusItemUncheckedCreateWithoutSyllabusChapterInput = {
+  id?: string
+  syllabusListId: string
+  subject?: string | null
+  chapterNum: string
+  chapterTitle: string
+  topicCode?: string | null
+  topicTitle: string
+  level: string
+  order: number
+  lectureCompleted?: boolean
+  pastPaperQCount?: number
+  marksLostInPPQ?: number
+  pastPaperNotesLink?: string | null
+  difficultTopics?: string | null
+  note?: string | null
+  isActive?: boolean
+  progressList?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutSyllabusItemInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutSyllabusItemInput
+  taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSyllabusItemInput
+  mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSyllabusItemInput
+  courseTimelineItems?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutSyllabusItemInput
+}
+
+export type SyllabusItemCreateOrConnectWithoutSyllabusChapterInput = {
+  where: Prisma.SyllabusItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.SyllabusItemCreateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput>
+}
+
+export type SyllabusItemCreateManySyllabusChapterInputEnvelope = {
+  data: Prisma.SyllabusItemCreateManySyllabusChapterInput | Prisma.SyllabusItemCreateManySyllabusChapterInput[]
+  skipDuplicates?: boolean
+}
+
+export type SyllabusItemUpsertWithWhereUniqueWithoutSyllabusChapterInput = {
+  where: Prisma.SyllabusItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.SyllabusItemUpdateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedUpdateWithoutSyllabusChapterInput>
+  create: Prisma.XOR<Prisma.SyllabusItemCreateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedCreateWithoutSyllabusChapterInput>
+}
+
+export type SyllabusItemUpdateWithWhereUniqueWithoutSyllabusChapterInput = {
+  where: Prisma.SyllabusItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.SyllabusItemUpdateWithoutSyllabusChapterInput, Prisma.SyllabusItemUncheckedUpdateWithoutSyllabusChapterInput>
+}
+
+export type SyllabusItemUpdateManyWithWhereWithoutSyllabusChapterInput = {
+  where: Prisma.SyllabusItemScalarWhereInput
+  data: Prisma.XOR<Prisma.SyllabusItemUpdateManyMutationInput, Prisma.SyllabusItemUncheckedUpdateManyWithoutSyllabusChapterInput>
 }
 
 export type SyllabusItemCreateWithoutProgressListInput = {
@@ -889,6 +1032,7 @@ export type SyllabusItemCreateWithoutProgressListInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
@@ -898,6 +1042,7 @@ export type SyllabusItemCreateWithoutProgressListInput = {
 export type SyllabusItemUncheckedCreateWithoutProgressListInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -951,6 +1096,7 @@ export type SyllabusItemUpdateWithoutProgressListInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
@@ -960,6 +1106,7 @@ export type SyllabusItemUpdateWithoutProgressListInput = {
 export type SyllabusItemUncheckedUpdateWithoutProgressListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -997,6 +1144,7 @@ export type SyllabusItemCreateWithoutTaskItemsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
@@ -1006,6 +1154,7 @@ export type SyllabusItemCreateWithoutTaskItemsInput = {
 export type SyllabusItemUncheckedCreateWithoutTaskItemsInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -1059,6 +1208,7 @@ export type SyllabusItemUpdateWithoutTaskItemsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1068,6 +1218,7 @@ export type SyllabusItemUpdateWithoutTaskItemsInput = {
 export type SyllabusItemUncheckedUpdateWithoutTaskItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1105,6 +1256,7 @@ export type SyllabusItemCreateWithoutMockItemsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
@@ -1114,6 +1266,7 @@ export type SyllabusItemCreateWithoutMockItemsInput = {
 export type SyllabusItemUncheckedCreateWithoutMockItemsInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -1167,6 +1320,7 @@ export type SyllabusItemUpdateWithoutMockItemsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1176,6 +1330,7 @@ export type SyllabusItemUpdateWithoutMockItemsInput = {
 export type SyllabusItemUncheckedUpdateWithoutMockItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1213,6 +1368,7 @@ export type SyllabusItemCreateWithoutCourseTimelineItemsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
@@ -1222,6 +1378,7 @@ export type SyllabusItemCreateWithoutCourseTimelineItemsInput = {
 export type SyllabusItemUncheckedCreateWithoutCourseTimelineItemsInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -1275,6 +1432,7 @@ export type SyllabusItemUpdateWithoutCourseTimelineItemsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1284,6 +1442,7 @@ export type SyllabusItemUpdateWithoutCourseTimelineItemsInput = {
 export type SyllabusItemUncheckedUpdateWithoutCourseTimelineItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1321,6 +1480,7 @@ export type SyllabusItemCreateWithoutDoubtsInput = {
   note?: string | null
   isActive?: boolean
   syllabusList: Prisma.SyllabusListCreateNestedOneWithoutSyllabusItemsInput
+  syllabusChapter?: Prisma.SyllabusChapterCreateNestedOneWithoutSyllabusItemsInput
   progressList?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutSyllabusItemInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSyllabusItemInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSyllabusItemInput
@@ -1330,6 +1490,7 @@ export type SyllabusItemCreateWithoutDoubtsInput = {
 export type SyllabusItemUncheckedCreateWithoutDoubtsInput = {
   id?: string
   syllabusListId: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -1383,6 +1544,7 @@ export type SyllabusItemUpdateWithoutDoubtsInput = {
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1392,6 +1554,7 @@ export type SyllabusItemUpdateWithoutDoubtsInput = {
 export type SyllabusItemUncheckedUpdateWithoutDoubtsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1414,6 +1577,7 @@ export type SyllabusItemUncheckedUpdateWithoutDoubtsInput = {
 
 export type SyllabusItemCreateManySyllabusListInput = {
   id?: string
+  syllabusChapterId?: string | null
   subject?: string | null
   chapterNum: string
   chapterTitle: string
@@ -1446,6 +1610,7 @@ export type SyllabusItemUpdateWithoutSyllabusListInput = {
   difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  syllabusChapter?: Prisma.SyllabusChapterUpdateOneWithoutSyllabusItemsNestedInput
   progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
@@ -1455,6 +1620,7 @@ export type SyllabusItemUpdateWithoutSyllabusListInput = {
 
 export type SyllabusItemUncheckedUpdateWithoutSyllabusListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1478,6 +1644,93 @@ export type SyllabusItemUncheckedUpdateWithoutSyllabusListInput = {
 
 export type SyllabusItemUncheckedUpdateManyWithoutSyllabusListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusChapterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
+  chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  topicCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topicTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  lectureCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pastPaperQCount?: Prisma.IntFieldUpdateOperationsInput | number
+  marksLostInPPQ?: Prisma.FloatFieldUpdateOperationsInput | number
+  pastPaperNotesLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type SyllabusItemCreateManySyllabusChapterInput = {
+  id?: string
+  syllabusListId: string
+  subject?: string | null
+  chapterNum: string
+  chapterTitle: string
+  topicCode?: string | null
+  topicTitle: string
+  level: string
+  order: number
+  lectureCompleted?: boolean
+  pastPaperQCount?: number
+  marksLostInPPQ?: number
+  pastPaperNotesLink?: string | null
+  difficultTopics?: string | null
+  note?: string | null
+  isActive?: boolean
+}
+
+export type SyllabusItemUpdateWithoutSyllabusChapterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
+  chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  topicCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topicTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  lectureCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pastPaperQCount?: Prisma.IntFieldUpdateOperationsInput | number
+  marksLostInPPQ?: Prisma.FloatFieldUpdateOperationsInput | number
+  pastPaperNotesLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  syllabusList?: Prisma.SyllabusListUpdateOneRequiredWithoutSyllabusItemsNestedInput
+  progressList?: Prisma.StudentSyllabusProgressUpdateManyWithoutSyllabusItemNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutSyllabusItemNestedInput
+  taskItems?: Prisma.TaskItemUpdateManyWithoutSyllabusItemNestedInput
+  mockItems?: Prisma.MockItemUpdateManyWithoutSyllabusItemNestedInput
+  courseTimelineItems?: Prisma.CourseTimelineItemUpdateManyWithoutSyllabusItemNestedInput
+}
+
+export type SyllabusItemUncheckedUpdateWithoutSyllabusChapterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
+  chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  topicCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topicTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.StringFieldUpdateOperationsInput | string
+  order?: Prisma.IntFieldUpdateOperationsInput | number
+  lectureCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pastPaperQCount?: Prisma.IntFieldUpdateOperationsInput | number
+  marksLostInPPQ?: Prisma.FloatFieldUpdateOperationsInput | number
+  pastPaperNotesLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  difficultTopics?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  progressList?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
+  courseTimelineItems?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutSyllabusItemNestedInput
+}
+
+export type SyllabusItemUncheckedUpdateManyWithoutSyllabusChapterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  syllabusListId?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   chapterNum?: Prisma.StringFieldUpdateOperationsInput | string
   chapterTitle?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1564,6 +1817,7 @@ export type SyllabusItemCountOutputTypeCountCourseTimelineItemsArgs<ExtArgs exte
 export type SyllabusItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   syllabusListId?: boolean
+  syllabusChapterId?: boolean
   subject?: boolean
   chapterNum?: boolean
   chapterTitle?: boolean
@@ -1579,6 +1833,7 @@ export type SyllabusItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   note?: boolean
   isActive?: boolean
   syllabusList?: boolean | Prisma.SyllabusListDefaultArgs<ExtArgs>
+  syllabusChapter?: boolean | Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>
   progressList?: boolean | Prisma.SyllabusItem$progressListArgs<ExtArgs>
   doubts?: boolean | Prisma.SyllabusItem$doubtsArgs<ExtArgs>
   taskItems?: boolean | Prisma.SyllabusItem$taskItemsArgs<ExtArgs>
@@ -1590,6 +1845,7 @@ export type SyllabusItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
 export type SyllabusItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   syllabusListId?: boolean
+  syllabusChapterId?: boolean
   subject?: boolean
   chapterNum?: boolean
   chapterTitle?: boolean
@@ -1605,11 +1861,13 @@ export type SyllabusItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   note?: boolean
   isActive?: boolean
   syllabusList?: boolean | Prisma.SyllabusListDefaultArgs<ExtArgs>
+  syllabusChapter?: boolean | Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>
 }, ExtArgs["result"]["syllabusItem"]>
 
 export type SyllabusItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   syllabusListId?: boolean
+  syllabusChapterId?: boolean
   subject?: boolean
   chapterNum?: boolean
   chapterTitle?: boolean
@@ -1625,11 +1883,13 @@ export type SyllabusItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   note?: boolean
   isActive?: boolean
   syllabusList?: boolean | Prisma.SyllabusListDefaultArgs<ExtArgs>
+  syllabusChapter?: boolean | Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>
 }, ExtArgs["result"]["syllabusItem"]>
 
 export type SyllabusItemSelectScalar = {
   id?: boolean
   syllabusListId?: boolean
+  syllabusChapterId?: boolean
   subject?: boolean
   chapterNum?: boolean
   chapterTitle?: boolean
@@ -1646,9 +1906,10 @@ export type SyllabusItemSelectScalar = {
   isActive?: boolean
 }
 
-export type SyllabusItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "syllabusListId" | "subject" | "chapterNum" | "chapterTitle" | "topicCode" | "topicTitle" | "level" | "order" | "lectureCompleted" | "pastPaperQCount" | "marksLostInPPQ" | "pastPaperNotesLink" | "difficultTopics" | "note" | "isActive", ExtArgs["result"]["syllabusItem"]>
+export type SyllabusItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "syllabusListId" | "syllabusChapterId" | "subject" | "chapterNum" | "chapterTitle" | "topicCode" | "topicTitle" | "level" | "order" | "lectureCompleted" | "pastPaperQCount" | "marksLostInPPQ" | "pastPaperNotesLink" | "difficultTopics" | "note" | "isActive", ExtArgs["result"]["syllabusItem"]>
 export type SyllabusItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   syllabusList?: boolean | Prisma.SyllabusListDefaultArgs<ExtArgs>
+  syllabusChapter?: boolean | Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>
   progressList?: boolean | Prisma.SyllabusItem$progressListArgs<ExtArgs>
   doubts?: boolean | Prisma.SyllabusItem$doubtsArgs<ExtArgs>
   taskItems?: boolean | Prisma.SyllabusItem$taskItemsArgs<ExtArgs>
@@ -1658,15 +1919,18 @@ export type SyllabusItemInclude<ExtArgs extends runtime.Types.Extensions.Interna
 }
 export type SyllabusItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   syllabusList?: boolean | Prisma.SyllabusListDefaultArgs<ExtArgs>
+  syllabusChapter?: boolean | Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>
 }
 export type SyllabusItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   syllabusList?: boolean | Prisma.SyllabusListDefaultArgs<ExtArgs>
+  syllabusChapter?: boolean | Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>
 }
 
 export type $SyllabusItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SyllabusItem"
   objects: {
     syllabusList: Prisma.$SyllabusListPayload<ExtArgs>
+    syllabusChapter: Prisma.$SyllabusChapterPayload<ExtArgs> | null
     progressList: Prisma.$StudentSyllabusProgressPayload<ExtArgs>[]
     doubts: Prisma.$DoubtPayload<ExtArgs>[]
     taskItems: Prisma.$TaskItemPayload<ExtArgs>[]
@@ -1676,6 +1940,7 @@ export type $SyllabusItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     syllabusListId: string
+    syllabusChapterId: string | null
     subject: string | null
     chapterNum: string
     chapterTitle: string
@@ -2085,6 +2350,7 @@ readonly fields: SyllabusItemFieldRefs;
 export interface Prisma__SyllabusItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   syllabusList<T extends Prisma.SyllabusListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusListDefaultArgs<ExtArgs>>): Prisma.Prisma__SyllabusListClient<runtime.Types.Result.GetResult<Prisma.$SyllabusListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  syllabusChapter<T extends Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$syllabusChapterArgs<ExtArgs>>): Prisma.Prisma__SyllabusChapterClient<runtime.Types.Result.GetResult<Prisma.$SyllabusChapterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   progressList<T extends Prisma.SyllabusItem$progressListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$progressListArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentSyllabusProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   doubts<T extends Prisma.SyllabusItem$doubtsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$doubtsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoubtPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskItems<T extends Prisma.SyllabusItem$taskItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SyllabusItem$taskItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2121,6 +2387,7 @@ export interface Prisma__SyllabusItemClient<T, Null = never, ExtArgs extends run
 export interface SyllabusItemFieldRefs {
   readonly id: Prisma.FieldRef<"SyllabusItem", 'String'>
   readonly syllabusListId: Prisma.FieldRef<"SyllabusItem", 'String'>
+  readonly syllabusChapterId: Prisma.FieldRef<"SyllabusItem", 'String'>
   readonly subject: Prisma.FieldRef<"SyllabusItem", 'String'>
   readonly chapterNum: Prisma.FieldRef<"SyllabusItem", 'String'>
   readonly chapterTitle: Prisma.FieldRef<"SyllabusItem", 'String'>
@@ -2533,6 +2800,25 @@ export type SyllabusItemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many SyllabusItems to delete.
    */
   limit?: number
+}
+
+/**
+ * SyllabusItem.syllabusChapter
+ */
+export type SyllabusItem$syllabusChapterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SyllabusChapter
+   */
+  select?: Prisma.SyllabusChapterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SyllabusChapter
+   */
+  omit?: Prisma.SyllabusChapterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SyllabusChapterInclude<ExtArgs> | null
+  where?: Prisma.SyllabusChapterWhereInput
 }
 
 /**

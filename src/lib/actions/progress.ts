@@ -131,6 +131,44 @@ export async function getSyllabusItems(subject?: string) {
   return subject ? all.filter((i: any) => i.subject === subject) : all;
 }
 
+export async function getSyllabusChapters(subject: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.syllabusChapter.findMany({
+    where: {
+      syllabusItems: {
+        some: {
+          subject: subject,
+          isActive: true,
+        },
+      },
+      isActive: true,
+    },
+    include: {
+      syllabusItems: {
+        where: {
+          subject: subject,
+          isActive: true,
+        },
+        orderBy: { order: "asc" },
+      },
+      recordingList: {
+        include: {
+          items: {
+            where: { isActive: true },
+            include: {
+              recording: true,
+            },
+            orderBy: { order: "asc" },
+          },
+        },
+      },
+    },
+    orderBy: { order: "asc" },
+  });
+}
+
 export async function getStudentProgress(studentEmail: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
