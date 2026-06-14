@@ -37,13 +37,20 @@ export async function GET(request: Request) {
         const prisma = (await import("@/lib/db")).default;
         const dbUser = await prisma.user.findUnique({
           where: { email: user.email.toLowerCase().trim() },
-          select: { role: true, dept: true },
+          select: { role: true, dept: true, subGroup: true },
         });
         if (dbUser) {
+          const SUBGROUP_PREFIX_TO_DEPT: Record<string, string> = {
+            HR: "HR", IT: "IT", FIN: "Finance", PR: "PR", MKT: "Marketing",
+          };
+          const resolvedDept = dbUser.dept
+            ?? SUBGROUP_PREFIX_TO_DEPT[dbUser.subGroup?.split("_")[0] ?? ""]
+            ?? "";
+
           await supabase.auth.updateUser({
             data: {
               role: dbUser.role || "",
-              dept: dbUser.dept || "",
+              dept: resolvedDept,
             },
           });
         }

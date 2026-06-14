@@ -47,14 +47,21 @@ export async function POST(req: NextRequest) {
     // Sync database profile role/dept to user_metadata to be stored in the JWT for middleware checks
     const dbUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
-      select: { role: true, dept: true },
+      select: { role: true, dept: true, subGroup: true },
     });
 
     if (dbUser) {
+      const SUBGROUP_PREFIX_TO_DEPT: Record<string, string> = {
+        HR: "HR", IT: "IT", FIN: "Finance", PR: "PR", MKT: "Marketing",
+      };
+      const resolvedDept = dbUser.dept
+        ?? SUBGROUP_PREFIX_TO_DEPT[dbUser.subGroup?.split("_")[0] ?? ""]
+        ?? "";
+
       await supabase.auth.updateUser({
         data: {
           role: dbUser.role || "",
-          dept: dbUser.dept || "",
+          dept: resolvedDept,
         },
       });
     }
