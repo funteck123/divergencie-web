@@ -1,61 +1,53 @@
-// src/lib/auth.ts
-import NextAuth, { CredentialsSignin } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import * as bcrypt from "bcryptjs";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import prisma from "@/lib/db";
-import { authConfig } from "./auth.config";
 
-class InactiveAccountError extends CredentialsSignin {
-  code = "account_inactive";
+export async function getSession() {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+      },
+    }
+  );
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  // Fetch role/dept from Prisma (single source of truth)
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user.email! },
+    select: { id: true, role: true, dept: true, name: true, subGroup: true, supervisor: true },
+  });
+  if (!dbUser) return null;
+
+  return {
+    user: {
+      id: dbUser.id,
+      email: user.email,
+      role: dbUser.role,
+      dept: dbUser.dept,
+      name: dbUser.name,
+      subGroup: dbUser.subGroup,
+      supervisor: dbUser.supervisor,
+    },
+  };
 }
 
-class InvalidCredentialsError extends CredentialsSignin {
-  code = "invalid_credentials";
-}
-
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig,
-  providers: [
-    Credentials({
-      credentials: {
-        email:    { label: "Email",    type: "email"    },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        const email    = (credentials?.email    as string)?.toLowerCase().trim();
-        const password = credentials?.password as string;
-
-        if (!email || !password) throw new InvalidCredentialsError();
-
-        try {
-          const user = await prisma.user.findUnique({ where: { email } });
-
-          if (!user) throw new InvalidCredentialsError();
-          if (!user.active) throw new InactiveAccountError();
-
-          const hash = user.passwordHash;
-
-          // Require bcrypt hash — legacy "demo" fallback removed for security
-          if (!hash) throw new InvalidCredentialsError();
-
-          const valid = await bcrypt.compare(password, hash);
-          if (!valid) throw new InvalidCredentialsError();
-
-          return {
-            id:         user.id,
-            email:      user.email,
-            name:       user.name,
-            role:       user.role || "",
-            dept:       user.dept || null,
-            subGroup:   user.subGroup || null,
-            supervisor: user.supervisor,
-          } as any;
-        } catch (error) {
-          if (error instanceof CredentialsSignin) throw error;
-          console.error("[AUTH] DB error:", error);
-          throw new InvalidCredentialsError();
-        }
-      },
-    }),
-  ],
-});
+export const auth = getSession;
