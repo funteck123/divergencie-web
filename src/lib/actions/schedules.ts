@@ -114,3 +114,32 @@ export async function submitSessionFeedback(attendanceId: string, stars: number,
   revalidatePath("/portal/student/classes");
   return updated;
 }
+
+export async function getTeacherScheduleData(teacherEmail: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const teacher = await prisma.user.findUnique({ where: { email: teacherEmail } });
+  if (!teacher) return { sessions: [], changeRequests: [], contentItems: [] };
+
+  const [sessions, changeRequests, contentItems] = await Promise.all([
+    prisma.academicSession.findMany({
+      where: { teacherId: teacher.id },
+      include: { student: { select: { name: true, email: true } } },
+      orderBy: { startTime: "desc" },
+      take: 50,
+    }),
+    prisma.scheduleChangeRequest.findMany({
+      where: { requestedByUserId: teacher.id },
+      orderBy: { id: "desc" },
+      take: 30,
+    }),
+    prisma.contentBankItem.findMany({
+      where: { isActive: true },
+      orderBy: { dateAdded: "desc" },
+      take: 50,
+    }),
+  ]);
+
+  return { sessions, changeRequests, contentItems };
+}
