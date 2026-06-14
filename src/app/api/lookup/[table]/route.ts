@@ -3,9 +3,29 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
 
 const LOOKUP_MAP: Record<string, () => Promise<any[]>> = {
-  departments: () => prisma.department.findMany({ orderBy: { name: "asc" } }),
-  staffRoles: () => prisma.staffRole.findMany({ orderBy: { name: "asc" } }),
-  userTypes: () => prisma.userType.findMany({ orderBy: { name: "asc" } }),
+  departments: async () => [
+    { id: "1", name: "Finance" },
+    { id: "2", name: "HR" },
+    { id: "3", name: "IT" },
+    { id: "4", name: "Marketing" },
+    { id: "5", name: "PR" },
+    { id: "6", name: "Management" }
+  ],
+  staffRoles: async () => [
+    { id: "1", name: "Manager" },
+    { id: "2", name: "Assistant" },
+    { id: "3", name: "Intern" },
+    { id: "4", name: "Officer" }
+  ],
+  userTypes: async () => [
+    { id: "1", name: "management" },
+    { id: "2", name: "staff" },
+    { id: "3", name: "teacher" },
+    { id: "4", name: "student" },
+    { id: "5", name: "parent" },
+    { id: "6", name: "ambassador" },
+    { id: "7", name: "candidate" }
+  ],
   sessionTypes: () => prisma.sessionType.findMany({ orderBy: { name: "asc" } }),
   ticketTypes: () => prisma.ticketType.findMany({ orderBy: { name: "asc" } }),
   notificationTypes: () => prisma.notificationType.findMany({ orderBy: { name: "asc" } }),
