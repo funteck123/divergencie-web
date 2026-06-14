@@ -17,10 +17,18 @@ export async function GET(req: NextRequest) {
   if (role === "student") {
     where.studentId = user.id;
   } else if (role === "teacher") {
-    where.teacherId = user.id;
-    if (answered === "false") where.answeredAt = null;
+    where.syllabusItem = {
+      syllabusList: {
+        curriculumList: {
+          service: {
+            teacherId: user.id,
+          },
+        },
+      },
+    };
+    if (answered === "false") where.response = null;
   } else if (role === "staff" || role === "management") {
-    if (answered === "false") where.answeredAt = null;
+    if (answered === "false") where.response = null;
   } else {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -29,10 +37,27 @@ export async function GET(req: NextRequest) {
     where,
     include: {
       student: { select: { id: true, name: true } },
-      teacher: { select: { id: true, name: true } },
-      syllabusItem: { select: { id: true, topicTitle: true } },
+      syllabusItem: {
+        select: {
+          id: true,
+          topicTitle: true,
+          syllabusList: {
+            select: {
+              curriculumList: {
+                select: {
+                  service: {
+                    select: {
+                      teacherId: true,
+                      teacher: { select: { id: true, name: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
-    orderBy: { createdAt: "desc" },
     take: 100,
   });
 
@@ -49,19 +74,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden: Students only" }, { status: 403 });
   }
 
-  const { teacherId, syllabusItemId, question, context } = await req.json();
+  const { syllabusItemId, question } = await req.json();
 
-  if (!teacherId || !question) {
-    return NextResponse.json({ error: "teacherId and question required" }, { status: 400 });
+  if (!syllabusItemId || !question) {
+    return NextResponse.json({ error: "syllabusItemId and question required" }, { status: 400 });
   }
 
   const doubt = await prisma.doubt.create({
     data: {
       studentId: user.id,
-      teacherId,
-      syllabusItemId: syllabusItemId ?? null,
-      question,
-      context: context ?? null,
+      syllabusItemId,
+      body: question,
+      status: "open",
     },
   });
 
