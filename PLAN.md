@@ -1,4 +1,4 @@
-﻿# DivergenCIE Coaching — Build Plan & Session Tracker
+# DivergenCIE Coaching — Build Plan & Session Tracker
 
 ## INTRO
 
@@ -291,4 +291,11 @@ Agent Note: When a task is finished, update the Status column in this table befo
 **Built:** New lean PLAN.md (Next.js phase only). PLAN_HTML_LEGACY.md + improvements.md → planning/legacy/. All 52 HTML source files → planning/legacy/html-source/ for M-phase reference.
 **Next:** M3 — Auth (NextAuth credentials provider, login page split layout)
 **Watch:** HTML source lives in planning/legacy/html-source/ — read from there for all M-phase ports.
+
+
+## 📖 Handoff Notes — v72
+
+**Built:** Decoupled Supabase Auth, Webhook & Manual Approval Notifications, WhatsApp Reminder Stage Tracker, Recurrence Overlap Conflict Detection Engine, and dynamic Student, Parent, and Teacher portal wiring.
+**Next:** Verify production Vercel deployment and address the 30 unimplemented database tables from ERD v23 audit.
+**Watch:** Clear out local node_modules caches if shifting node runtime versions.
 
