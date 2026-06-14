@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Cpu, Plus, Check, Clock, AlertCircle, X, ExternalLink, Loader2, ChevronDown } from "lucide-react";
-import { getAccessLogs } from "@/lib/actions/it";
+import { Cpu, Plus, Check, Clock, AlertCircle, X, ExternalLink, Loader2, ChevronDown, BookOpen } from "lucide-react";
+import { getAccessLogs, getKnowledgeBankItems, createKnowledgeBankItem } from "@/lib/actions/it";
 
 // IT-05: roadmap stored in Asset table with dept=IT, type=Roadmap
 import { getAssets, createAsset, deleteAsset } from "@/lib/actions/assets";
@@ -41,16 +41,31 @@ export default function ITRoadmapPage() {
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [showIntegrations, setShowIntegrations] = useState(true);
+  const [kbItems, setKbItems] = useState<any[]>([]);
+  const [showKbForm, setShowKbForm] = useState(false);
+  const [kbForm, setKbForm] = useState({ title: "", summary: "", domainName: "TECHNICAL" });
+  const [kbSaving, setKbSaving] = useState(false);
 
   const load = async () => {
     setLoading(true);
-    // IT roadmap tasks stored as Assets with dept=IT, type=Roadmap
-    const assets = await getAssets("IT");
+    const [assets, kb] = await Promise.all([getAssets("IT"), getKnowledgeBankItems()]);
     setTasks(assets.filter((a: any) => a.type === "Roadmap"));
+    setKbItems(kb);
     setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
+
+  const handleAddKb = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!kbForm.title) return;
+    setKbSaving(true);
+    await createKnowledgeBankItem({ title: kbForm.title, summary: kbForm.summary, domainName: kbForm.domainName });
+    setShowKbForm(false);
+    setKbForm({ title: "", summary: "", domainName: "TECHNICAL" });
+    await load();
+    setKbSaving(false);
+  };
 
   const handleAdd = async () => {
     if (!form.name) return;
@@ -186,6 +201,60 @@ export default function ITRoadmapPage() {
           })}
         </div>
       )}
+
+      {/* Knowledge Bank */}
+      <div className="mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <BookOpen size={16} className="text-[var(--gold)]" />
+            <span className="font-black text-sm text-[var(--navy)] dark:text-white uppercase tracking-widest">Knowledge Bank</span>
+            <span className="text-xs text-[var(--text-muted)]">({kbItems.length})</span>
+          </div>
+          <button onClick={() => setShowKbForm(!showKbForm)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--gold)] text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:opacity-90">
+            <Plus size={12} /> Add Entry
+          </button>
+        </div>
+
+        {showKbForm && (
+          <form onSubmit={handleAddKb} className="bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl p-5 space-y-4 mb-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <input value={kbForm.title} onChange={e => setKbForm(f => ({ ...f, title: e.target.value }))} required
+                  placeholder="Title *" className="w-full p-2.5 text-sm border border-[var(--border-subtle)] bg-transparent rounded-lg outline-none focus:border-[var(--gold)]" />
+              </div>
+              <div>
+                <select value={kbForm.domainName} onChange={e => setKbForm(f => ({ ...f, domainName: e.target.value }))}
+                  className="w-full p-2.5 text-sm border border-[var(--border-subtle)] bg-transparent rounded-lg outline-none focus:border-[var(--gold)]">
+                  {["ACADEMIC","SCHEDULING","FINANCE","HR","MARKETING","TECHNICAL","OPERATIONS","COMPLIANCE"].map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <textarea value={kbForm.summary} onChange={e => setKbForm(f => ({ ...f, summary: e.target.value }))} rows={3}
+                  placeholder="Summary / content..."
+                  className="w-full p-2.5 text-sm border border-[var(--border-subtle)] bg-transparent rounded-lg outline-none focus:border-[var(--gold)] resize-none" />
+              </div>
+            </div>
+            <button type="submit" disabled={kbSaving}
+              className="px-5 py-2 bg-[var(--gold)] text-black text-xs font-black uppercase tracking-widest rounded-xl disabled:opacity-50 flex items-center gap-2">
+              {kbSaving && <Loader2 size={12} className="animate-spin" />} Save
+            </button>
+          </form>
+        )}
+
+        <div className="space-y-3">
+          {kbItems.length === 0 ? (
+            <div className="text-center py-8 bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl">
+              <p className="text-[var(--text-muted)] text-sm">No knowledge bank entries yet.</p>
+            </div>
+          ) : kbItems.map((item: any) => (
+            <div key={item.id} className="bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl p-4">
+              <p className="font-black text-xs text-[var(--navy)] dark:text-white uppercase tracking-widest mb-1">{item.title}</p>
+              {item.summary && <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item.summary}</p>}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

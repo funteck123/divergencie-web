@@ -200,8 +200,12 @@ export async function getClaimsForApproval() {
   await requireFinanceAccess();
 
   return await prisma.claim.findMany({
-    where: { status: { in: ["pending", "submitted", "under_review"] } },
-    include: { user: { select: { name: true, role: true, dept: true } } },
+    where: { status: { in: ["SUBMITTED", "PENDING", "pending", "submitted"] } },
+    include: {
+      user: { select: { id: true, name: true, email: true, role: true } },
+      history: { orderBy: { changedAt: "desc" }, take: 10 },
+      paychecks: { select: { id: true, netAmount: true, status: true }, orderBy: { createdAt: "desc" } },
+    },
     orderBy: { createdAt: "desc" },
     take: 200,
   });
@@ -209,8 +213,15 @@ export async function getClaimsForApproval() {
 
 export async function approveClaim(id: string) {
   await requireFinanceAccess();
+  const session = await auth();
 
-  const c = await prisma.claim.update({ where: { id }, data: { status: "approved" } });
+  const existing = await prisma.claim.findUnique({ where: { id } });
+  if (!existing) throw new Error("Claim not found");
+
+  const c = await prisma.claim.update({ where: { id }, data: { status: "APPROVED" } });
+  await prisma.claimStatusChangeLog.create({
+    data: { claimId: id, fromStatus: existing.status, toStatus: "APPROVED", changedByUserId: (session!.user as any).id },
+  });
   revalidatePath("/portal/management");
   revalidatePath("/portal/management/budget");
   revalidatePath("/portal/teacher/payment-claims");
@@ -218,12 +229,20 @@ export async function approveClaim(id: string) {
   return c;
 }
 
-export async function rejectClaim(id: string) {
+export async function rejectClaim(id: string, reason?: string) {
   await requireFinanceAccess();
+  const session = await auth();
 
-  const c = await prisma.claim.update({ where: { id }, data: { status: "rejected" } });
+  const existing = await prisma.claim.findUnique({ where: { id } });
+  if (!existing) throw new Error("Claim not found");
+
+  const c = await prisma.claim.update({ where: { id }, data: { status: "REJECTED" } });
+  await prisma.claimStatusChangeLog.create({
+    data: { claimId: id, fromStatus: existing.status, toStatus: "REJECTED", changedByUserId: (session!.user as any).id, reason },
+  });
   revalidatePath("/portal/management");
   revalidatePath("/portal/management/budget");
+  revalidatePath("/portal/staff/finance/claims");
   return c;
 }
 
