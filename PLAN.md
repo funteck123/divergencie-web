@@ -224,7 +224,7 @@ divergencie/
 > **Plan philosophy (locked with user, v6):**
 > - **Sequencing:** vertical slices by role — each role shipped fully working before the next.
 > - **Baseline:** full re-verify — every task starts `⬜` regardless of existing code; re-test & re-wire end-to-end against ground truth. No assumptions about current code.
-> - **Schema is re-derived, not trusted:** before wiring a phase, re-validate that phase's Prisma models field-by-field against `schema-erd-v23.md`, correct any drift, and migrate (`prisma migrate`/`db push`). The 169-model schema is a starting point, not assumed correct.
+> - **Schema is re-derived, not trusted:** before wiring a phase, re-validate that phase's Prisma models field-by-field against `schema-erd-v23.md`, correct any drift, and sync with `prisma db push` (no migration history). The 169-model schema is a starting point, not assumed correct.
 > - **Granularity:** one task per **sub-system** (~45 tasks). A task is a coherent capability wired end-to-end.
 > - **Scope:** total coverage — all 169 entities reachable in UI; public site (brochure + intake) in scope.
 > - **Definition of Done — per task (gates 1-5):**
@@ -244,7 +244,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P0-0 | Supabase baseline — project + `.env` creds **already provisioned**; live DB **already has 170 tables** (schema pushed via `db push`); connection **verified ✅**. REMAINING: (1) **fix broken migration history** — `migration_lock.toml` says `sqlite` but datasource is postgres (`P3019`) and migrations are stale (31 tables); delete `prisma/migrations`, regenerate a postgres baseline (`migrate diff` → init) so future migrations work; (2) `prisma db pull`/diff to confirm `schema.prisma` == live DB, fix drift; (3) create + RLS-policy Supabase Storage buckets (receipts etc). **Hard prerequisite.** | all models | `.env`, `prisma/migrations/**`, `prisma/schema.prisma`, Supabase | ⬜ |
+| P0-0 | Supabase baseline (**no migrations — `db push` workflow**) — project + `.env` creds **already provisioned**; live DB **already has 170 tables**; connection **verified ✅**. Legacy sqlite migrations + sandbox deleted. REMAINING: (1) add **`DIRECT_URL`** (port 5432 non-pooling) to `.env` — `prisma.config.js` needs it for `db push`; (2) `prisma db push` to make live Supabase schema == `schema.prisma` (no migration history kept); (3) `prisma db pull`/diff to confirm zero drift; (4) create + RLS-policy Supabase Storage buckets (receipts etc); (5) `prisma generate`. **Hard prerequisite.** | all models | `.env`, `prisma/schema.prisma`, Supabase | ⬜ |
 | P0-1 | Auth consolidation — remove `next-auth-compat` shim; pure Supabase Auth; session in middleware; login (split layout)/logout/callback | User; Supabase Auth | `src/middleware.ts`, `src/lib/auth.ts`, `src/app/auth/**` | ⬜ |
 | P0-2 | RBAC — `PortalPermission` override table + code-defined default permissions; route + menu gating; `/unauthorized` | §38 | `src/lib/rbac.ts`, `src/middleware.ts`, `src/app/unauthorized/` | ⬜ |
 | P0-3 | Required seed data — UserType (incl `ALL`), SessionType (incl staff-meeting types), Department, StaffRole, RecordType (`targetUserTypeId`), CurrencyRate, all lookups | §53, §28 | `prisma/seed.ts` | ⬜ |
