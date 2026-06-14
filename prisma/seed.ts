@@ -2,6 +2,61 @@ import "dotenv/config";
 import * as bcrypt from "bcryptjs";
 import prisma from "../src/lib/db.js";
 
+async function seedLookups() {
+  const upsertMany = async (model: any, names: string[]) => {
+    for (const name of names) {
+      await model.upsert({ where: { name }, update: {}, create: { name, isActive: true } });
+    }
+  };
+
+  await upsertMany(prisma.sessionType, ["REGULAR", "TRIAL", "MAKEUP", "EXTRA", "RECORDING_REVIEW"]);
+  await upsertMany(prisma.ticketType, ["ACADEMIC", "SCHEDULING", "FINANCE", "TECHNICAL", "GENERAL", "HR", "COMPLAINT", "FEEDBACK"]);
+  await upsertMany(prisma.notificationType, [
+    "SESSION_SCHEDULED", "SESSION_CANCELLED", "SESSION_RESCHEDULED",
+    "INVOICE_GENERATED", "INVOICE_OVERDUE", "PAYMENT_RECEIVED", "PAYMENT_FAILED",
+    "TASK_ASSIGNED", "TASK_DUE", "TASK_GRADED",
+    "DOUBT_ANSWERED", "MOCK_RESULT_READY",
+    "TICKET_CREATED", "TICKET_UPDATED", "TICKET_RESOLVED",
+    "CLAIM_SUBMITTED", "CLAIM_APPROVED", "CLAIM_REJECTED",
+    "ONBOARDING_FLAG_SET", "ONBOARDING_COMPLETE",
+    "ANNOUNCEMENT", "PROGRESS_REPORT_READY",
+  ]);
+  await upsertMany(prisma.flagType, ["NO_SHOW", "PAYMENT_OVERDUE", "PROGRESS_CONCERN", "BEHAVIORAL", "DROPOUT_RISK", "ATTENDANCE_LOW"]);
+  await upsertMany(prisma.recordType, ["WARNING", "COMMENDATION", "ABSENCE_NOTICE", "PERFORMANCE_REVIEW", "SALARY_CHANGE", "ONBOARDING_COMPLETE"]);
+  await upsertMany(prisma.mockType, ["PAST_PAPER", "MOCK_EXAM", "TOPIC_TEST", "DIAGNOSTIC", "TIMED_PRACTICE"]);
+  await upsertMany(prisma.ambassadorTestType, ["KNOWLEDGE_CHECK", "PITCH_TEST", "ONBOARDING_QUIZ", "MODULE_ASSESSMENT"]);
+  await upsertMany(prisma.outreachSource, [
+    "REFERRAL", "SOCIAL_MEDIA", "SCHOOL_VISIT", "UNIVERSITY_FAIR", "WEBSITE_ORGANIC",
+    "WORD_OF_MOUTH", "PAID_ADVERTISEMENT", "EVENT", "COLD_OUTREACH",
+  ]);
+  await upsertMany(prisma.socialPlatformType, ["INSTAGRAM", "FACEBOOK", "TIKTOK", "LINKEDIN", "WHATSAPP", "YOUTUBE", "X"]);
+  await upsertMany(prisma.socialPostType, ["CAROUSEL", "REEL", "STORY", "STATIC_IMAGE", "VIDEO", "THREAD", "ARTICLE"]);
+  await upsertMany(prisma.campaignTag, [
+    "ADMISSIONS", "EXAM_PREP", "BRAND_AWARENESS", "AMBASSADOR_DRIVE",
+    "REFERRAL", "RESULTS_DAY", "SEASONAL", "SUBJECT_SPOTLIGHT",
+  ]);
+  await upsertMany(prisma.contentType, ["GRAPHIC", "VIDEO", "ANIMATION", "DOCUMENT", "INFOGRAPHIC", "TESTIMONIAL"]);
+  await upsertMany(prisma.outreachType, ["SCHOOL_VISIT", "UNIVERSITY_FAIR", "WEBINAR", "COMMUNITY_EVENT", "CAREERS_DAY"]);
+  await upsertMany(prisma.exhibitionType, ["EDUCATION_FAIR", "CAREER_EXPO", "OPEN_DAY", "SHOWCASE", "CONFERENCE"]);
+  await upsertMany(prisma.taskType, ["HOMEWORK", "PAST_PAPER", "PROJECT", "READING", "PRACTICE_SET", "CORRECTION", "REVISION_NOTES"]);
+  await upsertMany(prisma.knowledgeBankDomain, ["ACADEMIC", "SCHEDULING", "FINANCE", "HR", "MARKETING", "TECHNICAL", "OPERATIONS", "COMPLIANCE"]);
+
+  // PaymentMethodType has extra `region` field
+  const paymentMethods = [
+    { name: "STRIPE_CARD", region: "GLOBAL" },
+    { name: "BANK_TRANSFER_UK", region: "GB" },
+    { name: "BANK_TRANSFER_MY", region: "MY" },
+    { name: "BANK_TRANSFER_PK", region: "PK" },
+    { name: "BANK_TRANSFER_SA", region: "SA" },
+    { name: "CASH", region: "ALL" },
+  ];
+  for (const pm of paymentMethods) {
+    await prisma.paymentMethodType.upsert({ where: { name: pm.name }, update: { region: pm.region }, create: { name: pm.name, region: pm.region, isActive: true } });
+  }
+
+  console.log("[SEED] Lookup tables seeded");
+}
+
 async function seedUsers() {
   const USERS = [
     { email: "management@divergencie.com", name: "Director Mike", role: "management", dept: null, subGroup: null, supervisor: false, active: true },
@@ -25,7 +80,7 @@ async function seedUsers() {
     { email: "swe-intern@divergencie.com", name: "SWE Intern", role: "staff", dept: "IT", subGroup: "IT_MEM", supervisor: false, active: true },
   ] as const;
 
-  const hash = await bcrypt.hash("demo", 10);
+  const hash = await bcrypt.hash("Demo@1234", 12);
 
   const upserted: Record<string, any> = {};
   for (const u of USERS) {
@@ -51,6 +106,7 @@ async function seedUsers() {
 async function main() {
   console.log("\n═══ DivergenCIE Seed ═══\n");
 
+  await seedLookups();
   const users = await seedUsers();
   const teacher = users["teacher@divergencie.com"];
   const prStaff = users["pr@divergencie.com"];
@@ -368,7 +424,7 @@ async function main() {
   }).catch(() => { });
 
   console.log("\n═══ Seed complete ═══");
-  console.log("Login with any email above, password: demo\n");
+  console.log("Login with any email above, password: Demo@1234\n");
 }
 
 main()
