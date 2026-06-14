@@ -391,22 +391,3 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 `AmbassadorDeliverable` (§52.3 — deliberately not modelled) · `AmbassadorEarning` · `AmbassadorProgramme` (vs `AmbassadorProgrammeList`) · `Assignment` · `CanvaDesign` · `RateCard` · `SprintItem` (vs `MeetingSprintItem`) · `StudentStatus` · `TicketCategory` (vs `TicketType`). Confirm not referenced by retained relations before removal.
 
 > **Exit criteria for P0-S:** `prisma validate` clean; every ERD v23 entity present with ERD naming; no `…StatusHistory` tables remain; `prisma generate` + `tsc --noEmit` clean. Then P0-0 `db push`.
-
----
-
-## 🔧 Session Handout — 2026-06-15 P-B1 startup
-
-**Built:** partial P-B1 backend
-- `src/lib/actions/teacherEnrolments.ts` — getTeacherEnrolments, createTeacherEnrolment, updateTeacherEnrolmentStatus; RBAC-gated (PR staff + management)
-- `src/app/api/enrolments/teacher/route.ts` — POST handler
-- `src/tests/setup.ts` — prisma mock stubs for teacher enrolment models
-
-**State:** committed (e30c01d). P-B1 still ⬜ — portal pages not built yet.
-
-**Next:** Build P-B1 portal pages — `portal/teacher/dashboard/page.tsx` + `portal/teacher/profile/page.tsx`. Wire TeacherProfile (findUnique by userId), render enrolment list via getTeacherEnrolments. Spec §7. Then mark P-B1 ✅ + commit.
-
-**Decisions:** RBAC — PR dept staff OR management can enrol/update teachers (matches student enrolment pattern from P-A1). Teacher reads own enrolments only.
-
-**Watch:** TeacherProfile model — verify field names against schema-erd-v23.md §7 before wiring page (don't assume same shape as StudentProfile). `history` relation on TeacherEnrolmentItem → confirm it maps to `TeacherEnrolmentItemStatusChangeLog` in schema.
-
-**Overrides:** none.
