@@ -308,10 +308,10 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-F1 | Dashboard + metrics — MetricSnapshot (all entity types), staff performance metrics, finance/ticket/attendance dashboards | §37, §52 | `portal/management/metrics`, `api/metrics/**` | ⬜ |
-| P-F2 | Users + RBAC admin — User CRUD, PortalPermission editor, UserType/Department/StaffRole admin | §38, §51 | `portal/management/{users,permissions}`, `api/management/permissions`, `api/users` | ⬜ |
-| P-F3 | Database admin (TOTAL COVERAGE) — generic CRUD grids for every remaining model incl. all `…StatusChangeLog`, SiteLog, AccessLog, snapshots, junctions | all remaining models | `portal/management/database`, `api/management/db` | ⬜ |
-| P-F4 | Announcements + budget + finance oversight + content — Announcement, Discount oversight, Ledger/Budget, ContentBankItem | §17, §21, §25 | `portal/management/{announcements,budget}` | ⬜ |
+| P-F1 | Dashboard + metrics — MetricSnapshot (all entity types), staff performance metrics, finance/ticket/attendance dashboards | §37, §52 | `portal/management/metrics`, `api/metrics/**` | ✅ |
+| P-F2 | Users + RBAC admin — User CRUD, PortalPermission editor, UserType/Department/StaffRole admin | §38, §51 | `portal/management/{users,permissions}`, `api/management/permissions`, `api/users` | ✅ |
+| P-F3 | Database admin (TOTAL COVERAGE) — generic CRUD grids for every remaining model incl. all `…StatusChangeLog`, SiteLog, AccessLog, snapshots, junctions | all remaining models | `portal/management/database`, `api/management/db` | ✅ |
+| P-F4 | Announcements + budget + finance oversight + content — Announcement, Discount oversight, Ledger/Budget, ContentBankItem | §17, §21, §25 | `portal/management/{announcements,budget}` | ✅ |
 
 #### PHASE G — Public site (brochure + intake)
 
