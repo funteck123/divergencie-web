@@ -1,101 +1,71 @@
-# DivergenCIE Coaching — Full-Stack Implementation Plan v5 (Supabase Stack)
+# DivergenCIE Coaching — Implementation Plan (Phase 3: Database Schema Completion)
 
-> **Goal:** Build a fully functioning, production-ready web platform implementing the **complete ERD v23 (~170 entities)** and all system logic. The system must be capable of **onboarding real users** — students, parents, teachers, staff, ambassadors, and management — with full data flows from enrolment through billing, scheduling, attendance, and reporting.
->
-> **Deployment target:** Vercel.
-> **Database:** Supabase PostgreSQL (Transaction Mode Pooler for serverless runtime, direct connection for migrations).
-> **Authentication:** Supabase Auth (email+password, manual user creation only via Supabase admin SDK).
-> **Storage:** Supabase Storage (public `receipts` bucket) for manual invoice receipt uploads.
+This document outlines the implementation plan for Phase 3, focused on achieving 100% database schema completeness by adding the remaining 30 models specified in the ground truth **ERD v23** into our Prisma schema.
 
 ---
 
-## Technical Stack Architecture (v5 Decisions)
+## User Review Required
 
-| Layer | Technology | Configuration / Usage |
-|-------|------------|-----------------------|
-| **Database** | Supabase PostgreSQL | Prisma 7 client, using Transaction Pooler URL (`postgresql://...:6543`) for runtime and Session Mode Direct URL (`postgresql://...:5432`) for migrations. |
-| **ORM** | Prisma 7 | Standard `@prisma/adapter-pg` pool adapter in `src/lib/db.ts` to satisfy client generator types. |
-| **Auth** | Supabase Auth | Managed session cookies via `@supabase/ssr` server client helper. Signature maps email to Prisma database to resolve user `role`, `dept`, `subGroup`, and `supervisor` status. |
-| **File Storage** | Supabase Storage | File receipts uploaded to the public `receipts` bucket via the Supabase Client SDK in `src/app/api/upload/receipt`. |
+> [!IMPORTANT]
+> - **Strict ERD Naming:** We will adhere strictly to the exact naming conventions specified in ERD v23. We will implement all log tables with their exact `...ChangeLog` names (e.g., `AcademicSessionStatusChangeLog`, `AmbassadorCommissionItemStatusChangeLog`, etc.) rather than mapping them to the codebase's existing `...History` conventions.
+> - **Permissions & Roles Lookup:** All roles (`UserType`), departments (`Department`), and permissions (`PortalPermission`) will be added as specified in the ERD to satisfy schema completeness and support potential future dynamic config.
+> - **Zero Type Mismatches:** After adding these tables, we will run `npx prisma generate` and verify that the workspace remains free of any TypeScript compiler errors.
 
 ---
 
-## Proposed Changes — Phase 2 Implementation Tasks
+## Proposed Database Changes (ERD v23 Alignment)
 
-### Component 1: Webhook & Manual Approval Notifications (Priority 1)
+We will modify [schema.prisma](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/prisma/schema.prisma) to add the following models and relations:
 
-Ensure both Stripe webhook checkout completions and manual payment approvals trigger a user-facing notification.
+### 1. Lookup & System Config Models
+- **`Department`**: Name of the internal department.
+- **`StaffRole`**: Staff positions.
+- **`UserType`**: Lookup of system user types.
+- **`PortalPermission`**: Mapping roles/departments to access levels.
 
-#### [MODIFY] [src/app/api/payments/webhook/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/payments/webhook/route.ts)
-- Find the `NotificationType` with `name: "PAYMENT_RECEIVED"`.
-- Create a `Notification` record for the student (`invoice.studentId`) with payment details.
-- If the student has a `parentId`, create an identical notification for the parent.
+### 2. Marketing & Scheduling Entities
+- **`MarketingSchedule`**: Recurrence schedules for marketing campaigns.
+- **`MarketingScheduleOccurrence`**: Generated instances of marketing schedules.
+- **`MarketingPostSlot`**: Scheduled slots for content posts.
 
-#### [MODIFY] [src/app/api/payments/[recordId]/approve/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/payments/[recordId]/approve/route.ts)
-- Find the `NotificationType` with `name: "PAYMENT_RECEIVED"`.
-- Create a `Notification` record for the student and parent upon manual approval success.
+### 3. Syllabus & Recording Extensions
+- **`SyllabusChapter`**: Syllabus chapters.
+- **`ChapterRecordingList`**: Group of recordings mapped to chapters.
+- **`ChapterRecordingItem`**: Individual recordings within the list.
 
----
+### 4. Ambassador Service Additions
+- **`AmbassadorService`**: Lookup of public services offered by ambassadors.
+- **`AmbassadorProgrammeContentList`**: Modules and contents inside the ambassador programme.
 
-### Component 2: WhatsApp Reminder Stage Tracker (Priority 2)
+### 5. Metric & Report Tables
+- **`MetricSnapshot`**: Snapshots of system performance (finance, tickets, attendance).
+- **`ProgressReport`**: Generated PDF/markdown student progress files.
 
-#### [NEW] [src/lib/whatsapp.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/whatsapp.ts)
-- Implement `generateWhatsAppLink(invoice, user, stage)` helper:
-  - Generates the URL-encoded WhatsApp text templates for Stages 1 to 5.
-  - Formats:
-    - **Stage 1 (Due Soon):** Friendly reminder that invoice is due soon.
-    - **Stage 2 (Overdue - Deactivate 3d):** Warning that account will be deactivated in 3 days.
-    - **Stage 3 (Deactivated):** Account deactivated notification.
-    - **Stage 4 (Receipt Acknowledged):** Settle payment confirmation received.
-    - **Stage 5 (Payment Plan):** Flexible payment plans negotiation nudge.
-  - Matches the recipient's phone number (`user.whatsappNumber` or fallback to parent's).
-  - Returns `https://wa.me/[Phone]?text=[Message]`.
-
-#### [NEW] [src/app/api/invoices/[id]/whatsapp-reminder/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/invoices/[id]/whatsapp-reminder/route.ts)
-- **GET**: Fetch invoice by ID, check permissions, retrieve parent/student whatsapp details, and call `generateWhatsAppLink` for the current `reminderStage`.
-- **PATCH**: Accepts `{ stage: number }` to update the `reminderStage` in the database. Prevents skipping stages arbitrarily (e.g. must go sequentially `currentStage + 1` or stay at same).
-
----
-
-### Component 3: Conflict Detection System (Priority 2)
-
-#### [NEW] [src/lib/conflict.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/conflict.ts)
-- Implement `detectScheduleConflict(serviceId, proposedOccurrence)` helper:
-  - Finds the teacher and students associated with the given `serviceId`.
-  - Queries active occurrences (`isActive: true, status: "ACTIVE"`) for the teacher and students across all other services.
-  - Checks if the proposed day of the week matches any active schedule.
-  - If days match, checks time overlap by converting time components of `startTime` and `endTime` to minutes-from-midnight and checking `S1 < E2 && S2 < E1`.
-
-#### [NEW] [src/app/api/schedules/[serviceId]/conflict-check/route.ts](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/api/schedules/[serviceId]/conflict-check/route.ts)
-- **POST**: Accepts `{ dayOfWeek, startTime, endTime, recurrenceType, oneOffDate }` and evaluates conflict status. Returns `{ conflict: boolean, details: Array<{ type, userName, occurrence }> }`.
-
----
-
-### Component 4: Frontend Portal Dashboard Wiring (Priority 3)
-
-Remove static mockup placeholders and plug portals directly into server actions.
-
-#### [MODIFY] [src/app/portal/student/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/student/page.tsx)
-- Dynamically fetch user profile details (`name`) and replace "Alex" header.
-- Wire today's classes to real `AcademicSession` records.
-- Retrieve student announcements via `getStudentAnnouncements()`.
-- Add deactivation checkpoint: Redirect paused/inactive students to onboarding checklist page.
-
-#### [MODIFY] [src/app/portal/parent/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/page.tsx)
-- Wire children select option, real invoices list, and parent announcements.
-
-#### [MODIFY] [src/app/portal/teacher/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/teacher/page.tsx)
-- Wire active classes summary and doubts/questions queue.
+### 6. Granular Change Logs (Exact ERD Names)
+Status change log tables for tracking state transitions (preserving the exact `ChangeLog` names from the ERD):
+- `AcademicSessionStatusChangeLog`
+- `AmbassadorCommissionItemStatusChangeLog`
+- `AmbassadorEnrolmentItemStatusChangeLog`
+- `AmbassadorMeetingStatusChangeLog`
+- `AmbassadorProgrammeTimelineListStatusChangeLog`
+- `AmbassadorScheduleOccurrenceStatusChangeLog`
+- `AmbassadorTestListStatusChangeLog`
+- `CourseTimelineListStatusChangeLog`
+- `GeneralMeetingStatusChangeLog`
+- `MeetingStatusChangeLog`
+- `MockListStatusChangeLog`
+- `SyllabusListStatusChangeLog`
+- `TaskListStatusChangeLog`
+- `StaffEnrolmentItemStatusChangeLog`
+- `StaffScheduleOccurrenceStatusChangeLog`
+- `StudentEnrolmentItemStatusChangeLog`
+- `TeacherEnrolmentItemStatusChangeLog`
+- `RateItemStatusChangeLog`
 
 ---
 
 ## Verification Plan
 
-### Automated Tests
+### Automated Checks
 - Run `node ./node_modules/typescript/bin/tsc --noEmit` to confirm no TypeScript compilation errors exist.
-- Run vitest tests via node command.
-
-### Manual Verification
-- Settle checkout sessions and verify `Notification` items populate in database.
-- Request WhatsApp links and inspect final generated strings.
-- Submit conflicting times to check detection response.
+- Run `npx prisma generate` and verify client compilation.
