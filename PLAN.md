@@ -301,8 +301,8 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 
 | # | Task | Key entities / §Spec | Path | Status |
 |---|------|----------------------|------|--------|
-| P-E1 | Core + linked students — ParentProfile, linked-student relationship | §2, §40 | `portal/parent/profile` | ⬜ |
-| P-E2 | Views — child progress, fees/invoice (read), support tickets | §19, §22 | `portal/parent/{progress,fees,support}` | ⬜ |
+| P-E1 | Core + linked students — ParentProfile, linked-student relationship | §2, §40 | `portal/parent/profile` | ✅ |
+| P-E2 | Views — child progress, fees/invoice (read), support tickets | §19, §22 | `portal/parent/{progress,fees,support}` | ✅ |
 
 #### PHASE F — Management
 

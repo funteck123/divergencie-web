@@ -145,3 +145,23 @@ export async function getStudentProfileStatus(email: string) {
     status: user.studentProfile?.status ?? "ACTIVE"
   };
 }
+
+export async function getParentProfile(userId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return await prisma.parentProfile.findUnique({ where: { userId } });
+}
+
+export async function upsertParentProfile(userId: string, data: { phone?: string; address?: string }) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const profile = await prisma.parentProfile.upsert({
+    where: { userId },
+    update: { phone: data.phone, address: data.address },
+    create: { userId, phone: data.phone, address: data.address },
+  });
+  revalidatePath("/portal/parent/profile");
+  return profile;
+}
