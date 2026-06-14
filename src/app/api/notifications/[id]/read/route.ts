@@ -19,7 +19,7 @@ export async function PATCH(
 
   const updated = await prisma.notification.update({
     where: { id },
-    data: { isRead: true, readAt: new Date() },
+    data: { read: true },
   });
 
   return NextResponse.json(updated);
