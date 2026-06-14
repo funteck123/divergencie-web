@@ -2,15 +2,7 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-  webpack(config) {
-    // Alias next-auth/react and next-auth → Supabase-backed compat shim
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "next-auth/react": path.resolve("./src/lib/next-auth-compat.tsx"),
-      "next-auth": path.resolve("./src/lib/next-auth-compat.tsx"),
-    };
-    return config;
-  },
+
   // ── Bundler ──────────────────────────────────────────────────────────────
   // Turbopack is the default in Next.js 16 but explicitly opting in here
   // ensures it's used for both dev and production builds.
