@@ -161,6 +161,7 @@ export async function PATCH(
         historyAction = "PROCESSING";
         break;
       case "REPLY": {
+        updateData.status = "PROCESSING";
         if (userId === ticket.creatorId && ticket.assigneeId === userId) {
           if (stack && stack.length > 0) {
             const last = stack.pop();
@@ -191,6 +192,9 @@ export async function PATCH(
             }
           }
         } else {
+          if ((role === "staff" || role === "management") && userId !== ticket.creatorId && !isInternal) {
+            updateData.assigneeId = ticket.creatorId;
+          }
           historyAction = "REPLIED";
         }
         break;

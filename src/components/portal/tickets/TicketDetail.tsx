@@ -348,17 +348,24 @@ export default function TicketDetail({ ticket, currentUserId, currentUserRole, c
       {/* Reply Input */}
       {(() => {
         const isAssignee = ticket.assigneeId === currentUserId;
-        const canReply = currentUserRole === "management" || 
+        const isCreator = ticket.creator.id === currentUserId;
+        const canReply = ticket.status !== "CLOSED" && (
+                        currentUserRole === "management" || 
                         isAssignee || 
-                        (!ticket.assigneeId && isSup && ticket.department === userDept);
+                        isCreator ||
+                        (!ticket.assigneeId && isSup && ticket.department === userDept)
+        );
 
         if (!canReply) {
           return (
             <div className="p-8 border-t border-[var(--border-subtle)] bg-gray-50 dark:bg-white/5 flex items-center justify-center gap-3">
               <AlertCircle size={16} className="text-[var(--text-muted)]" />
               <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] text-center">
-                This thread is currently locked.<br/>
-                Waiting for {ticket.assignee?.name || ticket.department || "the other party"} to respond.
+                {ticket.status === "CLOSED" ? (
+                  <>This ticket is closed.<br/>Reopen the ticket to send a message.</>
+                ) : (
+                  <>This thread is currently locked.<br/>Waiting for {ticket.assignee?.name || ticket.department || "the other party"} to respond.</>
+                )}
               </p>
             </div>
           );
