@@ -11,7 +11,7 @@ export default function Partners() {
             <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">
               WHO WE ROLL WITH
             </p>
-            <h2 className="text-4xl sm:text-6xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-8 break-words w-full">
+            <h2 className="text-5xl sm:text-7xl lg:text-8xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-8 w-full">
               OUR<br /><span className="text-[var(--gold)]">CO-CONSPIRATORS.</span>
             </h2>
             <p className="text-sm font-black tracking-[0.2em] text-[var(--text-muted)] uppercase">
