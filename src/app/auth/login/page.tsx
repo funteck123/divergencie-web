@@ -29,14 +29,20 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        // NextAuth v5 custom error codes are usually in the error string or handled via throw
-        // We'll check the error code returned
-        if (result.error.includes("account_inactive")) {
+        const err = result.error.toLowerCase();
+        if (err.includes("account_inactive") || err.includes("deactivated")) {
           setErrorMsg("This account has been deactivated. Please contact HR or your supervisor.");
-        } else if (result.error.includes("invalid_credentials") || result.error === "CredentialsSignin") {
+        } else if (
+          err.includes("invalid login credentials") ||
+          err.includes("invalid_credentials") ||
+          err.includes("invalid email or password") ||
+          err === "credentialssignin"
+        ) {
           setErrorMsg("Invalid email or password. Please try again.");
+        } else if (err.includes("email not confirmed")) {
+          setErrorMsg("Email not confirmed. Contact your administrator.");
         } else {
-          setErrorMsg("An unexpected error occurred during login.");
+          setErrorMsg(result.error);
         }
         setFormState("idle");
       } else {
