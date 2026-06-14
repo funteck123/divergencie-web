@@ -12,6 +12,12 @@ export default defineConfig({
       reporter: ["text", "json", "html"],
       include: ["src/lib/**/*.ts"],
       exclude: ["src/lib/db.ts", "src/generated/**"],
+      thresholds: {
+        lines: 12,
+        functions: 30,
+        branches: 55,
+        statements: 12,
+      },
     },
   },
   resolve: {
