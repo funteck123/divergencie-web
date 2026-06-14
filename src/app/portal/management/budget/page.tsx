@@ -19,13 +19,21 @@ export default function ManagementBudgetPage() {
   const [claims, setClaims] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [b, c] = await Promise.all([getBudgetOverview(), getClaimsForApproval()]);
-    setBudget(b);
-    setClaims(c);
-    setLoading(false);
+    setError(null);
+    try {
+      const [b, c] = await Promise.all([getBudgetOverview(), getClaimsForApproval()]);
+      setBudget(b);
+      setClaims(c);
+    } catch (err: any) {
+      console.error("Error loading budget data:", err);
+      setError(err?.message || "Failed to load budget and claims data");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -50,6 +58,13 @@ export default function ManagementBudgetPage() {
         <h1 className="text-3xl font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">Budget & Claims</h1>
         <p className="text-[var(--text-muted)] font-medium mt-1">Review and approve staff claims. Track company budget.</p>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-2xl text-red-700 dark:text-red-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+          <AlertCircle size={16} />
+          {error}
+        </div>
+      )}
 
       {/* Overview cards */}
       {!loading && budget && (
@@ -115,7 +130,7 @@ export default function ManagementBudgetPage() {
                       <td className="px-6 py-5 font-black text-[var(--navy)] dark:text-white">{c.hours ? `${c.hours}h` : '—'}</td>
                       <td className="px-6 py-5 font-black text-[var(--gold)]">£{c.amount}</td>
                       <td className="px-6 py-5">
-                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${STATUS_COLORS[c.status] ?? "bg-gray-100 text-gray-700"}`}>{c.status}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${STATUS_COLORS[c.status.toLowerCase()] ?? "bg-gray-100 text-gray-700"}`}>{c.status}</span>
                       </td>
                       <td className="px-6 py-5 text-right">
                         <div className="flex items-center justify-end gap-2">

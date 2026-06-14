@@ -254,15 +254,18 @@ export async function getBudgetOverview() {
 
   const [claims, invoices] = await Promise.all([
     prisma.claim.findMany({
-      where: { status: { in: ["approved", "paid"] }, createdAt: { gte: cutoff } },
+      where: {
+        status: { in: ["approved", "paid", "APPROVED", "PAID"] },
+        createdAt: { gte: cutoff },
+      },
     }),
     prisma.studentInvoice.findMany({ where: { issuedAt: { gte: cutoff } }, take: 1000 }),
   ]);
   const totalPaid = claims
-    .filter((c: any) => c.status === "paid")
+    .filter((c: any) => c.status.toLowerCase() === "paid")
     .reduce((s: number, c: any) => s + c.amount, 0);
   const totalApproved = claims
-    .filter((c: any) => c.status === "approved")
+    .filter((c: any) => c.status.toLowerCase() === "approved")
     .reduce((s: number, c: any) => s + c.amount, 0);
   const revenue = invoices
     .filter((i: any) => i.status === "paid")
