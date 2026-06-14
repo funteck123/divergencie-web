@@ -109,6 +109,13 @@ vi.mock("@/lib/db", () => {
       findUnique: vi.fn(),
       create: vi.fn(),
     },
+    portalPermission: {
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
     paymentRecord: {
       create: vi.fn(),
       update: vi.fn(),
