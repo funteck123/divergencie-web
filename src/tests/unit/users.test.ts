@@ -30,7 +30,12 @@ describe("getStaffMembers", () => {
 
     expect(db.user.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ dept: "IT" }),
+        where: expect.objectContaining({
+          OR: expect.arrayContaining([
+            { dept: "IT" },
+            { subGroup: { startsWith: "IT_" } },
+          ]),
+        }),
       })
     );
   });

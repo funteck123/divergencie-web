@@ -3,14 +3,37 @@
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+const SUBGROUP_PREFIX_TO_DEPT: Record<string, string> = {
+  HR: "HR",
+  IT: "IT",
+  FIN: "Finance",
+  PR: "PR",
+  MKT: "Marketing",
+};
+
+const DEPT_TO_SUBGROUP_PREFIX: Record<string, string> = {
+  HR: "HR",
+  IT: "IT",
+  Finance: "FIN",
+  PR: "PR",
+  Marketing: "MKT",
+};
+
 export async function getStaffMembers(dept?: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  return await prisma.user.findMany({
+  const subGroupPrefix = dept ? DEPT_TO_SUBGROUP_PREFIX[dept] : undefined;
+
+  const users = await prisma.user.findMany({
     where: {
       role: { in: ["staff", "management"] },
-      ...(dept ? { dept } : {}),
+      ...(dept ? {
+        OR: [
+          { dept },
+          ...(subGroupPrefix ? [{ subGroup: { startsWith: `${subGroupPrefix}_` } }] : [])
+        ]
+      } : {}),
     },
     select: {
       id: true,
@@ -23,6 +46,15 @@ export async function getStaffMembers(dept?: string) {
       active: true
     },
     orderBy: { name: 'asc' }
+  });
+
+  return users.map(user => {
+    const prefix = user.subGroup?.split("_")[0] ?? "";
+    const resolvedDept = user.dept ?? SUBGROUP_PREFIX_TO_DEPT[prefix] ?? null;
+    return {
+      ...user,
+      dept: resolvedDept,
+    };
   });
 }
 
