@@ -133,7 +133,7 @@ export default function TicketDetail({ ticket, currentUserId, currentUserRole, c
   const lastForward = (ticket.history || []).find(h => h.action === "FORWARDED");
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)] bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-3xl overflow-hidden shadow-sm">
+    <div className="flex flex-col h-[calc(100vh-120px)] bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-3xl overflow-hidden shadow-sm">
       {/* Detail Header */}
       <div className="p-8 border-b border-[var(--border-subtle)] bg-[var(--bg-secondary)] dark:bg-white/5">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -401,7 +401,7 @@ export default function TicketDetail({ ticket, currentUserId, currentUserRole, c
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               placeholder="Type your response..."
-              rows={4}
+              rows={6}
               className="w-full p-6 bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl text-sm outline-none focus:border-[var(--gold)] transition-all resize-none shadow-inner"
             />
 
