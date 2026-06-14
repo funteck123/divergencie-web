@@ -1206,3 +1206,107 @@ export const config = { api: { bodyParser: false } } // required for Stripe sign
 **Watch:** `prisma/seed.ts` may not have all 19 lookup tables seeded with the exact values above. Verify before any testing. Missing lookup values → FK constraint errors at runtime.
 
 **Overrides:** None.
+
+---
+
+## Session Handout — 14 Jun 2026 (Update: ERD System Impl Session)
+
+**Branch:** `worktree-erd-system-impl` — merge to `main` when approved.
+
+**State after this session:**
+- Schema: 100% (unchanged, ERD v23 fully migrated)
+- Seed: FIXED — `seedLookups()` added, 16 lookup tables seeded, password `"Demo@1234"` (bcrypt 12)
+- API routes: **~90% complete** — all plan checklist items implemented
+- Tests: `divergencie-flows.test.ts` + `setup.ts` expanded (onboarding gate + invoice generation covered)
+- Stripe: wired (checkout + webhook handler, TODO below)
+- Vercel Blob: **NOT installed** — `@vercel/blob` not in package.json, no upload route
+- Portal pages: shells exist, not fully wired to API (still on mock data in most portals)
+- Deployed: No
+
+### API Routes — Completed (this session)
+
+All routes are in `src/app/api/`. All use NextAuth session + Prisma. All return JSON.
+
+| Route | Method | Done |
+|-------|--------|------|
+| `/enrolments/student/[studentId]` | GET | ✅ role-filtered list |
+| `/enrolments/student` | POST | ✅ create item |
+| `/enrolments/student/item/[itemId]` | PATCH | ✅ status update + StatusHistory |
+| `/sessions` | GET/POST | ✅ role-filtered, create |
+| `/sessions/[id]` | PATCH | ✅ status/timing |
+| `/sessions/[id]/attendance` | POST | ✅ attendance log |
+| `/schedules/[serviceId]` | GET | ✅ schedule + occurrences |
+| `/schedules/[serviceId]/occurrences` | POST | ✅ creates occurrence, resolves REGULAR SessionType |
+| `/schedules/occurrences/[id]` | PATCH | ✅ status + StatusHistory |
+| `/schedules/occurrences/[id]/change-request` | POST | ✅ ScheduleChangeRequest |
+| `/curriculum/[serviceId]` | GET | ✅ full tree |
+| `/curriculum/doubts` | GET/POST | ✅ role-filtered |
+| `/curriculum/doubts/[id]` | PATCH | ✅ teacher answer |
+| `/curriculum/progress/[studentId]` | GET/PATCH | ✅ mastery tracking |
+| `/curriculum/progress/[studentId]/[syllabusItemId]` | PATCH | ✅ per-item mastery |
+| `/invoices/generate` | POST | ✅ invoice generation |
+| `/invoices/[id]/status` | PATCH | ✅ Finance workflow + audit |
+| `/invoices/[studentId]` | GET | ✅ student invoice list |
+| `/claims` | GET/POST | ✅ role-filtered, submit |
+| `/claims/[id]/status` | PATCH | ✅ approve → auto-Paycheck |
+| `/payments/receipt` | POST | ✅ stores receiptUrl, creates PaymentRecord PENDING_VERIFICATION |
+| `/payments/[recordId]/approve` | PATCH | ✅ Finance approval → PAID + LedgerEntry |
+| `/payments/stripe/checkout` | POST | ✅ Stripe PaymentIntent |
+| `/payments/webhook` | POST | ✅ Stripe webhook (partial — see TODO) |
+| `/onboarding/flags/[studentId]` | GET/PATCH | ✅ 4-flag gate check |
+| `/notifications` | GET | ✅ unread filter |
+| `/notifications/[id]/read` | PATCH | ✅ mark read |
+| `/notifications/mark-all-read` | POST | ✅ bulk |
+| `/lookup/[table]` | GET | ✅ 19 lookup tables via dispatch map |
+| `/metrics/snapshot` | GET | ✅ live aggregates (management) |
+| `/metrics/student/[studentId]` | GET | ✅ attendance% + mastery% |
+
+### Schema Corrections Applied (important for next agent)
+
+- `StudentEnrolmentItemStatusHistory` (NOT `StatusChangeLog`) — enrolments
+- `ScheduleOccurrenceStatusHistory` (NOT `StatusChangeLog`) — schedules
+- `StudentInvoiceStatusChangeLog` (WITH Log) — invoices
+- `ClaimStatusChangeLog` + `PaycheckStatusChangeLog` — claims/paychecks
+- `Claim.userId` (NOT `claimantId`), `Claim.amount` (NOT `totalAmount`)
+- `Paycheck` has `netAmount` + `dueAmount` + `subtotal` (NO `grossAmount`)
+- `ScheduleChangeRequest` requires: `scheduleId`, `occurrenceId`, `requestType`, `recurrenceType`
+- `ScheduleOccurrence.sessionTypeId` is required → resolver looks up `SessionType.name = "REGULAR"` (must be seeded first)
+- `StudentEnrolmentList` has NO `@@unique` on `studentId` → use `findFirst` then `create`
+- `AcademicSession` has NO `StatusChangeLog` relation
+- `Doubt.body` (NOT `question`) — confirmed in schema line 2384
+- `Doubt.response` (NOT `answer`) — confirmed in schema line 2385
+
+### Known TODOs — Next Agent Must Complete
+
+**Priority 1 — Unblocks payment finality:**
+- [ ] `src/app/api/payments/webhook/route.ts` line ~183: `// TODO: create LedgerEntry + Notification` — after `payment_intent.succeeded`, create `LedgerEntry` (type=CREDIT, entityType=STUDENT_INVOICE, entityId=invoiceId, amount=pi.amount/100) and `Notification` (userId=student.id, message="Payment received for invoice {month}")
+- [ ] Install `@vercel/blob`: `npm install @vercel/blob` in worktree root
+- [ ] Create `src/app/api/upload/receipt/route.ts` — POST multipart/form-data, use `put()` from `@vercel/blob`, return `{ url, pathname }`. Auth-gated (student/parent/staff/management). Validate: JPEG/PNG/WEBP/PDF only, max 5MB. Filename: `receipts/{userId}-{Date.now()}-{safeFilename}`
+
+**Priority 2 — System logic completeness:**
+- [ ] Create `src/lib/utils/whatsapp.ts` — export `generateWhatsAppLink(parentWhatsapp, invoice, stage)`. See plan §6 (line ~888). Template messages for stages 1-5.
+- [ ] Create `src/app/api/invoices/[id]/whatsapp-reminder/route.ts` — GET, Finance/Management only. Fetch invoice + parent.whatsappNumber. Generate wa.me link. Increment `reminderStage` (max 5). Return `{ waLink, reminderStage }`.
+- [ ] Create `src/lib/utils/conflict.ts` — `detectScheduleConflict({ dayOfWeek, startTime, endTime, excludeId })` — query `ScheduleOccurrence` where `isActive=true AND startTime < endTime AND endTime > startTime`. Return `{ hasConflict, conflictingIds }`.
+- [ ] Create `src/app/api/schedules/[serviceId]/conflict-check/route.ts` — POST, staff/management, body `{ startTime, endTime, dayOfWeek?, excludeId? }`, calls `detectScheduleConflict`.
+
+**Priority 3 — Tests:**
+- [ ] Tests for: session attendance flow, schedule occurrence CRUD, claim approval → paycheck auto-creation, manual payment receipt → approval flow
+- [ ] Add mocked models to `src/tests/setup.ts`: `studentInvoice`, `paymentRecord`, `ledgerEntry`, `bankAccount`, `claim`, `paycheck`, `scheduleOccurrence`, `scheduleChangeRequest`, `academicSession`, `attendance`
+
+**Priority 4 — Portal wiring (deferred to later agent):**
+- [ ] Portal pages mostly use hardcoded/mock data — wire to real API endpoints
+- [ ] Student middleware redirect: `src/middleware.ts` — if student status = "PAUSED" redirect to `/portal/student/onboarding`
+- [ ] Parent portal invoice view → "Upload Receipt" → POST `/api/upload/receipt` then POST `/api/payments/receipt`
+
+### How to Run
+
+```bash
+# From worktree root
+npx prisma db push
+npx prisma db seed
+npm run dev
+```
+
+**Test users (after seed):** `admin@dc.com / Demo@1234` (management), `student1@dc.com / Demo@1234`, etc.
+
+**Merge:** `git checkout main && git merge worktree-erd-system-impl` when all Priority 1+2 todos done.
