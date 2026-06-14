@@ -13,3 +13,11 @@ This file documents issues reported during verification and testing, along with 
   2. Replace hardcoded instances in `planning/antigravity-sdk-guide.md` with environment variable lookups.
   3. Purge key from git history using `git-filter-repo` or BFG.
 
+---
+
+## Active Issue Tracking
+
+All identified system bugs, UI issues, and database tasks are tracked in GitHub Issue [#1](https://github.com/funteck123/divergencie-web/issues/1).
+Each item will be resolved locally, committed, and closed.
+
+
