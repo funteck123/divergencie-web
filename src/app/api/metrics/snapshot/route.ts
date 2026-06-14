@@ -19,7 +19,6 @@ export async function GET(req: NextRequest) {
     openTickets,
     pendingInvoices,
     recentSessions,
-    latestSnapshot,
   ] = await Promise.all([
     prisma.user.count({ where: { role: "student" } }),
     prisma.user.count({ where: { role: "student", active: true } }),
@@ -29,8 +28,9 @@ export async function GET(req: NextRequest) {
     prisma.academicSession.count({
       where: { startTime: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
     }),
-    prisma.metricSnapshot.findFirst({ orderBy: { snapshotAt: "desc" } }),
   ]);
+
+  const latestSnapshot = null;
 
   return NextResponse.json({
     live: { totalStudents, activeStudents, totalTeachers, openTickets, pendingInvoices, recentSessions },
