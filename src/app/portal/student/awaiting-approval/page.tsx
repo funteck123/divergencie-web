@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock, ShieldAlert, MessageCircle, ArrowLeft } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/auth-client";
 
 export default function AwaitingApprovalPage() {
   return (

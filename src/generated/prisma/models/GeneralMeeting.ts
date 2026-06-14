@@ -31,7 +31,7 @@ export type GeneralMeetingMinAggregateOutputType = {
   agenda: string | null
   status: string | null
   link: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
   sessionTypeId: string | null
 }
@@ -43,7 +43,7 @@ export type GeneralMeetingMaxAggregateOutputType = {
   agenda: string | null
   status: string | null
   link: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
   sessionTypeId: string | null
 }
@@ -55,7 +55,7 @@ export type GeneralMeetingCountAggregateOutputType = {
   agenda: number
   status: number
   link: number
-  dept: number
+  deptId: number
   isActive: number
   sessionTypeId: number
   _all: number
@@ -69,7 +69,7 @@ export type GeneralMeetingMinAggregateInputType = {
   agenda?: true
   status?: true
   link?: true
-  dept?: true
+  deptId?: true
   isActive?: true
   sessionTypeId?: true
 }
@@ -81,7 +81,7 @@ export type GeneralMeetingMaxAggregateInputType = {
   agenda?: true
   status?: true
   link?: true
-  dept?: true
+  deptId?: true
   isActive?: true
   sessionTypeId?: true
 }
@@ -93,7 +93,7 @@ export type GeneralMeetingCountAggregateInputType = {
   agenda?: true
   status?: true
   link?: true
-  dept?: true
+  deptId?: true
   isActive?: true
   sessionTypeId?: true
   _all?: true
@@ -178,7 +178,7 @@ export type GeneralMeetingGroupByOutputType = {
   agenda: string | null
   status: string
   link: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean
   sessionTypeId: string | null
   _count: GeneralMeetingCountAggregateOutputType | null
@@ -211,13 +211,15 @@ export type GeneralMeetingWhereInput = {
   agenda?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
   status?: Prisma.StringFilter<"GeneralMeeting"> | string
   link?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
-  dept?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
   isActive?: Prisma.BoolFilter<"GeneralMeeting"> | boolean
   sessionTypeId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   sessionType?: Prisma.XOR<Prisma.SessionTypeNullableScalarRelationFilter, Prisma.SessionTypeWhereInput> | null
   participants?: Prisma.MeetingParticipantListRelationFilter
   sprintList?: Prisma.XOR<Prisma.MeetingSprintListNullableScalarRelationFilter, Prisma.MeetingSprintListWhereInput> | null
   backlogList?: Prisma.XOR<Prisma.MeetingBacklogListNullableScalarRelationFilter, Prisma.MeetingBacklogListWhereInput> | null
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogListRelationFilter
 }
 
 export type GeneralMeetingOrderByWithRelationInput = {
@@ -227,13 +229,15 @@ export type GeneralMeetingOrderByWithRelationInput = {
   agenda?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   link?: Prisma.SortOrderInput | Prisma.SortOrder
-  dept?: Prisma.SortOrderInput | Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sessionTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  dept?: Prisma.DepartmentOrderByWithRelationInput
   sessionType?: Prisma.SessionTypeOrderByWithRelationInput
   participants?: Prisma.MeetingParticipantOrderByRelationAggregateInput
   sprintList?: Prisma.MeetingSprintListOrderByWithRelationInput
   backlogList?: Prisma.MeetingBacklogListOrderByWithRelationInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type GeneralMeetingWhereUniqueInput = Prisma.AtLeast<{
@@ -246,13 +250,15 @@ export type GeneralMeetingWhereUniqueInput = Prisma.AtLeast<{
   agenda?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
   status?: Prisma.StringFilter<"GeneralMeeting"> | string
   link?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
-  dept?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
   isActive?: Prisma.BoolFilter<"GeneralMeeting"> | boolean
   sessionTypeId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   sessionType?: Prisma.XOR<Prisma.SessionTypeNullableScalarRelationFilter, Prisma.SessionTypeWhereInput> | null
   participants?: Prisma.MeetingParticipantListRelationFilter
   sprintList?: Prisma.XOR<Prisma.MeetingSprintListNullableScalarRelationFilter, Prisma.MeetingSprintListWhereInput> | null
   backlogList?: Prisma.XOR<Prisma.MeetingBacklogListNullableScalarRelationFilter, Prisma.MeetingBacklogListWhereInput> | null
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogListRelationFilter
 }, "id">
 
 export type GeneralMeetingOrderByWithAggregationInput = {
@@ -262,7 +268,7 @@ export type GeneralMeetingOrderByWithAggregationInput = {
   agenda?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   link?: Prisma.SortOrderInput | Prisma.SortOrder
-  dept?: Prisma.SortOrderInput | Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sessionTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.GeneralMeetingCountOrderByAggregateInput
@@ -280,7 +286,7 @@ export type GeneralMeetingScalarWhereWithAggregatesInput = {
   agenda?: Prisma.StringNullableWithAggregatesFilter<"GeneralMeeting"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"GeneralMeeting"> | string
   link?: Prisma.StringNullableWithAggregatesFilter<"GeneralMeeting"> | string | null
-  dept?: Prisma.StringNullableWithAggregatesFilter<"GeneralMeeting"> | string | null
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"GeneralMeeting"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"GeneralMeeting"> | boolean
   sessionTypeId?: Prisma.StringNullableWithAggregatesFilter<"GeneralMeeting"> | string | null
 }
@@ -292,12 +298,13 @@ export type GeneralMeetingCreateInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutGeneralMeetingsInput
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutGeneralMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutGeneralMeetingInput
   sprintList?: Prisma.MeetingSprintListCreateNestedOneWithoutMeetingInput
   backlogList?: Prisma.MeetingBacklogListCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingUncheckedCreateInput = {
@@ -307,12 +314,13 @@ export type GeneralMeetingUncheckedCreateInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   sessionTypeId?: string | null
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutGeneralMeetingInput
   sprintList?: Prisma.MeetingSprintListUncheckedCreateNestedOneWithoutMeetingInput
   backlogList?: Prisma.MeetingBacklogListUncheckedCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingUpdateInput = {
@@ -322,12 +330,13 @@ export type GeneralMeetingUpdateInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutGeneralMeetingsNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneWithoutGeneralMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutGeneralMeetingNestedInput
   sprintList?: Prisma.MeetingSprintListUpdateOneWithoutMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingUncheckedUpdateInput = {
@@ -337,12 +346,13 @@ export type GeneralMeetingUncheckedUpdateInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutGeneralMeetingNestedInput
   sprintList?: Prisma.MeetingSprintListUncheckedUpdateOneWithoutMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUncheckedUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingCreateManyInput = {
@@ -352,7 +362,7 @@ export type GeneralMeetingCreateManyInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   sessionTypeId?: string | null
 }
@@ -364,7 +374,6 @@ export type GeneralMeetingUpdateManyMutationInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -375,7 +384,7 @@ export type GeneralMeetingUncheckedUpdateManyInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
@@ -402,7 +411,7 @@ export type GeneralMeetingCountOrderByAggregateInput = {
   agenda?: Prisma.SortOrder
   status?: Prisma.SortOrder
   link?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sessionTypeId?: Prisma.SortOrder
 }
@@ -414,7 +423,7 @@ export type GeneralMeetingMaxOrderByAggregateInput = {
   agenda?: Prisma.SortOrder
   status?: Prisma.SortOrder
   link?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sessionTypeId?: Prisma.SortOrder
 }
@@ -426,9 +435,51 @@ export type GeneralMeetingMinOrderByAggregateInput = {
   agenda?: Prisma.SortOrder
   status?: Prisma.SortOrder
   link?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   sessionTypeId?: Prisma.SortOrder
+}
+
+export type GeneralMeetingCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutDeptInput, Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput> | Prisma.GeneralMeetingCreateWithoutDeptInput[] | Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput | Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.GeneralMeetingCreateManyDeptInputEnvelope
+  connect?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+}
+
+export type GeneralMeetingUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutDeptInput, Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput> | Prisma.GeneralMeetingCreateWithoutDeptInput[] | Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput | Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.GeneralMeetingCreateManyDeptInputEnvelope
+  connect?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+}
+
+export type GeneralMeetingUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutDeptInput, Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput> | Prisma.GeneralMeetingCreateWithoutDeptInput[] | Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput | Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.GeneralMeetingUpsertWithWhereUniqueWithoutDeptInput | Prisma.GeneralMeetingUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.GeneralMeetingCreateManyDeptInputEnvelope
+  set?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  disconnect?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  delete?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  connect?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  update?: Prisma.GeneralMeetingUpdateWithWhereUniqueWithoutDeptInput | Prisma.GeneralMeetingUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.GeneralMeetingUpdateManyWithWhereWithoutDeptInput | Prisma.GeneralMeetingUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.GeneralMeetingScalarWhereInput | Prisma.GeneralMeetingScalarWhereInput[]
+}
+
+export type GeneralMeetingUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutDeptInput, Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput> | Prisma.GeneralMeetingCreateWithoutDeptInput[] | Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput | Prisma.GeneralMeetingCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.GeneralMeetingUpsertWithWhereUniqueWithoutDeptInput | Prisma.GeneralMeetingUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.GeneralMeetingCreateManyDeptInputEnvelope
+  set?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  disconnect?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  delete?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  connect?: Prisma.GeneralMeetingWhereUniqueInput | Prisma.GeneralMeetingWhereUniqueInput[]
+  update?: Prisma.GeneralMeetingUpdateWithWhereUniqueWithoutDeptInput | Prisma.GeneralMeetingUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.GeneralMeetingUpdateManyWithWhereWithoutDeptInput | Prisma.GeneralMeetingUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.GeneralMeetingScalarWhereInput | Prisma.GeneralMeetingScalarWhereInput[]
 }
 
 export type GeneralMeetingCreateNestedManyWithoutSessionTypeInput = {
@@ -515,6 +566,91 @@ export type GeneralMeetingUpdateOneRequiredWithoutBacklogListNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GeneralMeetingUpdateToOneWithWhereWithoutBacklogListInput, Prisma.GeneralMeetingUpdateWithoutBacklogListInput>, Prisma.GeneralMeetingUncheckedUpdateWithoutBacklogListInput>
 }
 
+export type GeneralMeetingCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.GeneralMeetingCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.GeneralMeetingWhereUniqueInput
+}
+
+export type GeneralMeetingUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.GeneralMeetingCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.GeneralMeetingUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.GeneralMeetingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GeneralMeetingUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUpdateWithoutStatusChangeLogsInput>, Prisma.GeneralMeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type GeneralMeetingCreateWithoutDeptInput = {
+  id?: string
+  title: string
+  dateTime: Date | string
+  agenda?: string | null
+  status?: string
+  link?: string | null
+  isActive?: boolean
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutGeneralMeetingsInput
+  participants?: Prisma.MeetingParticipantCreateNestedManyWithoutGeneralMeetingInput
+  sprintList?: Prisma.MeetingSprintListCreateNestedOneWithoutMeetingInput
+  backlogList?: Prisma.MeetingBacklogListCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
+}
+
+export type GeneralMeetingUncheckedCreateWithoutDeptInput = {
+  id?: string
+  title: string
+  dateTime: Date | string
+  agenda?: string | null
+  status?: string
+  link?: string | null
+  isActive?: boolean
+  sessionTypeId?: string | null
+  participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutGeneralMeetingInput
+  sprintList?: Prisma.MeetingSprintListUncheckedCreateNestedOneWithoutMeetingInput
+  backlogList?: Prisma.MeetingBacklogListUncheckedCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type GeneralMeetingCreateOrConnectWithoutDeptInput = {
+  where: Prisma.GeneralMeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutDeptInput, Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput>
+}
+
+export type GeneralMeetingCreateManyDeptInputEnvelope = {
+  data: Prisma.GeneralMeetingCreateManyDeptInput | Prisma.GeneralMeetingCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type GeneralMeetingUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.GeneralMeetingWhereUniqueInput
+  update: Prisma.XOR<Prisma.GeneralMeetingUpdateWithoutDeptInput, Prisma.GeneralMeetingUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutDeptInput, Prisma.GeneralMeetingUncheckedCreateWithoutDeptInput>
+}
+
+export type GeneralMeetingUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.GeneralMeetingWhereUniqueInput
+  data: Prisma.XOR<Prisma.GeneralMeetingUpdateWithoutDeptInput, Prisma.GeneralMeetingUncheckedUpdateWithoutDeptInput>
+}
+
+export type GeneralMeetingUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.GeneralMeetingScalarWhereInput
+  data: Prisma.XOR<Prisma.GeneralMeetingUpdateManyMutationInput, Prisma.GeneralMeetingUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type GeneralMeetingScalarWhereInput = {
+  AND?: Prisma.GeneralMeetingScalarWhereInput | Prisma.GeneralMeetingScalarWhereInput[]
+  OR?: Prisma.GeneralMeetingScalarWhereInput[]
+  NOT?: Prisma.GeneralMeetingScalarWhereInput | Prisma.GeneralMeetingScalarWhereInput[]
+  id?: Prisma.StringFilter<"GeneralMeeting"> | string
+  title?: Prisma.StringFilter<"GeneralMeeting"> | string
+  dateTime?: Prisma.DateTimeFilter<"GeneralMeeting"> | Date | string
+  agenda?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  status?: Prisma.StringFilter<"GeneralMeeting"> | string
+  link?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+  isActive?: Prisma.BoolFilter<"GeneralMeeting"> | boolean
+  sessionTypeId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
+}
+
 export type GeneralMeetingCreateWithoutSessionTypeInput = {
   id?: string
   title: string
@@ -522,11 +658,12 @@ export type GeneralMeetingCreateWithoutSessionTypeInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutGeneralMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutGeneralMeetingInput
   sprintList?: Prisma.MeetingSprintListCreateNestedOneWithoutMeetingInput
   backlogList?: Prisma.MeetingBacklogListCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingUncheckedCreateWithoutSessionTypeInput = {
@@ -536,11 +673,12 @@ export type GeneralMeetingUncheckedCreateWithoutSessionTypeInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutGeneralMeetingInput
   sprintList?: Prisma.MeetingSprintListUncheckedCreateNestedOneWithoutMeetingInput
   backlogList?: Prisma.MeetingBacklogListUncheckedCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingCreateOrConnectWithoutSessionTypeInput = {
@@ -569,21 +707,6 @@ export type GeneralMeetingUpdateManyWithWhereWithoutSessionTypeInput = {
   data: Prisma.XOR<Prisma.GeneralMeetingUpdateManyMutationInput, Prisma.GeneralMeetingUncheckedUpdateManyWithoutSessionTypeInput>
 }
 
-export type GeneralMeetingScalarWhereInput = {
-  AND?: Prisma.GeneralMeetingScalarWhereInput | Prisma.GeneralMeetingScalarWhereInput[]
-  OR?: Prisma.GeneralMeetingScalarWhereInput[]
-  NOT?: Prisma.GeneralMeetingScalarWhereInput | Prisma.GeneralMeetingScalarWhereInput[]
-  id?: Prisma.StringFilter<"GeneralMeeting"> | string
-  title?: Prisma.StringFilter<"GeneralMeeting"> | string
-  dateTime?: Prisma.DateTimeFilter<"GeneralMeeting"> | Date | string
-  agenda?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
-  status?: Prisma.StringFilter<"GeneralMeeting"> | string
-  link?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
-  dept?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
-  isActive?: Prisma.BoolFilter<"GeneralMeeting"> | boolean
-  sessionTypeId?: Prisma.StringNullableFilter<"GeneralMeeting"> | string | null
-}
-
 export type GeneralMeetingCreateWithoutParticipantsInput = {
   id?: string
   title: string
@@ -591,11 +714,12 @@ export type GeneralMeetingCreateWithoutParticipantsInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutGeneralMeetingsInput
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutGeneralMeetingsInput
   sprintList?: Prisma.MeetingSprintListCreateNestedOneWithoutMeetingInput
   backlogList?: Prisma.MeetingBacklogListCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingUncheckedCreateWithoutParticipantsInput = {
@@ -605,11 +729,12 @@ export type GeneralMeetingUncheckedCreateWithoutParticipantsInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   sessionTypeId?: string | null
   sprintList?: Prisma.MeetingSprintListUncheckedCreateNestedOneWithoutMeetingInput
   backlogList?: Prisma.MeetingBacklogListUncheckedCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingCreateOrConnectWithoutParticipantsInput = {
@@ -635,11 +760,12 @@ export type GeneralMeetingUpdateWithoutParticipantsInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutGeneralMeetingsNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneWithoutGeneralMeetingsNestedInput
   sprintList?: Prisma.MeetingSprintListUpdateOneWithoutMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingUncheckedUpdateWithoutParticipantsInput = {
@@ -649,11 +775,12 @@ export type GeneralMeetingUncheckedUpdateWithoutParticipantsInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sprintList?: Prisma.MeetingSprintListUncheckedUpdateOneWithoutMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUncheckedUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingCreateWithoutSprintListInput = {
@@ -663,11 +790,12 @@ export type GeneralMeetingCreateWithoutSprintListInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutGeneralMeetingsInput
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutGeneralMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutGeneralMeetingInput
   backlogList?: Prisma.MeetingBacklogListCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingUncheckedCreateWithoutSprintListInput = {
@@ -677,11 +805,12 @@ export type GeneralMeetingUncheckedCreateWithoutSprintListInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   sessionTypeId?: string | null
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutGeneralMeetingInput
   backlogList?: Prisma.MeetingBacklogListUncheckedCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingCreateOrConnectWithoutSprintListInput = {
@@ -707,11 +836,12 @@ export type GeneralMeetingUpdateWithoutSprintListInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutGeneralMeetingsNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneWithoutGeneralMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutGeneralMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingUncheckedUpdateWithoutSprintListInput = {
@@ -721,11 +851,12 @@ export type GeneralMeetingUncheckedUpdateWithoutSprintListInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutGeneralMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUncheckedUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingCreateWithoutBacklogListInput = {
@@ -735,11 +866,12 @@ export type GeneralMeetingCreateWithoutBacklogListInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutGeneralMeetingsInput
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutGeneralMeetingsInput
   participants?: Prisma.MeetingParticipantCreateNestedManyWithoutGeneralMeetingInput
   sprintList?: Prisma.MeetingSprintListCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingUncheckedCreateWithoutBacklogListInput = {
@@ -749,11 +881,12 @@ export type GeneralMeetingUncheckedCreateWithoutBacklogListInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
   sessionTypeId?: string | null
   participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutGeneralMeetingInput
   sprintList?: Prisma.MeetingSprintListUncheckedCreateNestedOneWithoutMeetingInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type GeneralMeetingCreateOrConnectWithoutBacklogListInput = {
@@ -779,11 +912,12 @@ export type GeneralMeetingUpdateWithoutBacklogListInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutGeneralMeetingsNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneWithoutGeneralMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutGeneralMeetingNestedInput
   sprintList?: Prisma.MeetingSprintListUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingUncheckedUpdateWithoutBacklogListInput = {
@@ -793,11 +927,140 @@ export type GeneralMeetingUncheckedUpdateWithoutBacklogListInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutGeneralMeetingNestedInput
   sprintList?: Prisma.MeetingSprintListUncheckedUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type GeneralMeetingCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  title: string
+  dateTime: Date | string
+  agenda?: string | null
+  status?: string
+  link?: string | null
+  isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutGeneralMeetingsInput
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutGeneralMeetingsInput
+  participants?: Prisma.MeetingParticipantCreateNestedManyWithoutGeneralMeetingInput
+  sprintList?: Prisma.MeetingSprintListCreateNestedOneWithoutMeetingInput
+  backlogList?: Prisma.MeetingBacklogListCreateNestedOneWithoutMeetingInput
+}
+
+export type GeneralMeetingUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  title: string
+  dateTime: Date | string
+  agenda?: string | null
+  status?: string
+  link?: string | null
+  deptId?: string | null
+  isActive?: boolean
+  sessionTypeId?: string | null
+  participants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutGeneralMeetingInput
+  sprintList?: Prisma.MeetingSprintListUncheckedCreateNestedOneWithoutMeetingInput
+  backlogList?: Prisma.MeetingBacklogListUncheckedCreateNestedOneWithoutMeetingInput
+}
+
+export type GeneralMeetingCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.GeneralMeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type GeneralMeetingUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.GeneralMeetingUpdateWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.GeneralMeetingCreateWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.GeneralMeetingWhereInput
+}
+
+export type GeneralMeetingUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.GeneralMeetingWhereInput
+  data: Prisma.XOR<Prisma.GeneralMeetingUpdateWithoutStatusChangeLogsInput, Prisma.GeneralMeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type GeneralMeetingUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  dateTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutGeneralMeetingsNestedInput
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutGeneralMeetingsNestedInput
+  participants?: Prisma.MeetingParticipantUpdateManyWithoutGeneralMeetingNestedInput
+  sprintList?: Prisma.MeetingSprintListUpdateOneWithoutMeetingNestedInput
+  backlogList?: Prisma.MeetingBacklogListUpdateOneWithoutMeetingNestedInput
+}
+
+export type GeneralMeetingUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  dateTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutGeneralMeetingNestedInput
+  sprintList?: Prisma.MeetingSprintListUncheckedUpdateOneWithoutMeetingNestedInput
+  backlogList?: Prisma.MeetingBacklogListUncheckedUpdateOneWithoutMeetingNestedInput
+}
+
+export type GeneralMeetingCreateManyDeptInput = {
+  id?: string
+  title: string
+  dateTime: Date | string
+  agenda?: string | null
+  status?: string
+  link?: string | null
+  isActive?: boolean
+  sessionTypeId?: string | null
+}
+
+export type GeneralMeetingUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  dateTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutGeneralMeetingsNestedInput
+  participants?: Prisma.MeetingParticipantUpdateManyWithoutGeneralMeetingNestedInput
+  sprintList?: Prisma.MeetingSprintListUpdateOneWithoutMeetingNestedInput
+  backlogList?: Prisma.MeetingBacklogListUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
+}
+
+export type GeneralMeetingUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  dateTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutGeneralMeetingNestedInput
+  sprintList?: Prisma.MeetingSprintListUncheckedUpdateOneWithoutMeetingNestedInput
+  backlogList?: Prisma.MeetingBacklogListUncheckedUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type GeneralMeetingUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  dateTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type GeneralMeetingCreateManySessionTypeInput = {
@@ -807,7 +1070,7 @@ export type GeneralMeetingCreateManySessionTypeInput = {
   agenda?: string | null
   status?: string
   link?: string | null
-  dept?: string | null
+  deptId?: string | null
   isActive?: boolean
 }
 
@@ -818,11 +1081,12 @@ export type GeneralMeetingUpdateWithoutSessionTypeInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutGeneralMeetingsNestedInput
   participants?: Prisma.MeetingParticipantUpdateManyWithoutGeneralMeetingNestedInput
   sprintList?: Prisma.MeetingSprintListUpdateOneWithoutMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingUncheckedUpdateWithoutSessionTypeInput = {
@@ -832,11 +1096,12 @@ export type GeneralMeetingUncheckedUpdateWithoutSessionTypeInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   participants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutGeneralMeetingNestedInput
   sprintList?: Prisma.MeetingSprintListUncheckedUpdateOneWithoutMeetingNestedInput
   backlogList?: Prisma.MeetingBacklogListUncheckedUpdateOneWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.GeneralMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type GeneralMeetingUncheckedUpdateManyWithoutSessionTypeInput = {
@@ -846,7 +1111,7 @@ export type GeneralMeetingUncheckedUpdateManyWithoutSessionTypeInput = {
   agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -857,10 +1122,12 @@ export type GeneralMeetingUncheckedUpdateManyWithoutSessionTypeInput = {
 
 export type GeneralMeetingCountOutputType = {
   participants: number
+  statusChangeLogs: number
 }
 
 export type GeneralMeetingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participants?: boolean | GeneralMeetingCountOutputTypeCountParticipantsArgs
+  statusChangeLogs?: boolean | GeneralMeetingCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -880,6 +1147,13 @@ export type GeneralMeetingCountOutputTypeCountParticipantsArgs<ExtArgs extends r
   where?: Prisma.MeetingParticipantWhereInput
 }
 
+/**
+ * GeneralMeetingCountOutputType without action
+ */
+export type GeneralMeetingCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.GeneralMeetingStatusChangeLogWhereInput
+}
+
 
 export type GeneralMeetingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -888,13 +1162,15 @@ export type GeneralMeetingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   agenda?: boolean
   status?: boolean
   link?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionTypeId?: boolean
+  dept?: boolean | Prisma.GeneralMeeting$deptArgs<ExtArgs>
   sessionType?: boolean | Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>
   participants?: boolean | Prisma.GeneralMeeting$participantsArgs<ExtArgs>
   sprintList?: boolean | Prisma.GeneralMeeting$sprintListArgs<ExtArgs>
   backlogList?: boolean | Prisma.GeneralMeeting$backlogListArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.GeneralMeeting$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.GeneralMeetingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["generalMeeting"]>
 
@@ -905,9 +1181,10 @@ export type GeneralMeetingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   agenda?: boolean
   status?: boolean
   link?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionTypeId?: boolean
+  dept?: boolean | Prisma.GeneralMeeting$deptArgs<ExtArgs>
   sessionType?: boolean | Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>
 }, ExtArgs["result"]["generalMeeting"]>
 
@@ -918,9 +1195,10 @@ export type GeneralMeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   agenda?: boolean
   status?: boolean
   link?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionTypeId?: boolean
+  dept?: boolean | Prisma.GeneralMeeting$deptArgs<ExtArgs>
   sessionType?: boolean | Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>
 }, ExtArgs["result"]["generalMeeting"]>
 
@@ -931,33 +1209,39 @@ export type GeneralMeetingSelectScalar = {
   agenda?: boolean
   status?: boolean
   link?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
   sessionTypeId?: boolean
 }
 
-export type GeneralMeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "dateTime" | "agenda" | "status" | "link" | "dept" | "isActive" | "sessionTypeId", ExtArgs["result"]["generalMeeting"]>
+export type GeneralMeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "dateTime" | "agenda" | "status" | "link" | "deptId" | "isActive" | "sessionTypeId", ExtArgs["result"]["generalMeeting"]>
 export type GeneralMeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.GeneralMeeting$deptArgs<ExtArgs>
   sessionType?: boolean | Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>
   participants?: boolean | Prisma.GeneralMeeting$participantsArgs<ExtArgs>
   sprintList?: boolean | Prisma.GeneralMeeting$sprintListArgs<ExtArgs>
   backlogList?: boolean | Prisma.GeneralMeeting$backlogListArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.GeneralMeeting$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.GeneralMeetingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GeneralMeetingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.GeneralMeeting$deptArgs<ExtArgs>
   sessionType?: boolean | Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>
 }
 export type GeneralMeetingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.GeneralMeeting$deptArgs<ExtArgs>
   sessionType?: boolean | Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>
 }
 
 export type $GeneralMeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "GeneralMeeting"
   objects: {
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
     sessionType: Prisma.$SessionTypePayload<ExtArgs> | null
     participants: Prisma.$MeetingParticipantPayload<ExtArgs>[]
     sprintList: Prisma.$MeetingSprintListPayload<ExtArgs> | null
     backlogList: Prisma.$MeetingBacklogListPayload<ExtArgs> | null
+    statusChangeLogs: Prisma.$GeneralMeetingStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -966,7 +1250,7 @@ export type $GeneralMeetingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     agenda: string | null
     status: string
     link: string | null
-    dept: string | null
+    deptId: string | null
     isActive: boolean
     sessionTypeId: string | null
   }, ExtArgs["result"]["generalMeeting"]>
@@ -1363,10 +1647,12 @@ readonly fields: GeneralMeetingFieldRefs;
  */
 export interface Prisma__GeneralMeetingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  dept<T extends Prisma.GeneralMeeting$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneralMeeting$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sessionType<T extends Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneralMeeting$sessionTypeArgs<ExtArgs>>): Prisma.Prisma__SessionTypeClient<runtime.Types.Result.GetResult<Prisma.$SessionTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   participants<T extends Prisma.GeneralMeeting$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneralMeeting$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sprintList<T extends Prisma.GeneralMeeting$sprintListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneralMeeting$sprintListArgs<ExtArgs>>): Prisma.Prisma__MeetingSprintListClient<runtime.Types.Result.GetResult<Prisma.$MeetingSprintListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   backlogList<T extends Prisma.GeneralMeeting$backlogListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneralMeeting$backlogListArgs<ExtArgs>>): Prisma.Prisma__MeetingBacklogListClient<runtime.Types.Result.GetResult<Prisma.$MeetingBacklogListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  statusChangeLogs<T extends Prisma.GeneralMeeting$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GeneralMeeting$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GeneralMeetingStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1402,7 +1688,7 @@ export interface GeneralMeetingFieldRefs {
   readonly agenda: Prisma.FieldRef<"GeneralMeeting", 'String'>
   readonly status: Prisma.FieldRef<"GeneralMeeting", 'String'>
   readonly link: Prisma.FieldRef<"GeneralMeeting", 'String'>
-  readonly dept: Prisma.FieldRef<"GeneralMeeting", 'String'>
+  readonly deptId: Prisma.FieldRef<"GeneralMeeting", 'String'>
   readonly isActive: Prisma.FieldRef<"GeneralMeeting", 'Boolean'>
   readonly sessionTypeId: Prisma.FieldRef<"GeneralMeeting", 'String'>
 }
@@ -1806,6 +2092,25 @@ export type GeneralMeetingDeleteManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * GeneralMeeting.dept
+ */
+export type GeneralMeeting$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
+}
+
+/**
  * GeneralMeeting.sessionType
  */
 export type GeneralMeeting$sessionTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1884,6 +2189,30 @@ export type GeneralMeeting$backlogListArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.MeetingBacklogListInclude<ExtArgs> | null
   where?: Prisma.MeetingBacklogListWhereInput
+}
+
+/**
+ * GeneralMeeting.statusChangeLogs
+ */
+export type GeneralMeeting$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GeneralMeetingStatusChangeLog
+   */
+  select?: Prisma.GeneralMeetingStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GeneralMeetingStatusChangeLog
+   */
+  omit?: Prisma.GeneralMeetingStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GeneralMeetingStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.GeneralMeetingStatusChangeLogWhereInput
+  orderBy?: Prisma.GeneralMeetingStatusChangeLogOrderByWithRelationInput | Prisma.GeneralMeetingStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.GeneralMeetingStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.GeneralMeetingStatusChangeLogScalarFieldEnum | Prisma.GeneralMeetingStatusChangeLogScalarFieldEnum[]
 }
 
 /**

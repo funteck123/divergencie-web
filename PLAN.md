@@ -1,4 +1,4 @@
-﻿# DivergenCIE Coaching — Build Plan & Session Tracker
+# DivergenCIE Coaching — Build Plan & Session Tracker
 
 ## INTRO
 
@@ -247,7 +247,7 @@ Agent Note: Update ⬜ to ✅ in these tables after each completed + verified ta
 |---|------|----------------------|------|--------|
 | P0-S | **Schema reconciliation to ERD v23 (DO FIRST)** — apply Appendix A: rename 11 `…StatusHistory`→`…StatusChangeLog` (§44), add ~19 missing entities (Department/StaffRole/UserType/PortalPermission, Marketing schedule chain, SyllabusChapter+ChapterRecording, AmbassadorService+ProgrammeContentList, MetricSnapshot, ProgressReport, GcrList/Item, session/meeting/sub-list change-logs), rename `InvoiceMonth`→`BillingMonth` + FK fields, add versioning fields to 5 sub-lists, add composite UNIQUE constraints, replace string `dept`/`role`/`targetRole` with FK lookups, review+remove ERD-contradicting extras. Each change cites its § — verify before applying. | see Appendix A | `prisma/schema.prisma` | ✅ |
 | P0-0 | Supabase baseline (**no migrations — `db push`**; runs AFTER P0-S) — project + `.env` creds **already provisioned**; connection **verified ✅**; legacy sqlite migrations + sandbox deleted. REMAINING: (1) add **`DIRECT_URL`** (port 5432 non-pooling) to `.env` — `prisma.config.js` needs it for `db push`; (2) `prisma db push` reconciled schema to live Supabase; (3) `prisma db pull`/diff → zero drift; (4) create + RLS-policy Supabase Storage buckets (receipts etc); (5) `prisma generate`; (6) `prisma/seed.ts` (P0-3) run. **Hard prerequisite.** | all models | `.env`, `prisma/schema.prisma`, Supabase | ✅ |
-| P0-1 | Auth consolidation — remove `next-auth-compat` shim; pure Supabase Auth; session in middleware; login (split layout)/logout/callback | User; Supabase Auth | `src/middleware.ts`, `src/lib/auth.ts`, `src/app/auth/**` | ⬜ |
+| P0-1 | Auth consolidation — remove `next-auth-compat` shim; pure Supabase Auth; session in middleware; login (split layout)/logout/callback | User; Supabase Auth | `src/middleware.ts`, `src/lib/auth.ts`, `src/app/auth/**` | ✅ |
 | P0-2 | RBAC — `PortalPermission` override table + code-defined default permissions; route + menu gating; `/unauthorized` | §38 | `src/lib/rbac.ts`, `src/middleware.ts`, `src/app/unauthorized/` | ⬜ |
 | P0-3 | Required seed data — UserType (incl `ALL`), SessionType (incl staff-meeting types), Department, StaffRole, RecordType (`targetUserTypeId`), CurrencyRate, all lookups | §53, §28 | `prisma/seed.ts` | ✅ |
 | P0-4 | Lookup tables CRUD (management) — Ticket/Notification/Flag/Record/Mock/AmbassadorTest types, OutreachSource, SocialPlatform/PostType, CampaignTag, ContentType, Outreach/Exhibition types | §28, §34, §35 | `api/lookup/[table]`, `portal/management/database/` | ⬜ |

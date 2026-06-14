@@ -68,7 +68,7 @@ export async function getLinkedChildren(parentEmail: string) {
   // Batch: fetch ALL student progress in one query, then group
   const studentIds = students.map((s: any) => s.id);
   const [allProgress, allNextSessions] = await Promise.all([
-    prisma.studentProgress.findMany({
+    prisma.studentSyllabusProgress.findMany({
       where: { studentId: { in: studentIds } },
       include: { syllabusItem: true }
     }),

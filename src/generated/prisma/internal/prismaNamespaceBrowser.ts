@@ -57,79 +57,101 @@ export const ModelName = {
   StaffProfile: 'StaffProfile',
   ParentProfile: 'ParentProfile',
   AmbassadorProfile: 'AmbassadorProfile',
+  Department: 'Department',
+  StaffRole: 'StaffRole',
+  UserType: 'UserType',
+  PortalPermission: 'PortalPermission',
   Candidate: 'Candidate',
   SessionType: 'SessionType',
   Group: 'Group',
   Service: 'Service',
+  GcrList: 'GcrList',
+  GcrItem: 'GcrItem',
   RateList: 'RateList',
   RateItem: 'RateItem',
-  RateItemStatusHistory: 'RateItemStatusHistory',
+  RateItemStatusChangeLog: 'RateItemStatusChangeLog',
   RateChangeLog: 'RateChangeLog',
   StudentEnrolmentList: 'StudentEnrolmentList',
   StudentEnrolmentItem: 'StudentEnrolmentItem',
-  StudentEnrolmentItemStatusHistory: 'StudentEnrolmentItemStatusHistory',
+  StudentEnrolmentItemStatusChangeLog: 'StudentEnrolmentItemStatusChangeLog',
   Discount: 'Discount',
   TeacherEnrolmentList: 'TeacherEnrolmentList',
   TeacherEnrolmentItem: 'TeacherEnrolmentItem',
-  TeacherEnrolmentItemStatusHistory: 'TeacherEnrolmentItemStatusHistory',
+  TeacherEnrolmentItemStatusChangeLog: 'TeacherEnrolmentItemStatusChangeLog',
   StaffEnrolmentList: 'StaffEnrolmentList',
   StaffEnrolmentItem: 'StaffEnrolmentItem',
-  StaffEnrolmentItemStatusHistory: 'StaffEnrolmentItemStatusHistory',
+  StaffEnrolmentItemStatusChangeLog: 'StaffEnrolmentItemStatusChangeLog',
   AmbassadorEnrolmentList: 'AmbassadorEnrolmentList',
   AmbassadorEnrolmentItem: 'AmbassadorEnrolmentItem',
-  AmbassadorEnrolmentItemStatusHistory: 'AmbassadorEnrolmentItemStatusHistory',
+  AmbassadorEnrolmentItemStatusChangeLog: 'AmbassadorEnrolmentItemStatusChangeLog',
   AmbassadorCommissionList: 'AmbassadorCommissionList',
   AmbassadorCommissionItem: 'AmbassadorCommissionItem',
-  AmbassadorCommissionItemStatusHistory: 'AmbassadorCommissionItemStatusHistory',
+  AmbassadorCommissionItemStatusChangeLog: 'AmbassadorCommissionItemStatusChangeLog',
   AmbassadorCommissionRateChangeLog: 'AmbassadorCommissionRateChangeLog',
   ServiceSchedule: 'ServiceSchedule',
   ScheduleOccurrence: 'ScheduleOccurrence',
-  ScheduleOccurrenceStatusHistory: 'ScheduleOccurrenceStatusHistory',
+  ScheduleOccurrenceStatusChangeLog: 'ScheduleOccurrenceStatusChangeLog',
   ScheduleChangeRequest: 'ScheduleChangeRequest',
   StaffServiceSchedule: 'StaffServiceSchedule',
   StaffScheduleOccurrence: 'StaffScheduleOccurrence',
-  StaffScheduleOccurrenceStatusHistory: 'StaffScheduleOccurrenceStatusHistory',
+  StaffScheduleOccurrenceStatusChangeLog: 'StaffScheduleOccurrenceStatusChangeLog',
   StaffScheduleChangeRequest: 'StaffScheduleChangeRequest',
   AmbassadorServiceSchedule: 'AmbassadorServiceSchedule',
   AmbassadorScheduleOccurrence: 'AmbassadorScheduleOccurrence',
-  AmbassadorScheduleOccurrenceStatusHistory: 'AmbassadorScheduleOccurrenceStatusHistory',
+  AmbassadorScheduleOccurrenceStatusChangeLog: 'AmbassadorScheduleOccurrenceStatusChangeLog',
   AmbassadorScheduleChangeRequest: 'AmbassadorScheduleChangeRequest',
+  MarketingSchedule: 'MarketingSchedule',
+  MarketingScheduleOccurrence: 'MarketingScheduleOccurrence',
+  MarketingPostSlot: 'MarketingPostSlot',
+  MarketingScheduleOccurrenceStatusChangeLog: 'MarketingScheduleOccurrenceStatusChangeLog',
   AcademicSession: 'AcademicSession',
+  AcademicSessionStatusChangeLog: 'AcademicSessionStatusChangeLog',
   SessionAttendance: 'SessionAttendance',
+  AmbassadorService: 'AmbassadorService',
   Meeting: 'Meeting',
+  MeetingStatusChangeLog: 'MeetingStatusChangeLog',
   MeetingParticipant: 'MeetingParticipant',
   MeetingAttendance: 'MeetingAttendance',
   AmbassadorMeeting: 'AmbassadorMeeting',
+  AmbassadorMeetingStatusChangeLog: 'AmbassadorMeetingStatusChangeLog',
   AmbassadorMeetingAttendance: 'AmbassadorMeetingAttendance',
   CalendarItem: 'CalendarItem',
   CurriculumList: 'CurriculumList',
   SyllabusList: 'SyllabusList',
-  SyllabusListStatusHistory: 'SyllabusListStatusHistory',
+  SyllabusListStatusChangeLog: 'SyllabusListStatusChangeLog',
   SyllabusItem: 'SyllabusItem',
-  StudentProgress: 'StudentProgress',
+  SyllabusChapter: 'SyllabusChapter',
+  ChapterRecordingList: 'ChapterRecordingList',
+  ChapterRecordingItem: 'ChapterRecordingItem',
+  StudentSyllabusProgress: 'StudentSyllabusProgress',
   TaskType: 'TaskType',
   TaskList: 'TaskList',
+  TaskListStatusChangeLog: 'TaskListStatusChangeLog',
   TaskItem: 'TaskItem',
   TaskAssignment: 'TaskAssignment',
   TaskSubmission: 'TaskSubmission',
   MockList: 'MockList',
+  MockListStatusChangeLog: 'MockListStatusChangeLog',
   MockItem: 'MockItem',
   MockResult: 'MockResult',
   CourseTimelineList: 'CourseTimelineList',
+  CourseTimelineListStatusChangeLog: 'CourseTimelineListStatusChangeLog',
   CourseTimelineItem: 'CourseTimelineItem',
   AmbassadorProgrammeList: 'AmbassadorProgrammeList',
-  AmbassadorProgramme: 'AmbassadorProgramme',
-  AmbassadorProgrammeListStatusHistory: 'AmbassadorProgrammeListStatusHistory',
+  AmbassadorProgrammeContentList: 'AmbassadorProgrammeContentList',
+  AmbassadorProgrammeContentListStatusChangeLog: 'AmbassadorProgrammeContentListStatusChangeLog',
   AmbassadorProgrammeItem: 'AmbassadorProgrammeItem',
   AmbassadorProgrammeProgress: 'AmbassadorProgrammeProgress',
   AmbassadorTestList: 'AmbassadorTestList',
+  AmbassadorTestListStatusChangeLog: 'AmbassadorTestListStatusChangeLog',
   AmbassadorTestItem: 'AmbassadorTestItem',
   AmbassadorTestResult: 'AmbassadorTestResult',
   AmbassadorProgrammeTimelineList: 'AmbassadorProgrammeTimelineList',
+  AmbassadorProgrammeTimelineListStatusChangeLog: 'AmbassadorProgrammeTimelineListStatusChangeLog',
   AmbassadorProgrammeTimelineItem: 'AmbassadorProgrammeTimelineItem',
   Referral: 'Referral',
   ReferralClick: 'ReferralClick',
-  InvoiceMonth: 'InvoiceMonth',
+  BillingMonth: 'BillingMonth',
   StudentInvoice: 'StudentInvoice',
   StudentInvoiceStatusChangeLog: 'StudentInvoiceStatusChangeLog',
   InvoiceLineItem: 'InvoiceLineItem',
@@ -154,7 +176,6 @@ export const ModelName = {
   BudgetSubCategory: 'BudgetSubCategory',
   BudgetUtilisation: 'BudgetUtilisation',
   Ticket: 'Ticket',
-  TicketCategory: 'TicketCategory',
   TicketMessage: 'TicketMessage',
   TicketHistory: 'TicketHistory',
   TicketPermission: 'TicketPermission',
@@ -192,6 +213,8 @@ export const ModelName = {
   ContentBankItem: 'ContentBankItem',
   Announcement: 'Announcement',
   Recording: 'Recording',
+  MetricSnapshot: 'MetricSnapshot',
+  ProgressReport: 'ProgressReport',
   SiteLog: 'SiteLog',
   AccessLog: 'AccessLog',
   Doubt: 'Doubt',
@@ -200,9 +223,6 @@ export const ModelName = {
   Lead: 'Lead',
   TextFormat: 'TextFormat',
   BacklogItem: 'BacklogItem',
-  SprintItem: 'SprintItem',
-  AmbassadorDeliverable: 'AmbassadorDeliverable',
-  AmbassadorEarning: 'AmbassadorEarning',
   ContentType: 'ContentType',
   KnowledgeBankDomain: 'KnowledgeBankDomain',
   KnowledgeBankList: 'KnowledgeBankList',
@@ -214,12 +234,8 @@ export const ModelName = {
   MeetingBacklogList: 'MeetingBacklogList',
   MeetingBacklogItem: 'MeetingBacklogItem',
   GeneralMeeting: 'GeneralMeeting',
-  Assignment: 'Assignment',
-  StudentStatus: 'StudentStatus',
-  CanvaDesign: 'CanvaDesign',
-  Booklet: 'Booklet',
-  GcrClassroom: 'GcrClassroom',
-  RateCard: 'RateCard'
+  GeneralMeetingStatusChangeLog: 'GeneralMeetingStatusChangeLog',
+  Booklet: 'Booklet'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -319,8 +335,8 @@ export const StaffProfileScalarFieldEnum = {
   roleTitle: 'roleTitle',
   salaryType: 'salaryType',
   salaryRate: 'salaryRate',
-  role: 'role',
-  dept: 'dept',
+  staffRoleId: 'staffRoleId',
+  deptId: 'deptId',
   isSupervisor: 'isSupervisor',
   registrationDate: 'registrationDate',
   departedAt: 'departedAt',
@@ -356,12 +372,57 @@ export const AmbassadorProfileScalarFieldEnum = {
 export type AmbassadorProfileScalarFieldEnum = (typeof AmbassadorProfileScalarFieldEnum)[keyof typeof AmbassadorProfileScalarFieldEnum]
 
 
+export const DepartmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive'
+} as const
+
+export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
+
+
+export const StaffRoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive'
+} as const
+
+export type StaffRoleScalarFieldEnum = (typeof StaffRoleScalarFieldEnum)[keyof typeof StaffRoleScalarFieldEnum]
+
+
+export const UserTypeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  isActive: 'isActive'
+} as const
+
+export type UserTypeScalarFieldEnum = (typeof UserTypeScalarFieldEnum)[keyof typeof UserTypeScalarFieldEnum]
+
+
+export const PortalPermissionScalarFieldEnum = {
+  id: 'id',
+  staffRoleId: 'staffRoleId',
+  deptId: 'deptId',
+  userId: 'userId',
+  resource: 'resource',
+  canView: 'canView',
+  canCreate: 'canCreate',
+  canEdit: 'canEdit',
+  canDelete: 'canDelete',
+  canApprove: 'canApprove',
+  updatedByUserId: 'updatedByUserId',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PortalPermissionScalarFieldEnum = (typeof PortalPermissionScalarFieldEnum)[keyof typeof PortalPermissionScalarFieldEnum]
+
+
 export const CandidateScalarFieldEnum = {
   id: 'id',
   email: 'email',
   name: 'name',
-  candidateType: 'candidateType',
-  role: 'role',
+  candidateUserTypeId: 'candidateUserTypeId',
+  staffRoleId: 'staffRoleId',
   status: 'status',
   cvLink: 'cvLink',
   docsLink: 'docsLink',
@@ -434,6 +495,24 @@ export const ServiceScalarFieldEnum = {
 export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
 
 
+export const GcrListScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId'
+} as const
+
+export type GcrListScalarFieldEnum = (typeof GcrListScalarFieldEnum)[keyof typeof GcrListScalarFieldEnum]
+
+
+export const GcrItemScalarFieldEnum = {
+  id: 'id',
+  gcrListId: 'gcrListId',
+  label: 'label',
+  url: 'url'
+} as const
+
+export type GcrItemScalarFieldEnum = (typeof GcrItemScalarFieldEnum)[keyof typeof GcrItemScalarFieldEnum]
+
+
 export const RateListScalarFieldEnum = {
   id: 'id',
   serviceId: 'serviceId',
@@ -460,7 +539,7 @@ export const RateItemScalarFieldEnum = {
 export type RateItemScalarFieldEnum = (typeof RateItemScalarFieldEnum)[keyof typeof RateItemScalarFieldEnum]
 
 
-export const RateItemStatusHistoryScalarFieldEnum = {
+export const RateItemStatusChangeLogScalarFieldEnum = {
   id: 'id',
   rateItemId: 'rateItemId',
   fromStatus: 'fromStatus',
@@ -470,7 +549,7 @@ export const RateItemStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type RateItemStatusHistoryScalarFieldEnum = (typeof RateItemStatusHistoryScalarFieldEnum)[keyof typeof RateItemStatusHistoryScalarFieldEnum]
+export type RateItemStatusChangeLogScalarFieldEnum = (typeof RateItemStatusChangeLogScalarFieldEnum)[keyof typeof RateItemStatusChangeLogScalarFieldEnum]
 
 
 export const RateChangeLogScalarFieldEnum = {
@@ -518,7 +597,7 @@ export const StudentEnrolmentItemScalarFieldEnum = {
 export type StudentEnrolmentItemScalarFieldEnum = (typeof StudentEnrolmentItemScalarFieldEnum)[keyof typeof StudentEnrolmentItemScalarFieldEnum]
 
 
-export const StudentEnrolmentItemStatusHistoryScalarFieldEnum = {
+export const StudentEnrolmentItemStatusChangeLogScalarFieldEnum = {
   id: 'id',
   enrolmentItemId: 'enrolmentItemId',
   fromStatus: 'fromStatus',
@@ -528,7 +607,7 @@ export const StudentEnrolmentItemStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type StudentEnrolmentItemStatusHistoryScalarFieldEnum = (typeof StudentEnrolmentItemStatusHistoryScalarFieldEnum)[keyof typeof StudentEnrolmentItemStatusHistoryScalarFieldEnum]
+export type StudentEnrolmentItemStatusChangeLogScalarFieldEnum = (typeof StudentEnrolmentItemStatusChangeLogScalarFieldEnum)[keyof typeof StudentEnrolmentItemStatusChangeLogScalarFieldEnum]
 
 
 export const DiscountScalarFieldEnum = {
@@ -574,7 +653,7 @@ export const TeacherEnrolmentItemScalarFieldEnum = {
 export type TeacherEnrolmentItemScalarFieldEnum = (typeof TeacherEnrolmentItemScalarFieldEnum)[keyof typeof TeacherEnrolmentItemScalarFieldEnum]
 
 
-export const TeacherEnrolmentItemStatusHistoryScalarFieldEnum = {
+export const TeacherEnrolmentItemStatusChangeLogScalarFieldEnum = {
   id: 'id',
   enrolmentItemId: 'enrolmentItemId',
   fromStatus: 'fromStatus',
@@ -584,7 +663,7 @@ export const TeacherEnrolmentItemStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type TeacherEnrolmentItemStatusHistoryScalarFieldEnum = (typeof TeacherEnrolmentItemStatusHistoryScalarFieldEnum)[keyof typeof TeacherEnrolmentItemStatusHistoryScalarFieldEnum]
+export type TeacherEnrolmentItemStatusChangeLogScalarFieldEnum = (typeof TeacherEnrolmentItemStatusChangeLogScalarFieldEnum)[keyof typeof TeacherEnrolmentItemStatusChangeLogScalarFieldEnum]
 
 
 export const StaffEnrolmentListScalarFieldEnum = {
@@ -617,7 +696,7 @@ export const StaffEnrolmentItemScalarFieldEnum = {
 export type StaffEnrolmentItemScalarFieldEnum = (typeof StaffEnrolmentItemScalarFieldEnum)[keyof typeof StaffEnrolmentItemScalarFieldEnum]
 
 
-export const StaffEnrolmentItemStatusHistoryScalarFieldEnum = {
+export const StaffEnrolmentItemStatusChangeLogScalarFieldEnum = {
   id: 'id',
   enrolmentItemId: 'enrolmentItemId',
   fromStatus: 'fromStatus',
@@ -627,7 +706,7 @@ export const StaffEnrolmentItemStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type StaffEnrolmentItemStatusHistoryScalarFieldEnum = (typeof StaffEnrolmentItemStatusHistoryScalarFieldEnum)[keyof typeof StaffEnrolmentItemStatusHistoryScalarFieldEnum]
+export type StaffEnrolmentItemStatusChangeLogScalarFieldEnum = (typeof StaffEnrolmentItemStatusChangeLogScalarFieldEnum)[keyof typeof StaffEnrolmentItemStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorEnrolmentListScalarFieldEnum = {
@@ -659,7 +738,7 @@ export const AmbassadorEnrolmentItemScalarFieldEnum = {
 export type AmbassadorEnrolmentItemScalarFieldEnum = (typeof AmbassadorEnrolmentItemScalarFieldEnum)[keyof typeof AmbassadorEnrolmentItemScalarFieldEnum]
 
 
-export const AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum = {
+export const AmbassadorEnrolmentItemStatusChangeLogScalarFieldEnum = {
   id: 'id',
   enrolmentItemId: 'enrolmentItemId',
   fromStatus: 'fromStatus',
@@ -669,7 +748,7 @@ export const AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum = (typeof AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum)[keyof typeof AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum]
+export type AmbassadorEnrolmentItemStatusChangeLogScalarFieldEnum = (typeof AmbassadorEnrolmentItemStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorEnrolmentItemStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorCommissionListScalarFieldEnum = {
@@ -696,7 +775,7 @@ export const AmbassadorCommissionItemScalarFieldEnum = {
 export type AmbassadorCommissionItemScalarFieldEnum = (typeof AmbassadorCommissionItemScalarFieldEnum)[keyof typeof AmbassadorCommissionItemScalarFieldEnum]
 
 
-export const AmbassadorCommissionItemStatusHistoryScalarFieldEnum = {
+export const AmbassadorCommissionItemStatusChangeLogScalarFieldEnum = {
   id: 'id',
   commissionItemId: 'commissionItemId',
   fromStatus: 'fromStatus',
@@ -706,7 +785,7 @@ export const AmbassadorCommissionItemStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type AmbassadorCommissionItemStatusHistoryScalarFieldEnum = (typeof AmbassadorCommissionItemStatusHistoryScalarFieldEnum)[keyof typeof AmbassadorCommissionItemStatusHistoryScalarFieldEnum]
+export type AmbassadorCommissionItemStatusChangeLogScalarFieldEnum = (typeof AmbassadorCommissionItemStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorCommissionItemStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorCommissionRateChangeLogScalarFieldEnum = {
@@ -754,7 +833,7 @@ export const ScheduleOccurrenceScalarFieldEnum = {
 export type ScheduleOccurrenceScalarFieldEnum = (typeof ScheduleOccurrenceScalarFieldEnum)[keyof typeof ScheduleOccurrenceScalarFieldEnum]
 
 
-export const ScheduleOccurrenceStatusHistoryScalarFieldEnum = {
+export const ScheduleOccurrenceStatusChangeLogScalarFieldEnum = {
   id: 'id',
   occurrenceId: 'occurrenceId',
   fromStatus: 'fromStatus',
@@ -764,7 +843,7 @@ export const ScheduleOccurrenceStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type ScheduleOccurrenceStatusHistoryScalarFieldEnum = (typeof ScheduleOccurrenceStatusHistoryScalarFieldEnum)[keyof typeof ScheduleOccurrenceStatusHistoryScalarFieldEnum]
+export type ScheduleOccurrenceStatusChangeLogScalarFieldEnum = (typeof ScheduleOccurrenceStatusChangeLogScalarFieldEnum)[keyof typeof ScheduleOccurrenceStatusChangeLogScalarFieldEnum]
 
 
 export const ScheduleChangeRequestScalarFieldEnum = {
@@ -820,7 +899,7 @@ export const StaffScheduleOccurrenceScalarFieldEnum = {
 export type StaffScheduleOccurrenceScalarFieldEnum = (typeof StaffScheduleOccurrenceScalarFieldEnum)[keyof typeof StaffScheduleOccurrenceScalarFieldEnum]
 
 
-export const StaffScheduleOccurrenceStatusHistoryScalarFieldEnum = {
+export const StaffScheduleOccurrenceStatusChangeLogScalarFieldEnum = {
   id: 'id',
   occurrenceId: 'occurrenceId',
   fromStatus: 'fromStatus',
@@ -830,7 +909,7 @@ export const StaffScheduleOccurrenceStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type StaffScheduleOccurrenceStatusHistoryScalarFieldEnum = (typeof StaffScheduleOccurrenceStatusHistoryScalarFieldEnum)[keyof typeof StaffScheduleOccurrenceStatusHistoryScalarFieldEnum]
+export type StaffScheduleOccurrenceStatusChangeLogScalarFieldEnum = (typeof StaffScheduleOccurrenceStatusChangeLogScalarFieldEnum)[keyof typeof StaffScheduleOccurrenceStatusChangeLogScalarFieldEnum]
 
 
 export const StaffScheduleChangeRequestScalarFieldEnum = {
@@ -886,7 +965,7 @@ export const AmbassadorScheduleOccurrenceScalarFieldEnum = {
 export type AmbassadorScheduleOccurrenceScalarFieldEnum = (typeof AmbassadorScheduleOccurrenceScalarFieldEnum)[keyof typeof AmbassadorScheduleOccurrenceScalarFieldEnum]
 
 
-export const AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum = {
+export const AmbassadorScheduleOccurrenceStatusChangeLogScalarFieldEnum = {
   id: 'id',
   occurrenceId: 'occurrenceId',
   fromStatus: 'fromStatus',
@@ -896,7 +975,7 @@ export const AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum = (typeof AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum)[keyof typeof AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum]
+export type AmbassadorScheduleOccurrenceStatusChangeLogScalarFieldEnum = (typeof AmbassadorScheduleOccurrenceStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorScheduleOccurrenceStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorScheduleChangeRequestScalarFieldEnum = {
@@ -918,6 +997,63 @@ export const AmbassadorScheduleChangeRequestScalarFieldEnum = {
 } as const
 
 export type AmbassadorScheduleChangeRequestScalarFieldEnum = (typeof AmbassadorScheduleChangeRequestScalarFieldEnum)[keyof typeof AmbassadorScheduleChangeRequestScalarFieldEnum]
+
+
+export const MarketingScheduleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  deptId: 'deptId',
+  createdByUserId: 'createdByUserId',
+  isActive: 'isActive'
+} as const
+
+export type MarketingScheduleScalarFieldEnum = (typeof MarketingScheduleScalarFieldEnum)[keyof typeof MarketingScheduleScalarFieldEnum]
+
+
+export const MarketingScheduleOccurrenceScalarFieldEnum = {
+  id: 'id',
+  scheduleId: 'scheduleId',
+  postTypeId: 'postTypeId',
+  recurrenceType: 'recurrenceType',
+  dayOfWeek: 'dayOfWeek',
+  dayOfMonth: 'dayOfMonth',
+  monthOfYear: 'monthOfYear',
+  oneOffDate: 'oneOffDate',
+  customPattern: 'customPattern',
+  quotaPerPeriod: 'quotaPerPeriod',
+  status: 'status',
+  activatedAt: 'activatedAt',
+  pausedAt: 'pausedAt',
+  deactivatedAt: 'deactivatedAt',
+  isActive: 'isActive'
+} as const
+
+export type MarketingScheduleOccurrenceScalarFieldEnum = (typeof MarketingScheduleOccurrenceScalarFieldEnum)[keyof typeof MarketingScheduleOccurrenceScalarFieldEnum]
+
+
+export const MarketingPostSlotScalarFieldEnum = {
+  id: 'id',
+  occurrenceId: 'occurrenceId',
+  dueDate: 'dueDate',
+  status: 'status',
+  missedTicketId: 'missedTicketId',
+  isActive: 'isActive'
+} as const
+
+export type MarketingPostSlotScalarFieldEnum = (typeof MarketingPostSlotScalarFieldEnum)[keyof typeof MarketingPostSlotScalarFieldEnum]
+
+
+export const MarketingScheduleOccurrenceStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  occurrenceId: 'occurrenceId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type MarketingScheduleOccurrenceStatusChangeLogScalarFieldEnum = (typeof MarketingScheduleOccurrenceStatusChangeLogScalarFieldEnum)[keyof typeof MarketingScheduleOccurrenceStatusChangeLogScalarFieldEnum]
 
 
 export const AcademicSessionScalarFieldEnum = {
@@ -958,6 +1094,19 @@ export const AcademicSessionScalarFieldEnum = {
 export type AcademicSessionScalarFieldEnum = (typeof AcademicSessionScalarFieldEnum)[keyof typeof AcademicSessionScalarFieldEnum]
 
 
+export const AcademicSessionStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type AcademicSessionStatusChangeLogScalarFieldEnum = (typeof AcademicSessionStatusChangeLogScalarFieldEnum)[keyof typeof AcademicSessionStatusChangeLogScalarFieldEnum]
+
+
 export const SessionAttendanceScalarFieldEnum = {
   id: 'id',
   sessionId: 'sessionId',
@@ -980,6 +1129,18 @@ export const SessionAttendanceScalarFieldEnum = {
 } as const
 
 export type SessionAttendanceScalarFieldEnum = (typeof SessionAttendanceScalarFieldEnum)[keyof typeof SessionAttendanceScalarFieldEnum]
+
+
+export const AmbassadorServiceScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  serviceType: 'serviceType',
+  currency: 'currency',
+  rate: 'rate',
+  isActive: 'isActive'
+} as const
+
+export type AmbassadorServiceScalarFieldEnum = (typeof AmbassadorServiceScalarFieldEnum)[keyof typeof AmbassadorServiceScalarFieldEnum]
 
 
 export const MeetingScalarFieldEnum = {
@@ -1007,11 +1168,24 @@ export const MeetingScalarFieldEnum = {
   recordingUrl: 'recordingUrl',
   transcriptUrl: 'transcriptUrl',
   summaryUrl: 'summaryUrl',
-  dept: 'dept',
+  deptId: 'deptId',
   isActive: 'isActive'
 } as const
 
 export type MeetingScalarFieldEnum = (typeof MeetingScalarFieldEnum)[keyof typeof MeetingScalarFieldEnum]
+
+
+export const MeetingStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  meetingId: 'meetingId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type MeetingStatusChangeLogScalarFieldEnum = (typeof MeetingStatusChangeLogScalarFieldEnum)[keyof typeof MeetingStatusChangeLogScalarFieldEnum]
 
 
 export const MeetingParticipantScalarFieldEnum = {
@@ -1077,6 +1251,19 @@ export const AmbassadorMeetingScalarFieldEnum = {
 } as const
 
 export type AmbassadorMeetingScalarFieldEnum = (typeof AmbassadorMeetingScalarFieldEnum)[keyof typeof AmbassadorMeetingScalarFieldEnum]
+
+
+export const AmbassadorMeetingStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  meetingId: 'meetingId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type AmbassadorMeetingStatusChangeLogScalarFieldEnum = (typeof AmbassadorMeetingStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorMeetingStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorMeetingAttendanceScalarFieldEnum = {
@@ -1145,7 +1332,7 @@ export const SyllabusListScalarFieldEnum = {
 export type SyllabusListScalarFieldEnum = (typeof SyllabusListScalarFieldEnum)[keyof typeof SyllabusListScalarFieldEnum]
 
 
-export const SyllabusListStatusHistoryScalarFieldEnum = {
+export const SyllabusListStatusChangeLogScalarFieldEnum = {
   id: 'id',
   syllabusListId: 'syllabusListId',
   fromStatus: 'fromStatus',
@@ -1155,7 +1342,7 @@ export const SyllabusListStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type SyllabusListStatusHistoryScalarFieldEnum = (typeof SyllabusListStatusHistoryScalarFieldEnum)[keyof typeof SyllabusListStatusHistoryScalarFieldEnum]
+export type SyllabusListStatusChangeLogScalarFieldEnum = (typeof SyllabusListStatusChangeLogScalarFieldEnum)[keyof typeof SyllabusListStatusChangeLogScalarFieldEnum]
 
 
 export const SyllabusItemScalarFieldEnum = {
@@ -1180,7 +1367,40 @@ export const SyllabusItemScalarFieldEnum = {
 export type SyllabusItemScalarFieldEnum = (typeof SyllabusItemScalarFieldEnum)[keyof typeof SyllabusItemScalarFieldEnum]
 
 
-export const StudentProgressScalarFieldEnum = {
+export const SyllabusChapterScalarFieldEnum = {
+  id: 'id',
+  syllabusListId: 'syllabusListId',
+  chapterNum: 'chapterNum',
+  chapterTitle: 'chapterTitle',
+  order: 'order',
+  isActive: 'isActive'
+} as const
+
+export type SyllabusChapterScalarFieldEnum = (typeof SyllabusChapterScalarFieldEnum)[keyof typeof SyllabusChapterScalarFieldEnum]
+
+
+export const ChapterRecordingListScalarFieldEnum = {
+  id: 'id',
+  syllabusChapterId: 'syllabusChapterId',
+  isActive: 'isActive'
+} as const
+
+export type ChapterRecordingListScalarFieldEnum = (typeof ChapterRecordingListScalarFieldEnum)[keyof typeof ChapterRecordingListScalarFieldEnum]
+
+
+export const ChapterRecordingItemScalarFieldEnum = {
+  id: 'id',
+  chapterRecordingListId: 'chapterRecordingListId',
+  recordingId: 'recordingId',
+  notes: 'notes',
+  order: 'order',
+  isActive: 'isActive'
+} as const
+
+export type ChapterRecordingItemScalarFieldEnum = (typeof ChapterRecordingItemScalarFieldEnum)[keyof typeof ChapterRecordingItemScalarFieldEnum]
+
+
+export const StudentSyllabusProgressScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
   syllabusItemId: 'syllabusItemId',
@@ -1190,7 +1410,7 @@ export const StudentProgressScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type StudentProgressScalarFieldEnum = (typeof StudentProgressScalarFieldEnum)[keyof typeof StudentProgressScalarFieldEnum]
+export type StudentSyllabusProgressScalarFieldEnum = (typeof StudentSyllabusProgressScalarFieldEnum)[keyof typeof StudentSyllabusProgressScalarFieldEnum]
 
 
 export const TaskTypeScalarFieldEnum = {
@@ -1205,10 +1425,29 @@ export type TaskTypeScalarFieldEnum = (typeof TaskTypeScalarFieldEnum)[keyof typ
 export const TaskListScalarFieldEnum = {
   id: 'id',
   curriculumListId: 'curriculumListId',
+  name: 'name',
+  version: 'version',
+  status: 'status',
+  activatedAt: 'activatedAt',
+  pausedAt: 'pausedAt',
+  deactivatedAt: 'deactivatedAt',
   isActive: 'isActive'
 } as const
 
 export type TaskListScalarFieldEnum = (typeof TaskListScalarFieldEnum)[keyof typeof TaskListScalarFieldEnum]
+
+
+export const TaskListStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  taskListId: 'taskListId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type TaskListStatusChangeLogScalarFieldEnum = (typeof TaskListStatusChangeLogScalarFieldEnum)[keyof typeof TaskListStatusChangeLogScalarFieldEnum]
 
 
 export const TaskItemScalarFieldEnum = {
@@ -1259,10 +1498,29 @@ export type TaskSubmissionScalarFieldEnum = (typeof TaskSubmissionScalarFieldEnu
 export const MockListScalarFieldEnum = {
   id: 'id',
   curriculumListId: 'curriculumListId',
+  name: 'name',
+  version: 'version',
+  status: 'status',
+  activatedAt: 'activatedAt',
+  pausedAt: 'pausedAt',
+  deactivatedAt: 'deactivatedAt',
   isActive: 'isActive'
 } as const
 
 export type MockListScalarFieldEnum = (typeof MockListScalarFieldEnum)[keyof typeof MockListScalarFieldEnum]
+
+
+export const MockListStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  mockListId: 'mockListId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type MockListStatusChangeLogScalarFieldEnum = (typeof MockListStatusChangeLogScalarFieldEnum)[keyof typeof MockListStatusChangeLogScalarFieldEnum]
 
 
 export const MockItemScalarFieldEnum = {
@@ -1310,10 +1568,29 @@ export type MockResultScalarFieldEnum = (typeof MockResultScalarFieldEnum)[keyof
 export const CourseTimelineListScalarFieldEnum = {
   id: 'id',
   curriculumListId: 'curriculumListId',
+  name: 'name',
+  version: 'version',
+  status: 'status',
+  activatedAt: 'activatedAt',
+  pausedAt: 'pausedAt',
+  deactivatedAt: 'deactivatedAt',
   isActive: 'isActive'
 } as const
 
 export type CourseTimelineListScalarFieldEnum = (typeof CourseTimelineListScalarFieldEnum)[keyof typeof CourseTimelineListScalarFieldEnum]
+
+
+export const CourseTimelineListStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  timelineListId: 'timelineListId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type CourseTimelineListStatusChangeLogScalarFieldEnum = (typeof CourseTimelineListStatusChangeLogScalarFieldEnum)[keyof typeof CourseTimelineListStatusChangeLogScalarFieldEnum]
 
 
 export const CourseTimelineItemScalarFieldEnum = {
@@ -1340,7 +1617,7 @@ export const AmbassadorProgrammeListScalarFieldEnum = {
 export type AmbassadorProgrammeListScalarFieldEnum = (typeof AmbassadorProgrammeListScalarFieldEnum)[keyof typeof AmbassadorProgrammeListScalarFieldEnum]
 
 
-export const AmbassadorProgrammeScalarFieldEnum = {
+export const AmbassadorProgrammeContentListScalarFieldEnum = {
   id: 'id',
   programmeListId: 'programmeListId',
   name: 'name',
@@ -1352,12 +1629,12 @@ export const AmbassadorProgrammeScalarFieldEnum = {
   isActive: 'isActive'
 } as const
 
-export type AmbassadorProgrammeScalarFieldEnum = (typeof AmbassadorProgrammeScalarFieldEnum)[keyof typeof AmbassadorProgrammeScalarFieldEnum]
+export type AmbassadorProgrammeContentListScalarFieldEnum = (typeof AmbassadorProgrammeContentListScalarFieldEnum)[keyof typeof AmbassadorProgrammeContentListScalarFieldEnum]
 
 
-export const AmbassadorProgrammeListStatusHistoryScalarFieldEnum = {
+export const AmbassadorProgrammeContentListStatusChangeLogScalarFieldEnum = {
   id: 'id',
-  programmeListId: 'programmeListId',
+  contentListId: 'contentListId',
   fromStatus: 'fromStatus',
   toStatus: 'toStatus',
   changedAt: 'changedAt',
@@ -1365,12 +1642,12 @@ export const AmbassadorProgrammeListStatusHistoryScalarFieldEnum = {
   reason: 'reason'
 } as const
 
-export type AmbassadorProgrammeListStatusHistoryScalarFieldEnum = (typeof AmbassadorProgrammeListStatusHistoryScalarFieldEnum)[keyof typeof AmbassadorProgrammeListStatusHistoryScalarFieldEnum]
+export type AmbassadorProgrammeContentListStatusChangeLogScalarFieldEnum = (typeof AmbassadorProgrammeContentListStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorProgrammeContentListStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorProgrammeItemScalarFieldEnum = {
   id: 'id',
-  programmeId: 'programmeId',
+  contentListId: 'contentListId',
   programmeCode: 'programmeCode',
   programmeTitle: 'programmeTitle',
   level: 'level',
@@ -1397,10 +1674,29 @@ export type AmbassadorProgrammeProgressScalarFieldEnum = (typeof AmbassadorProgr
 export const AmbassadorTestListScalarFieldEnum = {
   id: 'id',
   programmeListId: 'programmeListId',
+  name: 'name',
+  version: 'version',
+  status: 'status',
+  activatedAt: 'activatedAt',
+  pausedAt: 'pausedAt',
+  deactivatedAt: 'deactivatedAt',
   isActive: 'isActive'
 } as const
 
 export type AmbassadorTestListScalarFieldEnum = (typeof AmbassadorTestListScalarFieldEnum)[keyof typeof AmbassadorTestListScalarFieldEnum]
+
+
+export const AmbassadorTestListStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  testListId: 'testListId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type AmbassadorTestListStatusChangeLogScalarFieldEnum = (typeof AmbassadorTestListStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorTestListStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorTestItemScalarFieldEnum = {
@@ -1437,10 +1733,29 @@ export type AmbassadorTestResultScalarFieldEnum = (typeof AmbassadorTestResultSc
 export const AmbassadorProgrammeTimelineListScalarFieldEnum = {
   id: 'id',
   programmeListId: 'programmeListId',
+  name: 'name',
+  version: 'version',
+  status: 'status',
+  activatedAt: 'activatedAt',
+  pausedAt: 'pausedAt',
+  deactivatedAt: 'deactivatedAt',
   isActive: 'isActive'
 } as const
 
 export type AmbassadorProgrammeTimelineListScalarFieldEnum = (typeof AmbassadorProgrammeTimelineListScalarFieldEnum)[keyof typeof AmbassadorProgrammeTimelineListScalarFieldEnum]
+
+
+export const AmbassadorProgrammeTimelineListStatusChangeLogScalarFieldEnum = {
+  id: 'id',
+  timelineListId: 'timelineListId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
+} as const
+
+export type AmbassadorProgrammeTimelineListStatusChangeLogScalarFieldEnum = (typeof AmbassadorProgrammeTimelineListStatusChangeLogScalarFieldEnum)[keyof typeof AmbassadorProgrammeTimelineListStatusChangeLogScalarFieldEnum]
 
 
 export const AmbassadorProgrammeTimelineItemScalarFieldEnum = {
@@ -1484,19 +1799,19 @@ export const ReferralClickScalarFieldEnum = {
 export type ReferralClickScalarFieldEnum = (typeof ReferralClickScalarFieldEnum)[keyof typeof ReferralClickScalarFieldEnum]
 
 
-export const InvoiceMonthScalarFieldEnum = {
+export const BillingMonthScalarFieldEnum = {
   id: 'id',
   month: 'month',
   serialNo: 'serialNo'
 } as const
 
-export type InvoiceMonthScalarFieldEnum = (typeof InvoiceMonthScalarFieldEnum)[keyof typeof InvoiceMonthScalarFieldEnum]
+export type BillingMonthScalarFieldEnum = (typeof BillingMonthScalarFieldEnum)[keyof typeof BillingMonthScalarFieldEnum]
 
 
 export const StudentInvoiceScalarFieldEnum = {
   id: 'id',
   studentId: 'studentId',
-  invoiceMonthId: 'invoiceMonthId',
+  billingMonthId: 'billingMonthId',
   receivingPaymentMethodId: 'receivingPaymentMethodId',
   month: 'month',
   invoiceMode: 'invoiceMode',
@@ -1581,7 +1896,7 @@ export const ClaimScalarFieldEnum = {
   enrolmentListId: 'enrolmentListId',
   claimantType: 'claimantType',
   month: 'month',
-  dept: 'dept',
+  deptId: 'deptId',
   sessions: 'sessions',
   hours: 'hours',
   rateApplied: 'rateApplied',
@@ -1596,7 +1911,7 @@ export const ClaimScalarFieldEnum = {
   paymentDate: 'paymentDate',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  invoiceMonthId: 'invoiceMonthId'
+  billingMonthId: 'billingMonthId'
 } as const
 
 export type ClaimScalarFieldEnum = (typeof ClaimScalarFieldEnum)[keyof typeof ClaimScalarFieldEnum]
@@ -1639,7 +1954,7 @@ export const PaycheckScalarFieldEnum = {
   claimId: 'claimId',
   recipientId: 'recipientId',
   enrolmentListId: 'enrolmentListId',
-  paycheckMonthId: 'paycheckMonthId',
+  billingMonthId: 'billingMonthId',
   receivingPaymentMethodId: 'receivingPaymentMethodId',
   month: 'month',
   paycheckMode: 'paycheckMode',
@@ -1753,7 +2068,7 @@ export const AmbassadorPaycheckScalarFieldEnum = {
   id: 'id',
   claimId: 'claimId',
   ambassadorId: 'ambassadorId',
-  paycheckMonthId: 'paycheckMonthId',
+  billingMonthId: 'billingMonthId',
   receivingPaymentMethodId: 'receivingPaymentMethodId',
   month: 'month',
   subtotal: 'subtotal',
@@ -1882,7 +2197,7 @@ export type LedgerEntryScalarFieldEnum = (typeof LedgerEntryScalarFieldEnum)[key
 
 export const DeptBudgetScalarFieldEnum = {
   id: 'id',
-  dept: 'dept',
+  deptId: 'deptId',
   quarter: 'quarter',
   totalAllocated: 'totalAllocated',
   status: 'status',
@@ -1948,17 +2263,6 @@ export const TicketScalarFieldEnum = {
 } as const
 
 export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
-
-
-export const TicketCategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  department: 'department',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type TicketCategoryScalarFieldEnum = (typeof TicketCategoryScalarFieldEnum)[keyof typeof TicketCategoryScalarFieldEnum]
 
 
 export const TicketMessageScalarFieldEnum = {
@@ -2109,7 +2413,8 @@ export type FlagTypeScalarFieldEnum = (typeof FlagTypeScalarFieldEnum)[keyof typ
 export const RecordTypeScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  isActive: 'isActive'
+  isActive: 'isActive',
+  targetUserTypeId: 'targetUserTypeId'
 } as const
 
 export type RecordTypeScalarFieldEnum = (typeof RecordTypeScalarFieldEnum)[keyof typeof RecordTypeScalarFieldEnum]
@@ -2186,8 +2491,8 @@ export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[k
 
 export const JobPostingScalarFieldEnum = {
   id: 'id',
-  role: 'role',
-  dept: 'dept',
+  staffRoleId: 'staffRoleId',
+  deptId: 'deptId',
   description: 'description',
   jobPostingLink: 'jobPostingLink',
   jobPostingPosterLink: 'jobPostingPosterLink',
@@ -2203,7 +2508,7 @@ export type JobPostingScalarFieldEnum = (typeof JobPostingScalarFieldEnum)[keyof
 export const RegistrationFormScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  targetRole: 'targetRole',
+  targetUserTypeId: 'targetUserTypeId',
   description: 'description',
   isPublic: 'isPublic',
   isActive: 'isActive'
@@ -2234,7 +2539,7 @@ export const ChecklistTemplateScalarFieldEnum = {
   id: 'id',
   name: 'name',
   entityType: 'entityType',
-  targetRole: 'targetRole',
+  targetUserTypeId: 'targetUserTypeId',
   isActive: 'isActive'
 } as const
 
@@ -2359,7 +2664,7 @@ export type ExhibitionItemScalarFieldEnum = (typeof ExhibitionItemScalarFieldEnu
 export const ContentGroupScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  dept: 'dept',
+  deptId: 'deptId',
   isActive: 'isActive'
 } as const
 
@@ -2377,7 +2682,7 @@ export type ContentGroupItemScalarFieldEnum = (typeof ContentGroupItemScalarFiel
 
 export const ContentBankItemScalarFieldEnum = {
   id: 'id',
-  dept: 'dept',
+  deptId: 'deptId',
   name: 'name',
   url: 'url',
   addedByUserId: 'addedByUserId',
@@ -2423,6 +2728,35 @@ export const RecordingScalarFieldEnum = {
 } as const
 
 export type RecordingScalarFieldEnum = (typeof RecordingScalarFieldEnum)[keyof typeof RecordingScalarFieldEnum]
+
+
+export const MetricSnapshotScalarFieldEnum = {
+  id: 'id',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  month: 'month',
+  metrics: 'metrics',
+  snapshotAt: 'snapshotAt'
+} as const
+
+export type MetricSnapshotScalarFieldEnum = (typeof MetricSnapshotScalarFieldEnum)[keyof typeof MetricSnapshotScalarFieldEnum]
+
+
+export const ProgressReportScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  metricSnapshotId: 'metricSnapshotId',
+  month: 'month',
+  pdfLink: 'pdfLink',
+  staffComments: 'staffComments',
+  status: 'status',
+  reviewedByUserId: 'reviewedByUserId',
+  reviewedAt: 'reviewedAt',
+  sentAt: 'sentAt',
+  isActive: 'isActive'
+} as const
+
+export type ProgressReportScalarFieldEnum = (typeof ProgressReportScalarFieldEnum)[keyof typeof ProgressReportScalarFieldEnum]
 
 
 export const SiteLogScalarFieldEnum = {
@@ -2474,7 +2808,8 @@ export const CurrencyRateScalarFieldEnum = {
   fromCurrency: 'fromCurrency',
   toCurrency: 'toCurrency',
   rate: 'rate',
-  reverseRate: 'reverseRate'
+  reverseRate: 'reverseRate',
+  effectiveDate: 'effectiveDate'
 } as const
 
 export type CurrencyRateScalarFieldEnum = (typeof CurrencyRateScalarFieldEnum)[keyof typeof CurrencyRateScalarFieldEnum]
@@ -2548,52 +2883,6 @@ export const BacklogItemScalarFieldEnum = {
 export type BacklogItemScalarFieldEnum = (typeof BacklogItemScalarFieldEnum)[keyof typeof BacklogItemScalarFieldEnum]
 
 
-export const SprintItemScalarFieldEnum = {
-  id: 'id',
-  serialNo: 'serialNo',
-  importance: 'importance',
-  addedToCalendar: 'addedToCalendar',
-  addedToCalendar2: 'addedToCalendar2',
-  dateAdded: 'dateAdded',
-  date: 'date',
-  additionalTask: 'additionalTask',
-  event: 'event',
-  desc: 'desc',
-  startTime: 'startTime',
-  endTime: 'endTime',
-  durationHours: 'durationHours',
-  location: 'location',
-  tag: 'tag',
-  nextSteps: 'nextSteps'
-} as const
-
-export type SprintItemScalarFieldEnum = (typeof SprintItemScalarFieldEnum)[keyof typeof SprintItemScalarFieldEnum]
-
-
-export const AmbassadorDeliverableScalarFieldEnum = {
-  id: 'id',
-  ambassadorId: 'ambassadorId',
-  title: 'title',
-  score: 'score',
-  status: 'status'
-} as const
-
-export type AmbassadorDeliverableScalarFieldEnum = (typeof AmbassadorDeliverableScalarFieldEnum)[keyof typeof AmbassadorDeliverableScalarFieldEnum]
-
-
-export const AmbassadorEarningScalarFieldEnum = {
-  id: 'id',
-  ambassadorId: 'ambassadorId',
-  earningType: 'earningType',
-  amount: 'amount',
-  currency: 'currency',
-  payoutStatus: 'payoutStatus',
-  referralId: 'referralId'
-} as const
-
-export type AmbassadorEarningScalarFieldEnum = (typeof AmbassadorEarningScalarFieldEnum)[keyof typeof AmbassadorEarningScalarFieldEnum]
-
-
 export const ContentTypeScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -2615,7 +2904,7 @@ export type KnowledgeBankDomainScalarFieldEnum = (typeof KnowledgeBankDomainScal
 export const KnowledgeBankListScalarFieldEnum = {
   id: 'id',
   domainId: 'domainId',
-  dept: 'dept',
+  deptId: 'deptId',
   isActive: 'isActive'
 } as const
 
@@ -2689,7 +2978,7 @@ export const MeetingBacklogItemScalarFieldEnum = {
   backlogListId: 'backlogListId',
   ticketId: 'ticketId',
   title: 'title',
-  dept: 'dept',
+  deptId: 'deptId',
   priority: 'priority',
   notes: 'notes',
   pushedToBank: 'pushedToBank',
@@ -2706,7 +2995,7 @@ export const GeneralMeetingScalarFieldEnum = {
   agenda: 'agenda',
   status: 'status',
   link: 'link',
-  dept: 'dept',
+  deptId: 'deptId',
   isActive: 'isActive',
   sessionTypeId: 'sessionTypeId'
 } as const
@@ -2714,38 +3003,17 @@ export const GeneralMeetingScalarFieldEnum = {
 export type GeneralMeetingScalarFieldEnum = (typeof GeneralMeetingScalarFieldEnum)[keyof typeof GeneralMeetingScalarFieldEnum]
 
 
-export const AssignmentScalarFieldEnum = {
+export const GeneralMeetingStatusChangeLogScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  description: 'description',
-  dueDate: 'dueDate',
-  status: 'status',
-  grade: 'grade',
-  submission: 'submission',
-  studentId: 'studentId',
-  serviceId: 'serviceId'
+  meetingId: 'meetingId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  changedAt: 'changedAt',
+  changedByUserId: 'changedByUserId',
+  reason: 'reason'
 } as const
 
-export type AssignmentScalarFieldEnum = (typeof AssignmentScalarFieldEnum)[keyof typeof AssignmentScalarFieldEnum]
-
-
-export const StudentStatusScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  definition: 'definition'
-} as const
-
-export type StudentStatusScalarFieldEnum = (typeof StudentStatusScalarFieldEnum)[keyof typeof StudentStatusScalarFieldEnum]
-
-
-export const CanvaDesignScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  date: 'date',
-  link: 'link'
-} as const
-
-export type CanvaDesignScalarFieldEnum = (typeof CanvaDesignScalarFieldEnum)[keyof typeof CanvaDesignScalarFieldEnum]
+export type GeneralMeetingStatusChangeLogScalarFieldEnum = (typeof GeneralMeetingStatusChangeLogScalarFieldEnum)[keyof typeof GeneralMeetingStatusChangeLogScalarFieldEnum]
 
 
 export const BookletScalarFieldEnum = {
@@ -2758,35 +3026,19 @@ export const BookletScalarFieldEnum = {
 export type BookletScalarFieldEnum = (typeof BookletScalarFieldEnum)[keyof typeof BookletScalarFieldEnum]
 
 
-export const GcrClassroomScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  link: 'link',
-  date: 'date',
-  serialNo: 'serialNo'
-} as const
-
-export type GcrClassroomScalarFieldEnum = (typeof GcrClassroomScalarFieldEnum)[keyof typeof GcrClassroomScalarFieldEnum]
-
-
-export const RateCardScalarFieldEnum = {
-  id: 'id',
-  course: 'course',
-  country: 'country',
-  groupCode: 'groupCode',
-  rateGBP: 'rateGBP',
-  createdAt: 'createdAt'
-} as const
-
-export type RateCardScalarFieldEnum = (typeof RateCardScalarFieldEnum)[keyof typeof RateCardScalarFieldEnum]
-
-
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -2803,4 +3055,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

@@ -53,7 +53,7 @@ export async function POST(
     },
   });
 
-  await prisma.scheduleOccurrenceStatusHistory.create({
+  await prisma.scheduleOccurrenceStatusChangeLog.create({
     data: {
       occurrenceId: occurrence.id,
       fromStatus: "NONE",

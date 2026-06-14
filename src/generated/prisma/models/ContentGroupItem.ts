@@ -180,6 +180,7 @@ export type ContentGroupItemOrderByWithRelationInput = {
 
 export type ContentGroupItemWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  contentGroupId_contentBankItemId?: Prisma.ContentGroupItemContentGroupIdContentBankItemIdCompoundUniqueInput
   AND?: Prisma.ContentGroupItemWhereInput | Prisma.ContentGroupItemWhereInput[]
   OR?: Prisma.ContentGroupItemWhereInput[]
   NOT?: Prisma.ContentGroupItemWhereInput | Prisma.ContentGroupItemWhereInput[]
@@ -187,7 +188,7 @@ export type ContentGroupItemWhereUniqueInput = Prisma.AtLeast<{
   contentBankItemId?: Prisma.StringFilter<"ContentGroupItem"> | string
   contentGroup?: Prisma.XOR<Prisma.ContentGroupScalarRelationFilter, Prisma.ContentGroupWhereInput>
   contentBankItem?: Prisma.XOR<Prisma.ContentBankItemScalarRelationFilter, Prisma.ContentBankItemWhereInput>
-}, "id">
+}, "id" | "contentGroupId_contentBankItemId">
 
 export type ContentGroupItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -255,6 +256,11 @@ export type ContentGroupItemListRelationFilter = {
 
 export type ContentGroupItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ContentGroupItemContentGroupIdContentBankItemIdCompoundUniqueInput = {
+  contentGroupId: string
+  contentBankItemId: string
 }
 
 export type ContentGroupItemCountOrderByAggregateInput = {

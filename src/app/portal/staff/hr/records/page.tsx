@@ -19,7 +19,7 @@ import {
   UserPlus,
   ShieldAlert
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { getStaffMembers, getExternalUsers, toggleUserStatus } from "@/lib/actions/users";
 
 export default function HRStaffRecordsPage() {

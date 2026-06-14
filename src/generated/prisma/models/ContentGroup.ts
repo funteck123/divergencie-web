@@ -27,21 +27,21 @@ export type AggregateContentGroup = {
 export type ContentGroupMinAggregateOutputType = {
   id: string | null
   name: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
 }
 
 export type ContentGroupMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
 }
 
 export type ContentGroupCountAggregateOutputType = {
   id: number
   name: number
-  dept: number
+  deptId: number
   isActive: number
   _all: number
 }
@@ -50,21 +50,21 @@ export type ContentGroupCountAggregateOutputType = {
 export type ContentGroupMinAggregateInputType = {
   id?: true
   name?: true
-  dept?: true
+  deptId?: true
   isActive?: true
 }
 
 export type ContentGroupMaxAggregateInputType = {
   id?: true
   name?: true
-  dept?: true
+  deptId?: true
   isActive?: true
 }
 
 export type ContentGroupCountAggregateInputType = {
   id?: true
   name?: true
-  dept?: true
+  deptId?: true
   isActive?: true
   _all?: true
 }
@@ -144,7 +144,7 @@ export type ContentGroupGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type ContentGroupGroupByOutputType = {
   id: string
   name: string
-  dept: string
+  deptId: string | null
   isActive: boolean
   _count: ContentGroupCountAggregateOutputType | null
   _min: ContentGroupMinAggregateOutputType | null
@@ -172,16 +172,18 @@ export type ContentGroupWhereInput = {
   NOT?: Prisma.ContentGroupWhereInput | Prisma.ContentGroupWhereInput[]
   id?: Prisma.StringFilter<"ContentGroup"> | string
   name?: Prisma.StringFilter<"ContentGroup"> | string
-  dept?: Prisma.StringFilter<"ContentGroup"> | string
+  deptId?: Prisma.StringNullableFilter<"ContentGroup"> | string | null
   isActive?: Prisma.BoolFilter<"ContentGroup"> | boolean
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   items?: Prisma.ContentGroupItemListRelationFilter
 }
 
 export type ContentGroupOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  dept?: Prisma.DepartmentOrderByWithRelationInput
   items?: Prisma.ContentGroupItemOrderByRelationAggregateInput
 }
 
@@ -191,15 +193,16 @@ export type ContentGroupWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ContentGroupWhereInput[]
   NOT?: Prisma.ContentGroupWhereInput | Prisma.ContentGroupWhereInput[]
   name?: Prisma.StringFilter<"ContentGroup"> | string
-  dept?: Prisma.StringFilter<"ContentGroup"> | string
+  deptId?: Prisma.StringNullableFilter<"ContentGroup"> | string | null
   isActive?: Prisma.BoolFilter<"ContentGroup"> | boolean
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   items?: Prisma.ContentGroupItemListRelationFilter
 }, "id">
 
 export type ContentGroupOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.ContentGroupCountOrderByAggregateInput
   _max?: Prisma.ContentGroupMaxOrderByAggregateInput
@@ -212,22 +215,22 @@ export type ContentGroupScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ContentGroupScalarWhereWithAggregatesInput | Prisma.ContentGroupScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ContentGroup"> | string
   name?: Prisma.StringWithAggregatesFilter<"ContentGroup"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"ContentGroup"> | string
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"ContentGroup"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"ContentGroup"> | boolean
 }
 
 export type ContentGroupCreateInput = {
   id?: string
   name: string
-  dept: string
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutContentGroupsInput
   items?: Prisma.ContentGroupItemCreateNestedManyWithoutContentGroupInput
 }
 
 export type ContentGroupUncheckedCreateInput = {
   id?: string
   name: string
-  dept: string
+  deptId?: string | null
   isActive?: boolean
   items?: Prisma.ContentGroupItemUncheckedCreateNestedManyWithoutContentGroupInput
 }
@@ -235,15 +238,15 @@ export type ContentGroupUncheckedCreateInput = {
 export type ContentGroupUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutContentGroupsNestedInput
   items?: Prisma.ContentGroupItemUpdateManyWithoutContentGroupNestedInput
 }
 
 export type ContentGroupUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.ContentGroupItemUncheckedUpdateManyWithoutContentGroupNestedInput
 }
@@ -251,48 +254,99 @@ export type ContentGroupUncheckedUpdateInput = {
 export type ContentGroupCreateManyInput = {
   id?: string
   name: string
-  dept: string
+  deptId?: string | null
   isActive?: boolean
 }
 
 export type ContentGroupUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ContentGroupUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type ContentGroupListRelationFilter = {
+  every?: Prisma.ContentGroupWhereInput
+  some?: Prisma.ContentGroupWhereInput
+  none?: Prisma.ContentGroupWhereInput
+}
+
+export type ContentGroupOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type ContentGroupCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type ContentGroupMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type ContentGroupMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type ContentGroupScalarRelationFilter = {
   is?: Prisma.ContentGroupWhereInput
   isNot?: Prisma.ContentGroupWhereInput
+}
+
+export type ContentGroupCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.ContentGroupCreateWithoutDeptInput, Prisma.ContentGroupUncheckedCreateWithoutDeptInput> | Prisma.ContentGroupCreateWithoutDeptInput[] | Prisma.ContentGroupUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentGroupCreateOrConnectWithoutDeptInput | Prisma.ContentGroupCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.ContentGroupCreateManyDeptInputEnvelope
+  connect?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+}
+
+export type ContentGroupUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.ContentGroupCreateWithoutDeptInput, Prisma.ContentGroupUncheckedCreateWithoutDeptInput> | Prisma.ContentGroupCreateWithoutDeptInput[] | Prisma.ContentGroupUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentGroupCreateOrConnectWithoutDeptInput | Prisma.ContentGroupCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.ContentGroupCreateManyDeptInputEnvelope
+  connect?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+}
+
+export type ContentGroupUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentGroupCreateWithoutDeptInput, Prisma.ContentGroupUncheckedCreateWithoutDeptInput> | Prisma.ContentGroupCreateWithoutDeptInput[] | Prisma.ContentGroupUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentGroupCreateOrConnectWithoutDeptInput | Prisma.ContentGroupCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.ContentGroupUpsertWithWhereUniqueWithoutDeptInput | Prisma.ContentGroupUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.ContentGroupCreateManyDeptInputEnvelope
+  set?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  disconnect?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  delete?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  connect?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  update?: Prisma.ContentGroupUpdateWithWhereUniqueWithoutDeptInput | Prisma.ContentGroupUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.ContentGroupUpdateManyWithWhereWithoutDeptInput | Prisma.ContentGroupUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.ContentGroupScalarWhereInput | Prisma.ContentGroupScalarWhereInput[]
+}
+
+export type ContentGroupUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.ContentGroupCreateWithoutDeptInput, Prisma.ContentGroupUncheckedCreateWithoutDeptInput> | Prisma.ContentGroupCreateWithoutDeptInput[] | Prisma.ContentGroupUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.ContentGroupCreateOrConnectWithoutDeptInput | Prisma.ContentGroupCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.ContentGroupUpsertWithWhereUniqueWithoutDeptInput | Prisma.ContentGroupUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.ContentGroupCreateManyDeptInputEnvelope
+  set?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  disconnect?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  delete?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  connect?: Prisma.ContentGroupWhereUniqueInput | Prisma.ContentGroupWhereUniqueInput[]
+  update?: Prisma.ContentGroupUpdateWithWhereUniqueWithoutDeptInput | Prisma.ContentGroupUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.ContentGroupUpdateManyWithWhereWithoutDeptInput | Prisma.ContentGroupUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.ContentGroupScalarWhereInput | Prisma.ContentGroupScalarWhereInput[]
 }
 
 export type ContentGroupCreateNestedOneWithoutItemsInput = {
@@ -309,17 +363,67 @@ export type ContentGroupUpdateOneRequiredWithoutItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContentGroupUpdateToOneWithWhereWithoutItemsInput, Prisma.ContentGroupUpdateWithoutItemsInput>, Prisma.ContentGroupUncheckedUpdateWithoutItemsInput>
 }
 
+export type ContentGroupCreateWithoutDeptInput = {
+  id?: string
+  name: string
+  isActive?: boolean
+  items?: Prisma.ContentGroupItemCreateNestedManyWithoutContentGroupInput
+}
+
+export type ContentGroupUncheckedCreateWithoutDeptInput = {
+  id?: string
+  name: string
+  isActive?: boolean
+  items?: Prisma.ContentGroupItemUncheckedCreateNestedManyWithoutContentGroupInput
+}
+
+export type ContentGroupCreateOrConnectWithoutDeptInput = {
+  where: Prisma.ContentGroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContentGroupCreateWithoutDeptInput, Prisma.ContentGroupUncheckedCreateWithoutDeptInput>
+}
+
+export type ContentGroupCreateManyDeptInputEnvelope = {
+  data: Prisma.ContentGroupCreateManyDeptInput | Prisma.ContentGroupCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type ContentGroupUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.ContentGroupWhereUniqueInput
+  update: Prisma.XOR<Prisma.ContentGroupUpdateWithoutDeptInput, Prisma.ContentGroupUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.ContentGroupCreateWithoutDeptInput, Prisma.ContentGroupUncheckedCreateWithoutDeptInput>
+}
+
+export type ContentGroupUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.ContentGroupWhereUniqueInput
+  data: Prisma.XOR<Prisma.ContentGroupUpdateWithoutDeptInput, Prisma.ContentGroupUncheckedUpdateWithoutDeptInput>
+}
+
+export type ContentGroupUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.ContentGroupScalarWhereInput
+  data: Prisma.XOR<Prisma.ContentGroupUpdateManyMutationInput, Prisma.ContentGroupUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type ContentGroupScalarWhereInput = {
+  AND?: Prisma.ContentGroupScalarWhereInput | Prisma.ContentGroupScalarWhereInput[]
+  OR?: Prisma.ContentGroupScalarWhereInput[]
+  NOT?: Prisma.ContentGroupScalarWhereInput | Prisma.ContentGroupScalarWhereInput[]
+  id?: Prisma.StringFilter<"ContentGroup"> | string
+  name?: Prisma.StringFilter<"ContentGroup"> | string
+  deptId?: Prisma.StringNullableFilter<"ContentGroup"> | string | null
+  isActive?: Prisma.BoolFilter<"ContentGroup"> | boolean
+}
+
 export type ContentGroupCreateWithoutItemsInput = {
   id?: string
   name: string
-  dept: string
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutContentGroupsInput
 }
 
 export type ContentGroupUncheckedCreateWithoutItemsInput = {
   id?: string
   name: string
-  dept: string
+  deptId?: string | null
   isActive?: boolean
 }
 
@@ -342,14 +446,40 @@ export type ContentGroupUpdateToOneWithWhereWithoutItemsInput = {
 export type ContentGroupUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutContentGroupsNestedInput
 }
 
 export type ContentGroupUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type ContentGroupCreateManyDeptInput = {
+  id?: string
+  name: string
+  isActive?: boolean
+}
+
+export type ContentGroupUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  items?: Prisma.ContentGroupItemUpdateManyWithoutContentGroupNestedInput
+}
+
+export type ContentGroupUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  items?: Prisma.ContentGroupItemUncheckedUpdateManyWithoutContentGroupNestedInput
+}
+
+export type ContentGroupUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -387,8 +517,9 @@ export type ContentGroupCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Ty
 export type ContentGroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
+  dept?: boolean | Prisma.ContentGroup$deptArgs<ExtArgs>
   items?: boolean | Prisma.ContentGroup$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.ContentGroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contentGroup"]>
@@ -396,41 +527,49 @@ export type ContentGroupSelect<ExtArgs extends runtime.Types.Extensions.Internal
 export type ContentGroupSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
+  dept?: boolean | Prisma.ContentGroup$deptArgs<ExtArgs>
 }, ExtArgs["result"]["contentGroup"]>
 
 export type ContentGroupSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
+  dept?: boolean | Prisma.ContentGroup$deptArgs<ExtArgs>
 }, ExtArgs["result"]["contentGroup"]>
 
 export type ContentGroupSelectScalar = {
   id?: boolean
   name?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
 }
 
-export type ContentGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "dept" | "isActive", ExtArgs["result"]["contentGroup"]>
+export type ContentGroupOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "deptId" | "isActive", ExtArgs["result"]["contentGroup"]>
 export type ContentGroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.ContentGroup$deptArgs<ExtArgs>
   items?: boolean | Prisma.ContentGroup$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.ContentGroupCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ContentGroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ContentGroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ContentGroupIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.ContentGroup$deptArgs<ExtArgs>
+}
+export type ContentGroupIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.ContentGroup$deptArgs<ExtArgs>
+}
 
 export type $ContentGroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ContentGroup"
   objects: {
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
     items: Prisma.$ContentGroupItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    dept: string
+    deptId: string | null
     isActive: boolean
   }, ExtArgs["result"]["contentGroup"]>
   composites: {}
@@ -826,6 +965,7 @@ readonly fields: ContentGroupFieldRefs;
  */
 export interface Prisma__ContentGroupClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  dept<T extends Prisma.ContentGroup$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentGroup$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.ContentGroup$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentGroup$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentGroupItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -858,7 +998,7 @@ export interface Prisma__ContentGroupClient<T, Null = never, ExtArgs extends run
 export interface ContentGroupFieldRefs {
   readonly id: Prisma.FieldRef<"ContentGroup", 'String'>
   readonly name: Prisma.FieldRef<"ContentGroup", 'String'>
-  readonly dept: Prisma.FieldRef<"ContentGroup", 'String'>
+  readonly deptId: Prisma.FieldRef<"ContentGroup", 'String'>
   readonly isActive: Prisma.FieldRef<"ContentGroup", 'Boolean'>
 }
     
@@ -1114,6 +1254,10 @@ export type ContentGroupCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ex
    */
   data: Prisma.ContentGroupCreateManyInput | Prisma.ContentGroupCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentGroupIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1184,6 +1328,10 @@ export type ContentGroupUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Ex
    * Limit how many ContentGroups to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentGroupIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1250,6 +1398,25 @@ export type ContentGroupDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many ContentGroups to delete.
    */
   limit?: number
+}
+
+/**
+ * ContentGroup.dept
+ */
+export type ContentGroup$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
 }
 
 /**

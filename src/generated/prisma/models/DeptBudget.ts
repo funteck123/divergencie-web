@@ -36,7 +36,7 @@ export type DeptBudgetSumAggregateOutputType = {
 
 export type DeptBudgetMinAggregateOutputType = {
   id: string | null
-  dept: string | null
+  deptId: string | null
   quarter: string | null
   totalAllocated: number | null
   status: string | null
@@ -51,7 +51,7 @@ export type DeptBudgetMinAggregateOutputType = {
 
 export type DeptBudgetMaxAggregateOutputType = {
   id: string | null
-  dept: string | null
+  deptId: string | null
   quarter: string | null
   totalAllocated: number | null
   status: string | null
@@ -66,7 +66,7 @@ export type DeptBudgetMaxAggregateOutputType = {
 
 export type DeptBudgetCountAggregateOutputType = {
   id: number
-  dept: number
+  deptId: number
   quarter: number
   totalAllocated: number
   status: number
@@ -91,7 +91,7 @@ export type DeptBudgetSumAggregateInputType = {
 
 export type DeptBudgetMinAggregateInputType = {
   id?: true
-  dept?: true
+  deptId?: true
   quarter?: true
   totalAllocated?: true
   status?: true
@@ -106,7 +106,7 @@ export type DeptBudgetMinAggregateInputType = {
 
 export type DeptBudgetMaxAggregateInputType = {
   id?: true
-  dept?: true
+  deptId?: true
   quarter?: true
   totalAllocated?: true
   status?: true
@@ -121,7 +121,7 @@ export type DeptBudgetMaxAggregateInputType = {
 
 export type DeptBudgetCountAggregateInputType = {
   id?: true
-  dept?: true
+  deptId?: true
   quarter?: true
   totalAllocated?: true
   status?: true
@@ -223,7 +223,7 @@ export type DeptBudgetGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type DeptBudgetGroupByOutputType = {
   id: string
-  dept: string
+  deptId: string | null
   quarter: string
   totalAllocated: number
   status: string
@@ -261,7 +261,7 @@ export type DeptBudgetWhereInput = {
   OR?: Prisma.DeptBudgetWhereInput[]
   NOT?: Prisma.DeptBudgetWhereInput | Prisma.DeptBudgetWhereInput[]
   id?: Prisma.StringFilter<"DeptBudget"> | string
-  dept?: Prisma.StringFilter<"DeptBudget"> | string
+  deptId?: Prisma.StringNullableFilter<"DeptBudget"> | string | null
   quarter?: Prisma.StringFilter<"DeptBudget"> | string
   totalAllocated?: Prisma.FloatFilter<"DeptBudget"> | number
   status?: Prisma.StringFilter<"DeptBudget"> | string
@@ -272,13 +272,14 @@ export type DeptBudgetWhereInput = {
   quarterEnd?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
   isActive?: Prisma.BoolFilter<"DeptBudget"> | boolean
   createdAt?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   bankAccount?: Prisma.XOR<Prisma.BankAccountScalarRelationFilter, Prisma.BankAccountWhereInput>
   subCategories?: Prisma.BudgetSubCategoryListRelationFilter
 }
 
 export type DeptBudgetOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   quarter?: Prisma.SortOrder
   totalAllocated?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -289,17 +290,18 @@ export type DeptBudgetOrderByWithRelationInput = {
   quarterEnd?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  dept?: Prisma.DepartmentOrderByWithRelationInput
   bankAccount?: Prisma.BankAccountOrderByWithRelationInput
   subCategories?: Prisma.BudgetSubCategoryOrderByRelationAggregateInput
 }
 
 export type DeptBudgetWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  dept_quarter?: Prisma.DeptBudgetDeptQuarterCompoundUniqueInput
+  deptId_quarter?: Prisma.DeptBudgetDeptIdQuarterCompoundUniqueInput
   AND?: Prisma.DeptBudgetWhereInput | Prisma.DeptBudgetWhereInput[]
   OR?: Prisma.DeptBudgetWhereInput[]
   NOT?: Prisma.DeptBudgetWhereInput | Prisma.DeptBudgetWhereInput[]
-  dept?: Prisma.StringFilter<"DeptBudget"> | string
+  deptId?: Prisma.StringNullableFilter<"DeptBudget"> | string | null
   quarter?: Prisma.StringFilter<"DeptBudget"> | string
   totalAllocated?: Prisma.FloatFilter<"DeptBudget"> | number
   status?: Prisma.StringFilter<"DeptBudget"> | string
@@ -310,13 +312,14 @@ export type DeptBudgetWhereUniqueInput = Prisma.AtLeast<{
   quarterEnd?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
   isActive?: Prisma.BoolFilter<"DeptBudget"> | boolean
   createdAt?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
   bankAccount?: Prisma.XOR<Prisma.BankAccountScalarRelationFilter, Prisma.BankAccountWhereInput>
   subCategories?: Prisma.BudgetSubCategoryListRelationFilter
-}, "id" | "dept_quarter">
+}, "id" | "deptId_quarter">
 
 export type DeptBudgetOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   quarter?: Prisma.SortOrder
   totalAllocated?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -339,7 +342,7 @@ export type DeptBudgetScalarWhereWithAggregatesInput = {
   OR?: Prisma.DeptBudgetScalarWhereWithAggregatesInput[]
   NOT?: Prisma.DeptBudgetScalarWhereWithAggregatesInput | Prisma.DeptBudgetScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"DeptBudget"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"DeptBudget"> | string
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"DeptBudget"> | string | null
   quarter?: Prisma.StringWithAggregatesFilter<"DeptBudget"> | string
   totalAllocated?: Prisma.FloatWithAggregatesFilter<"DeptBudget"> | number
   status?: Prisma.StringWithAggregatesFilter<"DeptBudget"> | string
@@ -354,7 +357,6 @@ export type DeptBudgetScalarWhereWithAggregatesInput = {
 
 export type DeptBudgetCreateInput = {
   id?: string
-  dept: string
   quarter: string
   totalAllocated?: number
   status?: string
@@ -364,13 +366,14 @@ export type DeptBudgetCreateInput = {
   quarterEnd: Date | string
   isActive?: boolean
   createdAt?: Date | string
+  dept?: Prisma.DepartmentCreateNestedOneWithoutDeptBudgetsInput
   bankAccount: Prisma.BankAccountCreateNestedOneWithoutDeptBudgetsInput
   subCategories?: Prisma.BudgetSubCategoryCreateNestedManyWithoutBudgetInput
 }
 
 export type DeptBudgetUncheckedCreateInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   quarter: string
   totalAllocated?: number
   status?: string
@@ -386,7 +389,6 @@ export type DeptBudgetUncheckedCreateInput = {
 
 export type DeptBudgetUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -396,13 +398,14 @@ export type DeptBudgetUpdateInput = {
   quarterEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dept?: Prisma.DepartmentUpdateOneWithoutDeptBudgetsNestedInput
   bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutDeptBudgetsNestedInput
   subCategories?: Prisma.BudgetSubCategoryUpdateManyWithoutBudgetNestedInput
 }
 
 export type DeptBudgetUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -418,7 +421,7 @@ export type DeptBudgetUncheckedUpdateInput = {
 
 export type DeptBudgetCreateManyInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   quarter: string
   totalAllocated?: number
   status?: string
@@ -433,7 +436,6 @@ export type DeptBudgetCreateManyInput = {
 
 export type DeptBudgetUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -447,7 +449,7 @@ export type DeptBudgetUpdateManyMutationInput = {
 
 export type DeptBudgetUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -470,14 +472,14 @@ export type DeptBudgetOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type DeptBudgetDeptQuarterCompoundUniqueInput = {
-  dept: string
+export type DeptBudgetDeptIdQuarterCompoundUniqueInput = {
+  deptId: string
   quarter: string
 }
 
 export type DeptBudgetCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   quarter?: Prisma.SortOrder
   totalAllocated?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -496,7 +498,7 @@ export type DeptBudgetAvgOrderByAggregateInput = {
 
 export type DeptBudgetMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   quarter?: Prisma.SortOrder
   totalAllocated?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -511,7 +513,7 @@ export type DeptBudgetMaxOrderByAggregateInput = {
 
 export type DeptBudgetMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   quarter?: Prisma.SortOrder
   totalAllocated?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -531,6 +533,48 @@ export type DeptBudgetSumOrderByAggregateInput = {
 export type DeptBudgetScalarRelationFilter = {
   is?: Prisma.DeptBudgetWhereInput
   isNot?: Prisma.DeptBudgetWhereInput
+}
+
+export type DeptBudgetCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.DeptBudgetCreateWithoutDeptInput, Prisma.DeptBudgetUncheckedCreateWithoutDeptInput> | Prisma.DeptBudgetCreateWithoutDeptInput[] | Prisma.DeptBudgetUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.DeptBudgetCreateOrConnectWithoutDeptInput | Prisma.DeptBudgetCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.DeptBudgetCreateManyDeptInputEnvelope
+  connect?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+}
+
+export type DeptBudgetUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.DeptBudgetCreateWithoutDeptInput, Prisma.DeptBudgetUncheckedCreateWithoutDeptInput> | Prisma.DeptBudgetCreateWithoutDeptInput[] | Prisma.DeptBudgetUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.DeptBudgetCreateOrConnectWithoutDeptInput | Prisma.DeptBudgetCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.DeptBudgetCreateManyDeptInputEnvelope
+  connect?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+}
+
+export type DeptBudgetUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.DeptBudgetCreateWithoutDeptInput, Prisma.DeptBudgetUncheckedCreateWithoutDeptInput> | Prisma.DeptBudgetCreateWithoutDeptInput[] | Prisma.DeptBudgetUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.DeptBudgetCreateOrConnectWithoutDeptInput | Prisma.DeptBudgetCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.DeptBudgetUpsertWithWhereUniqueWithoutDeptInput | Prisma.DeptBudgetUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.DeptBudgetCreateManyDeptInputEnvelope
+  set?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  disconnect?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  delete?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  connect?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  update?: Prisma.DeptBudgetUpdateWithWhereUniqueWithoutDeptInput | Prisma.DeptBudgetUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.DeptBudgetUpdateManyWithWhereWithoutDeptInput | Prisma.DeptBudgetUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.DeptBudgetScalarWhereInput | Prisma.DeptBudgetScalarWhereInput[]
+}
+
+export type DeptBudgetUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.DeptBudgetCreateWithoutDeptInput, Prisma.DeptBudgetUncheckedCreateWithoutDeptInput> | Prisma.DeptBudgetCreateWithoutDeptInput[] | Prisma.DeptBudgetUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.DeptBudgetCreateOrConnectWithoutDeptInput | Prisma.DeptBudgetCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.DeptBudgetUpsertWithWhereUniqueWithoutDeptInput | Prisma.DeptBudgetUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.DeptBudgetCreateManyDeptInputEnvelope
+  set?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  disconnect?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  delete?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  connect?: Prisma.DeptBudgetWhereUniqueInput | Prisma.DeptBudgetWhereUniqueInput[]
+  update?: Prisma.DeptBudgetUpdateWithWhereUniqueWithoutDeptInput | Prisma.DeptBudgetUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.DeptBudgetUpdateManyWithWhereWithoutDeptInput | Prisma.DeptBudgetUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.DeptBudgetScalarWhereInput | Prisma.DeptBudgetScalarWhereInput[]
 }
 
 export type DeptBudgetCreateNestedManyWithoutBankAccountInput = {
@@ -589,9 +633,8 @@ export type DeptBudgetUpdateOneRequiredWithoutSubCategoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DeptBudgetUpdateToOneWithWhereWithoutSubCategoriesInput, Prisma.DeptBudgetUpdateWithoutSubCategoriesInput>, Prisma.DeptBudgetUncheckedUpdateWithoutSubCategoriesInput>
 }
 
-export type DeptBudgetCreateWithoutBankAccountInput = {
+export type DeptBudgetCreateWithoutDeptInput = {
   id?: string
-  dept: string
   quarter: string
   totalAllocated?: number
   status?: string
@@ -601,12 +644,87 @@ export type DeptBudgetCreateWithoutBankAccountInput = {
   quarterEnd: Date | string
   isActive?: boolean
   createdAt?: Date | string
+  bankAccount: Prisma.BankAccountCreateNestedOneWithoutDeptBudgetsInput
+  subCategories?: Prisma.BudgetSubCategoryCreateNestedManyWithoutBudgetInput
+}
+
+export type DeptBudgetUncheckedCreateWithoutDeptInput = {
+  id?: string
+  quarter: string
+  totalAllocated?: number
+  status?: string
+  bankAccountId: string
+  approvedByUserId?: string | null
+  approvedAt?: Date | string | null
+  quarterStart: Date | string
+  quarterEnd: Date | string
+  isActive?: boolean
+  createdAt?: Date | string
+  subCategories?: Prisma.BudgetSubCategoryUncheckedCreateNestedManyWithoutBudgetInput
+}
+
+export type DeptBudgetCreateOrConnectWithoutDeptInput = {
+  where: Prisma.DeptBudgetWhereUniqueInput
+  create: Prisma.XOR<Prisma.DeptBudgetCreateWithoutDeptInput, Prisma.DeptBudgetUncheckedCreateWithoutDeptInput>
+}
+
+export type DeptBudgetCreateManyDeptInputEnvelope = {
+  data: Prisma.DeptBudgetCreateManyDeptInput | Prisma.DeptBudgetCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type DeptBudgetUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.DeptBudgetWhereUniqueInput
+  update: Prisma.XOR<Prisma.DeptBudgetUpdateWithoutDeptInput, Prisma.DeptBudgetUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.DeptBudgetCreateWithoutDeptInput, Prisma.DeptBudgetUncheckedCreateWithoutDeptInput>
+}
+
+export type DeptBudgetUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.DeptBudgetWhereUniqueInput
+  data: Prisma.XOR<Prisma.DeptBudgetUpdateWithoutDeptInput, Prisma.DeptBudgetUncheckedUpdateWithoutDeptInput>
+}
+
+export type DeptBudgetUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.DeptBudgetScalarWhereInput
+  data: Prisma.XOR<Prisma.DeptBudgetUpdateManyMutationInput, Prisma.DeptBudgetUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type DeptBudgetScalarWhereInput = {
+  AND?: Prisma.DeptBudgetScalarWhereInput | Prisma.DeptBudgetScalarWhereInput[]
+  OR?: Prisma.DeptBudgetScalarWhereInput[]
+  NOT?: Prisma.DeptBudgetScalarWhereInput | Prisma.DeptBudgetScalarWhereInput[]
+  id?: Prisma.StringFilter<"DeptBudget"> | string
+  deptId?: Prisma.StringNullableFilter<"DeptBudget"> | string | null
+  quarter?: Prisma.StringFilter<"DeptBudget"> | string
+  totalAllocated?: Prisma.FloatFilter<"DeptBudget"> | number
+  status?: Prisma.StringFilter<"DeptBudget"> | string
+  bankAccountId?: Prisma.StringFilter<"DeptBudget"> | string
+  approvedByUserId?: Prisma.StringNullableFilter<"DeptBudget"> | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"DeptBudget"> | Date | string | null
+  quarterStart?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
+  quarterEnd?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
+  isActive?: Prisma.BoolFilter<"DeptBudget"> | boolean
+  createdAt?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
+}
+
+export type DeptBudgetCreateWithoutBankAccountInput = {
+  id?: string
+  quarter: string
+  totalAllocated?: number
+  status?: string
+  approvedByUserId?: string | null
+  approvedAt?: Date | string | null
+  quarterStart: Date | string
+  quarterEnd: Date | string
+  isActive?: boolean
+  createdAt?: Date | string
+  dept?: Prisma.DepartmentCreateNestedOneWithoutDeptBudgetsInput
   subCategories?: Prisma.BudgetSubCategoryCreateNestedManyWithoutBudgetInput
 }
 
 export type DeptBudgetUncheckedCreateWithoutBankAccountInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   quarter: string
   totalAllocated?: number
   status?: string
@@ -645,27 +763,8 @@ export type DeptBudgetUpdateManyWithWhereWithoutBankAccountInput = {
   data: Prisma.XOR<Prisma.DeptBudgetUpdateManyMutationInput, Prisma.DeptBudgetUncheckedUpdateManyWithoutBankAccountInput>
 }
 
-export type DeptBudgetScalarWhereInput = {
-  AND?: Prisma.DeptBudgetScalarWhereInput | Prisma.DeptBudgetScalarWhereInput[]
-  OR?: Prisma.DeptBudgetScalarWhereInput[]
-  NOT?: Prisma.DeptBudgetScalarWhereInput | Prisma.DeptBudgetScalarWhereInput[]
-  id?: Prisma.StringFilter<"DeptBudget"> | string
-  dept?: Prisma.StringFilter<"DeptBudget"> | string
-  quarter?: Prisma.StringFilter<"DeptBudget"> | string
-  totalAllocated?: Prisma.FloatFilter<"DeptBudget"> | number
-  status?: Prisma.StringFilter<"DeptBudget"> | string
-  bankAccountId?: Prisma.StringFilter<"DeptBudget"> | string
-  approvedByUserId?: Prisma.StringNullableFilter<"DeptBudget"> | string | null
-  approvedAt?: Prisma.DateTimeNullableFilter<"DeptBudget"> | Date | string | null
-  quarterStart?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
-  quarterEnd?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
-  isActive?: Prisma.BoolFilter<"DeptBudget"> | boolean
-  createdAt?: Prisma.DateTimeFilter<"DeptBudget"> | Date | string
-}
-
 export type DeptBudgetCreateWithoutSubCategoriesInput = {
   id?: string
-  dept: string
   quarter: string
   totalAllocated?: number
   status?: string
@@ -675,12 +774,13 @@ export type DeptBudgetCreateWithoutSubCategoriesInput = {
   quarterEnd: Date | string
   isActive?: boolean
   createdAt?: Date | string
+  dept?: Prisma.DepartmentCreateNestedOneWithoutDeptBudgetsInput
   bankAccount: Prisma.BankAccountCreateNestedOneWithoutDeptBudgetsInput
 }
 
 export type DeptBudgetUncheckedCreateWithoutSubCategoriesInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   quarter: string
   totalAllocated?: number
   status?: string
@@ -711,7 +811,50 @@ export type DeptBudgetUpdateToOneWithWhereWithoutSubCategoriesInput = {
 
 export type DeptBudgetUpdateWithoutSubCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  quarter?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  quarterStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quarterEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dept?: Prisma.DepartmentUpdateOneWithoutDeptBudgetsNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutDeptBudgetsNestedInput
+}
+
+export type DeptBudgetUncheckedUpdateWithoutSubCategoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quarter?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  quarterStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quarterEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type DeptBudgetCreateManyDeptInput = {
+  id?: string
+  quarter: string
+  totalAllocated?: number
+  status?: string
+  bankAccountId: string
+  approvedByUserId?: string | null
+  approvedAt?: Date | string | null
+  quarterStart: Date | string
+  quarterEnd: Date | string
+  isActive?: boolean
+  createdAt?: Date | string
+}
+
+export type DeptBudgetUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -722,11 +865,26 @@ export type DeptBudgetUpdateWithoutSubCategoriesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bankAccount?: Prisma.BankAccountUpdateOneRequiredWithoutDeptBudgetsNestedInput
+  subCategories?: Prisma.BudgetSubCategoryUpdateManyWithoutBudgetNestedInput
 }
 
-export type DeptBudgetUncheckedUpdateWithoutSubCategoriesInput = {
+export type DeptBudgetUncheckedUpdateWithoutDeptInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  quarter?: Prisma.StringFieldUpdateOperationsInput | string
+  totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  bankAccountId?: Prisma.StringFieldUpdateOperationsInput | string
+  approvedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  quarterStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quarterEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  subCategories?: Prisma.BudgetSubCategoryUncheckedUpdateManyWithoutBudgetNestedInput
+}
+
+export type DeptBudgetUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -741,7 +899,7 @@ export type DeptBudgetUncheckedUpdateWithoutSubCategoriesInput = {
 
 export type DeptBudgetCreateManyBankAccountInput = {
   id?: string
-  dept: string
+  deptId?: string | null
   quarter: string
   totalAllocated?: number
   status?: string
@@ -755,7 +913,6 @@ export type DeptBudgetCreateManyBankAccountInput = {
 
 export type DeptBudgetUpdateWithoutBankAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -765,12 +922,13 @@ export type DeptBudgetUpdateWithoutBankAccountInput = {
   quarterEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dept?: Prisma.DepartmentUpdateOneWithoutDeptBudgetsNestedInput
   subCategories?: Prisma.BudgetSubCategoryUpdateManyWithoutBudgetNestedInput
 }
 
 export type DeptBudgetUncheckedUpdateWithoutBankAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -785,7 +943,7 @@ export type DeptBudgetUncheckedUpdateWithoutBankAccountInput = {
 
 export type DeptBudgetUncheckedUpdateManyWithoutBankAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quarter?: Prisma.StringFieldUpdateOperationsInput | string
   totalAllocated?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -830,7 +988,7 @@ export type DeptBudgetCountOutputTypeCountSubCategoriesArgs<ExtArgs extends runt
 
 export type DeptBudgetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   quarter?: boolean
   totalAllocated?: boolean
   status?: boolean
@@ -841,6 +999,7 @@ export type DeptBudgetSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   quarterEnd?: boolean
   isActive?: boolean
   createdAt?: boolean
+  dept?: boolean | Prisma.DeptBudget$deptArgs<ExtArgs>
   bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   subCategories?: boolean | Prisma.DeptBudget$subCategoriesArgs<ExtArgs>
   _count?: boolean | Prisma.DeptBudgetCountOutputTypeDefaultArgs<ExtArgs>
@@ -848,7 +1007,7 @@ export type DeptBudgetSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type DeptBudgetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   quarter?: boolean
   totalAllocated?: boolean
   status?: boolean
@@ -859,12 +1018,13 @@ export type DeptBudgetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   quarterEnd?: boolean
   isActive?: boolean
   createdAt?: boolean
+  dept?: boolean | Prisma.DeptBudget$deptArgs<ExtArgs>
   bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deptBudget"]>
 
 export type DeptBudgetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   quarter?: boolean
   totalAllocated?: boolean
   status?: boolean
@@ -875,12 +1035,13 @@ export type DeptBudgetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   quarterEnd?: boolean
   isActive?: boolean
   createdAt?: boolean
+  dept?: boolean | Prisma.DeptBudget$deptArgs<ExtArgs>
   bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deptBudget"]>
 
 export type DeptBudgetSelectScalar = {
   id?: boolean
-  dept?: boolean
+  deptId?: boolean
   quarter?: boolean
   totalAllocated?: boolean
   status?: boolean
@@ -893,28 +1054,32 @@ export type DeptBudgetSelectScalar = {
   createdAt?: boolean
 }
 
-export type DeptBudgetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "dept" | "quarter" | "totalAllocated" | "status" | "bankAccountId" | "approvedByUserId" | "approvedAt" | "quarterStart" | "quarterEnd" | "isActive" | "createdAt", ExtArgs["result"]["deptBudget"]>
+export type DeptBudgetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "deptId" | "quarter" | "totalAllocated" | "status" | "bankAccountId" | "approvedByUserId" | "approvedAt" | "quarterStart" | "quarterEnd" | "isActive" | "createdAt", ExtArgs["result"]["deptBudget"]>
 export type DeptBudgetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.DeptBudget$deptArgs<ExtArgs>
   bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
   subCategories?: boolean | Prisma.DeptBudget$subCategoriesArgs<ExtArgs>
   _count?: boolean | Prisma.DeptBudgetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DeptBudgetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.DeptBudget$deptArgs<ExtArgs>
   bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
 }
 export type DeptBudgetIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.DeptBudget$deptArgs<ExtArgs>
   bankAccount?: boolean | Prisma.BankAccountDefaultArgs<ExtArgs>
 }
 
 export type $DeptBudgetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "DeptBudget"
   objects: {
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
     bankAccount: Prisma.$BankAccountPayload<ExtArgs>
     subCategories: Prisma.$BudgetSubCategoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    dept: string
+    deptId: string | null
     quarter: string
     totalAllocated: number
     status: string
@@ -1319,6 +1484,7 @@ readonly fields: DeptBudgetFieldRefs;
  */
 export interface Prisma__DeptBudgetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  dept<T extends Prisma.DeptBudget$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DeptBudget$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bankAccount<T extends Prisma.BankAccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BankAccountDefaultArgs<ExtArgs>>): Prisma.Prisma__BankAccountClient<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   subCategories<T extends Prisma.DeptBudget$subCategoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DeptBudget$subCategoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BudgetSubCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1351,7 +1517,7 @@ export interface Prisma__DeptBudgetClient<T, Null = never, ExtArgs extends runti
  */
 export interface DeptBudgetFieldRefs {
   readonly id: Prisma.FieldRef<"DeptBudget", 'String'>
-  readonly dept: Prisma.FieldRef<"DeptBudget", 'String'>
+  readonly deptId: Prisma.FieldRef<"DeptBudget", 'String'>
   readonly quarter: Prisma.FieldRef<"DeptBudget", 'String'>
   readonly totalAllocated: Prisma.FieldRef<"DeptBudget", 'Float'>
   readonly status: Prisma.FieldRef<"DeptBudget", 'String'>
@@ -1760,6 +1926,25 @@ export type DeptBudgetDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many DeptBudgets to delete.
    */
   limit?: number
+}
+
+/**
+ * DeptBudget.dept
+ */
+export type DeptBudget$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
 }
 
 /**

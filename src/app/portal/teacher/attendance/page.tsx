@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 import { logAttendance, getPendingAttendance, getAttendanceHistory, getStudentsForTeacher } from "@/lib/actions/attendance";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 export default function TeacherAttendancePage() {
   const { data: session } = useSession();

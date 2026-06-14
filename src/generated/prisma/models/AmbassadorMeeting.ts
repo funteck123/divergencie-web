@@ -376,8 +376,10 @@ export type AmbassadorMeetingWhereInput = {
   transcriptUrl?: Prisma.StringNullableFilter<"AmbassadorMeeting"> | string | null
   summaryUrl?: Prisma.StringNullableFilter<"AmbassadorMeeting"> | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorMeeting"> | boolean
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceNullableScalarRelationFilter, Prisma.AmbassadorServiceWhereInput> | null
   sessionType?: Prisma.XOR<Prisma.SessionTypeNullableScalarRelationFilter, Prisma.SessionTypeWhereInput> | null
   attendances?: Prisma.AmbassadorMeetingAttendanceListRelationFilter
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogListRelationFilter
 }
 
 export type AmbassadorMeetingOrderByWithRelationInput = {
@@ -406,8 +408,10 @@ export type AmbassadorMeetingOrderByWithRelationInput = {
   transcriptUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   summaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  ambassadorService?: Prisma.AmbassadorServiceOrderByWithRelationInput
   sessionType?: Prisma.SessionTypeOrderByWithRelationInput
   attendances?: Prisma.AmbassadorMeetingAttendanceOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type AmbassadorMeetingWhereUniqueInput = Prisma.AtLeast<{
@@ -439,8 +443,10 @@ export type AmbassadorMeetingWhereUniqueInput = Prisma.AtLeast<{
   transcriptUrl?: Prisma.StringNullableFilter<"AmbassadorMeeting"> | string | null
   summaryUrl?: Prisma.StringNullableFilter<"AmbassadorMeeting"> | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorMeeting"> | boolean
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceNullableScalarRelationFilter, Prisma.AmbassadorServiceWhereInput> | null
   sessionType?: Prisma.XOR<Prisma.SessionTypeNullableScalarRelationFilter, Prisma.SessionTypeWhereInput> | null
   attendances?: Prisma.AmbassadorMeetingAttendanceListRelationFilter
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogListRelationFilter
 }, "id">
 
 export type AmbassadorMeetingOrderByWithAggregationInput = {
@@ -509,7 +515,6 @@ export type AmbassadorMeetingScalarWhereWithAggregatesInput = {
 
 export type AmbassadorMeetingCreateInput = {
   id?: string
-  ambassadorServiceId?: string | null
   scheduleId?: string | null
   occurrenceId?: string | null
   scheduledByUserId?: string | null
@@ -532,8 +537,10 @@ export type AmbassadorMeetingCreateInput = {
   transcriptUrl?: string | null
   summaryUrl?: string | null
   isActive?: boolean
+  ambassadorService?: Prisma.AmbassadorServiceCreateNestedOneWithoutMeetingsInput
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutAmbassadorMeetingsInput
   attendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type AmbassadorMeetingUncheckedCreateInput = {
@@ -563,11 +570,11 @@ export type AmbassadorMeetingUncheckedCreateInput = {
   summaryUrl?: string | null
   isActive?: boolean
   attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type AmbassadorMeetingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -590,8 +597,10 @@ export type AmbassadorMeetingUpdateInput = {
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneWithoutMeetingsNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneWithoutAmbassadorMeetingsNestedInput
   attendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type AmbassadorMeetingUncheckedUpdateInput = {
@@ -621,6 +630,7 @@ export type AmbassadorMeetingUncheckedUpdateInput = {
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type AmbassadorMeetingCreateManyInput = {
@@ -653,7 +663,6 @@ export type AmbassadorMeetingCreateManyInput = {
 
 export type AmbassadorMeetingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -855,6 +864,62 @@ export type AmbassadorMeetingUncheckedUpdateManyWithoutSessionTypeNestedInput = 
   deleteMany?: Prisma.AmbassadorMeetingScalarWhereInput | Prisma.AmbassadorMeetingScalarWhereInput[]
 }
 
+export type AmbassadorMeetingCreateNestedManyWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorMeetingCreateManyAmbassadorServiceInputEnvelope
+  connect?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+}
+
+export type AmbassadorMeetingUncheckedCreateNestedManyWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorMeetingCreateManyAmbassadorServiceInputEnvelope
+  connect?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+}
+
+export type AmbassadorMeetingUpdateManyWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput[]
+  upsert?: Prisma.AmbassadorMeetingUpsertWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingUpsertWithWhereUniqueWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorMeetingCreateManyAmbassadorServiceInputEnvelope
+  set?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  disconnect?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  delete?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  connect?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  update?: Prisma.AmbassadorMeetingUpdateWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingUpdateWithWhereUniqueWithoutAmbassadorServiceInput[]
+  updateMany?: Prisma.AmbassadorMeetingUpdateManyWithWhereWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingUpdateManyWithWhereWithoutAmbassadorServiceInput[]
+  deleteMany?: Prisma.AmbassadorMeetingScalarWhereInput | Prisma.AmbassadorMeetingScalarWhereInput[]
+}
+
+export type AmbassadorMeetingUncheckedUpdateManyWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput[]
+  upsert?: Prisma.AmbassadorMeetingUpsertWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingUpsertWithWhereUniqueWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorMeetingCreateManyAmbassadorServiceInputEnvelope
+  set?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  disconnect?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  delete?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  connect?: Prisma.AmbassadorMeetingWhereUniqueInput | Prisma.AmbassadorMeetingWhereUniqueInput[]
+  update?: Prisma.AmbassadorMeetingUpdateWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingUpdateWithWhereUniqueWithoutAmbassadorServiceInput[]
+  updateMany?: Prisma.AmbassadorMeetingUpdateManyWithWhereWithoutAmbassadorServiceInput | Prisma.AmbassadorMeetingUpdateManyWithWhereWithoutAmbassadorServiceInput[]
+  deleteMany?: Prisma.AmbassadorMeetingScalarWhereInput | Prisma.AmbassadorMeetingScalarWhereInput[]
+}
+
+export type AmbassadorMeetingCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.AmbassadorMeetingWhereUniqueInput
+}
+
+export type AmbassadorMeetingUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.AmbassadorMeetingUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.AmbassadorMeetingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorMeetingUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUpdateWithoutStatusChangeLogsInput>, Prisma.AmbassadorMeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type AmbassadorMeetingCreateNestedOneWithoutAttendancesInput = {
   create?: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAttendancesInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.AmbassadorMeetingCreateOrConnectWithoutAttendancesInput
@@ -871,7 +936,6 @@ export type AmbassadorMeetingUpdateOneRequiredWithoutAttendancesNestedInput = {
 
 export type AmbassadorMeetingCreateWithoutSessionTypeInput = {
   id?: string
-  ambassadorServiceId?: string | null
   scheduleId?: string | null
   occurrenceId?: string | null
   scheduledByUserId?: string | null
@@ -894,7 +958,9 @@ export type AmbassadorMeetingCreateWithoutSessionTypeInput = {
   transcriptUrl?: string | null
   summaryUrl?: string | null
   isActive?: boolean
+  ambassadorService?: Prisma.AmbassadorServiceCreateNestedOneWithoutMeetingsInput
   attendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type AmbassadorMeetingUncheckedCreateWithoutSessionTypeInput = {
@@ -923,6 +989,7 @@ export type AmbassadorMeetingUncheckedCreateWithoutSessionTypeInput = {
   summaryUrl?: string | null
   isActive?: boolean
   attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type AmbassadorMeetingCreateOrConnectWithoutSessionTypeInput = {
@@ -982,9 +1049,8 @@ export type AmbassadorMeetingScalarWhereInput = {
   isActive?: Prisma.BoolFilter<"AmbassadorMeeting"> | boolean
 }
 
-export type AmbassadorMeetingCreateWithoutAttendancesInput = {
+export type AmbassadorMeetingCreateWithoutAmbassadorServiceInput = {
   id?: string
-  ambassadorServiceId?: string | null
   scheduleId?: string | null
   occurrenceId?: string | null
   scheduledByUserId?: string | null
@@ -1008,6 +1074,224 @@ export type AmbassadorMeetingCreateWithoutAttendancesInput = {
   summaryUrl?: string | null
   isActive?: boolean
   sessionType?: Prisma.SessionTypeCreateNestedOneWithoutAmbassadorMeetingsInput
+  attendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
+}
+
+export type AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput = {
+  id?: string
+  scheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  sessionTypeId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+  attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type AmbassadorMeetingCreateOrConnectWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorMeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorMeetingCreateManyAmbassadorServiceInputEnvelope = {
+  data: Prisma.AmbassadorMeetingCreateManyAmbassadorServiceInput | Prisma.AmbassadorMeetingCreateManyAmbassadorServiceInput[]
+  skipDuplicates?: boolean
+}
+
+export type AmbassadorMeetingUpsertWithWhereUniqueWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorMeetingWhereUniqueInput
+  update: Prisma.XOR<Prisma.AmbassadorMeetingUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedUpdateWithoutAmbassadorServiceInput>
+  create: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorMeetingUpdateWithWhereUniqueWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorMeetingWhereUniqueInput
+  data: Prisma.XOR<Prisma.AmbassadorMeetingUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorMeetingUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorMeetingUpdateManyWithWhereWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorMeetingScalarWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorMeetingUpdateManyMutationInput, Prisma.AmbassadorMeetingUncheckedUpdateManyWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorMeetingCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  scheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+  ambassadorService?: Prisma.AmbassadorServiceCreateNestedOneWithoutMeetingsInput
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutAmbassadorMeetingsInput
+  attendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutMeetingInput
+}
+
+export type AmbassadorMeetingUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  ambassadorServiceId?: string | null
+  scheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  sessionTypeId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+  attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutMeetingInput
+}
+
+export type AmbassadorMeetingCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.AmbassadorMeetingWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type AmbassadorMeetingUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.AmbassadorMeetingUpdateWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.AmbassadorMeetingCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.AmbassadorMeetingWhereInput
+}
+
+export type AmbassadorMeetingUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.AmbassadorMeetingWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorMeetingUpdateWithoutStatusChangeLogsInput, Prisma.AmbassadorMeetingUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type AmbassadorMeetingUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneWithoutMeetingsNestedInput
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutAmbassadorMeetingsNestedInput
+  attendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutMeetingNestedInput
+}
+
+export type AmbassadorMeetingUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ambassadorServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type AmbassadorMeetingCreateWithoutAttendancesInput = {
+  id?: string
+  scheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+  ambassadorService?: Prisma.AmbassadorServiceCreateNestedOneWithoutMeetingsInput
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutAmbassadorMeetingsInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogCreateNestedManyWithoutMeetingInput
 }
 
 export type AmbassadorMeetingUncheckedCreateWithoutAttendancesInput = {
@@ -1036,6 +1320,7 @@ export type AmbassadorMeetingUncheckedCreateWithoutAttendancesInput = {
   transcriptUrl?: string | null
   summaryUrl?: string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedCreateNestedManyWithoutMeetingInput
 }
 
 export type AmbassadorMeetingCreateOrConnectWithoutAttendancesInput = {
@@ -1056,7 +1341,6 @@ export type AmbassadorMeetingUpdateToOneWithWhereWithoutAttendancesInput = {
 
 export type AmbassadorMeetingUpdateWithoutAttendancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1079,7 +1363,9 @@ export type AmbassadorMeetingUpdateWithoutAttendancesInput = {
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneWithoutMeetingsNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneWithoutAmbassadorMeetingsNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type AmbassadorMeetingUncheckedUpdateWithoutAttendancesInput = {
@@ -1108,6 +1394,7 @@ export type AmbassadorMeetingUncheckedUpdateWithoutAttendancesInput = {
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type AmbassadorMeetingCreateManySessionTypeInput = {
@@ -1139,7 +1426,6 @@ export type AmbassadorMeetingCreateManySessionTypeInput = {
 
 export type AmbassadorMeetingUpdateWithoutSessionTypeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1162,7 +1448,9 @@ export type AmbassadorMeetingUpdateWithoutSessionTypeInput = {
   transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneWithoutMeetingsNestedInput
   attendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
 }
 
 export type AmbassadorMeetingUncheckedUpdateWithoutSessionTypeInput = {
@@ -1191,6 +1479,7 @@ export type AmbassadorMeetingUncheckedUpdateWithoutSessionTypeInput = {
   summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
 }
 
 export type AmbassadorMeetingUncheckedUpdateManyWithoutSessionTypeInput = {
@@ -1220,6 +1509,118 @@ export type AmbassadorMeetingUncheckedUpdateManyWithoutSessionTypeInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
+export type AmbassadorMeetingCreateManyAmbassadorServiceInput = {
+  id?: string
+  scheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  sessionTypeId?: string | null
+  title: string
+  agenda?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  isActive?: boolean
+}
+
+export type AmbassadorMeetingUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutAmbassadorMeetingsNestedInput
+  attendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUpdateManyWithoutMeetingNestedInput
+}
+
+export type AmbassadorMeetingUncheckedUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutMeetingNestedInput
+  statusChangeLogs?: Prisma.AmbassadorMeetingStatusChangeLogUncheckedUpdateManyWithoutMeetingNestedInput
+}
+
+export type AmbassadorMeetingUncheckedUpdateManyWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  scheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  agenda?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
 
 /**
  * Count Type AmbassadorMeetingCountOutputType
@@ -1227,10 +1628,12 @@ export type AmbassadorMeetingUncheckedUpdateManyWithoutSessionTypeInput = {
 
 export type AmbassadorMeetingCountOutputType = {
   attendances: number
+  statusChangeLogs: number
 }
 
 export type AmbassadorMeetingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   attendances?: boolean | AmbassadorMeetingCountOutputTypeCountAttendancesArgs
+  statusChangeLogs?: boolean | AmbassadorMeetingCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -1248,6 +1651,13 @@ export type AmbassadorMeetingCountOutputTypeDefaultArgs<ExtArgs extends runtime.
  */
 export type AmbassadorMeetingCountOutputTypeCountAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AmbassadorMeetingAttendanceWhereInput
+}
+
+/**
+ * AmbassadorMeetingCountOutputType without action
+ */
+export type AmbassadorMeetingCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AmbassadorMeetingStatusChangeLogWhereInput
 }
 
 
@@ -1277,8 +1687,10 @@ export type AmbassadorMeetingSelect<ExtArgs extends runtime.Types.Extensions.Int
   transcriptUrl?: boolean
   summaryUrl?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>
   sessionType?: boolean | Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>
   attendances?: boolean | Prisma.AmbassadorMeeting$attendancesArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AmbassadorMeeting$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorMeetingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorMeeting"]>
 
@@ -1308,6 +1720,7 @@ export type AmbassadorMeetingSelectCreateManyAndReturn<ExtArgs extends runtime.T
   transcriptUrl?: boolean
   summaryUrl?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>
   sessionType?: boolean | Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorMeeting"]>
 
@@ -1337,6 +1750,7 @@ export type AmbassadorMeetingSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   transcriptUrl?: boolean
   summaryUrl?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>
   sessionType?: boolean | Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorMeeting"]>
 
@@ -1370,22 +1784,28 @@ export type AmbassadorMeetingSelectScalar = {
 
 export type AmbassadorMeetingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ambassadorServiceId" | "scheduleId" | "occurrenceId" | "scheduledByUserId" | "sessionTypeId" | "title" | "agenda" | "startTime" | "endTime" | "originalStartTime" | "originalEndTime" | "durationHours" | "isTrial" | "status" | "sessionMode" | "zoomLink" | "zoomId" | "zoomPasscode" | "addedToCalendar" | "calendarSyncedAt" | "recordingUrl" | "transcriptUrl" | "summaryUrl" | "isActive", ExtArgs["result"]["ambassadorMeeting"]>
 export type AmbassadorMeetingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>
   sessionType?: boolean | Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>
   attendances?: boolean | Prisma.AmbassadorMeeting$attendancesArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AmbassadorMeeting$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorMeetingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AmbassadorMeetingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>
   sessionType?: boolean | Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>
 }
 export type AmbassadorMeetingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>
   sessionType?: boolean | Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>
 }
 
 export type $AmbassadorMeetingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AmbassadorMeeting"
   objects: {
+    ambassadorService: Prisma.$AmbassadorServicePayload<ExtArgs> | null
     sessionType: Prisma.$SessionTypePayload<ExtArgs> | null
     attendances: Prisma.$AmbassadorMeetingAttendancePayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$AmbassadorMeetingStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1807,8 +2227,10 @@ readonly fields: AmbassadorMeetingFieldRefs;
  */
 export interface Prisma__AmbassadorMeetingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  ambassadorService<T extends Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorMeeting$ambassadorServiceArgs<ExtArgs>>): Prisma.Prisma__AmbassadorServiceClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sessionType<T extends Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorMeeting$sessionTypeArgs<ExtArgs>>): Prisma.Prisma__SessionTypeClient<runtime.Types.Result.GetResult<Prisma.$SessionTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   attendances<T extends Prisma.AmbassadorMeeting$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorMeeting$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorMeetingAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.AmbassadorMeeting$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorMeeting$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorMeetingStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2264,6 +2686,25 @@ export type AmbassadorMeetingDeleteManyArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
+ * AmbassadorMeeting.ambassadorService
+ */
+export type AmbassadorMeeting$ambassadorServiceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AmbassadorService
+   */
+  select?: Prisma.AmbassadorServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AmbassadorService
+   */
+  omit?: Prisma.AmbassadorServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorServiceInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorServiceWhereInput
+}
+
+/**
  * AmbassadorMeeting.sessionType
  */
 export type AmbassadorMeeting$sessionTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2304,6 +2745,30 @@ export type AmbassadorMeeting$attendancesArgs<ExtArgs extends runtime.Types.Exte
   take?: number
   skip?: number
   distinct?: Prisma.AmbassadorMeetingAttendanceScalarFieldEnum | Prisma.AmbassadorMeetingAttendanceScalarFieldEnum[]
+}
+
+/**
+ * AmbassadorMeeting.statusChangeLogs
+ */
+export type AmbassadorMeeting$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AmbassadorMeetingStatusChangeLog
+   */
+  select?: Prisma.AmbassadorMeetingStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AmbassadorMeetingStatusChangeLog
+   */
+  omit?: Prisma.AmbassadorMeetingStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorMeetingStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorMeetingStatusChangeLogWhereInput
+  orderBy?: Prisma.AmbassadorMeetingStatusChangeLogOrderByWithRelationInput | Prisma.AmbassadorMeetingStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorMeetingStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AmbassadorMeetingStatusChangeLogScalarFieldEnum | Prisma.AmbassadorMeetingStatusChangeLogScalarFieldEnum[]
 }
 
 /**

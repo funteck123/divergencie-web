@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Clock, Trophy, Play, RotateCcw, CheckCircle2, XCircle, ChevronRight, Loader2, BookOpen, BarChart2 } from "lucide-react";
 import { saveMockResult } from "@/lib/actions/mock";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 // Static question bank — replace/extend with DB-driven questions in Phase 2
 const QUESTION_BANK: Record<string, Record<string, any[]>> = {

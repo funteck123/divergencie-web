@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { Send, User, Clock, Shield, Forward, CheckCircle2, RotateCcw, AlertCircle, UserPlus, Building2, ChevronRight, Link as LinkIcon } from "lucide-react";
 import { getStaffMembers, getExternalUsers } from "@/lib/actions/users";
 

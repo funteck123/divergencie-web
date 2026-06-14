@@ -198,6 +198,7 @@ export type ChecklistItemEntryOrderByWithRelationInput = {
 
 export type ChecklistItemEntryWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  checklistEntryId_templateItemId?: Prisma.ChecklistItemEntryChecklistEntryIdTemplateItemIdCompoundUniqueInput
   AND?: Prisma.ChecklistItemEntryWhereInput | Prisma.ChecklistItemEntryWhereInput[]
   OR?: Prisma.ChecklistItemEntryWhereInput[]
   NOT?: Prisma.ChecklistItemEntryWhereInput | Prisma.ChecklistItemEntryWhereInput[]
@@ -207,7 +208,7 @@ export type ChecklistItemEntryWhereUniqueInput = Prisma.AtLeast<{
   checkedAt?: Prisma.DateTimeNullableFilter<"ChecklistItemEntry"> | Date | string | null
   checklistEntry?: Prisma.XOR<Prisma.ChecklistEntryScalarRelationFilter, Prisma.ChecklistEntryWhereInput>
   templateItem?: Prisma.XOR<Prisma.ChecklistTemplateItemScalarRelationFilter, Prisma.ChecklistTemplateItemWhereInput>
-}, "id">
+}, "id" | "checklistEntryId_templateItemId">
 
 export type ChecklistItemEntryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -293,6 +294,11 @@ export type ChecklistItemEntryListRelationFilter = {
 
 export type ChecklistItemEntryOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type ChecklistItemEntryChecklistEntryIdTemplateItemIdCompoundUniqueInput = {
+  checklistEntryId: string
+  templateItemId: string
 }
 
 export type ChecklistItemEntryCountOrderByAggregateInput = {

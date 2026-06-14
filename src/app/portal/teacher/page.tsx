@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { getPendingAttendance, submitAttendance } from "@/lib/actions/attendance";
 import { getTeacherDashboardData } from "@/lib/actions/stats";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 function TeacherDashboardInner() {
   const { data: session } = useSession();

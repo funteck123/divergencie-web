@@ -318,7 +318,7 @@ export type AmbassadorScheduleOccurrenceWhereInput = {
   isActive?: Prisma.BoolFilter<"AmbassadorScheduleOccurrence"> | boolean
   schedule?: Prisma.XOR<Prisma.AmbassadorServiceScheduleScalarRelationFilter, Prisma.AmbassadorServiceScheduleWhereInput>
   sessionType?: Prisma.XOR<Prisma.SessionTypeScalarRelationFilter, Prisma.SessionTypeWhereInput>
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryListRelationFilter
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogListRelationFilter
 }
 
 export type AmbassadorScheduleOccurrenceOrderByWithRelationInput = {
@@ -341,7 +341,7 @@ export type AmbassadorScheduleOccurrenceOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   schedule?: Prisma.AmbassadorServiceScheduleOrderByWithRelationInput
   sessionType?: Prisma.SessionTypeOrderByWithRelationInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type AmbassadorScheduleOccurrenceWhereUniqueInput = Prisma.AtLeast<{
@@ -367,7 +367,7 @@ export type AmbassadorScheduleOccurrenceWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"AmbassadorScheduleOccurrence"> | boolean
   schedule?: Prisma.XOR<Prisma.AmbassadorServiceScheduleScalarRelationFilter, Prisma.AmbassadorServiceScheduleWhereInput>
   sessionType?: Prisma.XOR<Prisma.SessionTypeScalarRelationFilter, Prisma.SessionTypeWhereInput>
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryListRelationFilter
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogListRelationFilter
 }, "id">
 
 export type AmbassadorScheduleOccurrenceOrderByWithAggregationInput = {
@@ -436,7 +436,7 @@ export type AmbassadorScheduleOccurrenceCreateInput = {
   isActive?: boolean
   schedule: Prisma.AmbassadorServiceScheduleCreateNestedOneWithoutOccurrencesInput
   sessionType: Prisma.SessionTypeCreateNestedOneWithoutAmbassadorOccurrencesInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogCreateNestedManyWithoutOccurrenceInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedCreateInput = {
@@ -457,7 +457,7 @@ export type AmbassadorScheduleOccurrenceUncheckedCreateInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUncheckedCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUncheckedCreateNestedManyWithoutOccurrenceInput
 }
 
 export type AmbassadorScheduleOccurrenceUpdateInput = {
@@ -478,7 +478,7 @@ export type AmbassadorScheduleOccurrenceUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   schedule?: Prisma.AmbassadorServiceScheduleUpdateOneRequiredWithoutOccurrencesNestedInput
   sessionType?: Prisma.SessionTypeUpdateOneRequiredWithoutAmbassadorOccurrencesNestedInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedUpdateInput = {
@@ -499,7 +499,7 @@ export type AmbassadorScheduleOccurrenceUncheckedUpdateInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUncheckedUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUncheckedUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type AmbassadorScheduleOccurrenceCreateManyInput = {
@@ -760,7 +760,7 @@ export type AmbassadorScheduleOccurrenceCreateWithoutSessionTypeInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   schedule: Prisma.AmbassadorServiceScheduleCreateNestedOneWithoutOccurrencesInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogCreateNestedManyWithoutOccurrenceInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedCreateWithoutSessionTypeInput = {
@@ -780,7 +780,7 @@ export type AmbassadorScheduleOccurrenceUncheckedCreateWithoutSessionTypeInput =
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUncheckedCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUncheckedCreateNestedManyWithoutOccurrenceInput
 }
 
 export type AmbassadorScheduleOccurrenceCreateOrConnectWithoutSessionTypeInput = {
@@ -849,7 +849,7 @@ export type AmbassadorScheduleOccurrenceCreateWithoutScheduleInput = {
   deactivatedAt?: Date | string | null
   isActive?: boolean
   sessionType: Prisma.SessionTypeCreateNestedOneWithoutAmbassadorOccurrencesInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogCreateNestedManyWithoutOccurrenceInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedCreateWithoutScheduleInput = {
@@ -869,7 +869,7 @@ export type AmbassadorScheduleOccurrenceUncheckedCreateWithoutScheduleInput = {
   pausedAt?: Date | string | null
   deactivatedAt?: Date | string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUncheckedCreateNestedManyWithoutOccurrenceInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUncheckedCreateNestedManyWithoutOccurrenceInput
 }
 
 export type AmbassadorScheduleOccurrenceCreateOrConnectWithoutScheduleInput = {
@@ -1030,7 +1030,7 @@ export type AmbassadorScheduleOccurrenceUpdateWithoutSessionTypeInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   schedule?: Prisma.AmbassadorServiceScheduleUpdateOneRequiredWithoutOccurrencesNestedInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedUpdateWithoutSessionTypeInput = {
@@ -1050,7 +1050,7 @@ export type AmbassadorScheduleOccurrenceUncheckedUpdateWithoutSessionTypeInput =
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUncheckedUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUncheckedUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedUpdateManyWithoutSessionTypeInput = {
@@ -1108,7 +1108,7 @@ export type AmbassadorScheduleOccurrenceUpdateWithoutScheduleInput = {
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sessionType?: Prisma.SessionTypeUpdateOneRequiredWithoutAmbassadorOccurrencesNestedInput
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedUpdateWithoutScheduleInput = {
@@ -1128,7 +1128,7 @@ export type AmbassadorScheduleOccurrenceUncheckedUpdateWithoutScheduleInput = {
   pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryUncheckedUpdateManyWithoutOccurrenceNestedInput
+  history?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogUncheckedUpdateManyWithoutOccurrenceNestedInput
 }
 
 export type AmbassadorScheduleOccurrenceUncheckedUpdateManyWithoutScheduleInput = {
@@ -1177,7 +1177,7 @@ export type AmbassadorScheduleOccurrenceCountOutputTypeDefaultArgs<ExtArgs exten
  * AmbassadorScheduleOccurrenceCountOutputType without action
  */
 export type AmbassadorScheduleOccurrenceCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryWhereInput
+  where?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogWhereInput
 }
 
 
@@ -1290,7 +1290,7 @@ export type $AmbassadorScheduleOccurrencePayload<ExtArgs extends runtime.Types.E
   objects: {
     schedule: Prisma.$AmbassadorServiceSchedulePayload<ExtArgs>
     sessionType: Prisma.$SessionTypePayload<ExtArgs>
-    history: Prisma.$AmbassadorScheduleOccurrenceStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$AmbassadorScheduleOccurrenceStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1706,7 +1706,7 @@ export interface Prisma__AmbassadorScheduleOccurrenceClient<T, Null = never, Ext
   readonly [Symbol.toStringTag]: "PrismaPromise"
   schedule<T extends Prisma.AmbassadorServiceScheduleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorServiceScheduleDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorServiceScheduleClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorServiceSchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   sessionType<T extends Prisma.SessionTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SessionTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__SessionTypeClient<runtime.Types.Result.GetResult<Prisma.$SessionTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.AmbassadorScheduleOccurrence$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorScheduleOccurrence$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorScheduleOccurrenceStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.AmbassadorScheduleOccurrence$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorScheduleOccurrence$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorScheduleOccurrenceStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2158,23 +2158,23 @@ export type AmbassadorScheduleOccurrenceDeleteManyArgs<ExtArgs extends runtime.T
  */
 export type AmbassadorScheduleOccurrence$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the AmbassadorScheduleOccurrenceStatusHistory
+   * Select specific fields to fetch from the AmbassadorScheduleOccurrenceStatusChangeLog
    */
-  select?: Prisma.AmbassadorScheduleOccurrenceStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the AmbassadorScheduleOccurrenceStatusHistory
+   * Omit specific fields from the AmbassadorScheduleOccurrenceStatusChangeLog
    */
-  omit?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryWhereInput
-  orderBy?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryOrderByWithRelationInput | Prisma.AmbassadorScheduleOccurrenceStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryWhereUniqueInput
+  include?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogWhereInput
+  orderBy?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogOrderByWithRelationInput | Prisma.AmbassadorScheduleOccurrenceStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum | Prisma.AmbassadorScheduleOccurrenceStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.AmbassadorScheduleOccurrenceStatusChangeLogScalarFieldEnum | Prisma.AmbassadorScheduleOccurrenceStatusChangeLogScalarFieldEnum[]
 }
 
 /**

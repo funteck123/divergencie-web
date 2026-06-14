@@ -28,7 +28,7 @@ import {
   HelpCircle,
   Megaphone
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "@/lib/auth-client";
 
 const MENU_ITEMS: Record<string, any[]> = {
   student: [

@@ -25,7 +25,7 @@ export async function saveMockResult(data: {
     });
 
     if (syllabusItem) {
-      await prisma.studentProgress.upsert({
+      await prisma.studentSyllabusProgress.upsert({
         where: {
           // Now we can use the proper compound unique key
           studentId_syllabusItemId: {

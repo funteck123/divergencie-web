@@ -26,8 +26,8 @@ export type AggregateJobPosting = {
 
 export type JobPostingMinAggregateOutputType = {
   id: string | null
-  role: string | null
-  dept: string | null
+  staffRoleId: string | null
+  deptId: string | null
   description: string | null
   jobPostingLink: string | null
   jobPostingPosterLink: string | null
@@ -39,8 +39,8 @@ export type JobPostingMinAggregateOutputType = {
 
 export type JobPostingMaxAggregateOutputType = {
   id: string | null
-  role: string | null
-  dept: string | null
+  staffRoleId: string | null
+  deptId: string | null
   description: string | null
   jobPostingLink: string | null
   jobPostingPosterLink: string | null
@@ -52,8 +52,8 @@ export type JobPostingMaxAggregateOutputType = {
 
 export type JobPostingCountAggregateOutputType = {
   id: number
-  role: number
-  dept: number
+  staffRoleId: number
+  deptId: number
   description: number
   jobPostingLink: number
   jobPostingPosterLink: number
@@ -67,8 +67,8 @@ export type JobPostingCountAggregateOutputType = {
 
 export type JobPostingMinAggregateInputType = {
   id?: true
-  role?: true
-  dept?: true
+  staffRoleId?: true
+  deptId?: true
   description?: true
   jobPostingLink?: true
   jobPostingPosterLink?: true
@@ -80,8 +80,8 @@ export type JobPostingMinAggregateInputType = {
 
 export type JobPostingMaxAggregateInputType = {
   id?: true
-  role?: true
-  dept?: true
+  staffRoleId?: true
+  deptId?: true
   description?: true
   jobPostingLink?: true
   jobPostingPosterLink?: true
@@ -93,8 +93,8 @@ export type JobPostingMaxAggregateInputType = {
 
 export type JobPostingCountAggregateInputType = {
   id?: true
-  role?: true
-  dept?: true
+  staffRoleId?: true
+  deptId?: true
   description?: true
   jobPostingLink?: true
   jobPostingPosterLink?: true
@@ -179,8 +179,8 @@ export type JobPostingGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type JobPostingGroupByOutputType = {
   id: string
-  role: string
-  dept: string
+  staffRoleId: string | null
+  deptId: string | null
   description: string
   jobPostingLink: string | null
   jobPostingPosterLink: string | null
@@ -213,8 +213,8 @@ export type JobPostingWhereInput = {
   OR?: Prisma.JobPostingWhereInput[]
   NOT?: Prisma.JobPostingWhereInput | Prisma.JobPostingWhereInput[]
   id?: Prisma.StringFilter<"JobPosting"> | string
-  role?: Prisma.StringFilter<"JobPosting"> | string
-  dept?: Prisma.StringFilter<"JobPosting"> | string
+  staffRoleId?: Prisma.StringNullableFilter<"JobPosting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"JobPosting"> | string | null
   description?: Prisma.StringFilter<"JobPosting"> | string
   jobPostingLink?: Prisma.StringNullableFilter<"JobPosting"> | string | null
   jobPostingPosterLink?: Prisma.StringNullableFilter<"JobPosting"> | string | null
@@ -222,12 +222,14 @@ export type JobPostingWhereInput = {
   postedAt?: Prisma.DateTimeNullableFilter<"JobPosting"> | Date | string | null
   closedAt?: Prisma.DateTimeNullableFilter<"JobPosting"> | Date | string | null
   isActive?: Prisma.BoolFilter<"JobPosting"> | boolean
+  staffRole?: Prisma.XOR<Prisma.StaffRoleNullableScalarRelationFilter, Prisma.StaffRoleWhereInput> | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
 }
 
 export type JobPostingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrder
   jobPostingLink?: Prisma.SortOrderInput | Prisma.SortOrder
   jobPostingPosterLink?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -235,6 +237,8 @@ export type JobPostingOrderByWithRelationInput = {
   postedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   closedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  staffRole?: Prisma.StaffRoleOrderByWithRelationInput
+  dept?: Prisma.DepartmentOrderByWithRelationInput
 }
 
 export type JobPostingWhereUniqueInput = Prisma.AtLeast<{
@@ -242,8 +246,8 @@ export type JobPostingWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.JobPostingWhereInput | Prisma.JobPostingWhereInput[]
   OR?: Prisma.JobPostingWhereInput[]
   NOT?: Prisma.JobPostingWhereInput | Prisma.JobPostingWhereInput[]
-  role?: Prisma.StringFilter<"JobPosting"> | string
-  dept?: Prisma.StringFilter<"JobPosting"> | string
+  staffRoleId?: Prisma.StringNullableFilter<"JobPosting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"JobPosting"> | string | null
   description?: Prisma.StringFilter<"JobPosting"> | string
   jobPostingLink?: Prisma.StringNullableFilter<"JobPosting"> | string | null
   jobPostingPosterLink?: Prisma.StringNullableFilter<"JobPosting"> | string | null
@@ -251,12 +255,14 @@ export type JobPostingWhereUniqueInput = Prisma.AtLeast<{
   postedAt?: Prisma.DateTimeNullableFilter<"JobPosting"> | Date | string | null
   closedAt?: Prisma.DateTimeNullableFilter<"JobPosting"> | Date | string | null
   isActive?: Prisma.BoolFilter<"JobPosting"> | boolean
+  staffRole?: Prisma.XOR<Prisma.StaffRoleNullableScalarRelationFilter, Prisma.StaffRoleWhereInput> | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
 }, "id">
 
 export type JobPostingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrder
   jobPostingLink?: Prisma.SortOrderInput | Prisma.SortOrder
   jobPostingPosterLink?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -274,8 +280,8 @@ export type JobPostingScalarWhereWithAggregatesInput = {
   OR?: Prisma.JobPostingScalarWhereWithAggregatesInput[]
   NOT?: Prisma.JobPostingScalarWhereWithAggregatesInput | Prisma.JobPostingScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"JobPosting"> | string
-  role?: Prisma.StringWithAggregatesFilter<"JobPosting"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"JobPosting"> | string
+  staffRoleId?: Prisma.StringNullableWithAggregatesFilter<"JobPosting"> | string | null
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"JobPosting"> | string | null
   description?: Prisma.StringWithAggregatesFilter<"JobPosting"> | string
   jobPostingLink?: Prisma.StringNullableWithAggregatesFilter<"JobPosting"> | string | null
   jobPostingPosterLink?: Prisma.StringNullableWithAggregatesFilter<"JobPosting"> | string | null
@@ -287,8 +293,6 @@ export type JobPostingScalarWhereWithAggregatesInput = {
 
 export type JobPostingCreateInput = {
   id?: string
-  role: string
-  dept: string
   description: string
   jobPostingLink?: string | null
   jobPostingPosterLink?: string | null
@@ -296,12 +300,14 @@ export type JobPostingCreateInput = {
   postedAt?: Date | string | null
   closedAt?: Date | string | null
   isActive?: boolean
+  staffRole?: Prisma.StaffRoleCreateNestedOneWithoutJobPostingsInput
+  dept?: Prisma.DepartmentCreateNestedOneWithoutJobPostingsInput
 }
 
 export type JobPostingUncheckedCreateInput = {
   id?: string
-  role: string
-  dept: string
+  staffRoleId?: string | null
+  deptId?: string | null
   description: string
   jobPostingLink?: string | null
   jobPostingPosterLink?: string | null
@@ -313,8 +319,6 @@ export type JobPostingUncheckedCreateInput = {
 
 export type JobPostingUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -322,12 +326,14 @@ export type JobPostingUpdateInput = {
   postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  staffRole?: Prisma.StaffRoleUpdateOneWithoutJobPostingsNestedInput
+  dept?: Prisma.DepartmentUpdateOneWithoutJobPostingsNestedInput
 }
 
 export type JobPostingUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -339,8 +345,8 @@ export type JobPostingUncheckedUpdateInput = {
 
 export type JobPostingCreateManyInput = {
   id?: string
-  role: string
-  dept: string
+  staffRoleId?: string | null
+  deptId?: string | null
   description: string
   jobPostingLink?: string | null
   jobPostingPosterLink?: string | null
@@ -352,8 +358,6 @@ export type JobPostingCreateManyInput = {
 
 export type JobPostingUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -365,8 +369,8 @@ export type JobPostingUpdateManyMutationInput = {
 
 export type JobPostingUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -376,10 +380,20 @@ export type JobPostingUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
+export type JobPostingListRelationFilter = {
+  every?: Prisma.JobPostingWhereInput
+  some?: Prisma.JobPostingWhereInput
+  none?: Prisma.JobPostingWhereInput
+}
+
+export type JobPostingOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type JobPostingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   jobPostingLink?: Prisma.SortOrder
   jobPostingPosterLink?: Prisma.SortOrder
@@ -391,8 +405,8 @@ export type JobPostingCountOrderByAggregateInput = {
 
 export type JobPostingMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   jobPostingLink?: Prisma.SortOrder
   jobPostingPosterLink?: Prisma.SortOrder
@@ -404,8 +418,8 @@ export type JobPostingMaxOrderByAggregateInput = {
 
 export type JobPostingMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  staffRoleId?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   jobPostingLink?: Prisma.SortOrder
   jobPostingPosterLink?: Prisma.SortOrder
@@ -415,12 +429,308 @@ export type JobPostingMinOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
 }
 
+export type JobPostingCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutDeptInput, Prisma.JobPostingUncheckedCreateWithoutDeptInput> | Prisma.JobPostingCreateWithoutDeptInput[] | Prisma.JobPostingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutDeptInput | Prisma.JobPostingCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.JobPostingCreateManyDeptInputEnvelope
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+}
+
+export type JobPostingUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutDeptInput, Prisma.JobPostingUncheckedCreateWithoutDeptInput> | Prisma.JobPostingCreateWithoutDeptInput[] | Prisma.JobPostingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutDeptInput | Prisma.JobPostingCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.JobPostingCreateManyDeptInputEnvelope
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+}
+
+export type JobPostingUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutDeptInput, Prisma.JobPostingUncheckedCreateWithoutDeptInput> | Prisma.JobPostingCreateWithoutDeptInput[] | Prisma.JobPostingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutDeptInput | Prisma.JobPostingCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.JobPostingUpsertWithWhereUniqueWithoutDeptInput | Prisma.JobPostingUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.JobPostingCreateManyDeptInputEnvelope
+  set?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  disconnect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  delete?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  update?: Prisma.JobPostingUpdateWithWhereUniqueWithoutDeptInput | Prisma.JobPostingUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.JobPostingUpdateManyWithWhereWithoutDeptInput | Prisma.JobPostingUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.JobPostingScalarWhereInput | Prisma.JobPostingScalarWhereInput[]
+}
+
+export type JobPostingUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutDeptInput, Prisma.JobPostingUncheckedCreateWithoutDeptInput> | Prisma.JobPostingCreateWithoutDeptInput[] | Prisma.JobPostingUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutDeptInput | Prisma.JobPostingCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.JobPostingUpsertWithWhereUniqueWithoutDeptInput | Prisma.JobPostingUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.JobPostingCreateManyDeptInputEnvelope
+  set?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  disconnect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  delete?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  update?: Prisma.JobPostingUpdateWithWhereUniqueWithoutDeptInput | Prisma.JobPostingUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.JobPostingUpdateManyWithWhereWithoutDeptInput | Prisma.JobPostingUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.JobPostingScalarWhereInput | Prisma.JobPostingScalarWhereInput[]
+}
+
+export type JobPostingCreateNestedManyWithoutStaffRoleInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutStaffRoleInput, Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput> | Prisma.JobPostingCreateWithoutStaffRoleInput[] | Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput | Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput[]
+  createMany?: Prisma.JobPostingCreateManyStaffRoleInputEnvelope
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+}
+
+export type JobPostingUncheckedCreateNestedManyWithoutStaffRoleInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutStaffRoleInput, Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput> | Prisma.JobPostingCreateWithoutStaffRoleInput[] | Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput | Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput[]
+  createMany?: Prisma.JobPostingCreateManyStaffRoleInputEnvelope
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+}
+
+export type JobPostingUpdateManyWithoutStaffRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutStaffRoleInput, Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput> | Prisma.JobPostingCreateWithoutStaffRoleInput[] | Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput | Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput[]
+  upsert?: Prisma.JobPostingUpsertWithWhereUniqueWithoutStaffRoleInput | Prisma.JobPostingUpsertWithWhereUniqueWithoutStaffRoleInput[]
+  createMany?: Prisma.JobPostingCreateManyStaffRoleInputEnvelope
+  set?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  disconnect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  delete?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  update?: Prisma.JobPostingUpdateWithWhereUniqueWithoutStaffRoleInput | Prisma.JobPostingUpdateWithWhereUniqueWithoutStaffRoleInput[]
+  updateMany?: Prisma.JobPostingUpdateManyWithWhereWithoutStaffRoleInput | Prisma.JobPostingUpdateManyWithWhereWithoutStaffRoleInput[]
+  deleteMany?: Prisma.JobPostingScalarWhereInput | Prisma.JobPostingScalarWhereInput[]
+}
+
+export type JobPostingUncheckedUpdateManyWithoutStaffRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.JobPostingCreateWithoutStaffRoleInput, Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput> | Prisma.JobPostingCreateWithoutStaffRoleInput[] | Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput[]
+  connectOrCreate?: Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput | Prisma.JobPostingCreateOrConnectWithoutStaffRoleInput[]
+  upsert?: Prisma.JobPostingUpsertWithWhereUniqueWithoutStaffRoleInput | Prisma.JobPostingUpsertWithWhereUniqueWithoutStaffRoleInput[]
+  createMany?: Prisma.JobPostingCreateManyStaffRoleInputEnvelope
+  set?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  disconnect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  delete?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  connect?: Prisma.JobPostingWhereUniqueInput | Prisma.JobPostingWhereUniqueInput[]
+  update?: Prisma.JobPostingUpdateWithWhereUniqueWithoutStaffRoleInput | Prisma.JobPostingUpdateWithWhereUniqueWithoutStaffRoleInput[]
+  updateMany?: Prisma.JobPostingUpdateManyWithWhereWithoutStaffRoleInput | Prisma.JobPostingUpdateManyWithWhereWithoutStaffRoleInput[]
+  deleteMany?: Prisma.JobPostingScalarWhereInput | Prisma.JobPostingScalarWhereInput[]
+}
+
+export type JobPostingCreateWithoutDeptInput = {
+  id?: string
+  description: string
+  jobPostingLink?: string | null
+  jobPostingPosterLink?: string | null
+  status: string
+  postedAt?: Date | string | null
+  closedAt?: Date | string | null
+  isActive?: boolean
+  staffRole?: Prisma.StaffRoleCreateNestedOneWithoutJobPostingsInput
+}
+
+export type JobPostingUncheckedCreateWithoutDeptInput = {
+  id?: string
+  staffRoleId?: string | null
+  description: string
+  jobPostingLink?: string | null
+  jobPostingPosterLink?: string | null
+  status: string
+  postedAt?: Date | string | null
+  closedAt?: Date | string | null
+  isActive?: boolean
+}
+
+export type JobPostingCreateOrConnectWithoutDeptInput = {
+  where: Prisma.JobPostingWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobPostingCreateWithoutDeptInput, Prisma.JobPostingUncheckedCreateWithoutDeptInput>
+}
+
+export type JobPostingCreateManyDeptInputEnvelope = {
+  data: Prisma.JobPostingCreateManyDeptInput | Prisma.JobPostingCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type JobPostingUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.JobPostingWhereUniqueInput
+  update: Prisma.XOR<Prisma.JobPostingUpdateWithoutDeptInput, Prisma.JobPostingUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.JobPostingCreateWithoutDeptInput, Prisma.JobPostingUncheckedCreateWithoutDeptInput>
+}
+
+export type JobPostingUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.JobPostingWhereUniqueInput
+  data: Prisma.XOR<Prisma.JobPostingUpdateWithoutDeptInput, Prisma.JobPostingUncheckedUpdateWithoutDeptInput>
+}
+
+export type JobPostingUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.JobPostingScalarWhereInput
+  data: Prisma.XOR<Prisma.JobPostingUpdateManyMutationInput, Prisma.JobPostingUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type JobPostingScalarWhereInput = {
+  AND?: Prisma.JobPostingScalarWhereInput | Prisma.JobPostingScalarWhereInput[]
+  OR?: Prisma.JobPostingScalarWhereInput[]
+  NOT?: Prisma.JobPostingScalarWhereInput | Prisma.JobPostingScalarWhereInput[]
+  id?: Prisma.StringFilter<"JobPosting"> | string
+  staffRoleId?: Prisma.StringNullableFilter<"JobPosting"> | string | null
+  deptId?: Prisma.StringNullableFilter<"JobPosting"> | string | null
+  description?: Prisma.StringFilter<"JobPosting"> | string
+  jobPostingLink?: Prisma.StringNullableFilter<"JobPosting"> | string | null
+  jobPostingPosterLink?: Prisma.StringNullableFilter<"JobPosting"> | string | null
+  status?: Prisma.StringFilter<"JobPosting"> | string
+  postedAt?: Prisma.DateTimeNullableFilter<"JobPosting"> | Date | string | null
+  closedAt?: Prisma.DateTimeNullableFilter<"JobPosting"> | Date | string | null
+  isActive?: Prisma.BoolFilter<"JobPosting"> | boolean
+}
+
+export type JobPostingCreateWithoutStaffRoleInput = {
+  id?: string
+  description: string
+  jobPostingLink?: string | null
+  jobPostingPosterLink?: string | null
+  status: string
+  postedAt?: Date | string | null
+  closedAt?: Date | string | null
+  isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutJobPostingsInput
+}
+
+export type JobPostingUncheckedCreateWithoutStaffRoleInput = {
+  id?: string
+  deptId?: string | null
+  description: string
+  jobPostingLink?: string | null
+  jobPostingPosterLink?: string | null
+  status: string
+  postedAt?: Date | string | null
+  closedAt?: Date | string | null
+  isActive?: boolean
+}
+
+export type JobPostingCreateOrConnectWithoutStaffRoleInput = {
+  where: Prisma.JobPostingWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobPostingCreateWithoutStaffRoleInput, Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput>
+}
+
+export type JobPostingCreateManyStaffRoleInputEnvelope = {
+  data: Prisma.JobPostingCreateManyStaffRoleInput | Prisma.JobPostingCreateManyStaffRoleInput[]
+  skipDuplicates?: boolean
+}
+
+export type JobPostingUpsertWithWhereUniqueWithoutStaffRoleInput = {
+  where: Prisma.JobPostingWhereUniqueInput
+  update: Prisma.XOR<Prisma.JobPostingUpdateWithoutStaffRoleInput, Prisma.JobPostingUncheckedUpdateWithoutStaffRoleInput>
+  create: Prisma.XOR<Prisma.JobPostingCreateWithoutStaffRoleInput, Prisma.JobPostingUncheckedCreateWithoutStaffRoleInput>
+}
+
+export type JobPostingUpdateWithWhereUniqueWithoutStaffRoleInput = {
+  where: Prisma.JobPostingWhereUniqueInput
+  data: Prisma.XOR<Prisma.JobPostingUpdateWithoutStaffRoleInput, Prisma.JobPostingUncheckedUpdateWithoutStaffRoleInput>
+}
+
+export type JobPostingUpdateManyWithWhereWithoutStaffRoleInput = {
+  where: Prisma.JobPostingScalarWhereInput
+  data: Prisma.XOR<Prisma.JobPostingUpdateManyMutationInput, Prisma.JobPostingUncheckedUpdateManyWithoutStaffRoleInput>
+}
+
+export type JobPostingCreateManyDeptInput = {
+  id?: string
+  staffRoleId?: string | null
+  description: string
+  jobPostingLink?: string | null
+  jobPostingPosterLink?: string | null
+  status: string
+  postedAt?: Date | string | null
+  closedAt?: Date | string | null
+  isActive?: boolean
+}
+
+export type JobPostingUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  staffRole?: Prisma.StaffRoleUpdateOneWithoutJobPostingsNestedInput
+}
+
+export type JobPostingUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type JobPostingUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffRoleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type JobPostingCreateManyStaffRoleInput = {
+  id?: string
+  deptId?: string | null
+  description: string
+  jobPostingLink?: string | null
+  jobPostingPosterLink?: string | null
+  status: string
+  postedAt?: Date | string | null
+  closedAt?: Date | string | null
+  isActive?: boolean
+}
+
+export type JobPostingUpdateWithoutStaffRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutJobPostingsNestedInput
+}
+
+export type JobPostingUncheckedUpdateWithoutStaffRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type JobPostingUncheckedUpdateManyWithoutStaffRoleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  jobPostingLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobPostingPosterLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  postedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
 
 
 export type JobPostingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  role?: boolean
-  dept?: boolean
+  staffRoleId?: boolean
+  deptId?: boolean
   description?: boolean
   jobPostingLink?: boolean
   jobPostingPosterLink?: boolean
@@ -428,12 +738,14 @@ export type JobPostingSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   postedAt?: boolean
   closedAt?: boolean
   isActive?: boolean
+  staffRole?: boolean | Prisma.JobPosting$staffRoleArgs<ExtArgs>
+  dept?: boolean | Prisma.JobPosting$deptArgs<ExtArgs>
 }, ExtArgs["result"]["jobPosting"]>
 
 export type JobPostingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  role?: boolean
-  dept?: boolean
+  staffRoleId?: boolean
+  deptId?: boolean
   description?: boolean
   jobPostingLink?: boolean
   jobPostingPosterLink?: boolean
@@ -441,12 +753,14 @@ export type JobPostingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   postedAt?: boolean
   closedAt?: boolean
   isActive?: boolean
+  staffRole?: boolean | Prisma.JobPosting$staffRoleArgs<ExtArgs>
+  dept?: boolean | Prisma.JobPosting$deptArgs<ExtArgs>
 }, ExtArgs["result"]["jobPosting"]>
 
 export type JobPostingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  role?: boolean
-  dept?: boolean
+  staffRoleId?: boolean
+  deptId?: boolean
   description?: boolean
   jobPostingLink?: boolean
   jobPostingPosterLink?: boolean
@@ -454,12 +768,14 @@ export type JobPostingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   postedAt?: boolean
   closedAt?: boolean
   isActive?: boolean
+  staffRole?: boolean | Prisma.JobPosting$staffRoleArgs<ExtArgs>
+  dept?: boolean | Prisma.JobPosting$deptArgs<ExtArgs>
 }, ExtArgs["result"]["jobPosting"]>
 
 export type JobPostingSelectScalar = {
   id?: boolean
-  role?: boolean
-  dept?: boolean
+  staffRoleId?: boolean
+  deptId?: boolean
   description?: boolean
   jobPostingLink?: boolean
   jobPostingPosterLink?: boolean
@@ -469,15 +785,30 @@ export type JobPostingSelectScalar = {
   isActive?: boolean
 }
 
-export type JobPostingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "dept" | "description" | "jobPostingLink" | "jobPostingPosterLink" | "status" | "postedAt" | "closedAt" | "isActive", ExtArgs["result"]["jobPosting"]>
+export type JobPostingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "staffRoleId" | "deptId" | "description" | "jobPostingLink" | "jobPostingPosterLink" | "status" | "postedAt" | "closedAt" | "isActive", ExtArgs["result"]["jobPosting"]>
+export type JobPostingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  staffRole?: boolean | Prisma.JobPosting$staffRoleArgs<ExtArgs>
+  dept?: boolean | Prisma.JobPosting$deptArgs<ExtArgs>
+}
+export type JobPostingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  staffRole?: boolean | Prisma.JobPosting$staffRoleArgs<ExtArgs>
+  dept?: boolean | Prisma.JobPosting$deptArgs<ExtArgs>
+}
+export type JobPostingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  staffRole?: boolean | Prisma.JobPosting$staffRoleArgs<ExtArgs>
+  dept?: boolean | Prisma.JobPosting$deptArgs<ExtArgs>
+}
 
 export type $JobPostingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "JobPosting"
-  objects: {}
+  objects: {
+    staffRole: Prisma.$StaffRolePayload<ExtArgs> | null
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    role: string
-    dept: string
+    staffRoleId: string | null
+    deptId: string | null
     description: string
     jobPostingLink: string | null
     jobPostingPosterLink: string | null
@@ -879,6 +1210,8 @@ readonly fields: JobPostingFieldRefs;
  */
 export interface Prisma__JobPostingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  staffRole<T extends Prisma.JobPosting$staffRoleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobPosting$staffRoleArgs<ExtArgs>>): Prisma.Prisma__StaffRoleClient<runtime.Types.Result.GetResult<Prisma.$StaffRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dept<T extends Prisma.JobPosting$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.JobPosting$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -909,8 +1242,8 @@ export interface Prisma__JobPostingClient<T, Null = never, ExtArgs extends runti
  */
 export interface JobPostingFieldRefs {
   readonly id: Prisma.FieldRef<"JobPosting", 'String'>
-  readonly role: Prisma.FieldRef<"JobPosting", 'String'>
-  readonly dept: Prisma.FieldRef<"JobPosting", 'String'>
+  readonly staffRoleId: Prisma.FieldRef<"JobPosting", 'String'>
+  readonly deptId: Prisma.FieldRef<"JobPosting", 'String'>
   readonly description: Prisma.FieldRef<"JobPosting", 'String'>
   readonly jobPostingLink: Prisma.FieldRef<"JobPosting", 'String'>
   readonly jobPostingPosterLink: Prisma.FieldRef<"JobPosting", 'String'>
@@ -935,6 +1268,10 @@ export type JobPostingFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
+  /**
    * Filter, which JobPosting to fetch.
    */
   where: Prisma.JobPostingWhereUniqueInput
@@ -953,6 +1290,10 @@ export type JobPostingFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
+  /**
    * Filter, which JobPosting to fetch.
    */
   where: Prisma.JobPostingWhereUniqueInput
@@ -970,6 +1311,10 @@ export type JobPostingFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the JobPosting
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
   /**
    * Filter, which JobPosting to fetch.
    */
@@ -1019,6 +1364,10 @@ export type JobPostingFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
+  /**
    * Filter, which JobPosting to fetch.
    */
   where?: Prisma.JobPostingWhereInput
@@ -1066,6 +1415,10 @@ export type JobPostingFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the JobPosting
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
   /**
    * Filter, which JobPostings to fetch.
    */
@@ -1115,6 +1468,10 @@ export type JobPostingCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
+  /**
    * The data needed to create a JobPosting.
    */
   data: Prisma.XOR<Prisma.JobPostingCreateInput, Prisma.JobPostingUncheckedCreateInput>
@@ -1148,6 +1505,10 @@ export type JobPostingCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    */
   data: Prisma.JobPostingCreateManyInput | Prisma.JobPostingCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1162,6 +1523,10 @@ export type JobPostingUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the JobPosting
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
   /**
    * The data needed to update a JobPosting.
    */
@@ -1214,6 +1579,10 @@ export type JobPostingUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many JobPostings to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1228,6 +1597,10 @@ export type JobPostingUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the JobPosting
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
   /**
    * The filter to search for the JobPosting to update in case it exists.
    */
@@ -1255,6 +1628,10 @@ export type JobPostingDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
+  /**
    * Filter which JobPosting to delete.
    */
   where: Prisma.JobPostingWhereUniqueInput
@@ -1275,6 +1652,44 @@ export type JobPostingDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * JobPosting.staffRole
+ */
+export type JobPosting$staffRoleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StaffRole
+   */
+  select?: Prisma.StaffRoleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StaffRole
+   */
+  omit?: Prisma.StaffRoleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffRoleInclude<ExtArgs> | null
+  where?: Prisma.StaffRoleWhereInput
+}
+
+/**
+ * JobPosting.dept
+ */
+export type JobPosting$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
+}
+
+/**
  * JobPosting without action
  */
 export type JobPostingDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1286,4 +1701,8 @@ export type JobPostingDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the JobPosting
    */
   omit?: Prisma.JobPostingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobPostingInclude<ExtArgs> | null
 }

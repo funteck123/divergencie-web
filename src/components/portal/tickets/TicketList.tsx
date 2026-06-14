@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock, MessageCircle, AlertCircle, ChevronRight, User, Inbox } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 interface Ticket {
   id: string;

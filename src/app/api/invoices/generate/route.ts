@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Create or find the InvoiceMonth record
-    const invoiceMonth = await prisma.invoiceMonth.upsert({
+    // 1. Create or find the BillingMonth record
+    const billingMonth = await prisma.billingMonth.upsert({
       where: { month },
       update: {},
       create: { month },
@@ -138,14 +138,17 @@ export async function POST(req: NextRequest) {
 
         // Determine rate
         let rate = service?.standardRate || 150.0;
-        const rateCard = await prisma.rateCard.findFirst({
-          where: {
-            country: { equals: country, mode: "insensitive" },
-            groupCode: { equals: groupCode, mode: "insensitive" },
-          },
-        });
-        if (rateCard) {
-          rate = rateCard.rateGBP;
+        if (session.serviceId) {
+          const rateItem = await prisma.rateItem.findFirst({
+            where: {
+              rateList: { serviceId: session.serviceId },
+              country: { equals: country, mode: "insensitive" },
+              isActive: true,
+            },
+          });
+          if (rateItem) {
+            rate = rateItem.clientRate;
+          }
         }
 
         const hours = attendance.teacherLoggedHours || session.durationHours || 1.0;
@@ -181,14 +184,15 @@ export async function POST(req: NextRequest) {
         for (const item of monthlyEnrolments) {
           const country = student.country || "UK";
           let rate = item.service.standardRate || 150.0;
-          const rateCard = await prisma.rateCard.findFirst({
+          const rateItem = await prisma.rateItem.findFirst({
             where: {
+              rateList: { serviceId: item.serviceId },
               country: { equals: country, mode: "insensitive" },
-              groupCode: "B",
+              isActive: true,
             },
           });
-          if (rateCard) {
-            rate = rateCard.rateGBP;
+          if (rateItem) {
+            rate = rateItem.clientRate;
           }
 
           subtotal += rate;
@@ -236,7 +240,7 @@ export async function POST(req: NextRequest) {
       const invoice = await prisma.studentInvoice.create({
         data: {
           studentId: student.id,
-          invoiceMonthId: invoiceMonth.id,
+          billingMonthId: billingMonth.id,
           month,
           subtotal,
           discountApplied,

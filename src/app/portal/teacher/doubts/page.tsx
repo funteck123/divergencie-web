@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { HelpCircle, CheckCircle2, Send, ChevronDown, Loader2, BookOpen } from "lucide-react";
 import { getDoubts, respondToDoubt } from "@/lib/actions/doubts";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 export default function TeacherDoubtsPage() {
   const { data: session } = useSession();

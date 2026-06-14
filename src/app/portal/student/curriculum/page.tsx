@@ -5,7 +5,7 @@ import { BookOpen, CheckCircle2, ChevronDown, HelpCircle, Plus, Search, Loader2 
 import { logDoubt, getStudentDoubts } from "@/lib/actions/doubts";
 import { getSyllabusItems, getStudentProgress, toggleChapterComplete } from "@/lib/actions/progress";
 import { MessageSquare } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 const MILESTONE_COLORS: Record<string, string> = {
   core: "bg-blue-100 text-blue-700",

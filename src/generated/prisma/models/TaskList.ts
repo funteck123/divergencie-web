@@ -27,18 +27,36 @@ export type AggregateTaskList = {
 export type TaskListMinAggregateOutputType = {
   id: string | null
   curriculumListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type TaskListMaxAggregateOutputType = {
   id: string | null
   curriculumListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type TaskListCountAggregateOutputType = {
   id: number
   curriculumListId: number
+  name: number
+  version: number
+  status: number
+  activatedAt: number
+  pausedAt: number
+  deactivatedAt: number
   isActive: number
   _all: number
 }
@@ -47,18 +65,36 @@ export type TaskListCountAggregateOutputType = {
 export type TaskListMinAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type TaskListMaxAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type TaskListCountAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
   _all?: true
 }
@@ -138,6 +174,12 @@ export type TaskListGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type TaskListGroupByOutputType = {
   id: string
   curriculumListId: string
+  name: string
+  version: string
+  status: string
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean
   _count: TaskListCountAggregateOutputType | null
   _min: TaskListMinAggregateOutputType | null
@@ -165,17 +207,31 @@ export type TaskListWhereInput = {
   NOT?: Prisma.TaskListWhereInput | Prisma.TaskListWhereInput[]
   id?: Prisma.StringFilter<"TaskList"> | string
   curriculumListId?: Prisma.StringFilter<"TaskList"> | string
+  name?: Prisma.StringFilter<"TaskList"> | string
+  version?: Prisma.StringFilter<"TaskList"> | string
+  status?: Prisma.StringFilter<"TaskList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"TaskList"> | boolean
   curriculumList?: Prisma.XOR<Prisma.CurriculumListScalarRelationFilter, Prisma.CurriculumListWhereInput>
   taskItems?: Prisma.TaskItemListRelationFilter
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogListRelationFilter
 }
 
 export type TaskListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   curriculumList?: Prisma.CurriculumListOrderByWithRelationInput
   taskItems?: Prisma.TaskItemOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type TaskListWhereUniqueInput = Prisma.AtLeast<{
@@ -184,14 +240,27 @@ export type TaskListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.TaskListWhereInput[]
   NOT?: Prisma.TaskListWhereInput | Prisma.TaskListWhereInput[]
   curriculumListId?: Prisma.StringFilter<"TaskList"> | string
+  name?: Prisma.StringFilter<"TaskList"> | string
+  version?: Prisma.StringFilter<"TaskList"> | string
+  status?: Prisma.StringFilter<"TaskList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"TaskList"> | boolean
   curriculumList?: Prisma.XOR<Prisma.CurriculumListScalarRelationFilter, Prisma.CurriculumListWhereInput>
   taskItems?: Prisma.TaskItemListRelationFilter
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogListRelationFilter
 }, "id">
 
 export type TaskListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.TaskListCountOrderByAggregateInput
   _max?: Prisma.TaskListMaxOrderByAggregateInput
@@ -204,51 +273,103 @@ export type TaskListScalarWhereWithAggregatesInput = {
   NOT?: Prisma.TaskListScalarWhereWithAggregatesInput | Prisma.TaskListScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TaskList"> | string
   curriculumListId?: Prisma.StringWithAggregatesFilter<"TaskList"> | string
+  name?: Prisma.StringWithAggregatesFilter<"TaskList"> | string
+  version?: Prisma.StringWithAggregatesFilter<"TaskList"> | string
+  status?: Prisma.StringWithAggregatesFilter<"TaskList"> | string
+  activatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TaskList"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"TaskList"> | boolean
 }
 
 export type TaskListCreateInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   curriculumList: Prisma.CurriculumListCreateNestedOneWithoutTaskListsInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutTaskListInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogCreateNestedManyWithoutTaskListInput
 }
 
 export type TaskListUncheckedCreateInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutTaskListInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUncheckedCreateNestedManyWithoutTaskListInput
 }
 
 export type TaskListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutTaskListsNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutTaskListNestedInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutTaskListNestedInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUncheckedUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListCreateManyInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type TaskListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type TaskListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -265,18 +386,36 @@ export type TaskListOrderByRelationAggregateInput = {
 export type TaskListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type TaskListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type TaskListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -327,6 +466,20 @@ export type TaskListUncheckedUpdateManyWithoutCurriculumListNestedInput = {
   deleteMany?: Prisma.TaskListScalarWhereInput | Prisma.TaskListScalarWhereInput[]
 }
 
+export type TaskListCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.TaskListCreateWithoutStatusChangeLogsInput, Prisma.TaskListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.TaskListCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.TaskListWhereUniqueInput
+}
+
+export type TaskListUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskListCreateWithoutStatusChangeLogsInput, Prisma.TaskListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.TaskListCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.TaskListUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.TaskListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaskListUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.TaskListUpdateWithoutStatusChangeLogsInput>, Prisma.TaskListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type TaskListCreateNestedOneWithoutTaskItemsInput = {
   create?: Prisma.XOR<Prisma.TaskListCreateWithoutTaskItemsInput, Prisma.TaskListUncheckedCreateWithoutTaskItemsInput>
   connectOrCreate?: Prisma.TaskListCreateOrConnectWithoutTaskItemsInput
@@ -343,14 +496,28 @@ export type TaskListUpdateOneRequiredWithoutTaskItemsNestedInput = {
 
 export type TaskListCreateWithoutCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutTaskListInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogCreateNestedManyWithoutTaskListInput
 }
 
 export type TaskListUncheckedCreateWithoutCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutTaskListInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUncheckedCreateNestedManyWithoutTaskListInput
 }
 
 export type TaskListCreateOrConnectWithoutCurriculumListInput = {
@@ -385,19 +552,107 @@ export type TaskListScalarWhereInput = {
   NOT?: Prisma.TaskListScalarWhereInput | Prisma.TaskListScalarWhereInput[]
   id?: Prisma.StringFilter<"TaskList"> | string
   curriculumListId?: Prisma.StringFilter<"TaskList"> | string
+  name?: Prisma.StringFilter<"TaskList"> | string
+  version?: Prisma.StringFilter<"TaskList"> | string
+  status?: Prisma.StringFilter<"TaskList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"TaskList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"TaskList"> | boolean
+}
+
+export type TaskListCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  curriculumList: Prisma.CurriculumListCreateNestedOneWithoutTaskListsInput
+  taskItems?: Prisma.TaskItemCreateNestedManyWithoutTaskListInput
+}
+
+export type TaskListUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutTaskListInput
+}
+
+export type TaskListCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.TaskListWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaskListCreateWithoutStatusChangeLogsInput, Prisma.TaskListUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type TaskListUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.TaskListUpdateWithoutStatusChangeLogsInput, Prisma.TaskListUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.TaskListCreateWithoutStatusChangeLogsInput, Prisma.TaskListUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.TaskListWhereInput
+}
+
+export type TaskListUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.TaskListWhereInput
+  data: Prisma.XOR<Prisma.TaskListUpdateWithoutStatusChangeLogsInput, Prisma.TaskListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type TaskListUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutTaskListsNestedInput
+  taskItems?: Prisma.TaskItemUpdateManyWithoutTaskListNestedInput
+}
+
+export type TaskListUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListCreateWithoutTaskItemsInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   curriculumList: Prisma.CurriculumListCreateNestedOneWithoutTaskListsInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogCreateNestedManyWithoutTaskListInput
 }
 
 export type TaskListUncheckedCreateWithoutTaskItemsInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUncheckedCreateNestedManyWithoutTaskListInput
 }
 
 export type TaskListCreateOrConnectWithoutTaskItemsInput = {
@@ -418,35 +673,75 @@ export type TaskListUpdateToOneWithWhereWithoutTaskItemsInput = {
 
 export type TaskListUpdateWithoutTaskItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutTaskListsNestedInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListUncheckedUpdateWithoutTaskItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUncheckedUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListCreateManyCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type TaskListUpdateWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taskItems?: Prisma.TaskItemUpdateManyWithoutTaskListNestedInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListUncheckedUpdateWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutTaskListNestedInput
+  statusChangeLogs?: Prisma.TaskListStatusChangeLogUncheckedUpdateManyWithoutTaskListNestedInput
 }
 
 export type TaskListUncheckedUpdateManyWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -457,10 +752,12 @@ export type TaskListUncheckedUpdateManyWithoutCurriculumListInput = {
 
 export type TaskListCountOutputType = {
   taskItems: number
+  statusChangeLogs: number
 }
 
 export type TaskListCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   taskItems?: boolean | TaskListCountOutputTypeCountTaskItemsArgs
+  statusChangeLogs?: boolean | TaskListCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -480,19 +777,39 @@ export type TaskListCountOutputTypeCountTaskItemsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.TaskItemWhereInput
 }
 
+/**
+ * TaskListCountOutputType without action
+ */
+export type TaskListCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskListStatusChangeLogWhereInput
+}
+
 
 export type TaskListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
   taskItems?: boolean | Prisma.TaskList$taskItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.TaskList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskListCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskList"]>
 
 export type TaskListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskList"]>
@@ -500,6 +817,12 @@ export type TaskListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type TaskListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskList"]>
@@ -507,13 +830,20 @@ export type TaskListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type TaskListSelectScalar = {
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
 }
 
-export type TaskListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "curriculumListId" | "isActive", ExtArgs["result"]["taskList"]>
+export type TaskListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "curriculumListId" | "name" | "version" | "status" | "activatedAt" | "pausedAt" | "deactivatedAt" | "isActive", ExtArgs["result"]["taskList"]>
 export type TaskListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
   taskItems?: boolean | Prisma.TaskList$taskItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.TaskList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskListCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -528,10 +858,17 @@ export type $TaskListPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     curriculumList: Prisma.$CurriculumListPayload<ExtArgs>
     taskItems: Prisma.$TaskItemPayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$TaskListStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     curriculumListId: string
+    name: string
+    version: string
+    status: string
+    activatedAt: Date | null
+    pausedAt: Date | null
+    deactivatedAt: Date | null
     isActive: boolean
   }, ExtArgs["result"]["taskList"]>
   composites: {}
@@ -929,6 +1266,7 @@ export interface Prisma__TaskListClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   curriculumList<T extends Prisma.CurriculumListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CurriculumListDefaultArgs<ExtArgs>>): Prisma.Prisma__CurriculumListClient<runtime.Types.Result.GetResult<Prisma.$CurriculumListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   taskItems<T extends Prisma.TaskList$taskItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskList$taskItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.TaskList$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskList$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskListStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -960,6 +1298,12 @@ export interface Prisma__TaskListClient<T, Null = never, ExtArgs extends runtime
 export interface TaskListFieldRefs {
   readonly id: Prisma.FieldRef<"TaskList", 'String'>
   readonly curriculumListId: Prisma.FieldRef<"TaskList", 'String'>
+  readonly name: Prisma.FieldRef<"TaskList", 'String'>
+  readonly version: Prisma.FieldRef<"TaskList", 'String'>
+  readonly status: Prisma.FieldRef<"TaskList", 'String'>
+  readonly activatedAt: Prisma.FieldRef<"TaskList", 'DateTime'>
+  readonly pausedAt: Prisma.FieldRef<"TaskList", 'DateTime'>
+  readonly deactivatedAt: Prisma.FieldRef<"TaskList", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"TaskList", 'Boolean'>
 }
     
@@ -1383,6 +1727,30 @@ export type TaskList$taskItemsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.TaskItemScalarFieldEnum | Prisma.TaskItemScalarFieldEnum[]
+}
+
+/**
+ * TaskList.statusChangeLogs
+ */
+export type TaskList$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskListStatusChangeLog
+   */
+  select?: Prisma.TaskListStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskListStatusChangeLog
+   */
+  omit?: Prisma.TaskListStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskListStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.TaskListStatusChangeLogWhereInput
+  orderBy?: Prisma.TaskListStatusChangeLogOrderByWithRelationInput | Prisma.TaskListStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.TaskListStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskListStatusChangeLogScalarFieldEnum | Prisma.TaskListStatusChangeLogScalarFieldEnum[]
 }
 
 /**

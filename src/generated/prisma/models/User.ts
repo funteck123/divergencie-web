@@ -407,13 +407,17 @@ export type UserWhereInput = {
   taskSubmissions?: Prisma.TaskSubmissionListRelationFilter
   mockResults?: Prisma.MockResultListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
-  studentProgress?: Prisma.StudentProgressListRelationFilter
-  assignments?: Prisma.AssignmentListRelationFilter
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressListRelationFilter
   groups?: Prisma.GroupListRelationFilter
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressListRelationFilter
   referrals?: Prisma.ReferralListRelationFilter
   ambassadorTestRes?: Prisma.AmbassadorTestResultListRelationFilter
   checklistEntries?: Prisma.ChecklistEntryListRelationFilter
+  portalPermissionsOwned?: Prisma.PortalPermissionListRelationFilter
+  portalPermissionsUpdated?: Prisma.PortalPermissionListRelationFilter
+  progressReports?: Prisma.ProgressReportListRelationFilter
+  progressReportsReviewed?: Prisma.ProgressReportListRelationFilter
+  marketingSchedules?: Prisma.MarketingScheduleListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -487,13 +491,17 @@ export type UserOrderByWithRelationInput = {
   taskSubmissions?: Prisma.TaskSubmissionOrderByRelationAggregateInput
   mockResults?: Prisma.MockResultOrderByRelationAggregateInput
   doubts?: Prisma.DoubtOrderByRelationAggregateInput
-  studentProgress?: Prisma.StudentProgressOrderByRelationAggregateInput
-  assignments?: Prisma.AssignmentOrderByRelationAggregateInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressOrderByRelationAggregateInput
   groups?: Prisma.GroupOrderByRelationAggregateInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressOrderByRelationAggregateInput
   referrals?: Prisma.ReferralOrderByRelationAggregateInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultOrderByRelationAggregateInput
   checklistEntries?: Prisma.ChecklistEntryOrderByRelationAggregateInput
+  portalPermissionsOwned?: Prisma.PortalPermissionOrderByRelationAggregateInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionOrderByRelationAggregateInput
+  progressReports?: Prisma.ProgressReportOrderByRelationAggregateInput
+  progressReportsReviewed?: Prisma.ProgressReportOrderByRelationAggregateInput
+  marketingSchedules?: Prisma.MarketingScheduleOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -570,13 +578,17 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   taskSubmissions?: Prisma.TaskSubmissionListRelationFilter
   mockResults?: Prisma.MockResultListRelationFilter
   doubts?: Prisma.DoubtListRelationFilter
-  studentProgress?: Prisma.StudentProgressListRelationFilter
-  assignments?: Prisma.AssignmentListRelationFilter
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressListRelationFilter
   groups?: Prisma.GroupListRelationFilter
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressListRelationFilter
   referrals?: Prisma.ReferralListRelationFilter
   ambassadorTestRes?: Prisma.AmbassadorTestResultListRelationFilter
   checklistEntries?: Prisma.ChecklistEntryListRelationFilter
+  portalPermissionsOwned?: Prisma.PortalPermissionListRelationFilter
+  portalPermissionsUpdated?: Prisma.PortalPermissionListRelationFilter
+  progressReports?: Prisma.ProgressReportListRelationFilter
+  progressReportsReviewed?: Prisma.ProgressReportListRelationFilter
+  marketingSchedules?: Prisma.MarketingScheduleListRelationFilter
 }, "id" | "email" | "referralCode">
 
 export type UserOrderByWithAggregationInput = {
@@ -709,13 +721,17 @@ export type UserCreateInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -788,13 +804,17 @@ export type UserUncheckedCreateInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -867,13 +887,17 @@ export type UserUpdateInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -946,13 +970,17 @@ export type UserUncheckedUpdateInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1290,6 +1318,36 @@ export type UserUpdateOneRequiredWithoutAmbassadorProfileNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAmbassadorProfileInput, Prisma.UserUpdateWithoutAmbassadorProfileInput>, Prisma.UserUncheckedUpdateWithoutAmbassadorProfileInput>
 }
 
+export type UserCreateNestedOneWithoutPortalPermissionsOwnedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsOwnedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsOwnedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPortalPermissionsOwnedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutPortalPermissionsUpdatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsUpdatedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsUpdatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPortalPermissionsUpdatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutPortalPermissionsOwnedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsOwnedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsOwnedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPortalPermissionsOwnedInput
+  upsert?: Prisma.UserUpsertWithoutPortalPermissionsOwnedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPortalPermissionsOwnedInput, Prisma.UserUpdateWithoutPortalPermissionsOwnedInput>, Prisma.UserUncheckedUpdateWithoutPortalPermissionsOwnedInput>
+}
+
+export type UserUpdateOneRequiredWithoutPortalPermissionsUpdatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsUpdatedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsUpdatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPortalPermissionsUpdatedInput
+  upsert?: Prisma.UserUpsertWithoutPortalPermissionsUpdatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPortalPermissionsUpdatedInput, Prisma.UserUpdateWithoutPortalPermissionsUpdatedInput>, Prisma.UserUncheckedUpdateWithoutPortalPermissionsUpdatedInput>
+}
+
 export type UserCreateNestedOneWithoutTaughtGroupsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutTaughtGroupsInput, Prisma.UserUncheckedCreateWithoutTaughtGroupsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaughtGroupsInput
@@ -1428,6 +1486,20 @@ export type UserUpdateOneRequiredWithoutAmbassadorCommissionListsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAmbassadorCommissionListsInput, Prisma.UserUpdateWithoutAmbassadorCommissionListsInput>, Prisma.UserUncheckedUpdateWithoutAmbassadorCommissionListsInput>
 }
 
+export type UserCreateNestedOneWithoutMarketingSchedulesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMarketingSchedulesInput, Prisma.UserUncheckedCreateWithoutMarketingSchedulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketingSchedulesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMarketingSchedulesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMarketingSchedulesInput, Prisma.UserUncheckedCreateWithoutMarketingSchedulesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMarketingSchedulesInput
+  upsert?: Prisma.UserUpsertWithoutMarketingSchedulesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMarketingSchedulesInput, Prisma.UserUpdateWithoutMarketingSchedulesInput>, Prisma.UserUncheckedUpdateWithoutMarketingSchedulesInput>
+}
+
 export type UserCreateNestedOneWithoutTaughtSessionsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutTaughtSessionsInput, Prisma.UserUncheckedCreateWithoutTaughtSessionsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaughtSessionsInput
@@ -1500,18 +1572,18 @@ export type UserUpdateOneRequiredWithoutCalendarItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCalendarItemsInput, Prisma.UserUpdateWithoutCalendarItemsInput>, Prisma.UserUncheckedUpdateWithoutCalendarItemsInput>
 }
 
-export type UserCreateNestedOneWithoutStudentProgressInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProgressInput
+export type UserCreateNestedOneWithoutStudentSyllabusProgressInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentSyllabusProgressInput, Prisma.UserUncheckedCreateWithoutStudentSyllabusProgressInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentSyllabusProgressInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutStudentProgressNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProgressInput
-  upsert?: Prisma.UserUpsertWithoutStudentProgressInput
+export type UserUpdateOneRequiredWithoutStudentSyllabusProgressNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutStudentSyllabusProgressInput, Prisma.UserUncheckedCreateWithoutStudentSyllabusProgressInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentSyllabusProgressInput
+  upsert?: Prisma.UserUpsertWithoutStudentSyllabusProgressInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentProgressInput, Prisma.UserUpdateWithoutStudentProgressInput>, Prisma.UserUncheckedUpdateWithoutStudentProgressInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutStudentSyllabusProgressInput, Prisma.UserUpdateWithoutStudentSyllabusProgressInput>, Prisma.UserUncheckedUpdateWithoutStudentSyllabusProgressInput>
 }
 
 export type UserCreateNestedOneWithoutTaskAssignmentsInput = {
@@ -1934,6 +2006,36 @@ export type UserUpdateOneRequiredWithoutContentBankItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContentBankItemsInput, Prisma.UserUpdateWithoutContentBankItemsInput>, Prisma.UserUncheckedUpdateWithoutContentBankItemsInput>
 }
 
+export type UserCreateNestedOneWithoutProgressReportsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsInput, Prisma.UserUncheckedCreateWithoutProgressReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProgressReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutProgressReportsReviewedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsReviewedInput, Prisma.UserUncheckedCreateWithoutProgressReportsReviewedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProgressReportsReviewedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutProgressReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsInput, Prisma.UserUncheckedCreateWithoutProgressReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProgressReportsInput
+  upsert?: Prisma.UserUpsertWithoutProgressReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProgressReportsInput, Prisma.UserUpdateWithoutProgressReportsInput>, Prisma.UserUncheckedUpdateWithoutProgressReportsInput>
+}
+
+export type UserUpdateOneWithoutProgressReportsReviewedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsReviewedInput, Prisma.UserUncheckedCreateWithoutProgressReportsReviewedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProgressReportsReviewedInput
+  upsert?: Prisma.UserUpsertWithoutProgressReportsReviewedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProgressReportsReviewedInput, Prisma.UserUpdateWithoutProgressReportsReviewedInput>, Prisma.UserUncheckedUpdateWithoutProgressReportsReviewedInput>
+}
+
 export type UserCreateNestedOneWithoutSiteLogsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSiteLogsInput, Prisma.UserUncheckedCreateWithoutSiteLogsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSiteLogsInput
@@ -1978,20 +2080,6 @@ export type UserUpdateOneRequiredWithoutDoubtsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutDoubtsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDoubtsInput, Prisma.UserUpdateWithoutDoubtsInput>, Prisma.UserUncheckedUpdateWithoutDoubtsInput>
-}
-
-export type UserCreateNestedOneWithoutAssignmentsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-}
-
-export type UserUpdateOneRequiredWithoutAssignmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssignmentsInput
-  upsert?: Prisma.UserUpsertWithoutAssignmentsInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignmentsInput, Prisma.UserUpdateWithoutAssignmentsInput>, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
 }
 
 export type UserCreateWithoutChildrenInput = {
@@ -2063,13 +2151,17 @@ export type UserCreateWithoutChildrenInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutChildrenInput = {
@@ -2141,13 +2233,17 @@ export type UserUncheckedCreateWithoutChildrenInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutChildrenInput = {
@@ -2224,13 +2320,17 @@ export type UserCreateWithoutParentInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutParentInput = {
@@ -2302,13 +2402,17 @@ export type UserUncheckedCreateWithoutParentInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutParentInput = {
@@ -2401,13 +2505,17 @@ export type UserUpdateWithoutChildrenInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChildrenInput = {
@@ -2479,13 +2587,17 @@ export type UserUncheckedUpdateWithoutChildrenInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutParentInput = {
@@ -2602,13 +2714,17 @@ export type UserCreateWithoutStudentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentProfileInput = {
@@ -2680,13 +2796,17 @@ export type UserUncheckedCreateWithoutStudentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentProfileInput = {
@@ -2774,13 +2894,17 @@ export type UserUpdateWithoutStudentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentProfileInput = {
@@ -2852,13 +2976,17 @@ export type UserUncheckedUpdateWithoutStudentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTeacherProfileInput = {
@@ -2930,13 +3058,17 @@ export type UserCreateWithoutTeacherProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTeacherProfileInput = {
@@ -3008,13 +3140,17 @@ export type UserUncheckedCreateWithoutTeacherProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTeacherProfileInput = {
@@ -3102,13 +3238,17 @@ export type UserUpdateWithoutTeacherProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTeacherProfileInput = {
@@ -3180,13 +3320,17 @@ export type UserUncheckedUpdateWithoutTeacherProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStaffProfileInput = {
@@ -3258,13 +3402,17 @@ export type UserCreateWithoutStaffProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStaffProfileInput = {
@@ -3336,13 +3484,17 @@ export type UserUncheckedCreateWithoutStaffProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStaffProfileInput = {
@@ -3430,13 +3582,17 @@ export type UserUpdateWithoutStaffProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffProfileInput = {
@@ -3508,13 +3664,17 @@ export type UserUncheckedUpdateWithoutStaffProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutParentProfileInput = {
@@ -3586,13 +3746,17 @@ export type UserCreateWithoutParentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutParentProfileInput = {
@@ -3664,13 +3828,17 @@ export type UserUncheckedCreateWithoutParentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutParentProfileInput = {
@@ -3758,13 +3926,17 @@ export type UserUpdateWithoutParentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParentProfileInput = {
@@ -3836,13 +4008,17 @@ export type UserUncheckedUpdateWithoutParentProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorProfileInput = {
@@ -3914,13 +4090,17 @@ export type UserCreateWithoutAmbassadorProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorProfileInput = {
@@ -3992,13 +4172,17 @@ export type UserUncheckedCreateWithoutAmbassadorProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorProfileInput = {
@@ -4086,13 +4270,17 @@ export type UserUpdateWithoutAmbassadorProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorProfileInput = {
@@ -4164,13 +4352,705 @@ export type UserUncheckedUpdateWithoutAmbassadorProfileInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutPortalPermissionsOwnedInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutPortalPermissionsOwnedInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemUncheckedCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogUncheckedCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogUncheckedCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutPortalPermissionsOwnedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsOwnedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsOwnedInput>
+}
+
+export type UserCreateWithoutPortalPermissionsUpdatedInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutPortalPermissionsUpdatedInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemUncheckedCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogUncheckedCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogUncheckedCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutPortalPermissionsUpdatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsUpdatedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsUpdatedInput>
+}
+
+export type UserUpsertWithoutPortalPermissionsOwnedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPortalPermissionsOwnedInput, Prisma.UserUncheckedUpdateWithoutPortalPermissionsOwnedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsOwnedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsOwnedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPortalPermissionsOwnedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPortalPermissionsOwnedInput, Prisma.UserUncheckedUpdateWithoutPortalPermissionsOwnedInput>
+}
+
+export type UserUpdateWithoutPortalPermissionsOwnedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPortalPermissionsOwnedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUncheckedUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUncheckedUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUncheckedUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUncheckedUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUncheckedUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUncheckedUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithoutPortalPermissionsUpdatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPortalPermissionsUpdatedInput, Prisma.UserUncheckedUpdateWithoutPortalPermissionsUpdatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPortalPermissionsUpdatedInput, Prisma.UserUncheckedCreateWithoutPortalPermissionsUpdatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPortalPermissionsUpdatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPortalPermissionsUpdatedInput, Prisma.UserUncheckedUpdateWithoutPortalPermissionsUpdatedInput>
+}
+
+export type UserUpdateWithoutPortalPermissionsUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPortalPermissionsUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUncheckedUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUncheckedUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUncheckedUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUncheckedUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUncheckedUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUncheckedUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTaughtGroupsInput = {
@@ -4242,13 +5122,17 @@ export type UserCreateWithoutTaughtGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTaughtGroupsInput = {
@@ -4320,13 +5204,17 @@ export type UserUncheckedCreateWithoutTaughtGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTaughtGroupsInput = {
@@ -4404,12 +5292,16 @@ export type UserCreateWithoutGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutGroupsInput = {
@@ -4482,12 +5374,16 @@ export type UserUncheckedCreateWithoutGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutGroupsInput = {
@@ -4575,13 +5471,17 @@ export type UserUpdateWithoutTaughtGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaughtGroupsInput = {
@@ -4653,13 +5553,17 @@ export type UserUncheckedUpdateWithoutTaughtGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutGroupsInput = {
@@ -4747,13 +5651,17 @@ export type UserCreateWithoutServicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutServicesInput = {
@@ -4825,13 +5733,17 @@ export type UserUncheckedCreateWithoutServicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutServicesInput = {
@@ -4919,13 +5831,17 @@ export type UserUpdateWithoutServicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServicesInput = {
@@ -4997,13 +5913,17 @@ export type UserUncheckedUpdateWithoutServicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStudentEnrolmentListsInput = {
@@ -5075,13 +5995,17 @@ export type UserCreateWithoutStudentEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentEnrolmentListsInput = {
@@ -5153,13 +6077,17 @@ export type UserUncheckedCreateWithoutStudentEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentEnrolmentListsInput = {
@@ -5247,13 +6175,17 @@ export type UserUpdateWithoutStudentEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentEnrolmentListsInput = {
@@ -5325,13 +6257,17 @@ export type UserUncheckedUpdateWithoutStudentEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTeacherEnrolmentListsInput = {
@@ -5403,13 +6339,17 @@ export type UserCreateWithoutTeacherEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTeacherEnrolmentListsInput = {
@@ -5481,13 +6421,17 @@ export type UserUncheckedCreateWithoutTeacherEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTeacherEnrolmentListsInput = {
@@ -5575,13 +6519,17 @@ export type UserUpdateWithoutTeacherEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTeacherEnrolmentListsInput = {
@@ -5653,13 +6601,17 @@ export type UserUncheckedUpdateWithoutTeacherEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStaffEnrolmentListsInput = {
@@ -5731,13 +6683,17 @@ export type UserCreateWithoutStaffEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStaffEnrolmentListsInput = {
@@ -5809,13 +6765,17 @@ export type UserUncheckedCreateWithoutStaffEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStaffEnrolmentListsInput = {
@@ -5903,13 +6863,17 @@ export type UserUpdateWithoutStaffEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffEnrolmentListsInput = {
@@ -5981,13 +6945,17 @@ export type UserUncheckedUpdateWithoutStaffEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorEnrolmentListsInput = {
@@ -6059,13 +7027,17 @@ export type UserCreateWithoutAmbassadorEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorEnrolmentListsInput = {
@@ -6137,13 +7109,17 @@ export type UserUncheckedCreateWithoutAmbassadorEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorEnrolmentListsInput = {
@@ -6231,13 +7207,17 @@ export type UserUpdateWithoutAmbassadorEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorEnrolmentListsInput = {
@@ -6309,13 +7289,17 @@ export type UserUncheckedUpdateWithoutAmbassadorEnrolmentListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorCommissionListsInput = {
@@ -6387,13 +7371,17 @@ export type UserCreateWithoutAmbassadorCommissionListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorCommissionListsInput = {
@@ -6465,13 +7453,17 @@ export type UserUncheckedCreateWithoutAmbassadorCommissionListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorCommissionListsInput = {
@@ -6559,13 +7551,17 @@ export type UserUpdateWithoutAmbassadorCommissionListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorCommissionListsInput = {
@@ -6637,13 +7633,361 @@ export type UserUncheckedUpdateWithoutAmbassadorCommissionListsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutMarketingSchedulesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserUncheckedCreateWithoutMarketingSchedulesInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemUncheckedCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogUncheckedCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogUncheckedCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+}
+
+export type UserCreateOrConnectWithoutMarketingSchedulesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMarketingSchedulesInput, Prisma.UserUncheckedCreateWithoutMarketingSchedulesInput>
+}
+
+export type UserUpsertWithoutMarketingSchedulesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMarketingSchedulesInput, Prisma.UserUncheckedUpdateWithoutMarketingSchedulesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMarketingSchedulesInput, Prisma.UserUncheckedCreateWithoutMarketingSchedulesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMarketingSchedulesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMarketingSchedulesInput, Prisma.UserUncheckedUpdateWithoutMarketingSchedulesInput>
+}
+
+export type UserUpdateWithoutMarketingSchedulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMarketingSchedulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUncheckedUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUncheckedUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUncheckedUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUncheckedUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUncheckedUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUncheckedUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
 }
 
 export type UserCreateWithoutTaughtSessionsInput = {
@@ -6715,13 +8059,17 @@ export type UserCreateWithoutTaughtSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTaughtSessionsInput = {
@@ -6793,13 +8141,17 @@ export type UserUncheckedCreateWithoutTaughtSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTaughtSessionsInput = {
@@ -6876,13 +8228,17 @@ export type UserCreateWithoutStudentSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentSessionsInput = {
@@ -6954,13 +8310,17 @@ export type UserUncheckedCreateWithoutStudentSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentSessionsInput = {
@@ -7048,13 +8408,17 @@ export type UserUpdateWithoutTaughtSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaughtSessionsInput = {
@@ -7126,13 +8490,17 @@ export type UserUncheckedUpdateWithoutTaughtSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutStudentSessionsInput = {
@@ -7215,13 +8583,17 @@ export type UserUpdateWithoutStudentSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentSessionsInput = {
@@ -7293,13 +8665,17 @@ export type UserUncheckedUpdateWithoutStudentSessionsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAttendancesInput = {
@@ -7371,13 +8747,17 @@ export type UserCreateWithoutAttendancesInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAttendancesInput = {
@@ -7449,13 +8829,17 @@ export type UserUncheckedCreateWithoutAttendancesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAttendancesInput = {
@@ -7543,13 +8927,17 @@ export type UserUpdateWithoutAttendancesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAttendancesInput = {
@@ -7621,13 +9009,17 @@ export type UserUncheckedUpdateWithoutAttendancesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMeetingParticipantsInput = {
@@ -7699,13 +9091,17 @@ export type UserCreateWithoutMeetingParticipantsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMeetingParticipantsInput = {
@@ -7777,13 +9173,17 @@ export type UserUncheckedCreateWithoutMeetingParticipantsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMeetingParticipantsInput = {
@@ -7871,13 +9271,17 @@ export type UserUpdateWithoutMeetingParticipantsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMeetingParticipantsInput = {
@@ -7949,13 +9353,17 @@ export type UserUncheckedUpdateWithoutMeetingParticipantsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCalendarItemsInput = {
@@ -8027,13 +9435,17 @@ export type UserCreateWithoutCalendarItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCalendarItemsInput = {
@@ -8105,13 +9517,17 @@ export type UserUncheckedCreateWithoutCalendarItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCalendarItemsInput = {
@@ -8199,13 +9615,17 @@ export type UserUpdateWithoutCalendarItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCalendarItemsInput = {
@@ -8277,16 +9697,20 @@ export type UserUncheckedUpdateWithoutCalendarItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
-export type UserCreateWithoutStudentProgressInput = {
+export type UserCreateWithoutStudentSyllabusProgressInput = {
   id?: string
   email: string
   name?: string | null
@@ -8356,15 +9780,19 @@ export type UserCreateWithoutStudentProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
-export type UserUncheckedCreateWithoutStudentProgressInput = {
+export type UserUncheckedCreateWithoutStudentSyllabusProgressInput = {
   id?: string
   email: string
   name?: string | null
@@ -8434,31 +9862,35 @@ export type UserUncheckedCreateWithoutStudentProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
-export type UserCreateOrConnectWithoutStudentProgressInput = {
+export type UserCreateOrConnectWithoutStudentSyllabusProgressInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStudentSyllabusProgressInput, Prisma.UserUncheckedCreateWithoutStudentSyllabusProgressInput>
 }
 
-export type UserUpsertWithoutStudentProgressInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentProgressInput, Prisma.UserUncheckedUpdateWithoutStudentProgressInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutStudentProgressInput, Prisma.UserUncheckedCreateWithoutStudentProgressInput>
+export type UserUpsertWithoutStudentSyllabusProgressInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutStudentSyllabusProgressInput, Prisma.UserUncheckedUpdateWithoutStudentSyllabusProgressInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutStudentSyllabusProgressInput, Prisma.UserUncheckedCreateWithoutStudentSyllabusProgressInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutStudentProgressInput = {
+export type UserUpdateToOneWithWhereWithoutStudentSyllabusProgressInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentProgressInput, Prisma.UserUncheckedUpdateWithoutStudentProgressInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutStudentSyllabusProgressInput, Prisma.UserUncheckedUpdateWithoutStudentSyllabusProgressInput>
 }
 
-export type UserUpdateWithoutStudentProgressInput = {
+export type UserUpdateWithoutStudentSyllabusProgressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8528,15 +9960,19 @@ export type UserUpdateWithoutStudentProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutStudentProgressInput = {
+export type UserUncheckedUpdateWithoutStudentSyllabusProgressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8606,12 +10042,16 @@ export type UserUncheckedUpdateWithoutStudentProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTaskAssignmentsInput = {
@@ -8683,13 +10123,17 @@ export type UserCreateWithoutTaskAssignmentsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTaskAssignmentsInput = {
@@ -8761,13 +10205,17 @@ export type UserUncheckedCreateWithoutTaskAssignmentsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTaskAssignmentsInput = {
@@ -8855,13 +10303,17 @@ export type UserUpdateWithoutTaskAssignmentsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskAssignmentsInput = {
@@ -8933,13 +10385,17 @@ export type UserUncheckedUpdateWithoutTaskAssignmentsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTaskSubmissionsInput = {
@@ -9011,13 +10467,17 @@ export type UserCreateWithoutTaskSubmissionsInput = {
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTaskSubmissionsInput = {
@@ -9089,13 +10549,17 @@ export type UserUncheckedCreateWithoutTaskSubmissionsInput = {
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTaskSubmissionsInput = {
@@ -9183,13 +10647,17 @@ export type UserUpdateWithoutTaskSubmissionsInput = {
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTaskSubmissionsInput = {
@@ -9261,13 +10729,17 @@ export type UserUncheckedUpdateWithoutTaskSubmissionsInput = {
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMockResultsInput = {
@@ -9339,13 +10811,17 @@ export type UserCreateWithoutMockResultsInput = {
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMockResultsInput = {
@@ -9417,13 +10893,17 @@ export type UserUncheckedCreateWithoutMockResultsInput = {
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMockResultsInput = {
@@ -9511,13 +10991,17 @@ export type UserUpdateWithoutMockResultsInput = {
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMockResultsInput = {
@@ -9589,13 +11073,17 @@ export type UserUncheckedUpdateWithoutMockResultsInput = {
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorProgrammeProgressInput = {
@@ -9668,12 +11156,16 @@ export type UserCreateWithoutAmbassadorProgrammeProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorProgrammeProgressInput = {
@@ -9746,12 +11238,16 @@ export type UserUncheckedCreateWithoutAmbassadorProgrammeProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorProgrammeProgressInput = {
@@ -9840,12 +11336,16 @@ export type UserUpdateWithoutAmbassadorProgrammeProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorProgrammeProgressInput = {
@@ -9918,12 +11418,16 @@ export type UserUncheckedUpdateWithoutAmbassadorProgrammeProgressInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorTestResInput = {
@@ -9996,12 +11500,16 @@ export type UserCreateWithoutAmbassadorTestResInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorTestResInput = {
@@ -10074,12 +11582,16 @@ export type UserUncheckedCreateWithoutAmbassadorTestResInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorTestResInput = {
@@ -10168,12 +11680,16 @@ export type UserUpdateWithoutAmbassadorTestResInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorTestResInput = {
@@ -10246,12 +11762,16 @@ export type UserUncheckedUpdateWithoutAmbassadorTestResInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutReferralsInput = {
@@ -10324,12 +11844,16 @@ export type UserCreateWithoutReferralsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutReferralsInput = {
@@ -10402,12 +11926,16 @@ export type UserUncheckedCreateWithoutReferralsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutReferralsInput = {
@@ -10496,12 +12024,16 @@ export type UserUpdateWithoutReferralsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReferralsInput = {
@@ -10574,12 +12106,16 @@ export type UserUncheckedUpdateWithoutReferralsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStudentInvoicesInput = {
@@ -10651,13 +12187,17 @@ export type UserCreateWithoutStudentInvoicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentInvoicesInput = {
@@ -10729,13 +12269,17 @@ export type UserUncheckedCreateWithoutStudentInvoicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentInvoicesInput = {
@@ -10823,13 +12367,17 @@ export type UserUpdateWithoutStudentInvoicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentInvoicesInput = {
@@ -10901,13 +12449,17 @@ export type UserUncheckedUpdateWithoutStudentInvoicesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutClaimsInput = {
@@ -10979,13 +12531,17 @@ export type UserCreateWithoutClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutClaimsInput = {
@@ -11057,13 +12613,17 @@ export type UserUncheckedCreateWithoutClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutClaimsInput = {
@@ -11151,13 +12711,17 @@ export type UserUpdateWithoutClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClaimsInput = {
@@ -11229,13 +12793,17 @@ export type UserUncheckedUpdateWithoutClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPaychecksInput = {
@@ -11307,13 +12875,17 @@ export type UserCreateWithoutPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPaychecksInput = {
@@ -11385,13 +12957,17 @@ export type UserUncheckedCreateWithoutPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPaychecksInput = {
@@ -11479,13 +13055,17 @@ export type UserUpdateWithoutPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaychecksInput = {
@@ -11557,13 +13137,17 @@ export type UserUncheckedUpdateWithoutPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorClaimsInput = {
@@ -11635,13 +13219,17 @@ export type UserCreateWithoutAmbassadorClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorClaimsInput = {
@@ -11713,13 +13301,17 @@ export type UserUncheckedCreateWithoutAmbassadorClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorClaimsInput = {
@@ -11807,13 +13399,17 @@ export type UserUpdateWithoutAmbassadorClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorClaimsInput = {
@@ -11885,13 +13481,17 @@ export type UserUncheckedUpdateWithoutAmbassadorClaimsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorPaychecksInput = {
@@ -11963,13 +13563,17 @@ export type UserCreateWithoutAmbassadorPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorPaychecksInput = {
@@ -12041,13 +13645,17 @@ export type UserUncheckedCreateWithoutAmbassadorPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorPaychecksInput = {
@@ -12135,13 +13743,17 @@ export type UserUpdateWithoutAmbassadorPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorPaychecksInput = {
@@ -12213,13 +13825,17 @@ export type UserUncheckedUpdateWithoutAmbassadorPaychecksInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBankAccountsInput = {
@@ -12291,13 +13907,17 @@ export type UserCreateWithoutBankAccountsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBankAccountsInput = {
@@ -12369,13 +13989,17 @@ export type UserUncheckedCreateWithoutBankAccountsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBankAccountsInput = {
@@ -12463,13 +14087,17 @@ export type UserUpdateWithoutBankAccountsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBankAccountsInput = {
@@ -12541,13 +14169,17 @@ export type UserUncheckedUpdateWithoutBankAccountsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPaymentRecordsInput = {
@@ -12619,13 +14251,17 @@ export type UserCreateWithoutPaymentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPaymentRecordsInput = {
@@ -12697,13 +14333,17 @@ export type UserUncheckedCreateWithoutPaymentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPaymentRecordsInput = {
@@ -12791,13 +14431,17 @@ export type UserUpdateWithoutPaymentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaymentRecordsInput = {
@@ -12869,13 +14513,17 @@ export type UserUncheckedUpdateWithoutPaymentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTicketsCreatedInput = {
@@ -12947,13 +14595,17 @@ export type UserCreateWithoutTicketsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTicketsCreatedInput = {
@@ -13025,13 +14677,17 @@ export type UserUncheckedCreateWithoutTicketsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTicketsCreatedInput = {
@@ -13108,13 +14764,17 @@ export type UserCreateWithoutTicketsAssignedInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTicketsAssignedInput = {
@@ -13186,13 +14846,17 @@ export type UserUncheckedCreateWithoutTicketsAssignedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTicketsAssignedInput = {
@@ -13280,13 +14944,17 @@ export type UserUpdateWithoutTicketsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTicketsCreatedInput = {
@@ -13358,13 +15026,17 @@ export type UserUncheckedUpdateWithoutTicketsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutTicketsAssignedInput = {
@@ -13447,13 +15119,17 @@ export type UserUpdateWithoutTicketsAssignedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTicketsAssignedInput = {
@@ -13525,13 +15201,17 @@ export type UserUncheckedUpdateWithoutTicketsAssignedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTicketMessagesInput = {
@@ -13603,13 +15283,17 @@ export type UserCreateWithoutTicketMessagesInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTicketMessagesInput = {
@@ -13681,13 +15365,17 @@ export type UserUncheckedCreateWithoutTicketMessagesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTicketMessagesInput = {
@@ -13775,13 +15463,17 @@ export type UserUpdateWithoutTicketMessagesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTicketMessagesInput = {
@@ -13853,13 +15545,17 @@ export type UserUncheckedUpdateWithoutTicketMessagesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTicketHistoryInput = {
@@ -13931,13 +15627,17 @@ export type UserCreateWithoutTicketHistoryInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTicketHistoryInput = {
@@ -14009,13 +15709,17 @@ export type UserUncheckedCreateWithoutTicketHistoryInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTicketHistoryInput = {
@@ -14103,13 +15807,17 @@ export type UserUpdateWithoutTicketHistoryInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTicketHistoryInput = {
@@ -14181,13 +15889,17 @@ export type UserUncheckedUpdateWithoutTicketHistoryInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStudentRecordsInput = {
@@ -14259,13 +15971,17 @@ export type UserCreateWithoutStudentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentRecordsInput = {
@@ -14337,13 +16053,17 @@ export type UserUncheckedCreateWithoutStudentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentRecordsInput = {
@@ -14420,13 +16140,17 @@ export type UserCreateWithoutStudentRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentRecordsIssueInput = {
@@ -14498,13 +16222,17 @@ export type UserUncheckedCreateWithoutStudentRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentRecordsIssueInput = {
@@ -14592,13 +16320,17 @@ export type UserUpdateWithoutStudentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentRecordsInput = {
@@ -14670,13 +16402,17 @@ export type UserUncheckedUpdateWithoutStudentRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutStudentRecordsIssueInput = {
@@ -14759,13 +16495,17 @@ export type UserUpdateWithoutStudentRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentRecordsIssueInput = {
@@ -14837,13 +16577,17 @@ export type UserUncheckedUpdateWithoutStudentRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutTeacherRecordsInput = {
@@ -14915,13 +16659,17 @@ export type UserCreateWithoutTeacherRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTeacherRecordsInput = {
@@ -14993,13 +16741,17 @@ export type UserUncheckedCreateWithoutTeacherRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTeacherRecordsInput = {
@@ -15076,13 +16828,17 @@ export type UserCreateWithoutTeacherRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTeacherRecordsIssueInput = {
@@ -15154,13 +16910,17 @@ export type UserUncheckedCreateWithoutTeacherRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTeacherRecordsIssueInput = {
@@ -15248,13 +17008,17 @@ export type UserUpdateWithoutTeacherRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTeacherRecordsInput = {
@@ -15326,13 +17090,17 @@ export type UserUncheckedUpdateWithoutTeacherRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutTeacherRecordsIssueInput = {
@@ -15415,13 +17183,17 @@ export type UserUpdateWithoutTeacherRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTeacherRecordsIssueInput = {
@@ -15493,13 +17265,17 @@ export type UserUncheckedUpdateWithoutTeacherRecordsIssueInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAmbassadorRecordsInput = {
@@ -15571,13 +17347,17 @@ export type UserCreateWithoutAmbassadorRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorRecordsInput = {
@@ -15649,13 +17429,17 @@ export type UserUncheckedCreateWithoutAmbassadorRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorRecordsInput = {
@@ -15732,13 +17516,17 @@ export type UserCreateWithoutAmbassadorRecordIssInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAmbassadorRecordIssInput = {
@@ -15810,13 +17598,17 @@ export type UserUncheckedCreateWithoutAmbassadorRecordIssInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAmbassadorRecordIssInput = {
@@ -15904,13 +17696,17 @@ export type UserUpdateWithoutAmbassadorRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorRecordsInput = {
@@ -15982,13 +17778,17 @@ export type UserUncheckedUpdateWithoutAmbassadorRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutAmbassadorRecordIssInput = {
@@ -16071,13 +17871,17 @@ export type UserUpdateWithoutAmbassadorRecordIssInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAmbassadorRecordIssInput = {
@@ -16149,13 +17953,17 @@ export type UserUncheckedUpdateWithoutAmbassadorRecordIssInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStaffRecordsInput = {
@@ -16227,13 +18035,17 @@ export type UserCreateWithoutStaffRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStaffRecordsInput = {
@@ -16305,13 +18117,17 @@ export type UserUncheckedCreateWithoutStaffRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStaffRecordsInput = {
@@ -16388,13 +18204,17 @@ export type UserCreateWithoutStaffRecordsIssuedInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStaffRecordsIssuedInput = {
@@ -16466,13 +18286,17 @@ export type UserUncheckedCreateWithoutStaffRecordsIssuedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStaffRecordsIssuedInput = {
@@ -16560,13 +18384,17 @@ export type UserUpdateWithoutStaffRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffRecordsInput = {
@@ -16638,13 +18466,17 @@ export type UserUncheckedUpdateWithoutStaffRecordsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutStaffRecordsIssuedInput = {
@@ -16727,13 +18559,17 @@ export type UserUpdateWithoutStaffRecordsIssuedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffRecordsIssuedInput = {
@@ -16805,13 +18641,17 @@ export type UserUncheckedUpdateWithoutStaffRecordsIssuedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStudentFlagsInput = {
@@ -16883,13 +18723,17 @@ export type UserCreateWithoutStudentFlagsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentFlagsInput = {
@@ -16961,13 +18805,17 @@ export type UserUncheckedCreateWithoutStudentFlagsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentFlagsInput = {
@@ -17044,13 +18892,17 @@ export type UserCreateWithoutStudentFlagsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStudentFlagsCreatedInput = {
@@ -17122,13 +18974,17 @@ export type UserUncheckedCreateWithoutStudentFlagsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStudentFlagsCreatedInput = {
@@ -17216,13 +19072,17 @@ export type UserUpdateWithoutStudentFlagsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentFlagsInput = {
@@ -17294,13 +19154,17 @@ export type UserUncheckedUpdateWithoutStudentFlagsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutStudentFlagsCreatedInput = {
@@ -17383,13 +19247,17 @@ export type UserUpdateWithoutStudentFlagsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStudentFlagsCreatedInput = {
@@ -17461,13 +19329,17 @@ export type UserUncheckedUpdateWithoutStudentFlagsCreatedInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutChecklistEntriesInput = {
@@ -17540,12 +19412,16 @@ export type UserCreateWithoutChecklistEntriesInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutChecklistEntriesInput = {
@@ -17618,12 +19494,16 @@ export type UserUncheckedCreateWithoutChecklistEntriesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutChecklistEntriesInput = {
@@ -17712,12 +19592,16 @@ export type UserUpdateWithoutChecklistEntriesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChecklistEntriesInput = {
@@ -17790,12 +19674,16 @@ export type UserUncheckedUpdateWithoutChecklistEntriesInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutContentBankItemsInput = {
@@ -17867,13 +19755,17 @@ export type UserCreateWithoutContentBankItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutContentBankItemsInput = {
@@ -17945,13 +19837,17 @@ export type UserUncheckedCreateWithoutContentBankItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutContentBankItemsInput = {
@@ -18039,13 +19935,17 @@ export type UserUpdateWithoutContentBankItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutContentBankItemsInput = {
@@ -18117,13 +20017,705 @@ export type UserUncheckedUpdateWithoutContentBankItemsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutProgressReportsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutProgressReportsInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemUncheckedCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogUncheckedCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogUncheckedCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutProgressReportsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsInput, Prisma.UserUncheckedCreateWithoutProgressReportsInput>
+}
+
+export type UserCreateWithoutProgressReportsReviewedInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
+  children?: Prisma.UserCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutProgressReportsReviewedInput = {
+  id?: string
+  email: string
+  name?: string | null
+  role?: string | null
+  dept?: string | null
+  supervisor?: boolean
+  passwordHash?: string | null
+  photo?: string | null
+  bio?: string | null
+  isActive?: boolean
+  active?: boolean
+  subGroup?: string | null
+  referralCode?: string | null
+  whatsappNumber?: string | null
+  country?: string | null
+  phone?: string | null
+  grade?: string | null
+  board?: string | null
+  targetUni?: string | null
+  specialization?: string | null
+  hourlyRate?: number | null
+  createdAt?: Date | string
+  parentId?: string | null
+  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
+  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
+  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
+  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
+  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
+  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
+  calendarItems?: Prisma.CalendarItemUncheckedCreateNestedManyWithoutUserInput
+  siteLogs?: Prisma.SiteLogUncheckedCreateNestedManyWithoutUserInput
+  studentFlags?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutStudentInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutFlaggedByUserInput
+  accessLogs?: Prisma.AccessLogUncheckedCreateNestedManyWithoutStaffInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
+  studentRecords?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutUserInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutUserInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  staffRecords?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutUserInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutUserInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedCreateNestedManyWithoutStudentInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedCreateNestedManyWithoutTeacherInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedCreateNestedManyWithoutStaffInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedCreateNestedManyWithoutAmbassadorInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutPaidByUserInput
+  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
+  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutRecipientInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedCreateNestedManyWithoutAmbassadorInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedCreateNestedManyWithoutAmbassadorInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
+  taughtGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
+  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutStudentInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
+  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
+  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
+  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutProgressReportsReviewedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsReviewedInput, Prisma.UserUncheckedCreateWithoutProgressReportsReviewedInput>
+}
+
+export type UserUpsertWithoutProgressReportsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutProgressReportsInput, Prisma.UserUncheckedUpdateWithoutProgressReportsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsInput, Prisma.UserUncheckedCreateWithoutProgressReportsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutProgressReportsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutProgressReportsInput, Prisma.UserUncheckedUpdateWithoutProgressReportsInput>
+}
+
+export type UserUpdateWithoutProgressReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutProgressReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUncheckedUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUncheckedUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUncheckedUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUncheckedUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUncheckedUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUncheckedUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithoutProgressReportsReviewedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutProgressReportsReviewedInput, Prisma.UserUncheckedUpdateWithoutProgressReportsReviewedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutProgressReportsReviewedInput, Prisma.UserUncheckedCreateWithoutProgressReportsReviewedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutProgressReportsReviewedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutProgressReportsReviewedInput, Prisma.UserUncheckedUpdateWithoutProgressReportsReviewedInput>
+}
+
+export type UserUpdateWithoutProgressReportsReviewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.UserUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutProgressReportsReviewedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
+  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
+  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
+  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
+  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
+  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
+  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
+  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
+  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
+  calendarItems?: Prisma.CalendarItemUncheckedUpdateManyWithoutUserNestedInput
+  siteLogs?: Prisma.SiteLogUncheckedUpdateManyWithoutUserNestedInput
+  studentFlags?: Prisma.StudentFlagUncheckedUpdateManyWithoutStudentNestedInput
+  studentFlagsCreated?: Prisma.StudentFlagUncheckedUpdateManyWithoutFlaggedByUserNestedInput
+  accessLogs?: Prisma.AccessLogUncheckedUpdateManyWithoutStaffNestedInput
+  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
+  studentRecords?: Prisma.StudentRecordUncheckedUpdateManyWithoutUserNestedInput
+  studentRecordsIssue?: Prisma.StudentRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  teacherRecords?: Prisma.TeacherRecordUncheckedUpdateManyWithoutUserNestedInput
+  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  staffRecords?: Prisma.StaffRecordUncheckedUpdateManyWithoutUserNestedInput
+  staffRecordsIssued?: Prisma.StaffRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutUserNestedInput
+  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
+  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedUpdateManyWithoutStudentNestedInput
+  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedUpdateManyWithoutTeacherNestedInput
+  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedUpdateManyWithoutStaffNestedInput
+  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedUpdateManyWithoutAmbassadorNestedInput
+  studentInvoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
+  paymentRecords?: Prisma.PaymentRecordUncheckedUpdateManyWithoutPaidByUserNestedInput
+  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
+  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutRecipientNestedInput
+  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedUpdateManyWithoutAmbassadorNestedInput
+  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
+  taughtGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
+  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutStudentNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
+  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
+  groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
+  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
+  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
+  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
+  checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSiteLogsInput = {
@@ -18195,13 +20787,17 @@ export type UserCreateWithoutSiteLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSiteLogsInput = {
@@ -18273,13 +20869,17 @@ export type UserUncheckedCreateWithoutSiteLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSiteLogsInput = {
@@ -18367,13 +20967,17 @@ export type UserUpdateWithoutSiteLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSiteLogsInput = {
@@ -18445,13 +21049,17 @@ export type UserUncheckedUpdateWithoutSiteLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAccessLogsInput = {
@@ -18523,13 +21131,17 @@ export type UserCreateWithoutAccessLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAccessLogsInput = {
@@ -18601,13 +21213,17 @@ export type UserUncheckedCreateWithoutAccessLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
   doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAccessLogsInput = {
@@ -18695,13 +21311,17 @@ export type UserUpdateWithoutAccessLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccessLogsInput = {
@@ -18773,13 +21393,17 @@ export type UserUncheckedUpdateWithoutAccessLogsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutDoubtsInput = {
@@ -18851,13 +21475,17 @@ export type UserCreateWithoutDoubtsInput = {
   taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
   taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutDoubtsInput = {
@@ -18929,13 +21557,17 @@ export type UserUncheckedCreateWithoutDoubtsInput = {
   taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
   taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutStudentInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedCreateNestedManyWithoutStudentInput
   groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
   referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUserInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedCreateNestedManyWithoutUpdatedByInput
+  progressReports?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutStudentInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedCreateNestedManyWithoutReviewedByInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutDoubtsInput = {
@@ -19023,13 +21655,17 @@ export type UserUpdateWithoutDoubtsInput = {
   taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoubtsInput = {
@@ -19101,341 +21737,17 @@ export type UserUncheckedUpdateWithoutDoubtsInput = {
   taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutAssignmentsInput = {
-  id?: string
-  email: string
-  name?: string | null
-  role?: string | null
-  dept?: string | null
-  supervisor?: boolean
-  passwordHash?: string | null
-  photo?: string | null
-  bio?: string | null
-  isActive?: boolean
-  active?: boolean
-  subGroup?: string | null
-  referralCode?: string | null
-  whatsappNumber?: string | null
-  country?: string | null
-  phone?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  specialization?: string | null
-  hourlyRate?: number | null
-  createdAt?: Date | string
-  parent?: Prisma.UserCreateNestedOneWithoutChildrenInput
-  children?: Prisma.UserCreateNestedManyWithoutParentInput
-  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileCreateNestedOneWithoutUserInput
-  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileCreateNestedOneWithoutUserInput
-  bankAccounts?: Prisma.BankAccountCreateNestedManyWithoutOwnerInput
-  ticketsCreated?: Prisma.TicketCreateNestedManyWithoutCreatorInput
-  ticketsAssigned?: Prisma.TicketCreateNestedManyWithoutAssigneeInput
-  ticketMessages?: Prisma.TicketMessageCreateNestedManyWithoutSenderInput
-  ticketHistory?: Prisma.TicketHistoryCreateNestedManyWithoutActorInput
-  meetingParticipants?: Prisma.MeetingParticipantCreateNestedManyWithoutUserInput
-  calendarItems?: Prisma.CalendarItemCreateNestedManyWithoutUserInput
-  siteLogs?: Prisma.SiteLogCreateNestedManyWithoutUserInput
-  studentFlags?: Prisma.StudentFlagCreateNestedManyWithoutStudentInput
-  studentFlagsCreated?: Prisma.StudentFlagCreateNestedManyWithoutFlaggedByUserInput
-  accessLogs?: Prisma.AccessLogCreateNestedManyWithoutStaffInput
-  contentBankItems?: Prisma.ContentBankItemCreateNestedManyWithoutAddedByInput
-  studentRecords?: Prisma.StudentRecordCreateNestedManyWithoutUserInput
-  studentRecordsIssue?: Prisma.StudentRecordCreateNestedManyWithoutIssuedByUserInput
-  teacherRecords?: Prisma.TeacherRecordCreateNestedManyWithoutUserInput
-  teacherRecordsIssue?: Prisma.TeacherRecordCreateNestedManyWithoutIssuedByUserInput
-  staffRecords?: Prisma.StaffRecordCreateNestedManyWithoutUserInput
-  staffRecordsIssued?: Prisma.StaffRecordCreateNestedManyWithoutIssuedByUserInput
-  ambassadorRecords?: Prisma.AmbassadorRecordCreateNestedManyWithoutUserInput
-  ambassadorRecordIss?: Prisma.AmbassadorRecordCreateNestedManyWithoutIssuedByUserInput
-  studentEnrolmentLists?: Prisma.StudentEnrolmentListCreateNestedManyWithoutStudentInput
-  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListCreateNestedManyWithoutTeacherInput
-  staffEnrolmentLists?: Prisma.StaffEnrolmentListCreateNestedManyWithoutStaffInput
-  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListCreateNestedManyWithoutAmbassadorInput
-  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListCreateNestedManyWithoutAmbassadorInput
-  studentInvoices?: Prisma.StudentInvoiceCreateNestedManyWithoutStudentInput
-  paymentRecords?: Prisma.PaymentRecordCreateNestedManyWithoutPaidByUserInput
-  claims?: Prisma.ClaimCreateNestedManyWithoutUserInput
-  paychecks?: Prisma.PaycheckCreateNestedManyWithoutRecipientInput
-  ambassadorClaims?: Prisma.AmbassadorClaimCreateNestedManyWithoutAmbassadorInput
-  ambassadorPaychecks?: Prisma.AmbassadorPaycheckCreateNestedManyWithoutAmbassadorInput
-  services?: Prisma.ServiceCreateNestedManyWithoutTeacherInput
-  taughtSessions?: Prisma.AcademicSessionCreateNestedManyWithoutTeacherInput
-  taughtGroups?: Prisma.GroupCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutStudentInput
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutStudentInput
-  taskSubmissions?: Prisma.TaskSubmissionCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressCreateNestedManyWithoutStudentInput
-  groups?: Prisma.GroupCreateNestedManyWithoutStudentsInput
-  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressCreateNestedManyWithoutAmbassadorInput
-  referrals?: Prisma.ReferralCreateNestedManyWithoutReferrerInput
-  ambassadorTestRes?: Prisma.AmbassadorTestResultCreateNestedManyWithoutAmbassadorInput
-  checklistEntries?: Prisma.ChecklistEntryCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutAssignmentsInput = {
-  id?: string
-  email: string
-  name?: string | null
-  role?: string | null
-  dept?: string | null
-  supervisor?: boolean
-  passwordHash?: string | null
-  photo?: string | null
-  bio?: string | null
-  isActive?: boolean
-  active?: boolean
-  subGroup?: string | null
-  referralCode?: string | null
-  whatsappNumber?: string | null
-  country?: string | null
-  phone?: string | null
-  grade?: string | null
-  board?: string | null
-  targetUni?: string | null
-  specialization?: string | null
-  hourlyRate?: number | null
-  createdAt?: Date | string
-  parentId?: string | null
-  children?: Prisma.UserUncheckedCreateNestedManyWithoutParentInput
-  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedCreateNestedOneWithoutUserInput
-  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput
-  parentProfile?: Prisma.ParentProfileUncheckedCreateNestedOneWithoutUserInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedCreateNestedOneWithoutUserInput
-  bankAccounts?: Prisma.BankAccountUncheckedCreateNestedManyWithoutOwnerInput
-  ticketsCreated?: Prisma.TicketUncheckedCreateNestedManyWithoutCreatorInput
-  ticketsAssigned?: Prisma.TicketUncheckedCreateNestedManyWithoutAssigneeInput
-  ticketMessages?: Prisma.TicketMessageUncheckedCreateNestedManyWithoutSenderInput
-  ticketHistory?: Prisma.TicketHistoryUncheckedCreateNestedManyWithoutActorInput
-  meetingParticipants?: Prisma.MeetingParticipantUncheckedCreateNestedManyWithoutUserInput
-  calendarItems?: Prisma.CalendarItemUncheckedCreateNestedManyWithoutUserInput
-  siteLogs?: Prisma.SiteLogUncheckedCreateNestedManyWithoutUserInput
-  studentFlags?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutStudentInput
-  studentFlagsCreated?: Prisma.StudentFlagUncheckedCreateNestedManyWithoutFlaggedByUserInput
-  accessLogs?: Prisma.AccessLogUncheckedCreateNestedManyWithoutStaffInput
-  contentBankItems?: Prisma.ContentBankItemUncheckedCreateNestedManyWithoutAddedByInput
-  studentRecords?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutUserInput
-  studentRecordsIssue?: Prisma.StudentRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
-  teacherRecords?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutUserInput
-  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
-  staffRecords?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutUserInput
-  staffRecordsIssued?: Prisma.StaffRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
-  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutUserInput
-  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedCreateNestedManyWithoutIssuedByUserInput
-  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedCreateNestedManyWithoutStudentInput
-  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedCreateNestedManyWithoutTeacherInput
-  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedCreateNestedManyWithoutStaffInput
-  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedCreateNestedManyWithoutAmbassadorInput
-  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedCreateNestedManyWithoutAmbassadorInput
-  studentInvoices?: Prisma.StudentInvoiceUncheckedCreateNestedManyWithoutStudentInput
-  paymentRecords?: Prisma.PaymentRecordUncheckedCreateNestedManyWithoutPaidByUserInput
-  claims?: Prisma.ClaimUncheckedCreateNestedManyWithoutUserInput
-  paychecks?: Prisma.PaycheckUncheckedCreateNestedManyWithoutRecipientInput
-  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedCreateNestedManyWithoutAmbassadorInput
-  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedCreateNestedManyWithoutAmbassadorInput
-  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutTeacherInput
-  taughtSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutTeacherInput
-  taughtGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutTeacherInput
-  studentSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutStudentInput
-  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutStudentInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutStudentInput
-  taskSubmissions?: Prisma.TaskSubmissionUncheckedCreateNestedManyWithoutStudentInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutStudentInput
-  doubts?: Prisma.DoubtUncheckedCreateNestedManyWithoutStudentInput
-  studentProgress?: Prisma.StudentProgressUncheckedCreateNestedManyWithoutStudentInput
-  groups?: Prisma.GroupUncheckedCreateNestedManyWithoutStudentsInput
-  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedCreateNestedManyWithoutAmbassadorInput
-  referrals?: Prisma.ReferralUncheckedCreateNestedManyWithoutReferrerInput
-  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedCreateNestedManyWithoutAmbassadorInput
-  checklistEntries?: Prisma.ChecklistEntryUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutAssignmentsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-}
-
-export type UserUpsertWithoutAssignmentsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAssignmentsInput, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAssignmentsInput, Prisma.UserUncheckedCreateWithoutAssignmentsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutAssignmentsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAssignmentsInput, Prisma.UserUncheckedUpdateWithoutAssignmentsInput>
-}
-
-export type UserUpdateWithoutAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.UserUpdateOneWithoutChildrenNestedInput
-  children?: Prisma.UserUpdateManyWithoutParentNestedInput
-  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUpdateOneWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUpdateOneWithoutUserNestedInput
-  bankAccounts?: Prisma.BankAccountUpdateManyWithoutOwnerNestedInput
-  ticketsCreated?: Prisma.TicketUpdateManyWithoutCreatorNestedInput
-  ticketsAssigned?: Prisma.TicketUpdateManyWithoutAssigneeNestedInput
-  ticketMessages?: Prisma.TicketMessageUpdateManyWithoutSenderNestedInput
-  ticketHistory?: Prisma.TicketHistoryUpdateManyWithoutActorNestedInput
-  meetingParticipants?: Prisma.MeetingParticipantUpdateManyWithoutUserNestedInput
-  calendarItems?: Prisma.CalendarItemUpdateManyWithoutUserNestedInput
-  siteLogs?: Prisma.SiteLogUpdateManyWithoutUserNestedInput
-  studentFlags?: Prisma.StudentFlagUpdateManyWithoutStudentNestedInput
-  studentFlagsCreated?: Prisma.StudentFlagUpdateManyWithoutFlaggedByUserNestedInput
-  accessLogs?: Prisma.AccessLogUpdateManyWithoutStaffNestedInput
-  contentBankItems?: Prisma.ContentBankItemUpdateManyWithoutAddedByNestedInput
-  studentRecords?: Prisma.StudentRecordUpdateManyWithoutUserNestedInput
-  studentRecordsIssue?: Prisma.StudentRecordUpdateManyWithoutIssuedByUserNestedInput
-  teacherRecords?: Prisma.TeacherRecordUpdateManyWithoutUserNestedInput
-  teacherRecordsIssue?: Prisma.TeacherRecordUpdateManyWithoutIssuedByUserNestedInput
-  staffRecords?: Prisma.StaffRecordUpdateManyWithoutUserNestedInput
-  staffRecordsIssued?: Prisma.StaffRecordUpdateManyWithoutIssuedByUserNestedInput
-  ambassadorRecords?: Prisma.AmbassadorRecordUpdateManyWithoutUserNestedInput
-  ambassadorRecordIss?: Prisma.AmbassadorRecordUpdateManyWithoutIssuedByUserNestedInput
-  studentEnrolmentLists?: Prisma.StudentEnrolmentListUpdateManyWithoutStudentNestedInput
-  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUpdateManyWithoutTeacherNestedInput
-  staffEnrolmentLists?: Prisma.StaffEnrolmentListUpdateManyWithoutStaffNestedInput
-  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUpdateManyWithoutAmbassadorNestedInput
-  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUpdateManyWithoutAmbassadorNestedInput
-  studentInvoices?: Prisma.StudentInvoiceUpdateManyWithoutStudentNestedInput
-  paymentRecords?: Prisma.PaymentRecordUpdateManyWithoutPaidByUserNestedInput
-  claims?: Prisma.ClaimUpdateManyWithoutUserNestedInput
-  paychecks?: Prisma.PaycheckUpdateManyWithoutRecipientNestedInput
-  ambassadorClaims?: Prisma.AmbassadorClaimUpdateManyWithoutAmbassadorNestedInput
-  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUpdateManyWithoutAmbassadorNestedInput
-  services?: Prisma.ServiceUpdateManyWithoutTeacherNestedInput
-  taughtSessions?: Prisma.AcademicSessionUpdateManyWithoutTeacherNestedInput
-  taughtGroups?: Prisma.GroupUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.SessionAttendanceUpdateManyWithoutStudentNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutStudentNestedInput
-  taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
-  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
-  referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
-  ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
-  checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  dept?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  supervisor?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  photo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  subGroup?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  whatsappNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  grade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetUni?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hourlyRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  children?: Prisma.UserUncheckedUpdateManyWithoutParentNestedInput
-  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput
-  teacherProfile?: Prisma.TeacherProfileUncheckedUpdateOneWithoutUserNestedInput
-  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput
-  parentProfile?: Prisma.ParentProfileUncheckedUpdateOneWithoutUserNestedInput
-  ambassadorProfile?: Prisma.AmbassadorProfileUncheckedUpdateOneWithoutUserNestedInput
-  bankAccounts?: Prisma.BankAccountUncheckedUpdateManyWithoutOwnerNestedInput
-  ticketsCreated?: Prisma.TicketUncheckedUpdateManyWithoutCreatorNestedInput
-  ticketsAssigned?: Prisma.TicketUncheckedUpdateManyWithoutAssigneeNestedInput
-  ticketMessages?: Prisma.TicketMessageUncheckedUpdateManyWithoutSenderNestedInput
-  ticketHistory?: Prisma.TicketHistoryUncheckedUpdateManyWithoutActorNestedInput
-  meetingParticipants?: Prisma.MeetingParticipantUncheckedUpdateManyWithoutUserNestedInput
-  calendarItems?: Prisma.CalendarItemUncheckedUpdateManyWithoutUserNestedInput
-  siteLogs?: Prisma.SiteLogUncheckedUpdateManyWithoutUserNestedInput
-  studentFlags?: Prisma.StudentFlagUncheckedUpdateManyWithoutStudentNestedInput
-  studentFlagsCreated?: Prisma.StudentFlagUncheckedUpdateManyWithoutFlaggedByUserNestedInput
-  accessLogs?: Prisma.AccessLogUncheckedUpdateManyWithoutStaffNestedInput
-  contentBankItems?: Prisma.ContentBankItemUncheckedUpdateManyWithoutAddedByNestedInput
-  studentRecords?: Prisma.StudentRecordUncheckedUpdateManyWithoutUserNestedInput
-  studentRecordsIssue?: Prisma.StudentRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
-  teacherRecords?: Prisma.TeacherRecordUncheckedUpdateManyWithoutUserNestedInput
-  teacherRecordsIssue?: Prisma.TeacherRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
-  staffRecords?: Prisma.StaffRecordUncheckedUpdateManyWithoutUserNestedInput
-  staffRecordsIssued?: Prisma.StaffRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
-  ambassadorRecords?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutUserNestedInput
-  ambassadorRecordIss?: Prisma.AmbassadorRecordUncheckedUpdateManyWithoutIssuedByUserNestedInput
-  studentEnrolmentLists?: Prisma.StudentEnrolmentListUncheckedUpdateManyWithoutStudentNestedInput
-  teacherEnrolmentLists?: Prisma.TeacherEnrolmentListUncheckedUpdateManyWithoutTeacherNestedInput
-  staffEnrolmentLists?: Prisma.StaffEnrolmentListUncheckedUpdateManyWithoutStaffNestedInput
-  ambassadorEnrolmentLists?: Prisma.AmbassadorEnrolmentListUncheckedUpdateManyWithoutAmbassadorNestedInput
-  ambassadorCommissionLists?: Prisma.AmbassadorCommissionListUncheckedUpdateManyWithoutAmbassadorNestedInput
-  studentInvoices?: Prisma.StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput
-  paymentRecords?: Prisma.PaymentRecordUncheckedUpdateManyWithoutPaidByUserNestedInput
-  claims?: Prisma.ClaimUncheckedUpdateManyWithoutUserNestedInput
-  paychecks?: Prisma.PaycheckUncheckedUpdateManyWithoutRecipientNestedInput
-  ambassadorClaims?: Prisma.AmbassadorClaimUncheckedUpdateManyWithoutAmbassadorNestedInput
-  ambassadorPaychecks?: Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput
-  services?: Prisma.ServiceUncheckedUpdateManyWithoutTeacherNestedInput
-  taughtSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutTeacherNestedInput
-  taughtGroups?: Prisma.GroupUncheckedUpdateManyWithoutTeacherNestedInput
-  studentSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutStudentNestedInput
-  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutStudentNestedInput
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutStudentNestedInput
-  taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
-  doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
-  ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
-  referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
-  ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
-  checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyParentInput = {
@@ -19532,13 +21844,17 @@ export type UserUpdateWithoutParentInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParentInput = {
@@ -19610,13 +21926,17 @@ export type UserUncheckedUpdateWithoutParentInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   groups?: Prisma.GroupUncheckedUpdateManyWithoutStudentsNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutParentInput = {
@@ -19714,12 +22034,16 @@ export type UserUpdateWithoutGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUpdateManyWithoutStudentNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupsInput = {
@@ -19792,12 +22116,16 @@ export type UserUncheckedUpdateWithoutGroupsInput = {
   taskSubmissions?: Prisma.TaskSubmissionUncheckedUpdateManyWithoutStudentNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutStudentNestedInput
   doubts?: Prisma.DoubtUncheckedUpdateManyWithoutStudentNestedInput
-  studentProgress?: Prisma.StudentProgressUncheckedUpdateManyWithoutStudentNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutStudentNestedInput
+  studentSyllabusProgress?: Prisma.StudentSyllabusProgressUncheckedUpdateManyWithoutStudentNestedInput
   ambassadorProgrammeProgress?: Prisma.AmbassadorProgrammeProgressUncheckedUpdateManyWithoutAmbassadorNestedInput
   referrals?: Prisma.ReferralUncheckedUpdateManyWithoutReferrerNestedInput
   ambassadorTestRes?: Prisma.AmbassadorTestResultUncheckedUpdateManyWithoutAmbassadorNestedInput
   checklistEntries?: Prisma.ChecklistEntryUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsOwned?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUserNestedInput
+  portalPermissionsUpdated?: Prisma.PortalPermissionUncheckedUpdateManyWithoutUpdatedByNestedInput
+  progressReports?: Prisma.ProgressReportUncheckedUpdateManyWithoutStudentNestedInput
+  progressReportsReviewed?: Prisma.ProgressReportUncheckedUpdateManyWithoutReviewedByNestedInput
+  marketingSchedules?: Prisma.MarketingScheduleUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutGroupsInput = {
@@ -19873,13 +22201,17 @@ export type UserCountOutputType = {
   taskSubmissions: number
   mockResults: number
   doubts: number
-  studentProgress: number
-  assignments: number
+  studentSyllabusProgress: number
   groups: number
   ambassadorProgrammeProgress: number
   referrals: number
   ambassadorTestRes: number
   checklistEntries: number
+  portalPermissionsOwned: number
+  portalPermissionsUpdated: number
+  progressReports: number
+  progressReportsReviewed: number
+  marketingSchedules: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -19924,13 +22256,17 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   taskSubmissions?: boolean | UserCountOutputTypeCountTaskSubmissionsArgs
   mockResults?: boolean | UserCountOutputTypeCountMockResultsArgs
   doubts?: boolean | UserCountOutputTypeCountDoubtsArgs
-  studentProgress?: boolean | UserCountOutputTypeCountStudentProgressArgs
-  assignments?: boolean | UserCountOutputTypeCountAssignmentsArgs
+  studentSyllabusProgress?: boolean | UserCountOutputTypeCountStudentSyllabusProgressArgs
   groups?: boolean | UserCountOutputTypeCountGroupsArgs
   ambassadorProgrammeProgress?: boolean | UserCountOutputTypeCountAmbassadorProgrammeProgressArgs
   referrals?: boolean | UserCountOutputTypeCountReferralsArgs
   ambassadorTestRes?: boolean | UserCountOutputTypeCountAmbassadorTestResArgs
   checklistEntries?: boolean | UserCountOutputTypeCountChecklistEntriesArgs
+  portalPermissionsOwned?: boolean | UserCountOutputTypeCountPortalPermissionsOwnedArgs
+  portalPermissionsUpdated?: boolean | UserCountOutputTypeCountPortalPermissionsUpdatedArgs
+  progressReports?: boolean | UserCountOutputTypeCountProgressReportsArgs
+  progressReportsReviewed?: boolean | UserCountOutputTypeCountProgressReportsReviewedArgs
+  marketingSchedules?: boolean | UserCountOutputTypeCountMarketingSchedulesArgs
 }
 
 /**
@@ -20233,15 +22569,8 @@ export type UserCountOutputTypeCountDoubtsArgs<ExtArgs extends runtime.Types.Ext
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountStudentProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StudentProgressWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AssignmentWhereInput
+export type UserCountOutputTypeCountStudentSyllabusProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentSyllabusProgressWhereInput
 }
 
 /**
@@ -20277,6 +22606,41 @@ export type UserCountOutputTypeCountAmbassadorTestResArgs<ExtArgs extends runtim
  */
 export type UserCountOutputTypeCountChecklistEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ChecklistEntryWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPortalPermissionsOwnedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PortalPermissionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPortalPermissionsUpdatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PortalPermissionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountProgressReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgressReportWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountProgressReportsReviewedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgressReportWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMarketingSchedulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MarketingScheduleWhereInput
 }
 
 
@@ -20351,13 +22715,17 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   taskSubmissions?: boolean | Prisma.User$taskSubmissionsArgs<ExtArgs>
   mockResults?: boolean | Prisma.User$mockResultsArgs<ExtArgs>
   doubts?: boolean | Prisma.User$doubtsArgs<ExtArgs>
-  studentProgress?: boolean | Prisma.User$studentProgressArgs<ExtArgs>
-  assignments?: boolean | Prisma.User$assignmentsArgs<ExtArgs>
+  studentSyllabusProgress?: boolean | Prisma.User$studentSyllabusProgressArgs<ExtArgs>
   groups?: boolean | Prisma.User$groupsArgs<ExtArgs>
   ambassadorProgrammeProgress?: boolean | Prisma.User$ambassadorProgrammeProgressArgs<ExtArgs>
   referrals?: boolean | Prisma.User$referralsArgs<ExtArgs>
   ambassadorTestRes?: boolean | Prisma.User$ambassadorTestResArgs<ExtArgs>
   checklistEntries?: boolean | Prisma.User$checklistEntriesArgs<ExtArgs>
+  portalPermissionsOwned?: boolean | Prisma.User$portalPermissionsOwnedArgs<ExtArgs>
+  portalPermissionsUpdated?: boolean | Prisma.User$portalPermissionsUpdatedArgs<ExtArgs>
+  progressReports?: boolean | Prisma.User$progressReportsArgs<ExtArgs>
+  progressReportsReviewed?: boolean | Prisma.User$progressReportsReviewedArgs<ExtArgs>
+  marketingSchedules?: boolean | Prisma.User$marketingSchedulesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -20490,13 +22858,17 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   taskSubmissions?: boolean | Prisma.User$taskSubmissionsArgs<ExtArgs>
   mockResults?: boolean | Prisma.User$mockResultsArgs<ExtArgs>
   doubts?: boolean | Prisma.User$doubtsArgs<ExtArgs>
-  studentProgress?: boolean | Prisma.User$studentProgressArgs<ExtArgs>
-  assignments?: boolean | Prisma.User$assignmentsArgs<ExtArgs>
+  studentSyllabusProgress?: boolean | Prisma.User$studentSyllabusProgressArgs<ExtArgs>
   groups?: boolean | Prisma.User$groupsArgs<ExtArgs>
   ambassadorProgrammeProgress?: boolean | Prisma.User$ambassadorProgrammeProgressArgs<ExtArgs>
   referrals?: boolean | Prisma.User$referralsArgs<ExtArgs>
   ambassadorTestRes?: boolean | Prisma.User$ambassadorTestResArgs<ExtArgs>
   checklistEntries?: boolean | Prisma.User$checklistEntriesArgs<ExtArgs>
+  portalPermissionsOwned?: boolean | Prisma.User$portalPermissionsOwnedArgs<ExtArgs>
+  portalPermissionsUpdated?: boolean | Prisma.User$portalPermissionsUpdatedArgs<ExtArgs>
+  progressReports?: boolean | Prisma.User$progressReportsArgs<ExtArgs>
+  progressReportsReviewed?: boolean | Prisma.User$progressReportsReviewedArgs<ExtArgs>
+  marketingSchedules?: boolean | Prisma.User$marketingSchedulesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -20556,13 +22928,17 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     taskSubmissions: Prisma.$TaskSubmissionPayload<ExtArgs>[]
     mockResults: Prisma.$MockResultPayload<ExtArgs>[]
     doubts: Prisma.$DoubtPayload<ExtArgs>[]
-    studentProgress: Prisma.$StudentProgressPayload<ExtArgs>[]
-    assignments: Prisma.$AssignmentPayload<ExtArgs>[]
+    studentSyllabusProgress: Prisma.$StudentSyllabusProgressPayload<ExtArgs>[]
     groups: Prisma.$GroupPayload<ExtArgs>[]
     ambassadorProgrammeProgress: Prisma.$AmbassadorProgrammeProgressPayload<ExtArgs>[]
     referrals: Prisma.$ReferralPayload<ExtArgs>[]
     ambassadorTestRes: Prisma.$AmbassadorTestResultPayload<ExtArgs>[]
     checklistEntries: Prisma.$ChecklistEntryPayload<ExtArgs>[]
+    portalPermissionsOwned: Prisma.$PortalPermissionPayload<ExtArgs>[]
+    portalPermissionsUpdated: Prisma.$PortalPermissionPayload<ExtArgs>[]
+    progressReports: Prisma.$ProgressReportPayload<ExtArgs>[]
+    progressReportsReviewed: Prisma.$ProgressReportPayload<ExtArgs>[]
+    marketingSchedules: Prisma.$MarketingSchedulePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -21029,13 +23405,17 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   taskSubmissions<T extends Prisma.User$taskSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$taskSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mockResults<T extends Prisma.User$mockResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mockResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   doubts<T extends Prisma.User$doubtsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$doubtsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoubtPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  studentProgress<T extends Prisma.User$studentProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentProgressArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  assignments<T extends Prisma.User$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  studentSyllabusProgress<T extends Prisma.User$studentSyllabusProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$studentSyllabusProgressArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentSyllabusProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groups<T extends Prisma.User$groupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$groupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ambassadorProgrammeProgress<T extends Prisma.User$ambassadorProgrammeProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ambassadorProgrammeProgressArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   referrals<T extends Prisma.User$referralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$referralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ambassadorTestRes<T extends Prisma.User$ambassadorTestResArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ambassadorTestResArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorTestResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   checklistEntries<T extends Prisma.User$checklistEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$checklistEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChecklistEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  portalPermissionsOwned<T extends Prisma.User$portalPermissionsOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$portalPermissionsOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PortalPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  portalPermissionsUpdated<T extends Prisma.User$portalPermissionsUpdatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$portalPermissionsUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PortalPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  progressReports<T extends Prisma.User$progressReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$progressReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgressReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  progressReportsReviewed<T extends Prisma.User$progressReportsReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$progressReportsReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgressReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  marketingSchedules<T extends Prisma.User$marketingSchedulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$marketingSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketingSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22587,51 +24967,27 @@ export type User$doubtsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 /**
- * User.studentProgress
+ * User.studentSyllabusProgress
  */
-export type User$studentProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$studentSyllabusProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StudentProgress
+   * Select specific fields to fetch from the StudentSyllabusProgress
    */
-  select?: Prisma.StudentProgressSelect<ExtArgs> | null
+  select?: Prisma.StudentSyllabusProgressSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StudentProgress
+   * Omit specific fields from the StudentSyllabusProgress
    */
-  omit?: Prisma.StudentProgressOmit<ExtArgs> | null
+  omit?: Prisma.StudentSyllabusProgressOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StudentProgressInclude<ExtArgs> | null
-  where?: Prisma.StudentProgressWhereInput
-  orderBy?: Prisma.StudentProgressOrderByWithRelationInput | Prisma.StudentProgressOrderByWithRelationInput[]
-  cursor?: Prisma.StudentProgressWhereUniqueInput
+  include?: Prisma.StudentSyllabusProgressInclude<ExtArgs> | null
+  where?: Prisma.StudentSyllabusProgressWhereInput
+  orderBy?: Prisma.StudentSyllabusProgressOrderByWithRelationInput | Prisma.StudentSyllabusProgressOrderByWithRelationInput[]
+  cursor?: Prisma.StudentSyllabusProgressWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StudentProgressScalarFieldEnum | Prisma.StudentProgressScalarFieldEnum[]
-}
-
-/**
- * User.assignments
- */
-export type User$assignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Assignment
-   */
-  select?: Prisma.AssignmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Assignment
-   */
-  omit?: Prisma.AssignmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AssignmentInclude<ExtArgs> | null
-  where?: Prisma.AssignmentWhereInput
-  orderBy?: Prisma.AssignmentOrderByWithRelationInput | Prisma.AssignmentOrderByWithRelationInput[]
-  cursor?: Prisma.AssignmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AssignmentScalarFieldEnum | Prisma.AssignmentScalarFieldEnum[]
+  distinct?: Prisma.StudentSyllabusProgressScalarFieldEnum | Prisma.StudentSyllabusProgressScalarFieldEnum[]
 }
 
 /**
@@ -22752,6 +25108,126 @@ export type User$checklistEntriesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ChecklistEntryScalarFieldEnum | Prisma.ChecklistEntryScalarFieldEnum[]
+}
+
+/**
+ * User.portalPermissionsOwned
+ */
+export type User$portalPermissionsOwnedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PortalPermission
+   */
+  select?: Prisma.PortalPermissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PortalPermission
+   */
+  omit?: Prisma.PortalPermissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PortalPermissionInclude<ExtArgs> | null
+  where?: Prisma.PortalPermissionWhereInput
+  orderBy?: Prisma.PortalPermissionOrderByWithRelationInput | Prisma.PortalPermissionOrderByWithRelationInput[]
+  cursor?: Prisma.PortalPermissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PortalPermissionScalarFieldEnum | Prisma.PortalPermissionScalarFieldEnum[]
+}
+
+/**
+ * User.portalPermissionsUpdated
+ */
+export type User$portalPermissionsUpdatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PortalPermission
+   */
+  select?: Prisma.PortalPermissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PortalPermission
+   */
+  omit?: Prisma.PortalPermissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PortalPermissionInclude<ExtArgs> | null
+  where?: Prisma.PortalPermissionWhereInput
+  orderBy?: Prisma.PortalPermissionOrderByWithRelationInput | Prisma.PortalPermissionOrderByWithRelationInput[]
+  cursor?: Prisma.PortalPermissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PortalPermissionScalarFieldEnum | Prisma.PortalPermissionScalarFieldEnum[]
+}
+
+/**
+ * User.progressReports
+ */
+export type User$progressReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProgressReport
+   */
+  select?: Prisma.ProgressReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProgressReport
+   */
+  omit?: Prisma.ProgressReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgressReportInclude<ExtArgs> | null
+  where?: Prisma.ProgressReportWhereInput
+  orderBy?: Prisma.ProgressReportOrderByWithRelationInput | Prisma.ProgressReportOrderByWithRelationInput[]
+  cursor?: Prisma.ProgressReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgressReportScalarFieldEnum | Prisma.ProgressReportScalarFieldEnum[]
+}
+
+/**
+ * User.progressReportsReviewed
+ */
+export type User$progressReportsReviewedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProgressReport
+   */
+  select?: Prisma.ProgressReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProgressReport
+   */
+  omit?: Prisma.ProgressReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgressReportInclude<ExtArgs> | null
+  where?: Prisma.ProgressReportWhereInput
+  orderBy?: Prisma.ProgressReportOrderByWithRelationInput | Prisma.ProgressReportOrderByWithRelationInput[]
+  cursor?: Prisma.ProgressReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgressReportScalarFieldEnum | Prisma.ProgressReportScalarFieldEnum[]
+}
+
+/**
+ * User.marketingSchedules
+ */
+export type User$marketingSchedulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MarketingSchedule
+   */
+  select?: Prisma.MarketingScheduleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MarketingSchedule
+   */
+  omit?: Prisma.MarketingScheduleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MarketingScheduleInclude<ExtArgs> | null
+  where?: Prisma.MarketingScheduleWhereInput
+  orderBy?: Prisma.MarketingScheduleOrderByWithRelationInput | Prisma.MarketingScheduleOrderByWithRelationInput[]
+  cursor?: Prisma.MarketingScheduleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MarketingScheduleScalarFieldEnum | Prisma.MarketingScheduleScalarFieldEnum[]
 }
 
 /**

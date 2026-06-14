@@ -13,7 +13,7 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { submitCandidateDocs, requestInterview, getCandidateByEmail } from "@/lib/actions/candidate";
 
 export default function CandidatePortal() {

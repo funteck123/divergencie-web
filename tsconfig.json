@@ -25,12 +25,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "next-auth/react": [
-        "./src/lib/next-auth-compat.tsx"
-      ],
-      "next-auth": [
-        "./src/lib/next-auth-compat.tsx"
       ]
     }
   },

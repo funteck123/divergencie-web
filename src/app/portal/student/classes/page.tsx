@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getStudentSessions } from "@/lib/actions/progress";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { 
   Calendar, 
   Video, 

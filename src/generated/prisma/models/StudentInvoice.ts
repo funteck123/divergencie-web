@@ -49,7 +49,7 @@ export type StudentInvoiceSumAggregateOutputType = {
 export type StudentInvoiceMinAggregateOutputType = {
   id: string | null
   studentId: string | null
-  invoiceMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string | null
   invoiceMode: string | null
@@ -79,7 +79,7 @@ export type StudentInvoiceMinAggregateOutputType = {
 export type StudentInvoiceMaxAggregateOutputType = {
   id: string | null
   studentId: string | null
-  invoiceMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string | null
   invoiceMode: string | null
@@ -109,7 +109,7 @@ export type StudentInvoiceMaxAggregateOutputType = {
 export type StudentInvoiceCountAggregateOutputType = {
   id: number
   studentId: number
-  invoiceMonthId: number
+  billingMonthId: number
   receivingPaymentMethodId: number
   month: number
   invoiceMode: number
@@ -161,7 +161,7 @@ export type StudentInvoiceSumAggregateInputType = {
 export type StudentInvoiceMinAggregateInputType = {
   id?: true
   studentId?: true
-  invoiceMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   invoiceMode?: true
@@ -191,7 +191,7 @@ export type StudentInvoiceMinAggregateInputType = {
 export type StudentInvoiceMaxAggregateInputType = {
   id?: true
   studentId?: true
-  invoiceMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   invoiceMode?: true
@@ -221,7 +221,7 @@ export type StudentInvoiceMaxAggregateInputType = {
 export type StudentInvoiceCountAggregateInputType = {
   id?: true
   studentId?: true
-  invoiceMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   invoiceMode?: true
@@ -338,7 +338,7 @@ export type StudentInvoiceGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type StudentInvoiceGroupByOutputType = {
   id: string
   studentId: string
-  invoiceMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string
   invoiceMode: string | null
@@ -391,7 +391,7 @@ export type StudentInvoiceWhereInput = {
   NOT?: Prisma.StudentInvoiceWhereInput | Prisma.StudentInvoiceWhereInput[]
   id?: Prisma.StringFilter<"StudentInvoice"> | string
   studentId?: Prisma.StringFilter<"StudentInvoice"> | string
-  invoiceMonthId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   month?: Prisma.StringFilter<"StudentInvoice"> | string
   invoiceMode?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
@@ -417,7 +417,7 @@ export type StudentInvoiceWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"StudentInvoice"> | Date | string
   totalAmount?: Prisma.FloatNullableFilter<"StudentInvoice"> | number | null
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  invoiceMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   receivingPaymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
   lineItems?: Prisma.InvoiceLineItemListRelationFilter
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
@@ -427,7 +427,7 @@ export type StudentInvoiceWhereInput = {
 export type StudentInvoiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   invoiceMode?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -453,7 +453,7 @@ export type StudentInvoiceOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   student?: Prisma.UserOrderByWithRelationInput
-  invoiceMonth?: Prisma.InvoiceMonthOrderByWithRelationInput
+  billingMonth?: Prisma.BillingMonthOrderByWithRelationInput
   receivingPaymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
   lineItems?: Prisma.InvoiceLineItemOrderByRelationAggregateInput
   ledgerEntries?: Prisma.LedgerEntryOrderByRelationAggregateInput
@@ -466,7 +466,7 @@ export type StudentInvoiceWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.StudentInvoiceWhereInput[]
   NOT?: Prisma.StudentInvoiceWhereInput | Prisma.StudentInvoiceWhereInput[]
   studentId?: Prisma.StringFilter<"StudentInvoice"> | string
-  invoiceMonthId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   month?: Prisma.StringFilter<"StudentInvoice"> | string
   invoiceMode?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
@@ -492,7 +492,7 @@ export type StudentInvoiceWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"StudentInvoice"> | Date | string
   totalAmount?: Prisma.FloatNullableFilter<"StudentInvoice"> | number | null
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  invoiceMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   receivingPaymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
   lineItems?: Prisma.InvoiceLineItemListRelationFilter
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
@@ -502,7 +502,7 @@ export type StudentInvoiceWhereUniqueInput = Prisma.AtLeast<{
 export type StudentInvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   invoiceMode?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -540,7 +540,7 @@ export type StudentInvoiceScalarWhereWithAggregatesInput = {
   NOT?: Prisma.StudentInvoiceScalarWhereWithAggregatesInput | Prisma.StudentInvoiceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"StudentInvoice"> | string
   studentId?: Prisma.StringWithAggregatesFilter<"StudentInvoice"> | string
-  invoiceMonthId?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
+  billingMonthId?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
   month?: Prisma.StringWithAggregatesFilter<"StudentInvoice"> | string
   invoiceMode?: Prisma.StringNullableWithAggregatesFilter<"StudentInvoice"> | string | null
@@ -593,7 +593,7 @@ export type StudentInvoiceCreateInput = {
   createdAt?: Date | string
   totalAmount?: number | null
   student: Prisma.UserCreateNestedOneWithoutStudentInvoicesInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutInvoicesInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutInvoicesInput
   receivingPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutReceivingInvoicesInput
   lineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutInvoiceInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
@@ -603,7 +603,7 @@ export type StudentInvoiceCreateInput = {
 export type StudentInvoiceUncheckedCreateInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -659,7 +659,7 @@ export type StudentInvoiceUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   student?: Prisma.UserUpdateOneRequiredWithoutStudentInvoicesNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutInvoicesNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutInvoicesNestedInput
   receivingPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutReceivingInvoicesNestedInput
   lineItems?: Prisma.InvoiceLineItemUpdateManyWithoutInvoiceNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
@@ -669,7 +669,7 @@ export type StudentInvoiceUpdateInput = {
 export type StudentInvoiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -702,7 +702,7 @@ export type StudentInvoiceUncheckedUpdateInput = {
 export type StudentInvoiceCreateManyInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -759,7 +759,7 @@ export type StudentInvoiceUpdateManyMutationInput = {
 export type StudentInvoiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -799,7 +799,7 @@ export type StudentInvoiceOrderByRelationAggregateInput = {
 export type StudentInvoiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   invoiceMode?: Prisma.SortOrder
@@ -839,7 +839,7 @@ export type StudentInvoiceAvgOrderByAggregateInput = {
 export type StudentInvoiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   invoiceMode?: Prisma.SortOrder
@@ -869,7 +869,7 @@ export type StudentInvoiceMaxOrderByAggregateInput = {
 export type StudentInvoiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   studentId?: Prisma.SortOrder
-  invoiceMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   invoiceMode?: Prisma.SortOrder
@@ -958,45 +958,45 @@ export type StudentInvoiceUncheckedUpdateManyWithoutStudentNestedInput = {
   deleteMany?: Prisma.StudentInvoiceScalarWhereInput | Prisma.StudentInvoiceScalarWhereInput[]
 }
 
-export type StudentInvoiceCreateNestedManyWithoutInvoiceMonthInput = {
-  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput> | Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput[]
-  createMany?: Prisma.StudentInvoiceCreateManyInvoiceMonthInputEnvelope
+export type StudentInvoiceCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput> | Prisma.StudentInvoiceCreateWithoutBillingMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.StudentInvoiceCreateManyBillingMonthInputEnvelope
   connect?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
 }
 
-export type StudentInvoiceUncheckedCreateNestedManyWithoutInvoiceMonthInput = {
-  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput> | Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput[]
-  createMany?: Prisma.StudentInvoiceCreateManyInvoiceMonthInputEnvelope
+export type StudentInvoiceUncheckedCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput> | Prisma.StudentInvoiceCreateWithoutBillingMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.StudentInvoiceCreateManyBillingMonthInputEnvelope
   connect?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
 }
 
-export type StudentInvoiceUpdateManyWithoutInvoiceMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput> | Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput[]
-  upsert?: Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutInvoiceMonthInput | Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutInvoiceMonthInput[]
-  createMany?: Prisma.StudentInvoiceCreateManyInvoiceMonthInputEnvelope
+export type StudentInvoiceUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput> | Prisma.StudentInvoiceCreateWithoutBillingMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.StudentInvoiceCreateManyBillingMonthInputEnvelope
   set?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
   disconnect?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
   delete?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
   connect?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
-  update?: Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutInvoiceMonthInput | Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutInvoiceMonthInput[]
-  updateMany?: Prisma.StudentInvoiceUpdateManyWithWhereWithoutInvoiceMonthInput | Prisma.StudentInvoiceUpdateManyWithWhereWithoutInvoiceMonthInput[]
+  update?: Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.StudentInvoiceUpdateManyWithWhereWithoutBillingMonthInput | Prisma.StudentInvoiceUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.StudentInvoiceScalarWhereInput | Prisma.StudentInvoiceScalarWhereInput[]
 }
 
-export type StudentInvoiceUncheckedUpdateManyWithoutInvoiceMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput> | Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput[]
-  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput[]
-  upsert?: Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutInvoiceMonthInput | Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutInvoiceMonthInput[]
-  createMany?: Prisma.StudentInvoiceCreateManyInvoiceMonthInputEnvelope
+export type StudentInvoiceUncheckedUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput> | Prisma.StudentInvoiceCreateWithoutBillingMonthInput[] | Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput | Prisma.StudentInvoiceCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.StudentInvoiceUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.StudentInvoiceCreateManyBillingMonthInputEnvelope
   set?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
   disconnect?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
   delete?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
   connect?: Prisma.StudentInvoiceWhereUniqueInput | Prisma.StudentInvoiceWhereUniqueInput[]
-  update?: Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutInvoiceMonthInput | Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutInvoiceMonthInput[]
-  updateMany?: Prisma.StudentInvoiceUpdateManyWithWhereWithoutInvoiceMonthInput | Prisma.StudentInvoiceUpdateManyWithWhereWithoutInvoiceMonthInput[]
+  update?: Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.StudentInvoiceUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.StudentInvoiceUpdateManyWithWhereWithoutBillingMonthInput | Prisma.StudentInvoiceUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.StudentInvoiceScalarWhereInput | Prisma.StudentInvoiceScalarWhereInput[]
 }
 
@@ -1111,7 +1111,7 @@ export type StudentInvoiceCreateWithoutStudentInput = {
   billingEnd?: Date | string | null
   createdAt?: Date | string
   totalAmount?: number | null
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutInvoicesInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutInvoicesInput
   receivingPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutReceivingInvoicesInput
   lineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutInvoiceInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
@@ -1120,7 +1120,7 @@ export type StudentInvoiceCreateWithoutStudentInput = {
 
 export type StudentInvoiceUncheckedCreateWithoutStudentInput = {
   id?: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -1182,7 +1182,7 @@ export type StudentInvoiceScalarWhereInput = {
   NOT?: Prisma.StudentInvoiceScalarWhereInput | Prisma.StudentInvoiceScalarWhereInput[]
   id?: Prisma.StringFilter<"StudentInvoice"> | string
   studentId?: Prisma.StringFilter<"StudentInvoice"> | string
-  invoiceMonthId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
   month?: Prisma.StringFilter<"StudentInvoice"> | string
   invoiceMode?: Prisma.StringNullableFilter<"StudentInvoice"> | string | null
@@ -1209,7 +1209,7 @@ export type StudentInvoiceScalarWhereInput = {
   totalAmount?: Prisma.FloatNullableFilter<"StudentInvoice"> | number | null
 }
 
-export type StudentInvoiceCreateWithoutInvoiceMonthInput = {
+export type StudentInvoiceCreateWithoutBillingMonthInput = {
   id?: string
   month: string
   invoiceMode?: string | null
@@ -1241,7 +1241,7 @@ export type StudentInvoiceCreateWithoutInvoiceMonthInput = {
   history?: Prisma.StudentInvoiceStatusChangeLogCreateNestedManyWithoutInvoiceInput
 }
 
-export type StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput = {
+export type StudentInvoiceUncheckedCreateWithoutBillingMonthInput = {
   id?: string
   studentId: string
   receivingPaymentMethodId?: string | null
@@ -1273,30 +1273,30 @@ export type StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput = {
   history?: Prisma.StudentInvoiceStatusChangeLogUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
-export type StudentInvoiceCreateOrConnectWithoutInvoiceMonthInput = {
+export type StudentInvoiceCreateOrConnectWithoutBillingMonthInput = {
   where: Prisma.StudentInvoiceWhereUniqueInput
-  create: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput>
+  create: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type StudentInvoiceCreateManyInvoiceMonthInputEnvelope = {
-  data: Prisma.StudentInvoiceCreateManyInvoiceMonthInput | Prisma.StudentInvoiceCreateManyInvoiceMonthInput[]
+export type StudentInvoiceCreateManyBillingMonthInputEnvelope = {
+  data: Prisma.StudentInvoiceCreateManyBillingMonthInput | Prisma.StudentInvoiceCreateManyBillingMonthInput[]
   skipDuplicates?: boolean
 }
 
-export type StudentInvoiceUpsertWithWhereUniqueWithoutInvoiceMonthInput = {
+export type StudentInvoiceUpsertWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.StudentInvoiceWhereUniqueInput
-  update: Prisma.XOR<Prisma.StudentInvoiceUpdateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedUpdateWithoutInvoiceMonthInput>
-  create: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutInvoiceMonthInput>
+  update: Prisma.XOR<Prisma.StudentInvoiceUpdateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedUpdateWithoutBillingMonthInput>
+  create: Prisma.XOR<Prisma.StudentInvoiceCreateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type StudentInvoiceUpdateWithWhereUniqueWithoutInvoiceMonthInput = {
+export type StudentInvoiceUpdateWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.StudentInvoiceWhereUniqueInput
-  data: Prisma.XOR<Prisma.StudentInvoiceUpdateWithoutInvoiceMonthInput, Prisma.StudentInvoiceUncheckedUpdateWithoutInvoiceMonthInput>
+  data: Prisma.XOR<Prisma.StudentInvoiceUpdateWithoutBillingMonthInput, Prisma.StudentInvoiceUncheckedUpdateWithoutBillingMonthInput>
 }
 
-export type StudentInvoiceUpdateManyWithWhereWithoutInvoiceMonthInput = {
+export type StudentInvoiceUpdateManyWithWhereWithoutBillingMonthInput = {
   where: Prisma.StudentInvoiceScalarWhereInput
-  data: Prisma.XOR<Prisma.StudentInvoiceUpdateManyMutationInput, Prisma.StudentInvoiceUncheckedUpdateManyWithoutInvoiceMonthInput>
+  data: Prisma.XOR<Prisma.StudentInvoiceUpdateManyMutationInput, Prisma.StudentInvoiceUncheckedUpdateManyWithoutBillingMonthInput>
 }
 
 export type StudentInvoiceCreateWithoutHistoryInput = {
@@ -1325,7 +1325,7 @@ export type StudentInvoiceCreateWithoutHistoryInput = {
   createdAt?: Date | string
   totalAmount?: number | null
   student: Prisma.UserCreateNestedOneWithoutStudentInvoicesInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutInvoicesInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutInvoicesInput
   receivingPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutReceivingInvoicesInput
   lineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutInvoiceInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
@@ -1334,7 +1334,7 @@ export type StudentInvoiceCreateWithoutHistoryInput = {
 export type StudentInvoiceUncheckedCreateWithoutHistoryInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -1405,7 +1405,7 @@ export type StudentInvoiceUpdateWithoutHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   student?: Prisma.UserUpdateOneRequiredWithoutStudentInvoicesNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutInvoicesNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutInvoicesNestedInput
   receivingPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutReceivingInvoicesNestedInput
   lineItems?: Prisma.InvoiceLineItemUpdateManyWithoutInvoiceNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
@@ -1414,7 +1414,7 @@ export type StudentInvoiceUpdateWithoutHistoryInput = {
 export type StudentInvoiceUncheckedUpdateWithoutHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1469,7 +1469,7 @@ export type StudentInvoiceCreateWithoutLineItemsInput = {
   createdAt?: Date | string
   totalAmount?: number | null
   student: Prisma.UserCreateNestedOneWithoutStudentInvoicesInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutInvoicesInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutInvoicesInput
   receivingPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutReceivingInvoicesInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
   history?: Prisma.StudentInvoiceStatusChangeLogCreateNestedManyWithoutInvoiceInput
@@ -1478,7 +1478,7 @@ export type StudentInvoiceCreateWithoutLineItemsInput = {
 export type StudentInvoiceUncheckedCreateWithoutLineItemsInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -1549,7 +1549,7 @@ export type StudentInvoiceUpdateWithoutLineItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   student?: Prisma.UserUpdateOneRequiredWithoutStudentInvoicesNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutInvoicesNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutInvoicesNestedInput
   receivingPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutReceivingInvoicesNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
   history?: Prisma.StudentInvoiceStatusChangeLogUpdateManyWithoutInvoiceNestedInput
@@ -1558,7 +1558,7 @@ export type StudentInvoiceUpdateWithoutLineItemsInput = {
 export type StudentInvoiceUncheckedUpdateWithoutLineItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1613,7 +1613,7 @@ export type StudentInvoiceCreateWithoutReceivingPaymentMethodInput = {
   createdAt?: Date | string
   totalAmount?: number | null
   student: Prisma.UserCreateNestedOneWithoutStudentInvoicesInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutInvoicesInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutInvoicesInput
   lineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutInvoiceInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutStudentInvoiceInput
   history?: Prisma.StudentInvoiceStatusChangeLogCreateNestedManyWithoutInvoiceInput
@@ -1622,7 +1622,7 @@ export type StudentInvoiceCreateWithoutReceivingPaymentMethodInput = {
 export type StudentInvoiceUncheckedCreateWithoutReceivingPaymentMethodInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   month: string
   invoiceMode?: string | null
   subtotal?: number
@@ -1703,7 +1703,7 @@ export type StudentInvoiceCreateWithoutLedgerEntriesInput = {
   createdAt?: Date | string
   totalAmount?: number | null
   student: Prisma.UserCreateNestedOneWithoutStudentInvoicesInput
-  invoiceMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutInvoicesInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutInvoicesInput
   receivingPaymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutReceivingInvoicesInput
   lineItems?: Prisma.InvoiceLineItemCreateNestedManyWithoutInvoiceInput
   history?: Prisma.StudentInvoiceStatusChangeLogCreateNestedManyWithoutInvoiceInput
@@ -1712,7 +1712,7 @@ export type StudentInvoiceCreateWithoutLedgerEntriesInput = {
 export type StudentInvoiceUncheckedCreateWithoutLedgerEntriesInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -1783,7 +1783,7 @@ export type StudentInvoiceUpdateWithoutLedgerEntriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   student?: Prisma.UserUpdateOneRequiredWithoutStudentInvoicesNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutInvoicesNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutInvoicesNestedInput
   receivingPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutReceivingInvoicesNestedInput
   lineItems?: Prisma.InvoiceLineItemUpdateManyWithoutInvoiceNestedInput
   history?: Prisma.StudentInvoiceStatusChangeLogUpdateManyWithoutInvoiceNestedInput
@@ -1792,7 +1792,7 @@ export type StudentInvoiceUpdateWithoutLedgerEntriesInput = {
 export type StudentInvoiceUncheckedUpdateWithoutLedgerEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1823,7 +1823,7 @@ export type StudentInvoiceUncheckedUpdateWithoutLedgerEntriesInput = {
 
 export type StudentInvoiceCreateManyStudentInput = {
   id?: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   invoiceMode?: string | null
@@ -1875,7 +1875,7 @@ export type StudentInvoiceUpdateWithoutStudentInput = {
   billingEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutInvoicesNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutInvoicesNestedInput
   receivingPaymentMethod?: Prisma.PaymentMethodUpdateOneWithoutReceivingInvoicesNestedInput
   lineItems?: Prisma.InvoiceLineItemUpdateManyWithoutInvoiceNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
@@ -1884,7 +1884,7 @@ export type StudentInvoiceUpdateWithoutStudentInput = {
 
 export type StudentInvoiceUncheckedUpdateWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1916,7 +1916,7 @@ export type StudentInvoiceUncheckedUpdateWithoutStudentInput = {
 
 export type StudentInvoiceUncheckedUpdateManyWithoutStudentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1943,7 +1943,7 @@ export type StudentInvoiceUncheckedUpdateManyWithoutStudentInput = {
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
 }
 
-export type StudentInvoiceCreateManyInvoiceMonthInput = {
+export type StudentInvoiceCreateManyBillingMonthInput = {
   id?: string
   studentId: string
   receivingPaymentMethodId?: string | null
@@ -1972,7 +1972,7 @@ export type StudentInvoiceCreateManyInvoiceMonthInput = {
   totalAmount?: number | null
 }
 
-export type StudentInvoiceUpdateWithoutInvoiceMonthInput = {
+export type StudentInvoiceUpdateWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2004,7 +2004,7 @@ export type StudentInvoiceUpdateWithoutInvoiceMonthInput = {
   history?: Prisma.StudentInvoiceStatusChangeLogUpdateManyWithoutInvoiceNestedInput
 }
 
-export type StudentInvoiceUncheckedUpdateWithoutInvoiceMonthInput = {
+export type StudentInvoiceUncheckedUpdateWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2036,7 +2036,7 @@ export type StudentInvoiceUncheckedUpdateWithoutInvoiceMonthInput = {
   history?: Prisma.StudentInvoiceStatusChangeLogUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
-export type StudentInvoiceUncheckedUpdateManyWithoutInvoiceMonthInput = {
+export type StudentInvoiceUncheckedUpdateManyWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2068,7 +2068,7 @@ export type StudentInvoiceUncheckedUpdateManyWithoutInvoiceMonthInput = {
 export type StudentInvoiceCreateManyReceivingPaymentMethodInput = {
   id?: string
   studentId: string
-  invoiceMonthId?: string | null
+  billingMonthId?: string | null
   month: string
   invoiceMode?: string | null
   subtotal?: number
@@ -2120,7 +2120,7 @@ export type StudentInvoiceUpdateWithoutReceivingPaymentMethodInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   student?: Prisma.UserUpdateOneRequiredWithoutStudentInvoicesNestedInput
-  invoiceMonth?: Prisma.InvoiceMonthUpdateOneWithoutInvoicesNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutInvoicesNestedInput
   lineItems?: Prisma.InvoiceLineItemUpdateManyWithoutInvoiceNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutStudentInvoiceNestedInput
   history?: Prisma.StudentInvoiceStatusChangeLogUpdateManyWithoutInvoiceNestedInput
@@ -2129,7 +2129,7 @@ export type StudentInvoiceUpdateWithoutReceivingPaymentMethodInput = {
 export type StudentInvoiceUncheckedUpdateWithoutReceivingPaymentMethodInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2161,7 +2161,7 @@ export type StudentInvoiceUncheckedUpdateWithoutReceivingPaymentMethodInput = {
 export type StudentInvoiceUncheckedUpdateManyWithoutReceivingPaymentMethodInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   studentId?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -2239,7 +2239,7 @@ export type StudentInvoiceCountOutputTypeCountHistoryArgs<ExtArgs extends runtim
 export type StudentInvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   studentId?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   invoiceMode?: boolean
@@ -2265,7 +2265,7 @@ export type StudentInvoiceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   createdAt?: boolean
   totalAmount?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.StudentInvoice$billingMonthArgs<ExtArgs>
   receivingPaymentMethod?: boolean | Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>
   lineItems?: boolean | Prisma.StudentInvoice$lineItemsArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.StudentInvoice$ledgerEntriesArgs<ExtArgs>
@@ -2276,7 +2276,7 @@ export type StudentInvoiceSelect<ExtArgs extends runtime.Types.Extensions.Intern
 export type StudentInvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   studentId?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   invoiceMode?: boolean
@@ -2302,14 +2302,14 @@ export type StudentInvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   totalAmount?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.StudentInvoice$billingMonthArgs<ExtArgs>
   receivingPaymentMethod?: boolean | Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>
 }, ExtArgs["result"]["studentInvoice"]>
 
 export type StudentInvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   studentId?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   invoiceMode?: boolean
@@ -2335,14 +2335,14 @@ export type StudentInvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   createdAt?: boolean
   totalAmount?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.StudentInvoice$billingMonthArgs<ExtArgs>
   receivingPaymentMethod?: boolean | Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>
 }, ExtArgs["result"]["studentInvoice"]>
 
 export type StudentInvoiceSelectScalar = {
   id?: boolean
   studentId?: boolean
-  invoiceMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   invoiceMode?: boolean
@@ -2369,10 +2369,10 @@ export type StudentInvoiceSelectScalar = {
   totalAmount?: boolean
 }
 
-export type StudentInvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "invoiceMonthId" | "receivingPaymentMethodId" | "month" | "invoiceMode" | "subtotal" | "discountApplied" | "netAmount" | "dueAmount" | "currency" | "paymentDone" | "paymentDate" | "paymentMethod" | "referenceNo" | "reminderStage" | "invoicePdfUrl" | "paymentAcknowledgementMsg" | "paymentReminderMsg" | "serialNo" | "status" | "isActive" | "issuedAt" | "billingStart" | "billingEnd" | "createdAt" | "totalAmount", ExtArgs["result"]["studentInvoice"]>
+export type StudentInvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "billingMonthId" | "receivingPaymentMethodId" | "month" | "invoiceMode" | "subtotal" | "discountApplied" | "netAmount" | "dueAmount" | "currency" | "paymentDone" | "paymentDate" | "paymentMethod" | "referenceNo" | "reminderStage" | "invoicePdfUrl" | "paymentAcknowledgementMsg" | "paymentReminderMsg" | "serialNo" | "status" | "isActive" | "issuedAt" | "billingStart" | "billingEnd" | "createdAt" | "totalAmount", ExtArgs["result"]["studentInvoice"]>
 export type StudentInvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.StudentInvoice$billingMonthArgs<ExtArgs>
   receivingPaymentMethod?: boolean | Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>
   lineItems?: boolean | Prisma.StudentInvoice$lineItemsArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.StudentInvoice$ledgerEntriesArgs<ExtArgs>
@@ -2381,12 +2381,12 @@ export type StudentInvoiceInclude<ExtArgs extends runtime.Types.Extensions.Inter
 }
 export type StudentInvoiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.StudentInvoice$billingMonthArgs<ExtArgs>
   receivingPaymentMethod?: boolean | Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>
 }
 export type StudentInvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  invoiceMonth?: boolean | Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.StudentInvoice$billingMonthArgs<ExtArgs>
   receivingPaymentMethod?: boolean | Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>
 }
 
@@ -2394,7 +2394,7 @@ export type $StudentInvoicePayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "StudentInvoice"
   objects: {
     student: Prisma.$UserPayload<ExtArgs>
-    invoiceMonth: Prisma.$InvoiceMonthPayload<ExtArgs> | null
+    billingMonth: Prisma.$BillingMonthPayload<ExtArgs> | null
     receivingPaymentMethod: Prisma.$PaymentMethodPayload<ExtArgs> | null
     lineItems: Prisma.$InvoiceLineItemPayload<ExtArgs>[]
     ledgerEntries: Prisma.$LedgerEntryPayload<ExtArgs>[]
@@ -2403,7 +2403,7 @@ export type $StudentInvoicePayload<ExtArgs extends runtime.Types.Extensions.Inte
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     studentId: string
-    invoiceMonthId: string | null
+    billingMonthId: string | null
     receivingPaymentMethodId: string | null
     month: string
     invoiceMode: string | null
@@ -2823,7 +2823,7 @@ readonly fields: StudentInvoiceFieldRefs;
 export interface Prisma__StudentInvoiceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   student<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  invoiceMonth<T extends Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentInvoice$invoiceMonthArgs<ExtArgs>>): Prisma.Prisma__InvoiceMonthClient<runtime.Types.Result.GetResult<Prisma.$InvoiceMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  billingMonth<T extends Prisma.StudentInvoice$billingMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentInvoice$billingMonthArgs<ExtArgs>>): Prisma.Prisma__BillingMonthClient<runtime.Types.Result.GetResult<Prisma.$BillingMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   receivingPaymentMethod<T extends Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentInvoice$receivingPaymentMethodArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   lineItems<T extends Prisma.StudentInvoice$lineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentInvoice$lineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ledgerEntries<T extends Prisma.StudentInvoice$ledgerEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudentInvoice$ledgerEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LedgerEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2859,7 +2859,7 @@ export interface Prisma__StudentInvoiceClient<T, Null = never, ExtArgs extends r
 export interface StudentInvoiceFieldRefs {
   readonly id: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly studentId: Prisma.FieldRef<"StudentInvoice", 'String'>
-  readonly invoiceMonthId: Prisma.FieldRef<"StudentInvoice", 'String'>
+  readonly billingMonthId: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly receivingPaymentMethodId: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly month: Prisma.FieldRef<"StudentInvoice", 'String'>
   readonly invoiceMode: Prisma.FieldRef<"StudentInvoice", 'String'>
@@ -3285,22 +3285,22 @@ export type StudentInvoiceDeleteManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * StudentInvoice.invoiceMonth
+ * StudentInvoice.billingMonth
  */
-export type StudentInvoice$invoiceMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type StudentInvoice$billingMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the InvoiceMonth
+   * Select specific fields to fetch from the BillingMonth
    */
-  select?: Prisma.InvoiceMonthSelect<ExtArgs> | null
+  select?: Prisma.BillingMonthSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the InvoiceMonth
+   * Omit specific fields from the BillingMonth
    */
-  omit?: Prisma.InvoiceMonthOmit<ExtArgs> | null
+  omit?: Prisma.BillingMonthOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InvoiceMonthInclude<ExtArgs> | null
-  where?: Prisma.InvoiceMonthWhereInput
+  include?: Prisma.BillingMonthInclude<ExtArgs> | null
+  where?: Prisma.BillingMonthWhereInput
 }
 
 /**

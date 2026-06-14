@@ -37,7 +37,7 @@ export async function PATCH(
   });
 
   if (status && status !== existing.status) {
-    await prisma.scheduleOccurrenceStatusHistory.create({
+    await prisma.scheduleOccurrenceStatusChangeLog.create({
       data: {
         occurrenceId: id,
         fromStatus: existing.status,

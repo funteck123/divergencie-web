@@ -27,7 +27,7 @@ export type AggregateRegistrationForm = {
 export type RegistrationFormMinAggregateOutputType = {
   id: string | null
   name: string | null
-  targetRole: string | null
+  targetUserTypeId: string | null
   description: string | null
   isPublic: boolean | null
   isActive: boolean | null
@@ -36,7 +36,7 @@ export type RegistrationFormMinAggregateOutputType = {
 export type RegistrationFormMaxAggregateOutputType = {
   id: string | null
   name: string | null
-  targetRole: string | null
+  targetUserTypeId: string | null
   description: string | null
   isPublic: boolean | null
   isActive: boolean | null
@@ -45,7 +45,7 @@ export type RegistrationFormMaxAggregateOutputType = {
 export type RegistrationFormCountAggregateOutputType = {
   id: number
   name: number
-  targetRole: number
+  targetUserTypeId: number
   description: number
   isPublic: number
   isActive: number
@@ -56,7 +56,7 @@ export type RegistrationFormCountAggregateOutputType = {
 export type RegistrationFormMinAggregateInputType = {
   id?: true
   name?: true
-  targetRole?: true
+  targetUserTypeId?: true
   description?: true
   isPublic?: true
   isActive?: true
@@ -65,7 +65,7 @@ export type RegistrationFormMinAggregateInputType = {
 export type RegistrationFormMaxAggregateInputType = {
   id?: true
   name?: true
-  targetRole?: true
+  targetUserTypeId?: true
   description?: true
   isPublic?: true
   isActive?: true
@@ -74,7 +74,7 @@ export type RegistrationFormMaxAggregateInputType = {
 export type RegistrationFormCountAggregateInputType = {
   id?: true
   name?: true
-  targetRole?: true
+  targetUserTypeId?: true
   description?: true
   isPublic?: true
   isActive?: true
@@ -156,7 +156,7 @@ export type RegistrationFormGroupByArgs<ExtArgs extends runtime.Types.Extensions
 export type RegistrationFormGroupByOutputType = {
   id: string
   name: string
-  targetRole: string
+  targetUserTypeId: string | null
   description: string
   isPublic: boolean
   isActive: boolean
@@ -186,20 +186,22 @@ export type RegistrationFormWhereInput = {
   NOT?: Prisma.RegistrationFormWhereInput | Prisma.RegistrationFormWhereInput[]
   id?: Prisma.StringFilter<"RegistrationForm"> | string
   name?: Prisma.StringFilter<"RegistrationForm"> | string
-  targetRole?: Prisma.StringFilter<"RegistrationForm"> | string
+  targetUserTypeId?: Prisma.StringNullableFilter<"RegistrationForm"> | string | null
   description?: Prisma.StringFilter<"RegistrationForm"> | string
   isPublic?: Prisma.BoolFilter<"RegistrationForm"> | boolean
   isActive?: Prisma.BoolFilter<"RegistrationForm"> | boolean
+  targetUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
   entries?: Prisma.RegistrationFormEntryListRelationFilter
 }
 
 export type RegistrationFormOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  targetUserType?: Prisma.UserTypeOrderByWithRelationInput
   entries?: Prisma.RegistrationFormEntryOrderByRelationAggregateInput
 }
 
@@ -209,17 +211,18 @@ export type RegistrationFormWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.RegistrationFormWhereInput[]
   NOT?: Prisma.RegistrationFormWhereInput | Prisma.RegistrationFormWhereInput[]
   name?: Prisma.StringFilter<"RegistrationForm"> | string
-  targetRole?: Prisma.StringFilter<"RegistrationForm"> | string
+  targetUserTypeId?: Prisma.StringNullableFilter<"RegistrationForm"> | string | null
   description?: Prisma.StringFilter<"RegistrationForm"> | string
   isPublic?: Prisma.BoolFilter<"RegistrationForm"> | boolean
   isActive?: Prisma.BoolFilter<"RegistrationForm"> | boolean
+  targetUserType?: Prisma.XOR<Prisma.UserTypeNullableScalarRelationFilter, Prisma.UserTypeWhereInput> | null
   entries?: Prisma.RegistrationFormEntryListRelationFilter
 }, "id">
 
 export type RegistrationFormOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -234,7 +237,7 @@ export type RegistrationFormScalarWhereWithAggregatesInput = {
   NOT?: Prisma.RegistrationFormScalarWhereWithAggregatesInput | Prisma.RegistrationFormScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"RegistrationForm"> | string
   name?: Prisma.StringWithAggregatesFilter<"RegistrationForm"> | string
-  targetRole?: Prisma.StringWithAggregatesFilter<"RegistrationForm"> | string
+  targetUserTypeId?: Prisma.StringNullableWithAggregatesFilter<"RegistrationForm"> | string | null
   description?: Prisma.StringWithAggregatesFilter<"RegistrationForm"> | string
   isPublic?: Prisma.BoolWithAggregatesFilter<"RegistrationForm"> | boolean
   isActive?: Prisma.BoolWithAggregatesFilter<"RegistrationForm"> | boolean
@@ -243,17 +246,17 @@ export type RegistrationFormScalarWhereWithAggregatesInput = {
 export type RegistrationFormCreateInput = {
   id?: string
   name: string
-  targetRole: string
   description: string
   isPublic?: boolean
   isActive?: boolean
+  targetUserType?: Prisma.UserTypeCreateNestedOneWithoutRegistrationFormsInput
   entries?: Prisma.RegistrationFormEntryCreateNestedManyWithoutFormInput
 }
 
 export type RegistrationFormUncheckedCreateInput = {
   id?: string
   name: string
-  targetRole: string
+  targetUserTypeId?: string | null
   description: string
   isPublic?: boolean
   isActive?: boolean
@@ -263,17 +266,17 @@ export type RegistrationFormUncheckedCreateInput = {
 export type RegistrationFormUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserType?: Prisma.UserTypeUpdateOneWithoutRegistrationFormsNestedInput
   entries?: Prisma.RegistrationFormEntryUpdateManyWithoutFormNestedInput
 }
 
 export type RegistrationFormUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -283,7 +286,7 @@ export type RegistrationFormUncheckedUpdateInput = {
 export type RegistrationFormCreateManyInput = {
   id?: string
   name: string
-  targetRole: string
+  targetUserTypeId?: string | null
   description: string
   isPublic?: boolean
   isActive?: boolean
@@ -292,7 +295,6 @@ export type RegistrationFormCreateManyInput = {
 export type RegistrationFormUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -301,16 +303,26 @@ export type RegistrationFormUpdateManyMutationInput = {
 export type RegistrationFormUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
+export type RegistrationFormListRelationFilter = {
+  every?: Prisma.RegistrationFormWhereInput
+  some?: Prisma.RegistrationFormWhereInput
+  none?: Prisma.RegistrationFormWhereInput
+}
+
+export type RegistrationFormOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type RegistrationFormCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -319,7 +331,7 @@ export type RegistrationFormCountOrderByAggregateInput = {
 export type RegistrationFormMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -328,7 +340,7 @@ export type RegistrationFormMaxOrderByAggregateInput = {
 export type RegistrationFormMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  targetRole?: Prisma.SortOrder
+  targetUserTypeId?: Prisma.SortOrder
   description?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -337,6 +349,48 @@ export type RegistrationFormMinOrderByAggregateInput = {
 export type RegistrationFormScalarRelationFilter = {
   is?: Prisma.RegistrationFormWhereInput
   isNot?: Prisma.RegistrationFormWhereInput
+}
+
+export type RegistrationFormCreateNestedManyWithoutTargetUserTypeInput = {
+  create?: Prisma.XOR<Prisma.RegistrationFormCreateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RegistrationFormCreateWithoutTargetUserTypeInput[] | Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput | Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RegistrationFormCreateManyTargetUserTypeInputEnvelope
+  connect?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+}
+
+export type RegistrationFormUncheckedCreateNestedManyWithoutTargetUserTypeInput = {
+  create?: Prisma.XOR<Prisma.RegistrationFormCreateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RegistrationFormCreateWithoutTargetUserTypeInput[] | Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput | Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RegistrationFormCreateManyTargetUserTypeInputEnvelope
+  connect?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+}
+
+export type RegistrationFormUpdateManyWithoutTargetUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationFormCreateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RegistrationFormCreateWithoutTargetUserTypeInput[] | Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput | Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput[]
+  upsert?: Prisma.RegistrationFormUpsertWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RegistrationFormUpsertWithWhereUniqueWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RegistrationFormCreateManyTargetUserTypeInputEnvelope
+  set?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  disconnect?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  delete?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  connect?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  update?: Prisma.RegistrationFormUpdateWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RegistrationFormUpdateWithWhereUniqueWithoutTargetUserTypeInput[]
+  updateMany?: Prisma.RegistrationFormUpdateManyWithWhereWithoutTargetUserTypeInput | Prisma.RegistrationFormUpdateManyWithWhereWithoutTargetUserTypeInput[]
+  deleteMany?: Prisma.RegistrationFormScalarWhereInput | Prisma.RegistrationFormScalarWhereInput[]
+}
+
+export type RegistrationFormUncheckedUpdateManyWithoutTargetUserTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationFormCreateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput> | Prisma.RegistrationFormCreateWithoutTargetUserTypeInput[] | Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput[]
+  connectOrCreate?: Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput | Prisma.RegistrationFormCreateOrConnectWithoutTargetUserTypeInput[]
+  upsert?: Prisma.RegistrationFormUpsertWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RegistrationFormUpsertWithWhereUniqueWithoutTargetUserTypeInput[]
+  createMany?: Prisma.RegistrationFormCreateManyTargetUserTypeInputEnvelope
+  set?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  disconnect?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  delete?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  connect?: Prisma.RegistrationFormWhereUniqueInput | Prisma.RegistrationFormWhereUniqueInput[]
+  update?: Prisma.RegistrationFormUpdateWithWhereUniqueWithoutTargetUserTypeInput | Prisma.RegistrationFormUpdateWithWhereUniqueWithoutTargetUserTypeInput[]
+  updateMany?: Prisma.RegistrationFormUpdateManyWithWhereWithoutTargetUserTypeInput | Prisma.RegistrationFormUpdateManyWithWhereWithoutTargetUserTypeInput[]
+  deleteMany?: Prisma.RegistrationFormScalarWhereInput | Prisma.RegistrationFormScalarWhereInput[]
 }
 
 export type RegistrationFormCreateNestedOneWithoutEntriesInput = {
@@ -353,19 +407,75 @@ export type RegistrationFormUpdateOneRequiredWithoutEntriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationFormUpdateToOneWithWhereWithoutEntriesInput, Prisma.RegistrationFormUpdateWithoutEntriesInput>, Prisma.RegistrationFormUncheckedUpdateWithoutEntriesInput>
 }
 
-export type RegistrationFormCreateWithoutEntriesInput = {
+export type RegistrationFormCreateWithoutTargetUserTypeInput = {
   id?: string
   name: string
-  targetRole: string
   description: string
   isPublic?: boolean
   isActive?: boolean
+  entries?: Prisma.RegistrationFormEntryCreateNestedManyWithoutFormInput
+}
+
+export type RegistrationFormUncheckedCreateWithoutTargetUserTypeInput = {
+  id?: string
+  name: string
+  description: string
+  isPublic?: boolean
+  isActive?: boolean
+  entries?: Prisma.RegistrationFormEntryUncheckedCreateNestedManyWithoutFormInput
+}
+
+export type RegistrationFormCreateOrConnectWithoutTargetUserTypeInput = {
+  where: Prisma.RegistrationFormWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationFormCreateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput>
+}
+
+export type RegistrationFormCreateManyTargetUserTypeInputEnvelope = {
+  data: Prisma.RegistrationFormCreateManyTargetUserTypeInput | Prisma.RegistrationFormCreateManyTargetUserTypeInput[]
+  skipDuplicates?: boolean
+}
+
+export type RegistrationFormUpsertWithWhereUniqueWithoutTargetUserTypeInput = {
+  where: Prisma.RegistrationFormWhereUniqueInput
+  update: Prisma.XOR<Prisma.RegistrationFormUpdateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedUpdateWithoutTargetUserTypeInput>
+  create: Prisma.XOR<Prisma.RegistrationFormCreateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedCreateWithoutTargetUserTypeInput>
+}
+
+export type RegistrationFormUpdateWithWhereUniqueWithoutTargetUserTypeInput = {
+  where: Prisma.RegistrationFormWhereUniqueInput
+  data: Prisma.XOR<Prisma.RegistrationFormUpdateWithoutTargetUserTypeInput, Prisma.RegistrationFormUncheckedUpdateWithoutTargetUserTypeInput>
+}
+
+export type RegistrationFormUpdateManyWithWhereWithoutTargetUserTypeInput = {
+  where: Prisma.RegistrationFormScalarWhereInput
+  data: Prisma.XOR<Prisma.RegistrationFormUpdateManyMutationInput, Prisma.RegistrationFormUncheckedUpdateManyWithoutTargetUserTypeInput>
+}
+
+export type RegistrationFormScalarWhereInput = {
+  AND?: Prisma.RegistrationFormScalarWhereInput | Prisma.RegistrationFormScalarWhereInput[]
+  OR?: Prisma.RegistrationFormScalarWhereInput[]
+  NOT?: Prisma.RegistrationFormScalarWhereInput | Prisma.RegistrationFormScalarWhereInput[]
+  id?: Prisma.StringFilter<"RegistrationForm"> | string
+  name?: Prisma.StringFilter<"RegistrationForm"> | string
+  targetUserTypeId?: Prisma.StringNullableFilter<"RegistrationForm"> | string | null
+  description?: Prisma.StringFilter<"RegistrationForm"> | string
+  isPublic?: Prisma.BoolFilter<"RegistrationForm"> | boolean
+  isActive?: Prisma.BoolFilter<"RegistrationForm"> | boolean
+}
+
+export type RegistrationFormCreateWithoutEntriesInput = {
+  id?: string
+  name: string
+  description: string
+  isPublic?: boolean
+  isActive?: boolean
+  targetUserType?: Prisma.UserTypeCreateNestedOneWithoutRegistrationFormsInput
 }
 
 export type RegistrationFormUncheckedCreateWithoutEntriesInput = {
   id?: string
   name: string
-  targetRole: string
+  targetUserTypeId?: string | null
   description: string
   isPublic?: boolean
   isActive?: boolean
@@ -390,16 +500,50 @@ export type RegistrationFormUpdateToOneWithWhereWithoutEntriesInput = {
 export type RegistrationFormUpdateWithoutEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  targetUserType?: Prisma.UserTypeUpdateOneWithoutRegistrationFormsNestedInput
 }
 
 export type RegistrationFormUncheckedUpdateWithoutEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  targetRole?: Prisma.StringFieldUpdateOperationsInput | string
+  targetUserTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type RegistrationFormCreateManyTargetUserTypeInput = {
+  id?: string
+  name: string
+  description: string
+  isPublic?: boolean
+  isActive?: boolean
+}
+
+export type RegistrationFormUpdateWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  entries?: Prisma.RegistrationFormEntryUpdateManyWithoutFormNestedInput
+}
+
+export type RegistrationFormUncheckedUpdateWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  entries?: Prisma.RegistrationFormEntryUncheckedUpdateManyWithoutFormNestedInput
+}
+
+export type RegistrationFormUncheckedUpdateManyWithoutTargetUserTypeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -439,10 +583,11 @@ export type RegistrationFormCountOutputTypeCountEntriesArgs<ExtArgs extends runt
 export type RegistrationFormSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   description?: boolean
   isPublic?: boolean
   isActive?: boolean
+  targetUserType?: boolean | Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>
   entries?: boolean | Prisma.RegistrationForm$entriesArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationFormCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["registrationForm"]>
@@ -450,47 +595,55 @@ export type RegistrationFormSelect<ExtArgs extends runtime.Types.Extensions.Inte
 export type RegistrationFormSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   description?: boolean
   isPublic?: boolean
   isActive?: boolean
+  targetUserType?: boolean | Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["registrationForm"]>
 
 export type RegistrationFormSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   description?: boolean
   isPublic?: boolean
   isActive?: boolean
+  targetUserType?: boolean | Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>
 }, ExtArgs["result"]["registrationForm"]>
 
 export type RegistrationFormSelectScalar = {
   id?: boolean
   name?: boolean
-  targetRole?: boolean
+  targetUserTypeId?: boolean
   description?: boolean
   isPublic?: boolean
   isActive?: boolean
 }
 
-export type RegistrationFormOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "targetRole" | "description" | "isPublic" | "isActive", ExtArgs["result"]["registrationForm"]>
+export type RegistrationFormOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "targetUserTypeId" | "description" | "isPublic" | "isActive", ExtArgs["result"]["registrationForm"]>
 export type RegistrationFormInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>
   entries?: boolean | Prisma.RegistrationForm$entriesArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationFormCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type RegistrationFormIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type RegistrationFormIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type RegistrationFormIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>
+}
+export type RegistrationFormIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  targetUserType?: boolean | Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>
+}
 
 export type $RegistrationFormPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RegistrationForm"
   objects: {
+    targetUserType: Prisma.$UserTypePayload<ExtArgs> | null
     entries: Prisma.$RegistrationFormEntryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
-    targetRole: string
+    targetUserTypeId: string | null
     description: string
     isPublic: boolean
     isActive: boolean
@@ -888,6 +1041,7 @@ readonly fields: RegistrationFormFieldRefs;
  */
 export interface Prisma__RegistrationFormClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  targetUserType<T extends Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RegistrationForm$targetUserTypeArgs<ExtArgs>>): Prisma.Prisma__UserTypeClient<runtime.Types.Result.GetResult<Prisma.$UserTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   entries<T extends Prisma.RegistrationForm$entriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RegistrationForm$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RegistrationFormEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -920,7 +1074,7 @@ export interface Prisma__RegistrationFormClient<T, Null = never, ExtArgs extends
 export interface RegistrationFormFieldRefs {
   readonly id: Prisma.FieldRef<"RegistrationForm", 'String'>
   readonly name: Prisma.FieldRef<"RegistrationForm", 'String'>
-  readonly targetRole: Prisma.FieldRef<"RegistrationForm", 'String'>
+  readonly targetUserTypeId: Prisma.FieldRef<"RegistrationForm", 'String'>
   readonly description: Prisma.FieldRef<"RegistrationForm", 'String'>
   readonly isPublic: Prisma.FieldRef<"RegistrationForm", 'Boolean'>
   readonly isActive: Prisma.FieldRef<"RegistrationForm", 'Boolean'>
@@ -1178,6 +1332,10 @@ export type RegistrationFormCreateManyAndReturnArgs<ExtArgs extends runtime.Type
    */
   data: Prisma.RegistrationFormCreateManyInput | Prisma.RegistrationFormCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RegistrationFormIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1248,6 +1406,10 @@ export type RegistrationFormUpdateManyAndReturnArgs<ExtArgs extends runtime.Type
    * Limit how many RegistrationForms to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RegistrationFormIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1314,6 +1476,25 @@ export type RegistrationFormDeleteManyArgs<ExtArgs extends runtime.Types.Extensi
    * Limit how many RegistrationForms to delete.
    */
   limit?: number
+}
+
+/**
+ * RegistrationForm.targetUserType
+ */
+export type RegistrationForm$targetUserTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserType
+   */
+  select?: Prisma.UserTypeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserType
+   */
+  omit?: Prisma.UserTypeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTypeInclude<ExtArgs> | null
+  where?: Prisma.UserTypeWhereInput
 }
 
 /**

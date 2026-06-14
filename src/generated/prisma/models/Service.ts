@@ -299,6 +299,7 @@ export type ServiceWhereInput = {
   group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   rateList?: Prisma.XOR<Prisma.RateListNullableScalarRelationFilter, Prisma.RateListWhereInput> | null
+  gcrList?: Prisma.XOR<Prisma.GcrListNullableScalarRelationFilter, Prisma.GcrListWhereInput> | null
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemListRelationFilter
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemListRelationFilter
   serviceSchedules?: Prisma.ServiceScheduleListRelationFilter
@@ -308,7 +309,6 @@ export type ServiceWhereInput = {
   curriculumLists?: Prisma.CurriculumListListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
   mockItems?: Prisma.MockItemListRelationFilter
-  assignments?: Prisma.AssignmentListRelationFilter
   mockResults?: Prisma.MockResultListRelationFilter
   claimLineItems?: Prisma.ClaimLineItemListRelationFilter
 }
@@ -332,6 +332,7 @@ export type ServiceOrderByWithRelationInput = {
   group?: Prisma.GroupOrderByWithRelationInput
   teacher?: Prisma.UserOrderByWithRelationInput
   rateList?: Prisma.RateListOrderByWithRelationInput
+  gcrList?: Prisma.GcrListOrderByWithRelationInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemOrderByRelationAggregateInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemOrderByRelationAggregateInput
   serviceSchedules?: Prisma.ServiceScheduleOrderByRelationAggregateInput
@@ -341,7 +342,6 @@ export type ServiceOrderByWithRelationInput = {
   curriculumLists?: Prisma.CurriculumListOrderByRelationAggregateInput
   taskItems?: Prisma.TaskItemOrderByRelationAggregateInput
   mockItems?: Prisma.MockItemOrderByRelationAggregateInput
-  assignments?: Prisma.AssignmentOrderByRelationAggregateInput
   mockResults?: Prisma.MockResultOrderByRelationAggregateInput
   claimLineItems?: Prisma.ClaimLineItemOrderByRelationAggregateInput
 }
@@ -368,6 +368,7 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
   teacher?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   rateList?: Prisma.XOR<Prisma.RateListNullableScalarRelationFilter, Prisma.RateListWhereInput> | null
+  gcrList?: Prisma.XOR<Prisma.GcrListNullableScalarRelationFilter, Prisma.GcrListWhereInput> | null
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemListRelationFilter
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemListRelationFilter
   serviceSchedules?: Prisma.ServiceScheduleListRelationFilter
@@ -377,7 +378,6 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<{
   curriculumLists?: Prisma.CurriculumListListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
   mockItems?: Prisma.MockItemListRelationFilter
-  assignments?: Prisma.AssignmentListRelationFilter
   mockResults?: Prisma.MockResultListRelationFilter
   claimLineItems?: Prisma.ClaimLineItemListRelationFilter
 }, "id">
@@ -443,6 +443,7 @@ export type ServiceCreateInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -452,7 +453,6 @@ export type ServiceCreateInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -474,6 +474,7 @@ export type ServiceUncheckedCreateInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -483,7 +484,6 @@ export type ServiceUncheckedCreateInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -505,6 +505,7 @@ export type ServiceUpdateInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -514,7 +515,6 @@ export type ServiceUpdateInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -536,6 +536,7 @@ export type ServiceUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -545,7 +546,6 @@ export type ServiceUncheckedUpdateInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -768,6 +768,20 @@ export type ServiceUncheckedUpdateManyWithoutGroupNestedInput = {
   deleteMany?: Prisma.ServiceScalarWhereInput | Prisma.ServiceScalarWhereInput[]
 }
 
+export type ServiceCreateNestedOneWithoutGcrListInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutGcrListInput, Prisma.ServiceUncheckedCreateWithoutGcrListInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutGcrListInput
+  connect?: Prisma.ServiceWhereUniqueInput
+}
+
+export type ServiceUpdateOneRequiredWithoutGcrListNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceCreateWithoutGcrListInput, Prisma.ServiceUncheckedCreateWithoutGcrListInput>
+  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutGcrListInput
+  upsert?: Prisma.ServiceUpsertWithoutGcrListInput
+  connect?: Prisma.ServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutGcrListInput, Prisma.ServiceUpdateWithoutGcrListInput>, Prisma.ServiceUncheckedUpdateWithoutGcrListInput>
+}
+
 export type ServiceCreateNestedOneWithoutRateListInput = {
   create?: Prisma.XOR<Prisma.ServiceCreateWithoutRateListInput, Prisma.ServiceUncheckedCreateWithoutRateListInput>
   connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutRateListInput
@@ -950,22 +964,6 @@ export type ServiceUpdateOneWithoutRecordingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutRecordingsInput, Prisma.ServiceUpdateWithoutRecordingsInput>, Prisma.ServiceUncheckedUpdateWithoutRecordingsInput>
 }
 
-export type ServiceCreateNestedOneWithoutAssignmentsInput = {
-  create?: Prisma.XOR<Prisma.ServiceCreateWithoutAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutAssignmentsInput>
-  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutAssignmentsInput
-  connect?: Prisma.ServiceWhereUniqueInput
-}
-
-export type ServiceUpdateOneWithoutAssignmentsNestedInput = {
-  create?: Prisma.XOR<Prisma.ServiceCreateWithoutAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutAssignmentsInput>
-  connectOrCreate?: Prisma.ServiceCreateOrConnectWithoutAssignmentsInput
-  upsert?: Prisma.ServiceUpsertWithoutAssignmentsInput
-  disconnect?: Prisma.ServiceWhereInput | boolean
-  delete?: Prisma.ServiceWhereInput | boolean
-  connect?: Prisma.ServiceWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceUpdateToOneWithWhereWithoutAssignmentsInput, Prisma.ServiceUpdateWithoutAssignmentsInput>, Prisma.ServiceUncheckedUpdateWithoutAssignmentsInput>
-}
-
 export type ServiceCreateWithoutTeacherInput = {
   id?: string
   board?: string | null
@@ -982,6 +980,7 @@ export type ServiceCreateWithoutTeacherInput = {
   currency?: string | null
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -991,7 +990,6 @@ export type ServiceCreateWithoutTeacherInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1012,6 +1010,7 @@ export type ServiceUncheckedCreateWithoutTeacherInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -1021,7 +1020,6 @@ export type ServiceUncheckedCreateWithoutTeacherInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1089,6 +1087,7 @@ export type ServiceCreateWithoutGroupInput = {
   currency?: string | null
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -1098,7 +1097,6 @@ export type ServiceCreateWithoutGroupInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1119,6 +1117,7 @@ export type ServiceUncheckedCreateWithoutGroupInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -1128,7 +1127,6 @@ export type ServiceUncheckedCreateWithoutGroupInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1159,6 +1157,142 @@ export type ServiceUpdateManyWithWhereWithoutGroupInput = {
   data: Prisma.XOR<Prisma.ServiceUpdateManyMutationInput, Prisma.ServiceUncheckedUpdateManyWithoutGroupInput>
 }
 
+export type ServiceCreateWithoutGcrListInput = {
+  id?: string
+  board?: string | null
+  courseLevel?: string | null
+  subjectCode?: string | null
+  subjectName: string
+  fullSubjectName?: string | null
+  standardRate?: number | null
+  instructorNameSnapshot?: string | null
+  serviceType: string
+  isHourly?: boolean
+  teacherIdSnapshot?: string | null
+  isActive?: boolean
+  currency?: string | null
+  group?: Prisma.GroupCreateNestedOneWithoutServicesInput
+  teacher: Prisma.UserCreateNestedOneWithoutServicesInput
+  rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
+  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
+  serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
+  academicSessions?: Prisma.AcademicSessionCreateNestedManyWithoutServiceInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutServiceInput
+  recordings?: Prisma.RecordingCreateNestedManyWithoutServiceInput
+  curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
+  taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
+  mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
+  mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
+  claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceUncheckedCreateWithoutGcrListInput = {
+  id?: string
+  groupId?: string | null
+  teacherId: string
+  board?: string | null
+  courseLevel?: string | null
+  subjectCode?: string | null
+  subjectName: string
+  fullSubjectName?: string | null
+  standardRate?: number | null
+  instructorNameSnapshot?: string | null
+  serviceType: string
+  isHourly?: boolean
+  teacherIdSnapshot?: string | null
+  isActive?: boolean
+  currency?: string | null
+  rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
+  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
+  serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
+  academicSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutServiceInput
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutServiceInput
+  recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutServiceInput
+  curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
+  taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
+  mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
+  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
+  claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
+}
+
+export type ServiceCreateOrConnectWithoutGcrListInput = {
+  where: Prisma.ServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutGcrListInput, Prisma.ServiceUncheckedCreateWithoutGcrListInput>
+}
+
+export type ServiceUpsertWithoutGcrListInput = {
+  update: Prisma.XOR<Prisma.ServiceUpdateWithoutGcrListInput, Prisma.ServiceUncheckedUpdateWithoutGcrListInput>
+  create: Prisma.XOR<Prisma.ServiceCreateWithoutGcrListInput, Prisma.ServiceUncheckedCreateWithoutGcrListInput>
+  where?: Prisma.ServiceWhereInput
+}
+
+export type ServiceUpdateToOneWithWhereWithoutGcrListInput = {
+  where?: Prisma.ServiceWhereInput
+  data: Prisma.XOR<Prisma.ServiceUpdateWithoutGcrListInput, Prisma.ServiceUncheckedUpdateWithoutGcrListInput>
+}
+
+export type ServiceUpdateWithoutGcrListInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectName?: Prisma.StringFieldUpdateOperationsInput | string
+  fullSubjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  standardRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  instructorNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
+  isHourly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teacherIdSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
+  rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
+  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
+  serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
+  academicSessions?: Prisma.AcademicSessionUpdateManyWithoutServiceNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutServiceNestedInput
+  recordings?: Prisma.RecordingUpdateManyWithoutServiceNestedInput
+  curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
+  taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
+  mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
+  mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
+  claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
+}
+
+export type ServiceUncheckedUpdateWithoutGcrListInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectName?: Prisma.StringFieldUpdateOperationsInput | string
+  fullSubjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  standardRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  instructorNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
+  isHourly?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  teacherIdSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
+  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
+  serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
+  academicSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutServiceNestedInput
+  recordings?: Prisma.RecordingUncheckedUpdateManyWithoutServiceNestedInput
+  curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
+  taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
+  mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
+  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
+  claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
+}
+
 export type ServiceCreateWithoutRateListInput = {
   id?: string
   board?: string | null
@@ -1175,6 +1309,7 @@ export type ServiceCreateWithoutRateListInput = {
   currency?: string | null
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -1184,7 +1319,6 @@ export type ServiceCreateWithoutRateListInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1205,6 +1339,7 @@ export type ServiceUncheckedCreateWithoutRateListInput = {
   teacherIdSnapshot?: string | null
   isActive?: boolean
   currency?: string | null
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -1214,7 +1349,6 @@ export type ServiceUncheckedCreateWithoutRateListInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1251,6 +1385,7 @@ export type ServiceUpdateWithoutRateListInput = {
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -1260,7 +1395,6 @@ export type ServiceUpdateWithoutRateListInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -1281,6 +1415,7 @@ export type ServiceUncheckedUpdateWithoutRateListInput = {
   teacherIdSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -1290,7 +1425,6 @@ export type ServiceUncheckedUpdateWithoutRateListInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -1312,6 +1446,7 @@ export type ServiceCreateWithoutStudentEnrolmentItemsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
   academicSessions?: Prisma.AcademicSessionCreateNestedManyWithoutServiceInput
@@ -1320,7 +1455,6 @@ export type ServiceCreateWithoutStudentEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1342,6 +1476,7 @@ export type ServiceUncheckedCreateWithoutStudentEnrolmentItemsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
   academicSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutServiceInput
@@ -1350,7 +1485,6 @@ export type ServiceUncheckedCreateWithoutStudentEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1388,6 +1522,7 @@ export type ServiceUpdateWithoutStudentEnrolmentItemsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUpdateManyWithoutServiceNestedInput
@@ -1396,7 +1531,6 @@ export type ServiceUpdateWithoutStudentEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -1418,6 +1552,7 @@ export type ServiceUncheckedUpdateWithoutStudentEnrolmentItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput
@@ -1426,7 +1561,6 @@ export type ServiceUncheckedUpdateWithoutStudentEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -1448,6 +1582,7 @@ export type ServiceCreateWithoutTeacherEnrolmentItemsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
   academicSessions?: Prisma.AcademicSessionCreateNestedManyWithoutServiceInput
@@ -1456,7 +1591,6 @@ export type ServiceCreateWithoutTeacherEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1478,6 +1612,7 @@ export type ServiceUncheckedCreateWithoutTeacherEnrolmentItemsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
   academicSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutServiceInput
@@ -1486,7 +1621,6 @@ export type ServiceUncheckedCreateWithoutTeacherEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1524,6 +1658,7 @@ export type ServiceUpdateWithoutTeacherEnrolmentItemsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUpdateManyWithoutServiceNestedInput
@@ -1532,7 +1667,6 @@ export type ServiceUpdateWithoutTeacherEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -1554,6 +1688,7 @@ export type ServiceUncheckedUpdateWithoutTeacherEnrolmentItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput
@@ -1562,7 +1697,6 @@ export type ServiceUncheckedUpdateWithoutTeacherEnrolmentItemsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -1584,6 +1718,7 @@ export type ServiceCreateWithoutServiceSchedulesInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   academicSessions?: Prisma.AcademicSessionCreateNestedManyWithoutServiceInput
@@ -1592,7 +1727,6 @@ export type ServiceCreateWithoutServiceSchedulesInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1614,6 +1748,7 @@ export type ServiceUncheckedCreateWithoutServiceSchedulesInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   academicSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutServiceInput
@@ -1622,7 +1757,6 @@ export type ServiceUncheckedCreateWithoutServiceSchedulesInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1660,6 +1794,7 @@ export type ServiceUpdateWithoutServiceSchedulesInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUpdateManyWithoutServiceNestedInput
@@ -1668,7 +1803,6 @@ export type ServiceUpdateWithoutServiceSchedulesInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -1690,6 +1824,7 @@ export type ServiceUncheckedUpdateWithoutServiceSchedulesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput
@@ -1698,7 +1833,6 @@ export type ServiceUncheckedUpdateWithoutServiceSchedulesInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -1720,6 +1854,7 @@ export type ServiceCreateWithoutAcademicSessionsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -1728,7 +1863,6 @@ export type ServiceCreateWithoutAcademicSessionsInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1750,6 +1884,7 @@ export type ServiceUncheckedCreateWithoutAcademicSessionsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -1758,7 +1893,6 @@ export type ServiceUncheckedCreateWithoutAcademicSessionsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1796,6 +1930,7 @@ export type ServiceUpdateWithoutAcademicSessionsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -1804,7 +1939,6 @@ export type ServiceUpdateWithoutAcademicSessionsInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -1826,6 +1960,7 @@ export type ServiceUncheckedUpdateWithoutAcademicSessionsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -1834,7 +1969,6 @@ export type ServiceUncheckedUpdateWithoutAcademicSessionsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -1856,6 +1990,7 @@ export type ServiceCreateWithoutAttendancesInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -1864,7 +1999,6 @@ export type ServiceCreateWithoutAttendancesInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -1886,6 +2020,7 @@ export type ServiceUncheckedCreateWithoutAttendancesInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -1894,7 +2029,6 @@ export type ServiceUncheckedCreateWithoutAttendancesInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -1932,6 +2066,7 @@ export type ServiceUpdateWithoutAttendancesInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -1940,7 +2075,6 @@ export type ServiceUpdateWithoutAttendancesInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -1962,6 +2096,7 @@ export type ServiceUncheckedUpdateWithoutAttendancesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -1970,7 +2105,6 @@ export type ServiceUncheckedUpdateWithoutAttendancesInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -1992,6 +2126,7 @@ export type ServiceCreateWithoutCurriculumListsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -2000,7 +2135,6 @@ export type ServiceCreateWithoutCurriculumListsInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -2022,6 +2156,7 @@ export type ServiceUncheckedCreateWithoutCurriculumListsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -2030,7 +2165,6 @@ export type ServiceUncheckedCreateWithoutCurriculumListsInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -2068,6 +2202,7 @@ export type ServiceUpdateWithoutCurriculumListsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2076,7 +2211,6 @@ export type ServiceUpdateWithoutCurriculumListsInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -2098,6 +2232,7 @@ export type ServiceUncheckedUpdateWithoutCurriculumListsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -2106,7 +2241,6 @@ export type ServiceUncheckedUpdateWithoutCurriculumListsInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -2128,6 +2262,7 @@ export type ServiceCreateWithoutTaskItemsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -2136,7 +2271,6 @@ export type ServiceCreateWithoutTaskItemsInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutServiceInput
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -2158,6 +2292,7 @@ export type ServiceUncheckedCreateWithoutTaskItemsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -2166,7 +2301,6 @@ export type ServiceUncheckedCreateWithoutTaskItemsInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutServiceInput
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -2204,6 +2338,7 @@ export type ServiceUpdateWithoutTaskItemsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2212,7 +2347,6 @@ export type ServiceUpdateWithoutTaskItemsInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutServiceNestedInput
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -2234,6 +2368,7 @@ export type ServiceUncheckedUpdateWithoutTaskItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -2242,7 +2377,6 @@ export type ServiceUncheckedUpdateWithoutTaskItemsInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutServiceNestedInput
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -2264,6 +2398,7 @@ export type ServiceCreateWithoutMockItemsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -2272,7 +2407,6 @@ export type ServiceCreateWithoutMockItemsInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutServiceInput
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -2294,6 +2428,7 @@ export type ServiceUncheckedCreateWithoutMockItemsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -2302,7 +2437,6 @@ export type ServiceUncheckedCreateWithoutMockItemsInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutServiceInput
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -2340,6 +2474,7 @@ export type ServiceUpdateWithoutMockItemsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2348,7 +2483,6 @@ export type ServiceUpdateWithoutMockItemsInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutServiceNestedInput
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -2370,6 +2504,7 @@ export type ServiceUncheckedUpdateWithoutMockItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -2378,7 +2513,6 @@ export type ServiceUncheckedUpdateWithoutMockItemsInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutServiceNestedInput
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -2400,6 +2534,7 @@ export type ServiceCreateWithoutMockResultsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -2409,7 +2544,6 @@ export type ServiceCreateWithoutMockResultsInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
 
@@ -2430,6 +2564,7 @@ export type ServiceUncheckedCreateWithoutMockResultsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -2439,7 +2574,6 @@ export type ServiceUncheckedCreateWithoutMockResultsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
 
@@ -2476,6 +2610,7 @@ export type ServiceUpdateWithoutMockResultsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2485,7 +2620,6 @@ export type ServiceUpdateWithoutMockResultsInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
 
@@ -2506,6 +2640,7 @@ export type ServiceUncheckedUpdateWithoutMockResultsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -2515,7 +2650,6 @@ export type ServiceUncheckedUpdateWithoutMockResultsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
 
@@ -2536,6 +2670,7 @@ export type ServiceCreateWithoutClaimLineItemsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -2545,7 +2680,6 @@ export type ServiceCreateWithoutClaimLineItemsInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
 }
 
@@ -2566,6 +2700,7 @@ export type ServiceUncheckedCreateWithoutClaimLineItemsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -2575,7 +2710,6 @@ export type ServiceUncheckedCreateWithoutClaimLineItemsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
 }
 
@@ -2612,6 +2746,7 @@ export type ServiceUpdateWithoutClaimLineItemsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2621,7 +2756,6 @@ export type ServiceUpdateWithoutClaimLineItemsInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
 }
 
@@ -2642,6 +2776,7 @@ export type ServiceUncheckedUpdateWithoutClaimLineItemsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -2651,7 +2786,6 @@ export type ServiceUncheckedUpdateWithoutClaimLineItemsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
 }
 
@@ -2672,6 +2806,7 @@ export type ServiceCreateWithoutRecordingsInput = {
   group?: Prisma.GroupCreateNestedOneWithoutServicesInput
   teacher: Prisma.UserCreateNestedOneWithoutServicesInput
   rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
@@ -2680,7 +2815,6 @@ export type ServiceCreateWithoutRecordingsInput = {
   curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
 }
@@ -2702,6 +2836,7 @@ export type ServiceUncheckedCreateWithoutRecordingsInput = {
   isActive?: boolean
   currency?: string | null
   rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
+  gcrList?: Prisma.GcrListUncheckedCreateNestedOneWithoutServiceInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
@@ -2710,7 +2845,6 @@ export type ServiceUncheckedCreateWithoutRecordingsInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutServiceInput
   mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
 }
@@ -2748,6 +2882,7 @@ export type ServiceUpdateWithoutRecordingsInput = {
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2756,7 +2891,6 @@ export type ServiceUpdateWithoutRecordingsInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -2778,148 +2912,12 @@ export type ServiceUncheckedUpdateWithoutRecordingsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
   academicSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutServiceNestedInput
-  curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
-  taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
-  mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
-  mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
-  claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
-}
-
-export type ServiceCreateWithoutAssignmentsInput = {
-  id?: string
-  board?: string | null
-  courseLevel?: string | null
-  subjectCode?: string | null
-  subjectName: string
-  fullSubjectName?: string | null
-  standardRate?: number | null
-  instructorNameSnapshot?: string | null
-  serviceType: string
-  isHourly?: boolean
-  teacherIdSnapshot?: string | null
-  isActive?: boolean
-  currency?: string | null
-  group?: Prisma.GroupCreateNestedOneWithoutServicesInput
-  teacher: Prisma.UserCreateNestedOneWithoutServicesInput
-  rateList?: Prisma.RateListCreateNestedOneWithoutServiceInput
-  studentEnrolmentItems?: Prisma.StudentEnrolmentItemCreateNestedManyWithoutServiceInput
-  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemCreateNestedManyWithoutServiceInput
-  serviceSchedules?: Prisma.ServiceScheduleCreateNestedManyWithoutServiceInput
-  academicSessions?: Prisma.AcademicSessionCreateNestedManyWithoutServiceInput
-  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutServiceInput
-  recordings?: Prisma.RecordingCreateNestedManyWithoutServiceInput
-  curriculumLists?: Prisma.CurriculumListCreateNestedManyWithoutServiceInput
-  taskItems?: Prisma.TaskItemCreateNestedManyWithoutServiceInput
-  mockItems?: Prisma.MockItemCreateNestedManyWithoutServiceInput
-  mockResults?: Prisma.MockResultCreateNestedManyWithoutServiceInput
-  claimLineItems?: Prisma.ClaimLineItemCreateNestedManyWithoutServiceInput
-}
-
-export type ServiceUncheckedCreateWithoutAssignmentsInput = {
-  id?: string
-  groupId?: string | null
-  teacherId: string
-  board?: string | null
-  courseLevel?: string | null
-  subjectCode?: string | null
-  subjectName: string
-  fullSubjectName?: string | null
-  standardRate?: number | null
-  instructorNameSnapshot?: string | null
-  serviceType: string
-  isHourly?: boolean
-  teacherIdSnapshot?: string | null
-  isActive?: boolean
-  currency?: string | null
-  rateList?: Prisma.RateListUncheckedCreateNestedOneWithoutServiceInput
-  studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
-  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedCreateNestedManyWithoutServiceInput
-  serviceSchedules?: Prisma.ServiceScheduleUncheckedCreateNestedManyWithoutServiceInput
-  academicSessions?: Prisma.AcademicSessionUncheckedCreateNestedManyWithoutServiceInput
-  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutServiceInput
-  recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutServiceInput
-  curriculumLists?: Prisma.CurriculumListUncheckedCreateNestedManyWithoutServiceInput
-  taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutServiceInput
-  mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutServiceInput
-  mockResults?: Prisma.MockResultUncheckedCreateNestedManyWithoutServiceInput
-  claimLineItems?: Prisma.ClaimLineItemUncheckedCreateNestedManyWithoutServiceInput
-}
-
-export type ServiceCreateOrConnectWithoutAssignmentsInput = {
-  where: Prisma.ServiceWhereUniqueInput
-  create: Prisma.XOR<Prisma.ServiceCreateWithoutAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutAssignmentsInput>
-}
-
-export type ServiceUpsertWithoutAssignmentsInput = {
-  update: Prisma.XOR<Prisma.ServiceUpdateWithoutAssignmentsInput, Prisma.ServiceUncheckedUpdateWithoutAssignmentsInput>
-  create: Prisma.XOR<Prisma.ServiceCreateWithoutAssignmentsInput, Prisma.ServiceUncheckedCreateWithoutAssignmentsInput>
-  where?: Prisma.ServiceWhereInput
-}
-
-export type ServiceUpdateToOneWithWhereWithoutAssignmentsInput = {
-  where?: Prisma.ServiceWhereInput
-  data: Prisma.XOR<Prisma.ServiceUpdateWithoutAssignmentsInput, Prisma.ServiceUncheckedUpdateWithoutAssignmentsInput>
-}
-
-export type ServiceUpdateWithoutAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subjectCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subjectName?: Prisma.StringFieldUpdateOperationsInput | string
-  fullSubjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  standardRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  instructorNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  isHourly?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  teacherIdSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
-  teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
-  rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
-  studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
-  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
-  serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
-  academicSessions?: Prisma.AcademicSessionUpdateManyWithoutServiceNestedInput
-  attendances?: Prisma.SessionAttendanceUpdateManyWithoutServiceNestedInput
-  recordings?: Prisma.RecordingUpdateManyWithoutServiceNestedInput
-  curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
-  taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
-  mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
-  claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
-}
-
-export type ServiceUncheckedUpdateWithoutAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
-  board?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  courseLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subjectCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  subjectName?: Prisma.StringFieldUpdateOperationsInput | string
-  fullSubjectName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  standardRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
-  instructorNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
-  isHourly?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  teacherIdSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
-  studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
-  teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
-  serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
-  academicSessions?: Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput
-  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutServiceNestedInput
-  recordings?: Prisma.RecordingUncheckedUpdateManyWithoutServiceNestedInput
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
@@ -2960,6 +2958,7 @@ export type ServiceUpdateWithoutTeacherInput = {
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   group?: Prisma.GroupUpdateOneWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -2969,7 +2968,6 @@ export type ServiceUpdateWithoutTeacherInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -2990,6 +2988,7 @@ export type ServiceUncheckedUpdateWithoutTeacherInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -2999,7 +2998,6 @@ export type ServiceUncheckedUpdateWithoutTeacherInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -3054,6 +3052,7 @@ export type ServiceUpdateWithoutGroupInput = {
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   teacher?: Prisma.UserUpdateOneRequiredWithoutServicesNestedInput
   rateList?: Prisma.RateListUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUpdateManyWithoutServiceNestedInput
@@ -3063,7 +3062,6 @@ export type ServiceUpdateWithoutGroupInput = {
   curriculumLists?: Prisma.CurriculumListUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUpdateManyWithoutServiceNestedInput
 }
@@ -3084,6 +3082,7 @@ export type ServiceUncheckedUpdateWithoutGroupInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rateList?: Prisma.RateListUncheckedUpdateOneWithoutServiceNestedInput
+  gcrList?: Prisma.GcrListUncheckedUpdateOneWithoutServiceNestedInput
   studentEnrolmentItems?: Prisma.StudentEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   teacherEnrolmentItems?: Prisma.TeacherEnrolmentItemUncheckedUpdateManyWithoutServiceNestedInput
   serviceSchedules?: Prisma.ServiceScheduleUncheckedUpdateManyWithoutServiceNestedInput
@@ -3093,7 +3092,6 @@ export type ServiceUncheckedUpdateWithoutGroupInput = {
   curriculumLists?: Prisma.CurriculumListUncheckedUpdateManyWithoutServiceNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutServiceNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutServiceNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutServiceNestedInput
   mockResults?: Prisma.MockResultUncheckedUpdateManyWithoutServiceNestedInput
   claimLineItems?: Prisma.ClaimLineItemUncheckedUpdateManyWithoutServiceNestedInput
 }
@@ -3130,7 +3128,6 @@ export type ServiceCountOutputType = {
   curriculumLists: number
   taskItems: number
   mockItems: number
-  assignments: number
   mockResults: number
   claimLineItems: number
 }
@@ -3145,7 +3142,6 @@ export type ServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   curriculumLists?: boolean | ServiceCountOutputTypeCountCurriculumListsArgs
   taskItems?: boolean | ServiceCountOutputTypeCountTaskItemsArgs
   mockItems?: boolean | ServiceCountOutputTypeCountMockItemsArgs
-  assignments?: boolean | ServiceCountOutputTypeCountAssignmentsArgs
   mockResults?: boolean | ServiceCountOutputTypeCountMockResultsArgs
   claimLineItems?: boolean | ServiceCountOutputTypeCountClaimLineItemsArgs
 }
@@ -3226,13 +3222,6 @@ export type ServiceCountOutputTypeCountMockItemsArgs<ExtArgs extends runtime.Typ
 /**
  * ServiceCountOutputType without action
  */
-export type ServiceCountOutputTypeCountAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AssignmentWhereInput
-}
-
-/**
- * ServiceCountOutputType without action
- */
 export type ServiceCountOutputTypeCountMockResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MockResultWhereInput
 }
@@ -3264,6 +3253,7 @@ export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   group?: boolean | Prisma.Service$groupArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   rateList?: boolean | Prisma.Service$rateListArgs<ExtArgs>
+  gcrList?: boolean | Prisma.Service$gcrListArgs<ExtArgs>
   studentEnrolmentItems?: boolean | Prisma.Service$studentEnrolmentItemsArgs<ExtArgs>
   teacherEnrolmentItems?: boolean | Prisma.Service$teacherEnrolmentItemsArgs<ExtArgs>
   serviceSchedules?: boolean | Prisma.Service$serviceSchedulesArgs<ExtArgs>
@@ -3273,7 +3263,6 @@ export type ServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   curriculumLists?: boolean | Prisma.Service$curriculumListsArgs<ExtArgs>
   taskItems?: boolean | Prisma.Service$taskItemsArgs<ExtArgs>
   mockItems?: boolean | Prisma.Service$mockItemsArgs<ExtArgs>
-  assignments?: boolean | Prisma.Service$assignmentsArgs<ExtArgs>
   mockResults?: boolean | Prisma.Service$mockResultsArgs<ExtArgs>
   claimLineItems?: boolean | Prisma.Service$claimLineItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
@@ -3342,6 +3331,7 @@ export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   group?: boolean | Prisma.Service$groupArgs<ExtArgs>
   teacher?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   rateList?: boolean | Prisma.Service$rateListArgs<ExtArgs>
+  gcrList?: boolean | Prisma.Service$gcrListArgs<ExtArgs>
   studentEnrolmentItems?: boolean | Prisma.Service$studentEnrolmentItemsArgs<ExtArgs>
   teacherEnrolmentItems?: boolean | Prisma.Service$teacherEnrolmentItemsArgs<ExtArgs>
   serviceSchedules?: boolean | Prisma.Service$serviceSchedulesArgs<ExtArgs>
@@ -3351,7 +3341,6 @@ export type ServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   curriculumLists?: boolean | Prisma.Service$curriculumListsArgs<ExtArgs>
   taskItems?: boolean | Prisma.Service$taskItemsArgs<ExtArgs>
   mockItems?: boolean | Prisma.Service$mockItemsArgs<ExtArgs>
-  assignments?: boolean | Prisma.Service$assignmentsArgs<ExtArgs>
   mockResults?: boolean | Prisma.Service$mockResultsArgs<ExtArgs>
   claimLineItems?: boolean | Prisma.Service$claimLineItemsArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceCountOutputTypeDefaultArgs<ExtArgs>
@@ -3371,6 +3360,7 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     group: Prisma.$GroupPayload<ExtArgs> | null
     teacher: Prisma.$UserPayload<ExtArgs>
     rateList: Prisma.$RateListPayload<ExtArgs> | null
+    gcrList: Prisma.$GcrListPayload<ExtArgs> | null
     studentEnrolmentItems: Prisma.$StudentEnrolmentItemPayload<ExtArgs>[]
     teacherEnrolmentItems: Prisma.$TeacherEnrolmentItemPayload<ExtArgs>[]
     serviceSchedules: Prisma.$ServiceSchedulePayload<ExtArgs>[]
@@ -3380,7 +3370,6 @@ export type $ServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     curriculumLists: Prisma.$CurriculumListPayload<ExtArgs>[]
     taskItems: Prisma.$TaskItemPayload<ExtArgs>[]
     mockItems: Prisma.$MockItemPayload<ExtArgs>[]
-    assignments: Prisma.$AssignmentPayload<ExtArgs>[]
     mockResults: Prisma.$MockResultPayload<ExtArgs>[]
     claimLineItems: Prisma.$ClaimLineItemPayload<ExtArgs>[]
   }
@@ -3797,6 +3786,7 @@ export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends runtime.
   group<T extends Prisma.Service$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   teacher<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   rateList<T extends Prisma.Service$rateListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$rateListArgs<ExtArgs>>): Prisma.Prisma__RateListClient<runtime.Types.Result.GetResult<Prisma.$RateListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  gcrList<T extends Prisma.Service$gcrListArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$gcrListArgs<ExtArgs>>): Prisma.Prisma__GcrListClient<runtime.Types.Result.GetResult<Prisma.$GcrListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   studentEnrolmentItems<T extends Prisma.Service$studentEnrolmentItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$studentEnrolmentItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentEnrolmentItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   teacherEnrolmentItems<T extends Prisma.Service$teacherEnrolmentItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$teacherEnrolmentItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TeacherEnrolmentItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceSchedules<T extends Prisma.Service$serviceSchedulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$serviceSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3806,7 +3796,6 @@ export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends runtime.
   curriculumLists<T extends Prisma.Service$curriculumListsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$curriculumListsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CurriculumListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskItems<T extends Prisma.Service$taskItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$taskItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mockItems<T extends Prisma.Service$mockItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$mockItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  assignments<T extends Prisma.Service$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mockResults<T extends Prisma.Service$mockResultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$mockResultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   claimLineItems<T extends Prisma.Service$claimLineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Service$claimLineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClaimLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -4292,6 +4281,25 @@ export type Service$rateListArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
+ * Service.gcrList
+ */
+export type Service$gcrListArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GcrList
+   */
+  select?: Prisma.GcrListSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GcrList
+   */
+  omit?: Prisma.GcrListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GcrListInclude<ExtArgs> | null
+  where?: Prisma.GcrListWhereInput
+}
+
+/**
  * Service.studentEnrolmentItems
  */
 export type Service$studentEnrolmentItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4505,30 +4513,6 @@ export type Service$mockItemsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.MockItemScalarFieldEnum | Prisma.MockItemScalarFieldEnum[]
-}
-
-/**
- * Service.assignments
- */
-export type Service$assignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Assignment
-   */
-  select?: Prisma.AssignmentSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Assignment
-   */
-  omit?: Prisma.AssignmentOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.AssignmentInclude<ExtArgs> | null
-  where?: Prisma.AssignmentWhereInput
-  orderBy?: Prisma.AssignmentOrderByWithRelationInput | Prisma.AssignmentOrderByWithRelationInput[]
-  cursor?: Prisma.AssignmentWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.AssignmentScalarFieldEnum | Prisma.AssignmentScalarFieldEnum[]
 }
 
 /**

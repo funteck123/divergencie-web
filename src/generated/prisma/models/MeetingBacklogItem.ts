@@ -29,7 +29,7 @@ export type MeetingBacklogItemMinAggregateOutputType = {
   backlogListId: string | null
   ticketId: string | null
   title: string | null
-  dept: string | null
+  deptId: string | null
   priority: string | null
   notes: string | null
   pushedToBank: boolean | null
@@ -41,7 +41,7 @@ export type MeetingBacklogItemMaxAggregateOutputType = {
   backlogListId: string | null
   ticketId: string | null
   title: string | null
-  dept: string | null
+  deptId: string | null
   priority: string | null
   notes: string | null
   pushedToBank: boolean | null
@@ -53,7 +53,7 @@ export type MeetingBacklogItemCountAggregateOutputType = {
   backlogListId: number
   ticketId: number
   title: number
-  dept: number
+  deptId: number
   priority: number
   notes: number
   pushedToBank: number
@@ -67,7 +67,7 @@ export type MeetingBacklogItemMinAggregateInputType = {
   backlogListId?: true
   ticketId?: true
   title?: true
-  dept?: true
+  deptId?: true
   priority?: true
   notes?: true
   pushedToBank?: true
@@ -79,7 +79,7 @@ export type MeetingBacklogItemMaxAggregateInputType = {
   backlogListId?: true
   ticketId?: true
   title?: true
-  dept?: true
+  deptId?: true
   priority?: true
   notes?: true
   pushedToBank?: true
@@ -91,7 +91,7 @@ export type MeetingBacklogItemCountAggregateInputType = {
   backlogListId?: true
   ticketId?: true
   title?: true
-  dept?: true
+  deptId?: true
   priority?: true
   notes?: true
   pushedToBank?: true
@@ -176,7 +176,7 @@ export type MeetingBacklogItemGroupByOutputType = {
   backlogListId: string
   ticketId: string | null
   title: string
-  dept: string
+  deptId: string | null
   priority: string
   notes: string | null
   pushedToBank: boolean
@@ -209,11 +209,12 @@ export type MeetingBacklogItemWhereInput = {
   backlogListId?: Prisma.StringFilter<"MeetingBacklogItem"> | string
   ticketId?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
   title?: Prisma.StringFilter<"MeetingBacklogItem"> | string
-  dept?: Prisma.StringFilter<"MeetingBacklogItem"> | string
+  deptId?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
   priority?: Prisma.StringFilter<"MeetingBacklogItem"> | string
   notes?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
   pushedToBank?: Prisma.BoolFilter<"MeetingBacklogItem"> | boolean
   pushedAt?: Prisma.DateTimeNullableFilter<"MeetingBacklogItem"> | Date | string | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
 }
 
 export type MeetingBacklogItemOrderByWithRelationInput = {
@@ -221,11 +222,12 @@ export type MeetingBacklogItemOrderByWithRelationInput = {
   backlogListId?: Prisma.SortOrder
   ticketId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   priority?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   pushedToBank?: Prisma.SortOrder
   pushedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  dept?: Prisma.DepartmentOrderByWithRelationInput
 }
 
 export type MeetingBacklogItemWhereUniqueInput = Prisma.AtLeast<{
@@ -236,11 +238,12 @@ export type MeetingBacklogItemWhereUniqueInput = Prisma.AtLeast<{
   backlogListId?: Prisma.StringFilter<"MeetingBacklogItem"> | string
   ticketId?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
   title?: Prisma.StringFilter<"MeetingBacklogItem"> | string
-  dept?: Prisma.StringFilter<"MeetingBacklogItem"> | string
+  deptId?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
   priority?: Prisma.StringFilter<"MeetingBacklogItem"> | string
   notes?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
   pushedToBank?: Prisma.BoolFilter<"MeetingBacklogItem"> | boolean
   pushedAt?: Prisma.DateTimeNullableFilter<"MeetingBacklogItem"> | Date | string | null
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
 }, "id">
 
 export type MeetingBacklogItemOrderByWithAggregationInput = {
@@ -248,7 +251,7 @@ export type MeetingBacklogItemOrderByWithAggregationInput = {
   backlogListId?: Prisma.SortOrder
   ticketId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   priority?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   pushedToBank?: Prisma.SortOrder
@@ -266,7 +269,7 @@ export type MeetingBacklogItemScalarWhereWithAggregatesInput = {
   backlogListId?: Prisma.StringWithAggregatesFilter<"MeetingBacklogItem"> | string
   ticketId?: Prisma.StringNullableWithAggregatesFilter<"MeetingBacklogItem"> | string | null
   title?: Prisma.StringWithAggregatesFilter<"MeetingBacklogItem"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"MeetingBacklogItem"> | string
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"MeetingBacklogItem"> | string | null
   priority?: Prisma.StringWithAggregatesFilter<"MeetingBacklogItem"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"MeetingBacklogItem"> | string | null
   pushedToBank?: Prisma.BoolWithAggregatesFilter<"MeetingBacklogItem"> | boolean
@@ -278,11 +281,11 @@ export type MeetingBacklogItemCreateInput = {
   backlogListId: string
   ticketId?: string | null
   title: string
-  dept: string
   priority: string
   notes?: string | null
   pushedToBank?: boolean
   pushedAt?: Date | string | null
+  dept?: Prisma.DepartmentCreateNestedOneWithoutMeetingBacklogItemsInput
 }
 
 export type MeetingBacklogItemUncheckedCreateInput = {
@@ -290,7 +293,7 @@ export type MeetingBacklogItemUncheckedCreateInput = {
   backlogListId: string
   ticketId?: string | null
   title: string
-  dept: string
+  deptId?: string | null
   priority: string
   notes?: string | null
   pushedToBank?: boolean
@@ -302,11 +305,11 @@ export type MeetingBacklogItemUpdateInput = {
   backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
   ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pushedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dept?: Prisma.DepartmentUpdateOneWithoutMeetingBacklogItemsNestedInput
 }
 
 export type MeetingBacklogItemUncheckedUpdateInput = {
@@ -314,7 +317,7 @@ export type MeetingBacklogItemUncheckedUpdateInput = {
   backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
   ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -326,7 +329,7 @@ export type MeetingBacklogItemCreateManyInput = {
   backlogListId: string
   ticketId?: string | null
   title: string
-  dept: string
+  deptId?: string | null
   priority: string
   notes?: string | null
   pushedToBank?: boolean
@@ -338,7 +341,6 @@ export type MeetingBacklogItemUpdateManyMutationInput = {
   backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
   ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -350,11 +352,21 @@ export type MeetingBacklogItemUncheckedUpdateManyInput = {
   backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
   ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priority?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pushedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type MeetingBacklogItemListRelationFilter = {
+  every?: Prisma.MeetingBacklogItemWhereInput
+  some?: Prisma.MeetingBacklogItemWhereInput
+  none?: Prisma.MeetingBacklogItemWhereInput
+}
+
+export type MeetingBacklogItemOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type MeetingBacklogItemCountOrderByAggregateInput = {
@@ -362,7 +374,7 @@ export type MeetingBacklogItemCountOrderByAggregateInput = {
   backlogListId?: Prisma.SortOrder
   ticketId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   pushedToBank?: Prisma.SortOrder
@@ -374,7 +386,7 @@ export type MeetingBacklogItemMaxOrderByAggregateInput = {
   backlogListId?: Prisma.SortOrder
   ticketId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   pushedToBank?: Prisma.SortOrder
@@ -386,11 +398,160 @@ export type MeetingBacklogItemMinOrderByAggregateInput = {
   backlogListId?: Prisma.SortOrder
   ticketId?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   pushedToBank?: Prisma.SortOrder
   pushedAt?: Prisma.SortOrder
+}
+
+export type MeetingBacklogItemCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.MeetingBacklogItemCreateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput> | Prisma.MeetingBacklogItemCreateWithoutDeptInput[] | Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput | Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.MeetingBacklogItemCreateManyDeptInputEnvelope
+  connect?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+}
+
+export type MeetingBacklogItemUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.MeetingBacklogItemCreateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput> | Prisma.MeetingBacklogItemCreateWithoutDeptInput[] | Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput | Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.MeetingBacklogItemCreateManyDeptInputEnvelope
+  connect?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+}
+
+export type MeetingBacklogItemUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingBacklogItemCreateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput> | Prisma.MeetingBacklogItemCreateWithoutDeptInput[] | Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput | Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.MeetingBacklogItemUpsertWithWhereUniqueWithoutDeptInput | Prisma.MeetingBacklogItemUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.MeetingBacklogItemCreateManyDeptInputEnvelope
+  set?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  disconnect?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  delete?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  connect?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  update?: Prisma.MeetingBacklogItemUpdateWithWhereUniqueWithoutDeptInput | Prisma.MeetingBacklogItemUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.MeetingBacklogItemUpdateManyWithWhereWithoutDeptInput | Prisma.MeetingBacklogItemUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.MeetingBacklogItemScalarWhereInput | Prisma.MeetingBacklogItemScalarWhereInput[]
+}
+
+export type MeetingBacklogItemUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.MeetingBacklogItemCreateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput> | Prisma.MeetingBacklogItemCreateWithoutDeptInput[] | Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput | Prisma.MeetingBacklogItemCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.MeetingBacklogItemUpsertWithWhereUniqueWithoutDeptInput | Prisma.MeetingBacklogItemUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.MeetingBacklogItemCreateManyDeptInputEnvelope
+  set?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  disconnect?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  delete?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  connect?: Prisma.MeetingBacklogItemWhereUniqueInput | Prisma.MeetingBacklogItemWhereUniqueInput[]
+  update?: Prisma.MeetingBacklogItemUpdateWithWhereUniqueWithoutDeptInput | Prisma.MeetingBacklogItemUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.MeetingBacklogItemUpdateManyWithWhereWithoutDeptInput | Prisma.MeetingBacklogItemUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.MeetingBacklogItemScalarWhereInput | Prisma.MeetingBacklogItemScalarWhereInput[]
+}
+
+export type MeetingBacklogItemCreateWithoutDeptInput = {
+  id?: string
+  backlogListId: string
+  ticketId?: string | null
+  title: string
+  priority: string
+  notes?: string | null
+  pushedToBank?: boolean
+  pushedAt?: Date | string | null
+}
+
+export type MeetingBacklogItemUncheckedCreateWithoutDeptInput = {
+  id?: string
+  backlogListId: string
+  ticketId?: string | null
+  title: string
+  priority: string
+  notes?: string | null
+  pushedToBank?: boolean
+  pushedAt?: Date | string | null
+}
+
+export type MeetingBacklogItemCreateOrConnectWithoutDeptInput = {
+  where: Prisma.MeetingBacklogItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.MeetingBacklogItemCreateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput>
+}
+
+export type MeetingBacklogItemCreateManyDeptInputEnvelope = {
+  data: Prisma.MeetingBacklogItemCreateManyDeptInput | Prisma.MeetingBacklogItemCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type MeetingBacklogItemUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.MeetingBacklogItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.MeetingBacklogItemUpdateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.MeetingBacklogItemCreateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedCreateWithoutDeptInput>
+}
+
+export type MeetingBacklogItemUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.MeetingBacklogItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.MeetingBacklogItemUpdateWithoutDeptInput, Prisma.MeetingBacklogItemUncheckedUpdateWithoutDeptInput>
+}
+
+export type MeetingBacklogItemUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.MeetingBacklogItemScalarWhereInput
+  data: Prisma.XOR<Prisma.MeetingBacklogItemUpdateManyMutationInput, Prisma.MeetingBacklogItemUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type MeetingBacklogItemScalarWhereInput = {
+  AND?: Prisma.MeetingBacklogItemScalarWhereInput | Prisma.MeetingBacklogItemScalarWhereInput[]
+  OR?: Prisma.MeetingBacklogItemScalarWhereInput[]
+  NOT?: Prisma.MeetingBacklogItemScalarWhereInput | Prisma.MeetingBacklogItemScalarWhereInput[]
+  id?: Prisma.StringFilter<"MeetingBacklogItem"> | string
+  backlogListId?: Prisma.StringFilter<"MeetingBacklogItem"> | string
+  ticketId?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
+  title?: Prisma.StringFilter<"MeetingBacklogItem"> | string
+  deptId?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
+  priority?: Prisma.StringFilter<"MeetingBacklogItem"> | string
+  notes?: Prisma.StringNullableFilter<"MeetingBacklogItem"> | string | null
+  pushedToBank?: Prisma.BoolFilter<"MeetingBacklogItem"> | boolean
+  pushedAt?: Prisma.DateTimeNullableFilter<"MeetingBacklogItem"> | Date | string | null
+}
+
+export type MeetingBacklogItemCreateManyDeptInput = {
+  id?: string
+  backlogListId: string
+  ticketId?: string | null
+  title: string
+  priority: string
+  notes?: string | null
+  pushedToBank?: boolean
+  pushedAt?: Date | string | null
+}
+
+export type MeetingBacklogItemUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
+  ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type MeetingBacklogItemUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
+  ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type MeetingBacklogItemUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  backlogListId?: Prisma.StringFieldUpdateOperationsInput | string
+  ticketId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pushedToBank?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  pushedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -400,11 +561,12 @@ export type MeetingBacklogItemSelect<ExtArgs extends runtime.Types.Extensions.In
   backlogListId?: boolean
   ticketId?: boolean
   title?: boolean
-  dept?: boolean
+  deptId?: boolean
   priority?: boolean
   notes?: boolean
   pushedToBank?: boolean
   pushedAt?: boolean
+  dept?: boolean | Prisma.MeetingBacklogItem$deptArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBacklogItem"]>
 
 export type MeetingBacklogItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -412,11 +574,12 @@ export type MeetingBacklogItemSelectCreateManyAndReturn<ExtArgs extends runtime.
   backlogListId?: boolean
   ticketId?: boolean
   title?: boolean
-  dept?: boolean
+  deptId?: boolean
   priority?: boolean
   notes?: boolean
   pushedToBank?: boolean
   pushedAt?: boolean
+  dept?: boolean | Prisma.MeetingBacklogItem$deptArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBacklogItem"]>
 
 export type MeetingBacklogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -424,11 +587,12 @@ export type MeetingBacklogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.
   backlogListId?: boolean
   ticketId?: boolean
   title?: boolean
-  dept?: boolean
+  deptId?: boolean
   priority?: boolean
   notes?: boolean
   pushedToBank?: boolean
   pushedAt?: boolean
+  dept?: boolean | Prisma.MeetingBacklogItem$deptArgs<ExtArgs>
 }, ExtArgs["result"]["meetingBacklogItem"]>
 
 export type MeetingBacklogItemSelectScalar = {
@@ -436,24 +600,35 @@ export type MeetingBacklogItemSelectScalar = {
   backlogListId?: boolean
   ticketId?: boolean
   title?: boolean
-  dept?: boolean
+  deptId?: boolean
   priority?: boolean
   notes?: boolean
   pushedToBank?: boolean
   pushedAt?: boolean
 }
 
-export type MeetingBacklogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "backlogListId" | "ticketId" | "title" | "dept" | "priority" | "notes" | "pushedToBank" | "pushedAt", ExtArgs["result"]["meetingBacklogItem"]>
+export type MeetingBacklogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "backlogListId" | "ticketId" | "title" | "deptId" | "priority" | "notes" | "pushedToBank" | "pushedAt", ExtArgs["result"]["meetingBacklogItem"]>
+export type MeetingBacklogItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.MeetingBacklogItem$deptArgs<ExtArgs>
+}
+export type MeetingBacklogItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.MeetingBacklogItem$deptArgs<ExtArgs>
+}
+export type MeetingBacklogItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.MeetingBacklogItem$deptArgs<ExtArgs>
+}
 
 export type $MeetingBacklogItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MeetingBacklogItem"
-  objects: {}
+  objects: {
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     backlogListId: string
     ticketId: string | null
     title: string
-    dept: string
+    deptId: string | null
     priority: string
     notes: string | null
     pushedToBank: boolean
@@ -852,6 +1027,7 @@ readonly fields: MeetingBacklogItemFieldRefs;
  */
 export interface Prisma__MeetingBacklogItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  dept<T extends Prisma.MeetingBacklogItem$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MeetingBacklogItem$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -885,7 +1061,7 @@ export interface MeetingBacklogItemFieldRefs {
   readonly backlogListId: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
   readonly ticketId: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
   readonly title: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
-  readonly dept: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
+  readonly deptId: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
   readonly priority: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
   readonly notes: Prisma.FieldRef<"MeetingBacklogItem", 'String'>
   readonly pushedToBank: Prisma.FieldRef<"MeetingBacklogItem", 'Boolean'>
@@ -907,6 +1083,10 @@ export type MeetingBacklogItemFindUniqueArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
+  /**
    * Filter, which MeetingBacklogItem to fetch.
    */
   where: Prisma.MeetingBacklogItemWhereUniqueInput
@@ -925,6 +1105,10 @@ export type MeetingBacklogItemFindUniqueOrThrowArgs<ExtArgs extends runtime.Type
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
+  /**
    * Filter, which MeetingBacklogItem to fetch.
    */
   where: Prisma.MeetingBacklogItemWhereUniqueInput
@@ -942,6 +1126,10 @@ export type MeetingBacklogItemFindFirstArgs<ExtArgs extends runtime.Types.Extens
    * Omit specific fields from the MeetingBacklogItem
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
   /**
    * Filter, which MeetingBacklogItem to fetch.
    */
@@ -991,6 +1179,10 @@ export type MeetingBacklogItemFindFirstOrThrowArgs<ExtArgs extends runtime.Types
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
+  /**
    * Filter, which MeetingBacklogItem to fetch.
    */
   where?: Prisma.MeetingBacklogItemWhereInput
@@ -1038,6 +1230,10 @@ export type MeetingBacklogItemFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Omit specific fields from the MeetingBacklogItem
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
   /**
    * Filter, which MeetingBacklogItems to fetch.
    */
@@ -1087,6 +1283,10 @@ export type MeetingBacklogItemCreateArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
+  /**
    * The data needed to create a MeetingBacklogItem.
    */
   data: Prisma.XOR<Prisma.MeetingBacklogItemCreateInput, Prisma.MeetingBacklogItemUncheckedCreateInput>
@@ -1120,6 +1320,10 @@ export type MeetingBacklogItemCreateManyAndReturnArgs<ExtArgs extends runtime.Ty
    */
   data: Prisma.MeetingBacklogItemCreateManyInput | Prisma.MeetingBacklogItemCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1134,6 +1338,10 @@ export type MeetingBacklogItemUpdateArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the MeetingBacklogItem
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
   /**
    * The data needed to update a MeetingBacklogItem.
    */
@@ -1186,6 +1394,10 @@ export type MeetingBacklogItemUpdateManyAndReturnArgs<ExtArgs extends runtime.Ty
    * Limit how many MeetingBacklogItems to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1200,6 +1412,10 @@ export type MeetingBacklogItemUpsertArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the MeetingBacklogItem
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
   /**
    * The filter to search for the MeetingBacklogItem to update in case it exists.
    */
@@ -1227,6 +1443,10 @@ export type MeetingBacklogItemDeleteArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
+  /**
    * Filter which MeetingBacklogItem to delete.
    */
   where: Prisma.MeetingBacklogItemWhereUniqueInput
@@ -1247,6 +1467,25 @@ export type MeetingBacklogItemDeleteManyArgs<ExtArgs extends runtime.Types.Exten
 }
 
 /**
+ * MeetingBacklogItem.dept
+ */
+export type MeetingBacklogItem$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
+}
+
+/**
  * MeetingBacklogItem without action
  */
 export type MeetingBacklogItemDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1258,4 +1497,8 @@ export type MeetingBacklogItemDefaultArgs<ExtArgs extends runtime.Types.Extensio
    * Omit specific fields from the MeetingBacklogItem
    */
   omit?: Prisma.MeetingBacklogItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MeetingBacklogItemInclude<ExtArgs> | null
 }

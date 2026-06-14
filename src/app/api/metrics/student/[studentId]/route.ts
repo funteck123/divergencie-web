@@ -23,7 +23,7 @@ export async function GET(
   const [totalAttendance, presentAttendance, progressItems, totalSyllabusItems] = await Promise.all([
     prisma.sessionAttendance.count({ where: { studentId } }),
     prisma.sessionAttendance.count({ where: { studentId, status: "PRESENT" } }),
-    prisma.studentProgress.findMany({ where: { studentId } }),
+    prisma.studentSyllabusProgress.findMany({ where: { studentId } }),
     prisma.syllabusItem.count(),
   ]);
 

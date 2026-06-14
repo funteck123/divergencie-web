@@ -27,21 +27,21 @@ export type AggregateKnowledgeBankList = {
 export type KnowledgeBankListMinAggregateOutputType = {
   id: string | null
   domainId: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
 }
 
 export type KnowledgeBankListMaxAggregateOutputType = {
   id: string | null
   domainId: string | null
-  dept: string | null
+  deptId: string | null
   isActive: boolean | null
 }
 
 export type KnowledgeBankListCountAggregateOutputType = {
   id: number
   domainId: number
-  dept: number
+  deptId: number
   isActive: number
   _all: number
 }
@@ -50,21 +50,21 @@ export type KnowledgeBankListCountAggregateOutputType = {
 export type KnowledgeBankListMinAggregateInputType = {
   id?: true
   domainId?: true
-  dept?: true
+  deptId?: true
   isActive?: true
 }
 
 export type KnowledgeBankListMaxAggregateInputType = {
   id?: true
   domainId?: true
-  dept?: true
+  deptId?: true
   isActive?: true
 }
 
 export type KnowledgeBankListCountAggregateInputType = {
   id?: true
   domainId?: true
-  dept?: true
+  deptId?: true
   isActive?: true
   _all?: true
 }
@@ -144,7 +144,7 @@ export type KnowledgeBankListGroupByArgs<ExtArgs extends runtime.Types.Extension
 export type KnowledgeBankListGroupByOutputType = {
   id: string
   domainId: string
-  dept: string
+  deptId: string | null
   isActive: boolean
   _count: KnowledgeBankListCountAggregateOutputType | null
   _min: KnowledgeBankListMinAggregateOutputType | null
@@ -172,15 +172,17 @@ export type KnowledgeBankListWhereInput = {
   NOT?: Prisma.KnowledgeBankListWhereInput | Prisma.KnowledgeBankListWhereInput[]
   id?: Prisma.StringFilter<"KnowledgeBankList"> | string
   domainId?: Prisma.StringFilter<"KnowledgeBankList"> | string
-  dept?: Prisma.StringFilter<"KnowledgeBankList"> | string
+  deptId?: Prisma.StringNullableFilter<"KnowledgeBankList"> | string | null
   isActive?: Prisma.BoolFilter<"KnowledgeBankList"> | boolean
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
 }
 
 export type KnowledgeBankListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  dept?: Prisma.DepartmentOrderByWithRelationInput
 }
 
 export type KnowledgeBankListWhereUniqueInput = Prisma.AtLeast<{
@@ -189,14 +191,15 @@ export type KnowledgeBankListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.KnowledgeBankListWhereInput[]
   NOT?: Prisma.KnowledgeBankListWhereInput | Prisma.KnowledgeBankListWhereInput[]
   domainId?: Prisma.StringFilter<"KnowledgeBankList"> | string
-  dept?: Prisma.StringFilter<"KnowledgeBankList"> | string
+  deptId?: Prisma.StringNullableFilter<"KnowledgeBankList"> | string | null
   isActive?: Prisma.BoolFilter<"KnowledgeBankList"> | boolean
+  dept?: Prisma.XOR<Prisma.DepartmentNullableScalarRelationFilter, Prisma.DepartmentWhereInput> | null
 }, "id">
 
 export type KnowledgeBankListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.KnowledgeBankListCountOrderByAggregateInput
   _max?: Prisma.KnowledgeBankListMaxOrderByAggregateInput
@@ -209,78 +212,201 @@ export type KnowledgeBankListScalarWhereWithAggregatesInput = {
   NOT?: Prisma.KnowledgeBankListScalarWhereWithAggregatesInput | Prisma.KnowledgeBankListScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"KnowledgeBankList"> | string
   domainId?: Prisma.StringWithAggregatesFilter<"KnowledgeBankList"> | string
-  dept?: Prisma.StringWithAggregatesFilter<"KnowledgeBankList"> | string
+  deptId?: Prisma.StringNullableWithAggregatesFilter<"KnowledgeBankList"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"KnowledgeBankList"> | boolean
 }
 
 export type KnowledgeBankListCreateInput = {
   id?: string
   domainId: string
-  dept: string
   isActive?: boolean
+  dept?: Prisma.DepartmentCreateNestedOneWithoutKnowledgeBankListsInput
 }
 
 export type KnowledgeBankListUncheckedCreateInput = {
   id?: string
   domainId: string
-  dept: string
+  deptId?: string | null
   isActive?: boolean
 }
 
 export type KnowledgeBankListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dept?: Prisma.DepartmentUpdateOneWithoutKnowledgeBankListsNestedInput
 }
 
 export type KnowledgeBankListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type KnowledgeBankListCreateManyInput = {
   id?: string
   domainId: string
-  dept: string
+  deptId?: string | null
   isActive?: boolean
 }
 
 export type KnowledgeBankListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type KnowledgeBankListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   domainId?: Prisma.StringFieldUpdateOperationsInput | string
-  dept?: Prisma.StringFieldUpdateOperationsInput | string
+  deptId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type KnowledgeBankListListRelationFilter = {
+  every?: Prisma.KnowledgeBankListWhereInput
+  some?: Prisma.KnowledgeBankListWhereInput
+  none?: Prisma.KnowledgeBankListWhereInput
+}
+
+export type KnowledgeBankListOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type KnowledgeBankListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type KnowledgeBankListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type KnowledgeBankListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   domainId?: Prisma.SortOrder
-  dept?: Prisma.SortOrder
+  deptId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+}
+
+export type KnowledgeBankListCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeBankListCreateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput> | Prisma.KnowledgeBankListCreateWithoutDeptInput[] | Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput | Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.KnowledgeBankListCreateManyDeptInputEnvelope
+  connect?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+}
+
+export type KnowledgeBankListUncheckedCreateNestedManyWithoutDeptInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeBankListCreateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput> | Prisma.KnowledgeBankListCreateWithoutDeptInput[] | Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput | Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput[]
+  createMany?: Prisma.KnowledgeBankListCreateManyDeptInputEnvelope
+  connect?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+}
+
+export type KnowledgeBankListUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeBankListCreateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput> | Prisma.KnowledgeBankListCreateWithoutDeptInput[] | Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput | Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.KnowledgeBankListUpsertWithWhereUniqueWithoutDeptInput | Prisma.KnowledgeBankListUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.KnowledgeBankListCreateManyDeptInputEnvelope
+  set?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  disconnect?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  delete?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  connect?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  update?: Prisma.KnowledgeBankListUpdateWithWhereUniqueWithoutDeptInput | Prisma.KnowledgeBankListUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.KnowledgeBankListUpdateManyWithWhereWithoutDeptInput | Prisma.KnowledgeBankListUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.KnowledgeBankListScalarWhereInput | Prisma.KnowledgeBankListScalarWhereInput[]
+}
+
+export type KnowledgeBankListUncheckedUpdateManyWithoutDeptNestedInput = {
+  create?: Prisma.XOR<Prisma.KnowledgeBankListCreateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput> | Prisma.KnowledgeBankListCreateWithoutDeptInput[] | Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput[]
+  connectOrCreate?: Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput | Prisma.KnowledgeBankListCreateOrConnectWithoutDeptInput[]
+  upsert?: Prisma.KnowledgeBankListUpsertWithWhereUniqueWithoutDeptInput | Prisma.KnowledgeBankListUpsertWithWhereUniqueWithoutDeptInput[]
+  createMany?: Prisma.KnowledgeBankListCreateManyDeptInputEnvelope
+  set?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  disconnect?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  delete?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  connect?: Prisma.KnowledgeBankListWhereUniqueInput | Prisma.KnowledgeBankListWhereUniqueInput[]
+  update?: Prisma.KnowledgeBankListUpdateWithWhereUniqueWithoutDeptInput | Prisma.KnowledgeBankListUpdateWithWhereUniqueWithoutDeptInput[]
+  updateMany?: Prisma.KnowledgeBankListUpdateManyWithWhereWithoutDeptInput | Prisma.KnowledgeBankListUpdateManyWithWhereWithoutDeptInput[]
+  deleteMany?: Prisma.KnowledgeBankListScalarWhereInput | Prisma.KnowledgeBankListScalarWhereInput[]
+}
+
+export type KnowledgeBankListCreateWithoutDeptInput = {
+  id?: string
+  domainId: string
+  isActive?: boolean
+}
+
+export type KnowledgeBankListUncheckedCreateWithoutDeptInput = {
+  id?: string
+  domainId: string
+  isActive?: boolean
+}
+
+export type KnowledgeBankListCreateOrConnectWithoutDeptInput = {
+  where: Prisma.KnowledgeBankListWhereUniqueInput
+  create: Prisma.XOR<Prisma.KnowledgeBankListCreateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput>
+}
+
+export type KnowledgeBankListCreateManyDeptInputEnvelope = {
+  data: Prisma.KnowledgeBankListCreateManyDeptInput | Prisma.KnowledgeBankListCreateManyDeptInput[]
+  skipDuplicates?: boolean
+}
+
+export type KnowledgeBankListUpsertWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.KnowledgeBankListWhereUniqueInput
+  update: Prisma.XOR<Prisma.KnowledgeBankListUpdateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedUpdateWithoutDeptInput>
+  create: Prisma.XOR<Prisma.KnowledgeBankListCreateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedCreateWithoutDeptInput>
+}
+
+export type KnowledgeBankListUpdateWithWhereUniqueWithoutDeptInput = {
+  where: Prisma.KnowledgeBankListWhereUniqueInput
+  data: Prisma.XOR<Prisma.KnowledgeBankListUpdateWithoutDeptInput, Prisma.KnowledgeBankListUncheckedUpdateWithoutDeptInput>
+}
+
+export type KnowledgeBankListUpdateManyWithWhereWithoutDeptInput = {
+  where: Prisma.KnowledgeBankListScalarWhereInput
+  data: Prisma.XOR<Prisma.KnowledgeBankListUpdateManyMutationInput, Prisma.KnowledgeBankListUncheckedUpdateManyWithoutDeptInput>
+}
+
+export type KnowledgeBankListScalarWhereInput = {
+  AND?: Prisma.KnowledgeBankListScalarWhereInput | Prisma.KnowledgeBankListScalarWhereInput[]
+  OR?: Prisma.KnowledgeBankListScalarWhereInput[]
+  NOT?: Prisma.KnowledgeBankListScalarWhereInput | Prisma.KnowledgeBankListScalarWhereInput[]
+  id?: Prisma.StringFilter<"KnowledgeBankList"> | string
+  domainId?: Prisma.StringFilter<"KnowledgeBankList"> | string
+  deptId?: Prisma.StringNullableFilter<"KnowledgeBankList"> | string | null
+  isActive?: Prisma.BoolFilter<"KnowledgeBankList"> | boolean
+}
+
+export type KnowledgeBankListCreateManyDeptInput = {
+  id?: string
+  domainId: string
+  isActive?: boolean
+}
+
+export type KnowledgeBankListUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  domainId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type KnowledgeBankListUncheckedUpdateWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  domainId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type KnowledgeBankListUncheckedUpdateManyWithoutDeptInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  domainId?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -288,40 +414,54 @@ export type KnowledgeBankListMinOrderByAggregateInput = {
 export type KnowledgeBankListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   domainId?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
+  dept?: boolean | Prisma.KnowledgeBankList$deptArgs<ExtArgs>
 }, ExtArgs["result"]["knowledgeBankList"]>
 
 export type KnowledgeBankListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   domainId?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
+  dept?: boolean | Prisma.KnowledgeBankList$deptArgs<ExtArgs>
 }, ExtArgs["result"]["knowledgeBankList"]>
 
 export type KnowledgeBankListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   domainId?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
+  dept?: boolean | Prisma.KnowledgeBankList$deptArgs<ExtArgs>
 }, ExtArgs["result"]["knowledgeBankList"]>
 
 export type KnowledgeBankListSelectScalar = {
   id?: boolean
   domainId?: boolean
-  dept?: boolean
+  deptId?: boolean
   isActive?: boolean
 }
 
-export type KnowledgeBankListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "domainId" | "dept" | "isActive", ExtArgs["result"]["knowledgeBankList"]>
+export type KnowledgeBankListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "domainId" | "deptId" | "isActive", ExtArgs["result"]["knowledgeBankList"]>
+export type KnowledgeBankListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.KnowledgeBankList$deptArgs<ExtArgs>
+}
+export type KnowledgeBankListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.KnowledgeBankList$deptArgs<ExtArgs>
+}
+export type KnowledgeBankListIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  dept?: boolean | Prisma.KnowledgeBankList$deptArgs<ExtArgs>
+}
 
 export type $KnowledgeBankListPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "KnowledgeBankList"
-  objects: {}
+  objects: {
+    dept: Prisma.$DepartmentPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     domainId: string
-    dept: string
+    deptId: string | null
     isActive: boolean
   }, ExtArgs["result"]["knowledgeBankList"]>
   composites: {}
@@ -717,6 +857,7 @@ readonly fields: KnowledgeBankListFieldRefs;
  */
 export interface Prisma__KnowledgeBankListClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  dept<T extends Prisma.KnowledgeBankList$deptArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KnowledgeBankList$deptArgs<ExtArgs>>): Prisma.Prisma__DepartmentClient<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -748,7 +889,7 @@ export interface Prisma__KnowledgeBankListClient<T, Null = never, ExtArgs extend
 export interface KnowledgeBankListFieldRefs {
   readonly id: Prisma.FieldRef<"KnowledgeBankList", 'String'>
   readonly domainId: Prisma.FieldRef<"KnowledgeBankList", 'String'>
-  readonly dept: Prisma.FieldRef<"KnowledgeBankList", 'String'>
+  readonly deptId: Prisma.FieldRef<"KnowledgeBankList", 'String'>
   readonly isActive: Prisma.FieldRef<"KnowledgeBankList", 'Boolean'>
 }
     
@@ -766,6 +907,10 @@ export type KnowledgeBankListFindUniqueArgs<ExtArgs extends runtime.Types.Extens
    * Omit specific fields from the KnowledgeBankList
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
   /**
    * Filter, which KnowledgeBankList to fetch.
    */
@@ -785,6 +930,10 @@ export type KnowledgeBankListFindUniqueOrThrowArgs<ExtArgs extends runtime.Types
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
+  /**
    * Filter, which KnowledgeBankList to fetch.
    */
   where: Prisma.KnowledgeBankListWhereUniqueInput
@@ -802,6 +951,10 @@ export type KnowledgeBankListFindFirstArgs<ExtArgs extends runtime.Types.Extensi
    * Omit specific fields from the KnowledgeBankList
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
   /**
    * Filter, which KnowledgeBankList to fetch.
    */
@@ -851,6 +1004,10 @@ export type KnowledgeBankListFindFirstOrThrowArgs<ExtArgs extends runtime.Types.
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
+  /**
    * Filter, which KnowledgeBankList to fetch.
    */
   where?: Prisma.KnowledgeBankListWhereInput
@@ -898,6 +1055,10 @@ export type KnowledgeBankListFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Omit specific fields from the KnowledgeBankList
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
   /**
    * Filter, which KnowledgeBankLists to fetch.
    */
@@ -947,6 +1108,10 @@ export type KnowledgeBankListCreateArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
+  /**
    * The data needed to create a KnowledgeBankList.
    */
   data: Prisma.XOR<Prisma.KnowledgeBankListCreateInput, Prisma.KnowledgeBankListUncheckedCreateInput>
@@ -980,6 +1145,10 @@ export type KnowledgeBankListCreateManyAndReturnArgs<ExtArgs extends runtime.Typ
    */
   data: Prisma.KnowledgeBankListCreateManyInput | Prisma.KnowledgeBankListCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -994,6 +1163,10 @@ export type KnowledgeBankListUpdateArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the KnowledgeBankList
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
   /**
    * The data needed to update a KnowledgeBankList.
    */
@@ -1046,6 +1219,10 @@ export type KnowledgeBankListUpdateManyAndReturnArgs<ExtArgs extends runtime.Typ
    * Limit how many KnowledgeBankLists to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1060,6 +1237,10 @@ export type KnowledgeBankListUpsertArgs<ExtArgs extends runtime.Types.Extensions
    * Omit specific fields from the KnowledgeBankList
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
   /**
    * The filter to search for the KnowledgeBankList to update in case it exists.
    */
@@ -1087,6 +1268,10 @@ export type KnowledgeBankListDeleteArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
+  /**
    * Filter which KnowledgeBankList to delete.
    */
   where: Prisma.KnowledgeBankListWhereUniqueInput
@@ -1107,6 +1292,25 @@ export type KnowledgeBankListDeleteManyArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
+ * KnowledgeBankList.dept
+ */
+export type KnowledgeBankList$deptArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentInclude<ExtArgs> | null
+  where?: Prisma.DepartmentWhereInput
+}
+
+/**
  * KnowledgeBankList without action
  */
 export type KnowledgeBankListDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1118,4 +1322,8 @@ export type KnowledgeBankListDefaultArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the KnowledgeBankList
    */
   omit?: Prisma.KnowledgeBankListOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KnowledgeBankListInclude<ExtArgs> | null
 }

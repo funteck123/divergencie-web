@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { Database, Search, Save, Trash2, X, ChevronRight, AlertCircle, Table } from "lucide-react";
 
 const TABLES = [

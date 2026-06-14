@@ -17,7 +17,7 @@ import {
   Bell
 } from "lucide-react";
 import { getMeetings, requestMeeting, updateMeetingStatus } from "@/lib/actions/meetings";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { useEffect } from "react";
 
 export default function StaffMeetingsPage() {

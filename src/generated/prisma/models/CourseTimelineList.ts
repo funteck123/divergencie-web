@@ -27,18 +27,36 @@ export type AggregateCourseTimelineList = {
 export type CourseTimelineListMinAggregateOutputType = {
   id: string | null
   curriculumListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type CourseTimelineListMaxAggregateOutputType = {
   id: string | null
   curriculumListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type CourseTimelineListCountAggregateOutputType = {
   id: number
   curriculumListId: number
+  name: number
+  version: number
+  status: number
+  activatedAt: number
+  pausedAt: number
+  deactivatedAt: number
   isActive: number
   _all: number
 }
@@ -47,18 +65,36 @@ export type CourseTimelineListCountAggregateOutputType = {
 export type CourseTimelineListMinAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type CourseTimelineListMaxAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type CourseTimelineListCountAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
   _all?: true
 }
@@ -138,6 +174,12 @@ export type CourseTimelineListGroupByArgs<ExtArgs extends runtime.Types.Extensio
 export type CourseTimelineListGroupByOutputType = {
   id: string
   curriculumListId: string
+  name: string
+  version: string
+  status: string
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean
   _count: CourseTimelineListCountAggregateOutputType | null
   _min: CourseTimelineListMinAggregateOutputType | null
@@ -165,17 +207,31 @@ export type CourseTimelineListWhereInput = {
   NOT?: Prisma.CourseTimelineListWhereInput | Prisma.CourseTimelineListWhereInput[]
   id?: Prisma.StringFilter<"CourseTimelineList"> | string
   curriculumListId?: Prisma.StringFilter<"CourseTimelineList"> | string
+  name?: Prisma.StringFilter<"CourseTimelineList"> | string
+  version?: Prisma.StringFilter<"CourseTimelineList"> | string
+  status?: Prisma.StringFilter<"CourseTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"CourseTimelineList"> | boolean
   curriculumList?: Prisma.XOR<Prisma.CurriculumListScalarRelationFilter, Prisma.CurriculumListWhereInput>
   items?: Prisma.CourseTimelineItemListRelationFilter
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogListRelationFilter
 }
 
 export type CourseTimelineListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   curriculumList?: Prisma.CurriculumListOrderByWithRelationInput
   items?: Prisma.CourseTimelineItemOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type CourseTimelineListWhereUniqueInput = Prisma.AtLeast<{
@@ -184,14 +240,27 @@ export type CourseTimelineListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CourseTimelineListWhereInput[]
   NOT?: Prisma.CourseTimelineListWhereInput | Prisma.CourseTimelineListWhereInput[]
   curriculumListId?: Prisma.StringFilter<"CourseTimelineList"> | string
+  name?: Prisma.StringFilter<"CourseTimelineList"> | string
+  version?: Prisma.StringFilter<"CourseTimelineList"> | string
+  status?: Prisma.StringFilter<"CourseTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"CourseTimelineList"> | boolean
   curriculumList?: Prisma.XOR<Prisma.CurriculumListScalarRelationFilter, Prisma.CurriculumListWhereInput>
   items?: Prisma.CourseTimelineItemListRelationFilter
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogListRelationFilter
 }, "id">
 
 export type CourseTimelineListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.CourseTimelineListCountOrderByAggregateInput
   _max?: Prisma.CourseTimelineListMaxOrderByAggregateInput
@@ -204,51 +273,103 @@ export type CourseTimelineListScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CourseTimelineListScalarWhereWithAggregatesInput | Prisma.CourseTimelineListScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CourseTimelineList"> | string
   curriculumListId?: Prisma.StringWithAggregatesFilter<"CourseTimelineList"> | string
+  name?: Prisma.StringWithAggregatesFilter<"CourseTimelineList"> | string
+  version?: Prisma.StringWithAggregatesFilter<"CourseTimelineList"> | string
+  status?: Prisma.StringWithAggregatesFilter<"CourseTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CourseTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CourseTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CourseTimelineList"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"CourseTimelineList"> | boolean
 }
 
 export type CourseTimelineListCreateInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   curriculumList: Prisma.CurriculumListCreateNestedOneWithoutTimelineListsInput
   items?: Prisma.CourseTimelineItemCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogCreateNestedManyWithoutTimelineListInput
 }
 
 export type CourseTimelineListUncheckedCreateInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   items?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUncheckedCreateNestedManyWithoutTimelineListInput
 }
 
 export type CourseTimelineListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutTimelineListsNestedInput
   items?: Prisma.CourseTimelineItemUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListCreateManyInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type CourseTimelineListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type CourseTimelineListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -265,18 +386,36 @@ export type CourseTimelineListOrderByRelationAggregateInput = {
 export type CourseTimelineListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type CourseTimelineListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type CourseTimelineListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -327,6 +466,20 @@ export type CourseTimelineListUncheckedUpdateManyWithoutCurriculumListNestedInpu
   deleteMany?: Prisma.CourseTimelineListScalarWhereInput | Prisma.CourseTimelineListScalarWhereInput[]
 }
 
+export type CourseTimelineListCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.CourseTimelineListCreateWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.CourseTimelineListCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.CourseTimelineListWhereUniqueInput
+}
+
+export type CourseTimelineListUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseTimelineListCreateWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.CourseTimelineListCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.CourseTimelineListUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.CourseTimelineListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseTimelineListUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUpdateWithoutStatusChangeLogsInput>, Prisma.CourseTimelineListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type CourseTimelineListCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.CourseTimelineListCreateWithoutItemsInput, Prisma.CourseTimelineListUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.CourseTimelineListCreateOrConnectWithoutItemsInput
@@ -343,14 +496,28 @@ export type CourseTimelineListUpdateOneRequiredWithoutItemsNestedInput = {
 
 export type CourseTimelineListCreateWithoutCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   items?: Prisma.CourseTimelineItemCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogCreateNestedManyWithoutTimelineListInput
 }
 
 export type CourseTimelineListUncheckedCreateWithoutCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   items?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutTimelineListInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUncheckedCreateNestedManyWithoutTimelineListInput
 }
 
 export type CourseTimelineListCreateOrConnectWithoutCurriculumListInput = {
@@ -385,19 +552,107 @@ export type CourseTimelineListScalarWhereInput = {
   NOT?: Prisma.CourseTimelineListScalarWhereInput | Prisma.CourseTimelineListScalarWhereInput[]
   id?: Prisma.StringFilter<"CourseTimelineList"> | string
   curriculumListId?: Prisma.StringFilter<"CourseTimelineList"> | string
+  name?: Prisma.StringFilter<"CourseTimelineList"> | string
+  version?: Prisma.StringFilter<"CourseTimelineList"> | string
+  status?: Prisma.StringFilter<"CourseTimelineList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"CourseTimelineList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"CourseTimelineList"> | boolean
+}
+
+export type CourseTimelineListCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  curriculumList: Prisma.CurriculumListCreateNestedOneWithoutTimelineListsInput
+  items?: Prisma.CourseTimelineItemCreateNestedManyWithoutTimelineListInput
+}
+
+export type CourseTimelineListUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  items?: Prisma.CourseTimelineItemUncheckedCreateNestedManyWithoutTimelineListInput
+}
+
+export type CourseTimelineListCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.CourseTimelineListWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseTimelineListCreateWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type CourseTimelineListUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.CourseTimelineListUpdateWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.CourseTimelineListCreateWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.CourseTimelineListWhereInput
+}
+
+export type CourseTimelineListUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.CourseTimelineListWhereInput
+  data: Prisma.XOR<Prisma.CourseTimelineListUpdateWithoutStatusChangeLogsInput, Prisma.CourseTimelineListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type CourseTimelineListUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutTimelineListsNestedInput
+  items?: Prisma.CourseTimelineItemUpdateManyWithoutTimelineListNestedInput
+}
+
+export type CourseTimelineListUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  items?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListCreateWithoutItemsInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   curriculumList: Prisma.CurriculumListCreateNestedOneWithoutTimelineListsInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogCreateNestedManyWithoutTimelineListInput
 }
 
 export type CourseTimelineListUncheckedCreateWithoutItemsInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUncheckedCreateNestedManyWithoutTimelineListInput
 }
 
 export type CourseTimelineListCreateOrConnectWithoutItemsInput = {
@@ -418,35 +673,75 @@ export type CourseTimelineListUpdateToOneWithWhereWithoutItemsInput = {
 
 export type CourseTimelineListUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutTimelineListsNestedInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListCreateManyCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type CourseTimelineListUpdateWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.CourseTimelineItemUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListUncheckedUpdateWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   items?: Prisma.CourseTimelineItemUncheckedUpdateManyWithoutTimelineListNestedInput
+  statusChangeLogs?: Prisma.CourseTimelineListStatusChangeLogUncheckedUpdateManyWithoutTimelineListNestedInput
 }
 
 export type CourseTimelineListUncheckedUpdateManyWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -457,10 +752,12 @@ export type CourseTimelineListUncheckedUpdateManyWithoutCurriculumListInput = {
 
 export type CourseTimelineListCountOutputType = {
   items: number
+  statusChangeLogs: number
 }
 
 export type CourseTimelineListCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | CourseTimelineListCountOutputTypeCountItemsArgs
+  statusChangeLogs?: boolean | CourseTimelineListCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -480,19 +777,39 @@ export type CourseTimelineListCountOutputTypeCountItemsArgs<ExtArgs extends runt
   where?: Prisma.CourseTimelineItemWhereInput
 }
 
+/**
+ * CourseTimelineListCountOutputType without action
+ */
+export type CourseTimelineListCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CourseTimelineListStatusChangeLogWhereInput
+}
+
 
 export type CourseTimelineListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
   items?: boolean | Prisma.CourseTimelineList$itemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.CourseTimelineList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseTimelineListCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseTimelineList"]>
 
 export type CourseTimelineListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseTimelineList"]>
@@ -500,6 +817,12 @@ export type CourseTimelineListSelectCreateManyAndReturn<ExtArgs extends runtime.
 export type CourseTimelineListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseTimelineList"]>
@@ -507,13 +830,20 @@ export type CourseTimelineListSelectUpdateManyAndReturn<ExtArgs extends runtime.
 export type CourseTimelineListSelectScalar = {
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
 }
 
-export type CourseTimelineListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "curriculumListId" | "isActive", ExtArgs["result"]["courseTimelineList"]>
+export type CourseTimelineListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "curriculumListId" | "name" | "version" | "status" | "activatedAt" | "pausedAt" | "deactivatedAt" | "isActive", ExtArgs["result"]["courseTimelineList"]>
 export type CourseTimelineListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
   items?: boolean | Prisma.CourseTimelineList$itemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.CourseTimelineList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseTimelineListCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CourseTimelineListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -528,10 +858,17 @@ export type $CourseTimelineListPayload<ExtArgs extends runtime.Types.Extensions.
   objects: {
     curriculumList: Prisma.$CurriculumListPayload<ExtArgs>
     items: Prisma.$CourseTimelineItemPayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$CourseTimelineListStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     curriculumListId: string
+    name: string
+    version: string
+    status: string
+    activatedAt: Date | null
+    pausedAt: Date | null
+    deactivatedAt: Date | null
     isActive: boolean
   }, ExtArgs["result"]["courseTimelineList"]>
   composites: {}
@@ -929,6 +1266,7 @@ export interface Prisma__CourseTimelineListClient<T, Null = never, ExtArgs exten
   readonly [Symbol.toStringTag]: "PrismaPromise"
   curriculumList<T extends Prisma.CurriculumListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CurriculumListDefaultArgs<ExtArgs>>): Prisma.Prisma__CurriculumListClient<runtime.Types.Result.GetResult<Prisma.$CurriculumListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.CourseTimelineList$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseTimelineList$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourseTimelineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.CourseTimelineList$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseTimelineList$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourseTimelineListStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -960,6 +1298,12 @@ export interface Prisma__CourseTimelineListClient<T, Null = never, ExtArgs exten
 export interface CourseTimelineListFieldRefs {
   readonly id: Prisma.FieldRef<"CourseTimelineList", 'String'>
   readonly curriculumListId: Prisma.FieldRef<"CourseTimelineList", 'String'>
+  readonly name: Prisma.FieldRef<"CourseTimelineList", 'String'>
+  readonly version: Prisma.FieldRef<"CourseTimelineList", 'String'>
+  readonly status: Prisma.FieldRef<"CourseTimelineList", 'String'>
+  readonly activatedAt: Prisma.FieldRef<"CourseTimelineList", 'DateTime'>
+  readonly pausedAt: Prisma.FieldRef<"CourseTimelineList", 'DateTime'>
+  readonly deactivatedAt: Prisma.FieldRef<"CourseTimelineList", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"CourseTimelineList", 'Boolean'>
 }
     
@@ -1383,6 +1727,30 @@ export type CourseTimelineList$itemsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.CourseTimelineItemScalarFieldEnum | Prisma.CourseTimelineItemScalarFieldEnum[]
+}
+
+/**
+ * CourseTimelineList.statusChangeLogs
+ */
+export type CourseTimelineList$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CourseTimelineListStatusChangeLog
+   */
+  select?: Prisma.CourseTimelineListStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CourseTimelineListStatusChangeLog
+   */
+  omit?: Prisma.CourseTimelineListStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CourseTimelineListStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.CourseTimelineListStatusChangeLogWhereInput
+  orderBy?: Prisma.CourseTimelineListStatusChangeLogOrderByWithRelationInput | Prisma.CourseTimelineListStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.CourseTimelineListStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CourseTimelineListStatusChangeLogScalarFieldEnum | Prisma.CourseTimelineListStatusChangeLogScalarFieldEnum[]
 }
 
 /**

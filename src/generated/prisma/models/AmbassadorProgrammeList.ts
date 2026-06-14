@@ -166,7 +166,8 @@ export type AmbassadorProgrammeListWhereInput = {
   id?: Prisma.StringFilter<"AmbassadorProgrammeList"> | string
   ambassadorServiceId?: Prisma.StringFilter<"AmbassadorProgrammeList"> | string
   isActive?: Prisma.BoolFilter<"AmbassadorProgrammeList"> | boolean
-  programmes?: Prisma.AmbassadorProgrammeListRelationFilter
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceScalarRelationFilter, Prisma.AmbassadorServiceWhereInput>
+  contentLists?: Prisma.AmbassadorProgrammeContentListListRelationFilter
   testLists?: Prisma.AmbassadorTestListListRelationFilter
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListListRelationFilter
 }
@@ -175,7 +176,8 @@ export type AmbassadorProgrammeListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   ambassadorServiceId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  programmes?: Prisma.AmbassadorProgrammeOrderByRelationAggregateInput
+  ambassadorService?: Prisma.AmbassadorServiceOrderByWithRelationInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListOrderByRelationAggregateInput
   testLists?: Prisma.AmbassadorTestListOrderByRelationAggregateInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListOrderByRelationAggregateInput
 }
@@ -187,7 +189,8 @@ export type AmbassadorProgrammeListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AmbassadorProgrammeListWhereInput[]
   NOT?: Prisma.AmbassadorProgrammeListWhereInput | Prisma.AmbassadorProgrammeListWhereInput[]
   isActive?: Prisma.BoolFilter<"AmbassadorProgrammeList"> | boolean
-  programmes?: Prisma.AmbassadorProgrammeListRelationFilter
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceScalarRelationFilter, Prisma.AmbassadorServiceWhereInput>
+  contentLists?: Prisma.AmbassadorProgrammeContentListListRelationFilter
   testLists?: Prisma.AmbassadorTestListListRelationFilter
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListListRelationFilter
 }, "id" | "ambassadorServiceId">
@@ -212,9 +215,9 @@ export type AmbassadorProgrammeListScalarWhereWithAggregatesInput = {
 
 export type AmbassadorProgrammeListCreateInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
-  programmes?: Prisma.AmbassadorProgrammeCreateNestedManyWithoutProgrammeListInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutProgrammeListInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListCreateNestedManyWithoutProgrammeListInput
   testLists?: Prisma.AmbassadorTestListCreateNestedManyWithoutProgrammeListInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListCreateNestedManyWithoutProgrammeListInput
 }
@@ -223,16 +226,16 @@ export type AmbassadorProgrammeListUncheckedCreateInput = {
   id?: string
   ambassadorServiceId: string
   isActive?: boolean
-  programmes?: Prisma.AmbassadorProgrammeUncheckedCreateNestedManyWithoutProgrammeListInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedCreateNestedManyWithoutProgrammeListInput
   testLists?: Prisma.AmbassadorTestListUncheckedCreateNestedManyWithoutProgrammeListInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedCreateNestedManyWithoutProgrammeListInput
 }
 
 export type AmbassadorProgrammeListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  programmes?: Prisma.AmbassadorProgrammeUpdateManyWithoutProgrammeListNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutProgrammeListNestedInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUpdateManyWithoutProgrammeListNestedInput
   testLists?: Prisma.AmbassadorTestListUpdateManyWithoutProgrammeListNestedInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUpdateManyWithoutProgrammeListNestedInput
 }
@@ -241,7 +244,7 @@ export type AmbassadorProgrammeListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  programmes?: Prisma.AmbassadorProgrammeUncheckedUpdateManyWithoutProgrammeListNestedInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedUpdateManyWithoutProgrammeListNestedInput
   testLists?: Prisma.AmbassadorTestListUncheckedUpdateManyWithoutProgrammeListNestedInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedUpdateManyWithoutProgrammeListNestedInput
 }
@@ -254,7 +257,6 @@ export type AmbassadorProgrammeListCreateManyInput = {
 
 export type AmbassadorProgrammeListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -262,6 +264,11 @@ export type AmbassadorProgrammeListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type AmbassadorProgrammeListNullableScalarRelationFilter = {
+  is?: Prisma.AmbassadorProgrammeListWhereInput | null
+  isNot?: Prisma.AmbassadorProgrammeListWhereInput | null
 }
 
 export type AmbassadorProgrammeListCountOrderByAggregateInput = {
@@ -287,18 +294,50 @@ export type AmbassadorProgrammeListScalarRelationFilter = {
   isNot?: Prisma.AmbassadorProgrammeListWhereInput
 }
 
-export type AmbassadorProgrammeListCreateNestedOneWithoutProgrammesInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutProgrammesInput>
-  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutProgrammesInput
+export type AmbassadorProgrammeListCreateNestedOneWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutAmbassadorServiceInput
   connect?: Prisma.AmbassadorProgrammeListWhereUniqueInput
 }
 
-export type AmbassadorProgrammeListUpdateOneRequiredWithoutProgrammesNestedInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutProgrammesInput>
-  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutProgrammesInput
-  upsert?: Prisma.AmbassadorProgrammeListUpsertWithoutProgrammesInput
+export type AmbassadorProgrammeListUncheckedCreateNestedOneWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutAmbassadorServiceInput
   connect?: Prisma.AmbassadorProgrammeListWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateToOneWithWhereWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUpdateWithoutProgrammesInput>, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutProgrammesInput>
+}
+
+export type AmbassadorProgrammeListUpdateOneWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutAmbassadorServiceInput
+  upsert?: Prisma.AmbassadorProgrammeListUpsertWithoutAmbassadorServiceInput
+  disconnect?: Prisma.AmbassadorProgrammeListWhereInput | boolean
+  delete?: Prisma.AmbassadorProgrammeListWhereInput | boolean
+  connect?: Prisma.AmbassadorProgrammeListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateToOneWithWhereWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUpdateWithoutAmbassadorServiceInput>, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorProgrammeListUncheckedUpdateOneWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutAmbassadorServiceInput
+  upsert?: Prisma.AmbassadorProgrammeListUpsertWithoutAmbassadorServiceInput
+  disconnect?: Prisma.AmbassadorProgrammeListWhereInput | boolean
+  delete?: Prisma.AmbassadorProgrammeListWhereInput | boolean
+  connect?: Prisma.AmbassadorProgrammeListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateToOneWithWhereWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUpdateWithoutAmbassadorServiceInput>, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorProgrammeListCreateNestedOneWithoutContentListsInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutContentListsInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutContentListsInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutContentListsInput
+  connect?: Prisma.AmbassadorProgrammeListWhereUniqueInput
+}
+
+export type AmbassadorProgrammeListUpdateOneRequiredWithoutContentListsNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutContentListsInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutContentListsInput>
+  connectOrCreate?: Prisma.AmbassadorProgrammeListCreateOrConnectWithoutContentListsInput
+  upsert?: Prisma.AmbassadorProgrammeListUpsertWithoutContentListsInput
+  connect?: Prisma.AmbassadorProgrammeListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateToOneWithWhereWithoutContentListsInput, Prisma.AmbassadorProgrammeListUpdateWithoutContentListsInput>, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutContentListsInput>
 }
 
 export type AmbassadorProgrammeListCreateNestedOneWithoutTestListsInput = {
@@ -329,15 +368,63 @@ export type AmbassadorProgrammeListUpdateOneRequiredWithoutTimelineListsNestedIn
   update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateToOneWithWhereWithoutTimelineListsInput, Prisma.AmbassadorProgrammeListUpdateWithoutTimelineListsInput>, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutTimelineListsInput>
 }
 
-export type AmbassadorProgrammeListCreateWithoutProgrammesInput = {
+export type AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
+  contentLists?: Prisma.AmbassadorProgrammeContentListCreateNestedManyWithoutProgrammeListInput
   testLists?: Prisma.AmbassadorTestListCreateNestedManyWithoutProgrammeListInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListCreateNestedManyWithoutProgrammeListInput
 }
 
-export type AmbassadorProgrammeListUncheckedCreateWithoutProgrammesInput = {
+export type AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput = {
+  id?: string
+  isActive?: boolean
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedCreateNestedManyWithoutProgrammeListInput
+  testLists?: Prisma.AmbassadorTestListUncheckedCreateNestedManyWithoutProgrammeListInput
+  timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedCreateNestedManyWithoutProgrammeListInput
+}
+
+export type AmbassadorProgrammeListCreateOrConnectWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorProgrammeListWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorProgrammeListUpsertWithoutAmbassadorServiceInput = {
+  update: Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutAmbassadorServiceInput>
+  create: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutAmbassadorServiceInput>
+  where?: Prisma.AmbassadorProgrammeListWhereInput
+}
+
+export type AmbassadorProgrammeListUpdateToOneWithWhereWithoutAmbassadorServiceInput = {
+  where?: Prisma.AmbassadorProgrammeListWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorProgrammeListUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contentLists?: Prisma.AmbassadorProgrammeContentListUpdateManyWithoutProgrammeListNestedInput
+  testLists?: Prisma.AmbassadorTestListUpdateManyWithoutProgrammeListNestedInput
+  timelineLists?: Prisma.AmbassadorProgrammeTimelineListUpdateManyWithoutProgrammeListNestedInput
+}
+
+export type AmbassadorProgrammeListUncheckedUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedUpdateManyWithoutProgrammeListNestedInput
+  testLists?: Prisma.AmbassadorTestListUncheckedUpdateManyWithoutProgrammeListNestedInput
+  timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedUpdateManyWithoutProgrammeListNestedInput
+}
+
+export type AmbassadorProgrammeListCreateWithoutContentListsInput = {
+  id?: string
+  isActive?: boolean
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutProgrammeListInput
+  testLists?: Prisma.AmbassadorTestListCreateNestedManyWithoutProgrammeListInput
+  timelineLists?: Prisma.AmbassadorProgrammeTimelineListCreateNestedManyWithoutProgrammeListInput
+}
+
+export type AmbassadorProgrammeListUncheckedCreateWithoutContentListsInput = {
   id?: string
   ambassadorServiceId: string
   isActive?: boolean
@@ -345,31 +432,31 @@ export type AmbassadorProgrammeListUncheckedCreateWithoutProgrammesInput = {
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedCreateNestedManyWithoutProgrammeListInput
 }
 
-export type AmbassadorProgrammeListCreateOrConnectWithoutProgrammesInput = {
+export type AmbassadorProgrammeListCreateOrConnectWithoutContentListsInput = {
   where: Prisma.AmbassadorProgrammeListWhereUniqueInput
-  create: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutProgrammesInput>
+  create: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutContentListsInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutContentListsInput>
 }
 
-export type AmbassadorProgrammeListUpsertWithoutProgrammesInput = {
-  update: Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutProgrammesInput>
-  create: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutProgrammesInput>
+export type AmbassadorProgrammeListUpsertWithoutContentListsInput = {
+  update: Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateWithoutContentListsInput, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutContentListsInput>
+  create: Prisma.XOR<Prisma.AmbassadorProgrammeListCreateWithoutContentListsInput, Prisma.AmbassadorProgrammeListUncheckedCreateWithoutContentListsInput>
   where?: Prisma.AmbassadorProgrammeListWhereInput
 }
 
-export type AmbassadorProgrammeListUpdateToOneWithWhereWithoutProgrammesInput = {
+export type AmbassadorProgrammeListUpdateToOneWithWhereWithoutContentListsInput = {
   where?: Prisma.AmbassadorProgrammeListWhereInput
-  data: Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateWithoutProgrammesInput, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutProgrammesInput>
+  data: Prisma.XOR<Prisma.AmbassadorProgrammeListUpdateWithoutContentListsInput, Prisma.AmbassadorProgrammeListUncheckedUpdateWithoutContentListsInput>
 }
 
-export type AmbassadorProgrammeListUpdateWithoutProgrammesInput = {
+export type AmbassadorProgrammeListUpdateWithoutContentListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutProgrammeListNestedInput
   testLists?: Prisma.AmbassadorTestListUpdateManyWithoutProgrammeListNestedInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUpdateManyWithoutProgrammeListNestedInput
 }
 
-export type AmbassadorProgrammeListUncheckedUpdateWithoutProgrammesInput = {
+export type AmbassadorProgrammeListUncheckedUpdateWithoutContentListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -379,9 +466,9 @@ export type AmbassadorProgrammeListUncheckedUpdateWithoutProgrammesInput = {
 
 export type AmbassadorProgrammeListCreateWithoutTestListsInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
-  programmes?: Prisma.AmbassadorProgrammeCreateNestedManyWithoutProgrammeListInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutProgrammeListInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListCreateNestedManyWithoutProgrammeListInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListCreateNestedManyWithoutProgrammeListInput
 }
 
@@ -389,7 +476,7 @@ export type AmbassadorProgrammeListUncheckedCreateWithoutTestListsInput = {
   id?: string
   ambassadorServiceId: string
   isActive?: boolean
-  programmes?: Prisma.AmbassadorProgrammeUncheckedCreateNestedManyWithoutProgrammeListInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedCreateNestedManyWithoutProgrammeListInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedCreateNestedManyWithoutProgrammeListInput
 }
 
@@ -411,9 +498,9 @@ export type AmbassadorProgrammeListUpdateToOneWithWhereWithoutTestListsInput = {
 
 export type AmbassadorProgrammeListUpdateWithoutTestListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  programmes?: Prisma.AmbassadorProgrammeUpdateManyWithoutProgrammeListNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutProgrammeListNestedInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUpdateManyWithoutProgrammeListNestedInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUpdateManyWithoutProgrammeListNestedInput
 }
 
@@ -421,15 +508,15 @@ export type AmbassadorProgrammeListUncheckedUpdateWithoutTestListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  programmes?: Prisma.AmbassadorProgrammeUncheckedUpdateManyWithoutProgrammeListNestedInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedUpdateManyWithoutProgrammeListNestedInput
   timelineLists?: Prisma.AmbassadorProgrammeTimelineListUncheckedUpdateManyWithoutProgrammeListNestedInput
 }
 
 export type AmbassadorProgrammeListCreateWithoutTimelineListsInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
-  programmes?: Prisma.AmbassadorProgrammeCreateNestedManyWithoutProgrammeListInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutProgrammeListInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListCreateNestedManyWithoutProgrammeListInput
   testLists?: Prisma.AmbassadorTestListCreateNestedManyWithoutProgrammeListInput
 }
 
@@ -437,7 +524,7 @@ export type AmbassadorProgrammeListUncheckedCreateWithoutTimelineListsInput = {
   id?: string
   ambassadorServiceId: string
   isActive?: boolean
-  programmes?: Prisma.AmbassadorProgrammeUncheckedCreateNestedManyWithoutProgrammeListInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedCreateNestedManyWithoutProgrammeListInput
   testLists?: Prisma.AmbassadorTestListUncheckedCreateNestedManyWithoutProgrammeListInput
 }
 
@@ -459,9 +546,9 @@ export type AmbassadorProgrammeListUpdateToOneWithWhereWithoutTimelineListsInput
 
 export type AmbassadorProgrammeListUpdateWithoutTimelineListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  programmes?: Prisma.AmbassadorProgrammeUpdateManyWithoutProgrammeListNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutProgrammeListNestedInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUpdateManyWithoutProgrammeListNestedInput
   testLists?: Prisma.AmbassadorTestListUpdateManyWithoutProgrammeListNestedInput
 }
 
@@ -469,7 +556,7 @@ export type AmbassadorProgrammeListUncheckedUpdateWithoutTimelineListsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  programmes?: Prisma.AmbassadorProgrammeUncheckedUpdateManyWithoutProgrammeListNestedInput
+  contentLists?: Prisma.AmbassadorProgrammeContentListUncheckedUpdateManyWithoutProgrammeListNestedInput
   testLists?: Prisma.AmbassadorTestListUncheckedUpdateManyWithoutProgrammeListNestedInput
 }
 
@@ -479,13 +566,13 @@ export type AmbassadorProgrammeListUncheckedUpdateWithoutTimelineListsInput = {
  */
 
 export type AmbassadorProgrammeListCountOutputType = {
-  programmes: number
+  contentLists: number
   testLists: number
   timelineLists: number
 }
 
 export type AmbassadorProgrammeListCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  programmes?: boolean | AmbassadorProgrammeListCountOutputTypeCountProgrammesArgs
+  contentLists?: boolean | AmbassadorProgrammeListCountOutputTypeCountContentListsArgs
   testLists?: boolean | AmbassadorProgrammeListCountOutputTypeCountTestListsArgs
   timelineLists?: boolean | AmbassadorProgrammeListCountOutputTypeCountTimelineListsArgs
 }
@@ -503,8 +590,8 @@ export type AmbassadorProgrammeListCountOutputTypeDefaultArgs<ExtArgs extends ru
 /**
  * AmbassadorProgrammeListCountOutputType without action
  */
-export type AmbassadorProgrammeListCountOutputTypeCountProgrammesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorProgrammeWhereInput
+export type AmbassadorProgrammeListCountOutputTypeCountContentListsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AmbassadorProgrammeContentListWhereInput
 }
 
 /**
@@ -526,7 +613,8 @@ export type AmbassadorProgrammeListSelect<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   ambassadorServiceId?: boolean
   isActive?: boolean
-  programmes?: boolean | Prisma.AmbassadorProgrammeList$programmesArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
+  contentLists?: boolean | Prisma.AmbassadorProgrammeList$contentListsArgs<ExtArgs>
   testLists?: boolean | Prisma.AmbassadorProgrammeList$testListsArgs<ExtArgs>
   timelineLists?: boolean | Prisma.AmbassadorProgrammeList$timelineListsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorProgrammeListCountOutputTypeDefaultArgs<ExtArgs>
@@ -536,12 +624,14 @@ export type AmbassadorProgrammeListSelectCreateManyAndReturn<ExtArgs extends run
   id?: boolean
   ambassadorServiceId?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorProgrammeList"]>
 
 export type AmbassadorProgrammeListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   ambassadorServiceId?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorProgrammeList"]>
 
 export type AmbassadorProgrammeListSelectScalar = {
@@ -552,18 +642,24 @@ export type AmbassadorProgrammeListSelectScalar = {
 
 export type AmbassadorProgrammeListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ambassadorServiceId" | "isActive", ExtArgs["result"]["ambassadorProgrammeList"]>
 export type AmbassadorProgrammeListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  programmes?: boolean | Prisma.AmbassadorProgrammeList$programmesArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
+  contentLists?: boolean | Prisma.AmbassadorProgrammeList$contentListsArgs<ExtArgs>
   testLists?: boolean | Prisma.AmbassadorProgrammeList$testListsArgs<ExtArgs>
   timelineLists?: boolean | Prisma.AmbassadorProgrammeList$timelineListsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorProgrammeListCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type AmbassadorProgrammeListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type AmbassadorProgrammeListIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type AmbassadorProgrammeListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
+}
+export type AmbassadorProgrammeListIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
+}
 
 export type $AmbassadorProgrammeListPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AmbassadorProgrammeList"
   objects: {
-    programmes: Prisma.$AmbassadorProgrammePayload<ExtArgs>[]
+    ambassadorService: Prisma.$AmbassadorServicePayload<ExtArgs>
+    contentLists: Prisma.$AmbassadorProgrammeContentListPayload<ExtArgs>[]
     testLists: Prisma.$AmbassadorTestListPayload<ExtArgs>[]
     timelineLists: Prisma.$AmbassadorProgrammeTimelineListPayload<ExtArgs>[]
   }
@@ -965,7 +1061,8 @@ readonly fields: AmbassadorProgrammeListFieldRefs;
  */
 export interface Prisma__AmbassadorProgrammeListClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  programmes<T extends Prisma.AmbassadorProgrammeList$programmesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeList$programmesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ambassadorService<T extends Prisma.AmbassadorServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorServiceClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  contentLists<T extends Prisma.AmbassadorProgrammeList$contentListsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeList$contentListsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeContentListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   testLists<T extends Prisma.AmbassadorProgrammeList$testListsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeList$testListsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorTestListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timelineLists<T extends Prisma.AmbassadorProgrammeList$timelineListsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeList$timelineListsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeTimelineListPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1254,6 +1351,10 @@ export type AmbassadorProgrammeListCreateManyAndReturnArgs<ExtArgs extends runti
    */
   data: Prisma.AmbassadorProgrammeListCreateManyInput | Prisma.AmbassadorProgrammeListCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorProgrammeListIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1324,6 +1425,10 @@ export type AmbassadorProgrammeListUpdateManyAndReturnArgs<ExtArgs extends runti
    * Limit how many AmbassadorProgrammeLists to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorProgrammeListIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1393,27 +1498,27 @@ export type AmbassadorProgrammeListDeleteManyArgs<ExtArgs extends runtime.Types.
 }
 
 /**
- * AmbassadorProgrammeList.programmes
+ * AmbassadorProgrammeList.contentLists
  */
-export type AmbassadorProgrammeList$programmesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type AmbassadorProgrammeList$contentListsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the AmbassadorProgramme
+   * Select specific fields to fetch from the AmbassadorProgrammeContentList
    */
-  select?: Prisma.AmbassadorProgrammeSelect<ExtArgs> | null
+  select?: Prisma.AmbassadorProgrammeContentListSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the AmbassadorProgramme
+   * Omit specific fields from the AmbassadorProgrammeContentList
    */
-  omit?: Prisma.AmbassadorProgrammeOmit<ExtArgs> | null
+  omit?: Prisma.AmbassadorProgrammeContentListOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AmbassadorProgrammeInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorProgrammeWhereInput
-  orderBy?: Prisma.AmbassadorProgrammeOrderByWithRelationInput | Prisma.AmbassadorProgrammeOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorProgrammeWhereUniqueInput
+  include?: Prisma.AmbassadorProgrammeContentListInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorProgrammeContentListWhereInput
+  orderBy?: Prisma.AmbassadorProgrammeContentListOrderByWithRelationInput | Prisma.AmbassadorProgrammeContentListOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorProgrammeContentListWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.AmbassadorProgrammeScalarFieldEnum | Prisma.AmbassadorProgrammeScalarFieldEnum[]
+  distinct?: Prisma.AmbassadorProgrammeContentListScalarFieldEnum | Prisma.AmbassadorProgrammeContentListScalarFieldEnum[]
 }
 
 /**

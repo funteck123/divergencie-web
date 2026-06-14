@@ -166,6 +166,7 @@ export type AmbassadorServiceScheduleWhereInput = {
   id?: Prisma.StringFilter<"AmbassadorServiceSchedule"> | string
   ambassadorServiceId?: Prisma.StringFilter<"AmbassadorServiceSchedule"> | string
   isActive?: Prisma.BoolFilter<"AmbassadorServiceSchedule"> | boolean
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceScalarRelationFilter, Prisma.AmbassadorServiceWhereInput>
   occurrences?: Prisma.AmbassadorScheduleOccurrenceListRelationFilter
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestListRelationFilter
 }
@@ -174,6 +175,7 @@ export type AmbassadorServiceScheduleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   ambassadorServiceId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  ambassadorService?: Prisma.AmbassadorServiceOrderByWithRelationInput
   occurrences?: Prisma.AmbassadorScheduleOccurrenceOrderByRelationAggregateInput
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestOrderByRelationAggregateInput
 }
@@ -185,6 +187,7 @@ export type AmbassadorServiceScheduleWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AmbassadorServiceScheduleWhereInput[]
   NOT?: Prisma.AmbassadorServiceScheduleWhereInput | Prisma.AmbassadorServiceScheduleWhereInput[]
   isActive?: Prisma.BoolFilter<"AmbassadorServiceSchedule"> | boolean
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceScalarRelationFilter, Prisma.AmbassadorServiceWhereInput>
   occurrences?: Prisma.AmbassadorScheduleOccurrenceListRelationFilter
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestListRelationFilter
 }, "id" | "ambassadorServiceId">
@@ -209,8 +212,8 @@ export type AmbassadorServiceScheduleScalarWhereWithAggregatesInput = {
 
 export type AmbassadorServiceScheduleCreateInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutScheduleInput
   occurrences?: Prisma.AmbassadorScheduleOccurrenceCreateNestedManyWithoutScheduleInput
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestCreateNestedManyWithoutScheduleInput
 }
@@ -225,8 +228,8 @@ export type AmbassadorServiceScheduleUncheckedCreateInput = {
 
 export type AmbassadorServiceScheduleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutScheduleNestedInput
   occurrences?: Prisma.AmbassadorScheduleOccurrenceUpdateManyWithoutScheduleNestedInput
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestUpdateManyWithoutScheduleNestedInput
 }
@@ -247,7 +250,6 @@ export type AmbassadorServiceScheduleCreateManyInput = {
 
 export type AmbassadorServiceScheduleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -280,6 +282,11 @@ export type AmbassadorServiceScheduleScalarRelationFilter = {
   isNot?: Prisma.AmbassadorServiceScheduleWhereInput
 }
 
+export type AmbassadorServiceScheduleNullableScalarRelationFilter = {
+  is?: Prisma.AmbassadorServiceScheduleWhereInput | null
+  isNot?: Prisma.AmbassadorServiceScheduleWhereInput | null
+}
+
 export type AmbassadorServiceScheduleCreateNestedOneWithoutOccurrencesInput = {
   create?: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutOccurrencesInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutOccurrencesInput>
   connectOrCreate?: Prisma.AmbassadorServiceScheduleCreateOrConnectWithoutOccurrencesInput
@@ -308,10 +315,42 @@ export type AmbassadorServiceScheduleUpdateOneRequiredWithoutChangeRequestsNeste
   update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorServiceScheduleUpdateToOneWithWhereWithoutChangeRequestsInput, Prisma.AmbassadorServiceScheduleUpdateWithoutChangeRequestsInput>, Prisma.AmbassadorServiceScheduleUncheckedUpdateWithoutChangeRequestsInput>
 }
 
+export type AmbassadorServiceScheduleCreateNestedOneWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorServiceScheduleCreateOrConnectWithoutAmbassadorServiceInput
+  connect?: Prisma.AmbassadorServiceScheduleWhereUniqueInput
+}
+
+export type AmbassadorServiceScheduleUncheckedCreateNestedOneWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorServiceScheduleCreateOrConnectWithoutAmbassadorServiceInput
+  connect?: Prisma.AmbassadorServiceScheduleWhereUniqueInput
+}
+
+export type AmbassadorServiceScheduleUpdateOneWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorServiceScheduleCreateOrConnectWithoutAmbassadorServiceInput
+  upsert?: Prisma.AmbassadorServiceScheduleUpsertWithoutAmbassadorServiceInput
+  disconnect?: Prisma.AmbassadorServiceScheduleWhereInput | boolean
+  delete?: Prisma.AmbassadorServiceScheduleWhereInput | boolean
+  connect?: Prisma.AmbassadorServiceScheduleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorServiceScheduleUpdateToOneWithWhereWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUpdateWithoutAmbassadorServiceInput>, Prisma.AmbassadorServiceScheduleUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorServiceScheduleUncheckedUpdateOneWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput>
+  connectOrCreate?: Prisma.AmbassadorServiceScheduleCreateOrConnectWithoutAmbassadorServiceInput
+  upsert?: Prisma.AmbassadorServiceScheduleUpsertWithoutAmbassadorServiceInput
+  disconnect?: Prisma.AmbassadorServiceScheduleWhereInput | boolean
+  delete?: Prisma.AmbassadorServiceScheduleWhereInput | boolean
+  connect?: Prisma.AmbassadorServiceScheduleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorServiceScheduleUpdateToOneWithWhereWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUpdateWithoutAmbassadorServiceInput>, Prisma.AmbassadorServiceScheduleUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
 export type AmbassadorServiceScheduleCreateWithoutOccurrencesInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutScheduleInput
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestCreateNestedManyWithoutScheduleInput
 }
 
@@ -340,8 +379,8 @@ export type AmbassadorServiceScheduleUpdateToOneWithWhereWithoutOccurrencesInput
 
 export type AmbassadorServiceScheduleUpdateWithoutOccurrencesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutScheduleNestedInput
   changeRequests?: Prisma.AmbassadorScheduleChangeRequestUpdateManyWithoutScheduleNestedInput
 }
 
@@ -354,8 +393,8 @@ export type AmbassadorServiceScheduleUncheckedUpdateWithoutOccurrencesInput = {
 
 export type AmbassadorServiceScheduleCreateWithoutChangeRequestsInput = {
   id?: string
-  ambassadorServiceId: string
   isActive?: boolean
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutScheduleInput
   occurrences?: Prisma.AmbassadorScheduleOccurrenceCreateNestedManyWithoutScheduleInput
 }
 
@@ -384,8 +423,8 @@ export type AmbassadorServiceScheduleUpdateToOneWithWhereWithoutChangeRequestsIn
 
 export type AmbassadorServiceScheduleUpdateWithoutChangeRequestsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutScheduleNestedInput
   occurrences?: Prisma.AmbassadorScheduleOccurrenceUpdateManyWithoutScheduleNestedInput
 }
 
@@ -394,6 +433,50 @@ export type AmbassadorServiceScheduleUncheckedUpdateWithoutChangeRequestsInput =
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   occurrences?: Prisma.AmbassadorScheduleOccurrenceUncheckedUpdateManyWithoutScheduleNestedInput
+}
+
+export type AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput = {
+  id?: string
+  isActive?: boolean
+  occurrences?: Prisma.AmbassadorScheduleOccurrenceCreateNestedManyWithoutScheduleInput
+  changeRequests?: Prisma.AmbassadorScheduleChangeRequestCreateNestedManyWithoutScheduleInput
+}
+
+export type AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput = {
+  id?: string
+  isActive?: boolean
+  occurrences?: Prisma.AmbassadorScheduleOccurrenceUncheckedCreateNestedManyWithoutScheduleInput
+  changeRequests?: Prisma.AmbassadorScheduleChangeRequestUncheckedCreateNestedManyWithoutScheduleInput
+}
+
+export type AmbassadorServiceScheduleCreateOrConnectWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorServiceScheduleWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorServiceScheduleUpsertWithoutAmbassadorServiceInput = {
+  update: Prisma.XOR<Prisma.AmbassadorServiceScheduleUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedUpdateWithoutAmbassadorServiceInput>
+  create: Prisma.XOR<Prisma.AmbassadorServiceScheduleCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedCreateWithoutAmbassadorServiceInput>
+  where?: Prisma.AmbassadorServiceScheduleWhereInput
+}
+
+export type AmbassadorServiceScheduleUpdateToOneWithWhereWithoutAmbassadorServiceInput = {
+  where?: Prisma.AmbassadorServiceScheduleWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorServiceScheduleUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorServiceScheduleUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorServiceScheduleUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  occurrences?: Prisma.AmbassadorScheduleOccurrenceUpdateManyWithoutScheduleNestedInput
+  changeRequests?: Prisma.AmbassadorScheduleChangeRequestUpdateManyWithoutScheduleNestedInput
+}
+
+export type AmbassadorServiceScheduleUncheckedUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  occurrences?: Prisma.AmbassadorScheduleOccurrenceUncheckedUpdateManyWithoutScheduleNestedInput
+  changeRequests?: Prisma.AmbassadorScheduleChangeRequestUncheckedUpdateManyWithoutScheduleNestedInput
 }
 
 
@@ -440,6 +523,7 @@ export type AmbassadorServiceScheduleSelect<ExtArgs extends runtime.Types.Extens
   id?: boolean
   ambassadorServiceId?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
   occurrences?: boolean | Prisma.AmbassadorServiceSchedule$occurrencesArgs<ExtArgs>
   changeRequests?: boolean | Prisma.AmbassadorServiceSchedule$changeRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorServiceScheduleCountOutputTypeDefaultArgs<ExtArgs>
@@ -449,12 +533,14 @@ export type AmbassadorServiceScheduleSelectCreateManyAndReturn<ExtArgs extends r
   id?: boolean
   ambassadorServiceId?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorServiceSchedule"]>
 
 export type AmbassadorServiceScheduleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   ambassadorServiceId?: boolean
   isActive?: boolean
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorServiceSchedule"]>
 
 export type AmbassadorServiceScheduleSelectScalar = {
@@ -465,16 +551,22 @@ export type AmbassadorServiceScheduleSelectScalar = {
 
 export type AmbassadorServiceScheduleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ambassadorServiceId" | "isActive", ExtArgs["result"]["ambassadorServiceSchedule"]>
 export type AmbassadorServiceScheduleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
   occurrences?: boolean | Prisma.AmbassadorServiceSchedule$occurrencesArgs<ExtArgs>
   changeRequests?: boolean | Prisma.AmbassadorServiceSchedule$changeRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorServiceScheduleCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type AmbassadorServiceScheduleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type AmbassadorServiceScheduleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type AmbassadorServiceScheduleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
+}
+export type AmbassadorServiceScheduleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
+}
 
 export type $AmbassadorServiceSchedulePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AmbassadorServiceSchedule"
   objects: {
+    ambassadorService: Prisma.$AmbassadorServicePayload<ExtArgs>
     occurrences: Prisma.$AmbassadorScheduleOccurrencePayload<ExtArgs>[]
     changeRequests: Prisma.$AmbassadorScheduleChangeRequestPayload<ExtArgs>[]
   }
@@ -876,6 +968,7 @@ readonly fields: AmbassadorServiceScheduleFieldRefs;
  */
 export interface Prisma__AmbassadorServiceScheduleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  ambassadorService<T extends Prisma.AmbassadorServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorServiceClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   occurrences<T extends Prisma.AmbassadorServiceSchedule$occurrencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorServiceSchedule$occurrencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorScheduleOccurrencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   changeRequests<T extends Prisma.AmbassadorServiceSchedule$changeRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorServiceSchedule$changeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorScheduleChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1164,6 +1257,10 @@ export type AmbassadorServiceScheduleCreateManyAndReturnArgs<ExtArgs extends run
    */
   data: Prisma.AmbassadorServiceScheduleCreateManyInput | Prisma.AmbassadorServiceScheduleCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorServiceScheduleIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1234,6 +1331,10 @@ export type AmbassadorServiceScheduleUpdateManyAndReturnArgs<ExtArgs extends run
    * Limit how many AmbassadorServiceSchedules to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorServiceScheduleIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

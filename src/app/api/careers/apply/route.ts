@@ -6,19 +6,22 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { name, email, phone, country, role, message } = body;
 
-    if (!name || !email || !role) {
-      return NextResponse.json({ error: "name, email, and role are required" }, { status: 400 });
+    if (!name || !email) {
+      return NextResponse.json({ error: "name and email are required" }, { status: 400 });
     }
 
+    // Look up the UserType for Staff to wire targetUserTypeId
+    const staffUserType = await prisma.userType.findFirst({ where: { name: "Staff" } });
+
     let form = await prisma.registrationForm.findFirst({
-      where: { targetRole: "STAFF", isPublic: true, isActive: true },
+      where: { targetUserTypeId: staffUserType?.id, isPublic: true, isActive: true },
     });
 
     if (!form) {
       form = await prisma.registrationForm.create({
         data: {
           name: "Careers Application",
-          targetRole: "STAFF",
+          targetUserTypeId: staffUserType?.id ?? null,
           description: "Staff application form",
           isPublic: true,
           isActive: true,

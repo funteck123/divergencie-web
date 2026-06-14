@@ -7,11 +7,9 @@ export async function GET() {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const categories = await prisma.ticketCategory.findMany({
-      orderBy: { department: "asc" }
-    });
+    const categories = await prisma.ticketType.findMany({ orderBy: { name: "asc" } });
     return NextResponse.json(categories);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -22,21 +20,17 @@ export async function POST(req: NextRequest) {
 
   const role = session.user.role;
   if (role !== "staff" && role !== "management") {
-    return NextResponse.json({ error: "Forbidden: Only staff can add categories" }, { status: 403 });
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
-    const { name, department } = await req.json();
-    if (!name || !department) return NextResponse.json({ error: "Name and department required" }, { status: 400 });
+    const { name } = await req.json();
+    if (!name) return NextResponse.json({ error: "Name required" }, { status: 400 });
 
-    const category = await prisma.ticketCategory.create({
-      data: { name, department }
-    });
+    const category = await prisma.ticketType.create({ data: { name } });
     return NextResponse.json(category, { status: 201 });
   } catch (error: any) {
-    if (error.code === 'P2002') {
-      return NextResponse.json({ error: "Category already exists in this department" }, { status: 400 });
-    }
+    if (error.code === "P2002") return NextResponse.json({ error: "Category already exists" }, { status: 400 });
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

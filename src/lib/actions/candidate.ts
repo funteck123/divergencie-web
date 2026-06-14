@@ -18,7 +18,6 @@ export async function submitCandidateDocs(data: {
     create: {
       email: data.email,
       name: data.email.split("@")[0],
-      role: "Applicant",
       cvLink: data.cvLink,
       docsLink: data.docsLink,
     },

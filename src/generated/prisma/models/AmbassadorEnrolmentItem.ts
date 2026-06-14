@@ -247,7 +247,8 @@ export type AmbassadorEnrolmentItemWhereInput = {
   cancellationReason?: Prisma.StringNullableFilter<"AmbassadorEnrolmentItem"> | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.AmbassadorEnrolmentListScalarRelationFilter, Prisma.AmbassadorEnrolmentListWhereInput>
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryListRelationFilter
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceScalarRelationFilter, Prisma.AmbassadorServiceWhereInput>
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogListRelationFilter
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceListRelationFilter
 }
 
@@ -266,7 +267,8 @@ export type AmbassadorEnrolmentItemOrderByWithRelationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   enrolmentList?: Prisma.AmbassadorEnrolmentListOrderByWithRelationInput
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryOrderByRelationAggregateInput
+  ambassadorService?: Prisma.AmbassadorServiceOrderByWithRelationInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogOrderByRelationAggregateInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceOrderByRelationAggregateInput
 }
 
@@ -288,7 +290,8 @@ export type AmbassadorEnrolmentItemWhereUniqueInput = Prisma.AtLeast<{
   cancellationReason?: Prisma.StringNullableFilter<"AmbassadorEnrolmentItem"> | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.AmbassadorEnrolmentListScalarRelationFilter, Prisma.AmbassadorEnrolmentListWhereInput>
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryListRelationFilter
+  ambassadorService?: Prisma.XOR<Prisma.AmbassadorServiceScalarRelationFilter, Prisma.AmbassadorServiceWhereInput>
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogListRelationFilter
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceListRelationFilter
 }, "id">
 
@@ -333,7 +336,6 @@ export type AmbassadorEnrolmentItemScalarWhereWithAggregatesInput = {
 export type AmbassadorEnrolmentItemCreateInput = {
   id?: string
   ambassadorId: string
-  ambassadorServiceId: string
   status?: string
   trialRequired?: boolean
   startDate?: Date | string | null
@@ -344,7 +346,8 @@ export type AmbassadorEnrolmentItemCreateInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.AmbassadorEnrolmentListCreateNestedOneWithoutItemsInput
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutEnrolmentItemsInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -362,14 +365,13 @@ export type AmbassadorEnrolmentItemUncheckedCreateInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type AmbassadorEnrolmentItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -380,7 +382,8 @@ export type AmbassadorEnrolmentItemUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.AmbassadorEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutEnrolmentItemsNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -398,7 +401,7 @@ export type AmbassadorEnrolmentItemUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -421,7 +424,6 @@ export type AmbassadorEnrolmentItemCreateManyInput = {
 export type AmbassadorEnrolmentItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -568,6 +570,48 @@ export type AmbassadorEnrolmentItemUpdateOneRequiredWithoutHistoryNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorEnrolmentItemUpdateToOneWithWhereWithoutHistoryInput, Prisma.AmbassadorEnrolmentItemUpdateWithoutHistoryInput>, Prisma.AmbassadorEnrolmentItemUncheckedUpdateWithoutHistoryInput>
 }
 
+export type AmbassadorEnrolmentItemCreateNestedManyWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorEnrolmentItemCreateManyAmbassadorServiceInputEnvelope
+  connect?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+}
+
+export type AmbassadorEnrolmentItemUncheckedCreateNestedManyWithoutAmbassadorServiceInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorEnrolmentItemCreateManyAmbassadorServiceInputEnvelope
+  connect?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+}
+
+export type AmbassadorEnrolmentItemUpdateManyWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput[]
+  upsert?: Prisma.AmbassadorEnrolmentItemUpsertWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemUpsertWithWhereUniqueWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorEnrolmentItemCreateManyAmbassadorServiceInputEnvelope
+  set?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  disconnect?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  delete?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  connect?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  update?: Prisma.AmbassadorEnrolmentItemUpdateWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemUpdateWithWhereUniqueWithoutAmbassadorServiceInput[]
+  updateMany?: Prisma.AmbassadorEnrolmentItemUpdateManyWithWhereWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemUpdateManyWithWhereWithoutAmbassadorServiceInput[]
+  deleteMany?: Prisma.AmbassadorEnrolmentItemScalarWhereInput | Prisma.AmbassadorEnrolmentItemScalarWhereInput[]
+}
+
+export type AmbassadorEnrolmentItemUncheckedUpdateManyWithoutAmbassadorServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput> | Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput[] | Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput[]
+  connectOrCreate?: Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput[]
+  upsert?: Prisma.AmbassadorEnrolmentItemUpsertWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemUpsertWithWhereUniqueWithoutAmbassadorServiceInput[]
+  createMany?: Prisma.AmbassadorEnrolmentItemCreateManyAmbassadorServiceInputEnvelope
+  set?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  disconnect?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  delete?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  connect?: Prisma.AmbassadorEnrolmentItemWhereUniqueInput | Prisma.AmbassadorEnrolmentItemWhereUniqueInput[]
+  update?: Prisma.AmbassadorEnrolmentItemUpdateWithWhereUniqueWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemUpdateWithWhereUniqueWithoutAmbassadorServiceInput[]
+  updateMany?: Prisma.AmbassadorEnrolmentItemUpdateManyWithWhereWithoutAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemUpdateManyWithWhereWithoutAmbassadorServiceInput[]
+  deleteMany?: Prisma.AmbassadorEnrolmentItemScalarWhereInput | Prisma.AmbassadorEnrolmentItemScalarWhereInput[]
+}
+
 export type AmbassadorEnrolmentItemCreateNestedOneWithoutMeetingAttendancesInput = {
   create?: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutMeetingAttendancesInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutMeetingAttendancesInput>
   connectOrCreate?: Prisma.AmbassadorEnrolmentItemCreateOrConnectWithoutMeetingAttendancesInput
@@ -585,7 +629,6 @@ export type AmbassadorEnrolmentItemUpdateOneRequiredWithoutMeetingAttendancesNes
 export type AmbassadorEnrolmentItemCreateWithoutEnrolmentListInput = {
   id?: string
   ambassadorId: string
-  ambassadorServiceId: string
   status?: string
   trialRequired?: boolean
   startDate?: Date | string | null
@@ -595,7 +638,8 @@ export type AmbassadorEnrolmentItemCreateWithoutEnrolmentListInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutEnrolmentItemsInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -612,7 +656,7 @@ export type AmbassadorEnrolmentItemUncheckedCreateWithoutEnrolmentListInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -664,7 +708,6 @@ export type AmbassadorEnrolmentItemScalarWhereInput = {
 export type AmbassadorEnrolmentItemCreateWithoutHistoryInput = {
   id?: string
   ambassadorId: string
-  ambassadorServiceId: string
   status?: string
   trialRequired?: boolean
   startDate?: Date | string | null
@@ -675,6 +718,7 @@ export type AmbassadorEnrolmentItemCreateWithoutHistoryInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.AmbassadorEnrolmentListCreateNestedOneWithoutItemsInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutEnrolmentItemsInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -714,7 +758,6 @@ export type AmbassadorEnrolmentItemUpdateToOneWithWhereWithoutHistoryInput = {
 export type AmbassadorEnrolmentItemUpdateWithoutHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -725,6 +768,7 @@ export type AmbassadorEnrolmentItemUpdateWithoutHistoryInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.AmbassadorEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutEnrolmentItemsNestedInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -745,10 +789,9 @@ export type AmbassadorEnrolmentItemUncheckedUpdateWithoutHistoryInput = {
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
-export type AmbassadorEnrolmentItemCreateWithoutMeetingAttendancesInput = {
+export type AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput = {
   id?: string
   ambassadorId: string
-  ambassadorServiceId: string
   status?: string
   trialRequired?: boolean
   startDate?: Date | string | null
@@ -759,7 +802,68 @@ export type AmbassadorEnrolmentItemCreateWithoutMeetingAttendancesInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.AmbassadorEnrolmentListCreateNestedOneWithoutItemsInput
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
+  meetingAttendances?: Prisma.AmbassadorMeetingAttendanceCreateNestedManyWithoutEnrolmentItemInput
+}
+
+export type AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput = {
+  id?: string
+  enrolmentListId: string
+  ambassadorId: string
+  status?: string
+  trialRequired?: boolean
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  activatedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  completedAt?: Date | string | null
+  cancellationReason?: string | null
+  isActive?: boolean
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
+}
+
+export type AmbassadorEnrolmentItemCreateOrConnectWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorEnrolmentItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorEnrolmentItemCreateManyAmbassadorServiceInputEnvelope = {
+  data: Prisma.AmbassadorEnrolmentItemCreateManyAmbassadorServiceInput | Prisma.AmbassadorEnrolmentItemCreateManyAmbassadorServiceInput[]
+  skipDuplicates?: boolean
+}
+
+export type AmbassadorEnrolmentItemUpsertWithWhereUniqueWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorEnrolmentItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.AmbassadorEnrolmentItemUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedUpdateWithoutAmbassadorServiceInput>
+  create: Prisma.XOR<Prisma.AmbassadorEnrolmentItemCreateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedCreateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorEnrolmentItemUpdateWithWhereUniqueWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorEnrolmentItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.AmbassadorEnrolmentItemUpdateWithoutAmbassadorServiceInput, Prisma.AmbassadorEnrolmentItemUncheckedUpdateWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorEnrolmentItemUpdateManyWithWhereWithoutAmbassadorServiceInput = {
+  where: Prisma.AmbassadorEnrolmentItemScalarWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorEnrolmentItemUpdateManyMutationInput, Prisma.AmbassadorEnrolmentItemUncheckedUpdateManyWithoutAmbassadorServiceInput>
+}
+
+export type AmbassadorEnrolmentItemCreateWithoutMeetingAttendancesInput = {
+  id?: string
+  ambassadorId: string
+  status?: string
+  trialRequired?: boolean
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  activatedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  completedAt?: Date | string | null
+  cancellationReason?: string | null
+  isActive?: boolean
+  enrolmentList: Prisma.AmbassadorEnrolmentListCreateNestedOneWithoutItemsInput
+  ambassadorService: Prisma.AmbassadorServiceCreateNestedOneWithoutEnrolmentItemsInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type AmbassadorEnrolmentItemUncheckedCreateWithoutMeetingAttendancesInput = {
@@ -776,7 +880,7 @@ export type AmbassadorEnrolmentItemUncheckedCreateWithoutMeetingAttendancesInput
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type AmbassadorEnrolmentItemCreateOrConnectWithoutMeetingAttendancesInput = {
@@ -798,7 +902,6 @@ export type AmbassadorEnrolmentItemUpdateToOneWithWhereWithoutMeetingAttendances
 export type AmbassadorEnrolmentItemUpdateWithoutMeetingAttendancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -809,7 +912,8 @@ export type AmbassadorEnrolmentItemUpdateWithoutMeetingAttendancesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.AmbassadorEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutEnrolmentItemsNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type AmbassadorEnrolmentItemUncheckedUpdateWithoutMeetingAttendancesInput = {
@@ -826,7 +930,7 @@ export type AmbassadorEnrolmentItemUncheckedUpdateWithoutMeetingAttendancesInput
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type AmbassadorEnrolmentItemCreateManyEnrolmentListInput = {
@@ -847,7 +951,6 @@ export type AmbassadorEnrolmentItemCreateManyEnrolmentListInput = {
 export type AmbassadorEnrolmentItemUpdateWithoutEnrolmentListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -857,7 +960,8 @@ export type AmbassadorEnrolmentItemUpdateWithoutEnrolmentListInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  ambassadorService?: Prisma.AmbassadorServiceUpdateOneRequiredWithoutEnrolmentItemsNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -874,7 +978,7 @@ export type AmbassadorEnrolmentItemUncheckedUpdateWithoutEnrolmentListInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.AmbassadorEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -882,6 +986,70 @@ export type AmbassadorEnrolmentItemUncheckedUpdateManyWithoutEnrolmentListInput 
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorServiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type AmbassadorEnrolmentItemCreateManyAmbassadorServiceInput = {
+  id?: string
+  enrolmentListId: string
+  ambassadorId: string
+  status?: string
+  trialRequired?: boolean
+  startDate?: Date | string | null
+  endDate?: Date | string | null
+  activatedAt?: Date | string | null
+  cancelledAt?: Date | string | null
+  completedAt?: Date | string | null
+  cancellationReason?: string | null
+  isActive?: boolean
+}
+
+export type AmbassadorEnrolmentItemUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  enrolmentList?: Prisma.AmbassadorEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
+  meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUpdateManyWithoutEnrolmentItemNestedInput
+}
+
+export type AmbassadorEnrolmentItemUncheckedUpdateWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  enrolmentListId?: Prisma.StringFieldUpdateOperationsInput | string
+  ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  history?: Prisma.AmbassadorEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  meetingAttendances?: Prisma.AmbassadorMeetingAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+}
+
+export type AmbassadorEnrolmentItemUncheckedUpdateManyWithoutAmbassadorServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  enrolmentListId?: Prisma.StringFieldUpdateOperationsInput | string
+  ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   trialRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -922,7 +1090,7 @@ export type AmbassadorEnrolmentItemCountOutputTypeDefaultArgs<ExtArgs extends ru
  * AmbassadorEnrolmentItemCountOutputType without action
  */
 export type AmbassadorEnrolmentItemCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.AmbassadorEnrolmentItemStatusHistoryWhereInput
+  where?: Prisma.AmbassadorEnrolmentItemStatusChangeLogWhereInput
 }
 
 /**
@@ -948,6 +1116,7 @@ export type AmbassadorEnrolmentItemSelect<ExtArgs extends runtime.Types.Extensio
   cancellationReason?: boolean
   isActive?: boolean
   enrolmentList?: boolean | Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
   history?: boolean | Prisma.AmbassadorEnrolmentItem$historyArgs<ExtArgs>
   meetingAttendances?: boolean | Prisma.AmbassadorEnrolmentItem$meetingAttendancesArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorEnrolmentItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -968,6 +1137,7 @@ export type AmbassadorEnrolmentItemSelectCreateManyAndReturn<ExtArgs extends run
   cancellationReason?: boolean
   isActive?: boolean
   enrolmentList?: boolean | Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorEnrolmentItem"]>
 
 export type AmbassadorEnrolmentItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -985,6 +1155,7 @@ export type AmbassadorEnrolmentItemSelectUpdateManyAndReturn<ExtArgs extends run
   cancellationReason?: boolean
   isActive?: boolean
   enrolmentList?: boolean | Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorEnrolmentItem"]>
 
 export type AmbassadorEnrolmentItemSelectScalar = {
@@ -1006,22 +1177,26 @@ export type AmbassadorEnrolmentItemSelectScalar = {
 export type AmbassadorEnrolmentItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "enrolmentListId" | "ambassadorId" | "ambassadorServiceId" | "status" | "trialRequired" | "startDate" | "endDate" | "activatedAt" | "cancelledAt" | "completedAt" | "cancellationReason" | "isActive", ExtArgs["result"]["ambassadorEnrolmentItem"]>
 export type AmbassadorEnrolmentItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   enrolmentList?: boolean | Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
   history?: boolean | Prisma.AmbassadorEnrolmentItem$historyArgs<ExtArgs>
   meetingAttendances?: boolean | Prisma.AmbassadorEnrolmentItem$meetingAttendancesArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorEnrolmentItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AmbassadorEnrolmentItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   enrolmentList?: boolean | Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }
 export type AmbassadorEnrolmentItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   enrolmentList?: boolean | Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>
+  ambassadorService?: boolean | Prisma.AmbassadorServiceDefaultArgs<ExtArgs>
 }
 
 export type $AmbassadorEnrolmentItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "AmbassadorEnrolmentItem"
   objects: {
     enrolmentList: Prisma.$AmbassadorEnrolmentListPayload<ExtArgs>
-    history: Prisma.$AmbassadorEnrolmentItemStatusHistoryPayload<ExtArgs>[]
+    ambassadorService: Prisma.$AmbassadorServicePayload<ExtArgs>
+    history: Prisma.$AmbassadorEnrolmentItemStatusChangeLogPayload<ExtArgs>[]
     meetingAttendances: Prisma.$AmbassadorMeetingAttendancePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1433,7 +1608,8 @@ readonly fields: AmbassadorEnrolmentItemFieldRefs;
 export interface Prisma__AmbassadorEnrolmentItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   enrolmentList<T extends Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorEnrolmentListDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorEnrolmentListClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorEnrolmentListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.AmbassadorEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorEnrolmentItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ambassadorService<T extends Prisma.AmbassadorServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorServiceClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  history<T extends Prisma.AmbassadorEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorEnrolmentItemStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   meetingAttendances<T extends Prisma.AmbassadorEnrolmentItem$meetingAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorEnrolmentItem$meetingAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorMeetingAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1882,23 +2058,23 @@ export type AmbassadorEnrolmentItemDeleteManyArgs<ExtArgs extends runtime.Types.
  */
 export type AmbassadorEnrolmentItem$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the AmbassadorEnrolmentItemStatusHistory
+   * Select specific fields to fetch from the AmbassadorEnrolmentItemStatusChangeLog
    */
-  select?: Prisma.AmbassadorEnrolmentItemStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.AmbassadorEnrolmentItemStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the AmbassadorEnrolmentItemStatusHistory
+   * Omit specific fields from the AmbassadorEnrolmentItemStatusChangeLog
    */
-  omit?: Prisma.AmbassadorEnrolmentItemStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.AmbassadorEnrolmentItemStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.AmbassadorEnrolmentItemStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.AmbassadorEnrolmentItemStatusHistoryWhereInput
-  orderBy?: Prisma.AmbassadorEnrolmentItemStatusHistoryOrderByWithRelationInput | Prisma.AmbassadorEnrolmentItemStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.AmbassadorEnrolmentItemStatusHistoryWhereUniqueInput
+  include?: Prisma.AmbassadorEnrolmentItemStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorEnrolmentItemStatusChangeLogWhereInput
+  orderBy?: Prisma.AmbassadorEnrolmentItemStatusChangeLogOrderByWithRelationInput | Prisma.AmbassadorEnrolmentItemStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorEnrolmentItemStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum | Prisma.AmbassadorEnrolmentItemStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.AmbassadorEnrolmentItemStatusChangeLogScalarFieldEnum | Prisma.AmbassadorEnrolmentItemStatusChangeLogScalarFieldEnum[]
 }
 
 /**

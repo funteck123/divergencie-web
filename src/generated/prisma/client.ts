@@ -72,6 +72,26 @@ export type ParentProfile = Prisma.ParentProfileModel
  */
 export type AmbassadorProfile = Prisma.AmbassadorProfileModel
 /**
+ * Model Department
+ * 
+ */
+export type Department = Prisma.DepartmentModel
+/**
+ * Model StaffRole
+ * 
+ */
+export type StaffRole = Prisma.StaffRoleModel
+/**
+ * Model UserType
+ * 
+ */
+export type UserType = Prisma.UserTypeModel
+/**
+ * Model PortalPermission
+ * 
+ */
+export type PortalPermission = Prisma.PortalPermissionModel
+/**
  * Model Candidate
  * 
  */
@@ -92,6 +112,16 @@ export type Group = Prisma.GroupModel
  */
 export type Service = Prisma.ServiceModel
 /**
+ * Model GcrList
+ * 
+ */
+export type GcrList = Prisma.GcrListModel
+/**
+ * Model GcrItem
+ * 
+ */
+export type GcrItem = Prisma.GcrItemModel
+/**
  * Model RateList
  * 
  */
@@ -102,10 +132,10 @@ export type RateList = Prisma.RateListModel
  */
 export type RateItem = Prisma.RateItemModel
 /**
- * Model RateItemStatusHistory
+ * Model RateItemStatusChangeLog
  * 
  */
-export type RateItemStatusHistory = Prisma.RateItemStatusHistoryModel
+export type RateItemStatusChangeLog = Prisma.RateItemStatusChangeLogModel
 /**
  * Model RateChangeLog
  * 
@@ -122,10 +152,10 @@ export type StudentEnrolmentList = Prisma.StudentEnrolmentListModel
  */
 export type StudentEnrolmentItem = Prisma.StudentEnrolmentItemModel
 /**
- * Model StudentEnrolmentItemStatusHistory
+ * Model StudentEnrolmentItemStatusChangeLog
  * 
  */
-export type StudentEnrolmentItemStatusHistory = Prisma.StudentEnrolmentItemStatusHistoryModel
+export type StudentEnrolmentItemStatusChangeLog = Prisma.StudentEnrolmentItemStatusChangeLogModel
 /**
  * Model Discount
  * 
@@ -142,10 +172,10 @@ export type TeacherEnrolmentList = Prisma.TeacherEnrolmentListModel
  */
 export type TeacherEnrolmentItem = Prisma.TeacherEnrolmentItemModel
 /**
- * Model TeacherEnrolmentItemStatusHistory
+ * Model TeacherEnrolmentItemStatusChangeLog
  * 
  */
-export type TeacherEnrolmentItemStatusHistory = Prisma.TeacherEnrolmentItemStatusHistoryModel
+export type TeacherEnrolmentItemStatusChangeLog = Prisma.TeacherEnrolmentItemStatusChangeLogModel
 /**
  * Model StaffEnrolmentList
  * 
@@ -157,10 +187,10 @@ export type StaffEnrolmentList = Prisma.StaffEnrolmentListModel
  */
 export type StaffEnrolmentItem = Prisma.StaffEnrolmentItemModel
 /**
- * Model StaffEnrolmentItemStatusHistory
+ * Model StaffEnrolmentItemStatusChangeLog
  * 
  */
-export type StaffEnrolmentItemStatusHistory = Prisma.StaffEnrolmentItemStatusHistoryModel
+export type StaffEnrolmentItemStatusChangeLog = Prisma.StaffEnrolmentItemStatusChangeLogModel
 /**
  * Model AmbassadorEnrolmentList
  * 
@@ -172,10 +202,10 @@ export type AmbassadorEnrolmentList = Prisma.AmbassadorEnrolmentListModel
  */
 export type AmbassadorEnrolmentItem = Prisma.AmbassadorEnrolmentItemModel
 /**
- * Model AmbassadorEnrolmentItemStatusHistory
+ * Model AmbassadorEnrolmentItemStatusChangeLog
  * 
  */
-export type AmbassadorEnrolmentItemStatusHistory = Prisma.AmbassadorEnrolmentItemStatusHistoryModel
+export type AmbassadorEnrolmentItemStatusChangeLog = Prisma.AmbassadorEnrolmentItemStatusChangeLogModel
 /**
  * Model AmbassadorCommissionList
  * 
@@ -187,10 +217,10 @@ export type AmbassadorCommissionList = Prisma.AmbassadorCommissionListModel
  */
 export type AmbassadorCommissionItem = Prisma.AmbassadorCommissionItemModel
 /**
- * Model AmbassadorCommissionItemStatusHistory
+ * Model AmbassadorCommissionItemStatusChangeLog
  * 
  */
-export type AmbassadorCommissionItemStatusHistory = Prisma.AmbassadorCommissionItemStatusHistoryModel
+export type AmbassadorCommissionItemStatusChangeLog = Prisma.AmbassadorCommissionItemStatusChangeLogModel
 /**
  * Model AmbassadorCommissionRateChangeLog
  * 
@@ -207,10 +237,10 @@ export type ServiceSchedule = Prisma.ServiceScheduleModel
  */
 export type ScheduleOccurrence = Prisma.ScheduleOccurrenceModel
 /**
- * Model ScheduleOccurrenceStatusHistory
+ * Model ScheduleOccurrenceStatusChangeLog
  * 
  */
-export type ScheduleOccurrenceStatusHistory = Prisma.ScheduleOccurrenceStatusHistoryModel
+export type ScheduleOccurrenceStatusChangeLog = Prisma.ScheduleOccurrenceStatusChangeLogModel
 /**
  * Model ScheduleChangeRequest
  * 
@@ -227,10 +257,10 @@ export type StaffServiceSchedule = Prisma.StaffServiceScheduleModel
  */
 export type StaffScheduleOccurrence = Prisma.StaffScheduleOccurrenceModel
 /**
- * Model StaffScheduleOccurrenceStatusHistory
+ * Model StaffScheduleOccurrenceStatusChangeLog
  * 
  */
-export type StaffScheduleOccurrenceStatusHistory = Prisma.StaffScheduleOccurrenceStatusHistoryModel
+export type StaffScheduleOccurrenceStatusChangeLog = Prisma.StaffScheduleOccurrenceStatusChangeLogModel
 /**
  * Model StaffScheduleChangeRequest
  * 
@@ -247,30 +277,65 @@ export type AmbassadorServiceSchedule = Prisma.AmbassadorServiceScheduleModel
  */
 export type AmbassadorScheduleOccurrence = Prisma.AmbassadorScheduleOccurrenceModel
 /**
- * Model AmbassadorScheduleOccurrenceStatusHistory
+ * Model AmbassadorScheduleOccurrenceStatusChangeLog
  * 
  */
-export type AmbassadorScheduleOccurrenceStatusHistory = Prisma.AmbassadorScheduleOccurrenceStatusHistoryModel
+export type AmbassadorScheduleOccurrenceStatusChangeLog = Prisma.AmbassadorScheduleOccurrenceStatusChangeLogModel
 /**
  * Model AmbassadorScheduleChangeRequest
  * 
  */
 export type AmbassadorScheduleChangeRequest = Prisma.AmbassadorScheduleChangeRequestModel
 /**
+ * Model MarketingSchedule
+ * 
+ */
+export type MarketingSchedule = Prisma.MarketingScheduleModel
+/**
+ * Model MarketingScheduleOccurrence
+ * 
+ */
+export type MarketingScheduleOccurrence = Prisma.MarketingScheduleOccurrenceModel
+/**
+ * Model MarketingPostSlot
+ * 
+ */
+export type MarketingPostSlot = Prisma.MarketingPostSlotModel
+/**
+ * Model MarketingScheduleOccurrenceStatusChangeLog
+ * 
+ */
+export type MarketingScheduleOccurrenceStatusChangeLog = Prisma.MarketingScheduleOccurrenceStatusChangeLogModel
+/**
  * Model AcademicSession
  * 
  */
 export type AcademicSession = Prisma.AcademicSessionModel
+/**
+ * Model AcademicSessionStatusChangeLog
+ * 
+ */
+export type AcademicSessionStatusChangeLog = Prisma.AcademicSessionStatusChangeLogModel
 /**
  * Model SessionAttendance
  * 
  */
 export type SessionAttendance = Prisma.SessionAttendanceModel
 /**
+ * Model AmbassadorService
+ * 
+ */
+export type AmbassadorService = Prisma.AmbassadorServiceModel
+/**
  * Model Meeting
  * 
  */
 export type Meeting = Prisma.MeetingModel
+/**
+ * Model MeetingStatusChangeLog
+ * 
+ */
+export type MeetingStatusChangeLog = Prisma.MeetingStatusChangeLogModel
 /**
  * Model MeetingParticipant
  * 
@@ -286,6 +351,11 @@ export type MeetingAttendance = Prisma.MeetingAttendanceModel
  * 
  */
 export type AmbassadorMeeting = Prisma.AmbassadorMeetingModel
+/**
+ * Model AmbassadorMeetingStatusChangeLog
+ * 
+ */
+export type AmbassadorMeetingStatusChangeLog = Prisma.AmbassadorMeetingStatusChangeLogModel
 /**
  * Model AmbassadorMeetingAttendance
  * 
@@ -307,20 +377,35 @@ export type CurriculumList = Prisma.CurriculumListModel
  */
 export type SyllabusList = Prisma.SyllabusListModel
 /**
- * Model SyllabusListStatusHistory
+ * Model SyllabusListStatusChangeLog
  * 
  */
-export type SyllabusListStatusHistory = Prisma.SyllabusListStatusHistoryModel
+export type SyllabusListStatusChangeLog = Prisma.SyllabusListStatusChangeLogModel
 /**
  * Model SyllabusItem
  * 
  */
 export type SyllabusItem = Prisma.SyllabusItemModel
 /**
- * Model StudentProgress
+ * Model SyllabusChapter
  * 
  */
-export type StudentProgress = Prisma.StudentProgressModel
+export type SyllabusChapter = Prisma.SyllabusChapterModel
+/**
+ * Model ChapterRecordingList
+ * 
+ */
+export type ChapterRecordingList = Prisma.ChapterRecordingListModel
+/**
+ * Model ChapterRecordingItem
+ * 
+ */
+export type ChapterRecordingItem = Prisma.ChapterRecordingItemModel
+/**
+ * Model StudentSyllabusProgress
+ * 
+ */
+export type StudentSyllabusProgress = Prisma.StudentSyllabusProgressModel
 /**
  * Model TaskType
  * 
@@ -331,6 +416,11 @@ export type TaskType = Prisma.TaskTypeModel
  * 
  */
 export type TaskList = Prisma.TaskListModel
+/**
+ * Model TaskListStatusChangeLog
+ * 
+ */
+export type TaskListStatusChangeLog = Prisma.TaskListStatusChangeLogModel
 /**
  * Model TaskItem
  * 
@@ -352,6 +442,11 @@ export type TaskSubmission = Prisma.TaskSubmissionModel
  */
 export type MockList = Prisma.MockListModel
 /**
+ * Model MockListStatusChangeLog
+ * 
+ */
+export type MockListStatusChangeLog = Prisma.MockListStatusChangeLogModel
+/**
  * Model MockItem
  * 
  */
@@ -367,6 +462,11 @@ export type MockResult = Prisma.MockResultModel
  */
 export type CourseTimelineList = Prisma.CourseTimelineListModel
 /**
+ * Model CourseTimelineListStatusChangeLog
+ * 
+ */
+export type CourseTimelineListStatusChangeLog = Prisma.CourseTimelineListStatusChangeLogModel
+/**
  * Model CourseTimelineItem
  * 
  */
@@ -377,15 +477,15 @@ export type CourseTimelineItem = Prisma.CourseTimelineItemModel
  */
 export type AmbassadorProgrammeList = Prisma.AmbassadorProgrammeListModel
 /**
- * Model AmbassadorProgramme
+ * Model AmbassadorProgrammeContentList
  * 
  */
-export type AmbassadorProgramme = Prisma.AmbassadorProgrammeModel
+export type AmbassadorProgrammeContentList = Prisma.AmbassadorProgrammeContentListModel
 /**
- * Model AmbassadorProgrammeListStatusHistory
+ * Model AmbassadorProgrammeContentListStatusChangeLog
  * 
  */
-export type AmbassadorProgrammeListStatusHistory = Prisma.AmbassadorProgrammeListStatusHistoryModel
+export type AmbassadorProgrammeContentListStatusChangeLog = Prisma.AmbassadorProgrammeContentListStatusChangeLogModel
 /**
  * Model AmbassadorProgrammeItem
  * 
@@ -402,6 +502,11 @@ export type AmbassadorProgrammeProgress = Prisma.AmbassadorProgrammeProgressMode
  */
 export type AmbassadorTestList = Prisma.AmbassadorTestListModel
 /**
+ * Model AmbassadorTestListStatusChangeLog
+ * 
+ */
+export type AmbassadorTestListStatusChangeLog = Prisma.AmbassadorTestListStatusChangeLogModel
+/**
  * Model AmbassadorTestItem
  * 
  */
@@ -416,6 +521,11 @@ export type AmbassadorTestResult = Prisma.AmbassadorTestResultModel
  * 
  */
 export type AmbassadorProgrammeTimelineList = Prisma.AmbassadorProgrammeTimelineListModel
+/**
+ * Model AmbassadorProgrammeTimelineListStatusChangeLog
+ * 
+ */
+export type AmbassadorProgrammeTimelineListStatusChangeLog = Prisma.AmbassadorProgrammeTimelineListStatusChangeLogModel
 /**
  * Model AmbassadorProgrammeTimelineItem
  * 
@@ -432,10 +542,10 @@ export type Referral = Prisma.ReferralModel
  */
 export type ReferralClick = Prisma.ReferralClickModel
 /**
- * Model InvoiceMonth
+ * Model BillingMonth
  * 
  */
-export type InvoiceMonth = Prisma.InvoiceMonthModel
+export type BillingMonth = Prisma.BillingMonthModel
 /**
  * Model StudentInvoice
  * 
@@ -556,11 +666,6 @@ export type BudgetUtilisation = Prisma.BudgetUtilisationModel
  * 
  */
 export type Ticket = Prisma.TicketModel
-/**
- * Model TicketCategory
- * 
- */
-export type TicketCategory = Prisma.TicketCategoryModel
 /**
  * Model TicketMessage
  * 
@@ -747,6 +852,16 @@ export type Announcement = Prisma.AnnouncementModel
  */
 export type Recording = Prisma.RecordingModel
 /**
+ * Model MetricSnapshot
+ * 
+ */
+export type MetricSnapshot = Prisma.MetricSnapshotModel
+/**
+ * Model ProgressReport
+ * 
+ */
+export type ProgressReport = Prisma.ProgressReportModel
+/**
  * Model SiteLog
  * 
  */
@@ -786,21 +901,6 @@ export type TextFormat = Prisma.TextFormatModel
  * 
  */
 export type BacklogItem = Prisma.BacklogItemModel
-/**
- * Model SprintItem
- * 
- */
-export type SprintItem = Prisma.SprintItemModel
-/**
- * Model AmbassadorDeliverable
- * 
- */
-export type AmbassadorDeliverable = Prisma.AmbassadorDeliverableModel
-/**
- * Model AmbassadorEarning
- * 
- */
-export type AmbassadorEarning = Prisma.AmbassadorEarningModel
 /**
  * Model ContentType
  * 
@@ -857,32 +957,12 @@ export type MeetingBacklogItem = Prisma.MeetingBacklogItemModel
  */
 export type GeneralMeeting = Prisma.GeneralMeetingModel
 /**
- * Model Assignment
+ * Model GeneralMeetingStatusChangeLog
  * 
  */
-export type Assignment = Prisma.AssignmentModel
-/**
- * Model StudentStatus
- * 
- */
-export type StudentStatus = Prisma.StudentStatusModel
-/**
- * Model CanvaDesign
- * 
- */
-export type CanvaDesign = Prisma.CanvaDesignModel
+export type GeneralMeetingStatusChangeLog = Prisma.GeneralMeetingStatusChangeLogModel
 /**
  * Model Booklet
  * 
  */
 export type Booklet = Prisma.BookletModel
-/**
- * Model GcrClassroom
- * 
- */
-export type GcrClassroom = Prisma.GcrClassroomModel
-/**
- * Model RateCard
- * 
- */
-export type RateCard = Prisma.RateCardModel

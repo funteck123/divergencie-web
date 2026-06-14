@@ -289,7 +289,7 @@ export type StaffEnrolmentItemWhereInput = {
   cancellationReason?: Prisma.StringNullableFilter<"StaffEnrolmentItem"> | string | null
   isActive?: Prisma.BoolFilter<"StaffEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.StaffEnrolmentListScalarRelationFilter, Prisma.StaffEnrolmentListWhereInput>
-  history?: Prisma.StaffEnrolmentItemStatusHistoryListRelationFilter
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogListRelationFilter
   meetingAttendances?: Prisma.MeetingAttendanceListRelationFilter
 }
 
@@ -309,7 +309,7 @@ export type StaffEnrolmentItemOrderByWithRelationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   enrolmentList?: Prisma.StaffEnrolmentListOrderByWithRelationInput
-  history?: Prisma.StaffEnrolmentItemStatusHistoryOrderByRelationAggregateInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogOrderByRelationAggregateInput
   meetingAttendances?: Prisma.MeetingAttendanceOrderByRelationAggregateInput
 }
 
@@ -332,7 +332,7 @@ export type StaffEnrolmentItemWhereUniqueInput = Prisma.AtLeast<{
   cancellationReason?: Prisma.StringNullableFilter<"StaffEnrolmentItem"> | string | null
   isActive?: Prisma.BoolFilter<"StaffEnrolmentItem"> | boolean
   enrolmentList?: Prisma.XOR<Prisma.StaffEnrolmentListScalarRelationFilter, Prisma.StaffEnrolmentListWhereInput>
-  history?: Prisma.StaffEnrolmentItemStatusHistoryListRelationFilter
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogListRelationFilter
   meetingAttendances?: Prisma.MeetingAttendanceListRelationFilter
 }, "id">
 
@@ -393,7 +393,7 @@ export type StaffEnrolmentItemCreateInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.StaffEnrolmentListCreateNestedOneWithoutItemsInput
-  history?: Prisma.StaffEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.MeetingAttendanceCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -412,7 +412,7 @@ export type StaffEnrolmentItemUncheckedCreateInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -431,7 +431,7 @@ export type StaffEnrolmentItemUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StaffEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.MeetingAttendanceUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -450,7 +450,7 @@ export type StaffEnrolmentItemUncheckedUpdateInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -662,7 +662,7 @@ export type StaffEnrolmentItemCreateWithoutEnrolmentListInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.MeetingAttendanceCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -680,7 +680,7 @@ export type StaffEnrolmentItemUncheckedCreateWithoutEnrolmentListInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
   meetingAttendances?: Prisma.MeetingAttendanceUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
@@ -833,7 +833,7 @@ export type StaffEnrolmentItemCreateWithoutMeetingAttendancesInput = {
   cancellationReason?: string | null
   isActive?: boolean
   enrolmentList: Prisma.StaffEnrolmentListCreateNestedOneWithoutItemsInput
-  history?: Prisma.StaffEnrolmentItemStatusHistoryCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type StaffEnrolmentItemUncheckedCreateWithoutMeetingAttendancesInput = {
@@ -851,7 +851,7 @@ export type StaffEnrolmentItemUncheckedCreateWithoutMeetingAttendancesInput = {
   completedAt?: Date | string | null
   cancellationReason?: string | null
   isActive?: boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUncheckedCreateNestedManyWithoutEnrolmentItemInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUncheckedCreateNestedManyWithoutEnrolmentItemInput
 }
 
 export type StaffEnrolmentItemCreateOrConnectWithoutMeetingAttendancesInput = {
@@ -885,7 +885,7 @@ export type StaffEnrolmentItemUpdateWithoutMeetingAttendancesInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   enrolmentList?: Prisma.StaffEnrolmentListUpdateOneRequiredWithoutItemsNestedInput
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type StaffEnrolmentItemUncheckedUpdateWithoutMeetingAttendancesInput = {
@@ -903,7 +903,7 @@ export type StaffEnrolmentItemUncheckedUpdateWithoutMeetingAttendancesInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
 export type StaffEnrolmentItemCreateManyEnrolmentListInput = {
@@ -936,7 +936,7 @@ export type StaffEnrolmentItemUpdateWithoutEnrolmentListInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.MeetingAttendanceUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -954,7 +954,7 @@ export type StaffEnrolmentItemUncheckedUpdateWithoutEnrolmentListInput = {
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  history?: Prisma.StaffEnrolmentItemStatusHistoryUncheckedUpdateManyWithoutEnrolmentItemNestedInput
+  history?: Prisma.StaffEnrolmentItemStatusChangeLogUncheckedUpdateManyWithoutEnrolmentItemNestedInput
   meetingAttendances?: Prisma.MeetingAttendanceUncheckedUpdateManyWithoutEnrolmentItemNestedInput
 }
 
@@ -1003,7 +1003,7 @@ export type StaffEnrolmentItemCountOutputTypeDefaultArgs<ExtArgs extends runtime
  * StaffEnrolmentItemCountOutputType without action
  */
 export type StaffEnrolmentItemCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.StaffEnrolmentItemStatusHistoryWhereInput
+  where?: Prisma.StaffEnrolmentItemStatusChangeLogWhereInput
 }
 
 /**
@@ -1106,7 +1106,7 @@ export type $StaffEnrolmentItemPayload<ExtArgs extends runtime.Types.Extensions.
   name: "StaffEnrolmentItem"
   objects: {
     enrolmentList: Prisma.$StaffEnrolmentListPayload<ExtArgs>
-    history: Prisma.$StaffEnrolmentItemStatusHistoryPayload<ExtArgs>[]
+    history: Prisma.$StaffEnrolmentItemStatusChangeLogPayload<ExtArgs>[]
     meetingAttendances: Prisma.$MeetingAttendancePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1519,7 +1519,7 @@ readonly fields: StaffEnrolmentItemFieldRefs;
 export interface Prisma__StaffEnrolmentItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   enrolmentList<T extends Prisma.StaffEnrolmentListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffEnrolmentListDefaultArgs<ExtArgs>>): Prisma.Prisma__StaffEnrolmentListClient<runtime.Types.Result.GetResult<Prisma.$StaffEnrolmentListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  history<T extends Prisma.StaffEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffEnrolmentItemStatusHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.StaffEnrolmentItem$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffEnrolmentItem$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffEnrolmentItemStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   meetingAttendances<T extends Prisma.StaffEnrolmentItem$meetingAttendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StaffEnrolmentItem$meetingAttendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MeetingAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1969,23 +1969,23 @@ export type StaffEnrolmentItemDeleteManyArgs<ExtArgs extends runtime.Types.Exten
  */
 export type StaffEnrolmentItem$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StaffEnrolmentItemStatusHistory
+   * Select specific fields to fetch from the StaffEnrolmentItemStatusChangeLog
    */
-  select?: Prisma.StaffEnrolmentItemStatusHistorySelect<ExtArgs> | null
+  select?: Prisma.StaffEnrolmentItemStatusChangeLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StaffEnrolmentItemStatusHistory
+   * Omit specific fields from the StaffEnrolmentItemStatusChangeLog
    */
-  omit?: Prisma.StaffEnrolmentItemStatusHistoryOmit<ExtArgs> | null
+  omit?: Prisma.StaffEnrolmentItemStatusChangeLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StaffEnrolmentItemStatusHistoryInclude<ExtArgs> | null
-  where?: Prisma.StaffEnrolmentItemStatusHistoryWhereInput
-  orderBy?: Prisma.StaffEnrolmentItemStatusHistoryOrderByWithRelationInput | Prisma.StaffEnrolmentItemStatusHistoryOrderByWithRelationInput[]
-  cursor?: Prisma.StaffEnrolmentItemStatusHistoryWhereUniqueInput
+  include?: Prisma.StaffEnrolmentItemStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.StaffEnrolmentItemStatusChangeLogWhereInput
+  orderBy?: Prisma.StaffEnrolmentItemStatusChangeLogOrderByWithRelationInput | Prisma.StaffEnrolmentItemStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.StaffEnrolmentItemStatusChangeLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.StaffEnrolmentItemStatusHistoryScalarFieldEnum | Prisma.StaffEnrolmentItemStatusHistoryScalarFieldEnum[]
+  distinct?: Prisma.StaffEnrolmentItemStatusChangeLogScalarFieldEnum | Prisma.StaffEnrolmentItemStatusChangeLogScalarFieldEnum[]
 }
 
 /**

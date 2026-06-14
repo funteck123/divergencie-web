@@ -40,7 +40,7 @@ export type AmbassadorPaycheckMinAggregateOutputType = {
   id: string | null
   claimId: string | null
   ambassadorId: string | null
-  paycheckMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string | null
   subtotal: number | null
@@ -57,7 +57,7 @@ export type AmbassadorPaycheckMaxAggregateOutputType = {
   id: string | null
   claimId: string | null
   ambassadorId: string | null
-  paycheckMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string | null
   subtotal: number | null
@@ -74,7 +74,7 @@ export type AmbassadorPaycheckCountAggregateOutputType = {
   id: number
   claimId: number
   ambassadorId: number
-  paycheckMonthId: number
+  billingMonthId: number
   receivingPaymentMethodId: number
   month: number
   subtotal: number
@@ -103,7 +103,7 @@ export type AmbassadorPaycheckMinAggregateInputType = {
   id?: true
   claimId?: true
   ambassadorId?: true
-  paycheckMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   subtotal?: true
@@ -120,7 +120,7 @@ export type AmbassadorPaycheckMaxAggregateInputType = {
   id?: true
   claimId?: true
   ambassadorId?: true
-  paycheckMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   subtotal?: true
@@ -137,7 +137,7 @@ export type AmbassadorPaycheckCountAggregateInputType = {
   id?: true
   claimId?: true
   ambassadorId?: true
-  paycheckMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   subtotal?: true
@@ -241,7 +241,7 @@ export type AmbassadorPaycheckGroupByOutputType = {
   id: string
   claimId: string
   ambassadorId: string
-  paycheckMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string
   subtotal: number
@@ -281,7 +281,7 @@ export type AmbassadorPaycheckWhereInput = {
   id?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   claimId?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   ambassadorId?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
-  paycheckMonthId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
   month?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   subtotal?: Prisma.FloatFilter<"AmbassadorPaycheck"> | number
@@ -294,7 +294,7 @@ export type AmbassadorPaycheckWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"AmbassadorPaycheck"> | Date | string
   claim?: Prisma.XOR<Prisma.AmbassadorClaimScalarRelationFilter, Prisma.AmbassadorClaimWhereInput>
   ambassador?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  paycheckMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
   history?: Prisma.AmbassadorPaycheckStatusChangeLogListRelationFilter
 }
@@ -303,7 +303,7 @@ export type AmbassadorPaycheckOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
   ambassadorId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -316,7 +316,7 @@ export type AmbassadorPaycheckOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   claim?: Prisma.AmbassadorClaimOrderByWithRelationInput
   ambassador?: Prisma.UserOrderByWithRelationInput
-  paycheckMonth?: Prisma.InvoiceMonthOrderByWithRelationInput
+  billingMonth?: Prisma.BillingMonthOrderByWithRelationInput
   ledgerEntries?: Prisma.LedgerEntryOrderByRelationAggregateInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogOrderByRelationAggregateInput
 }
@@ -328,7 +328,7 @@ export type AmbassadorPaycheckWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AmbassadorPaycheckWhereInput | Prisma.AmbassadorPaycheckWhereInput[]
   claimId?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   ambassadorId?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
-  paycheckMonthId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
   month?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   subtotal?: Prisma.FloatFilter<"AmbassadorPaycheck"> | number
@@ -341,7 +341,7 @@ export type AmbassadorPaycheckWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"AmbassadorPaycheck"> | Date | string
   claim?: Prisma.XOR<Prisma.AmbassadorClaimScalarRelationFilter, Prisma.AmbassadorClaimWhereInput>
   ambassador?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  paycheckMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
   history?: Prisma.AmbassadorPaycheckStatusChangeLogListRelationFilter
 }, "id">
@@ -350,7 +350,7 @@ export type AmbassadorPaycheckOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
   ambassadorId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -375,7 +375,7 @@ export type AmbassadorPaycheckScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"AmbassadorPaycheck"> | string
   claimId?: Prisma.StringWithAggregatesFilter<"AmbassadorPaycheck"> | string
   ambassadorId?: Prisma.StringWithAggregatesFilter<"AmbassadorPaycheck"> | string
-  paycheckMonthId?: Prisma.StringNullableWithAggregatesFilter<"AmbassadorPaycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableWithAggregatesFilter<"AmbassadorPaycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableWithAggregatesFilter<"AmbassadorPaycheck"> | string | null
   month?: Prisma.StringWithAggregatesFilter<"AmbassadorPaycheck"> | string
   subtotal?: Prisma.FloatWithAggregatesFilter<"AmbassadorPaycheck"> | number
@@ -402,7 +402,7 @@ export type AmbassadorPaycheckCreateInput = {
   createdAt?: Date | string
   claim: Prisma.AmbassadorClaimCreateNestedOneWithoutPaychecksInput
   ambassador: Prisma.UserCreateNestedOneWithoutAmbassadorPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutAmbassadorPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutAmbassadorPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutAmbassadorPaycheckInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
 }
@@ -411,7 +411,7 @@ export type AmbassadorPaycheckUncheckedCreateInput = {
   id?: string
   claimId: string
   ambassadorId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -440,7 +440,7 @@ export type AmbassadorPaycheckUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.AmbassadorClaimUpdateOneRequiredWithoutPaychecksNestedInput
   ambassador?: Prisma.UserUpdateOneRequiredWithoutAmbassadorPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutAmbassadorPaycheckNestedInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
 }
@@ -449,7 +449,7 @@ export type AmbassadorPaycheckUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -468,7 +468,7 @@ export type AmbassadorPaycheckCreateManyInput = {
   id?: string
   claimId: string
   ambassadorId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -499,7 +499,7 @@ export type AmbassadorPaycheckUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -526,7 +526,7 @@ export type AmbassadorPaycheckCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
   ambassadorId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -548,7 +548,7 @@ export type AmbassadorPaycheckMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
   ambassadorId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -565,7 +565,7 @@ export type AmbassadorPaycheckMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   claimId?: Prisma.SortOrder
   ambassadorId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -635,45 +635,45 @@ export type AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorNestedInput = 
   deleteMany?: Prisma.AmbassadorPaycheckScalarWhereInput | Prisma.AmbassadorPaycheckScalarWhereInput[]
 }
 
-export type AmbassadorPaycheckCreateNestedManyWithoutPaycheckMonthInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  createMany?: Prisma.AmbassadorPaycheckCreateManyPaycheckMonthInputEnvelope
+export type AmbassadorPaycheckCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.AmbassadorPaycheckCreateManyBillingMonthInputEnvelope
   connect?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
 }
 
-export type AmbassadorPaycheckUncheckedCreateNestedManyWithoutPaycheckMonthInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  createMany?: Prisma.AmbassadorPaycheckCreateManyPaycheckMonthInputEnvelope
+export type AmbassadorPaycheckUncheckedCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.AmbassadorPaycheckCreateManyBillingMonthInputEnvelope
   connect?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
 }
 
-export type AmbassadorPaycheckUpdateManyWithoutPaycheckMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  upsert?: Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput[]
-  createMany?: Prisma.AmbassadorPaycheckCreateManyPaycheckMonthInputEnvelope
+export type AmbassadorPaycheckUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.AmbassadorPaycheckCreateManyBillingMonthInputEnvelope
   set?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
   disconnect?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
   delete?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
   connect?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
-  update?: Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput[]
-  updateMany?: Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutPaycheckMonthInput[]
+  update?: Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutBillingMonthInput | Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.AmbassadorPaycheckScalarWhereInput | Prisma.AmbassadorPaycheckScalarWhereInput[]
 }
 
-export type AmbassadorPaycheckUncheckedUpdateManyWithoutPaycheckMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  upsert?: Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput[]
-  createMany?: Prisma.AmbassadorPaycheckCreateManyPaycheckMonthInputEnvelope
+export type AmbassadorPaycheckUncheckedUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput[] | Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.AmbassadorPaycheckUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.AmbassadorPaycheckCreateManyBillingMonthInputEnvelope
   set?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
   disconnect?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
   delete?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
   connect?: Prisma.AmbassadorPaycheckWhereUniqueInput | Prisma.AmbassadorPaycheckWhereUniqueInput[]
-  update?: Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput[]
-  updateMany?: Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutPaycheckMonthInput | Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutPaycheckMonthInput[]
+  update?: Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.AmbassadorPaycheckUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutBillingMonthInput | Prisma.AmbassadorPaycheckUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.AmbassadorPaycheckScalarWhereInput | Prisma.AmbassadorPaycheckScalarWhereInput[]
 }
 
@@ -762,7 +762,7 @@ export type AmbassadorPaycheckCreateWithoutAmbassadorInput = {
   notes?: string | null
   createdAt?: Date | string
   claim: Prisma.AmbassadorClaimCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutAmbassadorPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutAmbassadorPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutAmbassadorPaycheckInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
 }
@@ -770,7 +770,7 @@ export type AmbassadorPaycheckCreateWithoutAmbassadorInput = {
 export type AmbassadorPaycheckUncheckedCreateWithoutAmbassadorInput = {
   id?: string
   claimId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -818,7 +818,7 @@ export type AmbassadorPaycheckScalarWhereInput = {
   id?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   claimId?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   ambassadorId?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
-  paycheckMonthId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"AmbassadorPaycheck"> | string | null
   month?: Prisma.StringFilter<"AmbassadorPaycheck"> | string
   subtotal?: Prisma.FloatFilter<"AmbassadorPaycheck"> | number
@@ -831,7 +831,7 @@ export type AmbassadorPaycheckScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"AmbassadorPaycheck"> | Date | string
 }
 
-export type AmbassadorPaycheckCreateWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckCreateWithoutBillingMonthInput = {
   id?: string
   receivingPaymentMethodId?: string | null
   month: string
@@ -849,7 +849,7 @@ export type AmbassadorPaycheckCreateWithoutPaycheckMonthInput = {
   history?: Prisma.AmbassadorPaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
 }
 
-export type AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput = {
   id?: string
   claimId: string
   ambassadorId: string
@@ -867,30 +867,30 @@ export type AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput = {
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUncheckedCreateNestedManyWithoutPaycheckInput
 }
 
-export type AmbassadorPaycheckCreateOrConnectWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckCreateOrConnectWithoutBillingMonthInput = {
   where: Prisma.AmbassadorPaycheckWhereUniqueInput
-  create: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput>
+  create: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type AmbassadorPaycheckCreateManyPaycheckMonthInputEnvelope = {
-  data: Prisma.AmbassadorPaycheckCreateManyPaycheckMonthInput | Prisma.AmbassadorPaycheckCreateManyPaycheckMonthInput[]
+export type AmbassadorPaycheckCreateManyBillingMonthInputEnvelope = {
+  data: Prisma.AmbassadorPaycheckCreateManyBillingMonthInput | Prisma.AmbassadorPaycheckCreateManyBillingMonthInput[]
   skipDuplicates?: boolean
 }
 
-export type AmbassadorPaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUpsertWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.AmbassadorPaycheckWhereUniqueInput
-  update: Prisma.XOR<Prisma.AmbassadorPaycheckUpdateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedUpdateWithoutPaycheckMonthInput>
-  create: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutPaycheckMonthInput>
+  update: Prisma.XOR<Prisma.AmbassadorPaycheckUpdateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedUpdateWithoutBillingMonthInput>
+  create: Prisma.XOR<Prisma.AmbassadorPaycheckCreateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type AmbassadorPaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUpdateWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.AmbassadorPaycheckWhereUniqueInput
-  data: Prisma.XOR<Prisma.AmbassadorPaycheckUpdateWithoutPaycheckMonthInput, Prisma.AmbassadorPaycheckUncheckedUpdateWithoutPaycheckMonthInput>
+  data: Prisma.XOR<Prisma.AmbassadorPaycheckUpdateWithoutBillingMonthInput, Prisma.AmbassadorPaycheckUncheckedUpdateWithoutBillingMonthInput>
 }
 
-export type AmbassadorPaycheckUpdateManyWithWhereWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUpdateManyWithWhereWithoutBillingMonthInput = {
   where: Prisma.AmbassadorPaycheckScalarWhereInput
-  data: Prisma.XOR<Prisma.AmbassadorPaycheckUpdateManyMutationInput, Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutPaycheckMonthInput>
+  data: Prisma.XOR<Prisma.AmbassadorPaycheckUpdateManyMutationInput, Prisma.AmbassadorPaycheckUncheckedUpdateManyWithoutBillingMonthInput>
 }
 
 export type AmbassadorPaycheckCreateWithoutClaimInput = {
@@ -906,7 +906,7 @@ export type AmbassadorPaycheckCreateWithoutClaimInput = {
   notes?: string | null
   createdAt?: Date | string
   ambassador: Prisma.UserCreateNestedOneWithoutAmbassadorPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutAmbassadorPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutAmbassadorPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutAmbassadorPaycheckInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
 }
@@ -914,7 +914,7 @@ export type AmbassadorPaycheckCreateWithoutClaimInput = {
 export type AmbassadorPaycheckUncheckedCreateWithoutClaimInput = {
   id?: string
   ambassadorId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -969,7 +969,7 @@ export type AmbassadorPaycheckCreateWithoutHistoryInput = {
   createdAt?: Date | string
   claim: Prisma.AmbassadorClaimCreateNestedOneWithoutPaychecksInput
   ambassador: Prisma.UserCreateNestedOneWithoutAmbassadorPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutAmbassadorPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutAmbassadorPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutAmbassadorPaycheckInput
 }
 
@@ -977,7 +977,7 @@ export type AmbassadorPaycheckUncheckedCreateWithoutHistoryInput = {
   id?: string
   claimId: string
   ambassadorId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -1021,7 +1021,7 @@ export type AmbassadorPaycheckUpdateWithoutHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.AmbassadorClaimUpdateOneRequiredWithoutPaychecksNestedInput
   ambassador?: Prisma.UserUpdateOneRequiredWithoutAmbassadorPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutAmbassadorPaycheckNestedInput
 }
 
@@ -1029,7 +1029,7 @@ export type AmbassadorPaycheckUncheckedUpdateWithoutHistoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1057,7 +1057,7 @@ export type AmbassadorPaycheckCreateWithoutLedgerEntriesInput = {
   createdAt?: Date | string
   claim: Prisma.AmbassadorClaimCreateNestedOneWithoutPaychecksInput
   ambassador: Prisma.UserCreateNestedOneWithoutAmbassadorPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutAmbassadorPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutAmbassadorPaychecksInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
 }
 
@@ -1065,7 +1065,7 @@ export type AmbassadorPaycheckUncheckedCreateWithoutLedgerEntriesInput = {
   id?: string
   claimId: string
   ambassadorId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -1109,7 +1109,7 @@ export type AmbassadorPaycheckUpdateWithoutLedgerEntriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.AmbassadorClaimUpdateOneRequiredWithoutPaychecksNestedInput
   ambassador?: Prisma.UserUpdateOneRequiredWithoutAmbassadorPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
 }
 
@@ -1117,7 +1117,7 @@ export type AmbassadorPaycheckUncheckedUpdateWithoutLedgerEntriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1134,7 +1134,7 @@ export type AmbassadorPaycheckUncheckedUpdateWithoutLedgerEntriesInput = {
 export type AmbassadorPaycheckCreateManyAmbassadorInput = {
   id?: string
   claimId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -1160,7 +1160,7 @@ export type AmbassadorPaycheckUpdateWithoutAmbassadorInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.AmbassadorClaimUpdateOneRequiredWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutAmbassadorPaycheckNestedInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
 }
@@ -1168,7 +1168,7 @@ export type AmbassadorPaycheckUpdateWithoutAmbassadorInput = {
 export type AmbassadorPaycheckUncheckedUpdateWithoutAmbassadorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1186,7 +1186,7 @@ export type AmbassadorPaycheckUncheckedUpdateWithoutAmbassadorInput = {
 export type AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1199,7 +1199,7 @@ export type AmbassadorPaycheckUncheckedUpdateManyWithoutAmbassadorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type AmbassadorPaycheckCreateManyPaycheckMonthInput = {
+export type AmbassadorPaycheckCreateManyBillingMonthInput = {
   id?: string
   claimId: string
   ambassadorId: string
@@ -1215,7 +1215,7 @@ export type AmbassadorPaycheckCreateManyPaycheckMonthInput = {
   createdAt?: Date | string
 }
 
-export type AmbassadorPaycheckUpdateWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUpdateWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1233,7 +1233,7 @@ export type AmbassadorPaycheckUpdateWithoutPaycheckMonthInput = {
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
 }
 
-export type AmbassadorPaycheckUncheckedUpdateWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUncheckedUpdateWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1251,7 +1251,7 @@ export type AmbassadorPaycheckUncheckedUpdateWithoutPaycheckMonthInput = {
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUncheckedUpdateManyWithoutPaycheckNestedInput
 }
 
-export type AmbassadorPaycheckUncheckedUpdateManyWithoutPaycheckMonthInput = {
+export type AmbassadorPaycheckUncheckedUpdateManyWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1270,7 +1270,7 @@ export type AmbassadorPaycheckUncheckedUpdateManyWithoutPaycheckMonthInput = {
 export type AmbassadorPaycheckCreateManyClaimInput = {
   id?: string
   ambassadorId: string
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   subtotal?: number
@@ -1296,7 +1296,7 @@ export type AmbassadorPaycheckUpdateWithoutClaimInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ambassador?: Prisma.UserUpdateOneRequiredWithoutAmbassadorPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutAmbassadorPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutAmbassadorPaycheckNestedInput
   history?: Prisma.AmbassadorPaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
 }
@@ -1304,7 +1304,7 @@ export type AmbassadorPaycheckUpdateWithoutClaimInput = {
 export type AmbassadorPaycheckUncheckedUpdateWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1322,7 +1322,7 @@ export type AmbassadorPaycheckUncheckedUpdateWithoutClaimInput = {
 export type AmbassadorPaycheckUncheckedUpdateManyWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   ambassadorId?: Prisma.StringFieldUpdateOperationsInput | string
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
@@ -1379,7 +1379,7 @@ export type AmbassadorPaycheckSelect<ExtArgs extends runtime.Types.Extensions.In
   id?: boolean
   claimId?: boolean
   ambassadorId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   subtotal?: boolean
@@ -1392,7 +1392,7 @@ export type AmbassadorPaycheckSelect<ExtArgs extends runtime.Types.Extensions.In
   createdAt?: boolean
   claim?: boolean | Prisma.AmbassadorClaimDefaultArgs<ExtArgs>
   ambassador?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.AmbassadorPaycheck$ledgerEntriesArgs<ExtArgs>
   history?: boolean | Prisma.AmbassadorPaycheck$historyArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorPaycheckCountOutputTypeDefaultArgs<ExtArgs>
@@ -1402,7 +1402,7 @@ export type AmbassadorPaycheckSelectCreateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   claimId?: boolean
   ambassadorId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   subtotal?: boolean
@@ -1415,14 +1415,14 @@ export type AmbassadorPaycheckSelectCreateManyAndReturn<ExtArgs extends runtime.
   createdAt?: boolean
   claim?: boolean | Prisma.AmbassadorClaimDefaultArgs<ExtArgs>
   ambassador?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorPaycheck"]>
 
 export type AmbassadorPaycheckSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   claimId?: boolean
   ambassadorId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   subtotal?: boolean
@@ -1435,14 +1435,14 @@ export type AmbassadorPaycheckSelectUpdateManyAndReturn<ExtArgs extends runtime.
   createdAt?: boolean
   claim?: boolean | Prisma.AmbassadorClaimDefaultArgs<ExtArgs>
   ambassador?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorPaycheck"]>
 
 export type AmbassadorPaycheckSelectScalar = {
   id?: boolean
   claimId?: boolean
   ambassadorId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   subtotal?: boolean
@@ -1455,11 +1455,11 @@ export type AmbassadorPaycheckSelectScalar = {
   createdAt?: boolean
 }
 
-export type AmbassadorPaycheckOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "claimId" | "ambassadorId" | "paycheckMonthId" | "receivingPaymentMethodId" | "month" | "subtotal" | "dueAmount" | "currency" | "status" | "statusReason" | "isActive" | "notes" | "createdAt", ExtArgs["result"]["ambassadorPaycheck"]>
+export type AmbassadorPaycheckOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "claimId" | "ambassadorId" | "billingMonthId" | "receivingPaymentMethodId" | "month" | "subtotal" | "dueAmount" | "currency" | "status" | "statusReason" | "isActive" | "notes" | "createdAt", ExtArgs["result"]["ambassadorPaycheck"]>
 export type AmbassadorPaycheckInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claim?: boolean | Prisma.AmbassadorClaimDefaultArgs<ExtArgs>
   ambassador?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.AmbassadorPaycheck$ledgerEntriesArgs<ExtArgs>
   history?: boolean | Prisma.AmbassadorPaycheck$historyArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorPaycheckCountOutputTypeDefaultArgs<ExtArgs>
@@ -1467,12 +1467,12 @@ export type AmbassadorPaycheckInclude<ExtArgs extends runtime.Types.Extensions.I
 export type AmbassadorPaycheckIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claim?: boolean | Prisma.AmbassadorClaimDefaultArgs<ExtArgs>
   ambassador?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>
 }
 export type AmbassadorPaycheckIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claim?: boolean | Prisma.AmbassadorClaimDefaultArgs<ExtArgs>
   ambassador?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>
 }
 
 export type $AmbassadorPaycheckPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1480,7 +1480,7 @@ export type $AmbassadorPaycheckPayload<ExtArgs extends runtime.Types.Extensions.
   objects: {
     claim: Prisma.$AmbassadorClaimPayload<ExtArgs>
     ambassador: Prisma.$UserPayload<ExtArgs>
-    paycheckMonth: Prisma.$InvoiceMonthPayload<ExtArgs> | null
+    billingMonth: Prisma.$BillingMonthPayload<ExtArgs> | null
     ledgerEntries: Prisma.$LedgerEntryPayload<ExtArgs>[]
     history: Prisma.$AmbassadorPaycheckStatusChangeLogPayload<ExtArgs>[]
   }
@@ -1488,7 +1488,7 @@ export type $AmbassadorPaycheckPayload<ExtArgs extends runtime.Types.Extensions.
     id: string
     claimId: string
     ambassadorId: string
-    paycheckMonthId: string | null
+    billingMonthId: string | null
     receivingPaymentMethodId: string | null
     month: string
     subtotal: number
@@ -1895,7 +1895,7 @@ export interface Prisma__AmbassadorPaycheckClient<T, Null = never, ExtArgs exten
   readonly [Symbol.toStringTag]: "PrismaPromise"
   claim<T extends Prisma.AmbassadorClaimDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorClaimDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorClaimClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorClaimPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   ambassador<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  paycheckMonth<T extends Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorPaycheck$paycheckMonthArgs<ExtArgs>>): Prisma.Prisma__InvoiceMonthClient<runtime.Types.Result.GetResult<Prisma.$InvoiceMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  billingMonth<T extends Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorPaycheck$billingMonthArgs<ExtArgs>>): Prisma.Prisma__BillingMonthClient<runtime.Types.Result.GetResult<Prisma.$BillingMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   ledgerEntries<T extends Prisma.AmbassadorPaycheck$ledgerEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorPaycheck$ledgerEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LedgerEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   history<T extends Prisma.AmbassadorPaycheck$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorPaycheck$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorPaycheckStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1930,7 +1930,7 @@ export interface AmbassadorPaycheckFieldRefs {
   readonly id: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
   readonly claimId: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
   readonly ambassadorId: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
-  readonly paycheckMonthId: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
+  readonly billingMonthId: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
   readonly receivingPaymentMethodId: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
   readonly month: Prisma.FieldRef<"AmbassadorPaycheck", 'String'>
   readonly subtotal: Prisma.FieldRef<"AmbassadorPaycheck", 'Float'>
@@ -2342,22 +2342,22 @@ export type AmbassadorPaycheckDeleteManyArgs<ExtArgs extends runtime.Types.Exten
 }
 
 /**
- * AmbassadorPaycheck.paycheckMonth
+ * AmbassadorPaycheck.billingMonth
  */
-export type AmbassadorPaycheck$paycheckMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type AmbassadorPaycheck$billingMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the InvoiceMonth
+   * Select specific fields to fetch from the BillingMonth
    */
-  select?: Prisma.InvoiceMonthSelect<ExtArgs> | null
+  select?: Prisma.BillingMonthSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the InvoiceMonth
+   * Omit specific fields from the BillingMonth
    */
-  omit?: Prisma.InvoiceMonthOmit<ExtArgs> | null
+  omit?: Prisma.BillingMonthOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InvoiceMonthInclude<ExtArgs> | null
-  where?: Prisma.InvoiceMonthWhereInput
+  include?: Prisma.BillingMonthInclude<ExtArgs> | null
+  where?: Prisma.BillingMonthWhereInput
 }
 
 /**

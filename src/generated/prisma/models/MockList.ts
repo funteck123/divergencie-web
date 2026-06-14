@@ -27,18 +27,36 @@ export type AggregateMockList = {
 export type MockListMinAggregateOutputType = {
   id: string | null
   curriculumListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type MockListMaxAggregateOutputType = {
   id: string | null
   curriculumListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type MockListCountAggregateOutputType = {
   id: number
   curriculumListId: number
+  name: number
+  version: number
+  status: number
+  activatedAt: number
+  pausedAt: number
+  deactivatedAt: number
   isActive: number
   _all: number
 }
@@ -47,18 +65,36 @@ export type MockListCountAggregateOutputType = {
 export type MockListMinAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type MockListMaxAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type MockListCountAggregateInputType = {
   id?: true
   curriculumListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
   _all?: true
 }
@@ -138,6 +174,12 @@ export type MockListGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type MockListGroupByOutputType = {
   id: string
   curriculumListId: string
+  name: string
+  version: string
+  status: string
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean
   _count: MockListCountAggregateOutputType | null
   _min: MockListMinAggregateOutputType | null
@@ -165,17 +207,31 @@ export type MockListWhereInput = {
   NOT?: Prisma.MockListWhereInput | Prisma.MockListWhereInput[]
   id?: Prisma.StringFilter<"MockList"> | string
   curriculumListId?: Prisma.StringFilter<"MockList"> | string
+  name?: Prisma.StringFilter<"MockList"> | string
+  version?: Prisma.StringFilter<"MockList"> | string
+  status?: Prisma.StringFilter<"MockList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"MockList"> | boolean
   curriculumList?: Prisma.XOR<Prisma.CurriculumListScalarRelationFilter, Prisma.CurriculumListWhereInput>
   mockItems?: Prisma.MockItemListRelationFilter
+  statusChangeLogs?: Prisma.MockListStatusChangeLogListRelationFilter
 }
 
 export type MockListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   curriculumList?: Prisma.CurriculumListOrderByWithRelationInput
   mockItems?: Prisma.MockItemOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type MockListWhereUniqueInput = Prisma.AtLeast<{
@@ -184,14 +240,27 @@ export type MockListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.MockListWhereInput[]
   NOT?: Prisma.MockListWhereInput | Prisma.MockListWhereInput[]
   curriculumListId?: Prisma.StringFilter<"MockList"> | string
+  name?: Prisma.StringFilter<"MockList"> | string
+  version?: Prisma.StringFilter<"MockList"> | string
+  status?: Prisma.StringFilter<"MockList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"MockList"> | boolean
   curriculumList?: Prisma.XOR<Prisma.CurriculumListScalarRelationFilter, Prisma.CurriculumListWhereInput>
   mockItems?: Prisma.MockItemListRelationFilter
+  statusChangeLogs?: Prisma.MockListStatusChangeLogListRelationFilter
 }, "id">
 
 export type MockListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.MockListCountOrderByAggregateInput
   _max?: Prisma.MockListMaxOrderByAggregateInput
@@ -204,51 +273,103 @@ export type MockListScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MockListScalarWhereWithAggregatesInput | Prisma.MockListScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"MockList"> | string
   curriculumListId?: Prisma.StringWithAggregatesFilter<"MockList"> | string
+  name?: Prisma.StringWithAggregatesFilter<"MockList"> | string
+  version?: Prisma.StringWithAggregatesFilter<"MockList"> | string
+  status?: Prisma.StringWithAggregatesFilter<"MockList"> | string
+  activatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MockList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MockList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"MockList"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"MockList"> | boolean
 }
 
 export type MockListCreateInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   curriculumList: Prisma.CurriculumListCreateNestedOneWithoutMockListsInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutMockListInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogCreateNestedManyWithoutMockListInput
 }
 
 export type MockListUncheckedCreateInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutMockListInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUncheckedCreateNestedManyWithoutMockListInput
 }
 
 export type MockListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutMockListsNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutMockListNestedInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutMockListNestedInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUncheckedUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListCreateManyInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type MockListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type MockListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -265,18 +386,36 @@ export type MockListOrderByRelationAggregateInput = {
 export type MockListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type MockListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type MockListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   curriculumListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -327,6 +466,20 @@ export type MockListUncheckedUpdateManyWithoutCurriculumListNestedInput = {
   deleteMany?: Prisma.MockListScalarWhereInput | Prisma.MockListScalarWhereInput[]
 }
 
+export type MockListCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.MockListCreateWithoutStatusChangeLogsInput, Prisma.MockListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.MockListCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.MockListWhereUniqueInput
+}
+
+export type MockListUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.MockListCreateWithoutStatusChangeLogsInput, Prisma.MockListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.MockListCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.MockListUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.MockListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MockListUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.MockListUpdateWithoutStatusChangeLogsInput>, Prisma.MockListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type MockListCreateNestedOneWithoutMockItemsInput = {
   create?: Prisma.XOR<Prisma.MockListCreateWithoutMockItemsInput, Prisma.MockListUncheckedCreateWithoutMockItemsInput>
   connectOrCreate?: Prisma.MockListCreateOrConnectWithoutMockItemsInput
@@ -343,14 +496,28 @@ export type MockListUpdateOneRequiredWithoutMockItemsNestedInput = {
 
 export type MockListCreateWithoutCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   mockItems?: Prisma.MockItemCreateNestedManyWithoutMockListInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogCreateNestedManyWithoutMockListInput
 }
 
 export type MockListUncheckedCreateWithoutCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutMockListInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUncheckedCreateNestedManyWithoutMockListInput
 }
 
 export type MockListCreateOrConnectWithoutCurriculumListInput = {
@@ -385,19 +552,107 @@ export type MockListScalarWhereInput = {
   NOT?: Prisma.MockListScalarWhereInput | Prisma.MockListScalarWhereInput[]
   id?: Prisma.StringFilter<"MockList"> | string
   curriculumListId?: Prisma.StringFilter<"MockList"> | string
+  name?: Prisma.StringFilter<"MockList"> | string
+  version?: Prisma.StringFilter<"MockList"> | string
+  status?: Prisma.StringFilter<"MockList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"MockList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"MockList"> | boolean
+}
+
+export type MockListCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  curriculumList: Prisma.CurriculumListCreateNestedOneWithoutMockListsInput
+  mockItems?: Prisma.MockItemCreateNestedManyWithoutMockListInput
+}
+
+export type MockListUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutMockListInput
+}
+
+export type MockListCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.MockListWhereUniqueInput
+  create: Prisma.XOR<Prisma.MockListCreateWithoutStatusChangeLogsInput, Prisma.MockListUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type MockListUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.MockListUpdateWithoutStatusChangeLogsInput, Prisma.MockListUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.MockListCreateWithoutStatusChangeLogsInput, Prisma.MockListUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.MockListWhereInput
+}
+
+export type MockListUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.MockListWhereInput
+  data: Prisma.XOR<Prisma.MockListUpdateWithoutStatusChangeLogsInput, Prisma.MockListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type MockListUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutMockListsNestedInput
+  mockItems?: Prisma.MockItemUpdateManyWithoutMockListNestedInput
+}
+
+export type MockListUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListCreateWithoutMockItemsInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   curriculumList: Prisma.CurriculumListCreateNestedOneWithoutMockListsInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogCreateNestedManyWithoutMockListInput
 }
 
 export type MockListUncheckedCreateWithoutMockItemsInput = {
   id?: string
   curriculumListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUncheckedCreateNestedManyWithoutMockListInput
 }
 
 export type MockListCreateOrConnectWithoutMockItemsInput = {
@@ -418,35 +673,75 @@ export type MockListUpdateToOneWithWhereWithoutMockItemsInput = {
 
 export type MockListUpdateWithoutMockItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   curriculumList?: Prisma.CurriculumListUpdateOneRequiredWithoutMockListsNestedInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListUncheckedUpdateWithoutMockItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   curriculumListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUncheckedUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListCreateManyCurriculumListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type MockListUpdateWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   mockItems?: Prisma.MockItemUpdateManyWithoutMockListNestedInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListUncheckedUpdateWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutMockListNestedInput
+  statusChangeLogs?: Prisma.MockListStatusChangeLogUncheckedUpdateManyWithoutMockListNestedInput
 }
 
 export type MockListUncheckedUpdateManyWithoutCurriculumListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -457,10 +752,12 @@ export type MockListUncheckedUpdateManyWithoutCurriculumListInput = {
 
 export type MockListCountOutputType = {
   mockItems: number
+  statusChangeLogs: number
 }
 
 export type MockListCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   mockItems?: boolean | MockListCountOutputTypeCountMockItemsArgs
+  statusChangeLogs?: boolean | MockListCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -480,19 +777,39 @@ export type MockListCountOutputTypeCountMockItemsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.MockItemWhereInput
 }
 
+/**
+ * MockListCountOutputType without action
+ */
+export type MockListCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MockListStatusChangeLogWhereInput
+}
+
 
 export type MockListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
   mockItems?: boolean | Prisma.MockList$mockItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.MockList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.MockListCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mockList"]>
 
 export type MockListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mockList"]>
@@ -500,6 +817,12 @@ export type MockListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type MockListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mockList"]>
@@ -507,13 +830,20 @@ export type MockListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type MockListSelectScalar = {
   id?: boolean
   curriculumListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
 }
 
-export type MockListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "curriculumListId" | "isActive", ExtArgs["result"]["mockList"]>
+export type MockListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "curriculumListId" | "name" | "version" | "status" | "activatedAt" | "pausedAt" | "deactivatedAt" | "isActive", ExtArgs["result"]["mockList"]>
 export type MockListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   curriculumList?: boolean | Prisma.CurriculumListDefaultArgs<ExtArgs>
   mockItems?: boolean | Prisma.MockList$mockItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.MockList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.MockListCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MockListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -528,10 +858,17 @@ export type $MockListPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     curriculumList: Prisma.$CurriculumListPayload<ExtArgs>
     mockItems: Prisma.$MockItemPayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$MockListStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     curriculumListId: string
+    name: string
+    version: string
+    status: string
+    activatedAt: Date | null
+    pausedAt: Date | null
+    deactivatedAt: Date | null
     isActive: boolean
   }, ExtArgs["result"]["mockList"]>
   composites: {}
@@ -929,6 +1266,7 @@ export interface Prisma__MockListClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   curriculumList<T extends Prisma.CurriculumListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CurriculumListDefaultArgs<ExtArgs>>): Prisma.Prisma__CurriculumListClient<runtime.Types.Result.GetResult<Prisma.$CurriculumListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   mockItems<T extends Prisma.MockList$mockItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MockList$mockItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.MockList$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MockList$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockListStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -960,6 +1298,12 @@ export interface Prisma__MockListClient<T, Null = never, ExtArgs extends runtime
 export interface MockListFieldRefs {
   readonly id: Prisma.FieldRef<"MockList", 'String'>
   readonly curriculumListId: Prisma.FieldRef<"MockList", 'String'>
+  readonly name: Prisma.FieldRef<"MockList", 'String'>
+  readonly version: Prisma.FieldRef<"MockList", 'String'>
+  readonly status: Prisma.FieldRef<"MockList", 'String'>
+  readonly activatedAt: Prisma.FieldRef<"MockList", 'DateTime'>
+  readonly pausedAt: Prisma.FieldRef<"MockList", 'DateTime'>
+  readonly deactivatedAt: Prisma.FieldRef<"MockList", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"MockList", 'Boolean'>
 }
     
@@ -1383,6 +1727,30 @@ export type MockList$mockItemsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.MockItemScalarFieldEnum | Prisma.MockItemScalarFieldEnum[]
+}
+
+/**
+ * MockList.statusChangeLogs
+ */
+export type MockList$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MockListStatusChangeLog
+   */
+  select?: Prisma.MockListStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MockListStatusChangeLog
+   */
+  omit?: Prisma.MockListStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MockListStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.MockListStatusChangeLogWhereInput
+  orderBy?: Prisma.MockListStatusChangeLogOrderByWithRelationInput | Prisma.MockListStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.MockListStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MockListStatusChangeLogScalarFieldEnum | Prisma.MockListStatusChangeLogScalarFieldEnum[]
 }
 
 /**

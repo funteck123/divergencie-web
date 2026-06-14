@@ -351,7 +351,7 @@ describe("Act 5 — Sarah (Management) oversees the day", () => {
       "user", "ticket", "ticketMessage", "ticketHistory", "ticketCategory",
       "ticketPermission", "attendance", "claim", "meeting", "meetingParticipant",
       "candidate", "rateCard", "invoice", "academicSession", "assignment",
-      "syllabusItem", "doubt", "studentProgress", "recording", "marketingPost",
+      "syllabusItem", "doubt", "studentSyllabusProgress", "recording", "marketingPost",
       "lead", "accessLog", "announcement", "asset", "mockResult", "group", "referral",
     ];
     expect(ALLOWED_TABLES).toContain("user");

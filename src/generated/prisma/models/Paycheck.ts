@@ -45,7 +45,7 @@ export type PaycheckMinAggregateOutputType = {
   claimId: string | null
   recipientId: string | null
   enrolmentListId: string | null
-  paycheckMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string | null
   paycheckMode: string | null
@@ -66,7 +66,7 @@ export type PaycheckMaxAggregateOutputType = {
   claimId: string | null
   recipientId: string | null
   enrolmentListId: string | null
-  paycheckMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string | null
   paycheckMode: string | null
@@ -87,7 +87,7 @@ export type PaycheckCountAggregateOutputType = {
   claimId: number
   recipientId: number
   enrolmentListId: number
-  paycheckMonthId: number
+  billingMonthId: number
   receivingPaymentMethodId: number
   month: number
   paycheckMode: number
@@ -124,7 +124,7 @@ export type PaycheckMinAggregateInputType = {
   claimId?: true
   recipientId?: true
   enrolmentListId?: true
-  paycheckMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   paycheckMode?: true
@@ -145,7 +145,7 @@ export type PaycheckMaxAggregateInputType = {
   claimId?: true
   recipientId?: true
   enrolmentListId?: true
-  paycheckMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   paycheckMode?: true
@@ -166,7 +166,7 @@ export type PaycheckCountAggregateInputType = {
   claimId?: true
   recipientId?: true
   enrolmentListId?: true
-  paycheckMonthId?: true
+  billingMonthId?: true
   receivingPaymentMethodId?: true
   month?: true
   paycheckMode?: true
@@ -274,7 +274,7 @@ export type PaycheckGroupByOutputType = {
   claimId: string | null
   recipientId: string
   enrolmentListId: string | null
-  paycheckMonthId: string | null
+  billingMonthId: string | null
   receivingPaymentMethodId: string | null
   month: string
   paycheckMode: string | null
@@ -318,7 +318,7 @@ export type PaycheckWhereInput = {
   claimId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   recipientId?: Prisma.StringFilter<"Paycheck"> | string
   enrolmentListId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
-  paycheckMonthId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   month?: Prisma.StringFilter<"Paycheck"> | string
   paycheckMode?: Prisma.StringNullableFilter<"Paycheck"> | string | null
@@ -334,7 +334,7 @@ export type PaycheckWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Paycheck"> | Date | string
   claim?: Prisma.XOR<Prisma.ClaimNullableScalarRelationFilter, Prisma.ClaimWhereInput> | null
   recipient?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  paycheckMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
   history?: Prisma.PaycheckStatusChangeLogListRelationFilter
   lineItems?: Prisma.PaycheckLineItemListRelationFilter
@@ -345,7 +345,7 @@ export type PaycheckOrderByWithRelationInput = {
   claimId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientId?: Prisma.SortOrder
   enrolmentListId?: Prisma.SortOrderInput | Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   paycheckMode?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -361,7 +361,7 @@ export type PaycheckOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   claim?: Prisma.ClaimOrderByWithRelationInput
   recipient?: Prisma.UserOrderByWithRelationInput
-  paycheckMonth?: Prisma.InvoiceMonthOrderByWithRelationInput
+  billingMonth?: Prisma.BillingMonthOrderByWithRelationInput
   ledgerEntries?: Prisma.LedgerEntryOrderByRelationAggregateInput
   history?: Prisma.PaycheckStatusChangeLogOrderByRelationAggregateInput
   lineItems?: Prisma.PaycheckLineItemOrderByRelationAggregateInput
@@ -375,7 +375,7 @@ export type PaycheckWhereUniqueInput = Prisma.AtLeast<{
   claimId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   recipientId?: Prisma.StringFilter<"Paycheck"> | string
   enrolmentListId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
-  paycheckMonthId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   month?: Prisma.StringFilter<"Paycheck"> | string
   paycheckMode?: Prisma.StringNullableFilter<"Paycheck"> | string | null
@@ -391,7 +391,7 @@ export type PaycheckWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Paycheck"> | Date | string
   claim?: Prisma.XOR<Prisma.ClaimNullableScalarRelationFilter, Prisma.ClaimWhereInput> | null
   recipient?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  paycheckMonth?: Prisma.XOR<Prisma.InvoiceMonthNullableScalarRelationFilter, Prisma.InvoiceMonthWhereInput> | null
+  billingMonth?: Prisma.XOR<Prisma.BillingMonthNullableScalarRelationFilter, Prisma.BillingMonthWhereInput> | null
   ledgerEntries?: Prisma.LedgerEntryListRelationFilter
   history?: Prisma.PaycheckStatusChangeLogListRelationFilter
   lineItems?: Prisma.PaycheckLineItemListRelationFilter
@@ -402,7 +402,7 @@ export type PaycheckOrderByWithAggregationInput = {
   claimId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientId?: Prisma.SortOrder
   enrolmentListId?: Prisma.SortOrderInput | Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrderInput | Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   month?: Prisma.SortOrder
   paycheckMode?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -431,7 +431,7 @@ export type PaycheckScalarWhereWithAggregatesInput = {
   claimId?: Prisma.StringNullableWithAggregatesFilter<"Paycheck"> | string | null
   recipientId?: Prisma.StringWithAggregatesFilter<"Paycheck"> | string
   enrolmentListId?: Prisma.StringNullableWithAggregatesFilter<"Paycheck"> | string | null
-  paycheckMonthId?: Prisma.StringNullableWithAggregatesFilter<"Paycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableWithAggregatesFilter<"Paycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableWithAggregatesFilter<"Paycheck"> | string | null
   month?: Prisma.StringWithAggregatesFilter<"Paycheck"> | string
   paycheckMode?: Prisma.StringNullableWithAggregatesFilter<"Paycheck"> | string | null
@@ -465,7 +465,7 @@ export type PaycheckCreateInput = {
   createdAt?: Date | string
   claim?: Prisma.ClaimCreateNestedOneWithoutPaychecksInput
   recipient: Prisma.UserCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutPaycheckInput
   history?: Prisma.PaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
   lineItems?: Prisma.PaycheckLineItemCreateNestedManyWithoutPaycheckInput
@@ -476,7 +476,7 @@ export type PaycheckUncheckedCreateInput = {
   claimId?: string | null
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -513,7 +513,7 @@ export type PaycheckUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.ClaimUpdateOneWithoutPaychecksNestedInput
   recipient?: Prisma.UserUpdateOneRequiredWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutPaycheckNestedInput
   history?: Prisma.PaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
   lineItems?: Prisma.PaycheckLineItemUpdateManyWithoutPaycheckNestedInput
@@ -524,7 +524,7 @@ export type PaycheckUncheckedUpdateInput = {
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -548,7 +548,7 @@ export type PaycheckCreateManyInput = {
   claimId?: string | null
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -587,7 +587,7 @@ export type PaycheckUncheckedUpdateManyInput = {
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -618,7 +618,7 @@ export type PaycheckCountOrderByAggregateInput = {
   claimId?: Prisma.SortOrder
   recipientId?: Prisma.SortOrder
   enrolmentListId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   paycheckMode?: Prisma.SortOrder
@@ -646,7 +646,7 @@ export type PaycheckMaxOrderByAggregateInput = {
   claimId?: Prisma.SortOrder
   recipientId?: Prisma.SortOrder
   enrolmentListId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   paycheckMode?: Prisma.SortOrder
@@ -667,7 +667,7 @@ export type PaycheckMinOrderByAggregateInput = {
   claimId?: Prisma.SortOrder
   recipientId?: Prisma.SortOrder
   enrolmentListId?: Prisma.SortOrder
-  paycheckMonthId?: Prisma.SortOrder
+  billingMonthId?: Prisma.SortOrder
   receivingPaymentMethodId?: Prisma.SortOrder
   month?: Prisma.SortOrder
   paycheckMode?: Prisma.SortOrder
@@ -742,45 +742,45 @@ export type PaycheckUncheckedUpdateManyWithoutRecipientNestedInput = {
   deleteMany?: Prisma.PaycheckScalarWhereInput | Prisma.PaycheckScalarWhereInput[]
 }
 
-export type PaycheckCreateNestedManyWithoutPaycheckMonthInput = {
-  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.PaycheckCreateWithoutPaycheckMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  createMany?: Prisma.PaycheckCreateManyPaycheckMonthInputEnvelope
+export type PaycheckCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutBillingMonthInput, Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.PaycheckCreateWithoutBillingMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.PaycheckCreateManyBillingMonthInputEnvelope
   connect?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
 }
 
-export type PaycheckUncheckedCreateNestedManyWithoutPaycheckMonthInput = {
-  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.PaycheckCreateWithoutPaycheckMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  createMany?: Prisma.PaycheckCreateManyPaycheckMonthInputEnvelope
+export type PaycheckUncheckedCreateNestedManyWithoutBillingMonthInput = {
+  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutBillingMonthInput, Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.PaycheckCreateWithoutBillingMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput[]
+  createMany?: Prisma.PaycheckCreateManyBillingMonthInputEnvelope
   connect?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
 }
 
-export type PaycheckUpdateManyWithoutPaycheckMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.PaycheckCreateWithoutPaycheckMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  upsert?: Prisma.PaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput | Prisma.PaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput[]
-  createMany?: Prisma.PaycheckCreateManyPaycheckMonthInputEnvelope
+export type PaycheckUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutBillingMonthInput, Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.PaycheckCreateWithoutBillingMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.PaycheckUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.PaycheckUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.PaycheckCreateManyBillingMonthInputEnvelope
   set?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
   disconnect?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
   delete?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
   connect?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
-  update?: Prisma.PaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput | Prisma.PaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput[]
-  updateMany?: Prisma.PaycheckUpdateManyWithWhereWithoutPaycheckMonthInput | Prisma.PaycheckUpdateManyWithWhereWithoutPaycheckMonthInput[]
+  update?: Prisma.PaycheckUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.PaycheckUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.PaycheckUpdateManyWithWhereWithoutBillingMonthInput | Prisma.PaycheckUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.PaycheckScalarWhereInput | Prisma.PaycheckScalarWhereInput[]
 }
 
-export type PaycheckUncheckedUpdateManyWithoutPaycheckMonthNestedInput = {
-  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput> | Prisma.PaycheckCreateWithoutPaycheckMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput[]
-  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput | Prisma.PaycheckCreateOrConnectWithoutPaycheckMonthInput[]
-  upsert?: Prisma.PaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput | Prisma.PaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput[]
-  createMany?: Prisma.PaycheckCreateManyPaycheckMonthInputEnvelope
+export type PaycheckUncheckedUpdateManyWithoutBillingMonthNestedInput = {
+  create?: Prisma.XOR<Prisma.PaycheckCreateWithoutBillingMonthInput, Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput> | Prisma.PaycheckCreateWithoutBillingMonthInput[] | Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput[]
+  connectOrCreate?: Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput | Prisma.PaycheckCreateOrConnectWithoutBillingMonthInput[]
+  upsert?: Prisma.PaycheckUpsertWithWhereUniqueWithoutBillingMonthInput | Prisma.PaycheckUpsertWithWhereUniqueWithoutBillingMonthInput[]
+  createMany?: Prisma.PaycheckCreateManyBillingMonthInputEnvelope
   set?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
   disconnect?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
   delete?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
   connect?: Prisma.PaycheckWhereUniqueInput | Prisma.PaycheckWhereUniqueInput[]
-  update?: Prisma.PaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput | Prisma.PaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput[]
-  updateMany?: Prisma.PaycheckUpdateManyWithWhereWithoutPaycheckMonthInput | Prisma.PaycheckUpdateManyWithWhereWithoutPaycheckMonthInput[]
+  update?: Prisma.PaycheckUpdateWithWhereUniqueWithoutBillingMonthInput | Prisma.PaycheckUpdateWithWhereUniqueWithoutBillingMonthInput[]
+  updateMany?: Prisma.PaycheckUpdateManyWithWhereWithoutBillingMonthInput | Prisma.PaycheckUpdateManyWithWhereWithoutBillingMonthInput[]
   deleteMany?: Prisma.PaycheckScalarWhereInput | Prisma.PaycheckScalarWhereInput[]
 }
 
@@ -887,7 +887,7 @@ export type PaycheckCreateWithoutRecipientInput = {
   notes?: string | null
   createdAt?: Date | string
   claim?: Prisma.ClaimCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutPaycheckInput
   history?: Prisma.PaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
   lineItems?: Prisma.PaycheckLineItemCreateNestedManyWithoutPaycheckInput
@@ -897,7 +897,7 @@ export type PaycheckUncheckedCreateWithoutRecipientInput = {
   id?: string
   claimId?: string | null
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -950,7 +950,7 @@ export type PaycheckScalarWhereInput = {
   claimId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   recipientId?: Prisma.StringFilter<"Paycheck"> | string
   enrolmentListId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
-  paycheckMonthId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
+  billingMonthId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   receivingPaymentMethodId?: Prisma.StringNullableFilter<"Paycheck"> | string | null
   month?: Prisma.StringFilter<"Paycheck"> | string
   paycheckMode?: Prisma.StringNullableFilter<"Paycheck"> | string | null
@@ -966,7 +966,7 @@ export type PaycheckScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Paycheck"> | Date | string
 }
 
-export type PaycheckCreateWithoutPaycheckMonthInput = {
+export type PaycheckCreateWithoutBillingMonthInput = {
   id?: string
   enrolmentListId?: string | null
   receivingPaymentMethodId?: string | null
@@ -989,7 +989,7 @@ export type PaycheckCreateWithoutPaycheckMonthInput = {
   lineItems?: Prisma.PaycheckLineItemCreateNestedManyWithoutPaycheckInput
 }
 
-export type PaycheckUncheckedCreateWithoutPaycheckMonthInput = {
+export type PaycheckUncheckedCreateWithoutBillingMonthInput = {
   id?: string
   claimId?: string | null
   recipientId: string
@@ -1012,30 +1012,30 @@ export type PaycheckUncheckedCreateWithoutPaycheckMonthInput = {
   lineItems?: Prisma.PaycheckLineItemUncheckedCreateNestedManyWithoutPaycheckInput
 }
 
-export type PaycheckCreateOrConnectWithoutPaycheckMonthInput = {
+export type PaycheckCreateOrConnectWithoutBillingMonthInput = {
   where: Prisma.PaycheckWhereUniqueInput
-  create: Prisma.XOR<Prisma.PaycheckCreateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput>
+  create: Prisma.XOR<Prisma.PaycheckCreateWithoutBillingMonthInput, Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type PaycheckCreateManyPaycheckMonthInputEnvelope = {
-  data: Prisma.PaycheckCreateManyPaycheckMonthInput | Prisma.PaycheckCreateManyPaycheckMonthInput[]
+export type PaycheckCreateManyBillingMonthInputEnvelope = {
+  data: Prisma.PaycheckCreateManyBillingMonthInput | Prisma.PaycheckCreateManyBillingMonthInput[]
   skipDuplicates?: boolean
 }
 
-export type PaycheckUpsertWithWhereUniqueWithoutPaycheckMonthInput = {
+export type PaycheckUpsertWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.PaycheckWhereUniqueInput
-  update: Prisma.XOR<Prisma.PaycheckUpdateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedUpdateWithoutPaycheckMonthInput>
-  create: Prisma.XOR<Prisma.PaycheckCreateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedCreateWithoutPaycheckMonthInput>
+  update: Prisma.XOR<Prisma.PaycheckUpdateWithoutBillingMonthInput, Prisma.PaycheckUncheckedUpdateWithoutBillingMonthInput>
+  create: Prisma.XOR<Prisma.PaycheckCreateWithoutBillingMonthInput, Prisma.PaycheckUncheckedCreateWithoutBillingMonthInput>
 }
 
-export type PaycheckUpdateWithWhereUniqueWithoutPaycheckMonthInput = {
+export type PaycheckUpdateWithWhereUniqueWithoutBillingMonthInput = {
   where: Prisma.PaycheckWhereUniqueInput
-  data: Prisma.XOR<Prisma.PaycheckUpdateWithoutPaycheckMonthInput, Prisma.PaycheckUncheckedUpdateWithoutPaycheckMonthInput>
+  data: Prisma.XOR<Prisma.PaycheckUpdateWithoutBillingMonthInput, Prisma.PaycheckUncheckedUpdateWithoutBillingMonthInput>
 }
 
-export type PaycheckUpdateManyWithWhereWithoutPaycheckMonthInput = {
+export type PaycheckUpdateManyWithWhereWithoutBillingMonthInput = {
   where: Prisma.PaycheckScalarWhereInput
-  data: Prisma.XOR<Prisma.PaycheckUpdateManyMutationInput, Prisma.PaycheckUncheckedUpdateManyWithoutPaycheckMonthInput>
+  data: Prisma.XOR<Prisma.PaycheckUpdateManyMutationInput, Prisma.PaycheckUncheckedUpdateManyWithoutBillingMonthInput>
 }
 
 export type PaycheckCreateWithoutClaimInput = {
@@ -1055,7 +1055,7 @@ export type PaycheckCreateWithoutClaimInput = {
   notes?: string | null
   createdAt?: Date | string
   recipient: Prisma.UserCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutPaycheckInput
   history?: Prisma.PaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
   lineItems?: Prisma.PaycheckLineItemCreateNestedManyWithoutPaycheckInput
@@ -1065,7 +1065,7 @@ export type PaycheckUncheckedCreateWithoutClaimInput = {
   id?: string
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -1128,7 +1128,7 @@ export type PaycheckCreateWithoutHistoryInput = {
   createdAt?: Date | string
   claim?: Prisma.ClaimCreateNestedOneWithoutPaychecksInput
   recipient: Prisma.UserCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutPaycheckInput
   lineItems?: Prisma.PaycheckLineItemCreateNestedManyWithoutPaycheckInput
 }
@@ -1138,7 +1138,7 @@ export type PaycheckUncheckedCreateWithoutHistoryInput = {
   claimId?: string | null
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -1190,7 +1190,7 @@ export type PaycheckUpdateWithoutHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.ClaimUpdateOneWithoutPaychecksNestedInput
   recipient?: Prisma.UserUpdateOneRequiredWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutPaycheckNestedInput
   lineItems?: Prisma.PaycheckLineItemUpdateManyWithoutPaycheckNestedInput
 }
@@ -1200,7 +1200,7 @@ export type PaycheckUncheckedUpdateWithoutHistoryInput = {
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1236,7 +1236,7 @@ export type PaycheckCreateWithoutLineItemsInput = {
   createdAt?: Date | string
   claim?: Prisma.ClaimCreateNestedOneWithoutPaychecksInput
   recipient: Prisma.UserCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutPaychecksInput
   ledgerEntries?: Prisma.LedgerEntryCreateNestedManyWithoutPaycheckInput
   history?: Prisma.PaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
 }
@@ -1246,7 +1246,7 @@ export type PaycheckUncheckedCreateWithoutLineItemsInput = {
   claimId?: string | null
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -1298,7 +1298,7 @@ export type PaycheckUpdateWithoutLineItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.ClaimUpdateOneWithoutPaychecksNestedInput
   recipient?: Prisma.UserUpdateOneRequiredWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutPaycheckNestedInput
   history?: Prisma.PaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
 }
@@ -1308,7 +1308,7 @@ export type PaycheckUncheckedUpdateWithoutLineItemsInput = {
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1344,7 +1344,7 @@ export type PaycheckCreateWithoutLedgerEntriesInput = {
   createdAt?: Date | string
   claim?: Prisma.ClaimCreateNestedOneWithoutPaychecksInput
   recipient: Prisma.UserCreateNestedOneWithoutPaychecksInput
-  paycheckMonth?: Prisma.InvoiceMonthCreateNestedOneWithoutPaychecksInput
+  billingMonth?: Prisma.BillingMonthCreateNestedOneWithoutPaychecksInput
   history?: Prisma.PaycheckStatusChangeLogCreateNestedManyWithoutPaycheckInput
   lineItems?: Prisma.PaycheckLineItemCreateNestedManyWithoutPaycheckInput
 }
@@ -1354,7 +1354,7 @@ export type PaycheckUncheckedCreateWithoutLedgerEntriesInput = {
   claimId?: string | null
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -1406,7 +1406,7 @@ export type PaycheckUpdateWithoutLedgerEntriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.ClaimUpdateOneWithoutPaychecksNestedInput
   recipient?: Prisma.UserUpdateOneRequiredWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutPaychecksNestedInput
   history?: Prisma.PaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
   lineItems?: Prisma.PaycheckLineItemUpdateManyWithoutPaycheckNestedInput
 }
@@ -1416,7 +1416,7 @@ export type PaycheckUncheckedUpdateWithoutLedgerEntriesInput = {
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1438,7 +1438,7 @@ export type PaycheckCreateManyRecipientInput = {
   id?: string
   claimId?: string | null
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -1471,7 +1471,7 @@ export type PaycheckUpdateWithoutRecipientInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   claim?: Prisma.ClaimUpdateOneWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutPaycheckNestedInput
   history?: Prisma.PaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
   lineItems?: Prisma.PaycheckLineItemUpdateManyWithoutPaycheckNestedInput
@@ -1481,7 +1481,7 @@ export type PaycheckUncheckedUpdateWithoutRecipientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1504,7 +1504,7 @@ export type PaycheckUncheckedUpdateManyWithoutRecipientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1520,7 +1520,7 @@ export type PaycheckUncheckedUpdateManyWithoutRecipientInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type PaycheckCreateManyPaycheckMonthInput = {
+export type PaycheckCreateManyBillingMonthInput = {
   id?: string
   claimId?: string | null
   recipientId: string
@@ -1540,7 +1540,7 @@ export type PaycheckCreateManyPaycheckMonthInput = {
   createdAt?: Date | string
 }
 
-export type PaycheckUpdateWithoutPaycheckMonthInput = {
+export type PaycheckUpdateWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1563,7 +1563,7 @@ export type PaycheckUpdateWithoutPaycheckMonthInput = {
   lineItems?: Prisma.PaycheckLineItemUpdateManyWithoutPaycheckNestedInput
 }
 
-export type PaycheckUncheckedUpdateWithoutPaycheckMonthInput = {
+export type PaycheckUncheckedUpdateWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1586,7 +1586,7 @@ export type PaycheckUncheckedUpdateWithoutPaycheckMonthInput = {
   lineItems?: Prisma.PaycheckLineItemUncheckedUpdateManyWithoutPaycheckNestedInput
 }
 
-export type PaycheckUncheckedUpdateManyWithoutPaycheckMonthInput = {
+export type PaycheckUncheckedUpdateManyWithoutBillingMonthInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   claimId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1610,7 +1610,7 @@ export type PaycheckCreateManyClaimInput = {
   id?: string
   recipientId: string
   enrolmentListId?: string | null
-  paycheckMonthId?: string | null
+  billingMonthId?: string | null
   receivingPaymentMethodId?: string | null
   month: string
   paycheckMode?: string | null
@@ -1643,7 +1643,7 @@ export type PaycheckUpdateWithoutClaimInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recipient?: Prisma.UserUpdateOneRequiredWithoutPaychecksNestedInput
-  paycheckMonth?: Prisma.InvoiceMonthUpdateOneWithoutPaychecksNestedInput
+  billingMonth?: Prisma.BillingMonthUpdateOneWithoutPaychecksNestedInput
   ledgerEntries?: Prisma.LedgerEntryUpdateManyWithoutPaycheckNestedInput
   history?: Prisma.PaycheckStatusChangeLogUpdateManyWithoutPaycheckNestedInput
   lineItems?: Prisma.PaycheckLineItemUpdateManyWithoutPaycheckNestedInput
@@ -1653,7 +1653,7 @@ export type PaycheckUncheckedUpdateWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1676,7 +1676,7 @@ export type PaycheckUncheckedUpdateManyWithoutClaimInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   recipientId?: Prisma.StringFieldUpdateOperationsInput | string
   enrolmentListId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  paycheckMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingMonthId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   receivingPaymentMethodId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   month?: Prisma.StringFieldUpdateOperationsInput | string
   paycheckMode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1746,7 +1746,7 @@ export type PaycheckSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   claimId?: boolean
   recipientId?: boolean
   enrolmentListId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   paycheckMode?: boolean
@@ -1762,7 +1762,7 @@ export type PaycheckSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   claim?: boolean | Prisma.Paycheck$claimArgs<ExtArgs>
   recipient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.Paycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Paycheck$billingMonthArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.Paycheck$ledgerEntriesArgs<ExtArgs>
   history?: boolean | Prisma.Paycheck$historyArgs<ExtArgs>
   lineItems?: boolean | Prisma.Paycheck$lineItemsArgs<ExtArgs>
@@ -1774,7 +1774,7 @@ export type PaycheckSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   claimId?: boolean
   recipientId?: boolean
   enrolmentListId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   paycheckMode?: boolean
@@ -1790,7 +1790,7 @@ export type PaycheckSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   claim?: boolean | Prisma.Paycheck$claimArgs<ExtArgs>
   recipient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.Paycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Paycheck$billingMonthArgs<ExtArgs>
 }, ExtArgs["result"]["paycheck"]>
 
 export type PaycheckSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1798,7 +1798,7 @@ export type PaycheckSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   claimId?: boolean
   recipientId?: boolean
   enrolmentListId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   paycheckMode?: boolean
@@ -1814,7 +1814,7 @@ export type PaycheckSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   claim?: boolean | Prisma.Paycheck$claimArgs<ExtArgs>
   recipient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.Paycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Paycheck$billingMonthArgs<ExtArgs>
 }, ExtArgs["result"]["paycheck"]>
 
 export type PaycheckSelectScalar = {
@@ -1822,7 +1822,7 @@ export type PaycheckSelectScalar = {
   claimId?: boolean
   recipientId?: boolean
   enrolmentListId?: boolean
-  paycheckMonthId?: boolean
+  billingMonthId?: boolean
   receivingPaymentMethodId?: boolean
   month?: boolean
   paycheckMode?: boolean
@@ -1838,11 +1838,11 @@ export type PaycheckSelectScalar = {
   createdAt?: boolean
 }
 
-export type PaycheckOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "claimId" | "recipientId" | "enrolmentListId" | "paycheckMonthId" | "receivingPaymentMethodId" | "month" | "paycheckMode" | "subtotal" | "deductionsApplied" | "netAmount" | "dueAmount" | "currency" | "status" | "statusReason" | "isActive" | "notes" | "createdAt", ExtArgs["result"]["paycheck"]>
+export type PaycheckOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "claimId" | "recipientId" | "enrolmentListId" | "billingMonthId" | "receivingPaymentMethodId" | "month" | "paycheckMode" | "subtotal" | "deductionsApplied" | "netAmount" | "dueAmount" | "currency" | "status" | "statusReason" | "isActive" | "notes" | "createdAt", ExtArgs["result"]["paycheck"]>
 export type PaycheckInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claim?: boolean | Prisma.Paycheck$claimArgs<ExtArgs>
   recipient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.Paycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Paycheck$billingMonthArgs<ExtArgs>
   ledgerEntries?: boolean | Prisma.Paycheck$ledgerEntriesArgs<ExtArgs>
   history?: boolean | Prisma.Paycheck$historyArgs<ExtArgs>
   lineItems?: boolean | Prisma.Paycheck$lineItemsArgs<ExtArgs>
@@ -1851,12 +1851,12 @@ export type PaycheckInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type PaycheckIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claim?: boolean | Prisma.Paycheck$claimArgs<ExtArgs>
   recipient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.Paycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Paycheck$billingMonthArgs<ExtArgs>
 }
 export type PaycheckIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   claim?: boolean | Prisma.Paycheck$claimArgs<ExtArgs>
   recipient?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  paycheckMonth?: boolean | Prisma.Paycheck$paycheckMonthArgs<ExtArgs>
+  billingMonth?: boolean | Prisma.Paycheck$billingMonthArgs<ExtArgs>
 }
 
 export type $PaycheckPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1864,7 +1864,7 @@ export type $PaycheckPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     claim: Prisma.$ClaimPayload<ExtArgs> | null
     recipient: Prisma.$UserPayload<ExtArgs>
-    paycheckMonth: Prisma.$InvoiceMonthPayload<ExtArgs> | null
+    billingMonth: Prisma.$BillingMonthPayload<ExtArgs> | null
     ledgerEntries: Prisma.$LedgerEntryPayload<ExtArgs>[]
     history: Prisma.$PaycheckStatusChangeLogPayload<ExtArgs>[]
     lineItems: Prisma.$PaycheckLineItemPayload<ExtArgs>[]
@@ -1874,7 +1874,7 @@ export type $PaycheckPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     claimId: string | null
     recipientId: string
     enrolmentListId: string | null
-    paycheckMonthId: string | null
+    billingMonthId: string | null
     receivingPaymentMethodId: string | null
     month: string
     paycheckMode: string | null
@@ -2284,7 +2284,7 @@ export interface Prisma__PaycheckClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   claim<T extends Prisma.Paycheck$claimArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Paycheck$claimArgs<ExtArgs>>): Prisma.Prisma__ClaimClient<runtime.Types.Result.GetResult<Prisma.$ClaimPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recipient<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  paycheckMonth<T extends Prisma.Paycheck$paycheckMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Paycheck$paycheckMonthArgs<ExtArgs>>): Prisma.Prisma__InvoiceMonthClient<runtime.Types.Result.GetResult<Prisma.$InvoiceMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  billingMonth<T extends Prisma.Paycheck$billingMonthArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Paycheck$billingMonthArgs<ExtArgs>>): Prisma.Prisma__BillingMonthClient<runtime.Types.Result.GetResult<Prisma.$BillingMonthPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   ledgerEntries<T extends Prisma.Paycheck$ledgerEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Paycheck$ledgerEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LedgerEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   history<T extends Prisma.Paycheck$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Paycheck$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaycheckStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   lineItems<T extends Prisma.Paycheck$lineItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Paycheck$lineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaycheckLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2321,7 +2321,7 @@ export interface PaycheckFieldRefs {
   readonly claimId: Prisma.FieldRef<"Paycheck", 'String'>
   readonly recipientId: Prisma.FieldRef<"Paycheck", 'String'>
   readonly enrolmentListId: Prisma.FieldRef<"Paycheck", 'String'>
-  readonly paycheckMonthId: Prisma.FieldRef<"Paycheck", 'String'>
+  readonly billingMonthId: Prisma.FieldRef<"Paycheck", 'String'>
   readonly receivingPaymentMethodId: Prisma.FieldRef<"Paycheck", 'String'>
   readonly month: Prisma.FieldRef<"Paycheck", 'String'>
   readonly paycheckMode: Prisma.FieldRef<"Paycheck", 'String'>
@@ -2755,22 +2755,22 @@ export type Paycheck$claimArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Paycheck.paycheckMonth
+ * Paycheck.billingMonth
  */
-export type Paycheck$paycheckMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Paycheck$billingMonthArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the InvoiceMonth
+   * Select specific fields to fetch from the BillingMonth
    */
-  select?: Prisma.InvoiceMonthSelect<ExtArgs> | null
+  select?: Prisma.BillingMonthSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the InvoiceMonth
+   * Omit specific fields from the BillingMonth
    */
-  omit?: Prisma.InvoiceMonthOmit<ExtArgs> | null
+  omit?: Prisma.BillingMonthOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.InvoiceMonthInclude<ExtArgs> | null
-  where?: Prisma.InvoiceMonthWhereInput
+  include?: Prisma.BillingMonthInclude<ExtArgs> | null
+  where?: Prisma.BillingMonthWhereInput
 }
 
 /**

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { FolderOpen, Search, Plus, ExternalLink, Filter, MoreVertical, Loader2, X, Trash2 } from "lucide-react";
 import { getAssets, createAsset, deleteAsset } from "@/lib/actions/assets";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 const DEPTS = ["all","PR","Finance","Marketing","IT","HR"];
 const TYPES = ["Protocol","Catalogue","Guidebook","Template","Policy","Reference","Other"];

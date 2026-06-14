@@ -27,18 +27,36 @@ export type AggregateAmbassadorTestList = {
 export type AmbassadorTestListMinAggregateOutputType = {
   id: string | null
   programmeListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type AmbassadorTestListMaxAggregateOutputType = {
   id: string | null
   programmeListId: string | null
+  name: string | null
+  version: string | null
+  status: string | null
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean | null
 }
 
 export type AmbassadorTestListCountAggregateOutputType = {
   id: number
   programmeListId: number
+  name: number
+  version: number
+  status: number
+  activatedAt: number
+  pausedAt: number
+  deactivatedAt: number
   isActive: number
   _all: number
 }
@@ -47,18 +65,36 @@ export type AmbassadorTestListCountAggregateOutputType = {
 export type AmbassadorTestListMinAggregateInputType = {
   id?: true
   programmeListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type AmbassadorTestListMaxAggregateInputType = {
   id?: true
   programmeListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
 }
 
 export type AmbassadorTestListCountAggregateInputType = {
   id?: true
   programmeListId?: true
+  name?: true
+  version?: true
+  status?: true
+  activatedAt?: true
+  pausedAt?: true
+  deactivatedAt?: true
   isActive?: true
   _all?: true
 }
@@ -138,6 +174,12 @@ export type AmbassadorTestListGroupByArgs<ExtArgs extends runtime.Types.Extensio
 export type AmbassadorTestListGroupByOutputType = {
   id: string
   programmeListId: string
+  name: string
+  version: string
+  status: string
+  activatedAt: Date | null
+  pausedAt: Date | null
+  deactivatedAt: Date | null
   isActive: boolean
   _count: AmbassadorTestListCountAggregateOutputType | null
   _min: AmbassadorTestListMinAggregateOutputType | null
@@ -165,17 +207,31 @@ export type AmbassadorTestListWhereInput = {
   NOT?: Prisma.AmbassadorTestListWhereInput | Prisma.AmbassadorTestListWhereInput[]
   id?: Prisma.StringFilter<"AmbassadorTestList"> | string
   programmeListId?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  name?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  version?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  status?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorTestList"> | boolean
   programmeList?: Prisma.XOR<Prisma.AmbassadorProgrammeListScalarRelationFilter, Prisma.AmbassadorProgrammeListWhereInput>
   testItems?: Prisma.AmbassadorTestItemListRelationFilter
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogListRelationFilter
 }
 
 export type AmbassadorTestListOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   programmeList?: Prisma.AmbassadorProgrammeListOrderByWithRelationInput
   testItems?: Prisma.AmbassadorTestItemOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type AmbassadorTestListWhereUniqueInput = Prisma.AtLeast<{
@@ -184,14 +240,27 @@ export type AmbassadorTestListWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AmbassadorTestListWhereInput[]
   NOT?: Prisma.AmbassadorTestListWhereInput | Prisma.AmbassadorTestListWhereInput[]
   programmeListId?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  name?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  version?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  status?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorTestList"> | boolean
   programmeList?: Prisma.XOR<Prisma.AmbassadorProgrammeListScalarRelationFilter, Prisma.AmbassadorProgrammeListWhereInput>
   testItems?: Prisma.AmbassadorTestItemListRelationFilter
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogListRelationFilter
 }, "id">
 
 export type AmbassadorTestListOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.AmbassadorTestListCountOrderByAggregateInput
   _max?: Prisma.AmbassadorTestListMaxOrderByAggregateInput
@@ -204,51 +273,103 @@ export type AmbassadorTestListScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AmbassadorTestListScalarWhereWithAggregatesInput | Prisma.AmbassadorTestListScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"AmbassadorTestList"> | string
   programmeListId?: Prisma.StringWithAggregatesFilter<"AmbassadorTestList"> | string
+  name?: Prisma.StringWithAggregatesFilter<"AmbassadorTestList"> | string
+  version?: Prisma.StringWithAggregatesFilter<"AmbassadorTestList"> | string
+  status?: Prisma.StringWithAggregatesFilter<"AmbassadorTestList"> | string
+  activatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AmbassadorTestList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AmbassadorTestList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"AmbassadorTestList"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"AmbassadorTestList"> | boolean
 }
 
 export type AmbassadorTestListCreateInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   programmeList: Prisma.AmbassadorProgrammeListCreateNestedOneWithoutTestListsInput
   testItems?: Prisma.AmbassadorTestItemCreateNestedManyWithoutTestListInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogCreateNestedManyWithoutTestListInput
 }
 
 export type AmbassadorTestListUncheckedCreateInput = {
   id?: string
   programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   testItems?: Prisma.AmbassadorTestItemUncheckedCreateNestedManyWithoutTestListInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUncheckedCreateNestedManyWithoutTestListInput
 }
 
 export type AmbassadorTestListUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   programmeList?: Prisma.AmbassadorProgrammeListUpdateOneRequiredWithoutTestListsNestedInput
   testItems?: Prisma.AmbassadorTestItemUpdateManyWithoutTestListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   testItems?: Prisma.AmbassadorTestItemUncheckedUpdateManyWithoutTestListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUncheckedUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListCreateManyInput = {
   id?: string
   programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type AmbassadorTestListUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type AmbassadorTestListUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -265,18 +386,36 @@ export type AmbassadorTestListOrderByRelationAggregateInput = {
 export type AmbassadorTestListCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type AmbassadorTestListMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type AmbassadorTestListMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   programmeListId?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  activatedAt?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  deactivatedAt?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -327,6 +466,20 @@ export type AmbassadorTestListUncheckedUpdateManyWithoutProgrammeListNestedInput
   deleteMany?: Prisma.AmbassadorTestListScalarWhereInput | Prisma.AmbassadorTestListScalarWhereInput[]
 }
 
+export type AmbassadorTestListCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorTestListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AmbassadorTestListCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.AmbassadorTestListWhereUniqueInput
+}
+
+export type AmbassadorTestListUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.AmbassadorTestListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AmbassadorTestListCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.AmbassadorTestListUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.AmbassadorTestListWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AmbassadorTestListUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUpdateWithoutStatusChangeLogsInput>, Prisma.AmbassadorTestListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type AmbassadorTestListCreateNestedOneWithoutTestItemsInput = {
   create?: Prisma.XOR<Prisma.AmbassadorTestListCreateWithoutTestItemsInput, Prisma.AmbassadorTestListUncheckedCreateWithoutTestItemsInput>
   connectOrCreate?: Prisma.AmbassadorTestListCreateOrConnectWithoutTestItemsInput
@@ -343,14 +496,28 @@ export type AmbassadorTestListUpdateOneRequiredWithoutTestItemsNestedInput = {
 
 export type AmbassadorTestListCreateWithoutProgrammeListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   testItems?: Prisma.AmbassadorTestItemCreateNestedManyWithoutTestListInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogCreateNestedManyWithoutTestListInput
 }
 
 export type AmbassadorTestListUncheckedCreateWithoutProgrammeListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   testItems?: Prisma.AmbassadorTestItemUncheckedCreateNestedManyWithoutTestListInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUncheckedCreateNestedManyWithoutTestListInput
 }
 
 export type AmbassadorTestListCreateOrConnectWithoutProgrammeListInput = {
@@ -385,19 +552,107 @@ export type AmbassadorTestListScalarWhereInput = {
   NOT?: Prisma.AmbassadorTestListScalarWhereInput | Prisma.AmbassadorTestListScalarWhereInput[]
   id?: Prisma.StringFilter<"AmbassadorTestList"> | string
   programmeListId?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  name?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  version?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  status?: Prisma.StringFilter<"AmbassadorTestList"> | string
+  activatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
+  deactivatedAt?: Prisma.DateTimeNullableFilter<"AmbassadorTestList"> | Date | string | null
   isActive?: Prisma.BoolFilter<"AmbassadorTestList"> | boolean
+}
+
+export type AmbassadorTestListCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  programmeList: Prisma.AmbassadorProgrammeListCreateNestedOneWithoutTestListsInput
+  testItems?: Prisma.AmbassadorTestItemCreateNestedManyWithoutTestListInput
+}
+
+export type AmbassadorTestListUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
+  isActive?: boolean
+  testItems?: Prisma.AmbassadorTestItemUncheckedCreateNestedManyWithoutTestListInput
+}
+
+export type AmbassadorTestListCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.AmbassadorTestListWhereUniqueInput
+  create: Prisma.XOR<Prisma.AmbassadorTestListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type AmbassadorTestListUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.AmbassadorTestListUpdateWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.AmbassadorTestListCreateWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.AmbassadorTestListWhereInput
+}
+
+export type AmbassadorTestListUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.AmbassadorTestListWhereInput
+  data: Prisma.XOR<Prisma.AmbassadorTestListUpdateWithoutStatusChangeLogsInput, Prisma.AmbassadorTestListUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type AmbassadorTestListUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  programmeList?: Prisma.AmbassadorProgrammeListUpdateOneRequiredWithoutTestListsNestedInput
+  testItems?: Prisma.AmbassadorTestItemUpdateManyWithoutTestListNestedInput
+}
+
+export type AmbassadorTestListUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  testItems?: Prisma.AmbassadorTestItemUncheckedUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListCreateWithoutTestItemsInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
   programmeList: Prisma.AmbassadorProgrammeListCreateNestedOneWithoutTestListsInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogCreateNestedManyWithoutTestListInput
 }
 
 export type AmbassadorTestListUncheckedCreateWithoutTestItemsInput = {
   id?: string
   programmeListId: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUncheckedCreateNestedManyWithoutTestListInput
 }
 
 export type AmbassadorTestListCreateOrConnectWithoutTestItemsInput = {
@@ -418,35 +673,75 @@ export type AmbassadorTestListUpdateToOneWithWhereWithoutTestItemsInput = {
 
 export type AmbassadorTestListUpdateWithoutTestItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   programmeList?: Prisma.AmbassadorProgrammeListUpdateOneRequiredWithoutTestListsNestedInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListUncheckedUpdateWithoutTestItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   programmeListId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUncheckedUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListCreateManyProgrammeListInput = {
   id?: string
+  name?: string
+  version?: string
+  status?: string
+  activatedAt?: Date | string | null
+  pausedAt?: Date | string | null
+  deactivatedAt?: Date | string | null
   isActive?: boolean
 }
 
 export type AmbassadorTestListUpdateWithoutProgrammeListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   testItems?: Prisma.AmbassadorTestItemUpdateManyWithoutTestListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListUncheckedUpdateWithoutProgrammeListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   testItems?: Prisma.AmbassadorTestItemUncheckedUpdateManyWithoutTestListNestedInput
+  statusChangeLogs?: Prisma.AmbassadorTestListStatusChangeLogUncheckedUpdateManyWithoutTestListNestedInput
 }
 
 export type AmbassadorTestListUncheckedUpdateManyWithoutProgrammeListInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deactivatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -457,10 +752,12 @@ export type AmbassadorTestListUncheckedUpdateManyWithoutProgrammeListInput = {
 
 export type AmbassadorTestListCountOutputType = {
   testItems: number
+  statusChangeLogs: number
 }
 
 export type AmbassadorTestListCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   testItems?: boolean | AmbassadorTestListCountOutputTypeCountTestItemsArgs
+  statusChangeLogs?: boolean | AmbassadorTestListCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -480,19 +777,39 @@ export type AmbassadorTestListCountOutputTypeCountTestItemsArgs<ExtArgs extends 
   where?: Prisma.AmbassadorTestItemWhereInput
 }
 
+/**
+ * AmbassadorTestListCountOutputType without action
+ */
+export type AmbassadorTestListCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AmbassadorTestListStatusChangeLogWhereInput
+}
+
 
 export type AmbassadorTestListSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
   testItems?: boolean | Prisma.AmbassadorTestList$testItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AmbassadorTestList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorTestListCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorTestList"]>
 
 export type AmbassadorTestListSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorTestList"]>
@@ -500,6 +817,12 @@ export type AmbassadorTestListSelectCreateManyAndReturn<ExtArgs extends runtime.
 export type AmbassadorTestListSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["ambassadorTestList"]>
@@ -507,13 +830,20 @@ export type AmbassadorTestListSelectUpdateManyAndReturn<ExtArgs extends runtime.
 export type AmbassadorTestListSelectScalar = {
   id?: boolean
   programmeListId?: boolean
+  name?: boolean
+  version?: boolean
+  status?: boolean
+  activatedAt?: boolean
+  pausedAt?: boolean
+  deactivatedAt?: boolean
   isActive?: boolean
 }
 
-export type AmbassadorTestListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "programmeListId" | "isActive", ExtArgs["result"]["ambassadorTestList"]>
+export type AmbassadorTestListOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "programmeListId" | "name" | "version" | "status" | "activatedAt" | "pausedAt" | "deactivatedAt" | "isActive", ExtArgs["result"]["ambassadorTestList"]>
 export type AmbassadorTestListInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   programmeList?: boolean | Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>
   testItems?: boolean | Prisma.AmbassadorTestList$testItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AmbassadorTestList$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AmbassadorTestListCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AmbassadorTestListIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -528,10 +858,17 @@ export type $AmbassadorTestListPayload<ExtArgs extends runtime.Types.Extensions.
   objects: {
     programmeList: Prisma.$AmbassadorProgrammeListPayload<ExtArgs>
     testItems: Prisma.$AmbassadorTestItemPayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$AmbassadorTestListStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     programmeListId: string
+    name: string
+    version: string
+    status: string
+    activatedAt: Date | null
+    pausedAt: Date | null
+    deactivatedAt: Date | null
     isActive: boolean
   }, ExtArgs["result"]["ambassadorTestList"]>
   composites: {}
@@ -929,6 +1266,7 @@ export interface Prisma__AmbassadorTestListClient<T, Null = never, ExtArgs exten
   readonly [Symbol.toStringTag]: "PrismaPromise"
   programmeList<T extends Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorProgrammeListDefaultArgs<ExtArgs>>): Prisma.Prisma__AmbassadorProgrammeListClient<runtime.Types.Result.GetResult<Prisma.$AmbassadorProgrammeListPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   testItems<T extends Prisma.AmbassadorTestList$testItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorTestList$testItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorTestItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.AmbassadorTestList$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AmbassadorTestList$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AmbassadorTestListStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -960,6 +1298,12 @@ export interface Prisma__AmbassadorTestListClient<T, Null = never, ExtArgs exten
 export interface AmbassadorTestListFieldRefs {
   readonly id: Prisma.FieldRef<"AmbassadorTestList", 'String'>
   readonly programmeListId: Prisma.FieldRef<"AmbassadorTestList", 'String'>
+  readonly name: Prisma.FieldRef<"AmbassadorTestList", 'String'>
+  readonly version: Prisma.FieldRef<"AmbassadorTestList", 'String'>
+  readonly status: Prisma.FieldRef<"AmbassadorTestList", 'String'>
+  readonly activatedAt: Prisma.FieldRef<"AmbassadorTestList", 'DateTime'>
+  readonly pausedAt: Prisma.FieldRef<"AmbassadorTestList", 'DateTime'>
+  readonly deactivatedAt: Prisma.FieldRef<"AmbassadorTestList", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"AmbassadorTestList", 'Boolean'>
 }
     
@@ -1383,6 +1727,30 @@ export type AmbassadorTestList$testItemsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.AmbassadorTestItemScalarFieldEnum | Prisma.AmbassadorTestItemScalarFieldEnum[]
+}
+
+/**
+ * AmbassadorTestList.statusChangeLogs
+ */
+export type AmbassadorTestList$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AmbassadorTestListStatusChangeLog
+   */
+  select?: Prisma.AmbassadorTestListStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AmbassadorTestListStatusChangeLog
+   */
+  omit?: Prisma.AmbassadorTestListStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AmbassadorTestListStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AmbassadorTestListStatusChangeLogWhereInput
+  orderBy?: Prisma.AmbassadorTestListStatusChangeLogOrderByWithRelationInput | Prisma.AmbassadorTestListStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AmbassadorTestListStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AmbassadorTestListStatusChangeLogScalarFieldEnum | Prisma.AmbassadorTestListStatusChangeLogScalarFieldEnum[]
 }
 
 /**

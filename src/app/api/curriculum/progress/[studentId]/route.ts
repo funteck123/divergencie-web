@@ -14,7 +14,7 @@ export async function GET(
   const { studentId } = await params;
 
   try {
-    const progress = await prisma.studentProgress.findMany({
+    const progress = await prisma.studentSyllabusProgress.findMany({
       where: { studentId },
       include: { syllabusItem: true },
     });

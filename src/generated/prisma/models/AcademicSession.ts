@@ -441,6 +441,7 @@ export type AcademicSessionWhereInput = {
   recordings?: Prisma.RecordingListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
   mockItems?: Prisma.MockItemListRelationFilter
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogListRelationFilter
 }
 
 export type AcademicSessionOrderByWithRelationInput = {
@@ -485,6 +486,7 @@ export type AcademicSessionOrderByWithRelationInput = {
   recordings?: Prisma.RecordingOrderByRelationAggregateInput
   taskItems?: Prisma.TaskItemOrderByRelationAggregateInput
   mockItems?: Prisma.MockItemOrderByRelationAggregateInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogOrderByRelationAggregateInput
 }
 
 export type AcademicSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -532,6 +534,7 @@ export type AcademicSessionWhereUniqueInput = Prisma.AtLeast<{
   recordings?: Prisma.RecordingListRelationFilter
   taskItems?: Prisma.TaskItemListRelationFilter
   mockItems?: Prisma.MockItemListRelationFilter
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogListRelationFilter
 }, "id">
 
 export type AcademicSessionOrderByWithAggregationInput = {
@@ -649,6 +652,7 @@ export type AcademicSessionCreateInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateInput = {
@@ -688,6 +692,7 @@ export type AcademicSessionUncheckedCreateInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUpdateInput = {
@@ -727,6 +732,7 @@ export type AcademicSessionUpdateInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateInput = {
@@ -766,6 +772,7 @@ export type AcademicSessionUncheckedUpdateInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateManyInput = {
@@ -1211,6 +1218,20 @@ export type AcademicSessionUncheckedUpdateManyWithoutServiceNestedInput = {
   deleteMany?: Prisma.AcademicSessionScalarWhereInput | Prisma.AcademicSessionScalarWhereInput[]
 }
 
+export type AcademicSessionCreateNestedOneWithoutStatusChangeLogsInput = {
+  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStatusChangeLogsInput, Prisma.AcademicSessionUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutStatusChangeLogsInput
+  connect?: Prisma.AcademicSessionWhereUniqueInput
+}
+
+export type AcademicSessionUpdateOneRequiredWithoutStatusChangeLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStatusChangeLogsInput, Prisma.AcademicSessionUncheckedCreateWithoutStatusChangeLogsInput>
+  connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutStatusChangeLogsInput
+  upsert?: Prisma.AcademicSessionUpsertWithoutStatusChangeLogsInput
+  connect?: Prisma.AcademicSessionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AcademicSessionUpdateToOneWithWhereWithoutStatusChangeLogsInput, Prisma.AcademicSessionUpdateWithoutStatusChangeLogsInput>, Prisma.AcademicSessionUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
 export type AcademicSessionCreateNestedOneWithoutAttendancesInput = {
   create?: Prisma.XOR<Prisma.AcademicSessionCreateWithoutAttendancesInput, Prisma.AcademicSessionUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.AcademicSessionCreateOrConnectWithoutAttendancesInput
@@ -1309,6 +1330,7 @@ export type AcademicSessionCreateWithoutTeacherInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutTeacherInput = {
@@ -1347,6 +1369,7 @@ export type AcademicSessionUncheckedCreateWithoutTeacherInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutTeacherInput = {
@@ -1395,6 +1418,7 @@ export type AcademicSessionCreateWithoutStudentInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutStudentInput = {
@@ -1433,6 +1457,7 @@ export type AcademicSessionUncheckedCreateWithoutStudentInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutStudentInput = {
@@ -1551,6 +1576,7 @@ export type AcademicSessionCreateWithoutSessionTypeInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutSessionTypeInput = {
@@ -1589,6 +1615,7 @@ export type AcademicSessionUncheckedCreateWithoutSessionTypeInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutSessionTypeInput = {
@@ -1653,6 +1680,7 @@ export type AcademicSessionCreateWithoutGroupInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutGroupInput = {
@@ -1691,6 +1719,7 @@ export type AcademicSessionUncheckedCreateWithoutGroupInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutGroupInput = {
@@ -1755,6 +1784,7 @@ export type AcademicSessionCreateWithoutServiceInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutServiceInput = {
@@ -1793,6 +1823,7 @@ export type AcademicSessionUncheckedCreateWithoutServiceInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutServiceInput = {
@@ -1819,6 +1850,178 @@ export type AcademicSessionUpdateWithWhereUniqueWithoutServiceInput = {
 export type AcademicSessionUpdateManyWithWhereWithoutServiceInput = {
   where: Prisma.AcademicSessionScalarWhereInput
   data: Prisma.XOR<Prisma.AcademicSessionUpdateManyMutationInput, Prisma.AcademicSessionUncheckedUpdateManyWithoutServiceInput>
+}
+
+export type AcademicSessionCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  subject?: string | null
+  serviceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  topic?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours?: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  timesheetSubmissionStatus?: string
+  submissionDeadline?: Date | string | null
+  submissionOverdue?: boolean
+  group?: Prisma.GroupCreateNestedOneWithoutSessionsInput
+  teacher: Prisma.UserCreateNestedOneWithoutTaughtSessionsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutAcademicSessionsInput
+  student?: Prisma.UserCreateNestedOneWithoutStudentSessionsInput
+  sessionType?: Prisma.SessionTypeCreateNestedOneWithoutAcademicSessionsInput
+  attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutSessionInput
+  recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
+  taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
+  mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+}
+
+export type AcademicSessionUncheckedCreateWithoutStatusChangeLogsInput = {
+  id?: string
+  groupId?: string | null
+  teacherId: string
+  serviceId?: string | null
+  studentId?: string | null
+  subject?: string | null
+  serviceScheduleId?: string | null
+  occurrenceId?: string | null
+  scheduledByUserId?: string | null
+  sessionTypeId?: string | null
+  topic?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  originalStartTime?: Date | string | null
+  originalEndTime?: Date | string | null
+  durationHours?: number
+  isTrial?: boolean
+  status?: string
+  sessionMode?: string
+  zoomLink?: string | null
+  zoomId?: string | null
+  zoomPasscode?: string | null
+  addedToCalendar?: boolean
+  calendarSyncedAt?: Date | string | null
+  recordingUrl?: string | null
+  transcriptUrl?: string | null
+  summaryUrl?: string | null
+  wbLink?: string | null
+  wbName?: string | null
+  timesheetSubmissionStatus?: string
+  submissionDeadline?: Date | string | null
+  submissionOverdue?: boolean
+  attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutSessionInput
+  recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
+  taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
+  mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+}
+
+export type AcademicSessionCreateOrConnectWithoutStatusChangeLogsInput = {
+  where: Prisma.AcademicSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStatusChangeLogsInput, Prisma.AcademicSessionUncheckedCreateWithoutStatusChangeLogsInput>
+}
+
+export type AcademicSessionUpsertWithoutStatusChangeLogsInput = {
+  update: Prisma.XOR<Prisma.AcademicSessionUpdateWithoutStatusChangeLogsInput, Prisma.AcademicSessionUncheckedUpdateWithoutStatusChangeLogsInput>
+  create: Prisma.XOR<Prisma.AcademicSessionCreateWithoutStatusChangeLogsInput, Prisma.AcademicSessionUncheckedCreateWithoutStatusChangeLogsInput>
+  where?: Prisma.AcademicSessionWhereInput
+}
+
+export type AcademicSessionUpdateToOneWithWhereWithoutStatusChangeLogsInput = {
+  where?: Prisma.AcademicSessionWhereInput
+  data: Prisma.XOR<Prisma.AcademicSessionUpdateWithoutStatusChangeLogsInput, Prisma.AcademicSessionUncheckedUpdateWithoutStatusChangeLogsInput>
+}
+
+export type AcademicSessionUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissionOverdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  group?: Prisma.GroupUpdateOneWithoutSessionsNestedInput
+  teacher?: Prisma.UserUpdateOneRequiredWithoutTaughtSessionsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutAcademicSessionsNestedInput
+  student?: Prisma.UserUpdateOneWithoutStudentSessionsNestedInput
+  sessionType?: Prisma.SessionTypeUpdateOneWithoutAcademicSessionsNestedInput
+  attendances?: Prisma.SessionAttendanceUpdateManyWithoutSessionNestedInput
+  recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
+  taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
+  mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+}
+
+export type AcademicSessionUncheckedUpdateWithoutStatusChangeLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teacherId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  studentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceScheduleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  occurrenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  scheduledByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topic?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  originalStartTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  originalEndTime?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  durationHours?: Prisma.FloatFieldUpdateOperationsInput | number
+  isTrial?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  sessionMode?: Prisma.StringFieldUpdateOperationsInput | string
+  zoomLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zoomPasscode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addedToCalendar?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  calendarSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recordingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transcriptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  summaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wbName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timesheetSubmissionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  submissionDeadline?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submissionOverdue?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutSessionNestedInput
+  recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
+  taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
+  mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateWithoutAttendancesInput = {
@@ -1857,6 +2060,7 @@ export type AcademicSessionCreateWithoutAttendancesInput = {
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutAttendancesInput = {
@@ -1895,6 +2099,7 @@ export type AcademicSessionUncheckedCreateWithoutAttendancesInput = {
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutAttendancesInput = {
@@ -1949,6 +2154,7 @@ export type AcademicSessionUpdateWithoutAttendancesInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutAttendancesInput = {
@@ -1987,6 +2193,7 @@ export type AcademicSessionUncheckedUpdateWithoutAttendancesInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateWithoutTaskItemsInput = {
@@ -2025,6 +2232,7 @@ export type AcademicSessionCreateWithoutTaskItemsInput = {
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutSessionInput
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutTaskItemsInput = {
@@ -2063,6 +2271,7 @@ export type AcademicSessionUncheckedCreateWithoutTaskItemsInput = {
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutSessionInput
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutTaskItemsInput = {
@@ -2117,6 +2326,7 @@ export type AcademicSessionUpdateWithoutTaskItemsInput = {
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutSessionNestedInput
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutTaskItemsInput = {
@@ -2155,6 +2365,7 @@ export type AcademicSessionUncheckedUpdateWithoutTaskItemsInput = {
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutSessionNestedInput
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateWithoutMockItemsInput = {
@@ -2193,6 +2404,7 @@ export type AcademicSessionCreateWithoutMockItemsInput = {
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutSessionInput
   recordings?: Prisma.RecordingCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutMockItemsInput = {
@@ -2231,6 +2443,7 @@ export type AcademicSessionUncheckedCreateWithoutMockItemsInput = {
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutSessionInput
   recordings?: Prisma.RecordingUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutMockItemsInput = {
@@ -2285,6 +2498,7 @@ export type AcademicSessionUpdateWithoutMockItemsInput = {
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutSessionNestedInput
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutMockItemsInput = {
@@ -2323,6 +2537,7 @@ export type AcademicSessionUncheckedUpdateWithoutMockItemsInput = {
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutSessionNestedInput
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateWithoutRecordingsInput = {
@@ -2361,6 +2576,7 @@ export type AcademicSessionCreateWithoutRecordingsInput = {
   attendances?: Prisma.SessionAttendanceCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionUncheckedCreateWithoutRecordingsInput = {
@@ -2399,6 +2615,7 @@ export type AcademicSessionUncheckedCreateWithoutRecordingsInput = {
   attendances?: Prisma.SessionAttendanceUncheckedCreateNestedManyWithoutSessionInput
   taskItems?: Prisma.TaskItemUncheckedCreateNestedManyWithoutSessionInput
   mockItems?: Prisma.MockItemUncheckedCreateNestedManyWithoutSessionInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedCreateNestedManyWithoutSessionInput
 }
 
 export type AcademicSessionCreateOrConnectWithoutRecordingsInput = {
@@ -2453,6 +2670,7 @@ export type AcademicSessionUpdateWithoutRecordingsInput = {
   attendances?: Prisma.SessionAttendanceUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutRecordingsInput = {
@@ -2491,6 +2709,7 @@ export type AcademicSessionUncheckedUpdateWithoutRecordingsInput = {
   attendances?: Prisma.SessionAttendanceUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionCreateManyTeacherInput = {
@@ -2597,6 +2816,7 @@ export type AcademicSessionUpdateWithoutTeacherInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutTeacherInput = {
@@ -2635,6 +2855,7 @@ export type AcademicSessionUncheckedUpdateWithoutTeacherInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutTeacherInput = {
@@ -2707,6 +2928,7 @@ export type AcademicSessionUpdateWithoutStudentInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutStudentInput = {
@@ -2745,6 +2967,7 @@ export type AcademicSessionUncheckedUpdateWithoutStudentInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutStudentInput = {
@@ -2851,6 +3074,7 @@ export type AcademicSessionUpdateWithoutSessionTypeInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutSessionTypeInput = {
@@ -2889,6 +3113,7 @@ export type AcademicSessionUncheckedUpdateWithoutSessionTypeInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutSessionTypeInput = {
@@ -2995,6 +3220,7 @@ export type AcademicSessionUpdateWithoutGroupInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutGroupInput = {
@@ -3033,6 +3259,7 @@ export type AcademicSessionUncheckedUpdateWithoutGroupInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutGroupInput = {
@@ -3139,6 +3366,7 @@ export type AcademicSessionUpdateWithoutServiceInput = {
   recordings?: Prisma.RecordingUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateWithoutServiceInput = {
@@ -3177,6 +3405,7 @@ export type AcademicSessionUncheckedUpdateWithoutServiceInput = {
   recordings?: Prisma.RecordingUncheckedUpdateManyWithoutSessionNestedInput
   taskItems?: Prisma.TaskItemUncheckedUpdateManyWithoutSessionNestedInput
   mockItems?: Prisma.MockItemUncheckedUpdateManyWithoutSessionNestedInput
+  statusChangeLogs?: Prisma.AcademicSessionStatusChangeLogUncheckedUpdateManyWithoutSessionNestedInput
 }
 
 export type AcademicSessionUncheckedUpdateManyWithoutServiceInput = {
@@ -3223,6 +3452,7 @@ export type AcademicSessionCountOutputType = {
   recordings: number
   taskItems: number
   mockItems: number
+  statusChangeLogs: number
 }
 
 export type AcademicSessionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3230,6 +3460,7 @@ export type AcademicSessionCountOutputTypeSelect<ExtArgs extends runtime.Types.E
   recordings?: boolean | AcademicSessionCountOutputTypeCountRecordingsArgs
   taskItems?: boolean | AcademicSessionCountOutputTypeCountTaskItemsArgs
   mockItems?: boolean | AcademicSessionCountOutputTypeCountMockItemsArgs
+  statusChangeLogs?: boolean | AcademicSessionCountOutputTypeCountStatusChangeLogsArgs
 }
 
 /**
@@ -3268,6 +3499,13 @@ export type AcademicSessionCountOutputTypeCountTaskItemsArgs<ExtArgs extends run
  */
 export type AcademicSessionCountOutputTypeCountMockItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MockItemWhereInput
+}
+
+/**
+ * AcademicSessionCountOutputType without action
+ */
+export type AcademicSessionCountOutputTypeCountStatusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AcademicSessionStatusChangeLogWhereInput
 }
 
 
@@ -3313,6 +3551,7 @@ export type AcademicSessionSelect<ExtArgs extends runtime.Types.Extensions.Inter
   recordings?: boolean | Prisma.AcademicSession$recordingsArgs<ExtArgs>
   taskItems?: boolean | Prisma.AcademicSession$taskItemsArgs<ExtArgs>
   mockItems?: boolean | Prisma.AcademicSession$mockItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AcademicSession$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AcademicSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["academicSession"]>
 
@@ -3442,6 +3681,7 @@ export type AcademicSessionInclude<ExtArgs extends runtime.Types.Extensions.Inte
   recordings?: boolean | Prisma.AcademicSession$recordingsArgs<ExtArgs>
   taskItems?: boolean | Prisma.AcademicSession$taskItemsArgs<ExtArgs>
   mockItems?: boolean | Prisma.AcademicSession$mockItemsArgs<ExtArgs>
+  statusChangeLogs?: boolean | Prisma.AcademicSession$statusChangeLogsArgs<ExtArgs>
   _count?: boolean | Prisma.AcademicSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AcademicSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3471,6 +3711,7 @@ export type $AcademicSessionPayload<ExtArgs extends runtime.Types.Extensions.Int
     recordings: Prisma.$RecordingPayload<ExtArgs>[]
     taskItems: Prisma.$TaskItemPayload<ExtArgs>[]
     mockItems: Prisma.$MockItemPayload<ExtArgs>[]
+    statusChangeLogs: Prisma.$AcademicSessionStatusChangeLogPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3908,6 +4149,7 @@ export interface Prisma__AcademicSessionClient<T, Null = never, ExtArgs extends 
   recordings<T extends Prisma.AcademicSession$recordingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSession$recordingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taskItems<T extends Prisma.AcademicSession$taskItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSession$taskItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mockItems<T extends Prisma.AcademicSession$mockItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSession$mockItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MockItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusChangeLogs<T extends Prisma.AcademicSession$statusChangeLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AcademicSession$statusChangeLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AcademicSessionStatusChangeLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4539,6 +4781,30 @@ export type AcademicSession$mockItemsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.MockItemScalarFieldEnum | Prisma.MockItemScalarFieldEnum[]
+}
+
+/**
+ * AcademicSession.statusChangeLogs
+ */
+export type AcademicSession$statusChangeLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AcademicSessionStatusChangeLog
+   */
+  select?: Prisma.AcademicSessionStatusChangeLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AcademicSessionStatusChangeLog
+   */
+  omit?: Prisma.AcademicSessionStatusChangeLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AcademicSessionStatusChangeLogInclude<ExtArgs> | null
+  where?: Prisma.AcademicSessionStatusChangeLogWhereInput
+  orderBy?: Prisma.AcademicSessionStatusChangeLogOrderByWithRelationInput | Prisma.AcademicSessionStatusChangeLogOrderByWithRelationInput[]
+  cursor?: Prisma.AcademicSessionStatusChangeLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AcademicSessionStatusChangeLogScalarFieldEnum | Prisma.AcademicSessionStatusChangeLogScalarFieldEnum[]
 }
 
 /**

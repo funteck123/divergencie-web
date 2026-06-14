@@ -22,7 +22,7 @@ const ALLOWED_TABLES = [
   "assignment",
   "syllabusItem",
   "doubt",
-  "studentProgress",
+  "studentSyllabusProgress",
   "recording",
   "marketingPost",
   "lead",

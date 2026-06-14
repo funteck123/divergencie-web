@@ -18,38 +18,50 @@ describe("getStudentAssignments", () => {
 
   it("returns assignments for a valid student", async () => {
     db.user.findUnique.mockResolvedValue({ id: "stu-1" });
-    db.assignment.findMany.mockResolvedValue([
-      { id: "a1", title: "Essay", status: "pending", dueDate: new Date() },
+    db.taskAssignment.findMany.mockResolvedValue([
+      { id: "a1", taskItemId: "ti-1", studentId: "stu-1", taskItem: { title: "Essay", dueDate: new Date() } },
     ]);
 
     const result = await getStudentAssignments("student@test.com");
 
-    expect(db.assignment.findMany).toHaveBeenCalledWith(
+    expect(db.taskAssignment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({ studentId: "stu-1" }),
       })
     );
     expect(result).toHaveLength(1);
-    expect(result[0].title).toBe("Essay");
+    expect(result[0].taskItem.title).toBe("Essay");
   });
 });
 
 describe("submitAssignment", () => {
   it("updates status to submitted and saves submission text", async () => {
-    const updated = { id: "a1", status: "submitted", submission: "https://drive.google.com/link" };
-    db.assignment.update.mockResolvedValue(updated);
+    db.taskAssignment.findUnique.mockResolvedValue({
+      taskItemId: "ti-1",
+      studentId: "stu-1",
+    });
+    db.taskSubmission.upsert.mockResolvedValue({
+      id: "ts-1",
+      status: "submitted",
+    });
 
     const result = await submitAssignment("a1", "https://drive.google.com/link");
 
-    expect(db.assignment.update).toHaveBeenCalledWith({
+    expect(db.taskAssignment.findUnique).toHaveBeenCalledWith({
       where: { id: "a1" },
-      data: { submission: "https://drive.google.com/link", status: "submitted" },
+      select: { taskItemId: true, studentId: true },
     });
-    expect(result.status).toBe("submitted");
+    expect(db.taskSubmission.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { taskItemId_studentId: { taskItemId: "ti-1", studentId: "stu-1" } },
+        update: expect.objectContaining({ status: "submitted" }),
+      })
+    );
+    expect(result.id).toBe("a1");
   });
 
   it("propagates database errors", async () => {
-    db.assignment.update.mockRejectedValue(new Error("DB error"));
+    db.taskAssignment.findUnique.mockRejectedValue(new Error("DB error"));
 
     await expect(submitAssignment("bad-id", "text")).rejects.toThrow("DB error");
   });

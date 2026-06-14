@@ -87,7 +87,7 @@ export async function getDepartmentAudit() {
     departments.map(async (dept) => {
       const [tickets, meetings] = await Promise.all([
         prisma.ticket.count({ where: { department: dept } }),
-        prisma.meeting.count({ where: { dept: dept } }),
+        prisma.meeting.count({ where: { dept: { name: dept } } }),
       ]);
       return { name: dept, tickets, meetings };
     })
