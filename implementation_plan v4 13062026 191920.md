@@ -1209,6 +1209,125 @@ export const config = { api: { bodyParser: false } } // required for Stripe sign
 
 ---
 
+## Architecture Decision — Supabase Stack (14 Jun 2026)
+
+**Decision:** Replace Neon + NextAuth v5 + Vercel Blob with **Supabase** for all three.
+
+| Layer | Old | New |
+|-------|-----|-----|
+| Database | Neon PostgreSQL | Supabase PostgreSQL |
+| Auth | NextAuth v5 credentials | Supabase Auth (email+password) |
+| File storage | Vercel Blob | Supabase Storage |
+
+### Auth — Scope
+- Manual account creation ONLY. No OAuth, no social login, no invite tokens.
+- Management creates user accounts via Supabase Admin API (`supabase.auth.admin.createUser`).
+- Login: `supabase.auth.signInWithPassword({ email, password })` — Supabase JWT session.
+- Middleware: `@supabase/ssr` `createServerClient` replaces NextAuth `auth()` for session checks.
+- Role/dept NOT in Supabase JWT by default → store in `user_metadata` at account creation OR keep reading from Prisma `User` table using `supabase.auth.getUser().id` as lookup key.
+
+### Database
+- Prisma schema unchanged. Only connection string changes.
+- Use Supabase **Transaction mode pooler** URL for serverless (port 6543): `postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true`
+- Remove `@prisma/adapter-neon` + `@neondatabase/serverless` deps. Use standard `pg` adapter or direct URL.
+- `src/lib/db.ts` → standard `new PrismaClient()` (no Neon adapter needed).
+
+### File Storage — Supabase Storage
+- Replace `@vercel/blob` with `@supabase/supabase-js` storage client.
+- Bucket: `receipts` (public). Upload: `supabase.storage.from('receipts').upload(path, file)`.
+- Public URL: `supabase.storage.from('receipts').getPublicUrl(path).data.publicUrl`.
+- Same validation: JPEG/PNG/WEBP/PDF, max 5MB.
+
+### Packages to add/remove
+
+```bash
+# Add
+npm install @supabase/supabase-js @supabase/ssr
+
+# Remove (once NextAuth fully replaced)
+npm uninstall next-auth @auth/prisma-adapter
+
+# Remove (Neon deps)
+npm uninstall @neondatabase/serverless @prisma/adapter-neon ws
+
+# Do NOT install @vercel/blob (replaced by Supabase Storage)
+```
+
+### Env vars (replace/add)
+
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://[ref].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...   # for admin.createUser in server actions only
+
+# Database (replace DATABASE_URL)
+DATABASE_URL=postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true
+DIRECT_URL=postgresql://postgres.[ref]:[password]@aws-0-[region].supabase.com:5432/postgres
+```
+
+Add `directUrl` to `prisma/schema.prisma` datasource block (required for migrations):
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+```
+
+### `src/lib/supabase.ts` — create this
+
+```typescript
+import { createClient } from "@supabase/supabase-js"
+
+export const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+```
+
+For server components/routes use `@supabase/ssr` `createServerClient` (reads cookies).
+
+### `src/lib/auth.ts` — replace NextAuth `auth()` with Supabase session helper
+
+```typescript
+import { createServerClient } from "@supabase/ssr"
+import { cookies } from "next/headers"
+import prisma from "@/lib/db"
+
+export async function getSession() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+  )
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  // Fetch role/dept from Prisma (single source of truth)
+  const dbUser = await prisma.user.findUnique({ where: { email: user.email! }, select: { id: true, role: true, dept: true, name: true } })
+  if (!dbUser) return null
+  return { user: { id: dbUser.id, email: user.email, role: dbUser.role, dept: dbUser.dept, name: dbUser.name } }
+}
+```
+
+All existing API routes call `auth()` → rename/replace with `getSession()`. Signature identical: returns `{ user: { id, email, role, dept } } | null`.
+
+### Migration order for next agent
+
+1. Install `@supabase/supabase-js @supabase/ssr`
+2. Update `prisma/schema.prisma` datasource with `directUrl`
+3. Create `src/lib/supabase.ts`
+4. Replace `src/lib/auth.ts` (NextAuth export) with Supabase `getSession()` above
+5. Update `src/middleware.ts` to use `@supabase/ssr` session check
+6. Update all API routes: `const session = await auth()` → `const session = await getSession()`
+7. Update `src/app/api/auth/[...nextauth]/route.ts` → replace with login/logout routes using Supabase
+8. Remove Neon deps, update `src/lib/db.ts` to plain `PrismaClient()`
+9. Run `prisma migrate dev` against Supabase DB
+10. Run seed
+
+---
+
 ## Session Handout — 14 Jun 2026 (Update: ERD System Impl Session)
 
 **Branch:** `worktree-erd-system-impl` — merge to `main` when approved.
