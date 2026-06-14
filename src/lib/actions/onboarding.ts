@@ -63,30 +63,34 @@ export async function updateOnboardingFlags(
   }
 
   // Validate department ownership of specific flags
-  const data: typeof flags = {};
+  const data: any = {};
   if (flags.gcrAssigned !== undefined) {
     if (!isPR && !isManagement) {
       throw new Error("Forbidden: PR or Management required for gcrAssigned");
     }
     data.gcrAssigned = flags.gcrAssigned;
+    data.gcrAssignedAt = flags.gcrAssigned ? new Date() : null;
   }
   if (flags.groupAssigned !== undefined) {
     if (!isPR && !isManagement) {
       throw new Error("Forbidden: PR or Management required for groupAssigned");
     }
     data.groupAssigned = flags.groupAssigned;
+    data.groupAssignedAt = flags.groupAssigned ? new Date() : null;
   }
   if (flags.scheduleAssigned !== undefined) {
     if (!isPR && !isManagement) {
       throw new Error("Forbidden: PR or Management required for scheduleAssigned");
     }
     data.scheduleAssigned = flags.scheduleAssigned;
+    data.scheduleAssignedAt = flags.scheduleAssigned ? new Date() : null;
   }
   if (flags.financeApprovedFlag !== undefined) {
     if (!isFinance && !isManagement) {
       throw new Error("Forbidden: Finance or Management required for financeApprovedFlag");
     }
     data.financeApprovedFlag = flags.financeApprovedFlag;
+    data.financeApprovedAt = flags.financeApprovedFlag ? new Date() : null;
   }
 
   // Check if student exists
