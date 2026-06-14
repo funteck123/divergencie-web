@@ -22,16 +22,33 @@ export async function PATCH(
 
   if (!answer) return NextResponse.json({ error: "answer required" }, { status: 400 });
 
-  const doubt = await prisma.doubt.findUnique({ where: { id } });
+  const doubt = await prisma.doubt.findUnique({
+    where: { id },
+    include: {
+      syllabusItem: {
+        include: {
+          syllabusList: {
+            include: {
+              curriculumList: {
+                include: {
+                  service: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
   if (!doubt) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  if (role === "teacher" && doubt.teacherId !== user.id) {
+  if (role === "teacher" && doubt.syllabusItem?.syllabusList?.curriculumList?.service?.teacherId !== user.id) {
     return NextResponse.json({ error: "Forbidden: Not your doubt" }, { status: 403 });
   }
 
   const updated = await prisma.doubt.update({
     where: { id },
-    data: { answer, answeredAt: new Date(), answeredByUserId: user.id },
+    data: { response: answer, status: "answered" },
   });
 
   return NextResponse.json(updated);
