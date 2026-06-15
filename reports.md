@@ -37,6 +37,38 @@ The 18 identified system bugs, UI issues, and database tasks are tracked in sepa
 16. **[#17](https://github.com/funteck123/divergencie-web/issues/17) ISSUE-016 (Management-Finance):** Management make invoice link gating and claims review redirect
 17. **[#18](https://github.com/funteck123/divergencie-web/issues/18) ISSUE-017 (Finance-CLI):** Payout button logic and CLI test scripts
 18. **[#19](https://github.com/funteck123/divergencie-web/issues/19) ISSUE-018 (Docs):** Update payment guide info
+19. **[#20](https://github.com/funteck123/divergencie-web/issues/20) ISSUE-019 (Parent-Finance):** Server-side authorization role mismatch on payInvoice
+20. **[#21](https://github.com/funteck123/divergencie-web/issues/21) ISSUE-020 (Parent-Finance):** Unbound payment reference input on fees page
+21. **[#22](https://github.com/funteck123/divergencie-web/issues/22) ISSUE-021 (Parent-Finance):** Dead links and mocked receipt downloads on parent fees page
 
+---
+
+## Detailed New Issues
+
+### ISSUE-019: Server-side authorization role mismatch on payInvoice
+**Location:** [page.tsx:331](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/fees/page.tsx#L331) and [billing.ts:11](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/billing.ts#L11)
+- **Finding:** Page runs under parent session but invokes `payInvoice(id)`. Server action restricts access to `staff` and `management` roles.
+- **Risk:** Server throws "Forbidden" error. Parent cannot mark invoice paid. Modal hangs on "Processing..." because `onClick` lacks error handling.
+- **Options:**
+  - **A)** Route payment confirmation to [submitManualPaymentReceipt](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/billing.ts#L38) instead (allows general authenticated users).
+  - **B)** Grant parent role access to [payInvoice](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/billing.ts#L7) (security compromise).
+  - **C)** Leave as-is.
+
+### ISSUE-020: Unbound payment reference input
+**Location:** [page.tsx:323](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/fees/page.tsx#L323)
+- **Finding:** Transaction ID / UTR input has no state binding or change listener.
+- **Risk:** Entered UTR reference is discarded. Staff cannot track or reconcile bank transfers.
+- **Options:**
+  - **A)** Add React state to bind input value. Pass reference parameter to server action.
+  - **B)** Remove input field.
+  - **C)** Leave as-is.
+
+### ISSUE-021: Dead links and mocked receipt downloads
+**Location:** [page.tsx:197](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/fees/page.tsx#L197), [page.tsx:219](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/fees/page.tsx#L219), and [page.tsx:277](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/fees/page.tsx#L277)
+- **Finding:** "Receipt" triggers alert modal. WhatsApp support links contain empty click handlers.
+- **Risk:** Degraded UX. Parents unable to contact admin or retrieve past payment proofs.
+- **Options:**
+  - **A)** Generate dynamic receipts. Add WhatsApp API redirect URLs.
+  - **B)** Leave mocked.
 
 
