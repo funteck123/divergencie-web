@@ -40,6 +40,13 @@ The 18 identified system bugs, UI issues, and database tasks are tracked in sepa
 19. **[#20](https://github.com/funteck123/divergencie-web/issues/20) ISSUE-019 (Parent-Finance):** Server-side authorization role mismatch on payInvoice
 20. **[#21](https://github.com/funteck123/divergencie-web/issues/21) ISSUE-020 (Parent-Finance):** Unbound payment reference input on fees page
 21. **[#22](https://github.com/funteck123/divergencie-web/issues/22) ISSUE-021 (Parent-Finance):** Dead links and mocked receipt downloads on parent fees page
+22. **[#23](https://github.com/funteck123/divergencie-web/issues/23) ISSUE-022 (Parent-Profile):** Broken parent-student query in getLinkedChildren
+23. **[#24](https://github.com/funteck123/divergencie-web/issues/24) ISSUE-023 (Parent-Dashboard):** Hardcoded logic for overdue invoices on Parent Dashboard
+24. **[#25](https://github.com/funteck123/divergencie-web/issues/25) ISSUE-024 (Parent-Progress):** Empty subject expansion in Parent Progress Page
+25. **[#26](https://github.com/funteck123/divergencie-web/issues/26) ISSUE-025 (Parent-Progress):** Monthly Reports tab & PDF downloads missing in Parent Progress
+26. **[#27](https://github.com/funteck123/divergencie-web/issues/27) ISSUE-026 (Parent-Support):** Broken support ticket category submission on dashboard
+27. **[#28](https://github.com/funteck123/divergencie-web/issues/28) ISSUE-027 (Parent-Support):** "Action Required" queue filters out parent tickets
+28. **[#29](https://github.com/funteck123/divergencie-web/issues/29) ISSUE-028 (Parent-Progress):** Synthetic monthly score trends using Math.random()
 
 ---
 
@@ -70,5 +77,68 @@ The 18 identified system bugs, UI issues, and database tasks are tracked in sepa
 - **Options:**
   - **A)** Generate dynamic receipts. Add WhatsApp API redirect URLs.
   - **B)** Leave mocked.
+
+### ISSUE-022: Broken parent-student query in getLinkedChildren
+**Location:** [profile.ts:57](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/profile.ts#L57)
+- **Finding:** Database query attempts to join relation `students` on `User` model, but correct field name is `children` (parent-student self-join key defined in schema). TypeScript error bypassed with `as any`.
+- **Risk:** Prisma throws runtime exception when parent dashboard, progress page, or profile page is loaded. Parent portal is entirely broken.
+- **Options:**
+  - **A)** Fix relation query in `getLinkedChildren` to use `children` instead of `students`.
+  - **B)** Rename relation in schema (unnecessary risk).
+  - **C)** Leave as-is.
+
+### ISSUE-023: Hardcoded logic for overdue invoices on Parent Dashboard
+**Location:** [page.tsx:101](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/page.tsx#L101)
+- **Finding:** Hero card uses hardcoded true condition: `true ? " Manage fees in the Fees tab." : " One invoice is currently outstanding."`
+- **Risk:** Overdue invoice notices never shown in welcoming text regardless of child's financial status.
+- **Options:**
+  - **A)** Update condition to reference `overdueInvoices.length === 0`.
+  - **B)** Keep hardcoded text.
+  - **C)** Leave as-is.
+
+### ISSUE-024: Empty subject expansion in Parent Progress Page
+**Location:** [progress/page.tsx:139](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/progress/page.tsx#L139)
+- **Finding:** Subject cards have state bindings for expansion (`openSubjects`) and rotate the chevron icon on click, but do not render any chapters or detailed progress items when open.
+- **Risk:** Unfinished UI. Click action seems broken to parents.
+- **Options:**
+  - **A)** Port chapter list display block from Student Progress page.
+  - **B)** Remove expansion logic and chevron icon.
+  - **C)** Leave as-is.
+
+### ISSUE-025: Monthly Reports tab & PDF downloads missing in Parent Progress
+**Location:** [progress/page.tsx](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/progress/page.tsx)
+- **Finding:** Unlike the Student Progress page, the Parent Progress page has no tab interface to view or download published Monthly Progress Reports (`ProgressReport` model records).
+- **Risk:** Parents cannot access historical academic progress reports or download report PDFs.
+- **Options:**
+  - **A)** Port tabs interface and monthly report list/details from Student Progress page.
+  - **B)** Keep reports inaccessible in Parent portal.
+  - **C)** Leave as-is.
+
+### ISSUE-026: Broken support ticket category submission on dashboard
+**Location:** [page.tsx:288-306](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/page.tsx#L288-L306)
+- **Finding:** Support Ticket modal in the parent dashboard renders a form, but submission has no click handler or `onSubmit` interceptor.
+- **Risk:** Submitting the form performs a full page reload and fails to call any API. Parent cannot send support tickets from the dashboard.
+- **Options:**
+  - **A)** Wire the form to submit to `/api/tickets` (similar to `TicketCreateForm`).
+  - **B)** Replace the form with a redirect to the Parent Support page.
+  - **C)** Leave as-is.
+
+### ISSUE-027: "Action Required" queue filters out parent tickets
+**Location:** [support/page.tsx:49](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/support/page.tsx#L49)
+- **Finding:** Filtering logic for `"active"` queue requires the user to be the assignee (`isOwner`). However, parent-created tickets are always assigned to staff.
+- **Risk:** Active tickets never show up in the parent's "Action Required" tab (default tab is empty).
+- **Options:**
+  - **A)** Adjust the status match to check if ticket status !== "CLOSED" for all parent tickets, or check if last message was from staff.
+  - **B)** Remove "Action Required" queue filter for external users.
+  - **C)** Leave as-is.
+
+### ISSUE-028: Synthetic monthly score trends using Math.random()
+**Location:** [progress/page.tsx:39](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/app/portal/parent/progress/page.tsx#L39)
+- **Finding:** Trend chart plots synthetic values generated via `Math.random()` rather than plotting actual mock scores.
+- **Risk:** Misleads parents with fake grade/mastery fluctuations.
+- **Options:**
+  - **A)** Retrieve actual historical mock exams from `MockResult` and plot them, or show flatline if empty.
+  - **B)** Keep random generation.
+  - **C)** Leave as-is.
 
 
