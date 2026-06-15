@@ -20,6 +20,11 @@ import { getParentInvoices } from "@/lib/actions/finance";
 import { useSession } from "@/lib/auth-client";
 
 const REGIONS = [
+  { flag:'🇲🇾', name:'Malaysia', currency:'MYR — Malaysian Ringgit',
+    gateways:['FPX','DuitNow','TNG eWallet'],
+    steps:'<strong>1.</strong> DC admin sends you a payment link or bank account details.<br><strong>2.</strong> Pay via FPX (online banking) or DuitNow QR through your banking app.<br><strong>3.</strong> Include Invoice ID in the remarks field.<br><strong>4.</strong> Screenshot and WhatsApp to DC.',
+    gwName:'FPX / DuitNow (Malaysia)',
+    gwInstructions:'Transfer to the DC bank account provided by admin via WhatsApp. Use <strong>FPX</strong> through your online banking portal or <strong>DuitNow QR</strong> via any Malaysian banking app (Maybank2u, CIMB Clicks, RHB Now, etc.). Always include your Invoice ID in the reference.' },
   { flag:'🇬🇧', name:'United Kingdom', currency:'GBP — British Pound',
     gateways:['Stripe Visa','Bank Transfer'],
     steps:'<strong>1.</strong> DC admin sends a Stripe link via email.<br><strong>2.</strong> Pay securely by card via Stripe checkout.<br><strong>3.</strong> A receipt is emailed automatically.',
