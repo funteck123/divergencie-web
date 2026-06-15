@@ -112,6 +112,7 @@ const david: MockUser     = { id: "u_david",   name: "David Chen",      email: "
 const maya: MockUser      = { id: "u_maya",    name: "Maya Patel",      email: "maya@ambassador.com", role: "ambassador", active: true };
 const rafael: MockUser    = { id: "u_rafael",  name: "Rafael Torres",   email: "rafael@gmail.com",    role: "candidate",  active: true };
 const sarah: MockUser     = { id: "u_sarah",   name: "Sarah Mitchell",  email: "sarah@mgmt.com",      role: "management", active: true };
+const parentUser: MockUser  = { id: "u_parent",  name: "Parent User",     email: "parent@parent.com",   role: "parent",     active: true };
 const deactivated: MockUser = { id: "u_old",   name: "Ex Staff",        email: "ex@staff.com",        role: "staff",      dept: "HR", active: false };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -533,6 +534,9 @@ describe("Act 9 — End of day security audit", () => {
       { user: sarah,    path: "/portal/management",               expected: true,  why: "management owns everything" },
       { user: sarah,    path: "/portal/staff/finance/invoices",   expected: true,  why: "management can access all staff sections" },
       { user: sarah,    path: "/portal/staff/hr/records",         expected: true,  why: "management can access all staff sections" },
+      { user: parentUser, path: "/portal/parent",                 expected: true,  why: "parents own their portal" },
+      { user: parentUser, path: "/portal/student/dashboard",      expected: false, why: "parents can't be students" },
+      { user: parentUser, path: "/portal/management",             expected: false, why: "parents can't be management" },
     ];
 
     for (const { user, path, expected, why } of matrix) {
