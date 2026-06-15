@@ -37,16 +37,21 @@ The 18 identified system bugs, UI issues, and database tasks are tracked in sepa
 16. **[#17](https://github.com/funteck123/divergencie-web/issues/17) ISSUE-016 (Management-Finance):** Management make invoice link gating and claims review redirect
 17. **[#18](https://github.com/funteck123/divergencie-web/issues/18) ISSUE-017 (Finance-CLI):** Payout button logic and CLI test scripts
 18. **[#19](https://github.com/funteck123/divergencie-web/issues/19) ISSUE-018 (Docs):** Update payment guide info
-19. **[#20](https://github.com/funteck123/divergencie-web/issues/20) ISSUE-019 (Parent-Finance):** Server-side authorization role mismatch on payInvoice
-20. **[#21](https://github.com/funteck123/divergencie-web/issues/21) ISSUE-020 (Parent-Finance):** Unbound payment reference input on fees page
-21. **[#22](https://github.com/funteck123/divergencie-web/issues/22) ISSUE-021 (Parent-Finance):** Dead links and mocked receipt downloads on parent fees page
-22. **[#23](https://github.com/funteck123/divergencie-web/issues/23) ISSUE-022 (Parent-Profile):** Broken parent-student query in getLinkedChildren
-23. **[#24](https://github.com/funteck123/divergencie-web/issues/24) ISSUE-023 (Parent-Dashboard):** Hardcoded logic for overdue invoices on Parent Dashboard
-24. **[#25](https://github.com/funteck123/divergencie-web/issues/25) ISSUE-024 (Parent-Progress):** Empty subject expansion in Parent Progress Page
-25. **[#26](https://github.com/funteck123/divergencie-web/issues/26) ISSUE-025 (Parent-Progress):** Monthly Reports tab & PDF downloads missing in Parent Progress
-26. **[#27](https://github.com/funteck123/divergencie-web/issues/27) ISSUE-026 (Parent-Support):** Broken support ticket category submission on dashboard
-27. **[#28](https://github.com/funteck123/divergencie-web/issues/28) ISSUE-027 (Parent-Support):** "Action Required" queue filters out parent tickets
-28. **[#29](https://github.com/funteck123/divergencie-web/issues/29) ISSUE-028 (Parent-Progress):** Synthetic monthly score trends using Math.random()
+19. **[#28](https://github.com/funteck123/divergencie-web/issues/28) ISSUE-019 (Parent-Finance):** Server-side authorization role mismatch on payInvoice
+20. **[#29](https://github.com/funteck123/divergencie-web/issues/29) ISSUE-020 (Parent-Finance):** Unbound payment reference input on fees page
+21. **[#30](https://github.com/funteck123/divergencie-web/issues/30) ISSUE-021 (Parent-Finance):** Dead links and mocked receipt downloads on parent fees page
+22. **[#31](https://github.com/funteck123/divergencie-web/issues/31) ISSUE-022 (Parent-Profile):** Broken parent-student query in getLinkedChildren
+23. **[#32](https://github.com/funteck123/divergencie-web/issues/32) ISSUE-023 (Parent-Dashboard):** Hardcoded logic for overdue invoices on Parent Dashboard
+24. **[#33](https://github.com/funteck123/divergencie-web/issues/33) ISSUE-024 (Parent-Progress):** Empty subject expansion in Parent Progress Page
+25. **[#34](https://github.com/funteck123/divergencie-web/issues/34) ISSUE-025 (Parent-Progress):** Monthly Reports tab & PDF downloads missing in Parent Progress
+26. **[#35](https://github.com/funteck123/divergencie-web/issues/35) ISSUE-026 (Parent-Support):** Broken support ticket category submission on dashboard
+27. **[#36](https://github.com/funteck123/divergencie-web/issues/36) ISSUE-027 (Parent-Support):** "Action Required" queue filters out parent tickets
+28. **[#37](https://github.com/funteck123/divergencie-web/issues/37) ISSUE-028 (Parent-Progress):** Synthetic monthly score trends using Math.random()
+29. **[#38](https://github.com/funteck123/divergencie-web/issues/38) ISSUE-029 (Security):** Broken Object Level Authorization (BOLA) in logDoubt action
+30. **[#39](https://github.com/funteck123/divergencie-web/issues/39) ISSUE-030 (Security):** Broken Object Level Authorization (BOLA) in submitClaim action
+31. **[#40](https://github.com/funteck123/divergencie-web/issues/40) ISSUE-031 (Logic):** Missing duplication checks in submitClaim (One Claim per month per enrolment list)
+32. **[#41](https://github.com/funteck123/divergencie-web/issues/41) ISSUE-032 (Schema-Drift):** Schema redundancy and dead index on User status fields (isActive vs active)
+
 
 ---
 
@@ -140,5 +145,38 @@ The 18 identified system bugs, UI issues, and database tasks are tracked in sepa
   - **A)** Retrieve actual historical mock exams from `MockResult` and plot them, or show flatline if empty.
   - **B)** Keep random generation.
   - **C)** Leave as-is.
+
+### ISSUE-029: Broken Object Level Authorization (BOLA) in logDoubt action
+**Location:** [doubts.ts:12](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/doubts.ts#L12) and [doubts.ts:17](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/doubts.ts#L17)
+- **Finding:** The 'logDoubt' server action parses 'studentId' from raw client-provided form data, creating records directly without verifying if the caller's session ID matches this 'studentId' or holds valid relationship credentials.
+- **Risk:** Any authenticated student can manipulate the hidden form inputs to log doubt records on behalf of any other student, causing potential spam or data corruption.
+- **Options:**
+  - **A)** Enforce session-derived identity verification by resolving the student ID directly from the authenticated session context (session.user.id), and explicitly check that the linked-child relationship is authorized if the caller is a parent user.
+  - **B)** Leave as-is.
+
+### ISSUE-030: Broken Object Level Authorization (BOLA) in submitClaim action
+**Location:** [claims.ts:16](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/claims.ts#L16) and [claims.ts:30](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/claims.ts#L30)
+- **Finding:** The 'submitClaim' server action reads 'userId' from the client form submission and creates the claim record, but fails to check if the 'userId' matches the authenticated session user's ID.
+- **Risk:** Allows malicious or compromised teacher/staff accounts to submit financial claims on behalf of any other user in the system.
+- **Options:**
+  - **A)** Derive the claimant's identity strictly from the secure server-side session token (session.user.id), preventing client-side parameter tampering, and restrict non-owner claim submissions to authorized supervisors or management roles only.
+  - **B)** Leave as-is.
+
+### ISSUE-031: Missing duplication checks in submitClaim (One Claim per month per enrolment list)
+**Location:** [claims.ts:30](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/claims.ts#L30)
+- **Requirement:** Section 18 of the system logic handoff (line 1669) mandates: "One Claim per EnrolmentList per month."
+- **Finding:** The server action performs no checks against the database before inserting a claim. A duplicate claim can be created for the same enrolment list and month.
+- **Risk:** Double payment / double claiming. Allows users to claim compensation multiple times for the same period.
+- **Options:**
+  - **A)** Introduce a strict database-level unique composite index on (enrolmentListId, month) in the Claim model, and perform a transactional pre-flight check in the 'submitClaim' server action to throw a structured error on duplicate submissions.
+  - **B)** Leave as-is.
+
+### ISSUE-032: Schema redundancy and dead index on User status fields (isActive vs active)
+**Location:** [schema.prisma:28-29](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/prisma/schema.prisma#L28-L29) and [users.ts:95](file:///home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/src/lib/actions/users.ts#L95)
+- **Finding:** The User model carries redundant boolean fields: 'isActive' and 'active'. The database index is on 'isActive', but the application only reads and writes the 'active' field.
+- **Risk:** Database index on user status is never hit by queries, causing performance degradation during user queries, and introducing high risk of logic/data drift where active and isActive diverge.
+- **Options:**
+  - **A)** Perform a database migration to consolidate the two fields into a single, standardized status attribute with a matching composite index, and refactor all read/write paths across user management portals to query that single indexed field.
+  - **B)** Leave as-is.
 
 
