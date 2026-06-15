@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { 
   LayoutDashboard, 
   Users, 
@@ -109,7 +110,7 @@ function ManagementDashboardInner() {
       <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 p-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-500">
         <AlertTriangle size={20} className="text-amber-600 dark:text-amber-400 shrink-0" />
         <p className="text-xs font-bold text-amber-800 dark:text-amber-200">
-          <strong>2 payment claims</strong> awaiting your approval. <span className="underline cursor-pointer ml-1">Review pending payouts</span>
+          <strong>2 payment claims</strong> awaiting your approval. <Link href="/portal/staff/finance/claims" className="underline cursor-pointer ml-1">Review pending payouts</Link>
         </p>
       </div>
 
@@ -283,7 +284,7 @@ function ManagementDashboardInner() {
                   <span className="text-lg font-black text-[var(--gold)]">£{c.amount.toFixed(2)}</span>
                   <div className="flex gap-2">
                     <button onClick={() => handleApprove(c.id)} disabled={loading} className="p-2 bg-emerald-500/10 text-emerald-600 rounded-lg hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50"><CheckCircle2 size={16} /></button>
-                    <button className="p-2 bg-red-500/10 text-red-600 rounded-lg hover:bg-red-500 hover:text-white transition-all"><XCircle size={16} /></button>
+                    <Link href="/portal/staff/finance/claims" className="p-2 bg-red-500/10 text-red-600 rounded-lg hover:bg-red-500 hover:text-white transition-all"><XCircle size={16} /></Link>
                   </div>
                 </div>
               </div>

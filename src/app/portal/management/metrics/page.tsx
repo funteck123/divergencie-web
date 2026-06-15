@@ -116,7 +116,7 @@ export default function ManagementMetricsPage() {
           <div className="bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl p-8 shadow-sm">
             <h3 className="text-sm font-black text-[var(--navy)] dark:text-white uppercase tracking-widest mb-6">Claims Summary</h3>
             <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase">{ov.pendingClaims} claims pending approval. Go to Claims Approval to review.</p>
-            <a href="/portal/management" className="mt-4 inline-flex items-center gap-2 text-[10px] font-black text-[var(--gold)] uppercase hover:underline">Review Claims →</a>
+            <a href="/portal/staff/finance/claims" className="mt-4 inline-flex items-center gap-2 text-[10px] font-black text-[var(--gold)] uppercase hover:underline">Review Claims →</a>
           </div>
           <div className="bg-white dark:bg-white/5 border border-[var(--border-subtle)] rounded-2xl p-8 shadow-sm">
             <h3 className="text-sm font-black text-[var(--navy)] dark:text-white uppercase tracking-widest mb-6">Invoice Status</h3>

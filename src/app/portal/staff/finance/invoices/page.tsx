@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FileText, Search, Plus, Download, CheckCircle2, Clock, AlertCircle, DollarSign, User, Filter, X, Loader2, MessageCircle } from "lucide-react";
 import { getInvoices, createInvoice, updateInvoiceStatus, getInvoiceStats, advanceReminderStage, WA_REMINDER_STAGES } from "@/lib/actions/finance";
 import { ShieldCheck } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
 
 const STATUS_COLORS: Record<string, string> = {
   paid: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30",
@@ -12,6 +13,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function FinanceInvoicesPage() {
+  const { data: session } = useSession();
+  const user = session?.user as any;
   const [invoices, setInvoices] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, collected: 0, pending: 0, overdue: 0 });
   const [query, setQuery] = useState("");
@@ -73,9 +76,11 @@ export default function FinanceInvoicesPage() {
           <h1 className="text-3xl font-black text-[var(--navy)] dark:text-white uppercase tracking-tight">Invoices</h1>
           <p className="text-[var(--text-muted)] font-medium mt-1">Manage student billing, scholarships, and payment tracking.</p>
         </div>
-        <button onClick={() => setShowForm(true)} className="px-6 py-3 bg-[var(--gold)] text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all flex items-center gap-2 shadow-lg">
-          <Plus size={14} /> Generate Invoice
-        </button>
+        {user?.role !== "management" && (
+          <button onClick={() => setShowForm(true)} className="px-6 py-3 bg-[var(--gold)] text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all flex items-center gap-2 shadow-lg">
+            <Plus size={14} /> Generate Invoice
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -108,7 +113,7 @@ export default function FinanceInvoicesPage() {
       </div>
 
       {/* Create form */}
-      {showForm && (
+      {showForm && user?.role !== "management" && (
         <div className="bg-white dark:bg-white/5 border border-[var(--gold)] rounded-2xl p-8 shadow-lg space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-sm font-black uppercase tracking-widest text-[var(--navy)] dark:text-white">New Invoice</h3>
