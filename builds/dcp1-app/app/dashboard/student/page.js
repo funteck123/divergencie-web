@@ -145,7 +145,9 @@ function Body({ user }) {
                     <td>{s.Duration}</td>
                     <td>
                       {att ? (
-                        <span className="badge badge-good">{att.Status} · {att.LoggedDuration}h</span>
+                        <span className={`badge badge-${att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad"}`}>
+                          {att.Status} · {att.LoggedDuration}h
+                        </span>
                       ) : (
                         <AttendanceForm defaultHrs={s.Duration} onSubmit={(status, hrs) => logAttendance(s.ScheduleID, status, hrs)} />
                       )}
