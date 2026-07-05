@@ -117,7 +117,7 @@ function Body({ user }) {
           <option value="">Select a service…</option>
           {eligibleServices.map((s) => (
             <option key={s.ServiceID} value={s.ServiceID}>
-              {s.Name}
+              {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
             </option>
           ))}
         </select>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 const KEY = "dcp1_user";
 
 export function getCurrentUser() {
@@ -39,6 +41,38 @@ export function roleHomePath(userType) {
 export function groupMatches(serviceGroup, requiredGroup) {
   const group = serviceGroup || "Student";
   return group === "Both" || group === requiredGroup;
+}
+
+// Click-to-sort for any list of plain objects. Pass keys directly present on
+// the items (add synthetic ones, e.g. `_period`, before sorting composite
+// values like Year+Month).
+export function useSort(items, initialKey, initialDir = "asc") {
+  const [sortKey, setSortKey] = useState(initialKey);
+  const [sortDir, setSortDir] = useState(initialDir);
+
+  function toggleSort(key) {
+    if (key === sortKey) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  }
+
+  const sorted = [...items].sort((a, b) => {
+    let av = a[sortKey];
+    let bv = b[sortKey];
+    if (typeof av === "string") av = av.toLowerCase();
+    if (typeof bv === "string") bv = bv.toLowerCase();
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    if (av < bv) return sortDir === "asc" ? -1 : 1;
+    if (av > bv) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  return { sorted, sortKey, sortDir, toggleSort };
 }
 
 export async function api(path, options = {}) {

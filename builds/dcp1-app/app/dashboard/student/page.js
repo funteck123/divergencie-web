@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
-import { api } from "@/lib/client";
+import SortableTh from "@/components/SortableTh";
+import { api, useSort } from "@/lib/client";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -40,6 +41,11 @@ function Body({ user }) {
     }
   }
 
+  const scheduleRows = (data?.scheduleItems || []).map((s) => ({ ...s, _dt: s.Date + s.Time }));
+  const invoiceRows = (data?.invoices || []).map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
+  const schedSort = useSort(scheduleRows, "_dt");
+  const invSort = useSort(invoiceRows, "_period", "desc");
+
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   return (
@@ -68,15 +74,15 @@ function Body({ user }) {
           <table>
             <thead>
               <tr>
-                <th>Service</th>
-                <th>Date</th>
+                <SortableTh label="Service" sortKeyName="ServiceName" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
+                <SortableTh label="Date" sortKeyName="_dt" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Time</th>
-                <th>Hrs</th>
+                <SortableTh label="Hrs" sortKeyName="Duration" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Attendance</th>
               </tr>
             </thead>
             <tbody>
-              {data.scheduleItems.map((s) => {
+              {schedSort.sorted.map((s) => {
                 const att = attendanceFor(s.ScheduleID);
                 return (
                   <tr key={s.ScheduleID}>
@@ -94,7 +100,7 @@ function Body({ user }) {
                   </tr>
                 );
               })}
-              {data.scheduleItems.length === 0 && (
+              {schedSort.sorted.length === 0 && (
                 <tr>
                   <td colSpan={5} style={{ color: "var(--muted)" }}>
                     No sessions yet — ask Management to enroll you in a Service.
@@ -111,15 +117,15 @@ function Body({ user }) {
         <table>
           <thead>
             <tr>
-              <th>Period</th>
-              <th>Attended hrs</th>
-              <th>Amount</th>
-              <th>INR Due</th>
-              <th>Status</th>
+              <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <SortableTh label="Status" sortKeyName="Status" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             </tr>
           </thead>
           <tbody>
-            {data.invoices.map((i) => (
+            {invSort.sorted.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
                 <td>{i.AttendedHours}</td>
@@ -130,7 +136,7 @@ function Body({ user }) {
                 </td>
               </tr>
             ))}
-            {data.invoices.length === 0 && (
+            {invSort.sorted.length === 0 && (
               <tr>
                 <td colSpan={5} style={{ color: "var(--muted)" }}>
                   No invoices yet.

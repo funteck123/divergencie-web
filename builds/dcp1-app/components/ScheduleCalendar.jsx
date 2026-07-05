@@ -31,6 +31,25 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
     return map;
   }, [scheduleItems]);
 
+  // Sequential number of a session within its recurring Occurrence (1st,
+  // 2nd, ...), so e.g. two Tuesday classes in a row read as "#3" and "#4".
+  // One-off (non-recurring) slots have no OccuranceID and get no number.
+  const occNumberByScheduleId = useMemo(() => {
+    const byOcc = {};
+    for (const s of scheduleItems) {
+      if (!s.OccuranceID) continue;
+      (byOcc[s.OccuranceID] ||= []).push(s);
+    }
+    const map = {};
+    for (const list of Object.values(byOcc)) {
+      const ordered = [...list].sort((a, b) => (a.Date + a.Time).localeCompare(b.Date + b.Time));
+      ordered.forEach((s, i) => {
+        map[s.ScheduleID] = i + 1;
+      });
+    }
+    return map;
+  }, [scheduleItems]);
+
   function attendanceFor(scheduleId) {
     return attendanceItems.find((a) => a.ScheduleItemID === scheduleId);
   }
@@ -125,6 +144,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                         title={s.ServiceName}
                       >
                         {s.Time} {s.ServiceName}
+                        {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
                         {att ? ` · ${att.Status}` : ""}
                       </button>
                       {expandedId === s.ScheduleID && !att && (

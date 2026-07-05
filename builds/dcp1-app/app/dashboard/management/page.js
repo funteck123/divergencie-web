@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
-import { api, groupMatches } from "@/lib/client";
+import SortableTh from "@/components/SortableTh";
+import { api, groupMatches, useSort } from "@/lib/client";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
 
@@ -500,6 +501,7 @@ function Services() {
   const [name, setName] = useState("");
   const [type, setType] = useState("Class");
   const [group, setGroup] = useState("Student");
+  const [code, setCode] = useState("");
   const [monthlyCost, setMonthlyCost] = useState("");
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
@@ -517,6 +519,7 @@ function Services() {
     setName("");
     setType("Class");
     setGroup("Student");
+    setCode("");
     setMonthlyCost("");
     setOccurrences([{ ...EMPTY_OCC }]);
   }
@@ -526,6 +529,7 @@ function Services() {
     setName(s.Name);
     setType(s.Type);
     setGroup(s.Group || "Student");
+    setCode(s.Code || "");
     setMonthlyCost(s.MonthlyCost);
     setOccurrences(
       s.OccuranceList.map((o) => ({
@@ -555,12 +559,12 @@ function Services() {
       if (editingId) {
         await api("/api/services", {
           method: "PATCH",
-          body: JSON.stringify({ serviceId: editingId, name, type, group, monthlyCost, occurrences }),
+          body: JSON.stringify({ serviceId: editingId, name, type, group, code, monthlyCost, occurrences }),
         });
       } else {
         await api("/api/services", {
           method: "POST",
-          body: JSON.stringify({ name, type, group, monthlyCost, occurrences }),
+          body: JSON.stringify({ name, type, group, code, monthlyCost, occurrences }),
         });
       }
       resetForm();
@@ -577,6 +581,12 @@ function Services() {
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
           <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
+          <input
+            className="field"
+            placeholder="Code (leave blank to auto-generate)"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+          />
           <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
             <option value="Student">Student (Trial-eligible)</option>
             <option value="Staff">Staff (Interview-eligible)</option>
@@ -651,6 +661,7 @@ function Services() {
           <thead>
             <tr>
               <th>ID</th>
+              <th>Code</th>
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
@@ -663,6 +674,7 @@ function Services() {
             {services.map((s) => (
               <tr key={s.ServiceID}>
                 <td>{s.ServiceID}</td>
+                <td>{s.Code || "—"}</td>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
                 <td>{s.Group || "Student"}</td>
@@ -771,7 +783,7 @@ function SchedulePool() {
             <option value="">Select service…</option>
             {eligibleServices.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
-                {s.Name}
+                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
               </option>
             ))}
           </select>
@@ -966,7 +978,7 @@ function Enrollments() {
             <option value="">Select service…</option>
             {services.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
-                {s.Name}
+                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
               </option>
             ))}
           </select>
@@ -1154,7 +1166,7 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
           <option value="">Select service…</option>
           {services.map((s) => (
             <option key={s.ServiceID} value={s.ServiceID}>
-              {s.Name}
+              {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
             </option>
           ))}
         </select>
@@ -1173,26 +1185,28 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
 }
 
 function BillingTable({ rows, idKey, nameOf, personKey, onPatch }) {
+  const decorated = rows.map((r) => ({ ...r, _person: nameOf(r[personKey]), _period: r.Year * 100 + r.Month }));
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
   return (
     <table>
       <thead>
         <tr>
-          <th>Person</th>
-          <th>Period</th>
-          <th>Scheduled hrs</th>
-          <th>Attended hrs</th>
-          <th>Amount</th>
+          <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <SortableTh label="Scheduled hrs" sortKeyName="ScheduledHours" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
           <th>INR Amount</th>
           <th>INR Due</th>
-          <th>Status</th>
+          <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {rows.map((r) => (
+        {sorted.map((r) => (
           <Row key={r[idKey]} row={r} idKey={idKey} nameOf={nameOf} personKey={personKey} onPatch={onPatch} />
         ))}
-        {rows.length === 0 && (
+        {sorted.length === 0 && (
           <tr>
             <td colSpan={9} style={{ color: "var(--muted)" }}>
               None generated yet.
