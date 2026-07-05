@@ -32,6 +32,13 @@ export function groupMatches(serviceGroup, requiredGroup) {
   return group === "Both" || group === requiredGroup;
 }
 
+// ScheduleItems are generated grouped by occurrence (all of one Occurrence's
+// future dates, then the next), so array/insertion order is not chronological
+// — callers that display a schedule must sort by Date+Time explicitly.
+export function sortByDateTime(items) {
+  return [...items].sort((a, b) => (a.Date + a.Time).localeCompare(b.Date + b.Time));
+}
+
 // A slot is booked once Management approves a Trial or Interview request for
 // it (Status "Scheduled") — regardless of whether the slot was manually
 // offered or auto-generated from a Service. Multiple accounts may hold a

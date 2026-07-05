@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked, groupMatches } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime } from "@/lib/scheduleGen";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -14,7 +14,7 @@ export async function GET(req) {
 
   const enrollments = db.enrollments.filter((e) => e.UserID === userId);
   const enrolledServiceIds = new Set(enrollments.map((e) => e.ServiceID));
-  const scheduleItems = db.scheduleItems.filter((s) => enrolledServiceIds.has(s.ServiceID));
+  const scheduleItems = sortByDateTime(db.scheduleItems.filter((s) => enrolledServiceIds.has(s.ServiceID)));
   const attendanceItems = db.attendanceItems.filter((a) => a.UserID === userId);
 
   const trialItems = db.trialItems.filter((t) => t.TrialAccID === userId);
@@ -38,17 +38,21 @@ export async function GET(req) {
   const myRequestedInterviewSlotIds = new Set(
     interviewItems.filter((i) => i.Status !== "Rejected").map((i) => i.ScheduleItemID)
   );
-  const availableTrialSlots = db.scheduleItems.filter(
-    (s) =>
-      !isSlotBooked(db, s.ScheduleID) &&
-      !myRequestedTrialSlotIds.has(s.ScheduleID) &&
-      groupMatches(s.ServiceGroup, "Student")
+  const availableTrialSlots = sortByDateTime(
+    db.scheduleItems.filter(
+      (s) =>
+        !isSlotBooked(db, s.ScheduleID) &&
+        !myRequestedTrialSlotIds.has(s.ScheduleID) &&
+        groupMatches(s.ServiceGroup, "Student")
+    )
   );
-  const availableInterviewSlots = db.scheduleItems.filter(
-    (s) =>
-      !isSlotBooked(db, s.ScheduleID) &&
-      !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
-      groupMatches(s.ServiceGroup, "Staff")
+  const availableInterviewSlots = sortByDateTime(
+    db.scheduleItems.filter(
+      (s) =>
+        !isSlotBooked(db, s.ScheduleID) &&
+        !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
+        groupMatches(s.ServiceGroup, "Staff")
+    )
   );
 
   let children = [];
@@ -59,7 +63,7 @@ export async function GET(req) {
       const childServiceIds = new Set(childEnroll.map((e) => e.ServiceID));
       return {
         student: child,
-        schedule: db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID)),
+        schedule: sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID))),
         attendance: db.attendanceItems.filter((a) => a.UserID === sid),
         invoices: db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft"),
       };
