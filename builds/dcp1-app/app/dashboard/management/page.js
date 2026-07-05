@@ -1235,7 +1235,6 @@ function Row({ row, idKey, nameOf, personKey, onPatch }) {
           style={{ width: 90 }}
           type="number"
           value={inrAmount}
-          disabled={!isDraft}
           onChange={(e) => setInrAmount(e.target.value)}
         />
       </td>
@@ -1245,7 +1244,6 @@ function Row({ row, idKey, nameOf, personKey, onPatch }) {
           style={{ width: 90 }}
           type="number"
           value={inrDue}
-          disabled={!isDraft}
           onChange={(e) => setInrDue(e.target.value)}
         />
       </td>
@@ -1253,15 +1251,13 @@ function Row({ row, idKey, nameOf, personKey, onPatch }) {
         <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
       </td>
       <td className="space-x-2">
+        <button className="btn-ghost" onClick={() => onPatch(row[idKey], { inrAmount, inrDue })}>
+          Save
+        </button>
         {isDraft && (
-          <>
-            <button className="btn-ghost" onClick={() => onPatch(row[idKey], { inrAmount, inrDue })}>
-              Save
-            </button>
-            <button className="btn" onClick={() => onPatch(row[idKey], { inrAmount, inrDue, status: "Sent" })}>
-              Send
-            </button>
-          </>
+          <button className="btn" onClick={() => onPatch(row[idKey], { inrAmount, inrDue, status: "Sent" })}>
+            Send
+          </button>
         )}
       </td>
     </tr>

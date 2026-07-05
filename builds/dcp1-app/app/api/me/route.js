@@ -20,10 +20,10 @@ export async function GET(req) {
   const trialItems = db.trialItems.filter((t) => t.TrialAccID === userId);
   const interviewItems = db.interviewItems.filter((i) => i.InterviewAccID === userId);
 
-  // Draft invoices are an internal Management staging state (before INR
-  // pricing is set and the invoice is marked Sent) — not visible to the account.
+  // Draft invoices/paychecks are an internal Management staging state (before
+  // INR pricing is set and it's marked Sent) — not visible to the account.
   const invoices = db.invoices.filter((i) => i.StudentID === userId && i.Status !== "Draft");
-  const paychecks = db.paychecks.filter((p) => p.StaffID === userId);
+  const paychecks = db.paychecks.filter((p) => p.StaffID === userId && p.Status !== "Draft");
 
   // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
   // Includes manually-offered Trial/Interview slots AND every auto-generated

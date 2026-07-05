@@ -24,12 +24,23 @@ export async function POST(req) {
       );
     }
     const db = readDB();
+    const y = Number(year);
+    const m = Number(month);
+    const dup = db.invoices.find(
+      (i) => i.StudentID === studentId && i.ServiceID === serviceId && i.Year === y && i.Month === m
+    );
+    if (dup) {
+      return NextResponse.json(
+        { error: `An invoice already exists for this Student/Service in ${m}/${y}.` },
+        { status: 400 }
+      );
+    }
     const invoice = {
       InvoiceID: nextId(db, "INV"),
       StudentID: studentId,
       ServiceID: serviceId,
-      Year: Number(year),
-      Month: Number(month),
+      Year: y,
+      Month: m,
       ScheduledHours: null,
       AttendedHours: null,
       Amount: Number(amount) || 0,

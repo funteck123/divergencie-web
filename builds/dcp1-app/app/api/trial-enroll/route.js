@@ -40,21 +40,31 @@ export async function POST(req) {
   }
 
   const now = new Date();
-  const invoice = {
-    InvoiceID: nextId(db, "INV"),
-    StudentID: studentId,
-    ServiceID: trial.ServiceID,
-    Year: now.getFullYear(),
-    Month: now.getMonth() + 1,
-    ScheduledHours: null,
-    AttendedHours: null,
-    Amount: Number(service.MonthlyCost) || 0,
-    INRAmount: 0,
-    INRDue: 0,
-    Status: "Draft",
-    Note: "One-month advance — new enrollment from Trial",
-  };
-  db.invoices.push(invoice);
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+
+  // Don't double-bill if an invoice for this Student/Service/month already
+  // exists (e.g. bulk "Generate Drafts" already ran for the current month).
+  let invoice = db.invoices.find(
+    (i) => i.StudentID === studentId && i.ServiceID === trial.ServiceID && i.Year === year && i.Month === month
+  );
+  if (!invoice) {
+    invoice = {
+      InvoiceID: nextId(db, "INV"),
+      StudentID: studentId,
+      ServiceID: trial.ServiceID,
+      Year: year,
+      Month: month,
+      ScheduledHours: null,
+      AttendedHours: null,
+      Amount: Number(service.MonthlyCost) || 0,
+      INRAmount: 0,
+      INRDue: 0,
+      Status: "Draft",
+      Note: "One-month advance — new enrollment from Trial",
+    };
+    db.invoices.push(invoice);
+  }
 
   trial.ServiceAdded = true;
   writeDB(db);
