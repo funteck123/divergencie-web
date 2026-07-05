@@ -385,6 +385,10 @@ function Accounts() {
                   </span>
                 ) : u.ConvertedToUserID ? (
                   <span style={{ color: "var(--muted)" }}>→ {u.ConvertedToUserID}</span>
+                ) : u.Username ? (
+                  <span style={{ color: "var(--muted)" }}>
+                    {u.Username} / {u.Password}
+                  </span>
                 ) : (
                   "—"
                 )}

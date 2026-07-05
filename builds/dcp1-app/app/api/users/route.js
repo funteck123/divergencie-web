@@ -3,8 +3,12 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 
 export async function GET() {
   const db = readDB();
-  // never expose passwords
-  const users = db.users.map((u) => ({ ...u }));
+  // Management needs to see issued credentials persistently (not just at the
+  // moment an account is created/converted) — join from db.credentials by UserID.
+  const users = db.users.map((u) => {
+    const cred = db.credentials.find((c) => c.UserID === u.UserID);
+    return cred ? { ...u, Username: cred.Username, Password: cred.Password } : { ...u };
+  });
   return NextResponse.json({ users });
 }
 
