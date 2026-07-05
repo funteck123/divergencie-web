@@ -12,6 +12,7 @@ function Body({ user }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [scheduleById, setScheduleById] = useState({});
+  const [serviceId, setServiceId] = useState("");
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -50,6 +51,8 @@ function Body({ user }) {
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
+
+  const slotsForService = serviceId ? data.availableInterviewSlots.filter((s) => s.ServiceID === serviceId) : [];
 
   return (
     <div className="space-y-6">
@@ -104,37 +107,47 @@ function Body({ user }) {
 
       <div className="card">
         <h2 className="font-semibold mb-4">Available Interview Slots</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Facilitator</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.availableInterviewSlots.map((s) => (
-              <tr key={s.ScheduleID}>
-                <td>{s.Date}</td>
-                <td>{s.Time}</td>
-                <td>{s.Facilitator}</td>
-                <td>
-                  <button className="btn" onClick={() => book(s.ScheduleID)}>
-                    Book
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {data.availableInterviewSlots.length === 0 && (
+        <select className="field mb-3" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+          <option value="">Select a service…</option>
+          {data.services.map((s) => (
+            <option key={s.ServiceID} value={s.ServiceID}>
+              {s.Name}
+            </option>
+          ))}
+        </select>
+        {serviceId && (
+          <table>
+            <thead>
               <tr>
-                <td colSpan={4} style={{ color: "var(--muted)" }}>
-                  No open slots right now — check back later.
-                </td>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Facilitator</th>
+                <th></th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {slotsForService.map((s) => (
+                <tr key={s.ScheduleID}>
+                  <td>{s.Date}</td>
+                  <td>{s.Time}</td>
+                  <td>{s.Facilitator}</td>
+                  <td>
+                    <button className="btn" onClick={() => book(s.ScheduleID)}>
+                      Book
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {slotsForService.length === 0 && (
+                <tr>
+                  <td colSpan={4} style={{ color: "var(--muted)" }}>
+                    No open slots for this service right now — check back later.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
