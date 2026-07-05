@@ -20,7 +20,9 @@ export async function GET(req) {
   const trialItems = db.trialItems.filter((t) => t.TrialAccID === userId);
   const interviewItems = db.interviewItems.filter((i) => i.InterviewAccID === userId);
 
-  const invoices = db.invoices.filter((i) => i.StudentID === userId);
+  // Draft invoices are an internal Management staging state (before INR
+  // pricing is set and the invoice is marked Sent) — not visible to the account.
+  const invoices = db.invoices.filter((i) => i.StudentID === userId && i.Status !== "Draft");
   const paychecks = db.paychecks.filter((p) => p.StaffID === userId);
 
   // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
@@ -58,7 +60,7 @@ export async function GET(req) {
         student: child,
         schedule: db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID)),
         attendance: db.attendanceItems.filter((a) => a.UserID === sid),
-        invoices: db.invoices.filter((i) => i.StudentID === sid),
+        invoices: db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft"),
       };
     });
   }
