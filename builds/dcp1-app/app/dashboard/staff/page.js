@@ -41,8 +41,23 @@ function Body({ user }) {
     }
   }
 
+  async function markPaycheckReceived(paycheckId) {
+    setError("");
+    try {
+      await api("/api/paychecks", {
+        method: "PATCH",
+        body: JSON.stringify({ paycheckId, staffReceivedFlag: true }),
+      });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   const scheduleRows = (data?.scheduleItems || []).map((s) => ({ ...s, _dt: s.Date + s.Time }));
-  const paycheckRows = (data?.paychecks || []).map((p) => ({ ...p, _period: p.Year * 100 + p.Month }));
+  const paycheckRows = (data?.paychecks || [])
+    .filter((p) => p.Status !== "Draft")
+    .map((p) => ({ ...p, _period: p.Year * 100 + p.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const paySort = useSort(paycheckRows, "_period", "desc");
 
@@ -122,6 +137,7 @@ function Body({ user }) {
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="Status" sortKeyName="Status" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
+              <th>Received</th>
             </tr>
           </thead>
           <tbody>
@@ -134,11 +150,20 @@ function Body({ user }) {
                 <td>
                   <span className={`badge ${p.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{p.Status}</span>
                 </td>
+                <td>
+                  {p.StaffReceivedFlag ? (
+                    <span className="badge badge-good">Received ✓</span>
+                  ) : (
+                    <button className="btn-ghost" onClick={() => markPaycheckReceived(p.PaycheckID)}>
+                      Mark as received
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {paySort.sorted.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ color: "var(--muted)" }}>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
                   No paychecks yet.
                 </td>
               </tr>

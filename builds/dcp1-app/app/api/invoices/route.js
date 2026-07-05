@@ -96,9 +96,9 @@ export async function POST(req) {
   return NextResponse.json({ created });
 }
 
-// body: { invoiceId, amount, inrAmount, inrDue, status }
+// body: { invoiceId, amount, inrAmount, inrDue, status, studentPaidFlag }
 export async function PATCH(req) {
-  const { invoiceId, amount, inrAmount, inrDue, status } = await req.json();
+  const { invoiceId, amount, inrAmount, inrDue, status, studentPaidFlag } = await req.json();
   const db = readDB();
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
@@ -107,6 +107,7 @@ export async function PATCH(req) {
   if (inrAmount !== undefined) invoice.INRAmount = Number(inrAmount);
   if (inrDue !== undefined) invoice.INRDue = Number(inrDue);
   if (status !== undefined) invoice.Status = status;
+  if (studentPaidFlag !== undefined) invoice.StudentPaidFlag = Boolean(studentPaidFlag);
 
   writeDB(db);
   return NextResponse.json({ invoice });

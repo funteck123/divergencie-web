@@ -41,8 +41,23 @@ function Body({ user }) {
     }
   }
 
+  async function markInvoicePaid(invoiceId) {
+    setError("");
+    try {
+      await api("/api/invoices", {
+        method: "PATCH",
+        body: JSON.stringify({ invoiceId, studentPaidFlag: true }),
+      });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   const scheduleRows = (data?.scheduleItems || []).map((s) => ({ ...s, _dt: s.Date + s.Time }));
-  const invoiceRows = (data?.invoices || []).map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
+  const invoiceRows = (data?.invoices || [])
+    .filter((i) => i.Status !== "Draft")
+    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
 
@@ -122,6 +137,7 @@ function Body({ user }) {
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="Status" sortKeyName="Status" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <th>Paid</th>
             </tr>
           </thead>
           <tbody>
@@ -134,11 +150,20 @@ function Body({ user }) {
                 <td>
                   <span className={`badge ${i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
                 </td>
+                <td>
+                  {i.StudentPaidFlag ? (
+                    <span className="badge badge-good">Paid ✓</span>
+                  ) : (
+                    <button className="btn-ghost" onClick={() => markInvoicePaid(i.InvoiceID)}>
+                      Mark as paid
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {invSort.sorted.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ color: "var(--muted)" }}>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
                   No invoices yet.
                 </td>
               </tr>

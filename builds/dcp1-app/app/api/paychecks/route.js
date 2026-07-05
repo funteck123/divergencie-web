@@ -95,8 +95,9 @@ export async function POST(req) {
   return NextResponse.json({ created });
 }
 
+// body: { paycheckId, amount, inrAmount, inrDue, status, staffReceivedFlag }
 export async function PATCH(req) {
-  const { paycheckId, amount, inrAmount, inrDue, status } = await req.json();
+  const { paycheckId, amount, inrAmount, inrDue, status, staffReceivedFlag } = await req.json();
   const db = readDB();
   const paycheck = db.paychecks.find((p) => p.PaycheckID === paycheckId);
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
@@ -105,6 +106,7 @@ export async function PATCH(req) {
   if (inrAmount !== undefined) paycheck.INRAmount = Number(inrAmount);
   if (inrDue !== undefined) paycheck.INRDue = Number(inrDue);
   if (status !== undefined) paycheck.Status = status;
+  if (staffReceivedFlag !== undefined) paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
 
   writeDB(db);
   return NextResponse.json({ paycheck });

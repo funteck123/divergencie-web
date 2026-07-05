@@ -38,7 +38,9 @@ function Body({ user }) {
 function ChildCard({ child }) {
   const { student, schedule, attendance, invoices } = child;
   const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
-  const invoiceRows = invoices.map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
+  const invoiceRows = invoices
+    .filter((i) => i.Status !== "Draft")
+    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
 
