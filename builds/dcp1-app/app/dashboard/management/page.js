@@ -139,13 +139,19 @@ function Pipeline() {
   const [trialItems, setTrialItems] = useState([]);
   const [interviewItems, setInterviewItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [services, setServices] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [issued, setIssued] = useState({});
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ users }, { invoices }] = await Promise.all([api("/api/users"), api("/api/invoices")]);
+    const [{ users }, { services }, { invoices }] = await Promise.all([
+      api("/api/users"),
+      api("/api/services"),
+      api("/api/invoices"),
+    ]);
     setUsers(users);
+    setServices(services);
     setInvoices(invoices);
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead
@@ -170,6 +176,10 @@ function Pipeline() {
 
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
+  }
+  function serviceNameOf(id) {
+    const s = services.find((s) => s.ServiceID === id);
+    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : id;
   }
   function accountOf(id) {
     return users.find((u) => u.UserID === id);
@@ -237,6 +247,7 @@ function Pipeline() {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Service</th>
               <th>Status</th>
               <th>Feedback</th>
               <th></th>
@@ -250,6 +261,7 @@ function Pipeline() {
               return (
                 <tr key={t.TrialID}>
                   <td>{nameOf(t.TrialAccID)}</td>
+                  <td>{serviceNameOf(t.ServiceID)}</td>
                   <td><span className="badge badge-info">{t.Status}</span></td>
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
                   <td>
@@ -274,7 +286,7 @@ function Pipeline() {
               );
             })}
             {trialItems.length === 0 && (
-              <tr><td colSpan={6} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
+              <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -286,6 +298,7 @@ function Pipeline() {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Service</th>
               <th>Status</th>
               <th>Task</th>
               <th></th>
@@ -296,6 +309,7 @@ function Pipeline() {
             {interviewItems.map((i) => (
               <tr key={i.InterviewID}>
                 <td>{nameOf(i.InterviewAccID)}</td>
+                <td>{serviceNameOf(i.ServiceID)}</td>
                 <td><span className="badge badge-info">{i.Status}</span></td>
                 <td style={{ color: "var(--muted)" }}>
                   {i.TaskSubmissionLink ? (
@@ -315,7 +329,7 @@ function Pipeline() {
               </tr>
             ))}
             {interviewItems.length === 0 && (
-              <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
+              <tr><td colSpan={6} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
             )}
           </tbody>
         </table>
