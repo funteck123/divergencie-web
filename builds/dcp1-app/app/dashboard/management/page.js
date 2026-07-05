@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
-import { api } from "@/lib/client";
+import { api, groupMatches } from "@/lib/client";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
 
@@ -138,10 +138,14 @@ function Pipeline() {
   const [trialItems, setTrialItems] = useState([]);
   const [interviewItems, setInterviewItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [issued, setIssued] = useState({});
+  const [error, setError] = useState("");
 
   async function load() {
-    const [{ scheduleItems }, { users }] = await Promise.all([api("/api/schedule"), api("/api/users")]);
+    const [{ users }, { invoices }] = await Promise.all([api("/api/users"), api("/api/invoices")]);
     setUsers(users);
+    setInvoices(invoices);
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead
     const trialAccs = users.filter((u) => u.UserType === "TrialAcc");
@@ -158,7 +162,6 @@ function Pipeline() {
     }
     setTrialItems(trials);
     setInterviewItems(interviews);
-    void scheduleItems;
   }
   useEffect(() => {
     load();
@@ -167,14 +170,52 @@ function Pipeline() {
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
+  function accountOf(id) {
+    return users.find((u) => u.UserID === id);
+  }
+  function invoiceFor(trial) {
+    return invoices.find((inv) => inv.StudentID === trial.TrialAccID && inv.ServiceID === trial.ServiceID);
+  }
 
-  async function sendOffer(interviewId) {
-    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send" }) });
+  async function sendOffer(interviewId, feedback) {
+    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send", feedback }) });
     load();
+  }
+
+  async function convert(accountId) {
+    setError("");
+    try {
+      const res = await api("/api/convert", { method: "POST", body: JSON.stringify({ accountId }) });
+      setIssued((prev) => ({ ...prev, [accountId]: res.credentials }));
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  function AccountCell({ accountId }) {
+    const account = accountOf(accountId);
+    if (!account) return "—";
+    if (issued[accountId]) {
+      return (
+        <span style={{ color: "var(--muted)" }}>
+          {issued[accountId].username} / {issued[accountId].password}
+        </span>
+      );
+    }
+    if (account.Status === "Converted") {
+      return <span style={{ color: "var(--muted)" }}>→ {account.ConvertedToUserID}</span>;
+    }
+    return (
+      <button className="btn-ghost" onClick={() => convert(accountId)}>
+        Convert
+      </button>
+    );
   }
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
+      {error && <p style={{ color: "var(--bad)" }} className="md:col-span-2">{error}</p>}
       <div className="card">
         <h2 className="font-semibold mb-4">Trial Pipeline</h2>
         <table>
@@ -183,18 +224,33 @@ function Pipeline() {
               <th>Name</th>
               <th>Status</th>
               <th>Feedback</th>
+              <th>Invoice</th>
+              <th>Account</th>
             </tr>
           </thead>
           <tbody>
-            {trialItems.map((t) => (
-              <tr key={t.TrialID}>
-                <td>{nameOf(t.TrialAccID)}</td>
-                <td><span className="badge badge-info">{t.Status}</span></td>
-                <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
-              </tr>
-            ))}
+            {trialItems.map((t) => {
+              const invoice = invoiceFor(t);
+              return (
+                <tr key={t.TrialID}>
+                  <td>{nameOf(t.TrialAccID)}</td>
+                  <td><span className="badge badge-info">{t.Status}</span></td>
+                  <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
+                  <td>
+                    {invoice ? (
+                      <span className={`badge ${invoice.Status === "Sent" || invoice.Status === "Paid" ? "badge-good" : "badge-pending"}`}>
+                        {invoice.Status}
+                      </span>
+                    ) : (
+                      <span style={{ color: "var(--muted)" }}>—</span>
+                    )}
+                  </td>
+                  <td><AccountCell accountId={t.TrialAccID} /></td>
+                </tr>
+              );
+            })}
             {trialItems.length === 0 && (
-              <tr><td colSpan={3} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
+              <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -209,6 +265,7 @@ function Pipeline() {
               <th>Status</th>
               <th>Task</th>
               <th></th>
+              <th>Account</th>
             </tr>
           </thead>
           <tbody>
@@ -227,20 +284,43 @@ function Pipeline() {
                 </td>
                 <td>
                   {i.Status === "TaskSubmitted" && (
-                    <button className="btn" onClick={() => sendOffer(i.InterviewID)}>
-                      Send offer
-                    </button>
+                    <SendOfferForm onSubmit={(feedback) => sendOffer(i.InterviewID, feedback)} />
                   )}
                 </td>
+                <td><AccountCell accountId={i.InterviewAccID} /></td>
               </tr>
             ))}
             {interviewItems.length === 0 && (
-              <tr><td colSpan={4} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
+              <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
             )}
           </tbody>
         </table>
       </div>
     </div>
+  );
+}
+
+function SendOfferForm({ onSubmit }) {
+  const [feedback, setFeedback] = useState("");
+  return (
+    <form
+      className="flex gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(feedback);
+      }}
+    >
+      <input
+        className="field"
+        style={{ width: 140 }}
+        placeholder="Feedback on task…"
+        value={feedback}
+        onChange={(e) => setFeedback(e.target.value)}
+      />
+      <button className="btn" type="submit">
+        Send offer
+      </button>
+    </form>
   );
 }
 
@@ -385,13 +465,16 @@ function CreateParent({ onCreated, users }) {
 }
 
 /* ---------------- Services ---------------- */
+const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "" };
+
 function Services() {
   const [services, setServices] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [name, setName] = useState("");
   const [type, setType] = useState("Class");
   const [group, setGroup] = useState("Student");
   const [monthlyCost, setMonthlyCost] = useState("");
-  const [occurrences, setOccurrences] = useState([{ day: "Monday", time: "16:00", duration: 1, facilitator: "" }]);
+  const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
   async function load() {
@@ -402,11 +485,37 @@ function Services() {
     load();
   }, []);
 
+  function resetForm() {
+    setEditingId(null);
+    setName("");
+    setType("Class");
+    setGroup("Student");
+    setMonthlyCost("");
+    setOccurrences([{ ...EMPTY_OCC }]);
+  }
+
+  function startEdit(s) {
+    setEditingId(s.ServiceID);
+    setName(s.Name);
+    setType(s.Type);
+    setGroup(s.Group || "Student");
+    setMonthlyCost(s.MonthlyCost);
+    setOccurrences(
+      s.OccuranceList.map((o) => ({
+        occuranceId: o.OccuranceID,
+        day: o.Day,
+        time: o.Time,
+        duration: o.Duration,
+        facilitator: o.Facilitator,
+      }))
+    );
+  }
+
   function updateOcc(i, field, value) {
     setOccurrences((prev) => prev.map((o, idx) => (idx === i ? { ...o, [field]: value } : o)));
   }
   function addOcc() {
-    setOccurrences((prev) => [...prev, { day: "Monday", time: "16:00", duration: 1, facilitator: "" }]);
+    setOccurrences((prev) => [...prev, { ...EMPTY_OCC }]);
   }
   function removeOcc(i) {
     setOccurrences((prev) => prev.filter((_, idx) => idx !== i));
@@ -416,13 +525,18 @@ function Services() {
     e.preventDefault();
     setError("");
     try {
-      await api("/api/services", {
-        method: "POST",
-        body: JSON.stringify({ name, type, group, monthlyCost, occurrences }),
-      });
-      setName("");
-      setMonthlyCost("");
-      setOccurrences([{ day: "Monday", time: "16:00", duration: 1, facilitator: "" }]);
+      if (editingId) {
+        await api("/api/services", {
+          method: "PATCH",
+          body: JSON.stringify({ serviceId: editingId, name, type, group, monthlyCost, occurrences }),
+        });
+      } else {
+        await api("/api/services", {
+          method: "POST",
+          body: JSON.stringify({ name, type, group, monthlyCost, occurrences }),
+        });
+      }
+      resetForm();
       load();
     } catch (e) {
       setError(e.message);
@@ -432,13 +546,14 @@ function Services() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="card">
-        <h2 className="font-semibold mb-4">Create Service</h2>
+        <h2 className="font-semibold mb-4">{editingId ? `Edit Service (${editingId})` : "Create Service"}</h2>
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
           <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
           <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
             <option value="Student">Student (Trial-eligible)</option>
             <option value="Staff">Staff (Interview-eligible)</option>
+            <option value="Both">Both (Trial + Interview eligible)</option>
           </select>
           <input
             className="field"
@@ -490,9 +605,16 @@ function Services() {
             </button>
           </div>
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-          <button className="btn" type="submit">
-            Create service
-          </button>
+          <div className="space-x-2">
+            <button className="btn" type="submit">
+              {editingId ? "Save changes" : "Create service"}
+            </button>
+            {editingId && (
+              <button type="button" className="btn-ghost" onClick={resetForm}>
+                Cancel
+              </button>
+            )}
+          </div>
         </form>
       </div>
 
@@ -507,6 +629,7 @@ function Services() {
               <th>Group</th>
               <th>Monthly cost</th>
               <th>Occurrences</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -519,6 +642,11 @@ function Services() {
                 <td>{s.MonthlyCost}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
+                </td>
+                <td>
+                  <button className="btn-ghost" onClick={() => startEdit(s)}>
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}
@@ -589,7 +717,7 @@ function SchedulePool() {
 
   const serviceSlots = items.filter((i) => i.OccuranceID !== null);
   const requiredGroup = serviceType === "Trial" ? "Student" : "Staff";
-  const eligibleServices = services.filter((s) => (s.Group || "Student") === requiredGroup);
+  const eligibleServices = services.filter((s) => groupMatches(s.Group, requiredGroup));
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -849,20 +977,23 @@ function Billing() {
   const [invoices, setInvoices] = useState([]);
   const [paychecks, setPaychecks] = useState([]);
   const [users, setUsers] = useState([]);
+  const [services, setServices] = useState([]);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ invoices }, { paychecks }, { users }] = await Promise.all([
+    const [{ invoices }, { paychecks }, { users }, { services }] = await Promise.all([
       api("/api/invoices"),
       api("/api/paychecks"),
       api("/api/users"),
+      api("/api/services"),
     ]);
     setInvoices(invoices);
     setPaychecks(paychecks);
     setUsers(users);
+    setServices(services);
   }
   useEffect(() => {
     load();
@@ -916,6 +1047,35 @@ function Billing() {
         {error && <p style={{ color: "var(--bad)" }} className="mt-2">{error}</p>}
       </div>
 
+      <div className="grid gap-6 md:grid-cols-2">
+        <ManualBillingForm
+          title="Create Invoice (manual)"
+          personLabel="Student"
+          people={users.filter((u) => u.UserType === "Student")}
+          services={services}
+          onSubmit={async ({ personId, serviceId, year, month, amount }) => {
+            await api("/api/invoices", {
+              method: "POST",
+              body: JSON.stringify({ action: "manual", studentId: personId, serviceId, year, month, amount }),
+            });
+            load();
+          }}
+        />
+        <ManualBillingForm
+          title="Create Paycheck (manual)"
+          personLabel="Staff"
+          people={users.filter((u) => u.UserType === "Staff")}
+          services={services}
+          onSubmit={async ({ personId, serviceId, year, month, amount }) => {
+            await api("/api/paychecks", {
+              method: "POST",
+              body: JSON.stringify({ action: "manual", staffId: personId, serviceId, year, month, amount }),
+            });
+            load();
+          }}
+        />
+      </div>
+
       <div className="card">
         <h2 className="font-semibold mb-4">Invoices (Students)</h2>
         <BillingTable rows={invoices} idKey="InvoiceID" nameOf={nameOf} personKey="StudentID" onPatch={patchInvoice} />
@@ -925,6 +1085,62 @@ function Billing() {
         <h2 className="font-semibold mb-4">Paychecks (Staff)</h2>
         <BillingTable rows={paychecks} idKey="PaycheckID" nameOf={nameOf} personKey="StaffID" onPatch={patchPaycheck} />
       </div>
+    </div>
+  );
+}
+
+function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
+  const now = new Date();
+  const [personId, setPersonId] = useState("");
+  const [serviceId, setServiceId] = useState("");
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
+
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+    try {
+      await onSubmit({ personId, serviceId, year: Number(year), month: Number(month), amount: Number(amount) });
+      setPersonId("");
+      setServiceId("");
+      setAmount("");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">{title}</h2>
+      <form onSubmit={submit} className="space-y-3">
+        <select className="field" value={personId} onChange={(e) => setPersonId(e.target.value)} required>
+          <option value="">Select {personLabel}…</option>
+          {people.map((p) => (
+            <option key={p.UserID} value={p.UserID}>
+              {p.Name}
+            </option>
+          ))}
+        </select>
+        <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
+          <option value="">Select service…</option>
+          {services.map((s) => (
+            <option key={s.ServiceID} value={s.ServiceID}>
+              {s.Name}
+            </option>
+          ))}
+        </select>
+        <div className="flex gap-2">
+          <input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} />
+          <input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} />
+        </div>
+        <input className="field" type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} required />
+        {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+        <button className="btn" type="submit">
+          Create draft
+        </button>
+      </form>
     </div>
   );
 }

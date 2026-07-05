@@ -35,6 +35,12 @@ export function roleHomePath(userType) {
   }
 }
 
+// A Service's Group ("Student" | "Staff" | "Both") gates who can see/book it.
+export function groupMatches(serviceGroup, requiredGroup) {
+  const group = serviceGroup || "Student";
+  return group === "Both" || group === requiredGroup;
+}
+
 export async function api(path, options = {}) {
   const res = await fetch(path, {
     headers: { "Content-Type": "application/json" },

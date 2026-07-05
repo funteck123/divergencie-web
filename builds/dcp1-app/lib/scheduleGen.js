@@ -15,16 +15,21 @@ function fmtDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-// Every Service belongs to a Group ("Student" or "Staff"), which gates who
-// can book its slots: Trial accounts only book Student-group services,
-// Interview accounts only Staff-group ones. Services created before this
-// field existed default to "Student".
+// Every Service belongs to a Group ("Student", "Staff", or "Both"), which
+// gates who can book its slots: Trial accounts only book services open to
+// Student, Interview accounts only ones open to Staff. "Both" satisfies
+// either. Services created before this field existed default to "Student".
 export function serviceGroupOf(db, serviceId) {
   return db.services.find((s) => s.ServiceID === serviceId)?.Group || "Student";
 }
 
 export function requiredGroupForBookingType(type) {
   return type === "Trial" ? "Student" : "Staff";
+}
+
+export function groupMatches(serviceGroup, requiredGroup) {
+  const group = serviceGroup || "Student";
+  return group === "Both" || group === requiredGroup;
 }
 
 // A slot is booked once Management approves a Trial or Interview request for

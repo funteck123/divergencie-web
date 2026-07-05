@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches } from "@/lib/scheduleGen";
 
 export async function GET() {
   const db = readDB();
@@ -33,9 +33,9 @@ export async function POST(req) {
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
   const requiredGroup = requiredGroupForBookingType(serviceType);
-  if ((service.Group || "Student") !== requiredGroup) {
+  if (!groupMatches(service.Group, requiredGroup)) {
     return NextResponse.json(
-      { error: `${serviceType} slots require a ${requiredGroup}-group Service.` },
+      { error: `${serviceType} slots require a ${requiredGroup} (or Both) group Service.` },
       { status: 400 }
     );
   }

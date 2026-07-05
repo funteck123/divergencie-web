@@ -9,11 +9,43 @@ export async function GET() {
 
 // action "generate": drafts one Invoice per Student enrollment for {year, month}
 // (skips ones that already exist for that user+service+year+month)
+// action "manual": drafts a single Invoice for an arbitrary studentId/serviceId/
+// year/month/amount — for one-off cases the bulk generator doesn't cover.
 export async function POST(req) {
-  const { action, year, month } = await req.json();
-  if (action !== "generate") {
-    return NextResponse.json({ error: "action must be generate." }, { status: 400 });
+  const body = await req.json();
+  const { action } = body;
+
+  if (action === "manual") {
+    const { studentId, serviceId, year, month, amount } = body;
+    if (!studentId || !serviceId || !year || !month || amount === undefined) {
+      return NextResponse.json(
+        { error: "studentId, serviceId, year, month, and amount are required." },
+        { status: 400 }
+      );
+    }
+    const db = readDB();
+    const invoice = {
+      InvoiceID: nextId(db, "INV"),
+      StudentID: studentId,
+      ServiceID: serviceId,
+      Year: Number(year),
+      Month: Number(month),
+      ScheduledHours: null,
+      AttendedHours: null,
+      Amount: Number(amount) || 0,
+      INRAmount: 0,
+      INRDue: 0,
+      Status: "Draft",
+    };
+    db.invoices.push(invoice);
+    writeDB(db);
+    return NextResponse.json({ invoice });
   }
+
+  if (action !== "generate") {
+    return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
+  }
+  const { year, month } = body;
   const db = readDB();
 
   const studentIds = new Set(db.users.filter((u) => u.UserType === "Student").map((u) => u.UserID));

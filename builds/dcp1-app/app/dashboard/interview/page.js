@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
-import { api } from "@/lib/client";
+import { api, groupMatches } from "@/lib/client";
 
 export default function InterviewDashboard() {
   return <DashboardShell allowedType="InterviewAcc">{(user) => <Body user={user} />}</DashboardShell>;
@@ -52,7 +52,7 @@ function Body({ user }) {
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
-  const eligibleServices = data.services.filter((s) => (s.Group || "Student") === "Staff");
+  const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Staff"));
   const slotsForService = serviceId ? data.availableInterviewSlots.filter((s) => s.ServiceID === serviceId) : [];
 
   return (
@@ -89,6 +89,11 @@ function Body({ user }) {
               {it.Status === "TaskSubmitted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
                   Task submitted — waiting on Management to send an offer.
+                </p>
+              )}
+              {it.TaskFeedback && ["OfferSent", "OfferAccepted"].includes(it.Status) && (
+                <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                  Management feedback on your task: {it.TaskFeedback}
                 </p>
               )}
               {it.Status === "OfferSent" && (

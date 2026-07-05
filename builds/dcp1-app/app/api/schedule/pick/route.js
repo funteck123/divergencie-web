@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { serviceGroupOf, requiredGroupForBookingType } from "@/lib/scheduleGen";
+import { serviceGroupOf, requiredGroupForBookingType, groupMatches } from "@/lib/scheduleGen";
 
 // body: { scheduleId, userId, type: "Trial" | "Interview" }
 // Multiple accounts may request the same slot ("double booking") — Management
@@ -17,9 +17,9 @@ export async function POST(req) {
     return NextResponse.json({ error: "type must be Trial or Interview." }, { status: 400 });
   }
   const requiredGroup = requiredGroupForBookingType(type);
-  if (serviceGroupOf(db, slot.ServiceID) !== requiredGroup) {
+  if (!groupMatches(serviceGroupOf(db, slot.ServiceID), requiredGroup)) {
     return NextResponse.json(
-      { error: `${type} accounts can only book ${requiredGroup}-group services.` },
+      { error: `${type} accounts can only book ${requiredGroup} (or Both) group services.` },
       { status: 400 }
     );
   }
@@ -56,6 +56,7 @@ export async function POST(req) {
     ScheduleItemID: scheduleId,
     ServiceID: slot.ServiceID,
     TaskSubmissionLink: "",
+    TaskFeedback: "",
     Status: "Pending",
   };
   db.interviewItems.push(item);

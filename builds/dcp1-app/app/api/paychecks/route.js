@@ -7,11 +7,44 @@ export async function GET() {
   return NextResponse.json({ paychecks: db.paychecks });
 }
 
+// action "generate": drafts one Paycheck per Staff enrollment for {year, month}
+// action "manual": drafts a single Paycheck for an arbitrary staffId/serviceId/
+// year/month/amount — for one-off cases the bulk generator doesn't cover.
 export async function POST(req) {
-  const { action, year, month } = await req.json();
-  if (action !== "generate") {
-    return NextResponse.json({ error: "action must be generate." }, { status: 400 });
+  const body = await req.json();
+  const { action } = body;
+
+  if (action === "manual") {
+    const { staffId, serviceId, year, month, amount } = body;
+    if (!staffId || !serviceId || !year || !month || amount === undefined) {
+      return NextResponse.json(
+        { error: "staffId, serviceId, year, month, and amount are required." },
+        { status: 400 }
+      );
+    }
+    const db = readDB();
+    const paycheck = {
+      PaycheckID: nextId(db, "PAY"),
+      StaffID: staffId,
+      ServiceID: serviceId,
+      Year: Number(year),
+      Month: Number(month),
+      ScheduledHours: null,
+      AttendedHours: null,
+      Amount: Number(amount) || 0,
+      INRAmount: 0,
+      INRDue: 0,
+      Status: "Draft",
+    };
+    db.paychecks.push(paycheck);
+    writeDB(db);
+    return NextResponse.json({ paycheck });
   }
+
+  if (action !== "generate") {
+    return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
+  }
+  const { year, month } = body;
   const db = readDB();
 
   const staffIds = new Set(db.users.filter((u) => u.UserType === "Staff").map((u) => u.UserID));

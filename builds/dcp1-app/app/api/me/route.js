@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, groupMatches } from "@/lib/scheduleGen";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -28,9 +28,10 @@ export async function GET(req) {
   // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
   // Includes manually-offered Trial/Interview slots AND every auto-generated
   // Service occurrence (OccuranceID set) — any real class session doubles as
-  // an open pool slot. Gated by ServiceGroup: Trial only sees Student-group
-  // services, Interview only Staff-group ones. Multiple accounts may hold a
-  // Pending request on the same slot; Management approves one.
+  // an open pool slot. Gated by ServiceGroup: Trial only sees services open
+  // to Student, Interview only ones open to Staff ("Both" satisfies either).
+  // Multiple accounts may hold a Pending request on the same slot;
+  // Management approves one.
   const myRequestedTrialSlotIds = new Set(
     trialItems.filter((t) => t.Status !== "Rejected").map((t) => t.ScheduleItemID)
   );
@@ -41,13 +42,13 @@ export async function GET(req) {
     (s) =>
       !isSlotBooked(db, s.ScheduleID) &&
       !myRequestedTrialSlotIds.has(s.ScheduleID) &&
-      (s.ServiceGroup || "Student") === "Student"
+      groupMatches(s.ServiceGroup, "Student")
   );
   const availableInterviewSlots = db.scheduleItems.filter(
     (s) =>
       !isSlotBooked(db, s.ScheduleID) &&
       !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
-      (s.ServiceGroup || "Student") === "Staff"
+      groupMatches(s.ServiceGroup, "Staff")
   );
 
   let children = [];

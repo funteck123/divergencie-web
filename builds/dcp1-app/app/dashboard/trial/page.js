@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
-import { api } from "@/lib/client";
+import { api, groupMatches } from "@/lib/client";
 
 export default function TrialDashboard() {
   return <DashboardShell allowedType="TrialAcc">{(user) => <Body user={user} />}</DashboardShell>;
@@ -53,7 +53,7 @@ function Body({ user }) {
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const myTrials = data.trialItems;
-  const eligibleServices = data.services.filter((s) => (s.Group || "Student") === "Student");
+  const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Student"));
   const slotsForService = serviceId ? data.availableTrialSlots.filter((s) => s.ServiceID === serviceId) : [];
 
   return (
