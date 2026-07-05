@@ -15,12 +15,14 @@ function fmtDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
-// A slot is booked once a Trial or Interview item references it — regardless
-// of whether it was manually offered or auto-generated from a Service.
+// A slot is booked once Management approves a Trial or Interview request for
+// it (Status "Scheduled") — regardless of whether the slot was manually
+// offered or auto-generated from a Service. Multiple accounts may hold a
+// Pending request on the same slot at once; only an approved one locks it.
 export function isSlotBooked(db, scheduleId) {
   return (
-    db.trialItems.some((t) => t.ScheduleItemID === scheduleId) ||
-    db.interviewItems.some((i) => i.ScheduleItemID === scheduleId)
+    db.trialItems.some((t) => t.ScheduleItemID === scheduleId && t.Status === "Scheduled") ||
+    db.interviewItems.some((i) => i.ScheduleItemID === scheduleId && i.Status === "Scheduled")
   );
 }
 

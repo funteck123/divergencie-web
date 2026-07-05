@@ -68,9 +68,18 @@ function Body({ user }) {
                 {slot ? `${slot.Date} at ${slot.Time} with ${slot.Facilitator}` : t.ScheduleItemID}{" "}
                 <span className="badge badge-info">{t.Status}</span>
               </p>
-              {t.Status !== "FeedbackSubmitted" ? (
-                <FeedbackForm onSubmit={(fb) => submitFeedback(t.TrialID, fb)} />
-              ) : (
+              {t.Status === "Pending" && (
+                <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                  Awaiting Management approval.
+                </p>
+              )}
+              {t.Status === "Rejected" && (
+                <p className="text-sm mt-1" style={{ color: "var(--bad)" }}>
+                  This request was rejected.
+                </p>
+              )}
+              {t.Status === "Scheduled" && <FeedbackForm onSubmit={(fb) => submitFeedback(t.TrialID, fb)} />}
+              {t.Status === "FeedbackSubmitted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
                   Feedback submitted: {t.Feedback}
                 </p>

@@ -69,6 +69,16 @@ function Body({ user }) {
                 <span className="badge badge-info">{it.Status}</span>
               </p>
 
+              {it.Status === "Pending" && (
+                <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                  Awaiting Management approval.
+                </p>
+              )}
+              {it.Status === "Rejected" && (
+                <p className="text-sm mt-1" style={{ color: "var(--bad)" }}>
+                  This request was rejected.
+                </p>
+              )}
               {it.Status === "Scheduled" && (
                 <TaskForm onSubmit={(link) => submitTask(it.InterviewID, link)} />
               )}

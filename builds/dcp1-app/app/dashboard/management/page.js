@@ -526,6 +526,8 @@ function Services() {
 function SchedulePool() {
   const [items, setItems] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
+  const [pendingTrials, setPendingTrials] = useState([]);
+  const [pendingInterviews, setPendingInterviews] = useState([]);
   const [services, setServices] = useState([]);
   const [serviceType, setServiceType] = useState("Trial");
   const [serviceId, setServiceId] = useState("");
@@ -536,13 +538,16 @@ function SchedulePool() {
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ scheduleItems, openPoolSlots }, { services }] = await Promise.all([
+    const [{ scheduleItems, openPoolSlots }, { services }, { pendingTrials, pendingInterviews }] = await Promise.all([
       api("/api/schedule"),
       api("/api/services"),
+      api("/api/schedule/requests"),
     ]);
     setItems(scheduleItems);
     setOpenPoolSlots(openPoolSlots);
     setServices(services);
+    setPendingTrials(pendingTrials);
+    setPendingInterviews(pendingInterviews);
   }
   useEffect(() => {
     load();
@@ -565,6 +570,16 @@ function SchedulePool() {
     }
   }
 
+  async function actOnRequest(type, id, action) {
+    setError("");
+    try {
+      await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   const serviceSlots = items.filter((i) => i.OccuranceID !== null);
 
   return (
@@ -572,9 +587,9 @@ function SchedulePool() {
       <div className="card">
         <h2 className="font-semibold mb-4">Offer a Trial / Interview Slot</h2>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-          Open pool — the first pending Trial/Interview account to book it gets it. Every slot is
-          for a specific Service; booking a Trial slot auto-bills one month in advance for that
-          Service.
+          Open pool — any Trial/Interview account can request a slot; multiple requests on the
+          same slot are fine. Management approves one, which locks the slot and (for Trial)
+          auto-bills one month in advance for that Service.
         </p>
         <form onSubmit={submit} className="space-y-3">
           <select className="field" value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
@@ -632,6 +647,63 @@ function SchedulePool() {
                 <td>{s.Facilitator}</td>
               </tr>
             ))}
+          </tbody>
+        </table>
+
+        <h3 className="font-semibold mt-6 mb-2">Pending Requests</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Requester</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {pendingTrials.map((t) => (
+              <tr key={t.TrialID}>
+                <td>Trial</td>
+                <td>{t.RequesterName}</td>
+                <td>{t.Slot?.ServiceName}</td>
+                <td>{t.Slot?.Date}</td>
+                <td>{t.Slot?.Time}</td>
+                <td className="space-x-2">
+                  <button className="btn" onClick={() => actOnRequest("Trial", t.TrialID, "approve")}>
+                    Approve
+                  </button>
+                  <button className="btn-ghost" onClick={() => actOnRequest("Trial", t.TrialID, "reject")}>
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {pendingInterviews.map((i) => (
+              <tr key={i.InterviewID}>
+                <td>Interview</td>
+                <td>{i.RequesterName}</td>
+                <td>{i.Slot?.ServiceName}</td>
+                <td>{i.Slot?.Date}</td>
+                <td>{i.Slot?.Time}</td>
+                <td className="space-x-2">
+                  <button className="btn" onClick={() => actOnRequest("Interview", i.InterviewID, "approve")}>
+                    Approve
+                  </button>
+                  <button className="btn-ghost" onClick={() => actOnRequest("Interview", i.InterviewID, "reject")}>
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {pendingTrials.length === 0 && pendingInterviews.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                  No pending requests.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

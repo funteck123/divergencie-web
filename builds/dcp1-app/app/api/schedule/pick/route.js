@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 
 // body: { scheduleId, userId, type: "Trial" | "Interview" }
+// Multiple accounts may request the same slot ("double booking") — Management
+// approves one via PATCH /api/schedule/requests, which is what actually locks
+// the slot (see isSlotBooked). This route only records a Pending request.
 export async function POST(req) {
   const { scheduleId, userId, type } = await req.json();
   const db = readDB();
@@ -9,59 +12,40 @@ export async function POST(req) {
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
   if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
 
-  // First-come-first-served: reject if someone already booked this slot.
-  const alreadyTaken =
-    db.trialItems.some((t) => t.ScheduleItemID === scheduleId) ||
-    db.interviewItems.some((i) => i.ScheduleItemID === scheduleId);
-  if (alreadyTaken) {
-    return NextResponse.json({ error: "This slot was just taken by someone else." }, { status: 409 });
-  }
-
   if (type === "Trial") {
+    const alreadyRequested = db.trialItems.some(
+      (t) => t.ScheduleItemID === scheduleId && t.TrialAccID === userId && t.Status !== "Rejected"
+    );
+    if (alreadyRequested) {
+      return NextResponse.json({ error: "You already requested this slot." }, { status: 409 });
+    }
     const item = {
       TrialID: nextId(db, "TRI"),
       TrialAccID: userId,
       ScheduleItemID: scheduleId,
       ServiceID: slot.ServiceID,
       Feedback: "",
-      Status: "Scheduled",
+      Status: "Pending",
     };
     db.trialItems.push(item);
-
-    // Every Trial is for a real Service, and booking one requires paying a
-    // month in advance for that Service — this is a flat MonthlyCost charge,
-    // not the attendance-prorated formula used for ongoing Student billing
-    // (there's no attendance yet).
-    const service = db.services.find((s) => s.ServiceID === slot.ServiceID);
-    const slotDate = new Date(slot.Date);
-    const invoice = {
-      InvoiceID: nextId(db, "INV"),
-      StudentID: userId,
-      ServiceID: slot.ServiceID,
-      Year: slotDate.getFullYear(),
-      Month: slotDate.getMonth() + 1,
-      ScheduledHours: null,
-      AttendedHours: null,
-      Amount: service ? Number(service.MonthlyCost) || 0 : 0,
-      INRAmount: 0,
-      INRDue: 0,
-      Status: "Draft",
-      Note: "One-month advance — Trial",
-    };
-    db.invoices.push(invoice);
-
     writeDB(db);
-    return NextResponse.json({ trialItem: item, invoice });
+    return NextResponse.json({ trialItem: item });
   }
 
   if (type === "Interview") {
+    const alreadyRequested = db.interviewItems.some(
+      (i) => i.ScheduleItemID === scheduleId && i.InterviewAccID === userId && i.Status !== "Rejected"
+    );
+    if (alreadyRequested) {
+      return NextResponse.json({ error: "You already requested this slot." }, { status: 409 });
+    }
     const item = {
       InterviewID: nextId(db, "IVW"),
       InterviewAccID: userId,
       ScheduleItemID: scheduleId,
       ServiceID: slot.ServiceID,
       TaskSubmissionLink: "",
-      Status: "Scheduled",
+      Status: "Pending",
     };
     db.interviewItems.push(item);
     writeDB(db);

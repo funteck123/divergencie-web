@@ -23,15 +23,28 @@ export async function GET(req) {
   const invoices = db.invoices.filter((i) => i.StudentID === userId);
   const paychecks = db.paychecks.filter((p) => p.StaffID === userId);
 
-  // Open pool slots this user (Trial/Interview) hasn't booked yet.
+  // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
   // Includes manually-offered Trial/Interview slots AND every auto-generated
   // Service occurrence (OccuranceID set) — any real class session doubles as
-  // an open pool slot for both Trial and Interview, first-come-first-served.
+  // an open pool slot for both Trial and Interview. Multiple accounts may
+  // hold a Pending request on the same slot; Management approves one.
+  const myRequestedTrialSlotIds = new Set(
+    trialItems.filter((t) => t.Status !== "Rejected").map((t) => t.ScheduleItemID)
+  );
+  const myRequestedInterviewSlotIds = new Set(
+    interviewItems.filter((i) => i.Status !== "Rejected").map((i) => i.ScheduleItemID)
+  );
   const availableTrialSlots = db.scheduleItems.filter(
-    (s) => !isSlotBooked(db, s.ScheduleID) && (s.ServiceType === "Trial" || s.OccuranceID !== null)
+    (s) =>
+      !isSlotBooked(db, s.ScheduleID) &&
+      !myRequestedTrialSlotIds.has(s.ScheduleID) &&
+      (s.ServiceType === "Trial" || s.OccuranceID !== null)
   );
   const availableInterviewSlots = db.scheduleItems.filter(
-    (s) => !isSlotBooked(db, s.ScheduleID) && (s.ServiceType === "Interview" || s.OccuranceID !== null)
+    (s) =>
+      !isSlotBooked(db, s.ScheduleID) &&
+      !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
+      (s.ServiceType === "Interview" || s.OccuranceID !== null)
   );
 
   let children = [];
