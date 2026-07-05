@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType } from "@/lib/scheduleGen";
 
 export async function GET() {
   const db = readDB();
@@ -32,11 +32,20 @@ export async function POST(req) {
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
+  const requiredGroup = requiredGroupForBookingType(serviceType);
+  if ((service.Group || "Student") !== requiredGroup) {
+    return NextResponse.json(
+      { error: `${serviceType} slots require a ${requiredGroup}-group Service.` },
+      { status: 400 }
+    );
+  }
+
   const item = {
     ScheduleID: nextId(db, "SCH"),
     ServiceID: service.ServiceID,
     ServiceName: service.Name,
     ServiceType: serviceType, // "Trial" | "Interview" — distinguishes pool slots from real occurrences
+    ServiceGroup: service.Group || "Student",
     OccuranceID: null,
     Date: date,
     Time: time,

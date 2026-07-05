@@ -389,6 +389,7 @@ function Services() {
   const [services, setServices] = useState([]);
   const [name, setName] = useState("");
   const [type, setType] = useState("Class");
+  const [group, setGroup] = useState("Student");
   const [monthlyCost, setMonthlyCost] = useState("");
   const [occurrences, setOccurrences] = useState([{ day: "Monday", time: "16:00", duration: 1, facilitator: "" }]);
   const [error, setError] = useState("");
@@ -417,7 +418,7 @@ function Services() {
     try {
       await api("/api/services", {
         method: "POST",
-        body: JSON.stringify({ name, type, monthlyCost, occurrences }),
+        body: JSON.stringify({ name, type, group, monthlyCost, occurrences }),
       });
       setName("");
       setMonthlyCost("");
@@ -435,6 +436,10 @@ function Services() {
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
           <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
+          <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
+            <option value="Student">Student (Trial-eligible)</option>
+            <option value="Staff">Staff (Interview-eligible)</option>
+          </select>
           <input
             className="field"
             type="number"
@@ -499,6 +504,7 @@ function Services() {
               <th>ID</th>
               <th>Name</th>
               <th>Type</th>
+              <th>Group</th>
               <th>Monthly cost</th>
               <th>Occurrences</th>
             </tr>
@@ -509,6 +515,7 @@ function Services() {
                 <td>{s.ServiceID}</td>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
+                <td>{s.Group || "Student"}</td>
                 <td>{s.MonthlyCost}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
@@ -581,6 +588,8 @@ function SchedulePool() {
   }
 
   const serviceSlots = items.filter((i) => i.OccuranceID !== null);
+  const requiredGroup = serviceType === "Trial" ? "Student" : "Staff";
+  const eligibleServices = services.filter((s) => (s.Group || "Student") === requiredGroup);
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -592,13 +601,20 @@ function SchedulePool() {
           auto-bills one month in advance for that Service.
         </p>
         <form onSubmit={submit} className="space-y-3">
-          <select className="field" value={serviceType} onChange={(e) => setServiceType(e.target.value)}>
+          <select
+            className="field"
+            value={serviceType}
+            onChange={(e) => {
+              setServiceType(e.target.value);
+              setServiceId("");
+            }}
+          >
             <option value="Trial">Trial</option>
             <option value="Interview">Interview</option>
           </select>
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
             <option value="">Select service…</option>
-            {services.map((s) => (
+            {eligibleServices.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
                 {s.Name}
               </option>

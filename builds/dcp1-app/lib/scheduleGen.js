@@ -15,6 +15,18 @@ function fmtDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
+// Every Service belongs to a Group ("Student" or "Staff"), which gates who
+// can book its slots: Trial accounts only book Student-group services,
+// Interview accounts only Staff-group ones. Services created before this
+// field existed default to "Student".
+export function serviceGroupOf(db, serviceId) {
+  return db.services.find((s) => s.ServiceID === serviceId)?.Group || "Student";
+}
+
+export function requiredGroupForBookingType(type) {
+  return type === "Trial" ? "Student" : "Staff";
+}
+
 // A slot is booked once Management approves a Trial or Interview request for
 // it (Status "Scheduled") — regardless of whether the slot was manually
 // offered or auto-generated from a Service. Multiple accounts may hold a
@@ -52,6 +64,7 @@ export function ensureScheduleGenerated(db) {
           ServiceID: service.ServiceID,
           ServiceName: service.Name,
           ServiceType: service.Type,
+          ServiceGroup: service.Group || "Student",
           OccuranceID: occ.OccuranceID,
           Date: fmtDate(cursor),
           Time: occ.Time,

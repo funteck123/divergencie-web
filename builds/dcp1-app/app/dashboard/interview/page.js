@@ -52,6 +52,7 @@ function Body({ user }) {
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
+  const eligibleServices = data.services.filter((s) => (s.Group || "Student") === "Staff");
   const slotsForService = serviceId ? data.availableInterviewSlots.filter((s) => s.ServiceID === serviceId) : [];
 
   return (
@@ -109,7 +110,7 @@ function Body({ user }) {
         <h2 className="font-semibold mb-4">Available Interview Slots</h2>
         <select className="field mb-3" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
           <option value="">Select a service…</option>
-          {data.services.map((s) => (
+          {eligibleServices.map((s) => (
             <option key={s.ServiceID} value={s.ServiceID}>
               {s.Name}
             </option>

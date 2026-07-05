@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { serviceGroupOf, requiredGroupForBookingType } from "@/lib/scheduleGen";
 
 // body: { scheduleId, userId, type: "Trial" | "Interview" }
 // Multiple accounts may request the same slot ("double booking") — Management
@@ -11,6 +12,17 @@ export async function POST(req) {
 
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
   if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
+
+  if (!["Trial", "Interview"].includes(type)) {
+    return NextResponse.json({ error: "type must be Trial or Interview." }, { status: 400 });
+  }
+  const requiredGroup = requiredGroupForBookingType(type);
+  if (serviceGroupOf(db, slot.ServiceID) !== requiredGroup) {
+    return NextResponse.json(
+      { error: `${type} accounts can only book ${requiredGroup}-group services.` },
+      { status: 400 }
+    );
+  }
 
   if (type === "Trial") {
     const alreadyRequested = db.trialItems.some(
@@ -32,25 +44,21 @@ export async function POST(req) {
     return NextResponse.json({ trialItem: item });
   }
 
-  if (type === "Interview") {
-    const alreadyRequested = db.interviewItems.some(
-      (i) => i.ScheduleItemID === scheduleId && i.InterviewAccID === userId && i.Status !== "Rejected"
-    );
-    if (alreadyRequested) {
-      return NextResponse.json({ error: "You already requested this slot." }, { status: 409 });
-    }
-    const item = {
-      InterviewID: nextId(db, "IVW"),
-      InterviewAccID: userId,
-      ScheduleItemID: scheduleId,
-      ServiceID: slot.ServiceID,
-      TaskSubmissionLink: "",
-      Status: "Pending",
-    };
-    db.interviewItems.push(item);
-    writeDB(db);
-    return NextResponse.json({ interviewItem: item });
+  const alreadyRequested = db.interviewItems.some(
+    (i) => i.ScheduleItemID === scheduleId && i.InterviewAccID === userId && i.Status !== "Rejected"
+  );
+  if (alreadyRequested) {
+    return NextResponse.json({ error: "You already requested this slot." }, { status: 409 });
   }
-
-  return NextResponse.json({ error: "type must be Trial or Interview." }, { status: 400 });
+  const item = {
+    InterviewID: nextId(db, "IVW"),
+    InterviewAccID: userId,
+    ScheduleItemID: scheduleId,
+    ServiceID: slot.ServiceID,
+    TaskSubmissionLink: "",
+    Status: "Pending",
+  };
+  db.interviewItems.push(item);
+  writeDB(db);
+  return NextResponse.json({ interviewItem: item });
 }

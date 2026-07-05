@@ -26,8 +26,9 @@ export async function GET(req) {
   // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
   // Includes manually-offered Trial/Interview slots AND every auto-generated
   // Service occurrence (OccuranceID set) — any real class session doubles as
-  // an open pool slot for both Trial and Interview. Multiple accounts may
-  // hold a Pending request on the same slot; Management approves one.
+  // an open pool slot. Gated by ServiceGroup: Trial only sees Student-group
+  // services, Interview only Staff-group ones. Multiple accounts may hold a
+  // Pending request on the same slot; Management approves one.
   const myRequestedTrialSlotIds = new Set(
     trialItems.filter((t) => t.Status !== "Rejected").map((t) => t.ScheduleItemID)
   );
@@ -38,13 +39,13 @@ export async function GET(req) {
     (s) =>
       !isSlotBooked(db, s.ScheduleID) &&
       !myRequestedTrialSlotIds.has(s.ScheduleID) &&
-      (s.ServiceType === "Trial" || s.OccuranceID !== null)
+      (s.ServiceGroup || "Student") === "Student"
   );
   const availableInterviewSlots = db.scheduleItems.filter(
     (s) =>
       !isSlotBooked(db, s.ScheduleID) &&
       !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
-      (s.ServiceType === "Interview" || s.OccuranceID !== null)
+      (s.ServiceGroup || "Student") === "Staff"
   );
 
   let children = [];

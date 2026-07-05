@@ -9,14 +9,16 @@ export async function GET() {
   return NextResponse.json({ services: db.services });
 }
 
-// body: { name, type, monthlyCost, occurrences: [{day, time, duration, facilitator}] }
+// body: { name, type, group: "Student" | "Staff", monthlyCost, occurrences: [{day, time, duration, facilitator}] }
+// Group determines which pool a Service's slots fall into: Trial accounts can
+// only book Student-group services, Interview accounts only Staff-group ones.
 export async function POST(req) {
   const body = await req.json();
-  const { name, type, monthlyCost, occurrences } = body;
+  const { name, type, group, monthlyCost, occurrences } = body;
 
-  if (!name || !type || !Array.isArray(occurrences) || occurrences.length === 0) {
+  if (!name || !type || !["Student", "Staff"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
-      { error: "name, type, and at least one occurrence are required." },
+      { error: "name, type, group (Student/Staff), and at least one occurrence are required." },
       { status: 400 }
     );
   }
@@ -34,6 +36,7 @@ export async function POST(req) {
   const service = {
     ServiceID: serviceId,
     Type: type,
+    Group: group,
     Name: name,
     MonthlyCost: Number(monthlyCost) || 0,
     OccuranceList: occuranceList,
