@@ -78,7 +78,8 @@ function Body({ user }) {
               <th>Code</th>
               <th>Service</th>
               <th>Type</th>
-              <th>Monthly Cost</th>
+              <th>Compensation</th>
+              <th>Occurrences</th>
             </tr>
           </thead>
           <tbody>
@@ -88,11 +89,14 @@ function Body({ user }) {
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
                 <td>{s.MonthlyCost}</td>
+                <td style={{ color: "var(--muted)" }}>
+                  {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ") || "—"}
+                </td>
               </tr>
             ))}
             {enrolledServices.length === 0 && (
               <tr>
-                <td colSpan={4} style={{ color: "var(--muted)" }}>
+                <td colSpan={5} style={{ color: "var(--muted)" }}>
                   No enrollments yet — ask Management to enroll you in a Service.
                 </td>
               </tr>

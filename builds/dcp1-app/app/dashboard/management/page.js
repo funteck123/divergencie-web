@@ -595,7 +595,7 @@ function Services() {
           <input
             className="field"
             type="number"
-            placeholder="Monthly cost"
+            placeholder="Compensation"
             value={monthlyCost}
             onChange={(e) => setMonthlyCost(e.target.value)}
           />
@@ -665,7 +665,7 @@ function Services() {
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
-              <th>Monthly cost</th>
+              <th>Compensation</th>
               <th>Occurrences</th>
               <th></th>
             </tr>
