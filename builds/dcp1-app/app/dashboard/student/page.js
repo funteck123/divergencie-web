@@ -64,6 +64,11 @@ function Body({ user }) {
     .map((e) => (data.services || []).find((s) => s.ServiceID === e.ServiceID))
     .filter(Boolean);
 
+  function serviceNameOf(id) {
+    const s = (data?.services || []).find((s) => s.ServiceID === id);
+    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : "—";
+  }
+
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   return (
@@ -173,6 +178,7 @@ function Body({ user }) {
           <thead>
             <tr>
               <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <th>Service</th>
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
@@ -184,6 +190,7 @@ function Body({ user }) {
             {invSort.sorted.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
+                <td>{serviceNameOf(i.ServiceID)}</td>
                 <td>{i.AttendedHours}</td>
                 <td>{i.Amount}</td>
                 <td>{i.INRDue}</td>
@@ -203,7 +210,7 @@ function Body({ user }) {
             ))}
             {invSort.sorted.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                <td colSpan={7} style={{ color: "var(--muted)" }}>
                   No invoices yet.
                 </td>
               </tr>

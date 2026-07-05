@@ -1158,6 +1158,10 @@ function Billing() {
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
+  function serviceNameOf(id) {
+    const s = services.find((s) => s.ServiceID === id);
+    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : id;
+  }
 
   async function generate() {
     setError("");
@@ -1247,6 +1251,7 @@ function Billing() {
           idKey="InvoiceID"
           nameOf={nameOf}
           personKey="StudentID"
+          serviceNameOf={serviceNameOf}
           onPatch={patchInvoice}
           onDelete={deleteInvoice}
           flagKey="StudentPaidFlag"
@@ -1261,6 +1266,7 @@ function Billing() {
           idKey="PaycheckID"
           nameOf={nameOf}
           personKey="StaffID"
+          serviceNameOf={serviceNameOf}
           onPatch={patchPaycheck}
           onDelete={deletePaycheck}
           flagKey="StaffReceivedFlag"
@@ -1327,7 +1333,7 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
   );
 }
 
-function BillingTable({ rows, idKey, nameOf, personKey, onPatch, onDelete, flagKey, flagLabel }) {
+function BillingTable({ rows, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const decorated = rows.map((r) => ({ ...r, _person: nameOf(r[personKey]), _period: r.Year * 100 + r.Month }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
   return (
@@ -1335,6 +1341,7 @@ function BillingTable({ rows, idKey, nameOf, personKey, onPatch, onDelete, flagK
       <thead>
         <tr>
           <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <th>Service</th>
           <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
           <SortableTh label="Scheduled hrs" sortKeyName="ScheduledHours" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
           <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
@@ -1354,6 +1361,7 @@ function BillingTable({ rows, idKey, nameOf, personKey, onPatch, onDelete, flagK
             idKey={idKey}
             nameOf={nameOf}
             personKey={personKey}
+            serviceNameOf={serviceNameOf}
             onPatch={onPatch}
             onDelete={onDelete}
             flagKey={flagKey}
@@ -1362,7 +1370,7 @@ function BillingTable({ rows, idKey, nameOf, personKey, onPatch, onDelete, flagK
         ))}
         {sorted.length === 0 && (
           <tr>
-            <td colSpan={10} style={{ color: "var(--muted)" }}>
+            <td colSpan={11} style={{ color: "var(--muted)" }}>
               None generated yet.
             </td>
           </tr>
@@ -1372,7 +1380,7 @@ function BillingTable({ rows, idKey, nameOf, personKey, onPatch, onDelete, flagK
   );
 }
 
-function Row({ row, idKey, nameOf, personKey, onPatch, onDelete, flagKey, flagLabel }) {
+function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const [editing, setEditing] = useState(false);
   const [inrAmount, setInrAmount] = useState(row.INRAmount);
   const [inrDue, setInrDue] = useState(row.INRDue);
@@ -1398,6 +1406,7 @@ function Row({ row, idKey, nameOf, personKey, onPatch, onDelete, flagKey, flagLa
   return (
     <tr>
       <td>{nameOf(row[personKey])}</td>
+      <td>{serviceNameOf(row.ServiceID)}</td>
       <td>{row.Month}/{row.Year}</td>
       <td>{row.ScheduledHours ?? "—"}</td>
       <td>{row.AttendedHours ?? "—"}</td>

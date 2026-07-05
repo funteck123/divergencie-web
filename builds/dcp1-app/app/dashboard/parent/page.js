@@ -29,13 +29,13 @@ function Body({ user }) {
   return (
     <div className="space-y-6">
       {data.children.map((child) => (
-        <ChildCard key={child.student?.UserID} child={child} />
+        <ChildCard key={child.student?.UserID} child={child} services={data.services} />
       ))}
     </div>
   );
 }
 
-function ChildCard({ child }) {
+function ChildCard({ child, services }) {
   const { student, schedule, attendance, invoices } = child;
   const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
   const invoiceRows = invoices
@@ -43,6 +43,11 @@ function ChildCard({ child }) {
     .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
+
+  function serviceNameOf(id) {
+    const s = (services || []).find((s) => s.ServiceID === id);
+    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : "—";
+  }
 
   return (
     <div className="card">
@@ -105,6 +110,7 @@ function ChildCard({ child }) {
         <thead>
           <tr>
             <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+            <th>Service</th>
             <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <SortableTh label="Status" sortKeyName="Status" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
           </tr>
@@ -113,12 +119,13 @@ function ChildCard({ child }) {
           {invSort.sorted.map((i) => (
             <tr key={i.InvoiceID}>
               <td>{i.Month}/{i.Year}</td>
+              <td>{serviceNameOf(i.ServiceID)}</td>
               <td>{i.Amount}</td>
               <td>{i.Status}</td>
             </tr>
           ))}
           {invSort.sorted.length === 0 && (
-            <tr><td colSpan={3} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
+            <tr><td colSpan={4} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
           )}
         </tbody>
       </table>

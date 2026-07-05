@@ -64,6 +64,11 @@ function Body({ user }) {
     .map((e) => (data.services || []).find((s) => s.ServiceID === e.ServiceID))
     .filter(Boolean);
 
+  function serviceNameOf(id) {
+    const s = (data?.services || []).find((s) => s.ServiceID === id);
+    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : "—";
+  }
+
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   return (
@@ -173,6 +178,7 @@ function Body({ user }) {
           <thead>
             <tr>
               <SortableTh label="Period" sortKeyName="_period" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
+              <th>Service</th>
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
@@ -184,6 +190,7 @@ function Body({ user }) {
             {paySort.sorted.map((p) => (
               <tr key={p.PaycheckID}>
                 <td>{p.Month}/{p.Year}</td>
+                <td>{serviceNameOf(p.ServiceID)}</td>
                 <td>{p.AttendedHours}</td>
                 <td>{p.Amount}</td>
                 <td>{p.INRDue}</td>
@@ -203,7 +210,7 @@ function Body({ user }) {
             ))}
             {paySort.sorted.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                <td colSpan={7} style={{ color: "var(--muted)" }}>
                   No paychecks yet.
                 </td>
               </tr>
