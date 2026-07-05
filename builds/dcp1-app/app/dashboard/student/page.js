@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
+import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api } from "@/lib/client";
 
 export default function StudentDashboard() {
@@ -11,6 +12,7 @@ export default function StudentDashboard() {
 function Body({ user }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [view, setView] = useState("calendar");
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -45,45 +47,63 @@ function Body({ user }) {
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
 
       <div className="card">
-        <h2 className="font-semibold mb-4">My Schedule</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Hrs</th>
-              <th>Attendance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.scheduleItems.map((s) => {
-              const att = attendanceFor(s.ScheduleID);
-              return (
-                <tr key={s.ScheduleID}>
-                  <td>{s.ServiceName}</td>
-                  <td>{s.Date}</td>
-                  <td>{s.Time}</td>
-                  <td>{s.Duration}</td>
-                  <td>
-                    {att ? (
-                      <span className="badge badge-good">{att.Status} · {att.LoggedDuration}h</span>
-                    ) : (
-                      <AttendanceForm defaultHrs={s.Duration} onSubmit={(status, hrs) => logAttendance(s.ScheduleID, status, hrs)} />
-                    )}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold">My Schedule</h2>
+          <div className="flex gap-2">
+            <button className={view === "calendar" ? "btn" : "btn-ghost"} onClick={() => setView("calendar")}>
+              Calendar
+            </button>
+            <button className={view === "list" ? "btn" : "btn-ghost"} onClick={() => setView("list")}>
+              List
+            </button>
+          </div>
+        </div>
+        {view === "calendar" ? (
+          <ScheduleCalendar
+            scheduleItems={data.scheduleItems}
+            attendanceItems={data.attendanceItems}
+            onLogAttendance={logAttendance}
+          />
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Hrs</th>
+                <th>Attendance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.scheduleItems.map((s) => {
+                const att = attendanceFor(s.ScheduleID);
+                return (
+                  <tr key={s.ScheduleID}>
+                    <td>{s.ServiceName}</td>
+                    <td>{s.Date}</td>
+                    <td>{s.Time}</td>
+                    <td>{s.Duration}</td>
+                    <td>
+                      {att ? (
+                        <span className="badge badge-good">{att.Status} · {att.LoggedDuration}h</span>
+                      ) : (
+                        <AttendanceForm defaultHrs={s.Duration} onSubmit={(status, hrs) => logAttendance(s.ScheduleID, status, hrs)} />
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {data.scheduleItems.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ color: "var(--muted)" }}>
+                    No sessions yet — ask Management to enroll you in a Service.
                   </td>
                 </tr>
-              );
-            })}
-            {data.scheduleItems.length === 0 && (
-              <tr>
-                <td colSpan={5} style={{ color: "var(--muted)" }}>
-                  No sessions yet — ask Management to enroll you in a Service.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <div className="card">
