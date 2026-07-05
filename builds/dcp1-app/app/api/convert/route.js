@@ -16,8 +16,12 @@ function randomPassword() {
 }
 
 // body: { accountId } — the TrialAcc or InterviewAcc UserID to convert.
-// The old record is kept forever (Status: "Converted", can no longer log in).
-// The new Student/Staff account starts completely fresh — nothing carries over.
+// The old record is kept forever (Status: "Converted") but can still log in —
+// the same Trial/Interview account is reused to request Trials/Interviews for
+// other Services later, it isn't a one-time-use account.
+// Invoices already billed to the TrialAcc's ID (e.g. the one-month-advance
+// Trial invoice) are reassigned to the new Student so billing history carries
+// over; everything else about the new account starts fresh.
 export async function POST(req) {
   const { accountId } = await req.json();
   const db = readDB();
@@ -46,6 +50,12 @@ export async function POST(req) {
 
   db.users.push(newUser);
   db.credentials.push({ UserID: newUserId, Username: username, Password: password });
+
+  if (newType === "Student") {
+    for (const invoice of db.invoices) {
+      if (invoice.StudentID === accountId) invoice.StudentID = newUserId;
+    }
+  }
 
   oldUser.Status = "Converted";
   oldUser.ConvertedToUserID = newUserId;
