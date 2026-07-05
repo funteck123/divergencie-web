@@ -60,12 +60,46 @@ function Body({ user }) {
     .map((p) => ({ ...p, _period: p.Year * 100 + p.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const paySort = useSort(paycheckRows, "_period", "desc");
+  const enrolledServices = (data?.enrollments || [])
+    .map((e) => (data.services || []).find((s) => s.ServiceID === e.ServiceID))
+    .filter(Boolean);
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   return (
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+
+      <div className="card">
+        <h2 className="font-semibold mb-4">My Enrollments</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Service</th>
+              <th>Type</th>
+              <th>Monthly Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {enrolledServices.map((s) => (
+              <tr key={s.ServiceID}>
+                <td>{s.Code}</td>
+                <td>{s.Name}</td>
+                <td>{s.Type}</td>
+                <td>{s.MonthlyCost}</td>
+              </tr>
+            ))}
+            {enrolledServices.length === 0 && (
+              <tr>
+                <td colSpan={4} style={{ color: "var(--muted)" }}>
+                  No enrollments yet — ask Management to enroll you in a Service.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="card">
         <div className="flex items-center justify-between mb-4">
