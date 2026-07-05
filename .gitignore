@@ -38,4 +38,5 @@ data/
 
 # Generated clients — only exclude sandbox (large wasm); prisma client is regenerated via postinstall
 src/generated/sandbox/
+prisma/generated/
 .vercel
