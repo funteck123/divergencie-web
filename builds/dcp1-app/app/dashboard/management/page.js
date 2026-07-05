@@ -575,7 +575,7 @@ function Services() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 items-start">
       <div className="card">
         <h2 className="font-semibold mb-4">{editingId ? `Edit Service (${editingId})` : "Create Service"}</h2>
         <form onSubmit={submit} className="space-y-3">
@@ -954,6 +954,16 @@ function Enrollments() {
     }
   }
 
+  async function updateEnrollment(enrolmentId, patch) {
+    await api("/api/enrollments", { method: "PATCH", body: JSON.stringify({ enrolmentId, ...patch }) });
+    load();
+  }
+
+  async function deleteEnrollment(enrolmentId) {
+    await api("/api/enrollments", { method: "DELETE", body: JSON.stringify({ enrolmentId }) });
+    load();
+  }
+
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
@@ -995,19 +1005,112 @@ function Enrollments() {
             <tr>
               <th>Person</th>
               <th>Service</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {enrollments.map((e) => (
-              <tr key={e.EnrolmentID}>
-                <td>{nameOf(e.UserID)}</td>
-                <td>{serviceNameOf(e.ServiceID)}</td>
-              </tr>
+              <EnrollmentRow
+                key={e.EnrolmentID}
+                enrollment={e}
+                users={users}
+                services={services}
+                nameOf={nameOf}
+                serviceNameOf={serviceNameOf}
+                onUpdate={updateEnrollment}
+                onDelete={deleteEnrollment}
+              />
             ))}
+            {enrollments.length === 0 && (
+              <tr>
+                <td colSpan={3} style={{ color: "var(--muted)" }}>
+                  No enrollments yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
     </div>
+  );
+}
+
+function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onUpdate, onDelete }) {
+  const [editing, setEditing] = useState(false);
+  const [userId, setUserId] = useState(enrollment.UserID);
+  const [serviceId, setServiceId] = useState(enrollment.ServiceID);
+  const [error, setError] = useState("");
+
+  function cancel() {
+    setUserId(enrollment.UserID);
+    setServiceId(enrollment.ServiceID);
+    setError("");
+    setEditing(false);
+  }
+
+  async function save() {
+    setError("");
+    try {
+      await onUpdate(enrollment.EnrolmentID, { userId, serviceId });
+      setEditing(false);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  function remove() {
+    if (window.confirm(`Remove ${nameOf(enrollment.UserID)}'s enrollment in ${serviceNameOf(enrollment.ServiceID)}?`)) {
+      onDelete(enrollment.EnrolmentID);
+    }
+  }
+
+  if (editing) {
+    return (
+      <tr>
+        <td>
+          <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)}>
+            {users.map((u) => (
+              <option key={u.UserID} value={u.UserID}>
+                {u.Name} ({u.UserType})
+              </option>
+            ))}
+          </select>
+        </td>
+        <td>
+          <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+            {services.map((s) => (
+              <option key={s.ServiceID} value={s.ServiceID}>
+                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+              </option>
+            ))}
+          </select>
+          {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+        </td>
+        <td className="space-x-2">
+          <button className="btn" onClick={save}>
+            Save
+          </button>
+          <button className="btn-ghost" onClick={cancel}>
+            Cancel
+          </button>
+        </td>
+      </tr>
+    );
+  }
+
+  return (
+    <tr>
+      <td>{nameOf(enrollment.UserID)}</td>
+      <td>{serviceNameOf(enrollment.ServiceID)}</td>
+      <td className="space-x-2">
+        <button className="btn-ghost" onClick={() => setEditing(true)}>
+          Edit
+        </button>
+        <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
+          Delete
+        </button>
+      </td>
+    </tr>
   );
 }
 
