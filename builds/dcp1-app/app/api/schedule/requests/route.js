@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB } from "@/lib/db";
 
 // Pending Trial/Interview requests, joined with slot + requester name, for
 // Management to approve or reject.
@@ -46,33 +46,13 @@ export async function PATCH(req) {
       return NextResponse.json({ trialItem: item });
     }
 
+    // Approving a Trial slot only schedules the session — no billing happens
+    // here. A Trial exists to decide whether to add the Service to the
+    // Student account; billing only starts if/when Management does that via
+    // POST /api/trial-enroll, after feedback comes in.
     item.Status = "Scheduled";
-
-    // Every Trial is for a real Service, and approving one requires paying a
-    // month in advance for that Service — this is a flat MonthlyCost charge,
-    // not the attendance-prorated formula used for ongoing Student billing
-    // (there's no attendance yet).
-    const slot = db.scheduleItems.find((s) => s.ScheduleID === item.ScheduleItemID);
-    const service = db.services.find((s) => s.ServiceID === item.ServiceID);
-    const slotDate = slot ? new Date(slot.Date) : new Date();
-    const invoice = {
-      InvoiceID: nextId(db, "INV"),
-      StudentID: item.TrialAccID,
-      ServiceID: item.ServiceID,
-      Year: slotDate.getFullYear(),
-      Month: slotDate.getMonth() + 1,
-      ScheduledHours: null,
-      AttendedHours: null,
-      Amount: service ? Number(service.MonthlyCost) || 0 : 0,
-      INRAmount: 0,
-      INRDue: 0,
-      Status: "Draft",
-      Note: "One-month advance — Trial",
-    };
-    db.invoices.push(invoice);
-
     writeDB(db);
-    return NextResponse.json({ trialItem: item, invoice });
+    return NextResponse.json({ trialItem: item });
   }
 
   const item = db.interviewItems.find((i) => i.InterviewID === id);

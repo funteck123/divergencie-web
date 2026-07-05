@@ -174,7 +174,21 @@ function Pipeline() {
     return users.find((u) => u.UserID === id);
   }
   function invoiceFor(trial) {
-    return invoices.find((inv) => inv.StudentID === trial.TrialAccID && inv.ServiceID === trial.ServiceID);
+    // Invoices are billed to the converted Student's own ID, not the TrialAcc
+    // ID — a Trial produces no invoice until Management adds the Service.
+    const account = accountOf(trial.TrialAccID);
+    const studentId = account?.ConvertedToUserID || trial.TrialAccID;
+    return invoices.find((inv) => inv.StudentID === studentId && inv.ServiceID === trial.ServiceID);
+  }
+
+  async function addService(trialId) {
+    setError("");
+    try {
+      await api("/api/trial-enroll", { method: "POST", body: JSON.stringify({ trialId }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
   }
 
   async function sendOffer(interviewId, feedback) {
@@ -224,6 +238,7 @@ function Pipeline() {
               <th>Name</th>
               <th>Status</th>
               <th>Feedback</th>
+              <th></th>
               <th>Invoice</th>
               <th>Account</th>
             </tr>
@@ -236,6 +251,14 @@ function Pipeline() {
                   <td>{nameOf(t.TrialAccID)}</td>
                   <td><span className="badge badge-info">{t.Status}</span></td>
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
+                  <td>
+                    {t.Status === "FeedbackSubmitted" && !t.ServiceAdded && (
+                      <button className="btn" onClick={() => addService(t.TrialID)}>
+                        Add Service
+                      </button>
+                    )}
+                    {t.ServiceAdded && <span style={{ color: "var(--good)" }}>Added ✓</span>}
+                  </td>
                   <td>
                     {invoice ? (
                       <span className={`badge ${invoice.Status === "Sent" || invoice.Status === "Paid" ? "badge-good" : "badge-pending"}`}>
@@ -250,7 +273,7 @@ function Pipeline() {
               );
             })}
             {trialItems.length === 0 && (
-              <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
+              <tr><td colSpan={6} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
             )}
           </tbody>
         </table>

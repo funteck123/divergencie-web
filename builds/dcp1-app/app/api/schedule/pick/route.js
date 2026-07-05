@@ -38,6 +38,7 @@ export async function POST(req) {
       ServiceID: slot.ServiceID,
       Feedback: "",
       Status: "Pending",
+      ServiceAdded: false,
     };
     db.trialItems.push(item);
     writeDB(db);
