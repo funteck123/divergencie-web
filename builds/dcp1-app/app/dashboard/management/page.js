@@ -525,6 +525,7 @@ function Services() {
 /* ---------------- Schedule Pool ---------------- */
 function SchedulePool() {
   const [items, setItems] = useState([]);
+  const [openPoolSlots, setOpenPoolSlots] = useState([]);
   const [services, setServices] = useState([]);
   const [serviceType, setServiceType] = useState("Trial");
   const [serviceId, setServiceId] = useState("");
@@ -535,8 +536,12 @@ function SchedulePool() {
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ scheduleItems }, { services }] = await Promise.all([api("/api/schedule"), api("/api/services")]);
+    const [{ scheduleItems, openPoolSlots }, { services }] = await Promise.all([
+      api("/api/schedule"),
+      api("/api/services"),
+    ]);
     setItems(scheduleItems);
+    setOpenPoolSlots(openPoolSlots);
     setServices(services);
   }
   useEffect(() => {
@@ -560,7 +565,6 @@ function SchedulePool() {
     }
   }
 
-  const openSlots = items.filter((i) => i.OccuranceID === null);
   const serviceSlots = items.filter((i) => i.OccuranceID !== null);
 
   return (
@@ -619,7 +623,7 @@ function SchedulePool() {
             </tr>
           </thead>
           <tbody>
-            {openSlots.map((s) => (
+            {openPoolSlots.map((s) => (
               <tr key={s.ScheduleID}>
                 <td>{s.ServiceType}</td>
                 <td>{s.ServiceName}</td>

@@ -15,6 +15,15 @@ function fmtDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
+// A slot is booked once a Trial or Interview item references it — regardless
+// of whether it was manually offered or auto-generated from a Service.
+export function isSlotBooked(db, scheduleId) {
+  return (
+    db.trialItems.some((t) => t.ScheduleItemID === scheduleId) ||
+    db.interviewItems.some((i) => i.ScheduleItemID === scheduleId)
+  );
+}
+
 // Ensures every Service has ScheduleItems generated out to a rolling window
 // (ROLLING_WEEKS_AHEAD from today). Called lazily whenever the schedule is
 // read, which keeps the window automatically topped up without a cron job.

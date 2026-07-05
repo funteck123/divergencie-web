@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { ensureScheduleGenerated } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked } from "@/lib/scheduleGen";
 
 export async function GET() {
   const db = readDB();
   ensureScheduleGenerated(db);
   writeDB(db);
-  return NextResponse.json({ scheduleItems: db.scheduleItems });
+  // Every unbooked slot is open pool — manually-offered Trial/Interview slots
+  // and auto-generated Service occurrences alike.
+  const openPoolSlots = db.scheduleItems.filter((s) => !isSlotBooked(db, s.ScheduleID));
+  return NextResponse.json({ scheduleItems: db.scheduleItems, openPoolSlots });
 }
 
 // Management creates an open-pool slot for a Trial or Interview session.

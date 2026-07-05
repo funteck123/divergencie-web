@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
-import { ensureScheduleGenerated } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked } from "@/lib/scheduleGen";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -23,12 +23,15 @@ export async function GET(req) {
   const invoices = db.invoices.filter((i) => i.StudentID === userId);
   const paychecks = db.paychecks.filter((p) => p.StaffID === userId);
 
-  // Open pool slots this user (Trial/Interview) hasn't booked yet
+  // Open pool slots this user (Trial/Interview) hasn't booked yet.
+  // Includes manually-offered Trial/Interview slots AND every auto-generated
+  // Service occurrence (OccuranceID set) — any real class session doubles as
+  // an open pool slot for both Trial and Interview, first-come-first-served.
   const availableTrialSlots = db.scheduleItems.filter(
-    (s) => s.ServiceType === "Trial" && !db.trialItems.some((t) => t.ScheduleItemID === s.ScheduleID)
+    (s) => !isSlotBooked(db, s.ScheduleID) && (s.ServiceType === "Trial" || s.OccuranceID !== null)
   );
   const availableInterviewSlots = db.scheduleItems.filter(
-    (s) => s.ServiceType === "Interview" && !db.interviewItems.some((t) => t.ScheduleItemID === s.ScheduleID)
+    (s) => !isSlotBooked(db, s.ScheduleID) && (s.ServiceType === "Interview" || s.OccuranceID !== null)
   );
 
   let children = [];
