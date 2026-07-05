@@ -112,3 +112,15 @@ export async function PATCH(req) {
   writeDB(db);
   return NextResponse.json({ invoice });
 }
+
+// body: { invoiceId }
+export async function DELETE(req) {
+  const { invoiceId } = await req.json();
+  const db = readDB();
+  const index = db.invoices.findIndex((i) => i.InvoiceID === invoiceId);
+  if (index === -1) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
+
+  db.invoices.splice(index, 1);
+  writeDB(db);
+  return NextResponse.json({ ok: true });
+}

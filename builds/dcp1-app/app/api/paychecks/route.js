@@ -111,3 +111,15 @@ export async function PATCH(req) {
   writeDB(db);
   return NextResponse.json({ paycheck });
 }
+
+// body: { paycheckId }
+export async function DELETE(req) {
+  const { paycheckId } = await req.json();
+  const db = readDB();
+  const index = db.paychecks.findIndex((p) => p.PaycheckID === paycheckId);
+  if (index === -1) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
+
+  db.paychecks.splice(index, 1);
+  writeDB(db);
+  return NextResponse.json({ ok: true });
+}

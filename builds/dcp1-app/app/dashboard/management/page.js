@@ -1061,6 +1061,14 @@ function Billing() {
     await api("/api/paychecks", { method: "PATCH", body: JSON.stringify({ paycheckId: id, ...patch }) });
     load();
   }
+  async function deleteInvoice(id) {
+    await api("/api/invoices", { method: "DELETE", body: JSON.stringify({ invoiceId: id }) });
+    load();
+  }
+  async function deletePaycheck(id) {
+    await api("/api/paychecks", { method: "DELETE", body: JSON.stringify({ paycheckId: id }) });
+    load();
+  }
 
   return (
     <div className="space-y-6">
@@ -1117,12 +1125,30 @@ function Billing() {
 
       <div className="card">
         <h2 className="font-semibold mb-4">Invoices (Students)</h2>
-        <BillingTable rows={invoices} idKey="InvoiceID" nameOf={nameOf} personKey="StudentID" onPatch={patchInvoice} />
+        <BillingTable
+          rows={invoices}
+          idKey="InvoiceID"
+          nameOf={nameOf}
+          personKey="StudentID"
+          onPatch={patchInvoice}
+          onDelete={deleteInvoice}
+          flagKey="StudentPaidFlag"
+          flagLabel="Paid"
+        />
       </div>
 
       <div className="card">
         <h2 className="font-semibold mb-4">Paychecks (Staff)</h2>
-        <BillingTable rows={paychecks} idKey="PaycheckID" nameOf={nameOf} personKey="StaffID" onPatch={patchPaycheck} />
+        <BillingTable
+          rows={paychecks}
+          idKey="PaycheckID"
+          nameOf={nameOf}
+          personKey="StaffID"
+          onPatch={patchPaycheck}
+          onDelete={deletePaycheck}
+          flagKey="StaffReceivedFlag"
+          flagLabel="Received"
+        />
       </div>
     </div>
   );
@@ -1184,7 +1210,7 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
   );
 }
 
-function BillingTable({ rows, idKey, nameOf, personKey, onPatch }) {
+function BillingTable({ rows, idKey, nameOf, personKey, onPatch, onDelete, flagKey, flagLabel }) {
   const decorated = rows.map((r) => ({ ...r, _person: nameOf(r[personKey]), _period: r.Year * 100 + r.Month }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
   return (
@@ -1199,16 +1225,27 @@ function BillingTable({ rows, idKey, nameOf, personKey, onPatch }) {
           <th>INR Amount</th>
           <th>INR Due</th>
           <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <th>{flagLabel}</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {sorted.map((r) => (
-          <Row key={r[idKey]} row={r} idKey={idKey} nameOf={nameOf} personKey={personKey} onPatch={onPatch} />
+          <Row
+            key={r[idKey]}
+            row={r}
+            idKey={idKey}
+            nameOf={nameOf}
+            personKey={personKey}
+            onPatch={onPatch}
+            onDelete={onDelete}
+            flagKey={flagKey}
+            flagLabel={flagLabel}
+          />
         ))}
         {sorted.length === 0 && (
           <tr>
-            <td colSpan={9} style={{ color: "var(--muted)" }}>
+            <td colSpan={10} style={{ color: "var(--muted)" }}>
               None generated yet.
             </td>
           </tr>
@@ -1218,10 +1255,29 @@ function BillingTable({ rows, idKey, nameOf, personKey, onPatch }) {
   );
 }
 
-function Row({ row, idKey, nameOf, personKey, onPatch }) {
+function Row({ row, idKey, nameOf, personKey, onPatch, onDelete, flagKey, flagLabel }) {
+  const [editing, setEditing] = useState(false);
   const [inrAmount, setInrAmount] = useState(row.INRAmount);
   const [inrDue, setInrDue] = useState(row.INRDue);
   const isDraft = row.Status === "Draft";
+
+  function cancel() {
+    setInrAmount(row.INRAmount);
+    setInrDue(row.INRDue);
+    setEditing(false);
+  }
+
+  function save() {
+    onPatch(row[idKey], { inrAmount, inrDue });
+    setEditing(false);
+  }
+
+  function remove() {
+    if (window.confirm(`Delete this ${flagLabel === "Paid" ? "invoice" : "paycheck"}? This cannot be undone.`)) {
+      onDelete(row[idKey]);
+    }
+  }
+
   return (
     <tr>
       <td>{nameOf(row[personKey])}</td>
@@ -1230,34 +1286,67 @@ function Row({ row, idKey, nameOf, personKey, onPatch }) {
       <td>{row.AttendedHours ?? "—"}</td>
       <td>{row.Amount}</td>
       <td>
-        <input
-          className="field"
-          style={{ width: 90 }}
-          type="number"
-          value={inrAmount}
-          onChange={(e) => setInrAmount(e.target.value)}
-        />
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 90 }}
+            type="number"
+            value={inrAmount}
+            onChange={(e) => setInrAmount(e.target.value)}
+          />
+        ) : (
+          row.INRAmount
+        )}
       </td>
       <td>
-        <input
-          className="field"
-          style={{ width: 90 }}
-          type="number"
-          value={inrDue}
-          onChange={(e) => setInrDue(e.target.value)}
-        />
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 90 }}
+            type="number"
+            value={inrDue}
+            onChange={(e) => setInrDue(e.target.value)}
+          />
+        ) : (
+          row.INRDue
+        )}
       </td>
       <td>
         <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
       </td>
+      <td>
+        <span className={`badge ${row[flagKey] ? "badge-good" : "badge-pending"}`}>
+          {row[flagKey] ? flagLabel : "—"}
+        </span>
+      </td>
       <td className="space-x-2">
-        <button className="btn-ghost" onClick={() => onPatch(row[idKey], { inrAmount, inrDue })}>
-          Save
-        </button>
-        {isDraft && (
-          <button className="btn" onClick={() => onPatch(row[idKey], { inrAmount, inrDue, status: "Sent" })}>
-            Send
-          </button>
+        {editing ? (
+          <>
+            <button className="btn" onClick={save}>
+              Save
+            </button>
+            <button className="btn-ghost" onClick={cancel}>
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="btn-ghost" onClick={() => setEditing(true)}>
+              Edit
+            </button>
+            {isDraft ? (
+              <button className="btn" onClick={() => onPatch(row[idKey], { status: "Sent" })}>
+                Send
+              </button>
+            ) : (
+              <button className="btn-ghost" onClick={() => onPatch(row[idKey], { status: "Draft" })}>
+                Unsend
+              </button>
+            )}
+            <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
+              Delete
+            </button>
+          </>
         )}
       </td>
     </tr>
