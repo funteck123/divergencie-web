@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
+import ScheduleImage from "@/components/ScheduleImage";
 import { api, groupMatches, useSort } from "@/lib/client";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
@@ -496,6 +497,16 @@ function Accounts() {
     }
   }
 
+  async function setTimezone(userId, timezone) {
+    setError("");
+    try {
+      await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, timezone }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <CreateParent onCreated={load} users={users} />
@@ -510,6 +521,7 @@ function Accounts() {
             <th>Type</th>
             <th>Status</th>
             <th>New credentials</th>
+            <th>Schedule</th>
             <th></th>
           </tr>
         </thead>
@@ -533,6 +545,24 @@ function Accounts() {
                   <span style={{ color: "var(--muted)" }}>
                     {u.Username} / {u.Password}
                   </span>
+                ) : (
+                  "—"
+                )}
+              </td>
+              <td>
+                {["Student", "Staff"].includes(u.UserType) ? (
+                  <div className="space-y-1">
+                    <ScheduleImage userId={u.UserID} userName={u.Name} thumbnail />
+                    <select
+                      className="field"
+                      style={{ fontSize: "0.75rem", padding: "0.15rem 0.3rem" }}
+                      value={u.Timezone === "Saudi" ? "Saudi" : "India"}
+                      onChange={(e) => setTimezone(u.UserID, e.target.value)}
+                    >
+                      <option value="India">India</option>
+                      <option value="Saudi">Saudi</option>
+                    </select>
+                  </div>
                 ) : (
                   "—"
                 )}

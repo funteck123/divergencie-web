@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
+import ScheduleImage from "@/components/ScheduleImage";
 import SortableTh from "@/components/SortableTh";
 import { api, useSort } from "@/lib/client";
 
@@ -124,10 +125,15 @@ function Body({ user }) {
             <button className={view === "list" ? "btn" : "btn-ghost"} onClick={() => setView("list")}>
               List
             </button>
+            <button className={view === "image" ? "btn" : "btn-ghost"} onClick={() => setView("image")}>
+              Schedule Image
+            </button>
           </div>
         </div>
         {view === "weekly" ? (
           <WeeklyOccurrences services={enrolledServices} />
+        ) : view === "image" ? (
+          <ScheduleImage userId={user.UserID} userName={user.Name} />
         ) : view === "calendar" ? (
           <ScheduleCalendar
             scheduleItems={data.scheduleItems}

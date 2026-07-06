@@ -43,3 +43,18 @@ export async function POST(req) {
   writeDB(db);
   return NextResponse.json({ user, credentials: { username, password } });
 }
+
+// Management sets a Student/Staff account's Timezone (used by the schedule image).
+// body: { userId, timezone: "India" | "Saudi" }
+export async function PATCH(req) {
+  const { userId, timezone } = await req.json();
+  if (!["India", "Saudi"].includes(timezone)) {
+    return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
+  }
+  const db = readDB();
+  const user = db.users.find((u) => u.UserID === userId);
+  if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
+  user.Timezone = timezone;
+  writeDB(db);
+  return NextResponse.json({ user });
+}

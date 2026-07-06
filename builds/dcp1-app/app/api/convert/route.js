@@ -43,6 +43,7 @@ export async function POST(req) {
     UserType: newType,
     Name: oldUser.Name,
     Status: "Active",
+    Timezone: "India",
     ...(newType === "Staff" ? { StaffRole: "Teacher" } : {}),
   };
   const username = makeUsername(oldUser.Name, db);
