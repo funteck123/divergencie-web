@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 
-// body: { interviewId, action: "send" | "accept" | "waitlist" | "reject", feedback?, offerLetterLink? }
+// body: { interviewId, action: "send" | "accept" | "waitlist" | "reject" | "unsend", feedback?, offerLetterLink? }
 // "feedback" is Management's note on the task submission, left when sending
 // the offer — the Interview-side counterpart to Trial's account-authored Feedback.
 // "offerLetterLink" is the document the InterviewAcc opens to view/accept.
+// "send" doubles as edit — calling it again while already OfferSent
+// overwrites the link/feedback in place.
 export async function POST(req) {
   const { interviewId, action, feedback, offerLetterLink } = await req.json();
   const db = readDB();
@@ -23,8 +25,12 @@ export async function POST(req) {
   } else if (action === "reject") {
     if (feedback !== undefined) item.TaskFeedback = feedback;
     item.Status = "Rejected";
+  } else if (action === "unsend") {
+    // Reverts an OfferSent back to TaskSubmitted; link/feedback stay stored
+    // so the outcome form can prefill them if Management re-sends.
+    item.Status = "TaskSubmitted";
   } else {
-    return NextResponse.json({ error: "action must be send, accept, waitlist, or reject." }, { status: 400 });
+    return NextResponse.json({ error: "action must be send, accept, waitlist, reject, or unsend." }, { status: 400 });
   }
   writeDB(db);
   return NextResponse.json({ interviewItem: item });

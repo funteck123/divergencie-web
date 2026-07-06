@@ -338,9 +338,18 @@ function Pipeline() {
                 <td>
                   {i.Status === "TaskSubmitted" && (
                     <InterviewOutcomeForm
+                      initialFeedback={i.TaskFeedback}
+                      initialLink={i.OfferLetterLink}
                       onSendOffer={(feedback, link) => sendOffer(i.InterviewID, feedback, link)}
                       onWaitlist={(feedback) => setInterviewOutcome(i.InterviewID, "waitlist", feedback)}
                       onReject={(feedback) => setInterviewOutcome(i.InterviewID, "reject", feedback)}
+                    />
+                  )}
+                  {i.Status === "OfferSent" && (
+                    <OfferSentControls
+                      item={i}
+                      onSave={(feedback, link) => sendOffer(i.InterviewID, feedback, link)}
+                      onUnsend={() => setInterviewOutcome(i.InterviewID, "unsend")}
                     />
                   )}
                 </td>
@@ -357,9 +366,9 @@ function Pipeline() {
   );
 }
 
-function InterviewOutcomeForm({ onSendOffer, onWaitlist, onReject }) {
-  const [feedback, setFeedback] = useState("");
-  const [offerLetterLink, setOfferLetterLink] = useState("");
+function InterviewOutcomeForm({ initialFeedback, initialLink, onSendOffer, onWaitlist, onReject }) {
+  const [feedback, setFeedback] = useState(initialFeedback || "");
+  const [offerLetterLink, setOfferLetterLink] = useState(initialLink || "");
 
   return (
     <div className="space-y-2">
@@ -393,6 +402,68 @@ function InterviewOutcomeForm({ onSendOffer, onWaitlist, onReject }) {
           Reject
         </button>
       </div>
+    </div>
+  );
+}
+
+function OfferSentControls({ item, onSave, onUnsend }) {
+  const [editing, setEditing] = useState(false);
+  const [feedback, setFeedback] = useState(item.TaskFeedback || "");
+  const [offerLetterLink, setOfferLetterLink] = useState(item.OfferLetterLink || "");
+
+  if (editing) {
+    return (
+      <div className="space-y-2">
+        <input
+          className="field"
+          style={{ width: 160 }}
+          placeholder="Feedback on task…"
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+        />
+        <input
+          className="field"
+          style={{ width: 160 }}
+          placeholder="Offer letter link…"
+          value={offerLetterLink}
+          onChange={(e) => setOfferLetterLink(e.target.value)}
+        />
+        <div className="flex gap-2">
+          <button
+            className="btn"
+            type="button"
+            disabled={!offerLetterLink.trim()}
+            onClick={() => {
+              onSave(feedback, offerLetterLink);
+              setEditing(false);
+            }}
+          >
+            Save
+          </button>
+          <button
+            className="btn-ghost"
+            type="button"
+            onClick={() => {
+              setFeedback(item.TaskFeedback || "");
+              setOfferLetterLink(item.OfferLetterLink || "");
+              setEditing(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2">
+      <button className="btn-ghost" type="button" onClick={() => setEditing(true)}>
+        Edit
+      </button>
+      <button className="btn-ghost" type="button" onClick={onUnsend}>
+        Unsend
+      </button>
     </div>
   );
 }
