@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
+import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import { api, useSort } from "@/lib/client";
 
@@ -39,20 +40,23 @@ function Body({ user }) {
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
-  if (data.children.length === 0) {
-    return (
-      <div className="card">
-        <p style={{ color: "var(--muted)" }}>No children linked to this account yet.</p>
-      </div>
-    );
-  }
+  const linkedChildren = data.children.map((c) => c.student).filter(Boolean);
 
   return (
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-      {data.children.map((child) => (
-        <ChildCard key={child.student?.UserID} child={child} services={data.services} onSetPaid={setInvoicePaid} />
-      ))}
+
+      <MyInfo user={data.user} linkedChildren={linkedChildren} />
+
+      {data.children.length === 0 ? (
+        <div className="card">
+          <p style={{ color: "var(--muted)" }}>No children linked to this account yet.</p>
+        </div>
+      ) : (
+        data.children.map((child) => (
+          <ChildCard key={child.student?.UserID} child={child} services={data.services} onSetPaid={setInvoicePaid} />
+        ))
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
+import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import { api, useSort } from "@/lib/client";
 
@@ -76,6 +77,8 @@ function Body({ user }) {
   return (
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+
+      <MyInfo user={data.user} />
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Enrollments</h2>
