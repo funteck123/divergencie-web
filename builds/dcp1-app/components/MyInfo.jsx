@@ -13,6 +13,7 @@ export default function MyInfo({ user, linkedChildren }) {
   if (user.UserType === "Student" || user.UserType === "Staff") {
     rows.push(["Timezone", user.Timezone || "India"]);
   }
+  if (user.UserType === "Student") rows.push(["Course", user.Course || "—"]);
   if (user.StaffRole) rows.push(["Role", user.StaffRole]);
 
   return (

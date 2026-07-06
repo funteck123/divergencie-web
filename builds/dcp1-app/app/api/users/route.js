@@ -44,17 +44,21 @@ export async function POST(req) {
   return NextResponse.json({ user, credentials: { username, password } });
 }
 
-// Management sets a Student/Staff account's Timezone (used by the schedule image).
-// body: { userId, timezone: "India" | "Saudi" }
+// Management edits a Student/Staff account's Timezone (schedule image) and/or
+// a Student's Course. body: { userId, timezone?: "India"|"Saudi", course?: string }
 export async function PATCH(req) {
-  const { userId, timezone } = await req.json();
-  if (!["India", "Saudi"].includes(timezone)) {
+  const { userId, timezone, course } = await req.json();
+  if (timezone === undefined && course === undefined) {
+    return NextResponse.json({ error: "timezone and/or course is required." }, { status: 400 });
+  }
+  if (timezone !== undefined && !["India", "Saudi"].includes(timezone)) {
     return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
   }
   const db = readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
-  user.Timezone = timezone;
+  if (timezone !== undefined) user.Timezone = timezone;
+  if (course !== undefined) user.Course = course;
   writeDB(db);
   return NextResponse.json({ user });
 }

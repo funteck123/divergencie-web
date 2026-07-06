@@ -507,6 +507,16 @@ function Accounts() {
     }
   }
 
+  async function setCourse(userId, course) {
+    setError("");
+    try {
+      await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, course }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <CreateParent onCreated={load} users={users} />
@@ -520,6 +530,7 @@ function Accounts() {
             <th>Name</th>
             <th>Type</th>
             <th>Status</th>
+            <th>Course</th>
             <th>New credentials</th>
             <th>Schedule</th>
             <th></th>
@@ -533,6 +544,13 @@ function Accounts() {
               <td>{u.UserType}</td>
               <td>
                 <Badge kind={u.Status === "Converted" ? "info" : "good"}>{u.Status}</Badge>
+              </td>
+              <td>
+                {u.UserType === "Student" ? (
+                  <CourseInput userId={u.UserID} initialCourse={u.Course} onSave={setCourse} />
+                ) : (
+                  "—"
+                )}
               </td>
               <td>
                 {issued[u.UserID] ? (
@@ -580,6 +598,29 @@ function Accounts() {
       </table>
       </div>
     </div>
+  );
+}
+
+// Local draft so keystrokes don't fight the polled `users` list — saves on blur/Enter.
+function CourseInput({ userId, initialCourse, onSave }) {
+  const [value, setValue] = useState(initialCourse || "");
+
+  function save() {
+    if (value !== (initialCourse || "")) onSave(userId, value);
+  }
+
+  return (
+    <input
+      className="field"
+      style={{ fontSize: "0.75rem", padding: "0.15rem 0.3rem", width: 140 }}
+      placeholder="—"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={save}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") e.target.blur();
+      }}
+    />
   );
 }
 
