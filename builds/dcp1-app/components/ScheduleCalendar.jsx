@@ -12,12 +12,34 @@ function fmtDate(y, m, d) {
   return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
 
-// Month-grid calendar for a schedule. Each cell lists that day's sessions as
-// chips; an unlogged session's chip expands into an inline attendance form.
-export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance }) {
-  const today = new Date();
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function startOfWeek(date) {
+  const d = new Date(date);
+  d.setDate(d.getDate() - d.getDay());
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+// Month-grid or single-week calendar for a schedule. Each cell lists that
+// day's sessions as chips; an unlogged session's chip expands into an inline
+// attendance form (unless readOnly, e.g. the Parent portal viewing a child's
+// schedule). Forward navigation is capped at the same rolling window the
+// schedule is generated for (~1 month ahead) — past is unbounded since
+// history is never deleted.
+export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, mode = "month", readOnly = false }) {
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
+  const [weekStart, setWeekStart] = useState(() => startOfWeek(today));
   const [expandedId, setExpandedId] = useState(null);
 
   const itemsByDate = useMemo(() => {
@@ -54,11 +76,104 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
     return attendanceItems.find((a) => a.ScheduleItemID === scheduleId);
   }
 
+  const todayStr = fmtDate(today.getFullYear(), today.getMonth(), today.getDate());
+  // Schedule is only ever generated ~1 month ahead — cap forward navigation
+  // there so users can't page into empty future months/weeks.
+  const horizonMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+  const horizonWeekStart = startOfWeek(new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()));
+
+  function renderSession(s) {
+    const att = attendanceFor(s.ScheduleID);
+    const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
+    const clickable = !readOnly && !att;
+    return (
+      <div key={s.ScheduleID}>
+        <button
+          type="button"
+          className={`badge badge-${kind}`}
+          style={{ display: "block", width: "100%", textAlign: "left", cursor: clickable ? "pointer" : "default" }}
+          onClick={() => clickable && setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID)}
+          title={s.ServiceName}
+        >
+          {s.Time} {s.ServiceName}
+          {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
+          {att ? ` · ${att.Status}` : ""}
+        </button>
+        {expandedId === s.ScheduleID && clickable && (
+          <div className="mt-1">
+            <MiniAttendanceForm
+              defaultHrs={s.Duration}
+              onSubmit={(status, hrs) => {
+                onLogAttendance(s.ScheduleID, status, hrs);
+                setExpandedId(null);
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (mode === "week") {
+    const atHorizon = weekStart >= horizonWeekStart;
+    const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    const weekEnd = days[6];
+    const label =
+      weekStart.getMonth() === weekEnd.getMonth()
+        ? `${MONTH_LABELS[weekStart.getMonth()]} ${weekStart.getDate()}–${weekEnd.getDate()}, ${weekStart.getFullYear()}`
+        : `${MONTH_LABELS[weekStart.getMonth()]} ${weekStart.getDate()} – ${MONTH_LABELS[weekEnd.getMonth()]} ${weekEnd.getDate()}, ${weekEnd.getFullYear()}`;
+
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex gap-2">
+            <button className="btn-ghost" onClick={() => { setExpandedId(null); setWeekStart((w) => addDays(w, -7)); }}>‹</button>
+            <button className="btn-ghost" onClick={() => { setExpandedId(null); setWeekStart(startOfWeek(today)); }}>Today</button>
+            <button className="btn-ghost" disabled={atHorizon} style={atHorizon ? { opacity: 0.4, cursor: "default" } : undefined} onClick={() => { if (!atHorizon) { setExpandedId(null); setWeekStart((w) => addDays(w, 7)); } }}>›</button>
+          </div>
+          <h3 className="font-semibold">{label}</h3>
+          <div style={{ width: 132 }} />
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {days.map((d, i) => {
+            const dateStr = fmtDate(d.getFullYear(), d.getMonth(), d.getDate());
+            const sessions = itemsByDate[dateStr] || [];
+            const isToday = dateStr === todayStr;
+            return (
+              <div
+                key={dateStr}
+                style={{
+                  minHeight: 140,
+                  border: "1px solid var(--border)",
+                  borderRadius: 8,
+                  padding: "0.35rem",
+                  background: "var(--panel-2)",
+                }}
+              >
+                <div
+                  className="text-xs mb-1"
+                  style={{ color: isToday ? "var(--accent-2)" : "var(--muted)", fontWeight: isToday ? 700 : 400 }}
+                >
+                  {DAY_LABELS[i]} {d.getDate()}
+                </div>
+                <div className="space-y-1">
+                  {sessions.map(renderSession)}
+                  {sessions.length === 0 && <div className="text-xs" style={{ color: "var(--muted)" }}>—</div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   const firstOfMonth = new Date(year, month, 1);
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startOffset = firstOfMonth.getDay();
   const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
-  const todayStr = fmtDate(today.getFullYear(), today.getMonth(), today.getDate());
+  const atHorizon = year > horizonMonthDate.getFullYear() || (year === horizonMonthDate.getFullYear() && month >= horizonMonthDate.getMonth());
 
   function goPrev() {
     setExpandedId(null);
@@ -70,6 +185,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
     }
   }
   function goNext() {
+    if (atHorizon) return;
     setExpandedId(null);
     if (month === 11) {
       setMonth(0);
@@ -90,7 +206,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
         <div className="flex gap-2">
           <button className="btn-ghost" onClick={goPrev}>‹</button>
           <button className="btn-ghost" onClick={goToday}>Today</button>
-          <button className="btn-ghost" onClick={goNext}>›</button>
+          <button className="btn-ghost" disabled={atHorizon} style={atHorizon ? { opacity: 0.4, cursor: "default" } : undefined} onClick={goNext}>›</button>
         </div>
         <h3 className="font-semibold">{MONTH_LABELS[month]} {year}</h3>
         <div style={{ width: 132 }} />
@@ -130,38 +246,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
               >
                 {inMonth ? dayNum : ""}
               </div>
-              <div className="space-y-1">
-                {sessions.map((s) => {
-                  const att = attendanceFor(s.ScheduleID);
-                  const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
-                  return (
-                    <div key={s.ScheduleID}>
-                      <button
-                        type="button"
-                        className={`badge badge-${kind}`}
-                        style={{ display: "block", width: "100%", textAlign: "left", cursor: att ? "default" : "pointer" }}
-                        onClick={() => !att && setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID)}
-                        title={s.ServiceName}
-                      >
-                        {s.Time} {s.ServiceName}
-                        {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
-                        {att ? ` · ${att.Status}` : ""}
-                      </button>
-                      {expandedId === s.ScheduleID && !att && (
-                        <div className="mt-1">
-                          <MiniAttendanceForm
-                            defaultHrs={s.Duration}
-                            onSubmit={(status, hrs) => {
-                              onLogAttendance(s.ScheduleID, status, hrs);
-                              setExpandedId(null);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              <div className="space-y-1">{sessions.map(renderSession)}</div>
             </div>
           );
         })}

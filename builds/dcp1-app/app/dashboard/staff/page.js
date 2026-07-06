@@ -13,7 +13,7 @@ export default function StaffDashboard() {
 function Body({ user }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
-  const [view, setView] = useState("calendar");
+  const [view, setView] = useState("weekly");
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -114,6 +114,9 @@ function Body({ user }) {
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">My Schedule</h2>
           <div className="flex gap-2">
+            <button className={view === "weekly" ? "btn" : "btn-ghost"} onClick={() => setView("weekly")}>
+              Weekly
+            </button>
             <button className={view === "calendar" ? "btn" : "btn-ghost"} onClick={() => setView("calendar")}>
               Calendar
             </button>
@@ -122,8 +125,16 @@ function Body({ user }) {
             </button>
           </div>
         </div>
-        {view === "calendar" ? (
+        {view === "weekly" ? (
           <ScheduleCalendar
+            mode="week"
+            scheduleItems={data.scheduleItems}
+            attendanceItems={data.attendanceItems}
+            onLogAttendance={logAttendance}
+          />
+        ) : view === "calendar" ? (
+          <ScheduleCalendar
+            mode="month"
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
@@ -182,7 +193,6 @@ function Body({ user }) {
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <SortableTh label="Status" sortKeyName="Status" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <th>Received</th>
             </tr>
           </thead>
@@ -194,9 +204,6 @@ function Body({ user }) {
                 <td>{p.AttendedHours}</td>
                 <td>{p.Amount}</td>
                 <td>{p.INRDue}</td>
-                <td>
-                  <span className={`badge ${p.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{p.Status}</span>
-                </td>
                 <td>
                   {p.StaffReceivedFlag ? (
                     <span className="badge badge-good">Received ✓</span>
@@ -210,7 +217,7 @@ function Body({ user }) {
             ))}
             {paySort.sorted.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ color: "var(--muted)" }}>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
                   No paychecks yet.
                 </td>
               </tr>
