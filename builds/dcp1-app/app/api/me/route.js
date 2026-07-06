@@ -63,6 +63,7 @@ export async function GET(req) {
       const childServiceIds = new Set(childEnroll.map((e) => e.ServiceID));
       return {
         student: child,
+        enrollments: childEnroll,
         schedule: sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID))),
         attendance: db.attendanceItems.filter((a) => a.UserID === sid),
         invoices: db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft"),

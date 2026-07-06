@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
+import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import SortableTh from "@/components/SortableTh";
 import { api, useSort } from "@/lib/client";
 
@@ -57,7 +58,7 @@ function Body({ user }) {
 }
 
 function ChildCard({ child, services, onSetPaid }) {
-  const { student, schedule, attendance, invoices } = child;
+  const { student, schedule, attendance, invoices, enrollments } = child;
   const [view, setView] = useState("weekly");
   const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
   const invoiceRows = invoices
@@ -65,6 +66,9 @@ function ChildCard({ child, services, onSetPaid }) {
     .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
+  const enrolledServices = (enrollments || [])
+    .map((e) => (services || []).find((s) => s.ServiceID === e.ServiceID))
+    .filter(Boolean);
 
   function serviceNameOf(id) {
     const s = (services || []).find((s) => s.ServiceID === id);
@@ -97,9 +101,9 @@ function ChildCard({ child, services, onSetPaid }) {
       </div>
       <div className="mb-4">
         {view === "weekly" ? (
-          <ScheduleCalendar mode="week" scheduleItems={schedule} attendanceItems={attendance} readOnly />
+          <WeeklyOccurrences services={enrolledServices} />
         ) : view === "calendar" ? (
-          <ScheduleCalendar mode="month" scheduleItems={schedule} attendanceItems={attendance} readOnly />
+          <ScheduleCalendar scheduleItems={schedule} attendanceItems={attendance} readOnly />
         ) : (
           <table>
             <thead>

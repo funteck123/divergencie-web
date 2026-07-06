@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
+import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import SortableTh from "@/components/SortableTh";
 import { api, useSort } from "@/lib/client";
 
@@ -126,15 +127,9 @@ function Body({ user }) {
           </div>
         </div>
         {view === "weekly" ? (
-          <ScheduleCalendar
-            mode="week"
-            scheduleItems={data.scheduleItems}
-            attendanceItems={data.attendanceItems}
-            onLogAttendance={logAttendance}
-          />
+          <WeeklyOccurrences services={enrolledServices} />
         ) : view === "calendar" ? (
           <ScheduleCalendar
-            mode="month"
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
