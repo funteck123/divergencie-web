@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleImage from "@/components/ScheduleImage";
@@ -474,6 +474,7 @@ function Accounts() {
   const [users, setUsers] = useState([]);
   const [issued, setIssued] = useState({});
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   async function load() {
     const { users } = await api("/api/users");
@@ -517,6 +518,17 @@ function Accounts() {
     }
   }
 
+  async function saveEdit(userId, fields) {
+    setError("");
+    try {
+      await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, ...fields }) });
+      setEditingId(null);
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <CreateParent onCreated={load} users={users} />
@@ -538,7 +550,8 @@ function Accounts() {
         </thead>
         <tbody>
           {users.map((u) => (
-            <tr key={u.UserID}>
+            <Fragment key={u.UserID}>
+            <tr>
               <td>{u.UserID}</td>
               <td>{u.Name}</td>
               <td>{u.UserType}</td>
@@ -585,19 +598,99 @@ function Accounts() {
                   "—"
                 )}
               </td>
-              <td>
+              <td className="flex gap-2">
                 {["TrialAcc", "InterviewAcc"].includes(u.UserType) && u.Status !== "Converted" && (
                   <button className="btn" onClick={() => convert(u.UserID)}>
                     Convert to {u.UserType === "TrialAcc" ? "Student" : "Staff"}
                   </button>
                 )}
+                <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
+                  {editingId === u.UserID ? "Close" : "Edit"}
+                </button>
               </td>
             </tr>
+            {editingId === u.UserID && (
+              <tr>
+                <td colSpan={8}>
+                  <EditAccountForm user={u} users={users} onSave={(fields) => saveEdit(u.UserID, fields)} onCancel={() => setEditingId(null)} />
+                </td>
+              </tr>
+            )}
+            </Fragment>
           ))}
         </tbody>
       </table>
       </div>
     </div>
+  );
+}
+
+// Every account gets Name editing; Staff also gets Role, Parent also gets
+// which Students are linked. Type/Status aren't editable here (Status is
+// state-machine-driven — see /api/convert).
+function EditAccountForm({ user, users, onSave, onCancel }) {
+  const [name, setName] = useState(user.Name);
+  const [staffRole, setStaffRole] = useState(user.StaffRole || "");
+  const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
+
+  const students = users.filter((u) => u.UserType === "Student");
+
+  function toggleStudent(id) {
+    setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  function submit(e) {
+    e.preventDefault();
+    const fields = { name };
+    if (user.UserType === "Staff") fields.staffRole = staffRole;
+    if (user.UserType === "Parent") fields.studentIds = studentIds;
+    onSave(fields);
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-3 p-3" style={{ background: "var(--panel-2)", borderRadius: 8 }}>
+      <div>
+        <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+          Name
+        </label>
+        <input className="field" value={name} onChange={(e) => setName(e.target.value)} required />
+      </div>
+
+      {user.UserType === "Staff" && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Staff Role
+          </label>
+          <input className="field" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
+        </div>
+      )}
+
+      {user.UserType === "Parent" && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Linked student(s)
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {students.map((s) => (
+              <label key={s.UserID} className="flex items-center gap-1 text-sm">
+                <input type="checkbox" checked={studentIds.includes(s.UserID)} onChange={() => toggleStudent(s.UserID)} />
+                {s.Name}
+              </label>
+            ))}
+            {students.length === 0 && <p style={{ color: "var(--muted)" }}>No students yet.</p>}
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <button className="btn" type="submit">
+          Save
+        </button>
+        <button className="btn-ghost" type="button" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
 

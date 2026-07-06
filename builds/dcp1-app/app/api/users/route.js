@@ -44,21 +44,32 @@ export async function POST(req) {
   return NextResponse.json({ user, credentials: { username, password } });
 }
 
-// Management edits a Student/Staff account's Timezone (schedule image) and/or
-// a Student's Course. body: { userId, timezone?: "India"|"Saudi", course?: string }
+// Management edits an account. Every field is optional — only the ones
+// present in the body are changed. UserType/Status aren't editable here:
+// Status is state-machine-driven (see /api/convert), not a free-form field.
+// body: { userId, name?, timezone?: "India"|"Saudi", course?, staffRole?, studentIds?: [] }
 export async function PATCH(req) {
-  const { userId, timezone, course } = await req.json();
-  if (timezone === undefined && course === undefined) {
-    return NextResponse.json({ error: "timezone and/or course is required." }, { status: 400 });
+  const { userId, name, timezone, course, staffRole, studentIds } = await req.json();
+  if ([name, timezone, course, staffRole, studentIds].every((v) => v === undefined)) {
+    return NextResponse.json({ error: "at least one field to update is required." }, { status: 400 });
+  }
+  if (name !== undefined && !name.trim()) {
+    return NextResponse.json({ error: "name cannot be blank." }, { status: 400 });
   }
   if (timezone !== undefined && !["India", "Saudi"].includes(timezone)) {
     return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
   }
+  if (studentIds !== undefined && !Array.isArray(studentIds)) {
+    return NextResponse.json({ error: "studentIds must be an array." }, { status: 400 });
+  }
   const db = readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
+  if (name !== undefined) user.Name = name;
   if (timezone !== undefined) user.Timezone = timezone;
   if (course !== undefined) user.Course = course;
+  if (staffRole !== undefined) user.StaffRole = staffRole;
+  if (studentIds !== undefined) user.StudentIDs = studentIds;
   writeDB(db);
   return NextResponse.json({ user });
 }
