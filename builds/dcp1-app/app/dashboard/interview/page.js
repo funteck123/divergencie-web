@@ -83,6 +83,11 @@ function Body({ user }) {
                   This request was rejected.
                 </p>
               )}
+              {it.Status === "Waitlisted" && (
+                <p className="text-sm mt-1" style={{ color: "var(--warn)" }}>
+                  You&apos;ve been added to the waitlist — Management will follow up.
+                </p>
+              )}
               {it.Status === "Scheduled" && (
                 <TaskForm onSubmit={(link) => submitTask(it.InterviewID, link)} />
               )}
@@ -91,20 +96,34 @@ function Body({ user }) {
                   Task submitted — waiting on Management to send an offer.
                 </p>
               )}
-              {it.TaskFeedback && ["OfferSent", "OfferAccepted"].includes(it.Status) && (
+              {it.TaskFeedback && ["OfferSent", "OfferAccepted", "Waitlisted", "Rejected"].includes(it.Status) && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
                   Management feedback on your task: {it.TaskFeedback}
                 </p>
               )}
               {it.Status === "OfferSent" && (
-                <button className="btn mt-2" onClick={() => acceptOffer(it.InterviewID)}>
-                  Accept offer letter
-                </button>
+                <div className="mt-2 flex gap-2 items-center">
+                  {it.OfferLetterLink && (
+                    <a className="btn-ghost" href={it.OfferLetterLink} target="_blank" rel="noreferrer">
+                      Open offer letter
+                    </a>
+                  )}
+                  <button className="btn" onClick={() => acceptOffer(it.InterviewID)}>
+                    Accept offer
+                  </button>
+                </div>
               )}
               {it.Status === "OfferAccepted" && (
-                <p className="text-sm mt-1" style={{ color: "var(--good)" }}>
-                  Offer accepted — Management will convert you to a Staff account shortly.
-                </p>
+                <div className="mt-1">
+                  {it.OfferLetterLink && (
+                    <a className="btn-ghost" href={it.OfferLetterLink} target="_blank" rel="noreferrer">
+                      Open offer letter
+                    </a>
+                  )}
+                  <p className="text-sm mt-1" style={{ color: "var(--good)" }}>
+                    Offer accepted — Management will convert you to a Staff account shortly.
+                  </p>
+                </div>
               )}
             </div>
           );

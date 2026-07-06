@@ -202,8 +202,13 @@ function Pipeline() {
     }
   }
 
-  async function sendOffer(interviewId, feedback) {
-    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send", feedback }) });
+  async function sendOffer(interviewId, feedback, offerLetterLink) {
+    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send", feedback, offerLetterLink }) });
+    load();
+  }
+
+  async function setInterviewOutcome(interviewId, action, feedback) {
+    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action, feedback }) });
     load();
   }
 
@@ -301,6 +306,7 @@ function Pipeline() {
               <th>Service</th>
               <th>Status</th>
               <th>Task</th>
+              <th>Offer</th>
               <th></th>
               <th>Account</th>
             </tr>
@@ -320,16 +326,29 @@ function Pipeline() {
                     "—"
                   )}
                 </td>
+                <td style={{ color: "var(--muted)" }}>
+                  {i.OfferLetterLink ? (
+                    <a href={i.OfferLetterLink} target="_blank" rel="noreferrer" className="underline">
+                      link
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>
                   {i.Status === "TaskSubmitted" && (
-                    <SendOfferForm onSubmit={(feedback) => sendOffer(i.InterviewID, feedback)} />
+                    <InterviewOutcomeForm
+                      onSendOffer={(feedback, link) => sendOffer(i.InterviewID, feedback, link)}
+                      onWaitlist={(feedback) => setInterviewOutcome(i.InterviewID, "waitlist", feedback)}
+                      onReject={(feedback) => setInterviewOutcome(i.InterviewID, "reject", feedback)}
+                    />
                   )}
                 </td>
                 <td><AccountCell accountId={i.InterviewAccID} /></td>
               </tr>
             ))}
             {interviewItems.length === 0 && (
-              <tr><td colSpan={6} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
+              <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -338,27 +357,43 @@ function Pipeline() {
   );
 }
 
-function SendOfferForm({ onSubmit }) {
+function InterviewOutcomeForm({ onSendOffer, onWaitlist, onReject }) {
   const [feedback, setFeedback] = useState("");
+  const [offerLetterLink, setOfferLetterLink] = useState("");
+
   return (
-    <form
-      className="flex gap-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(feedback);
-      }}
-    >
+    <div className="space-y-2">
       <input
         className="field"
-        style={{ width: 140 }}
+        style={{ width: 160 }}
         placeholder="Feedback on task…"
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
       />
-      <button className="btn" type="submit">
-        Send offer
-      </button>
-    </form>
+      <input
+        className="field"
+        style={{ width: 160 }}
+        placeholder="Offer letter link…"
+        value={offerLetterLink}
+        onChange={(e) => setOfferLetterLink(e.target.value)}
+      />
+      <div className="flex gap-2">
+        <button
+          className="btn"
+          type="button"
+          disabled={!offerLetterLink.trim()}
+          onClick={() => onSendOffer(feedback, offerLetterLink)}
+        >
+          Send offer
+        </button>
+        <button className="btn-ghost" type="button" onClick={() => onWaitlist(feedback)}>
+          Waitlist
+        </button>
+        <button className="btn-ghost" style={{ color: "var(--bad)" }} type="button" onClick={() => onReject(feedback)}>
+          Reject
+        </button>
+      </div>
+    </div>
   );
 }
 
