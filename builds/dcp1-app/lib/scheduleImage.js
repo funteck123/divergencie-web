@@ -1,11 +1,11 @@
 import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
 
-// Ported 1:1 from p26 (backend/visualization/schedule_maker.py,
-// backend/classes/timetable.py, backend/utils/utils.py). Same fixed grid,
-// same template PNGs, same pixel coordinates, same fonts/sizes. Entries whose
-// Day/Time don't exactly match the fixed grid below are silently skipped —
-// that's p26's own behaviour, kept intentionally for exact replication.
+// Header/day-row/branding art is p26's original template PNG (untouched).
+// The row area below the day header — p26's baked-in fixed 8 time-slots
+// (4:30pm-11:30pm hourly) — is painted over and redrawn per-request with as
+// many rows as the user's actual occurrence times need, so no occurrence
+// time is ever silently dropped (p26's own behaviour, since fixed).
 
 const ASSETS_DIR = path.join(process.cwd(), "lib", "schedule-image", "assets");
 const FONT_PATH = path.join(ASSETS_DIR, "Roboto.ttf");
@@ -13,39 +13,37 @@ registerFont(FONT_PATH, { family: "Roboto" });
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_TO_COL = Object.fromEntries(DAYS.map((d, i) => [d, i]));
+const NUM_COLS = 7;
 
-const TIMES = ["16:30", "17:30", "18:30", "19:30", "20:30", "21:30", "22:30", "23:30"];
-const TIME_TO_ROW = Object.fromEntries(TIMES.map((t, i) => [t, i]));
+// Column geometry sampled/ported from the template — same 7 x-positions the
+// baked day-header row above already uses, so the redrawn grid lines up.
+const GRID_TOP_LEFT_X = 279;
+const GRID_COL_WIDTH = 216;
+const GRID_COL_PADDING = 29;
+
+// Row area bounding box: covers the old magenta time column + white cells
+// (measured empirically across both templates), leaves the day-header row
+// and bottom decorative dots untouched.
+const ROW_AREA = { left: 20, right: 1968, top: 300, bottom: 1360 };
+const TIME_COL_LEFT = 36;
+const TIME_COL_WIDTH = 216;
+
+const FALLBACK_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
 const THEMES = {
   teacher: {
-    topLeft: [279, 312],
-    firstBoxBottomRight: [495, 412],
-    bottomRight: [1965, 1357],
-    numRows: 8,
-    numCols: 7,
     file: path.join(ASSETS_DIR, "teacher-ist.png"),
     nameCoord: [639, 105],
     classCoord: [0, 0],
     timezoneCoord: [1684, 105],
   },
   student_India: {
-    topLeft: [279, 312],
-    firstBoxBottomRight: [495, 682],
-    bottomRight: [1965, 1357],
-    numRows: 6,
-    numCols: 7,
     file: path.join(ASSETS_DIR, "student-ist.png"),
     nameCoord: [1422, 125],
     classCoord: [1422, 199],
     timezoneCoord: [1422, 256],
   },
   student_Saudi: {
-    topLeft: [279, 312],
-    firstBoxBottomRight: [495, 682],
-    bottomRight: [1965, 1357],
-    numRows: 6,
-    numCols: 7,
     file: path.join(ASSETS_DIR, "student-saudi.png"),
     nameCoord: [1422, 125],
     classCoord: [1422, 199],
@@ -58,17 +56,15 @@ function themeFor(role, timezone) {
   return timezone === "Saudi" ? THEMES.student_Saudi : THEMES.student_India;
 }
 
-// utils.get_cell_center, ported verbatim.
-function getCellCenter(topLeft, firstBoxBottomRight, bottomRight, numRows, numCols, row, col) {
-  const boxWidth = firstBoxBottomRight[0] - topLeft[0];
-  const boxHeight = firstBoxBottomRight[1] - topLeft[1];
+function colLeft(col) {
+  return GRID_TOP_LEFT_X + col * (GRID_COL_WIDTH + GRID_COL_PADDING);
+}
 
-  const paddingX = numCols > 1 ? (bottomRight[0] - topLeft[0] - boxWidth * numCols) / (numCols - 1) : 0;
-  const paddingY = numRows > 1 ? (bottomRight[1] - topLeft[1] - boxHeight * numRows) / (numRows - 1) : 0;
-
-  const centerX = topLeft[0] + col * (boxWidth + paddingX) + boxWidth / 2;
-  const centerY = topLeft[1] + row * (boxHeight + paddingY) + boxHeight / 2;
-  return [centerX, centerY];
+function to12Hour(time24) {
+  const [h, m] = time24.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
 // textwrap.wrap(name, width=15) equivalent — greedy word wrap at ~15 chars.
@@ -100,7 +96,6 @@ export async function drawSchedule(entity, entries) {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0);
 
-  const cellFont = "25px Roboto";
   const headerFont = "45px Roboto";
 
   // PIL anchor="lb" (left-baseline) == canvas textBaseline "alphabetic" + textAlign "left".
@@ -118,27 +113,59 @@ export async function drawSchedule(entity, entries) {
   }
   ctx.fillText(`${timezoneLabel} Time`, timezoneCoord[0], timezoneCoord[1]);
 
-  // PIL anchor="mm" (middle-middle) == canvas textAlign "center" + textBaseline "middle".
+  // Every distinct time actually in use becomes its own row — this is what
+  // fixes p26's fixed-8-slot limitation (any time can now show up).
+  const distinctTimes = [...new Set(entries.map((e) => e.time))].sort();
+  const rowTimes = distinctTimes.length ? distinctTimes : FALLBACK_TIMES;
+  const numRows = rowTimes.length;
+  const timeToRow = Object.fromEntries(rowTimes.map((t, i) => [t, i]));
+
+  // Paint over the old baked-in time column + cells, then redraw fresh.
+  ctx.fillStyle = "#3d1760";
+  ctx.fillRect(ROW_AREA.left, ROW_AREA.top, ROW_AREA.right - ROW_AREA.left, ROW_AREA.bottom - ROW_AREA.top);
+
+  const rowHeight = (ROW_AREA.bottom - ROW_AREA.top) / numRows;
+  const timeFontSize = Math.max(12, Math.min(22, rowHeight * 0.3));
+  const cellFontSize = Math.max(11, Math.min(25, rowHeight * 0.28));
+  const dividerHeight = Math.max(1, Math.min(3, rowHeight * 0.03));
+
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+
+  for (let row = 0; row < numRows; row++) {
+    const rowTop = ROW_AREA.top + row * rowHeight;
+    const rowCenterY = rowTop + rowHeight / 2;
+
+    ctx.fillStyle = "#c03fa9";
+    ctx.fillRect(TIME_COL_LEFT, rowTop, TIME_COL_WIDTH, rowHeight - dividerHeight);
+    ctx.fillStyle = "#ffde59";
+    ctx.font = `${timeFontSize}px Roboto`;
+    ctx.fillText(to12Hour(rowTimes[row]), TIME_COL_LEFT + TIME_COL_WIDTH / 2, rowCenterY);
+
+    for (let col = 0; col < NUM_COLS; col++) {
+      ctx.fillStyle = "#f9f5ff";
+      ctx.fillRect(colLeft(col), rowTop, GRID_COL_WIDTH, rowHeight - dividerHeight);
+    }
+  }
+
   ctx.fillStyle = "black";
-  ctx.font = cellFont;
+  ctx.font = `${cellFontSize}px Roboto`;
 
   for (const entry of entries) {
     const { day, time } = entry;
-    if (!(day in DAY_TO_COL) || !(time in TIME_TO_ROW)) continue;
-    const row = TIME_TO_ROW[time];
+    if (!(day in DAY_TO_COL) || !(time in timeToRow)) continue;
+    const row = timeToRow[time];
     const col = DAY_TO_COL[day];
-    let [centerX, centerY] = getCellCenter(
-      theme.topLeft, theme.firstBoxBottomRight, theme.bottomRight, theme.numRows, theme.numCols, row, col
-    );
+    const centerX = colLeft(col) + GRID_COL_WIDTH / 2;
+    const centerY = ROW_AREA.top + row * rowHeight + (rowHeight - dividerHeight) / 2;
 
     const lines = wrapText(entry.name, 15);
+    const lineHeight = cellFontSize;
     if (lines.length > 1) {
-      let y = centerY - 25 / 2;
+      let y = centerY - (lineHeight * (lines.length - 1)) / 2;
       for (const line of lines) {
         ctx.fillText(line, centerX, y);
-        y += 25;
+        y += lineHeight;
       }
     } else {
       ctx.fillText(lines[0], centerX, centerY);
