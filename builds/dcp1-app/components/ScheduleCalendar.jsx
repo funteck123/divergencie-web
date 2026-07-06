@@ -156,6 +156,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                       >
                         {s.Time} {s.ServiceName}
                         {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
+                        {s.Facilitator ? ` · ${s.Facilitator}` : ""}
                         {att ? ` · ${att.Status}` : ""}
                       </button>
                       {expandedId === s.ScheduleID && clickable && (

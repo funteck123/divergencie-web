@@ -111,6 +111,7 @@ function ChildCard({ child, services, onSetPaid }) {
                 <SortableTh label="Service" sortKeyName="ServiceName" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <SortableTh label="Date" sortKeyName="_dt" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Time</th>
+                <th>Instructor</th>
               </tr>
             </thead>
             <tbody>
@@ -119,10 +120,11 @@ function ChildCard({ child, services, onSetPaid }) {
                   <td>{s.ServiceName}</td>
                   <td>{s.Date}</td>
                   <td>{s.Time}</td>
+                  <td>{s.Facilitator || "—"}</td>
                 </tr>
               ))}
               {schedSort.sorted.length === 0 && (
-                <tr><td colSpan={3} style={{ color: "var(--muted)" }}>No sessions scheduled.</td></tr>
+                <tr><td colSpan={4} style={{ color: "var(--muted)" }}>No sessions scheduled.</td></tr>
               )}
             </tbody>
           </table>
@@ -138,6 +140,7 @@ function ChildCard({ child, services, onSetPaid }) {
             <th>Service</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Instructor</th>
             <th>Status</th>
             <th>Hours</th>
           </tr>
@@ -150,6 +153,7 @@ function ChildCard({ child, services, onSetPaid }) {
                 <td>{session?.ServiceName || "—"}</td>
                 <td>{a.Date}</td>
                 <td>{session?.Time || "—"}</td>
+                <td>{session?.Facilitator || "—"}</td>
                 <td>
                   <span className={`badge badge-${a.Status === "Present" ? "good" : a.Status === "Late" ? "pending" : "bad"}`}>
                     {a.Status}
@@ -160,7 +164,7 @@ function ChildCard({ child, services, onSetPaid }) {
             );
           })}
           {attendance.length === 0 && (
-            <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No attendance logged.</td></tr>
+            <tr><td colSpan={6} style={{ color: "var(--muted)" }}>No attendance logged.</td></tr>
           )}
         </tbody>
       </table>

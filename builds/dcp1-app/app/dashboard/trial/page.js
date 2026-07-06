@@ -108,7 +108,7 @@ function Body({ user }) {
               <tr>
                 <th>Date</th>
                 <th>Time</th>
-                <th>Facilitator</th>
+                <th>Instructor</th>
                 <th></th>
               </tr>
             </thead>

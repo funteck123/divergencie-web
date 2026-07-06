@@ -640,7 +640,7 @@ function Services() {
                 />
                 <input
                   className="field"
-                  placeholder="Facilitator"
+                  placeholder="Instructor"
                   value={o.facilitator}
                   onChange={(e) => updateOcc(i, "facilitator", e.target.value)}
                 />
@@ -813,7 +813,7 @@ function SchedulePool() {
           />
           <input
             className="field"
-            placeholder="Facilitator"
+            placeholder="Instructor"
             value={facilitator}
             onChange={(e) => setFacilitator(e.target.value)}
           />
@@ -831,7 +831,7 @@ function SchedulePool() {
               <th>Service</th>
               <th>Date</th>
               <th>Time</th>
-              <th>Facilitator</th>
+              <th>Instructor</th>
             </tr>
           </thead>
           <tbody>
@@ -914,7 +914,7 @@ function SchedulePool() {
               <th>Date</th>
               <th>Time</th>
               <th>Hrs</th>
-              <th>Facilitator</th>
+              <th>Instructor</th>
             </tr>
           </thead>
           <tbody>

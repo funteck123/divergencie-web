@@ -96,7 +96,7 @@ function Body({ user }) {
                 <td>{s.Type}</td>
                 <td>{s.MonthlyCost}</td>
                 <td style={{ color: "var(--muted)" }}>
-                  {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ") || "—"}
+                  {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>
               </tr>
             ))}
@@ -142,6 +142,7 @@ function Body({ user }) {
                 <SortableTh label="Date" sortKeyName="_dt" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Time</th>
                 <SortableTh label="Hrs" sortKeyName="Duration" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
+                <th>Instructor</th>
                 <th>Attendance</th>
               </tr>
             </thead>
@@ -154,6 +155,7 @@ function Body({ user }) {
                     <td>{s.Date}</td>
                     <td>{s.Time}</td>
                     <td>{s.Duration}</td>
+                    <td>{s.Facilitator || "—"}</td>
                     <td>
                       {att ? (
                         <span className={`badge badge-${att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad"}`}>
@@ -168,7 +170,7 @@ function Body({ user }) {
               })}
               {schedSort.sorted.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ color: "var(--muted)" }}>
+                  <td colSpan={6} style={{ color: "var(--muted)" }}>
                     No sessions yet — ask Management to enroll you in a Service.
                   </td>
                 </tr>

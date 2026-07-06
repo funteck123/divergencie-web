@@ -41,7 +41,7 @@ export default function WeeklyOccurrences({ services }) {
           <div className="space-y-1">
             {(byDay[day] || []).map((o, i) => (
               <span key={i} className="badge badge-info" style={{ display: "block", textAlign: "left" }}>
-                {o.Time} {o.serviceLabel} ({o.Duration}h)
+                {o.Time} {o.serviceLabel} ({o.Duration}h){o.Facilitator ? ` · ${o.Facilitator}` : ""}
               </span>
             ))}
           </div>
