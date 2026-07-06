@@ -41,12 +41,12 @@ function Body({ user }) {
     }
   }
 
-  async function markInvoicePaid(invoiceId) {
+  async function setInvoicePaid(invoiceId, paid) {
     setError("");
     try {
       await api("/api/invoices", {
         method: "PATCH",
-        body: JSON.stringify({ invoiceId, studentPaidFlag: true }),
+        body: JSON.stringify({ invoiceId, studentPaidFlag: paid }),
       });
       load();
     } catch (e) {
@@ -204,11 +204,16 @@ function Body({ user }) {
                 <td>{i.AttendedHours}</td>
                 <td>{i.Amount}</td>
                 <td>{i.INRDue}</td>
-                <td>
+                <td className="flex items-center gap-2">
                   {i.StudentPaidFlag ? (
-                    <span className="badge badge-good">Paid ✓</span>
+                    <>
+                      <span className="badge badge-good">Paid ✓</span>
+                      <button className="btn-ghost" onClick={() => setInvoicePaid(i.InvoiceID, false)}>
+                        Mark as unpaid
+                      </button>
+                    </>
                   ) : (
-                    <button className="btn-ghost" onClick={() => markInvoicePaid(i.InvoiceID)}>
+                    <button className="btn-ghost" onClick={() => setInvoicePaid(i.InvoiceID, true)}>
                       Mark as paid
                     </button>
                   )}

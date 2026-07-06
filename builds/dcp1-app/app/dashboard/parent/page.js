@@ -23,12 +23,12 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function markInvoicePaid(invoiceId) {
+  async function setInvoicePaid(invoiceId, paid) {
     setError("");
     try {
       await api("/api/invoices", {
         method: "PATCH",
-        body: JSON.stringify({ invoiceId, studentPaidFlag: true }),
+        body: JSON.stringify({ invoiceId, studentPaidFlag: paid }),
       });
       load();
     } catch (e) {
@@ -50,13 +50,13 @@ function Body({ user }) {
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       {data.children.map((child) => (
-        <ChildCard key={child.student?.UserID} child={child} services={data.services} onMarkPaid={markInvoicePaid} />
+        <ChildCard key={child.student?.UserID} child={child} services={data.services} onSetPaid={setInvoicePaid} />
       ))}
     </div>
   );
 }
 
-function ChildCard({ child, services, onMarkPaid }) {
+function ChildCard({ child, services, onSetPaid }) {
   const { student, schedule, attendance, invoices } = child;
   const [view, setView] = useState("weekly");
   const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
@@ -179,11 +179,16 @@ function ChildCard({ child, services, onMarkPaid }) {
               <td>{i.Month}/{i.Year}</td>
               <td>{serviceNameOf(i.ServiceID)}</td>
               <td>{i.Amount}</td>
-              <td>
+              <td className="flex items-center gap-2">
                 {i.StudentPaidFlag ? (
-                  <span className="badge badge-good">Paid ✓</span>
+                  <>
+                    <span className="badge badge-good">Paid ✓</span>
+                    <button className="btn-ghost" onClick={() => onSetPaid(i.InvoiceID, false)}>
+                      Mark as unpaid
+                    </button>
+                  </>
                 ) : (
-                  <button className="btn-ghost" onClick={() => onMarkPaid(i.InvoiceID)}>
+                  <button className="btn-ghost" onClick={() => onSetPaid(i.InvoiceID, true)}>
                     Mark as paid
                   </button>
                 )}
