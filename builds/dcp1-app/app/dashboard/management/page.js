@@ -1382,18 +1382,24 @@ function BillingTable({ rows, idKey, nameOf, personKey, serviceNameOf, onPatch, 
 
 function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const [editing, setEditing] = useState(false);
+  const [scheduledHours, setScheduledHours] = useState(row.ScheduledHours);
+  const [attendedHours, setAttendedHours] = useState(row.AttendedHours);
+  const [amount, setAmount] = useState(row.Amount);
   const [inrAmount, setInrAmount] = useState(row.INRAmount);
   const [inrDue, setInrDue] = useState(row.INRDue);
   const isDraft = row.Status === "Draft";
 
   function cancel() {
+    setScheduledHours(row.ScheduledHours);
+    setAttendedHours(row.AttendedHours);
+    setAmount(row.Amount);
     setInrAmount(row.INRAmount);
     setInrDue(row.INRDue);
     setEditing(false);
   }
 
   function save() {
-    onPatch(row[idKey], { inrAmount, inrDue });
+    onPatch(row[idKey], { scheduledHours, attendedHours, amount, inrAmount, inrDue });
     setEditing(false);
   }
 
@@ -1408,9 +1414,47 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
       <td>{nameOf(row[personKey])}</td>
       <td>{serviceNameOf(row.ServiceID)}</td>
       <td>{row.Month}/{row.Year}</td>
-      <td>{row.ScheduledHours ?? "—"}</td>
-      <td>{row.AttendedHours ?? "—"}</td>
-      <td>{row.Amount}</td>
+      <td>
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 70 }}
+            type="number"
+            step="0.5"
+            value={scheduledHours ?? ""}
+            onChange={(e) => setScheduledHours(e.target.value)}
+          />
+        ) : (
+          row.ScheduledHours ?? "—"
+        )}
+      </td>
+      <td>
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 70 }}
+            type="number"
+            step="0.5"
+            value={attendedHours ?? ""}
+            onChange={(e) => setAttendedHours(e.target.value)}
+          />
+        ) : (
+          row.AttendedHours ?? "—"
+        )}
+      </td>
+      <td>
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 90 }}
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        ) : (
+          row.Amount
+        )}
+      </td>
       <td>
         {editing ? (
           <input

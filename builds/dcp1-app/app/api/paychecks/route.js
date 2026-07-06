@@ -95,13 +95,15 @@ export async function POST(req) {
   return NextResponse.json({ created });
 }
 
-// body: { paycheckId, amount, inrAmount, inrDue, status, staffReceivedFlag }
+// body: { paycheckId, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, staffReceivedFlag }
 export async function PATCH(req) {
-  const { paycheckId, amount, inrAmount, inrDue, status, staffReceivedFlag } = await req.json();
+  const { paycheckId, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, staffReceivedFlag } = await req.json();
   const db = readDB();
   const paycheck = db.paychecks.find((p) => p.PaycheckID === paycheckId);
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
+  if (scheduledHours !== undefined) paycheck.ScheduledHours = Number(scheduledHours);
+  if (attendedHours !== undefined) paycheck.AttendedHours = Number(attendedHours);
   if (amount !== undefined) paycheck.Amount = Number(amount);
   if (inrAmount !== undefined) paycheck.INRAmount = Number(inrAmount);
   if (inrDue !== undefined) paycheck.INRDue = Number(inrDue);
