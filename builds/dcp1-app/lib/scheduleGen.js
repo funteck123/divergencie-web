@@ -1,6 +1,5 @@
 import { nextId } from "./db";
 
-const ROLLING_WEEKS_AHEAD = 4;
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function nextDateForDay(fromDate, dayName) {
@@ -11,8 +10,11 @@ function nextDateForDay(fromDate, dayName) {
   return d;
 }
 
+// Format using local calendar date components, not toISOString() — that
+// converts to UTC first, which silently shifts the date back a day in any
+// timezone ahead of UTC (cursor/horizon dates here are always local midnight).
 function fmtDate(d) {
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 // Every Service belongs to a Group ("Student", "Staff", or "Both"), which
@@ -50,14 +52,16 @@ export function isSlotBooked(db, scheduleId) {
   );
 }
 
-// Ensures every Service has ScheduleItems generated out to a rolling window
-// (ROLLING_WEEKS_AHEAD from today). Called lazily whenever the schedule is
-// read, which keeps the window automatically topped up without a cron job.
+// Ensures every Service has ScheduleItems generated through the end of next
+// calendar month (current month + next month, in full — not a fixed N-day
+// rolling window, which would leave the tail end of next month uncovered
+// depending on where in the current month "today" falls). Called lazily
+// whenever the schedule is read, which keeps the window automatically
+// topped up without a cron job.
 export function ensureScheduleGenerated(db) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const horizon = new Date(today);
-  horizon.setDate(horizon.getDate() + ROLLING_WEEKS_AHEAD * 7);
+  const horizon = new Date(today.getFullYear(), today.getMonth() + 2, 0); // last day of next month
 
   for (const service of db.services) {
     for (const occ of service.OccuranceList || []) {
