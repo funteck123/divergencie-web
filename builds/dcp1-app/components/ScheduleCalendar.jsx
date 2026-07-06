@@ -15,9 +15,9 @@ function fmtDate(y, m, d) {
 // Month-grid calendar for a schedule. Each cell lists that day's sessions as
 // chips; an unlogged session's chip expands into an inline attendance form
 // (unless readOnly, e.g. the Parent portal viewing a child's schedule).
-// Forward navigation is capped at the same rolling window the schedule is
-// generated for (~1 month ahead) — past is unbounded since history is never
-// deleted.
+// Navigation is unbounded in both directions — months beyond the schedule's
+// generation horizon (~1 month ahead) just render empty, same as any month
+// with no sessions.
 export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
@@ -64,11 +64,6 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
   const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
   const todayStr = fmtDate(today.getFullYear(), today.getMonth(), today.getDate());
 
-  // Schedule is only ever generated ~1 month ahead — cap forward navigation
-  // there so users can't page into empty future months.
-  const horizonMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1);
-  const atHorizon = year > horizonMonthDate.getFullYear() || (year === horizonMonthDate.getFullYear() && month >= horizonMonthDate.getMonth());
-
   function goPrev() {
     setExpandedId(null);
     if (month === 0) {
@@ -79,7 +74,6 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
     }
   }
   function goNext() {
-    if (atHorizon) return;
     setExpandedId(null);
     if (month === 11) {
       setMonth(0);
@@ -100,7 +94,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
         <div className="flex gap-2">
           <button className="btn-ghost" onClick={goPrev}>‹</button>
           <button className="btn-ghost" onClick={goToday}>Today</button>
-          <button className="btn-ghost" disabled={atHorizon} style={atHorizon ? { opacity: 0.4, cursor: "default" } : undefined} onClick={goNext}>›</button>
+          <button className="btn-ghost" onClick={goNext}>›</button>
         </div>
         <h3 className="font-semibold">{MONTH_LABELS[month]} {year}</h3>
         <div style={{ width: 132 }} />
