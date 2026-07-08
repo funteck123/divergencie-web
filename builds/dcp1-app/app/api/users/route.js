@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { isValidTimezone, normalizeTimezone } from "@/lib/timezones";
 
 export async function GET() {
   const db = readDB();
@@ -50,8 +51,8 @@ export async function POST(req) {
   if (userType === "Parent" && (!Array.isArray(studentIds) || studentIds.length === 0)) {
     return NextResponse.json({ error: "at least one studentId is required for a Parent account." }, { status: 400 });
   }
-  if (timezone !== undefined && !["India", "Saudi"].includes(timezone)) {
-    return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
+  if (timezone !== undefined && !isValidTimezone(timezone)) {
+    return NextResponse.json({ error: "timezone is not a recognized IANA timezone." }, { status: 400 });
   }
 
   const db = readDB();
@@ -60,11 +61,11 @@ export async function POST(req) {
   if (userType === "Parent") user.StudentIDs = studentIds;
   if (userType === "Staff") {
     user.StaffRole = staffRole || "Teacher";
-    user.Timezone = timezone || "India";
+    user.Timezone = normalizeTimezone(timezone);
   }
   if (userType === "Student") {
     user.Course = course || "";
-    user.Timezone = timezone || "India";
+    user.Timezone = normalizeTimezone(timezone);
   }
 
   const username = makeUsername(name, db);
@@ -95,8 +96,8 @@ export async function PATCH(req) {
   if (status !== undefined && !["Active", "Inactive"].includes(status)) {
     return NextResponse.json({ error: "status must be Active or Inactive." }, { status: 400 });
   }
-  if (timezone !== undefined && !["India", "Saudi"].includes(timezone)) {
-    return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
+  if (timezone !== undefined && !isValidTimezone(timezone)) {
+    return NextResponse.json({ error: "timezone is not a recognized IANA timezone." }, { status: 400 });
   }
   if (studentIds !== undefined && !Array.isArray(studentIds)) {
     return NextResponse.json({ error: "studentIds must be an array." }, { status: 400 });

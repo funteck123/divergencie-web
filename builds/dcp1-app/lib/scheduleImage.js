@@ -1,5 +1,6 @@
 import path from "path";
 import { createCanvas, loadImage, registerFont } from "canvas";
+import { timezoneLabel as lookupTimezoneLabel } from "@/lib/timezones";
 
 // Header/day-row/branding art is p26's original template PNG (untouched).
 // The row area below the day header — p26's baked-in fixed 8 time-slots
@@ -30,6 +31,12 @@ const TIME_COL_WIDTH = 216;
 
 const FALLBACK_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
+// One template per role — the row area below the day header is fully
+// repainted per-request regardless (see comment above), so the template
+// file's own baked-in time labels never actually show. The Time Zone field
+// on the template is a blank line filled in with whatever timezone string
+// is passed in, so a single template works for every timezone, not just
+// the original India/Saudi pair.
 const THEMES = {
   teacher: {
     file: path.join(ASSETS_DIR, "teacher-ist.png"),
@@ -37,23 +44,23 @@ const THEMES = {
     classCoord: [0, 0],
     timezoneCoord: [1684, 105],
   },
-  student_India: {
+  student: {
     file: path.join(ASSETS_DIR, "student-ist.png"),
-    nameCoord: [1422, 125],
-    classCoord: [1422, 199],
-    timezoneCoord: [1422, 256],
-  },
-  student_Saudi: {
-    file: path.join(ASSETS_DIR, "student-saudi.png"),
     nameCoord: [1422, 125],
     classCoord: [1422, 199],
     timezoneCoord: [1422, 256],
   },
 };
 
-function themeFor(role, timezone) {
-  if (role === "teacher") return THEMES.teacher;
-  return timezone === "Saudi" ? THEMES.student_Saudi : THEMES.student_India;
+function themeFor(role) {
+  return role === "teacher" ? THEMES.teacher : THEMES.student;
+}
+
+// The Time Zone field is a single fixed-width blank line on the template —
+// truncate very long labels (e.g. some IANA ids) so they don't run past it.
+function shortTimezoneLabel(tz) {
+  const label = lookupTimezoneLabel(tz);
+  return label.length > 22 ? `${label.slice(0, 19)}...` : label;
 }
 
 function colLeft(col) {
@@ -85,11 +92,11 @@ function wrapText(text, width = 15) {
   return lines.length ? lines : [text];
 }
 
-// entity: { name, role: "student"|"teacher", timezone: "India"|"Saudi", className }
+// entity: { name, role: "student"|"teacher", timezone: IANA timezone id, className }
 // entries: [{ name, day, time }] — name is the class/service label for that cell.
 export async function drawSchedule(entity, entries) {
-  const theme = themeFor(entity.role, entity.timezone);
-  const timezoneLabel = entity.timezone === "Saudi" ? "Saudi" : "India";
+  const theme = themeFor(entity.role);
+  const timezoneLabel = shortTimezoneLabel(entity.timezone);
 
   const img = await loadImage(theme.file);
   const canvas = createCanvas(img.width, img.height);

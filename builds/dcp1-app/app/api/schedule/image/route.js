@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawSchedule } from "@/lib/scheduleImage";
+import { normalizeTimezone } from "@/lib/timezones";
 
 function buildEntries(db, userId) {
   const enrolledServiceIds = new Set(db.enrollments.filter((e) => e.UserID === userId).map((e) => e.ServiceID));
@@ -31,7 +32,7 @@ export async function GET(req) {
   const entity = {
     name: user.Name,
     role,
-    timezone: user.Timezone === "Saudi" ? "Saudi" : "India",
+    timezone: normalizeTimezone(user.Timezone),
     // dcp1-app students can be enrolled across multiple unrelated Services,
     // unlike p26's one-class-per-student model — no single "class name" to show.
     className: "",

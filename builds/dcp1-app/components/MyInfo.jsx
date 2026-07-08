@@ -1,5 +1,7 @@
 "use client";
 
+import { timezoneLabel } from "@/lib/timezones";
+
 // Read-only summary of the logged-in account's own record. `user` should be
 // the full record from /api/me (has Timezone/StaffRole/Status), not the
 // lightweight {UserID, UserType, Name} DashboardShell keeps in localStorage.
@@ -11,7 +13,7 @@ export default function MyInfo({ user, linkedChildren }) {
     ["Status", user.Status],
   ];
   if (user.UserType === "Student" || user.UserType === "Staff") {
-    rows.push(["Timezone", user.Timezone || "India"]);
+    rows.push(["Timezone", timezoneLabel(user.Timezone)]);
   }
   if (user.UserType === "Student") rows.push(["Course", user.Course || "—"]);
   if (user.StaffRole) rows.push(["Role", user.StaffRole]);

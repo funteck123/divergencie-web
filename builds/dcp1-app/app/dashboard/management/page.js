@@ -5,6 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleImage from "@/components/ScheduleImage";
 import { api, groupMatches, useSort } from "@/lib/client";
+import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
 
@@ -35,6 +36,22 @@ function Body() {
       {tab === "Enrollments" && <Enrollments />}
       {tab === "Billing" && <Billing />}
     </div>
+  );
+}
+
+function TimezoneSelect({ value, onChange }) {
+  return (
+    <select className="field" value={value} onChange={(e) => onChange(e.target.value)}>
+      {TIMEZONE_GROUPS.map((group) => (
+        <optgroup key={group.label} label={group.label}>
+          {group.options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
   );
 }
 
@@ -556,7 +573,7 @@ function Accounts() {
                   "—"
                 )}
               </td>
-              <td>{["Student", "Staff"].includes(u.UserType) ? u.Timezone || "India" : "—"}</td>
+              <td>{["Student", "Staff"].includes(u.UserType) ? timezoneLabel(u.Timezone) : "—"}</td>
               <td>
                 {issued[u.UserID] ? (
                   <span style={{ color: "var(--muted)" }}>
@@ -618,7 +635,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
   const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
   const [staffRole, setStaffRole] = useState(user.StaffRole || "");
-  const [timezone, setTimezone] = useState(user.Timezone || "India");
+  const [timezone, setTimezone] = useState(normalizeTimezone(user.Timezone));
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
   const [username, setUsername] = useState(user.Username || "");
   const [password, setPassword] = useState("");
@@ -693,10 +710,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Timezone
           </label>
-          <select className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
-            <option value="India">India</option>
-            <option value="Saudi">Saudi</option>
-          </select>
+          <TimezoneSelect value={timezone} onChange={setTimezone} />
         </div>
       )}
 
@@ -760,7 +774,7 @@ function CreateAccount({ onCreated, users }) {
   const [studentIds, setStudentIds] = useState([]);
   const [staffRole, setStaffRole] = useState("");
   const [course, setCourse] = useState("");
-  const [timezone, setTimezone] = useState("India");
+  const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [issued, setIssued] = useState(null);
   const [error, setError] = useState("");
 
@@ -775,7 +789,7 @@ function CreateAccount({ onCreated, users }) {
     setStudentIds([]);
     setStaffRole("");
     setCourse("");
-    setTimezone("India");
+    setTimezone("Asia/Kolkata");
   }
 
   async function submit(e) {
@@ -850,10 +864,7 @@ function CreateAccount({ onCreated, users }) {
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Timezone
             </label>
-            <select className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
-              <option value="India">India</option>
-              <option value="Saudi">Saudi</option>
-            </select>
+            <TimezoneSelect value={timezone} onChange={setTimezone} />
           </div>
         )}
 

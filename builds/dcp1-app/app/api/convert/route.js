@@ -43,7 +43,7 @@ export async function POST(req) {
     UserType: newType,
     Name: oldUser.Name,
     Status: "Active",
-    Timezone: "India",
+    Timezone: "Asia/Kolkata",
     ...(newType === "Student" ? { Course: "" } : {}),
     ...(newType === "Staff" ? { StaffRole: "Teacher" } : {}),
   };
