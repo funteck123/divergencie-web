@@ -531,7 +531,8 @@ function Accounts() {
       <div className="card">
       <h2 className="font-semibold mb-4">All Accounts</h2>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-      <table>
+      <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "max-content", minWidth: "100%" }}>
         <thead>
           <tr>
             <th>ID</th>
@@ -608,6 +609,7 @@ function Accounts() {
           ))}
         </tbody>
       </table>
+      </div>
       </div>
     </div>
   );
