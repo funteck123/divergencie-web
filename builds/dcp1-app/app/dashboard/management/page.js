@@ -531,7 +531,7 @@ function Accounts() {
 
   return (
     <div className="space-y-6">
-      <CreateParent onCreated={load} users={users} />
+      <CreateAccount onCreated={load} users={users} />
       <div className="card">
       <h2 className="font-semibold mb-4">All Accounts</h2>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
@@ -717,26 +717,49 @@ function CourseInput({ userId, initialCourse, onSave }) {
   );
 }
 
-function CreateParent({ onCreated, users }) {
+const CREATABLE_TYPES = ["Parent", "Student", "Staff", "TrialAcc", "InterviewAcc", "Management"];
+
+function CreateAccount({ onCreated, users }) {
+  const [userType, setUserType] = useState("Parent");
   const [name, setName] = useState("");
   const [studentIds, setStudentIds] = useState([]);
+  const [staffRole, setStaffRole] = useState("");
+  const [course, setCourse] = useState("");
+  const [timezone, setTimezone] = useState("India");
   const [issued, setIssued] = useState(null);
   const [error, setError] = useState("");
 
   const students = users.filter((u) => u.UserType === "Student");
 
-  function toggle(id) {
+  function toggleStudent(id) {
     setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  function reset() {
+    setName("");
+    setStudentIds([]);
+    setStaffRole("");
+    setCourse("");
+    setTimezone("India");
   }
 
   async function submit(e) {
     e.preventDefault();
     setError("");
     try {
-      const res = await api("/api/users", { method: "POST", body: JSON.stringify({ name, studentIds }) });
+      const body = { userType, name };
+      if (userType === "Parent") body.studentIds = studentIds;
+      if (userType === "Staff") {
+        body.staffRole = staffRole;
+        body.timezone = timezone;
+      }
+      if (userType === "Student") {
+        body.course = course;
+        body.timezone = timezone;
+      }
+      const res = await api("/api/users", { method: "POST", body: JSON.stringify(body) });
       setIssued(res.credentials);
-      setName("");
-      setStudentIds([]);
+      reset();
       onCreated();
     } catch (e) {
       setError(e.message);
@@ -745,26 +768,63 @@ function CreateParent({ onCreated, users }) {
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">Create Parent Account</h2>
+      <h2 className="font-semibold mb-4">Create Account</h2>
       <form onSubmit={submit} className="space-y-3">
-        <input className="field" placeholder="Parent name" value={name} onChange={(e) => setName(e.target.value)} required />
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-            Linked student(s)
+            Account type
           </label>
-          <div className="flex flex-wrap gap-2">
-            {students.map((s) => (
-              <label key={s.UserID} className="flex items-center gap-1 text-sm">
-                <input type="checkbox" checked={studentIds.includes(s.UserID)} onChange={() => toggle(s.UserID)} />
-                {s.Name}
-              </label>
+          <select className="field" value={userType} onChange={(e) => setUserType(e.target.value)}>
+            {CREATABLE_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
-            {students.length === 0 && <p style={{ color: "var(--muted)" }}>No students yet.</p>}
-          </div>
+          </select>
         </div>
+
+        <input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+
+        {userType === "Parent" && (
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Linked student(s)
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {students.map((s) => (
+                <label key={s.UserID} className="flex items-center gap-1 text-sm">
+                  <input type="checkbox" checked={studentIds.includes(s.UserID)} onChange={() => toggleStudent(s.UserID)} />
+                  {s.Name}
+                </label>
+              ))}
+              {students.length === 0 && <p style={{ color: "var(--muted)" }}>No students yet.</p>}
+            </div>
+          </div>
+        )}
+
+        {userType === "Staff" && (
+          <input className="field" placeholder="Staff role (default: Teacher)" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
+        )}
+
+        {userType === "Student" && (
+          <input className="field" placeholder="Course" value={course} onChange={(e) => setCourse(e.target.value)} />
+        )}
+
+        {["Student", "Staff"].includes(userType) && (
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Timezone
+            </label>
+            <select className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+              <option value="India">India</option>
+              <option value="Saudi">Saudi</option>
+            </select>
+          </div>
+        )}
+
         {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
         <button className="btn" type="submit">
-          Create parent account
+          Create account
         </button>
       </form>
       {issued && (

@@ -26,16 +26,47 @@ function randomPassword() {
   return Math.random().toString(36).slice(-8);
 }
 
-// Management creates a Parent account, view-only, linked to one or more Students.
-// body: { name, studentIds: [] }
+const ID_PREFIX = {
+  Management: "MGT",
+  Staff: "STF",
+  Student: "STU",
+  Parent: "PAR",
+  TrialAcc: "TRL",
+  InterviewAcc: "INT",
+};
+
+// Management creates any account type directly from the Accounts tab.
+// Student/Staff created here start fresh (no linked Trial/Interview record,
+// no invoice carry-over) — that history only exists via /api/convert.
+// body: { userType, name, studentIds?: [] (Parent), staffRole?, course?, timezone? }
 export async function POST(req) {
-  const { name, studentIds } = await req.json();
-  if (!name || !Array.isArray(studentIds) || studentIds.length === 0) {
-    return NextResponse.json({ error: "name and at least one studentId are required." }, { status: 400 });
+  const { userType, name, studentIds, staffRole, course, timezone } = await req.json();
+  if (!userType || !ID_PREFIX[userType]) {
+    return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
+  if (!name || !name.trim()) {
+    return NextResponse.json({ error: "name is required." }, { status: 400 });
+  }
+  if (userType === "Parent" && (!Array.isArray(studentIds) || studentIds.length === 0)) {
+    return NextResponse.json({ error: "at least one studentId is required for a Parent account." }, { status: 400 });
+  }
+  if (timezone !== undefined && !["India", "Saudi"].includes(timezone)) {
+    return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
+  }
+
   const db = readDB();
-  const userId = nextId(db, "PAR");
-  const user = { UserID: userId, UserType: "Parent", Name: name, Status: "Active", StudentIDs: studentIds };
+  const userId = nextId(db, ID_PREFIX[userType]);
+  const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
+  if (userType === "Parent") user.StudentIDs = studentIds;
+  if (userType === "Staff") {
+    user.StaffRole = staffRole || "Teacher";
+    user.Timezone = timezone || "India";
+  }
+  if (userType === "Student") {
+    user.Course = course || "";
+    user.Timezone = timezone || "India";
+  }
+
   const username = makeUsername(name, db);
   const password = randomPassword();
   db.users.push(user);
