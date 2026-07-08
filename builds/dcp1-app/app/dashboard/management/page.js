@@ -1119,7 +1119,7 @@ function Services() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Services</h2>
+        <h2 className="font-semibold mb-4">Student Services</h2>
         <div style={{ overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
@@ -1140,21 +1140,21 @@ function Services() {
             </tr>
           </thead>
           <tbody>
-            {services.map((s) => {
-              const eligible = ["Student", "Both"].includes(s.Group || "Student");
-              return (
+            {services
+              .filter((s) => ["Student", "Both"].includes(s.Group || "Student"))
+              .map((s) => (
                 <tr key={s.ServiceID}>
                   <td>{s.ServiceID}</td>
                   <td>{s.Name}</td>
                   <td>{s.Type}</td>
                   <td>{s.Group || "Student"}</td>
-                  <td>{eligible ? s.Batch || "—" : "—"}</td>
-                  <td>{eligible ? s.Board || "—" : "—"}</td>
-                  <td>{eligible ? s.CourseClass || "—" : "—"}</td>
-                  <td>{eligible ? s.SubjectCode || "—" : "—"}</td>
-                  <td>{eligible ? s.SubjectName || "—" : "—"}</td>
-                  <td>{eligible ? s.FullSubjectName || "—" : "—"}</td>
-                  <td>{eligible ? `${s.Currency || "INR"} ${s.Rate ?? 0}` : s.MonthlyCost}</td>
+                  <td>{s.Batch || "—"}</td>
+                  <td>{s.Board || "—"}</td>
+                  <td>{s.CourseClass || "—"}</td>
+                  <td>{s.SubjectCode || "—"}</td>
+                  <td>{s.SubjectName || "—"}</td>
+                  <td>{s.FullSubjectName || "—"}</td>
+                  <td>{s.Currency || "INR"} {s.Rate ?? 0}</td>
                   <td style={{ color: "var(--muted)" }}>
                     {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
                   </td>
@@ -1164,8 +1164,47 @@ function Services() {
                     </button>
                   </td>
                 </tr>
-              );
-            })}
+              ))}
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div className="card">
+        <h2 className="font-semibold mb-4">Staff Services</h2>
+        <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "max-content", minWidth: "100%" }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Group</th>
+              <th>Compensation</th>
+              <th>Occurrences</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {services
+              .filter((s) => (s.Group || "Student") === "Staff")
+              .map((s) => (
+                <tr key={s.ServiceID}>
+                  <td>{s.ServiceID}</td>
+                  <td>{s.Name}</td>
+                  <td>{s.Type}</td>
+                  <td>{s.Group}</td>
+                  <td>{s.MonthlyCost}</td>
+                  <td style={{ color: "var(--muted)" }}>
+                    {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
+                  </td>
+                  <td>
+                    <button className="btn-ghost" onClick={() => startEdit(s)}>
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
         </div>
