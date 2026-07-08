@@ -576,6 +576,7 @@ function Accounts() {
                 {["Student", "Staff"].includes(u.UserType) ? (
                   <a
                     className="btn-ghost"
+                    style={{ whiteSpace: "nowrap" }}
                     href={`/api/schedule/image?userId=${u.UserID}&download=1`}
                     download={`DC_Schedule_${u.Name}.png`}
                   >
