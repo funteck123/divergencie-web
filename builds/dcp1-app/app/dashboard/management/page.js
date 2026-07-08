@@ -1008,12 +1008,6 @@ function Services() {
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
           <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
-          <input
-            className="field"
-            placeholder="Code (leave blank to auto-generate)"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
           <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
             <option value="Student">Student (Trial-eligible)</option>
             <option value="Staff">Staff (Interview-eligible)</option>
@@ -1065,13 +1059,21 @@ function Services() {
               </div>
             </>
           ) : (
-            <input
-              className="field"
-              type="number"
-              placeholder="Compensation"
-              value={monthlyCost}
-              onChange={(e) => setMonthlyCost(e.target.value)}
-            />
+            <>
+              <input
+                className="field"
+                placeholder="Code (leave blank to auto-generate)"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <input
+                className="field"
+                type="number"
+                placeholder="Compensation"
+                value={monthlyCost}
+                onChange={(e) => setMonthlyCost(e.target.value)}
+              />
+            </>
           )}
           <div className="space-y-2">
             <label className="text-sm" style={{ color: "var(--muted)" }}>

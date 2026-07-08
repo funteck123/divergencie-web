@@ -55,14 +55,16 @@ function applyStudentOnlyFields(service, body, group) {
   }
 }
 
-// body: { name, type, group: "Student" | "Staff" | "Both", monthlyCost, code?,
+// body: { name, type, group: "Student" | "Staff" | "Both", monthlyCost, code? (Staff-only services only),
 //         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?, currency?, rate?
 //         (all Student-eligible-only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
 // only book services open to Student, Interview accounts only ones open to
-// Staff. "Both" makes a Service bookable by either. Code is auto-generated
-// from the name unless one is given manually (must be unique either way).
-// Student-only fields are silently dropped if sent for a Staff-only service.
+// Staff. "Both" makes a Service bookable by either. Code is a Staff-only
+// identifier now (auto-generated from the name unless given manually, must
+// be unique) — Student-eligible services use Subject Code instead and never
+// carry a Code. Other Student-only fields are silently dropped if sent for
+// a Staff-only service.
 export async function POST(req) {
   const body = await req.json();
   const { name, type, group, monthlyCost, code, occurrences } = body;
@@ -75,15 +77,18 @@ export async function POST(req) {
   }
 
   const db = readDB();
+  const studentEligible = isStudentEligible(group);
 
   let finalCode;
-  if (code && code.trim()) {
-    finalCode = code.trim().toUpperCase();
-    if (db.services.some((s) => s.Code === finalCode)) {
-      return NextResponse.json({ error: `Code "${finalCode}" is already in use.` }, { status: 400 });
+  if (!studentEligible) {
+    if (code && code.trim()) {
+      finalCode = code.trim().toUpperCase();
+      if (db.services.some((s) => s.Code === finalCode)) {
+        return NextResponse.json({ error: `Code "${finalCode}" is already in use.` }, { status: 400 });
+      }
+    } else {
+      finalCode = autoServiceCode(name, db);
     }
-  } else {
-    finalCode = autoServiceCode(name, db);
   }
 
   const serviceId = nextId(db, "SVC");
@@ -97,13 +102,13 @@ export async function POST(req) {
 
   const service = {
     ServiceID: serviceId,
-    Code: finalCode,
     Type: type,
     Group: group,
     Name: name,
     MonthlyCost: Number(monthlyCost) || 0,
     OccuranceList: occuranceList,
   };
+  if (finalCode) service.Code = finalCode;
   applyStudentOnlyFields(service, body, group);
   db.services.push(service);
   ensureScheduleGenerated(db);
@@ -112,14 +117,16 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, monthlyCost, code?, occurrences: [{occuranceId?, day, time, duration, facilitator}],
-//         + the Student-only fields listed above }
+// body: { serviceId, name, type, group, monthlyCost, code? (Staff-only services only),
+//         occurrences: [{occuranceId?, day, time, duration, facilitator}], + the Student-only fields listed above }
 // Occurrences are replaced wholesale: existing ones keep their OccuranceID
 // (so already-generated ScheduleItems still trace back to them), new ones
 // get a fresh ID. Already-generated ScheduleItems are historical and are
 // never rewritten — edits only change what ensureScheduleGenerated produces
-// going forward. Code keeps its previous value if not supplied. Student-only
-// fields are dropped if the Service is edited to a Staff-only Group.
+// going forward. Code keeps its previous value if not supplied, and is
+// dropped entirely if the Service is edited to a Student-eligible Group
+// (Subject Code takes over). Other Student-only fields are dropped if the
+// Service is edited to a Staff-only Group.
 export async function PATCH(req) {
   const body = await req.json();
   const { serviceId, name, type, group, monthlyCost, code, occurrences } = body;
@@ -135,7 +142,10 @@ export async function PATCH(req) {
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
-  if (code && code.trim()) {
+  const studentEligible = isStudentEligible(group);
+  if (studentEligible) {
+    delete service.Code;
+  } else if (code && code.trim()) {
     const finalCode = code.trim().toUpperCase();
     if (db.services.some((s) => s.Code === finalCode && s.ServiceID !== serviceId)) {
       return NextResponse.json({ error: `Code "${finalCode}" is already in use.` }, { status: 400 });
