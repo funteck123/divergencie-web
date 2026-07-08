@@ -547,7 +547,7 @@ function Accounts() {
               <td>{u.Name}</td>
               <td>{u.UserType}</td>
               <td>
-                <Badge kind={u.Status === "Converted" ? "info" : "good"}>{u.Status}</Badge>
+                <Badge kind={u.Status === "Converted" ? "info" : u.Status === "Inactive" ? "bad" : "good"}>{u.Status}</Badge>
               </td>
               <td>
                 {u.UserType === "Student" ? (
@@ -606,14 +606,22 @@ function Accounts() {
   );
 }
 
-// Every account gets Name editing; Staff also gets Role + Timezone, Student
-// also gets Timezone, Parent also gets which Students are linked. Type/Status
-// aren't editable here (Status is state-machine-driven — see /api/convert).
+// Every account gets Name + credentials editing; Staff also gets Role +
+// Timezone, Student also gets Timezone, Parent also gets which Students are
+// linked. Type is never editable here — conversion between types only
+// happens through /api/convert, which handles ID reassignment and invoice
+// carry-over that a raw type swap would skip. Status is limited to
+// Active/Inactive; "Converted" is a terminal state stamped by /api/convert
+// alongside ConvertedToUserID, so the Status field is hidden once an account
+// has already converted.
 function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
+  const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
   const [staffRole, setStaffRole] = useState(user.StaffRole || "");
   const [timezone, setTimezone] = useState(user.Timezone || "India");
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
+  const [username, setUsername] = useState(user.Username || "");
+  const [password, setPassword] = useState("");
 
   const students = users.filter((u) => u.UserType === "Student");
 
@@ -623,10 +631,12 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
 
   function submit(e) {
     e.preventDefault();
-    const fields = { name };
+    const fields = { name, username };
+    if (user.Status !== "Converted") fields.status = status;
     if (user.UserType === "Staff") fields.staffRole = staffRole;
     if (["Student", "Staff"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
+    if (password.trim()) fields.password = password;
     onSave(fields);
   }
 
@@ -637,6 +647,36 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           Name
         </label>
         <input className="field" value={name} onChange={(e) => setName(e.target.value)} required />
+      </div>
+
+      {user.Status === "Converted" ? (
+        <p className="text-sm" style={{ color: "var(--muted)" }}>
+          Status: Converted (locked — set by the Convert action)
+        </p>
+      ) : (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Status
+          </label>
+          <select className="field" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      )}
+
+      <div>
+        <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+          Username
+        </label>
+        <input className="field" value={username} onChange={(e) => setUsername(e.target.value)} required />
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+          New password (leave blank to keep current)
+        </label>
+        <input className="field" value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
 
       {user.UserType === "Staff" && (

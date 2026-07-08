@@ -76,16 +76,24 @@ export async function POST(req) {
 }
 
 // Management edits an account. Every field is optional — only the ones
-// present in the body are changed. UserType/Status aren't editable here:
-// Status is state-machine-driven (see /api/convert), not a free-form field.
-// body: { userId, name?, timezone?: "India"|"Saudi", course?, staffRole?, studentIds?: [] }
+// present in the body are changed. UserType isn't editable here: conversion
+// between types only happens through /api/convert, which handles ID
+// reassignment and invoice carry-over that a raw type swap would skip.
+// Status here is limited to Active/Inactive — "Converted" is a terminal
+// state stamped by /api/convert alongside ConvertedToUserID, and can't be
+// set or cleared from this endpoint.
+// body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
+//         staffRole?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
-  const { userId, name, timezone, course, staffRole, studentIds } = await req.json();
-  if ([name, timezone, course, staffRole, studentIds].every((v) => v === undefined)) {
+  const { userId, name, status, timezone, course, staffRole, studentIds, username, password } = await req.json();
+  if ([name, status, timezone, course, staffRole, studentIds, username, password].every((v) => v === undefined)) {
     return NextResponse.json({ error: "at least one field to update is required." }, { status: 400 });
   }
   if (name !== undefined && !name.trim()) {
     return NextResponse.json({ error: "name cannot be blank." }, { status: 400 });
+  }
+  if (status !== undefined && !["Active", "Inactive"].includes(status)) {
+    return NextResponse.json({ error: "status must be Active or Inactive." }, { status: 400 });
   }
   if (timezone !== undefined && !["India", "Saudi"].includes(timezone)) {
     return NextResponse.json({ error: "timezone must be India or Saudi." }, { status: 400 });
@@ -93,14 +101,37 @@ export async function PATCH(req) {
   if (studentIds !== undefined && !Array.isArray(studentIds)) {
     return NextResponse.json({ error: "studentIds must be an array." }, { status: 400 });
   }
+  if (username !== undefined && !username.trim()) {
+    return NextResponse.json({ error: "username cannot be blank." }, { status: 400 });
+  }
+  if (password !== undefined && !password.trim()) {
+    return NextResponse.json({ error: "password cannot be blank." }, { status: 400 });
+  }
+
   const db = readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
+  if (status !== undefined && user.Status === "Converted") {
+    return NextResponse.json({ error: "Converted accounts' status can't be edited here." }, { status: 400 });
+  }
+
+  let cred;
+  if (username !== undefined || password !== undefined) {
+    cred = db.credentials.find((c) => c.UserID === userId);
+    if (!cred) return NextResponse.json({ error: "No credentials found for this account." }, { status: 404 });
+    if (username !== undefined && db.credentials.some((c) => c.Username === username && c.UserID !== userId)) {
+      return NextResponse.json({ error: "username already taken." }, { status: 400 });
+    }
+  }
+
   if (name !== undefined) user.Name = name;
+  if (status !== undefined) user.Status = status;
   if (timezone !== undefined) user.Timezone = timezone;
   if (course !== undefined) user.Course = course;
   if (staffRole !== undefined) user.StaffRole = staffRole;
   if (studentIds !== undefined) user.StudentIDs = studentIds;
+  if (username !== undefined) cred.Username = username;
+  if (password !== undefined) cred.Password = password;
   writeDB(db);
   return NextResponse.json({ user });
 }
