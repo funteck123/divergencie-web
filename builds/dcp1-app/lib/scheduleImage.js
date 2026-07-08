@@ -38,22 +38,39 @@ const FALLBACK_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "1
 // is passed in, so a single template works for every timezone, not just
 // the original India/Saudi pair.
 const THEMES = {
-  teacher: {
-    file: path.join(ASSETS_DIR, "teacher-ist.png"),
-    nameCoord: [639, 105],
-    classCoord: [0, 0],
-    timezoneCoord: [1684, 105],
-  },
   student: {
     file: path.join(ASSETS_DIR, "student-ist.png"),
     nameCoord: [1422, 125],
     classCoord: [1422, 199],
     timezoneCoord: [1422, 256],
   },
+  // Staff whose StaffRole is "Teacher" get the Teacher Schedule template;
+  // every other StaffRole gets the plain Staff Schedule template. Both
+  // share the same field layout (Name / Batch-or-Department / Time Zone
+  // drawn side by side above the day header, not stacked, so nothing
+  // collides with the header row painted in below at ROW_AREA.top).
+  teacherRole: {
+    file: path.join(ASSETS_DIR, "teacher-schedule.png"),
+    nameCoord: [375, 150],
+    classCoord: [810, 150],
+    timezoneCoord: [1310, 150],
+    valueFont: "30px Roboto",
+    fieldMaxWidth: 280,
+  },
+  staff: {
+    file: path.join(ASSETS_DIR, "staff-schedule.png"),
+    nameCoord: [375, 150],
+    classCoord: [810, 150],
+    timezoneCoord: [1310, 150],
+    valueFont: "30px Roboto",
+    fieldMaxWidth: 280,
+  },
 };
 
 function themeFor(role) {
-  return role === "teacher" ? THEMES.teacher : THEMES.student;
+  if (role === "teacherRole") return THEMES.teacherRole;
+  if (role === "staff") return THEMES.staff;
+  return THEMES.student;
 }
 
 // The Time Zone field is a single fixed-width blank line on the template —
@@ -61,6 +78,19 @@ function themeFor(role) {
 function shortTimezoneLabel(tz) {
   const label = lookupTimezoneLabel(tz);
   return label.length > 22 ? `${label.slice(0, 19)}...` : label;
+}
+
+// Shrinks text char-by-char (with a trailing "…") until it fits maxWidth
+// under ctx's currently-set font — used for the compact side-by-side
+// Name/Batch-or-Department/Time Zone fields on the Staff/Teacher templates,
+// where a long value would otherwise run into the next field's label.
+function fitText(ctx, text, maxWidth) {
+  if (!maxWidth || ctx.measureText(text).width <= maxWidth) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(`${t}…`).width > maxWidth) {
+    t = t.slice(0, -1);
+  }
+  return `${t}…`;
 }
 
 function colLeft(col) {
@@ -92,7 +122,7 @@ function wrapText(text, width = 15) {
   return lines.length ? lines : [text];
 }
 
-// entity: { name, role: "student"|"teacher", timezone: IANA timezone id, className }
+// entity: { name, role: "student"|"staff"|"teacherRole", timezone: IANA timezone id, className }
 // entries: [{ name, day, time }] — name is the class/service label for that cell.
 export async function drawSchedule(entity, entries) {
   const theme = themeFor(entity.role);
@@ -103,22 +133,22 @@ export async function drawSchedule(entity, entries) {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(img, 0, 0);
 
-  const headerFont = "45px Roboto";
+  const valueFont = theme.valueFont || "45px Roboto";
 
   // PIL anchor="lb" (left-baseline) == canvas textBaseline "alphabetic" + textAlign "left".
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "white";
-  ctx.font = headerFont;
+  ctx.font = valueFont;
   const nameCoord = [theme.nameCoord[0] + 25, theme.nameCoord[1] - 10];
   const classCoord = [theme.classCoord[0] + 25, theme.classCoord[1] - 10];
   const timezoneCoord = [theme.timezoneCoord[0] + 25, theme.timezoneCoord[1] - 10];
 
-  ctx.fillText(entity.name, nameCoord[0], nameCoord[1]);
+  ctx.fillText(fitText(ctx, entity.name, theme.fieldMaxWidth), nameCoord[0], nameCoord[1]);
   if (entity.role === "student") {
-    ctx.fillText(entity.className || "", classCoord[0], classCoord[1]);
+    ctx.fillText(fitText(ctx, entity.className || "", theme.fieldMaxWidth), classCoord[0], classCoord[1]);
   }
-  ctx.fillText(`${timezoneLabel} Time`, timezoneCoord[0], timezoneCoord[1]);
+  ctx.fillText(fitText(ctx, `${timezoneLabel} Time`, theme.fieldMaxWidth), timezoneCoord[0], timezoneCoord[1]);
 
   // Every distinct time actually in use becomes its own row — this is what
   // fixes p26's fixed-8-slot limitation (any time can now show up).

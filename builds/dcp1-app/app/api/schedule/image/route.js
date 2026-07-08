@@ -27,7 +27,10 @@ export async function GET(req) {
     return NextResponse.json({ error: "Schedule image only available for Student/Staff." }, { status: 400 });
   }
 
-  const role = user.UserType === "Staff" ? "teacher" : "student";
+  let role = "student";
+  if (user.UserType === "Staff") {
+    role = user.StaffRole === "Teacher" ? "teacherRole" : "staff";
+  }
   const entity = {
     name: user.Name,
     role,
