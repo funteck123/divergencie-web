@@ -8,9 +8,8 @@ function buildEntries(db, userId) {
   const services = db.services.filter((s) => enrolledServiceIds.has(s.ServiceID));
   const entries = [];
   for (const s of services) {
-    const label = s.Code ? `${s.Code} ${s.Name}` : s.Name;
     for (const o of s.OccuranceList || []) {
-      entries.push({ name: label, day: o.Day, time: o.Time });
+      entries.push({ name: s.Name, day: o.Day, time: o.Time });
     }
   }
   return entries;
