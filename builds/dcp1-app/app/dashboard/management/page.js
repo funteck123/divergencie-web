@@ -872,7 +872,14 @@ function Services() {
   const [type, setType] = useState("Class");
   const [group, setGroup] = useState("Student");
   const [code, setCode] = useState("");
-  const [course, setCourse] = useState("");
+  const [batch, setBatch] = useState("");
+  const [board, setBoard] = useState("");
+  const [courseClass, setCourseClass] = useState("");
+  const [subjectCode, setSubjectCode] = useState("");
+  const [subjectName, setSubjectName] = useState("");
+  const [fullSubjectName, setFullSubjectName] = useState("");
+  const [currency, setCurrency] = useState("INR");
+  const [rate, setRate] = useState("");
   const [monthlyCost, setMonthlyCost] = useState("");
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
@@ -893,7 +900,14 @@ function Services() {
     setType("Class");
     setGroup("Student");
     setCode("");
-    setCourse("");
+    setBatch("");
+    setBoard("");
+    setCourseClass("");
+    setSubjectCode("");
+    setSubjectName("");
+    setFullSubjectName("");
+    setCurrency("INR");
+    setRate("");
     setMonthlyCost("");
     setOccurrences([{ ...EMPTY_OCC }]);
   }
@@ -904,7 +918,14 @@ function Services() {
     setType(s.Type);
     setGroup(s.Group || "Student");
     setCode(s.Code || "");
-    setCourse(s.Course || "");
+    setBatch(s.Batch || "");
+    setBoard(s.Board || "");
+    setCourseClass(s.CourseClass || "");
+    setSubjectCode(s.SubjectCode || "");
+    setSubjectName(s.SubjectName || "");
+    setFullSubjectName(s.FullSubjectName || "");
+    setCurrency(s.Currency || "INR");
+    setRate(s.Rate ?? "");
     setMonthlyCost(s.MonthlyCost);
     setOccurrences(
       s.OccuranceList.map((o) => ({
@@ -934,12 +955,43 @@ function Services() {
       if (editingId) {
         await api("/api/services", {
           method: "PATCH",
-          body: JSON.stringify({ serviceId: editingId, name, type, group, code, course, monthlyCost, occurrences }),
+          body: JSON.stringify({
+            serviceId: editingId,
+            name,
+            type,
+            group,
+            code,
+            batch,
+            board,
+            courseClass,
+            subjectCode,
+            subjectName,
+            fullSubjectName,
+            currency,
+            rate,
+            monthlyCost,
+            occurrences,
+          }),
         });
       } else {
         await api("/api/services", {
           method: "POST",
-          body: JSON.stringify({ name, type, group, code, course, monthlyCost, occurrences }),
+          body: JSON.stringify({
+            name,
+            type,
+            group,
+            code,
+            batch,
+            board,
+            courseClass,
+            subjectCode,
+            subjectName,
+            fullSubjectName,
+            currency,
+            rate,
+            monthlyCost,
+            occurrences,
+          }),
         });
       }
       resetForm();
@@ -967,21 +1019,60 @@ function Services() {
             <option value="Staff">Staff (Interview-eligible)</option>
             <option value="Both">Both (Trial + Interview eligible)</option>
           </select>
-          {studentEligible && (
+          {studentEligible ? (
+            <>
+              <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
+              <input className="field" placeholder="Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
+              <input
+                className="field"
+                placeholder="Course/Class (e.g. IGCSE Year 10)"
+                value={courseClass}
+                onChange={(e) => setCourseClass(e.target.value)}
+              />
+              <input
+                className="field"
+                placeholder="Subject Code"
+                value={subjectCode}
+                onChange={(e) => setSubjectCode(e.target.value)}
+              />
+              <input
+                className="field"
+                placeholder="Subject Name"
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
+              />
+              <input
+                className="field"
+                placeholder="Full Subject Name"
+                value={fullSubjectName}
+                onChange={(e) => setFullSubjectName(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <input
+                  className="field"
+                  style={{ maxWidth: 100 }}
+                  placeholder="Currency"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                />
+                <input
+                  className="field"
+                  type="number"
+                  placeholder="Rate"
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                />
+              </div>
+            </>
+          ) : (
             <input
               className="field"
-              placeholder="Course (e.g. IGCSE)"
-              value={course}
-              onChange={(e) => setCourse(e.target.value)}
+              type="number"
+              placeholder="Compensation"
+              value={monthlyCost}
+              onChange={(e) => setMonthlyCost(e.target.value)}
             />
           )}
-          <input
-            className="field"
-            type="number"
-            placeholder="Compensation"
-            value={monthlyCost}
-            onChange={(e) => setMonthlyCost(e.target.value)}
-          />
           <div className="space-y-2">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
               Recurring occurrences
@@ -1040,7 +1131,8 @@ function Services() {
 
       <div className="card">
         <h2 className="font-semibold mb-4">Services</h2>
-        <table>
+        <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
               <th>ID</th>
@@ -1048,34 +1140,48 @@ function Services() {
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
-              <th>Course</th>
-              <th>Compensation</th>
+              <th>Batch</th>
+              <th>Board</th>
+              <th>Course/Class</th>
+              <th>Subject Code</th>
+              <th>Subject Name</th>
+              <th>Full Subject Name</th>
+              <th>Rate</th>
               <th>Occurrences</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {services.map((s) => (
-              <tr key={s.ServiceID}>
-                <td>{s.ServiceID}</td>
-                <td>{s.Code || "—"}</td>
-                <td>{s.Name}</td>
-                <td>{s.Type}</td>
-                <td>{s.Group || "Student"}</td>
-                <td>{["Student", "Both"].includes(s.Group || "Student") ? s.Course || "—" : "—"}</td>
-                <td>{s.MonthlyCost}</td>
-                <td style={{ color: "var(--muted)" }}>
-                  {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
-                </td>
-                <td>
-                  <button className="btn-ghost" onClick={() => startEdit(s)}>
-                    Edit
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {services.map((s) => {
+              const eligible = ["Student", "Both"].includes(s.Group || "Student");
+              return (
+                <tr key={s.ServiceID}>
+                  <td>{s.ServiceID}</td>
+                  <td>{s.Code || "—"}</td>
+                  <td>{s.Name}</td>
+                  <td>{s.Type}</td>
+                  <td>{s.Group || "Student"}</td>
+                  <td>{eligible ? s.Batch || "—" : "—"}</td>
+                  <td>{eligible ? s.Board || "—" : "—"}</td>
+                  <td>{eligible ? s.CourseClass || "—" : "—"}</td>
+                  <td>{eligible ? s.SubjectCode || "—" : "—"}</td>
+                  <td>{eligible ? s.SubjectName || "—" : "—"}</td>
+                  <td>{eligible ? s.FullSubjectName || "—" : "—"}</td>
+                  <td>{eligible ? `${s.Currency || "INR"} ${s.Rate ?? 0}` : s.MonthlyCost}</td>
+                  <td style={{ color: "var(--muted)" }}>
+                    {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
+                  </td>
+                  <td>
+                    <button className="btn-ghost" onClick={() => startEdit(s)}>
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

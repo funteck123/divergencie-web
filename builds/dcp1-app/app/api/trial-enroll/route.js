@@ -57,7 +57,7 @@ export async function POST(req) {
       Month: month,
       ScheduledHours: null,
       AttendedHours: null,
-      Amount: Number(service.MonthlyCost) || 0,
+      Amount: Number(service.Rate) || 0,
       INRAmount: 0,
       INRDue: 0,
       Status: "Draft",

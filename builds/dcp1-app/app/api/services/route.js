@@ -35,17 +35,37 @@ function isStudentEligible(group) {
   return group === "Student" || group === "Both";
 }
 
+// Fields that only apply to Student-eligible services (Group Student/Both).
+// Rate+Currency replace MonthlyCost/Compensation as the billing amount for
+// these — Staff-only services keep MonthlyCost/Compensation unchanged.
+function applyStudentOnlyFields(service, body, group) {
+  if (isStudentEligible(group)) {
+    service.Batch = body.batch || "";
+    service.Board = body.board || "";
+    service.CourseClass = body.courseClass || "";
+    service.SubjectCode = body.subjectCode || "";
+    service.SubjectName = body.subjectName || "";
+    service.FullSubjectName = body.fullSubjectName || "";
+    service.Currency = body.currency || "INR";
+    service.Rate = Number(body.rate) || 0;
+  } else {
+    for (const key of ["Batch", "Board", "CourseClass", "SubjectCode", "SubjectName", "FullSubjectName", "Currency", "Rate"]) {
+      delete service[key];
+    }
+  }
+}
+
 // body: { name, type, group: "Student" | "Staff" | "Both", monthlyCost, code?,
-//         course? (Student-eligible services only), occurrences: [{day, time, duration, facilitator}] }
+//         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?, currency?, rate?
+//         (all Student-eligible-only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
 // only book services open to Student, Interview accounts only ones open to
 // Staff. "Both" makes a Service bookable by either. Code is auto-generated
 // from the name unless one is given manually (must be unique either way).
-// Course is a Student-only attribute (e.g. "IGCSE") — Staff-only services
-// never carry one, silently dropped if sent for a Staff-only service.
+// Student-only fields are silently dropped if sent for a Staff-only service.
 export async function POST(req) {
   const body = await req.json();
-  const { name, type, group, monthlyCost, code, course, occurrences } = body;
+  const { name, type, group, monthlyCost, code, occurrences } = body;
 
   if (!name || !type || !["Student", "Staff", "Both"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -84,7 +104,7 @@ export async function POST(req) {
     MonthlyCost: Number(monthlyCost) || 0,
     OccuranceList: occuranceList,
   };
-  if (isStudentEligible(group)) service.Course = course || "";
+  applyStudentOnlyFields(service, body, group);
   db.services.push(service);
   ensureScheduleGenerated(db);
   writeDB(db);
@@ -92,16 +112,17 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, monthlyCost, code?, course?, occurrences: [{occuranceId?, day, time, duration, facilitator}] }
+// body: { serviceId, name, type, group, monthlyCost, code?, occurrences: [{occuranceId?, day, time, duration, facilitator}],
+//         + the Student-only fields listed above }
 // Occurrences are replaced wholesale: existing ones keep their OccuranceID
 // (so already-generated ScheduleItems still trace back to them), new ones
 // get a fresh ID. Already-generated ScheduleItems are historical and are
 // never rewritten — edits only change what ensureScheduleGenerated produces
-// going forward. Code keeps its previous value if not supplied. Course is
-// dropped if the Service is edited to a Staff-only Group.
+// going forward. Code keeps its previous value if not supplied. Student-only
+// fields are dropped if the Service is edited to a Staff-only Group.
 export async function PATCH(req) {
   const body = await req.json();
-  const { serviceId, name, type, group, monthlyCost, code, course, occurrences } = body;
+  const { serviceId, name, type, group, monthlyCost, code, occurrences } = body;
 
   if (!serviceId || !name || !type || !["Student", "Staff", "Both"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -128,11 +149,7 @@ export async function PATCH(req) {
   service.Type = type;
   service.Group = group;
   service.MonthlyCost = Number(monthlyCost) || 0;
-  if (isStudentEligible(group)) {
-    service.Course = course || "";
-  } else {
-    delete service.Course;
-  }
+  applyStudentOnlyFields(service, body, group);
   service.OccuranceList = occurrences.map((o) => ({
     OccuranceID: o.occuranceId || nextId(db, "OCC"),
     Day: o.day,
