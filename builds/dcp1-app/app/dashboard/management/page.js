@@ -196,7 +196,7 @@ function Pipeline() {
   }
   function serviceNameOf(id) {
     const s = services.find((s) => s.ServiceID === id);
-    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : id;
+    return s ? s.Name : id;
   }
   function accountOf(id) {
     return users.find((u) => u.UserID === id);
@@ -871,7 +871,6 @@ function Services() {
   const [name, setName] = useState("");
   const [type, setType] = useState("Class");
   const [group, setGroup] = useState("Student");
-  const [code, setCode] = useState("");
   const [batch, setBatch] = useState("");
   const [board, setBoard] = useState("");
   const [courseClass, setCourseClass] = useState("");
@@ -899,7 +898,6 @@ function Services() {
     setName("");
     setType("Class");
     setGroup("Student");
-    setCode("");
     setBatch("");
     setBoard("");
     setCourseClass("");
@@ -917,7 +915,6 @@ function Services() {
     setName(s.Name);
     setType(s.Type);
     setGroup(s.Group || "Student");
-    setCode(s.Code || "");
     setBatch(s.Batch || "");
     setBoard(s.Board || "");
     setCourseClass(s.CourseClass || "");
@@ -960,7 +957,6 @@ function Services() {
             name,
             type,
             group,
-            code,
             batch,
             board,
             courseClass,
@@ -980,7 +976,6 @@ function Services() {
             name,
             type,
             group,
-            code,
             batch,
             board,
             courseClass,
@@ -1059,21 +1054,13 @@ function Services() {
               </div>
             </>
           ) : (
-            <>
-              <input
-                className="field"
-                placeholder="Code (leave blank to auto-generate)"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-              <input
-                className="field"
-                type="number"
-                placeholder="Compensation"
-                value={monthlyCost}
-                onChange={(e) => setMonthlyCost(e.target.value)}
-              />
-            </>
+            <input
+              className="field"
+              type="number"
+              placeholder="Compensation"
+              value={monthlyCost}
+              onChange={(e) => setMonthlyCost(e.target.value)}
+            />
           )}
           <div className="space-y-2">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
@@ -1138,7 +1125,6 @@ function Services() {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Code</th>
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
@@ -1159,7 +1145,6 @@ function Services() {
               return (
                 <tr key={s.ServiceID}>
                   <td>{s.ServiceID}</td>
-                  <td>{s.Code || "—"}</td>
                   <td>{s.Name}</td>
                   <td>{s.Type}</td>
                   <td>{s.Group || "Student"}</td>
@@ -1276,7 +1261,7 @@ function SchedulePool() {
             <option value="">Select service…</option>
             {eligibleServices.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
-                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                {s.Name}
               </option>
             ))}
           </select>
@@ -1481,7 +1466,7 @@ function Enrollments() {
             <option value="">Select service…</option>
             {services.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
-                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                {s.Name}
               </option>
             ))}
           </select>
@@ -1573,7 +1558,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
             {services.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
-                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                {s.Name}
               </option>
             ))}
           </select>
@@ -1639,7 +1624,7 @@ function Billing() {
   }
   function serviceNameOf(id) {
     const s = services.find((s) => s.ServiceID === id);
-    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : id;
+    return s ? s.Name : id;
   }
 
   async function generate() {
@@ -1794,7 +1779,7 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
           <option value="">Select service…</option>
           {services.map((s) => (
             <option key={s.ServiceID} value={s.ServiceID}>
-              {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+              {s.Name}
             </option>
           ))}
         </select>

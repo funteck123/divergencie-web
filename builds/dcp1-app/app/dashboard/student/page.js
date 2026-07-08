@@ -69,7 +69,7 @@ function Body({ user }) {
 
   function serviceNameOf(id) {
     const s = (data?.services || []).find((s) => s.ServiceID === id);
-    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : "—";
+    return s ? s.Name : "—";
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -85,7 +85,6 @@ function Body({ user }) {
         <table>
           <thead>
             <tr>
-              <th>Code</th>
               <th>Service</th>
               <th>Type</th>
               <th>Rate</th>
@@ -95,7 +94,6 @@ function Body({ user }) {
           <tbody>
             {enrolledServices.map((s) => (
               <tr key={s.ServiceID}>
-                <td>{s.Code}</td>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
                 <td>{s.Currency || "INR"} {s.Rate ?? 0}</td>
@@ -106,7 +104,7 @@ function Body({ user }) {
             ))}
             {enrolledServices.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ color: "var(--muted)" }}>
+                <td colSpan={4} style={{ color: "var(--muted)" }}>
                   No enrollments yet — ask Management to enroll you in a Service.
                 </td>
               </tr>
