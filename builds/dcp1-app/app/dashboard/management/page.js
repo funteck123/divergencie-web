@@ -498,16 +498,6 @@ function Accounts() {
     }
   }
 
-  async function setTimezone(userId, timezone) {
-    setError("");
-    try {
-      await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, timezone }) });
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
-  }
-
   async function setCourse(userId, course) {
     setError("");
     try {
@@ -566,21 +556,7 @@ function Accounts() {
                   "—"
                 )}
               </td>
-              <td>
-                {["Student", "Staff"].includes(u.UserType) ? (
-                  <select
-                    className="field"
-                    style={{ fontSize: "0.75rem", padding: "0.15rem 0.3rem" }}
-                    value={u.Timezone === "Saudi" ? "Saudi" : "India"}
-                    onChange={(e) => setTimezone(u.UserID, e.target.value)}
-                  >
-                    <option value="India">India</option>
-                    <option value="Saudi">Saudi</option>
-                  </select>
-                ) : (
-                  "—"
-                )}
-              </td>
+              <td>{["Student", "Staff"].includes(u.UserType) ? u.Timezone || "India" : "—"}</td>
               <td>
                 {issued[u.UserID] ? (
                   <span style={{ color: "var(--muted)" }}>
@@ -630,12 +606,13 @@ function Accounts() {
   );
 }
 
-// Every account gets Name editing; Staff also gets Role, Parent also gets
-// which Students are linked. Type/Status aren't editable here (Status is
-// state-machine-driven — see /api/convert).
+// Every account gets Name editing; Staff also gets Role + Timezone, Student
+// also gets Timezone, Parent also gets which Students are linked. Type/Status
+// aren't editable here (Status is state-machine-driven — see /api/convert).
 function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
   const [staffRole, setStaffRole] = useState(user.StaffRole || "");
+  const [timezone, setTimezone] = useState(user.Timezone || "India");
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
 
   const students = users.filter((u) => u.UserType === "Student");
@@ -648,6 +625,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     e.preventDefault();
     const fields = { name };
     if (user.UserType === "Staff") fields.staffRole = staffRole;
+    if (["Student", "Staff"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
     onSave(fields);
   }
@@ -667,6 +645,18 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             Staff Role
           </label>
           <input className="field" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
+        </div>
+      )}
+
+      {["Student", "Staff"].includes(user.UserType) && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Timezone
+          </label>
+          <select className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+            <option value="India">India</option>
+            <option value="Saudi">Saudi</option>
+          </select>
         </div>
       )}
 
