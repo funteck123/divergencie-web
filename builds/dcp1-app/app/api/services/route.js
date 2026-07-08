@@ -28,14 +28,24 @@ function autoServiceCode(name, db, excludeServiceId) {
   return candidate;
 }
 
-// body: { name, type, group: "Student" | "Staff" | "Both", monthlyCost, code?, occurrences: [{day, time, duration, facilitator}] }
+// A Service's Group gates who can book it (Trial accounts only see
+// Student-eligible ones, Interview accounts only Staff-eligible ones);
+// "Both" is eligible for either.
+function isStudentEligible(group) {
+  return group === "Student" || group === "Both";
+}
+
+// body: { name, type, group: "Student" | "Staff" | "Both", monthlyCost, code?,
+//         course? (Student-eligible services only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
 // only book services open to Student, Interview accounts only ones open to
 // Staff. "Both" makes a Service bookable by either. Code is auto-generated
 // from the name unless one is given manually (must be unique either way).
+// Course is a Student-only attribute (e.g. "IGCSE") — Staff-only services
+// never carry one, silently dropped if sent for a Staff-only service.
 export async function POST(req) {
   const body = await req.json();
-  const { name, type, group, monthlyCost, code, occurrences } = body;
+  const { name, type, group, monthlyCost, code, course, occurrences } = body;
 
   if (!name || !type || !["Student", "Staff", "Both"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -74,6 +84,7 @@ export async function POST(req) {
     MonthlyCost: Number(monthlyCost) || 0,
     OccuranceList: occuranceList,
   };
+  if (isStudentEligible(group)) service.Course = course || "";
   db.services.push(service);
   ensureScheduleGenerated(db);
   writeDB(db);
@@ -81,15 +92,16 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, monthlyCost, code?, occurrences: [{occuranceId?, day, time, duration, facilitator}] }
+// body: { serviceId, name, type, group, monthlyCost, code?, course?, occurrences: [{occuranceId?, day, time, duration, facilitator}] }
 // Occurrences are replaced wholesale: existing ones keep their OccuranceID
 // (so already-generated ScheduleItems still trace back to them), new ones
 // get a fresh ID. Already-generated ScheduleItems are historical and are
 // never rewritten — edits only change what ensureScheduleGenerated produces
-// going forward. Code keeps its previous value if not supplied.
+// going forward. Code keeps its previous value if not supplied. Course is
+// dropped if the Service is edited to a Staff-only Group.
 export async function PATCH(req) {
   const body = await req.json();
-  const { serviceId, name, type, group, monthlyCost, code, occurrences } = body;
+  const { serviceId, name, type, group, monthlyCost, code, course, occurrences } = body;
 
   if (!serviceId || !name || !type || !["Student", "Staff", "Both"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -116,6 +128,11 @@ export async function PATCH(req) {
   service.Type = type;
   service.Group = group;
   service.MonthlyCost = Number(monthlyCost) || 0;
+  if (isStudentEligible(group)) {
+    service.Course = course || "";
+  } else {
+    delete service.Course;
+  }
   service.OccuranceList = occurrences.map((o) => ({
     OccuranceID: o.occuranceId || nextId(db, "OCC"),
     Day: o.day,

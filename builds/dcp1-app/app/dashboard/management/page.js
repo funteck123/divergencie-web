@@ -872,9 +872,12 @@ function Services() {
   const [type, setType] = useState("Class");
   const [group, setGroup] = useState("Student");
   const [code, setCode] = useState("");
+  const [course, setCourse] = useState("");
   const [monthlyCost, setMonthlyCost] = useState("");
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
+
+  const studentEligible = group === "Student" || group === "Both";
 
   async function load() {
     const { services } = await api("/api/services");
@@ -890,6 +893,7 @@ function Services() {
     setType("Class");
     setGroup("Student");
     setCode("");
+    setCourse("");
     setMonthlyCost("");
     setOccurrences([{ ...EMPTY_OCC }]);
   }
@@ -900,6 +904,7 @@ function Services() {
     setType(s.Type);
     setGroup(s.Group || "Student");
     setCode(s.Code || "");
+    setCourse(s.Course || "");
     setMonthlyCost(s.MonthlyCost);
     setOccurrences(
       s.OccuranceList.map((o) => ({
@@ -929,12 +934,12 @@ function Services() {
       if (editingId) {
         await api("/api/services", {
           method: "PATCH",
-          body: JSON.stringify({ serviceId: editingId, name, type, group, code, monthlyCost, occurrences }),
+          body: JSON.stringify({ serviceId: editingId, name, type, group, code, course, monthlyCost, occurrences }),
         });
       } else {
         await api("/api/services", {
           method: "POST",
-          body: JSON.stringify({ name, type, group, code, monthlyCost, occurrences }),
+          body: JSON.stringify({ name, type, group, code, course, monthlyCost, occurrences }),
         });
       }
       resetForm();
@@ -962,6 +967,14 @@ function Services() {
             <option value="Staff">Staff (Interview-eligible)</option>
             <option value="Both">Both (Trial + Interview eligible)</option>
           </select>
+          {studentEligible && (
+            <input
+              className="field"
+              placeholder="Course (e.g. IGCSE)"
+              value={course}
+              onChange={(e) => setCourse(e.target.value)}
+            />
+          )}
           <input
             className="field"
             type="number"
@@ -1035,6 +1048,7 @@ function Services() {
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
+              <th>Course</th>
               <th>Compensation</th>
               <th>Occurrences</th>
               <th></th>
@@ -1048,6 +1062,7 @@ function Services() {
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
                 <td>{s.Group || "Student"}</td>
+                <td>{["Student", "Both"].includes(s.Group || "Student") ? s.Course || "—" : "—"}</td>
                 <td>{s.MonthlyCost}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
