@@ -3,7 +3,6 @@
 import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
-import ScheduleImage from "@/components/ScheduleImage";
 import { api, groupMatches, useSort } from "@/lib/client";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 
@@ -575,7 +574,13 @@ function Accounts() {
               </td>
               <td>
                 {["Student", "Staff"].includes(u.UserType) ? (
-                  <ScheduleImage userId={u.UserID} userName={u.Name} thumbnail />
+                  <a
+                    className="btn-ghost"
+                    href={`/api/schedule/image?userId=${u.UserID}&download=1`}
+                    download={`DC_Schedule_${u.Name}.png`}
+                  >
+                    Download PNG
+                  </a>
                 ) : (
                   "—"
                 )}
