@@ -515,16 +515,6 @@ function Accounts() {
     }
   }
 
-  async function setCourse(userId, course) {
-    setError("");
-    try {
-      await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, course }) });
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
-  }
-
   async function saveEdit(userId, fields) {
     setError("");
     try {
@@ -566,13 +556,7 @@ function Accounts() {
               <td>
                 <Badge kind={u.Status === "Converted" ? "info" : u.Status === "Inactive" ? "bad" : "good"}>{u.Status}</Badge>
               </td>
-              <td>
-                {u.UserType === "Student" ? (
-                  <CourseInput userId={u.UserID} initialCourse={u.Course} onSave={setCourse} />
-                ) : (
-                  "—"
-                )}
-              </td>
+              <td>{u.UserType === "Student" ? u.Course || "—" : "—"}</td>
               <td>{["Student", "Staff"].includes(u.UserType) ? timezoneLabel(u.Timezone) : "—"}</td>
               <td>
                 {issued[u.UserID] ? (
@@ -624,17 +608,18 @@ function Accounts() {
 }
 
 // Every account gets Name + credentials editing; Staff also gets Role +
-// Timezone, Student also gets Timezone, Parent also gets which Students are
-// linked. Type is never editable here — conversion between types only
-// happens through /api/convert, which handles ID reassignment and invoice
-// carry-over that a raw type swap would skip. Status is limited to
-// Active/Inactive; "Converted" is a terminal state stamped by /api/convert
-// alongside ConvertedToUserID, so the Status field is hidden once an account
-// has already converted.
+// Timezone, Student also gets Course + Timezone, Parent also gets which
+// Students are linked. Type is never editable here — conversion between
+// types only happens through /api/convert, which handles ID reassignment
+// and invoice carry-over that a raw type swap would skip. Status is limited
+// to Active/Inactive; "Converted" is a terminal state stamped by
+// /api/convert alongside ConvertedToUserID, so the Status field is hidden
+// once an account has already converted.
 function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
   const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
   const [staffRole, setStaffRole] = useState(user.StaffRole || "");
+  const [course, setCourse] = useState(user.Course || "");
   const [timezone, setTimezone] = useState(normalizeTimezone(user.Timezone));
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
   const [username, setUsername] = useState(user.Username || "");
@@ -651,6 +636,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     const fields = { name, username };
     if (user.Status !== "Converted") fields.status = status;
     if (user.UserType === "Staff") fields.staffRole = staffRole;
+    if (user.UserType === "Student") fields.course = course;
     if (["Student", "Staff"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
     if (password.trim()) fields.password = password;
@@ -705,6 +691,15 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </div>
       )}
 
+      {user.UserType === "Student" && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Course
+          </label>
+          <input className="field" value={course} onChange={(e) => setCourse(e.target.value)} />
+        </div>
+      )}
+
       {["Student", "Staff"].includes(user.UserType) && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
@@ -740,29 +735,6 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </button>
       </div>
     </form>
-  );
-}
-
-// Local draft so keystrokes don't fight the polled `users` list — saves on blur/Enter.
-function CourseInput({ userId, initialCourse, onSave }) {
-  const [value, setValue] = useState(initialCourse || "");
-
-  function save() {
-    if (value !== (initialCourse || "")) onSave(userId, value);
-  }
-
-  return (
-    <input
-      className="field"
-      style={{ fontSize: "0.75rem", padding: "0.15rem 0.3rem", width: 140 }}
-      placeholder="—"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={save}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") e.target.blur();
-      }}
-    />
   );
 }
 
