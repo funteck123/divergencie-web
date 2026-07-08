@@ -543,6 +543,7 @@ function Accounts() {
             <th>Type</th>
             <th>Status</th>
             <th>Course</th>
+            <th>Timezone</th>
             <th>New credentials</th>
             <th>Schedule</th>
             <th></th>
@@ -566,6 +567,21 @@ function Accounts() {
                 )}
               </td>
               <td>
+                {["Student", "Staff"].includes(u.UserType) ? (
+                  <select
+                    className="field"
+                    style={{ fontSize: "0.75rem", padding: "0.15rem 0.3rem" }}
+                    value={u.Timezone === "Saudi" ? "Saudi" : "India"}
+                    onChange={(e) => setTimezone(u.UserID, e.target.value)}
+                  >
+                    <option value="India">India</option>
+                    <option value="Saudi">Saudi</option>
+                  </select>
+                ) : (
+                  "—"
+                )}
+              </td>
+              <td>
                 {issued[u.UserID] ? (
                   <span style={{ color: "var(--muted)" }}>
                     {issued[u.UserID].username} / {issued[u.UserID].password}
@@ -582,18 +598,7 @@ function Accounts() {
               </td>
               <td>
                 {["Student", "Staff"].includes(u.UserType) ? (
-                  <div className="space-y-1">
-                    <ScheduleImage userId={u.UserID} userName={u.Name} thumbnail />
-                    <select
-                      className="field"
-                      style={{ fontSize: "0.75rem", padding: "0.15rem 0.3rem" }}
-                      value={u.Timezone === "Saudi" ? "Saudi" : "India"}
-                      onChange={(e) => setTimezone(u.UserID, e.target.value)}
-                    >
-                      <option value="India">India</option>
-                      <option value="Saudi">Saudi</option>
-                    </select>
-                  </div>
+                  <ScheduleImage userId={u.UserID} userName={u.Name} thumbnail />
                 ) : (
                   "—"
                 )}
@@ -611,7 +616,7 @@ function Accounts() {
             </tr>
             {editingId === u.UserID && (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={9}>
                   <EditAccountForm user={u} users={users} onSave={(fields) => saveEdit(u.UserID, fields)} onCancel={() => setEditingId(null)} />
                 </td>
               </tr>
