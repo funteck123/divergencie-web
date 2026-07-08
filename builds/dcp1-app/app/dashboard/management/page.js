@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
+import ScheduleImage from "@/components/ScheduleImage";
 import { api, groupMatches, useSort } from "@/lib/client";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 
@@ -541,6 +542,7 @@ function Accounts() {
             <th>Course</th>
             <th>Timezone</th>
             <th>New credentials</th>
+            <th>Schedule</th>
             <th></th>
           </tr>
         </thead>
@@ -571,6 +573,13 @@ function Accounts() {
                   "—"
                 )}
               </td>
+              <td>
+                {["Student", "Staff"].includes(u.UserType) ? (
+                  <ScheduleImage userId={u.UserID} userName={u.Name} thumbnail />
+                ) : (
+                  "—"
+                )}
+              </td>
               <td className="flex gap-2">
                 {["TrialAcc", "InterviewAcc"].includes(u.UserType) && u.Status !== "Converted" && (
                   <button className="btn" onClick={() => convert(u.UserID)}>
@@ -584,7 +593,7 @@ function Accounts() {
             </tr>
             {editingId === u.UserID && (
               <tr>
-                <td colSpan={8}>
+                <td colSpan={9}>
                   <EditAccountForm user={u} users={users} onSave={(fields) => saveEdit(u.UserID, fields)} onCancel={() => setEditingId(null)} />
                 </td>
               </tr>
