@@ -87,7 +87,7 @@ function Body({ user }) {
             <tr>
               <th>Service</th>
               <th>Type</th>
-              <th>Compensation</th>
+              <th>Rate</th>
               <th>Occurrences</th>
             </tr>
           </thead>
@@ -96,7 +96,7 @@ function Body({ user }) {
               <tr key={s.ServiceID}>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
-                <td>{s.MonthlyCost}</td>
+                <td>{s.Currency || "INR"} {s.Rate ?? 0}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>

@@ -1061,7 +1061,6 @@ function Services() {
   const [fullSubjectName, setFullSubjectName] = useState("");
   const [currency, setCurrency] = useState("INR");
   const [rate, setRate] = useState("");
-  const [monthlyCost, setMonthlyCost] = useState("");
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
@@ -1092,7 +1091,6 @@ function Services() {
     setFullSubjectName("");
     setCurrency("INR");
     setRate("");
-    setMonthlyCost("");
     setOccurrences([{ ...EMPTY_OCC }]);
   }
 
@@ -1109,7 +1107,6 @@ function Services() {
     setFullSubjectName(s.FullSubjectName || "");
     setCurrency(s.Currency || "INR");
     setRate(s.Rate ?? "");
-    setMonthlyCost(s.MonthlyCost);
     setOccurrences(
       s.OccuranceList.map((o) => ({
         occuranceId: o.OccuranceID,
@@ -1155,7 +1152,6 @@ function Services() {
             fullSubjectName,
             currency,
             rate,
-            monthlyCost,
             occurrences,
           }),
         });
@@ -1174,7 +1170,6 @@ function Services() {
             fullSubjectName,
             currency,
             rate,
-            monthlyCost,
             occurrences,
           }),
         });
@@ -1206,7 +1201,7 @@ function Services() {
               ))}
             </div>
           </div>
-          {cohortEligible ? (
+          {cohortEligible && (
             <>
               <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
               <input className="field" placeholder="Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
@@ -1234,32 +1229,24 @@ function Services() {
                 value={fullSubjectName}
                 onChange={(e) => setFullSubjectName(e.target.value)}
               />
-              <div className="flex gap-2">
-                <input
-                  className="field"
-                  style={{ maxWidth: 100 }}
-                  placeholder="Currency"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                />
-                <input
-                  className="field"
-                  type="number"
-                  placeholder="Rate"
-                  value={rate}
-                  onChange={(e) => setRate(e.target.value)}
-                />
-              </div>
             </>
-          ) : (
+          )}
+          <div className="flex gap-2">
+            <input
+              className="field"
+              style={{ maxWidth: 100 }}
+              placeholder="Currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            />
             <input
               className="field"
               type="number"
-              placeholder="Compensation"
-              value={monthlyCost}
-              onChange={(e) => setMonthlyCost(e.target.value)}
+              placeholder="Rate"
+              value={rate}
+              onChange={(e) => setRate(e.target.value)}
             />
-          )}
+          </div>
           <div className="space-y-2">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
               Recurring occurrences
@@ -1323,9 +1310,9 @@ function Services() {
   );
 }
 
-// One table per Group — Student/Teacher services carry the cohort fields
-// (Batch/Board/Subject.../Rate), every other group just shows Compensation,
-// since those are the only two attribute shapes a service can have.
+// One table per Group — every service shows Rate (the one billing field);
+// Student/Teacher services additionally carry the cohort curriculum fields
+// (Batch/Board/Subject...).
 function ServiceGroupTable({ groupName, services, onEdit }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const colSpan = isCohort ? 13 : 7;
@@ -1341,7 +1328,7 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
-              {isCohort ? (
+              {isCohort && (
                 <>
                   <th>Batch</th>
                   <th>Board</th>
@@ -1349,11 +1336,9 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
                   <th>Subject Code</th>
                   <th>Subject Name</th>
                   <th>Full Subject Name</th>
-                  <th>Rate</th>
                 </>
-              ) : (
-                <th>Compensation</th>
               )}
+              <th>Rate</th>
               <th>Occurrences</th>
               <th></th>
             </tr>
@@ -1365,7 +1350,7 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
                 <td>{normalizeGroup(s.Group).join(", ")}</td>
-                {isCohort ? (
+                {isCohort && (
                   <>
                     <td>{s.Batch || "—"}</td>
                     <td>{s.Board || "—"}</td>
@@ -1373,13 +1358,11 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
                     <td>{s.SubjectCode || "—"}</td>
                     <td>{s.SubjectName || "—"}</td>
                     <td>{s.FullSubjectName || "—"}</td>
-                    <td>
-                      {s.Currency || "INR"} {s.Rate ?? 0}
-                    </td>
                   </>
-                ) : (
-                  <td>{s.MonthlyCost}</td>
                 )}
+                <td>
+                  {s.Currency || "INR"} {s.Rate ?? 0}
+                </td>
                 <td style={{ color: "var(--muted)" }}>{s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
                 <td>
                   <button className="btn-ghost" onClick={() => onEdit(s)}>

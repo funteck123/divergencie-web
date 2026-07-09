@@ -18,10 +18,10 @@ function isValidGroup(group) {
   return Array.isArray(group) && group.length > 0 && group.every((g) => ALL_GROUPS.includes(g));
 }
 
-// Fields that only apply to services open to Student or Teacher (the two
-// "attends a cohort" account types). Rate+Currency replace MonthlyCost/
-// Compensation as the billing amount for these — every other group keeps
-// MonthlyCost/Compensation unchanged.
+// Rate + Currency is the one billing field every service has now, regardless
+// of Group — Compensation/MonthlyCost was a separate term for the same
+// concept and has been removed. Batch/Board/Subject fields are still
+// Student/Teacher-only (a service's curriculum details, not its billing).
 function hasCohortFields(group) {
   return group.includes("Student") || group.includes("Teacher");
 }
@@ -34,25 +34,23 @@ function applyCohortServiceFields(service, body, group) {
     service.SubjectCode = body.subjectCode || "";
     service.SubjectName = body.subjectName || "";
     service.FullSubjectName = body.fullSubjectName || "";
-    service.Currency = body.currency || "INR";
-    service.Rate = Number(body.rate) || 0;
   } else {
-    for (const key of ["Batch", "Board", "CourseClass", "SubjectCode", "SubjectName", "FullSubjectName", "Currency", "Rate"]) {
+    for (const key of ["Batch", "Board", "CourseClass", "SubjectCode", "SubjectName", "FullSubjectName"]) {
       delete service[key];
     }
   }
 }
 
-// body: { name, type, group: string[] (subset of ALL_GROUPS), monthlyCost,
-//         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?, currency?, rate?
-//         (all Student/Teacher-only), occurrences: [{day, time, duration, facilitator}] }
+// body: { name, type, group: string[] (subset of ALL_GROUPS), rate, currency?,
+//         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?
+//         (Student/Teacher-only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
 // only book services open to Student, Interview accounts only ones open to
 // Staff. A service can belong to several groups at once. Cohort-only fields
 // are silently dropped if sent for a service not open to Student/Teacher.
 export async function POST(req) {
   const body = await req.json();
-  const { name, type, group, monthlyCost, occurrences } = body;
+  const { name, type, group, rate, currency, occurrences } = body;
 
   if (!name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -77,7 +75,8 @@ export async function POST(req) {
     Type: type,
     Group: group,
     Name: name,
-    MonthlyCost: Number(monthlyCost) || 0,
+    Currency: currency || "INR",
+    Rate: Number(rate) || 0,
     OccuranceList: occuranceList,
   };
   applyCohortServiceFields(service, body, group);
@@ -88,17 +87,17 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, monthlyCost,
-//         occurrences: [{occuranceId?, day, time, duration, facilitator}], + the Student-only fields listed above }
+// body: { serviceId, name, type, group, rate, currency?,
+//         occurrences: [{occuranceId?, day, time, duration, facilitator}], + the Student/Teacher-only fields listed above }
 // Occurrences are replaced wholesale: existing ones keep their OccuranceID
 // (so already-generated ScheduleItems still trace back to them), new ones
 // get a fresh ID. Already-generated ScheduleItems are historical and are
 // never rewritten — edits only change what ensureScheduleGenerated produces
-// going forward. Student-only fields are dropped if the Service is edited
-// to a Staff-only Group.
+// going forward. Student/Teacher-only fields are dropped if the Service is
+// edited to a Group without either.
 export async function PATCH(req) {
   const body = await req.json();
-  const { serviceId, name, type, group, monthlyCost, occurrences } = body;
+  const { serviceId, name, type, group, rate, currency, occurrences } = body;
 
   if (!serviceId || !name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -114,7 +113,8 @@ export async function PATCH(req) {
   service.Name = name;
   service.Type = type;
   service.Group = group;
-  service.MonthlyCost = Number(monthlyCost) || 0;
+  service.Currency = currency || "INR";
+  service.Rate = Number(rate) || 0;
   delete service.Code;
   applyCohortServiceFields(service, body, group);
   service.OccuranceList = occurrences.map((o) => ({
