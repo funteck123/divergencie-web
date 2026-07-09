@@ -38,11 +38,16 @@ const FALLBACK_TIMES = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "1
 // is passed in, so a single template works for every timezone, not just
 // the original India/Saudi pair.
 const THEMES = {
+  // The day-header bar baked into this template sits at y~310-419 (below
+  // the logo already) — the shared ROW_AREA.top of 300 used to start
+  // repainting a few pixels into it and erase it entirely. rowAreaTop
+  // pushes the redrawn grid to start right after the header instead.
   student: {
     file: path.join(ASSETS_DIR, "student-ist.png"),
     nameCoord: [1422, 125],
     classCoord: [1422, 199],
     timezoneCoord: [1422, 256],
+    rowAreaTop: 425,
   },
   // Staff whose StaffRole is "Teacher" get the Teacher Schedule template;
   // every other StaffRole gets the plain Staff Schedule template. Both
