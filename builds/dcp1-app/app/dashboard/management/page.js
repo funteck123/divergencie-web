@@ -525,91 +525,153 @@ function Accounts() {
     }
   }
 
+  const isTeacher = (u) => u.UserType === "Staff" && (u.StaffRole || "Teacher") === "Teacher";
+  const studentUsers = users.filter((u) => u.UserType === "Student");
+  const teacherUsers = users.filter(isTeacher);
+  const otherStaffUsers = users.filter((u) => u.UserType === "Staff" && !isTeacher(u));
+  const otherUsers = users.filter((u) => !["Student", "Staff"].includes(u.UserType));
+
+  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit };
+
   return (
     <div className="space-y-6">
       <CreateAccount onCreated={load} users={users} />
-      <div className="card">
-      <h2 className="font-semibold mb-4">All Accounts</h2>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+
+      <AccountGroupTable
+        title="Student Accounts"
+        rows={studentUsers}
+        columns={[
+          { header: "Course", render: (u) => u.Course || "—" },
+          { header: "Batch", render: (u) => u.Batch || "—" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
+        ]}
+        showSchedule
+        {...sharedProps}
+      />
+
+      <AccountGroupTable
+        title="Teacher Accounts"
+        rows={teacherUsers}
+        columns={[
+          { header: "Batch", render: (u) => u.Batch || "—" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
+        ]}
+        showSchedule
+        {...sharedProps}
+      />
+
+      <AccountGroupTable
+        title="Staff Accounts"
+        rows={otherStaffUsers}
+        columns={[
+          { header: "Role", render: (u) => u.StaffRole || "—" },
+          { header: "Department", render: (u) => u.Department || "—" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
+        ]}
+        showSchedule
+        {...sharedProps}
+      />
+
+      <AccountGroupTable title="Other Accounts" rows={otherUsers} columns={[{ header: "Type", render: (u) => u.UserType }]} showConvert {...sharedProps} />
+    </div>
+  );
+}
+
+// Shared table renderer for one account group — the four groups (Student,
+// Teacher, other Staff, everything else) have genuinely different
+// attributes (Course+Batch vs Batch vs Role+Department vs just Type), so
+// each passes its own `columns` def instead of one table trying to show
+// every possible field for every account type.
+function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert }) {
+  const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">{title}</h2>
       <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "max-content", minWidth: "100%" }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Course</th>
-            <th>Timezone</th>
-            <th>New credentials</th>
-            <th>Schedule</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <Fragment key={u.UserID}>
+        <table style={{ width: "max-content", minWidth: "100%" }}>
+          <thead>
             <tr>
-              <td>{u.UserID}</td>
-              <td>{u.Name}</td>
-              <td>{u.UserType}</td>
-              <td>
-                <Badge kind={u.Status === "Converted" ? "info" : u.Status === "Inactive" ? "bad" : "good"}>{u.Status}</Badge>
-              </td>
-              <td>{u.UserType === "Student" ? u.Course || "—" : "—"}</td>
-              <td>{["Student", "Staff"].includes(u.UserType) ? timezoneLabel(u.Timezone) : "—"}</td>
-              <td>
-                {issued[u.UserID] ? (
-                  <span style={{ color: "var(--muted)" }}>
-                    {issued[u.UserID].username} / {issued[u.UserID].password}
-                  </span>
-                ) : u.ConvertedToUserID ? (
-                  <span style={{ color: "var(--muted)" }}>→ {u.ConvertedToUserID}</span>
-                ) : u.Username ? (
-                  <span style={{ color: "var(--muted)" }}>
-                    {u.Username} / {u.Password}
-                  </span>
-                ) : (
-                  "—"
-                )}
-              </td>
-              <td>
-                {["Student", "Staff"].includes(u.UserType) ? (
-                  <a
-                    className="btn-ghost"
-                    style={{ whiteSpace: "nowrap" }}
-                    href={`/api/schedule/image?userId=${u.UserID}&download=1`}
-                    download={`DC_Schedule_${u.Name}.png`}
-                  >
-                    Download PNG
-                  </a>
-                ) : (
-                  "—"
-                )}
-              </td>
-              <td className="flex gap-2">
-                {["TrialAcc", "InterviewAcc"].includes(u.UserType) && u.Status !== "Converted" && (
-                  <button className="btn" onClick={() => convert(u.UserID)}>
-                    Convert to {u.UserType === "TrialAcc" ? "Student" : "Staff"}
-                  </button>
-                )}
-                <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
-                  {editingId === u.UserID ? "Close" : "Edit"}
-                </button>
-              </td>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Status</th>
+              {columns.map((c) => (
+                <th key={c.header}>{c.header}</th>
+              ))}
+              <th>New credentials</th>
+              {showSchedule && <th>Schedule</th>}
+              <th></th>
             </tr>
-            {editingId === u.UserID && (
+          </thead>
+          <tbody>
+            {rows.map((u) => (
+              <Fragment key={u.UserID}>
+                <tr>
+                  <td>{u.UserID}</td>
+                  <td>{u.Name}</td>
+                  <td>
+                    <Badge kind={u.Status === "Converted" ? "info" : u.Status === "Inactive" ? "bad" : "good"}>{u.Status}</Badge>
+                  </td>
+                  {columns.map((c) => (
+                    <td key={c.header}>{c.render(u)}</td>
+                  ))}
+                  <td>
+                    {issued[u.UserID] ? (
+                      <span style={{ color: "var(--muted)" }}>
+                        {issued[u.UserID].username} / {issued[u.UserID].password}
+                      </span>
+                    ) : u.ConvertedToUserID ? (
+                      <span style={{ color: "var(--muted)" }}>→ {u.ConvertedToUserID}</span>
+                    ) : u.Username ? (
+                      <span style={{ color: "var(--muted)" }}>
+                        {u.Username} / {u.Password}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  {showSchedule && (
+                    <td>
+                      <a
+                        className="btn-ghost"
+                        style={{ whiteSpace: "nowrap" }}
+                        href={`/api/schedule/image?userId=${u.UserID}&download=1`}
+                        download={`DC_Schedule_${u.Name}.png`}
+                      >
+                        Download PNG
+                      </a>
+                    </td>
+                  )}
+                  <td className="flex gap-2">
+                    {showConvert && ["TrialAcc", "InterviewAcc"].includes(u.UserType) && u.Status !== "Converted" && (
+                      <button className="btn" onClick={() => convert(u.UserID)}>
+                        Convert to {u.UserType === "TrialAcc" ? "Student" : "Staff"}
+                      </button>
+                    )}
+                    <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
+                      {editingId === u.UserID ? "Close" : "Edit"}
+                    </button>
+                  </td>
+                </tr>
+                {editingId === u.UserID && (
+                  <tr>
+                    <td colSpan={colSpan}>
+                      <EditAccountForm user={u} users={users} onSave={(fields) => saveEdit(u.UserID, fields)} onCancel={() => setEditingId(null)} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            ))}
+            {rows.length === 0 && (
               <tr>
-                <td colSpan={9}>
-                  <EditAccountForm user={u} users={users} onSave={(fields) => saveEdit(u.UserID, fields)} onCancel={() => setEditingId(null)} />
+                <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
+                  None yet.
                 </td>
               </tr>
             )}
-            </Fragment>
-          ))}
-        </tbody>
-      </table>
-      </div>
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -628,12 +690,15 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
   const [staffRole, setStaffRole] = useState(user.StaffRole || "");
   const [course, setCourse] = useState(user.Course || "");
+  const [batch, setBatch] = useState(user.Batch || "");
+  const [department, setDepartment] = useState(user.Department || "");
   const [timezone, setTimezone] = useState(normalizeTimezone(user.Timezone));
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
   const [username, setUsername] = useState(user.Username || "");
   const [password, setPassword] = useState("");
 
   const students = users.filter((u) => u.UserType === "Student");
+  const isTeacherRole = user.UserType === "Staff" && (staffRole.trim() || "Teacher") === "Teacher";
 
   function toggleStudent(id) {
     setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -643,8 +708,15 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     e.preventDefault();
     const fields = { name, username };
     if (user.Status !== "Converted") fields.status = status;
-    if (user.UserType === "Staff") fields.staffRole = staffRole;
-    if (user.UserType === "Student") fields.course = course;
+    if (user.UserType === "Staff") {
+      fields.staffRole = staffRole;
+      if (isTeacherRole) fields.batch = batch;
+      else fields.department = department;
+    }
+    if (user.UserType === "Student") {
+      fields.course = course;
+      fields.batch = batch;
+    }
     if (["Student", "Staff"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
     if (password.trim()) fields.password = password;
@@ -699,12 +771,34 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </div>
       )}
 
+      {user.UserType === "Staff" && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            {isTeacherRole ? "Batch" : "Department"}
+          </label>
+          {isTeacherRole ? (
+            <input className="field" value={batch} onChange={(e) => setBatch(e.target.value)} />
+          ) : (
+            <input className="field" value={department} onChange={(e) => setDepartment(e.target.value)} />
+          )}
+        </div>
+      )}
+
       {user.UserType === "Student" && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Course
           </label>
           <input className="field" value={course} onChange={(e) => setCourse(e.target.value)} />
+        </div>
+      )}
+
+      {user.UserType === "Student" && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Batch
+          </label>
+          <input className="field" value={batch} onChange={(e) => setBatch(e.target.value)} />
         </div>
       )}
 
@@ -754,11 +848,14 @@ function CreateAccount({ onCreated, users }) {
   const [studentIds, setStudentIds] = useState([]);
   const [staffRole, setStaffRole] = useState("");
   const [course, setCourse] = useState("");
+  const [batch, setBatch] = useState("");
+  const [department, setDepartment] = useState("");
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [issued, setIssued] = useState(null);
   const [error, setError] = useState("");
 
   const students = users.filter((u) => u.UserType === "Student");
+  const isTeacherRole = userType === "Staff" && (staffRole.trim() || "Teacher") === "Teacher";
 
   function toggleStudent(id) {
     setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -769,6 +866,8 @@ function CreateAccount({ onCreated, users }) {
     setStudentIds([]);
     setStaffRole("");
     setCourse("");
+    setBatch("");
+    setDepartment("");
     setTimezone("Asia/Kolkata");
   }
 
@@ -781,9 +880,12 @@ function CreateAccount({ onCreated, users }) {
       if (userType === "Staff") {
         body.staffRole = staffRole;
         body.timezone = timezone;
+        if (isTeacherRole) body.batch = batch;
+        else body.department = department;
       }
       if (userType === "Student") {
         body.course = course;
+        body.batch = batch;
         body.timezone = timezone;
       }
       const res = await api("/api/users", { method: "POST", body: JSON.stringify(body) });
@@ -835,8 +937,17 @@ function CreateAccount({ onCreated, users }) {
           <input className="field" placeholder="Staff role (default: Teacher)" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
         )}
 
+        {userType === "Staff" && (isTeacherRole ? (
+          <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
+        ) : (
+          <input className="field" placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} />
+        ))}
+
         {userType === "Student" && (
-          <input className="field" placeholder="Course" value={course} onChange={(e) => setCourse(e.target.value)} />
+          <>
+            <input className="field" placeholder="Course" value={course} onChange={(e) => setCourse(e.target.value)} />
+            <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
+          </>
         )}
 
         {["Student", "Staff"].includes(userType) && (

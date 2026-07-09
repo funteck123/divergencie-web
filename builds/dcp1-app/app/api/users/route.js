@@ -36,12 +36,28 @@ const ID_PREFIX = {
   InterviewAcc: "INT",
 };
 
+// Batch is a Student attribute, and also applies to Staff whose StaffRole
+// is exactly "Teacher" (same cohort concept as a Student's). Every other
+// StaffRole gets Department instead — the two are mutually exclusive, never
+// both present on the same account.
+function applyCohortField(user, userType, staffRole, batch, department) {
+  const isTeacherRole = userType === "Staff" && staffRole === "Teacher";
+  if (userType === "Student" || isTeacherRole) {
+    user.Batch = batch || "";
+    delete user.Department;
+  } else if (userType === "Staff") {
+    user.Department = department || "";
+    delete user.Batch;
+  }
+}
+
 // Management creates any account type directly from the Accounts tab.
 // Student/Staff created here start fresh (no linked Trial/Interview record,
 // no invoice carry-over) — that history only exists via /api/convert.
-// body: { userType, name, studentIds?: [] (Parent), staffRole?, course?, timezone? }
+// body: { userType, name, studentIds?: [] (Parent), staffRole?, course?,
+//         batch?, department?, timezone? }
 export async function POST(req) {
-  const { userType, name, studentIds, staffRole, course, timezone } = await req.json();
+  const { userType, name, studentIds, staffRole, course, batch, department, timezone } = await req.json();
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -59,14 +75,16 @@ export async function POST(req) {
   const userId = nextId(db, ID_PREFIX[userType]);
   const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
   if (userType === "Parent") user.StudentIDs = studentIds;
+  const effectiveStaffRole = staffRole || "Teacher";
   if (userType === "Staff") {
-    user.StaffRole = staffRole || "Teacher";
+    user.StaffRole = effectiveStaffRole;
     user.Timezone = normalizeTimezone(timezone);
   }
   if (userType === "Student") {
     user.Course = course || "";
     user.Timezone = normalizeTimezone(timezone);
   }
+  applyCohortField(user, userType, effectiveStaffRole, batch, department);
 
   const username = makeUsername(name, db);
   const password = randomPassword();
@@ -84,10 +102,15 @@ export async function POST(req) {
 // state stamped by /api/convert alongside ConvertedToUserID, and can't be
 // set or cleared from this endpoint.
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
-//         staffRole?, studentIds?: [], username?, password? }
+//         staffRole?, batch?, department?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
-  const { userId, name, status, timezone, course, staffRole, studentIds, username, password } = await req.json();
-  if ([name, status, timezone, course, staffRole, studentIds, username, password].every((v) => v === undefined)) {
+  const { userId, name, status, timezone, course, staffRole, batch, department, studentIds, username, password } =
+    await req.json();
+  if (
+    [name, status, timezone, course, staffRole, batch, department, studentIds, username, password].every(
+      (v) => v === undefined
+    )
+  ) {
     return NextResponse.json({ error: "at least one field to update is required." }, { status: 400 });
   }
   if (name !== undefined && !name.trim()) {
@@ -131,6 +154,9 @@ export async function PATCH(req) {
   if (course !== undefined) user.Course = course;
   if (staffRole !== undefined) user.StaffRole = staffRole;
   if (studentIds !== undefined) user.StudentIDs = studentIds;
+  if (batch !== undefined || department !== undefined) {
+    applyCohortField(user, user.UserType, user.StaffRole, batch, department);
+  }
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
   writeDB(db);
