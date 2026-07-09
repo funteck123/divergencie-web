@@ -35,11 +35,16 @@ export async function GET(req) {
     balanceLabel: "Balance Due:",
     currency: service?.Currency || "INR",
     balance: invoice.Amount,
+    // Quantity is always 1 (one billing line for this month), Rate equals
+    // the actual Amount charged — Quantity x Rate must equal Amount on a
+    // real invoice. Service.Rate is a monthly figure, not per-hour, so it
+    // can't be mixed with AttendedHours as a quantity (that produced a
+    // Quantity x Rate that didn't match Amount at all).
     lineItems: [
       {
         item: service?.Name || invoice.ServiceID,
-        quantity: invoice.AttendedHours ?? 1,
-        rate: service?.Rate ?? invoice.Amount,
+        quantity: 1,
+        rate: invoice.Amount,
         amount: invoice.Amount,
       },
     ],

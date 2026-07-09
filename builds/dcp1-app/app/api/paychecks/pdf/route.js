@@ -35,11 +35,15 @@ export async function GET(req) {
     balanceLabel: "Amount Due:",
     currency: service?.Currency || "INR",
     balance: paycheck.Amount,
+    // Quantity is always 1 (one payout line for this month), Rate equals
+    // the actual Amount paid — see the matching comment in
+    // api/invoices/pdf/route.js for why AttendedHours can't be mixed with
+    // Service.Rate as a quantity/rate pair.
     lineItems: [
       {
         item: service?.Name || paycheck.ServiceID,
-        quantity: paycheck.AttendedHours ?? 0,
-        rate: service?.Rate ?? paycheck.Amount,
+        quantity: 1,
+        rate: paycheck.Amount,
         amount: paycheck.Amount,
       },
     ],
