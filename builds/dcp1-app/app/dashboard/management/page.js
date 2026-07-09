@@ -1578,8 +1578,6 @@ function Enrollments() {
   const [users, setUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
-  const [userId, setUserId] = useState("");
-  const [serviceId, setServiceId] = useState("");
   const [error, setError] = useState("");
 
   async function load() {
@@ -1596,8 +1594,7 @@ function Enrollments() {
     load();
   }, []);
 
-  async function submit(e) {
-    e.preventDefault();
+  async function enroll(userId, serviceId) {
     setError("");
     try {
       await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId }) });
@@ -1624,35 +1621,77 @@ function Enrollments() {
     return services.find((s) => s.ServiceID === id)?.Name || id;
   }
 
+  const studentUsers = users.filter((u) => u.UserType === "Student");
+  const staffUsers = users.filter((u) => u.UserType === "Staff");
+  const studentServices = services.filter((s) => groupMatches(s.Group, "Student"));
+  const staffServices = services.filter((s) => groupMatches(s.Group, "Staff"));
+  const studentEnrollments = enrollments.filter((e) => studentUsers.some((u) => u.UserID === e.UserID));
+  const staffEnrollments = enrollments.filter((e) => staffUsers.some((u) => u.UserID === e.UserID));
+
+  const shared = { users, services, nameOf, serviceNameOf, onUpdate: updateEnrollment, onDelete: deleteEnrollment };
+
+  return (
+    <div className="space-y-6">
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      <EnrollmentGroup
+        title="Student"
+        people={studentUsers}
+        eligibleServices={studentServices}
+        enrollments={studentEnrollments}
+        onEnroll={enroll}
+        {...shared}
+      />
+      <EnrollmentGroup
+        title="Staff"
+        people={staffUsers}
+        eligibleServices={staffServices}
+        enrollments={staffEnrollments}
+        onEnroll={enroll}
+        {...shared}
+      />
+    </div>
+  );
+}
+
+function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, onUpdate, onDelete }) {
+  const [userId, setUserId] = useState("");
+  const [serviceId, setServiceId] = useState("");
+
+  function submit(e) {
+    e.preventDefault();
+    onEnroll(userId, serviceId);
+    setUserId("");
+    setServiceId("");
+  }
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="card">
-        <h2 className="font-semibold mb-4">Enroll a Student or Staff into a Service</h2>
+        <h2 className="font-semibold mb-4">Enroll a {title} into a Service</h2>
         <form onSubmit={submit} className="space-y-3">
           <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)} required>
-            <option value="">Select person…</option>
-            {users.map((u) => (
+            <option value="">Select {title.toLowerCase()}…</option>
+            {people.map((u) => (
               <option key={u.UserID} value={u.UserID}>
-                {u.Name} ({u.UserType})
+                {u.Name}
               </option>
             ))}
           </select>
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
             <option value="">Select service…</option>
-            {services.map((s) => (
+            {eligibleServices.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
                 {s.Name}
               </option>
             ))}
           </select>
-          {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
           <button className="btn" type="submit">
             Enroll
           </button>
         </form>
       </div>
       <div className="card">
-        <h2 className="font-semibold mb-4">Current Enrollments</h2>
+        <h2 className="font-semibold mb-4">Current {title} Enrollments</h2>
         <table>
           <thead>
             <tr>
@@ -1670,14 +1709,14 @@ function Enrollments() {
                 services={services}
                 nameOf={nameOf}
                 serviceNameOf={serviceNameOf}
-                onUpdate={updateEnrollment}
-                onDelete={deleteEnrollment}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
               />
             ))}
             {enrollments.length === 0 && (
               <tr>
                 <td colSpan={3} style={{ color: "var(--muted)" }}>
-                  No enrollments yet.
+                  No {title.toLowerCase()} enrollments yet.
                 </td>
               </tr>
             )}
