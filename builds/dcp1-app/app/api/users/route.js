@@ -34,6 +34,7 @@ const ID_PREFIX = {
   Parent: "PAR",
   TrialAcc: "TRL",
   InterviewAcc: "INT",
+  Ambassador: "AMB",
 };
 
 // Batch is a Student attribute, and also applies to Staff whose StaffRole

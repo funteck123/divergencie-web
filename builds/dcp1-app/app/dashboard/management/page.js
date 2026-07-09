@@ -529,7 +529,15 @@ function Accounts() {
   const studentUsers = users.filter((u) => u.UserType === "Student");
   const teacherUsers = users.filter(isTeacher);
   const otherStaffUsers = users.filter((u) => u.UserType === "Staff" && !isTeacher(u));
-  const otherUsers = users.filter((u) => !["Student", "Staff"].includes(u.UserType));
+  const managementUsers = users.filter((u) => u.UserType === "Management");
+  const parentUsers = users.filter((u) => u.UserType === "Parent");
+  const ambassadorUsers = users.filter((u) => u.UserType === "Ambassador");
+  const pendingUsers = users.filter((u) => ["TrialAcc", "InterviewAcc"].includes(u.UserType));
+
+  function studentNamesOf(studentIds) {
+    if (!studentIds || studentIds.length === 0) return "—";
+    return studentIds.map((id) => users.find((u) => u.UserID === id)?.Name || id).join(", ");
+  }
 
   const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit };
 
@@ -573,7 +581,24 @@ function Accounts() {
         {...sharedProps}
       />
 
-      <AccountGroupTable title="Other Accounts" rows={otherUsers} columns={[{ header: "Type", render: (u) => u.UserType }]} showConvert {...sharedProps} />
+      <AccountGroupTable title="Management Accounts" rows={managementUsers} columns={[]} {...sharedProps} />
+
+      <AccountGroupTable
+        title="Parent Accounts"
+        rows={parentUsers}
+        columns={[{ header: "Linked Student(s)", render: (u) => studentNamesOf(u.StudentIDs) }]}
+        {...sharedProps}
+      />
+
+      <AccountGroupTable title="Ambassador Accounts" rows={ambassadorUsers} columns={[]} {...sharedProps} />
+
+      <AccountGroupTable
+        title="Pending Accounts (Trial/Interview)"
+        rows={pendingUsers}
+        columns={[{ header: "Type", render: (u) => u.UserType }]}
+        showConvert
+        {...sharedProps}
+      />
     </div>
   );
 }
@@ -840,7 +865,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   );
 }
 
-const CREATABLE_TYPES = ["Parent", "Student", "Staff", "TrialAcc", "InterviewAcc", "Management"];
+const CREATABLE_TYPES = ["Parent", "Student", "Staff", "TrialAcc", "InterviewAcc", "Management", "Ambassador"];
 
 function CreateAccount({ onCreated, users }) {
   const [userType, setUserType] = useState("Parent");
