@@ -2226,6 +2226,14 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
                 Unsend
               </button>
             )}
+            <a
+              className="btn-ghost"
+              style={{ whiteSpace: "nowrap" }}
+              href={idKey === "InvoiceID" ? `/api/invoices/pdf?invoiceId=${row[idKey]}` : `/api/paychecks/pdf?paycheckId=${row[idKey]}`}
+              download
+            >
+              PDF
+            </a>
             <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
               Delete
             </button>

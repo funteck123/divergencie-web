@@ -183,6 +183,7 @@ function ChildCard({ child, services, onSetPaid }) {
             <th>Service</th>
             <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <th>Paid</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -205,10 +206,15 @@ function ChildCard({ child, services, onSetPaid }) {
                   </button>
                 )}
               </td>
+              <td>
+                <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${i.InvoiceID}`} download>
+                  PDF
+                </a>
+              </td>
             </tr>
           ))}
           {invSort.sorted.length === 0 && (
-            <tr><td colSpan={4} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
+            <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
           )}
         </tbody>
       </table>

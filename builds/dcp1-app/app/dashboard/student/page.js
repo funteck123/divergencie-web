@@ -198,6 +198,7 @@ function Body({ user }) {
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <th>Paid</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -222,11 +223,16 @@ function Body({ user }) {
                     </button>
                   )}
                 </td>
+                <td>
+                  <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${i.InvoiceID}`} download>
+                    PDF
+                  </a>
+                </td>
               </tr>
             ))}
             {invSort.sorted.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                <td colSpan={7} style={{ color: "var(--muted)" }}>
                   No invoices yet.
                 </td>
               </tr>

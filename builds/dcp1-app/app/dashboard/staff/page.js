@@ -198,6 +198,7 @@ function Body({ user }) {
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <th>Received</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -217,11 +218,16 @@ function Body({ user }) {
                     </button>
                   )}
                 </td>
+                <td>
+                  <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/paychecks/pdf?paycheckId=${p.PaycheckID}`} download>
+                    PDF
+                  </a>
+                </td>
               </tr>
             ))}
             {paySort.sorted.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                <td colSpan={7} style={{ color: "var(--muted)" }}>
                   No paychecks yet.
                 </td>
               </tr>
