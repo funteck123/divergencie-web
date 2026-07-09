@@ -1,9 +1,16 @@
-// Amount = (Service.MonthlyCost / ScheduledHours) * AttendedHours
+import { normalizeGroup } from "./scheduleGen";
+
+// Amount = (baseRate / ScheduledHours) * AttendedHours
+// baseRate is Service.Rate for Student/Teacher-eligible services (they carry
+// Rate+Currency instead of MonthlyCost — see applyCohortServiceFields in
+// api/services/route.js) and Service.MonthlyCost for everything else.
 // ScheduledHours = sum of ScheduleItem.Duration for that service in the given month
 // AttendedHours  = sum of AttendanceItem.LoggedDuration for that user+service in the given month
 export function computeHoursAndAmount(db, { userId, serviceId, year, month }) {
   const service = db.services.find((s) => s.ServiceID === serviceId);
-  const monthlyCost = service ? Number(service.MonthlyCost) || 0 : 0;
+  const group = service ? normalizeGroup(service.Group) : [];
+  const isCohort = group.includes("Student") || group.includes("Teacher");
+  const monthlyCost = service ? Number(isCohort ? service.Rate : service.MonthlyCost) || 0 : 0;
 
   const monthScheduleItems = db.scheduleItems.filter((s) => {
     if (s.ServiceID !== serviceId) return false;

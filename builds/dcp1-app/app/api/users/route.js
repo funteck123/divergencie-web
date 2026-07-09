@@ -29,6 +29,7 @@ function randomPassword() {
 
 const ID_PREFIX = {
   Management: "MGT",
+  Teacher: "TCH",
   Staff: "STF",
   Student: "STU",
   Parent: "PAR",
@@ -39,13 +40,14 @@ const ID_PREFIX = {
   Ambassador: "AMB",
 };
 
-// Batch is a Student attribute, and also applies to Staff whose StaffRole
-// is exactly "Teacher" (same cohort concept as a Student's). Every other
-// StaffRole gets Department instead — the two are mutually exclusive, never
-// both present on the same account.
-function applyCohortField(user, userType, staffRole, batch, department) {
-  const isTeacherRole = userType === "Staff" && staffRole === "Teacher";
-  if (userType === "Student" || isTeacherRole) {
+// Batch is the cohort attribute for Student and Teacher accounts (same
+// concept for both — which cohort/intake they belong to). Staff instead
+// gets Department (which department they work in) — the two are mutually
+// exclusive, never both present on the same account. Teacher and Staff are
+// separate UserTypes (not one "Staff" type with a role flag), so this is a
+// straight type check now.
+function applyCohortField(user, userType, batch, department) {
+  if (userType === "Student" || userType === "Teacher") {
     user.Batch = batch || "";
     delete user.Department;
   } else if (userType === "Staff") {
@@ -55,10 +57,10 @@ function applyCohortField(user, userType, staffRole, batch, department) {
 }
 
 // Management creates any account type directly from the Accounts tab.
-// Student/Staff created here start fresh (no linked Trial/Interview record,
-// no invoice carry-over) — that history only exists via /api/convert.
-// body: { userType, name, studentIds?: [] (Parent), staffRole?, course?,
-//         batch?, department?, timezone? }
+// Student/Teacher/Staff created here start fresh (no linked Trial/Interview
+// record, no invoice carry-over) — that history only exists via /api/convert.
+// body: { userType, name, studentIds?: [] (Parent), staffRole? (Staff job
+//         title, free text), course?, batch?, department?, timezone? }
 export async function POST(req) {
   const { userType, name, studentIds, staffRole, course, batch, department, timezone } = await req.json();
   if (!userType || !ID_PREFIX[userType]) {
@@ -78,16 +80,18 @@ export async function POST(req) {
   const userId = nextId(db, ID_PREFIX[userType]);
   const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
   if (userType === "Parent") user.StudentIDs = studentIds;
-  const effectiveStaffRole = staffRole || "Teacher";
   if (userType === "Staff") {
-    user.StaffRole = effectiveStaffRole;
+    user.StaffRole = staffRole || "";
+    user.Timezone = normalizeTimezone(timezone);
+  }
+  if (userType === "Teacher") {
     user.Timezone = normalizeTimezone(timezone);
   }
   if (userType === "Student") {
     user.Course = course || "";
     user.Timezone = normalizeTimezone(timezone);
   }
-  applyCohortField(user, userType, effectiveStaffRole, batch, department);
+  applyCohortField(user, userType, batch, department);
 
   const username = makeUsername(name, db);
   const password = randomPassword();
@@ -158,7 +162,7 @@ export async function PATCH(req) {
   if (staffRole !== undefined) user.StaffRole = staffRole;
   if (studentIds !== undefined) user.StudentIDs = studentIds;
   if (batch !== undefined || department !== undefined) {
-    applyCohortField(user, user.UserType, user.StaffRole, batch, department);
+    applyCohortField(user, user.UserType, batch, department);
   }
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;

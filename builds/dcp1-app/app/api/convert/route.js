@@ -16,13 +16,14 @@ function randomPassword() {
 }
 
 // Every pending account type converts to exactly one final type — this is
-// the only mapping that decides it. TeacherInterviewAcc and StaffInterviewAcc
-// both become Staff, differing only in the StaffRole they start with;
-// AmbassadorInterviewAcc becomes Ambassador directly (no StaffRole/Course).
+// the only mapping that decides it. Teacher and Staff are separate
+// UserTypes (not one "Staff" type with a role flag), so TeacherInterviewAcc
+// and StaffInterviewAcc land on different final types, each with its own ID
+// prefix. AmbassadorInterviewAcc becomes Ambassador directly.
 const CONVERT_MAP = {
   TrialAcc: { newType: "Student", prefix: "STU", extra: () => ({ Course: "" }) },
-  TeacherInterviewAcc: { newType: "Staff", prefix: "STF", extra: () => ({ StaffRole: "Teacher" }) },
-  StaffInterviewAcc: { newType: "Staff", prefix: "STF", extra: () => ({ StaffRole: "Staff" }) },
+  TeacherInterviewAcc: { newType: "Teacher", prefix: "TCH", extra: () => ({}) },
+  StaffInterviewAcc: { newType: "Staff", prefix: "STF", extra: () => ({ StaffRole: "" }) },
   AmbassadorInterviewAcc: { newType: "Ambassador", prefix: "AMB", extra: () => ({}) },
 };
 
@@ -59,7 +60,7 @@ export async function POST(req) {
     UserType: newType,
     Name: oldUser.Name,
     Status: "Active",
-    ...(["Student", "Staff"].includes(newType) ? { Timezone: "Asia/Kolkata" } : {}),
+    ...(["Student", "Teacher", "Staff"].includes(newType) ? { Timezone: "Asia/Kolkata" } : {}),
     ...extra(),
   };
   const username = makeUsername(oldUser.Name, db);

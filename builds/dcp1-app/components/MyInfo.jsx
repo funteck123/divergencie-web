@@ -12,11 +12,15 @@ export default function MyInfo({ user, linkedChildren }) {
     ["Type", user.UserType],
     ["Status", user.Status],
   ];
-  if (user.UserType === "Student" || user.UserType === "Staff") {
+  if (["Student", "Teacher", "Staff"].includes(user.UserType)) {
     rows.push(["Timezone", timezoneLabel(user.Timezone)]);
   }
   if (user.UserType === "Student") rows.push(["Course", user.Course || "—"]);
-  if (user.StaffRole) rows.push(["Role", user.StaffRole]);
+  if (["Student", "Teacher"].includes(user.UserType)) rows.push(["Batch", user.Batch || "—"]);
+  if (user.UserType === "Staff") {
+    rows.push(["Role", user.StaffRole || "—"]);
+    rows.push(["Department", user.Department || "—"]);
+  }
 
   return (
     <div className="card">

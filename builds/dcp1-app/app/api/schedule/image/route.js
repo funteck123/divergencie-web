@@ -23,14 +23,13 @@ export async function GET(req) {
   const db = readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
-  if (!["Student", "Staff"].includes(user.UserType)) {
-    return NextResponse.json({ error: "Schedule image only available for Student/Staff." }, { status: 400 });
+  if (!["Student", "Teacher", "Staff"].includes(user.UserType)) {
+    return NextResponse.json({ error: "Schedule image only available for Student/Teacher/Staff." }, { status: 400 });
   }
 
   let role = "student";
-  if (user.UserType === "Staff") {
-    role = user.StaffRole === "Teacher" ? "teacherRole" : "staff";
-  }
+  if (user.UserType === "Teacher") role = "teacherRole";
+  if (user.UserType === "Staff") role = "staff";
   const entity = {
     name: user.Name,
     role,

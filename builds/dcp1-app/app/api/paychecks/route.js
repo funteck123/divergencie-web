@@ -58,7 +58,7 @@ export async function POST(req) {
   const { year, month } = body;
   const db = readDB();
 
-  const staffIds = new Set(db.users.filter((u) => u.UserType === "Staff").map((u) => u.UserID));
+  const staffIds = new Set(db.users.filter((u) => ["Teacher", "Staff"].includes(u.UserType)).map((u) => u.UserID));
   const staffEnrollments = db.enrollments.filter((e) => staffIds.has(e.UserID));
 
   const created = [];

@@ -30,6 +30,8 @@ export function roleHomePath(userType) {
       return "/dashboard/interview";
     case "Student":
       return "/dashboard/student";
+    case "Teacher":
+      return "/dashboard/teacher";
     case "Staff":
       return "/dashboard/staff";
     case "Parent":
@@ -53,12 +55,10 @@ export function groupMatches(serviceGroup, requiredGroup) {
   return normalizeGroup(serviceGroup).includes(requiredGroup);
 }
 
-// Maps an account to the Group bucket it belongs in for
-// Service/Enrollment eligibility — Staff accounts split into "Teacher"
-// (StaffRole exactly "Teacher") vs "Staff" (every other role), matching how
-// the Accounts tab already separates them.
+// Maps an account to the Group bucket it belongs in for Service/Enrollment
+// eligibility. Teacher and Staff are separate UserTypes, so this is just
+// the account's own type.
 export function roleGroupOf(user) {
-  if (user.UserType === "Staff") return (user.StaffRole || "Teacher") === "Teacher" ? "Teacher" : "Staff";
   return user.UserType;
 }
 

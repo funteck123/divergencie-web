@@ -17,7 +17,7 @@ const INTERVIEW_ACC_LABEL = {
 };
 const CONVERT_LABEL = {
   TrialAcc: "Student",
-  TeacherInterviewAcc: "Staff (Teacher)",
+  TeacherInterviewAcc: "Teacher",
   StaffInterviewAcc: "Staff",
   AmbassadorInterviewAcc: "Ambassador",
 };
@@ -556,10 +556,9 @@ function Accounts() {
     }
   }
 
-  const isTeacher = (u) => u.UserType === "Staff" && (u.StaffRole || "Teacher") === "Teacher";
   const studentUsers = users.filter((u) => u.UserType === "Student");
-  const teacherUsers = users.filter(isTeacher);
-  const otherStaffUsers = users.filter((u) => u.UserType === "Staff" && !isTeacher(u));
+  const teacherUsers = users.filter((u) => u.UserType === "Teacher");
+  const otherStaffUsers = users.filter((u) => u.UserType === "Staff");
   const managementUsers = users.filter((u) => u.UserType === "Management");
   const parentUsers = users.filter((u) => u.UserType === "Parent");
   const ambassadorUsers = users.filter((u) => u.UserType === "Ambassador");
@@ -739,13 +738,14 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
 }
 
 // Every account gets Name + credentials editing; Staff also gets Role +
-// Timezone, Student also gets Course + Timezone, Parent also gets which
-// Students are linked. Type is never editable here — conversion between
-// types only happens through /api/convert, which handles ID reassignment
-// and invoice carry-over that a raw type swap would skip. Status is limited
-// to Active/Inactive; "Converted" is a terminal state stamped by
-// /api/convert alongside ConvertedToUserID, so the Status field is hidden
-// once an account has already converted.
+// Department + Timezone, Teacher gets Batch + Timezone (same cohort concept
+// as Student), Student also gets Course + Batch + Timezone, Parent also
+// gets which Students are linked. Type is never editable here — conversion
+// between types only happens through /api/convert, which handles ID
+// reassignment and invoice carry-over that a raw type swap would skip.
+// Status is limited to Active/Inactive; "Converted" is a terminal state
+// stamped by /api/convert alongside ConvertedToUserID, so the Status field
+// is hidden once an account has already converted.
 function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
   const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
@@ -759,7 +759,6 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [password, setPassword] = useState("");
 
   const students = users.filter((u) => u.UserType === "Student");
-  const isTeacherRole = user.UserType === "Staff" && (staffRole.trim() || "Teacher") === "Teacher";
 
   function toggleStudent(id) {
     setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -771,14 +770,14 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     if (user.Status !== "Converted") fields.status = status;
     if (user.UserType === "Staff") {
       fields.staffRole = staffRole;
-      if (isTeacherRole) fields.batch = batch;
-      else fields.department = department;
+      fields.department = department;
     }
+    if (user.UserType === "Teacher") fields.batch = batch;
     if (user.UserType === "Student") {
       fields.course = course;
       fields.batch = batch;
     }
-    if (["Student", "Staff"].includes(user.UserType)) fields.timezone = timezone;
+    if (["Student", "Teacher", "Staff"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
     if (password.trim()) fields.password = password;
     onSave(fields);
@@ -826,7 +825,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       {user.UserType === "Staff" && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-            Staff Role
+            Role
           </label>
           <input className="field" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
         </div>
@@ -835,13 +834,9 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       {user.UserType === "Staff" && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-            {isTeacherRole ? "Batch" : "Department"}
+            Department
           </label>
-          {isTeacherRole ? (
-            <input className="field" value={batch} onChange={(e) => setBatch(e.target.value)} />
-          ) : (
-            <input className="field" value={department} onChange={(e) => setDepartment(e.target.value)} />
-          )}
+          <input className="field" value={department} onChange={(e) => setDepartment(e.target.value)} />
         </div>
       )}
 
@@ -854,7 +849,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </div>
       )}
 
-      {user.UserType === "Student" && (
+      {["Student", "Teacher"].includes(user.UserType) && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Batch
@@ -863,7 +858,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </div>
       )}
 
-      {["Student", "Staff"].includes(user.UserType) && (
+      {["Student", "Teacher", "Staff"].includes(user.UserType) && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Timezone
@@ -904,6 +899,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
 const CREATABLE_TYPES = [
   "Parent",
   "Student",
+  "Teacher",
   "Staff",
   "TrialAcc",
   "TeacherInterviewAcc",
@@ -926,7 +922,6 @@ function CreateAccount({ onCreated, users }) {
   const [error, setError] = useState("");
 
   const students = users.filter((u) => u.UserType === "Student");
-  const isTeacherRole = userType === "Staff" && (staffRole.trim() || "Teacher") === "Teacher";
 
   function toggleStudent(id) {
     setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -950,9 +945,12 @@ function CreateAccount({ onCreated, users }) {
       if (userType === "Parent") body.studentIds = studentIds;
       if (userType === "Staff") {
         body.staffRole = staffRole;
+        body.department = department;
         body.timezone = timezone;
-        if (isTeacherRole) body.batch = batch;
-        else body.department = department;
+      }
+      if (userType === "Teacher") {
+        body.batch = batch;
+        body.timezone = timezone;
       }
       if (userType === "Student") {
         body.course = course;
@@ -1005,14 +1003,15 @@ function CreateAccount({ onCreated, users }) {
         )}
 
         {userType === "Staff" && (
-          <input className="field" placeholder="Staff role (default: Teacher)" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
+          <>
+            <input className="field" placeholder="Role (e.g. SM Assistant)" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
+            <input className="field" placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} />
+          </>
         )}
 
-        {userType === "Staff" && (isTeacherRole ? (
+        {userType === "Teacher" && (
           <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
-        ) : (
-          <input className="field" placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} />
-        ))}
+        )}
 
         {userType === "Student" && (
           <>
@@ -1021,7 +1020,7 @@ function CreateAccount({ onCreated, users }) {
           </>
         )}
 
-        {["Student", "Staff"].includes(userType) && (
+        {["Student", "Teacher", "Staff"].includes(userType) && (
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Timezone
