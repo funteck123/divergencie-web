@@ -207,3 +207,152 @@ export async function drawDocumentPDF(data) {
 
   return canvas.toBuffer("application/pdf");
 }
+
+// Matches the layout in planning/payslip generator/A0271.2026-02-End Month
+// .Payslip.PDF — a plain boxed key/value header, a gray section-bar table
+// for the current month's Earnings/Deductions, and a second boxed table for
+// Year-To-Date figures. Unlike drawDocumentPDF (branded invoice look), this
+// is a flat statutory-payslip style with no logo/color accents.
+//
+// data: {
+//   company, period, emplNo, name, department, icPassport, epfNo, socsoNo, taxNo,
+//   earnings: [{ label, rate, amount }], grossPay,
+//   deductions: [{ label, rate, amount }], nettPay,
+//   ytd: [{ label, value }],
+// }
+const PS_GRAY = "#C7C7C7";
+const PS_GRAY_LIGHT = "#E4E4E4";
+const PS_BORDER = "#999999";
+const PS_TEXT = "#000000";
+const PS_TABLE_W = MARGIN_R - MARGIN_L;
+
+function psRow(ctx, x, y, w, h, fill) {
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fillRect(x, y, w, h);
+  }
+  ctx.strokeStyle = PS_BORDER;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, w, h);
+}
+
+export async function drawPayslipPDF(data) {
+  const canvas = createCanvas(PAGE_W, PAGE_H, "pdf");
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, PAGE_W, PAGE_H);
+  ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = PS_TEXT;
+
+  // Header key/value box
+  const headerRows = [
+    ["Company:", data.company],
+    ["Period:", data.period],
+    ["Empl No.:", data.emplNo],
+    ["Name:", data.name],
+    ["Department:", data.department],
+    ["IC/Passport:", data.icPassport],
+    ["EPF No.:", data.epfNo],
+    ["SOCSO No.:", data.socsoNo],
+    ["TAX No.:", data.taxNo],
+  ];
+  const headerRowH = 16;
+  const headerTop = 40;
+  const headerH = headerRows.length * headerRowH;
+  psRow(ctx, MARGIN_L, headerTop, PS_TABLE_W, headerH, PS_GRAY_LIGHT);
+  ctx.fillStyle = PS_TEXT;
+  ctx.font = "10px Roboto";
+  ctx.textAlign = "left";
+  let hy = headerTop + 12;
+  for (const [label, value] of headerRows) {
+    ctx.font = "bold 10px Roboto";
+    ctx.fillText(label, MARGIN_L + 8, hy);
+    ctx.font = "10px Roboto";
+    ctx.fillText(value || "", MARGIN_L + 140, hy);
+    hy += headerRowH;
+  }
+
+  // CURRENT MONTH PAYROLL DETAIL
+  let y = headerTop + headerH + 24;
+  const sectionH = 20;
+  psRow(ctx, MARGIN_L, y, PS_TABLE_W, sectionH, PS_GRAY);
+  ctx.fillStyle = PS_TEXT;
+  ctx.font = "bold 11px Roboto";
+  ctx.textAlign = "center";
+  ctx.fillText("CURRENT MONTH PAYROLL DETAIL", MARGIN_L + PS_TABLE_W / 2, y + 14);
+  y += sectionH;
+
+  const colRates = MARGIN_R - 150;
+  const colAmount = MARGIN_R - 8;
+
+  function payrollTable(title, rows, totalLabel, totalValue) {
+    const headH = 18;
+    psRow(ctx, MARGIN_L, y, PS_TABLE_W, headH, PS_GRAY_LIGHT);
+    ctx.fillStyle = PS_TEXT;
+    ctx.font = "bold 10px Roboto";
+    ctx.textAlign = "left";
+    ctx.fillText(title, MARGIN_L + 8, y + 13);
+    ctx.textAlign = "right";
+    ctx.fillText("Rates", colRates, y + 13);
+    ctx.fillText("Amount", colAmount, y + 13);
+    y += headH;
+
+    const lineH = 16;
+    for (const r of rows) {
+      psRow(ctx, MARGIN_L, y, PS_TABLE_W, lineH, null);
+      ctx.fillStyle = PS_TEXT;
+      ctx.font = "9px Roboto";
+      ctx.textAlign = "left";
+      ctx.fillText(r.label, MARGIN_L + 8, y + 12);
+      ctx.textAlign = "right";
+      ctx.fillText(r.rate || "", colRates, y + 12);
+      ctx.fillText(Number(r.amount).toFixed(2), colAmount, y + 12);
+      y += lineH;
+    }
+    if (rows.length === 0) {
+      psRow(ctx, MARGIN_L, y, PS_TABLE_W, lineH, null);
+      ctx.font = "9px Roboto";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#777777";
+      ctx.fillText("—", MARGIN_L + 8, y + 12);
+      y += lineH;
+    }
+
+    psRow(ctx, MARGIN_L, y, PS_TABLE_W, lineH, PS_GRAY_LIGHT);
+    ctx.fillStyle = PS_TEXT;
+    ctx.font = "bold 10px Roboto";
+    ctx.textAlign = "left";
+    ctx.fillText(totalLabel, MARGIN_L + 8, y + 12);
+    ctx.textAlign = "right";
+    ctx.fillText(Number(totalValue).toFixed(2), colAmount, y + 12);
+    y += lineH;
+  }
+
+  payrollTable("EARNINGS", data.earnings, "GROSS PAY", data.grossPay);
+  y += 4;
+  payrollTable("DEDUCTIONS", data.deductions, "NETT PAY", data.nettPay);
+
+  // YEAR-TO-DATE PAYROLL DETAIL
+  y += 24;
+  psRow(ctx, MARGIN_L, y, PS_TABLE_W, sectionH, PS_GRAY);
+  ctx.fillStyle = PS_TEXT;
+  ctx.font = "bold 11px Roboto";
+  ctx.textAlign = "center";
+  ctx.fillText("YEAR-TO-DATE PAYROLL DETAIL", MARGIN_L + PS_TABLE_W / 2, y + 14);
+  y += sectionH;
+
+  const ytdRowH = 16;
+  for (const { label, value } of data.ytd) {
+    psRow(ctx, MARGIN_L, y, PS_TABLE_W, ytdRowH, PS_GRAY_LIGHT);
+    ctx.fillStyle = PS_TEXT;
+    ctx.font = "10px Roboto";
+    ctx.textAlign = "left";
+    ctx.fillText(label, MARGIN_L + 8, y + 12);
+    ctx.textAlign = "right";
+    ctx.fillText(Number(value).toFixed(2), colAmount, y + 12);
+    y += ytdRowH;
+  }
+
+  return canvas.toBuffer("application/pdf");
+}

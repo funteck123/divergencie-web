@@ -38,6 +38,9 @@ const BOOKING_TYPE_LABEL = {
   StaffInterview: "Interview — Staff",
   AmbassadorInterview: "Interview — Ambassador",
 };
+// Mirrors DEPARTMENTS in api/users/route.js (duplicated for the same reason
+// as BOOKING_TYPES above — that module can't be imported client-side).
+const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
 
 export default function ManagementDashboard() {
   return <DashboardShell allowedType="Management">{(user) => <Body user={user} />}</DashboardShell>;
@@ -836,7 +839,14 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Department
           </label>
-          <input className="field" value={department} onChange={(e) => setDepartment(e.target.value)} />
+          <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+            <option value="">Select department…</option>
+            {DEPARTMENTS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 
@@ -1005,7 +1015,14 @@ function CreateAccount({ onCreated, users }) {
         {userType === "Staff" && (
           <>
             <input className="field" placeholder="Role (e.g. SM Assistant)" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
-            <input className="field" placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} />
+            <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+              <option value="">Select department…</option>
+              {DEPARTMENTS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
           </>
         )}
 

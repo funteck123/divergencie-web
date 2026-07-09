@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
-import { drawDocumentPDF } from "@/lib/pdfDoc";
+import { drawPayslipPDF } from "@/lib/pdfDoc";
 
-const TERMS =
-  "This payslip reflects hours attended against your enrolled Service for the period shown. " +
-  "Amounts are calculated from scheduled and attended hours and are subject to correction if attendance " +
-  "records are later amended. DivergenCIE Coaching is not liable for payments made to incorrect account " +
-  "details on file.\n\n" +
-  "For any delays or issues, please notify us at divergenCIE@outlook.com. Thank you for teaching with us!";
+const MONTH_ABBR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -20,43 +15,44 @@ export async function GET(req) {
   const staff = db.users.find((u) => u.UserID === paycheck.StaffID);
   const service = db.services.find((s) => s.ServiceID === paycheck.ServiceID);
 
-  const dueDate = new Date(paycheck.Year, paycheck.Month - 1, 1);
-  const buffer = await drawDocumentPDF({
-    docType: "Paycheck",
-    docNumber: paycheck.PaycheckID,
-    issueDate: new Date(),
-    dueDate,
-    paymentTerms: "Monthly Payment",
-    companyLine: "DivergenCIE Coaching",
-    partyLabel: staff?.UserType === "Teacher" ? "Teacher Name" : "Staff Name",
-    partyName: staff?.Name || paycheck.StaffID,
-    secondaryLabel: "Service",
-    secondaryValue: service?.Name || paycheck.ServiceID,
-    balanceLabel: "Amount Due:",
-    currency: service?.Currency || "INR",
-    balance: paycheck.Amount,
-    // Quantity is always 1 (one payout line for this month), Rate equals
-    // the actual Amount paid — see the matching comment in
-    // api/invoices/pdf/route.js for why AttendedHours can't be mixed with
-    // Service.Rate as a quantity/rate pair.
-    lineItems: [
-      {
-        item: service?.Name || paycheck.ServiceID,
-        quantity: 1,
-        rate: paycheck.Amount,
-        amount: paycheck.Amount,
-      },
+  // YTD Gross = sum of this staff's paychecks in the same year, through the
+  // month of this payslip — the other statutory YTD lines (EPF/SOCSO/EIS/
+  // PCB) stay 0.00 since we don't collect those figures.
+  const ytdGross = db.paychecks
+    .filter((p) => p.StaffID === paycheck.StaffID && p.Year === paycheck.Year && p.Month <= paycheck.Month)
+    .reduce((sum, p) => sum + (Number(p.Amount) || 0), 0);
+
+  const buffer = await drawPayslipPDF({
+    company: "DivergenCIE Coaching",
+    period: `END-${MONTH_ABBR[paycheck.Month - 1]}-${paycheck.Year}`,
+    emplNo: paycheck.StaffID,
+    name: staff?.Name || paycheck.StaffID,
+    department: staff?.Department || staff?.StaffRole || "",
+    icPassport: "",
+    epfNo: "",
+    socsoNo: "",
+    taxNo: "",
+    earnings: [{ label: service?.Name || paycheck.ServiceID, rate: "", amount: paycheck.Amount }],
+    grossPay: paycheck.Amount,
+    deductions: [],
+    nettPay: paycheck.Amount,
+    ytd: [
+      { label: "YTD Basic", value: 0 },
+      { label: "YTD Gross", value: ytdGross },
+      { label: "YTD Employee EPF", value: 0 },
+      { label: "YTD Employer EPF", value: 0 },
+      { label: "YTD Employee SOCSO", value: 0 },
+      { label: "YTD Employer SOCSO", value: 0 },
+      { label: "YTD Employee EIS", value: 0 },
+      { label: "YTD Employer EIS", value: 0 },
+      { label: "YTD Income Tax PCB", value: 0 },
     ],
-    taxPercent: 0,
-    discountPercent: 0,
-    total: paycheck.Amount,
-    terms: TERMS,
   });
 
   return new NextResponse(buffer, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="Paycheck_${paycheck.PaycheckID}.pdf"`,
+      "Content-Disposition": `attachment; filename="Payslip_${paycheck.PaycheckID}.pdf"`,
       "Cache-Control": "no-store",
     },
   });

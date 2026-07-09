@@ -40,6 +40,8 @@ const ID_PREFIX = {
   Ambassador: "AMB",
 };
 
+export const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
+
 // Batch is the cohort attribute for Student and Teacher accounts (same
 // concept for both — which cohort/intake they belong to). Staff instead
 // gets Department (which department they work in) — the two are mutually
@@ -74,6 +76,9 @@ export async function POST(req) {
   }
   if (timezone !== undefined && !isValidTimezone(timezone)) {
     return NextResponse.json({ error: "timezone is not a recognized IANA timezone." }, { status: 400 });
+  }
+  if (userType === "Staff" && department && !DEPARTMENTS.includes(department)) {
+    return NextResponse.json({ error: `department must be one of ${DEPARTMENTS.join(", ")}.` }, { status: 400 });
   }
 
   const db = readDB();
@@ -128,6 +133,9 @@ export async function PATCH(req) {
   }
   if (timezone !== undefined && !isValidTimezone(timezone)) {
     return NextResponse.json({ error: "timezone is not a recognized IANA timezone." }, { status: 400 });
+  }
+  if (department && !DEPARTMENTS.includes(department)) {
+    return NextResponse.json({ error: `department must be one of ${DEPARTMENTS.join(", ")}.` }, { status: 400 });
   }
   if (studentIds !== undefined && !Array.isArray(studentIds)) {
     return NextResponse.json({ error: "studentIds must be an array." }, { status: 400 });
