@@ -47,23 +47,30 @@ const THEMES = {
   // Staff whose StaffRole is "Teacher" get the Teacher Schedule template;
   // every other StaffRole gets the plain Staff Schedule template. Both
   // share the same field layout (Name / Batch-or-Department / Time Zone
-  // drawn side by side above the day header, not stacked, so nothing
-  // collides with the header row painted in below at ROW_AREA.top).
+  // drawn side by side below the logo, with the day header starting right
+  // below that row — rowAreaTop is pushed down accordingly so the redrawn
+  // grid never collides with the taller header).
   teacherRole: {
     file: path.join(ASSETS_DIR, "teacher-schedule.png"),
-    nameCoord: [375, 150],
-    classCoord: [810, 150],
-    timezoneCoord: [1310, 150],
-    valueFont: "30px Roboto",
-    fieldMaxWidth: 280,
+    nameCoord: [435, 235],
+    classCoord: [1055, 235],
+    timezoneCoord: [1715, 235],
+    valueFont: "38px Roboto",
+    nameMaxWidth: 370,
+    classMaxWidth: 370,
+    timezoneMaxWidth: 210,
+    rowAreaTop: 410,
   },
   staff: {
     file: path.join(ASSETS_DIR, "staff-schedule.png"),
-    nameCoord: [375, 150],
-    classCoord: [810, 150],
-    timezoneCoord: [1310, 150],
-    valueFont: "30px Roboto",
-    fieldMaxWidth: 280,
+    nameCoord: [435, 235],
+    classCoord: [1055, 235],
+    timezoneCoord: [1715, 235],
+    valueFont: "38px Roboto",
+    nameMaxWidth: 370,
+    classMaxWidth: 370,
+    timezoneMaxWidth: 210,
+    rowAreaTop: 410,
   },
 };
 
@@ -144,11 +151,11 @@ export async function drawSchedule(entity, entries) {
   const classCoord = [theme.classCoord[0] + 25, theme.classCoord[1] - 10];
   const timezoneCoord = [theme.timezoneCoord[0] + 25, theme.timezoneCoord[1] - 10];
 
-  ctx.fillText(fitText(ctx, entity.name, theme.fieldMaxWidth), nameCoord[0], nameCoord[1]);
+  ctx.fillText(fitText(ctx, entity.name, theme.nameMaxWidth), nameCoord[0], nameCoord[1]);
   if (entity.role === "student") {
-    ctx.fillText(fitText(ctx, entity.className || "", theme.fieldMaxWidth), classCoord[0], classCoord[1]);
+    ctx.fillText(fitText(ctx, entity.className || "", theme.classMaxWidth), classCoord[0], classCoord[1]);
   }
-  ctx.fillText(fitText(ctx, `${timezoneLabel} Time`, theme.fieldMaxWidth), timezoneCoord[0], timezoneCoord[1]);
+  ctx.fillText(fitText(ctx, `${timezoneLabel} Time`, theme.timezoneMaxWidth), timezoneCoord[0], timezoneCoord[1]);
 
   // Every distinct time actually in use becomes its own row — this is what
   // fixes p26's fixed-8-slot limitation (any time can now show up).
@@ -157,11 +164,13 @@ export async function drawSchedule(entity, entries) {
   const numRows = rowTimes.length;
   const timeToRow = Object.fromEntries(rowTimes.map((t, i) => [t, i]));
 
+  const rowArea = { ...ROW_AREA, top: theme.rowAreaTop || ROW_AREA.top };
+
   // Paint over the old baked-in time column + cells, then redraw fresh.
   ctx.fillStyle = "#3d1760";
-  ctx.fillRect(ROW_AREA.left, ROW_AREA.top, ROW_AREA.right - ROW_AREA.left, ROW_AREA.bottom - ROW_AREA.top);
+  ctx.fillRect(rowArea.left, rowArea.top, rowArea.right - rowArea.left, rowArea.bottom - rowArea.top);
 
-  const rowHeight = (ROW_AREA.bottom - ROW_AREA.top) / numRows;
+  const rowHeight = (rowArea.bottom - rowArea.top) / numRows;
   const timeFontSize = Math.max(12, Math.min(22, rowHeight * 0.3));
   const cellFontSize = Math.max(11, Math.min(25, rowHeight * 0.28));
   const dividerHeight = Math.max(1, Math.min(3, rowHeight * 0.03));
@@ -170,7 +179,7 @@ export async function drawSchedule(entity, entries) {
   ctx.textBaseline = "middle";
 
   for (let row = 0; row < numRows; row++) {
-    const rowTop = ROW_AREA.top + row * rowHeight;
+    const rowTop = rowArea.top + row * rowHeight;
     const rowCenterY = rowTop + rowHeight / 2;
 
     ctx.fillStyle = "#c03fa9";
@@ -194,7 +203,7 @@ export async function drawSchedule(entity, entries) {
     const row = timeToRow[time];
     const col = DAY_TO_COL[day];
     const centerX = colLeft(col) + GRID_COL_WIDTH / 2;
-    const centerY = ROW_AREA.top + row * rowHeight + (rowHeight - dividerHeight) / 2;
+    const centerY = rowArea.top + row * rowHeight + (rowHeight - dividerHeight) / 2;
 
     const lines = wrapText(entry.name, 15);
     const lineHeight = cellFontSize;
