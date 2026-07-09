@@ -37,10 +37,27 @@ export function roleHomePath(userType) {
   }
 }
 
-// A Service's Group ("Student" | "Staff" | "Both") gates who can see/book it.
+// A Service's Group is an array of the account types it's open to (Student,
+// Teacher, Staff, Management, Parent, Ambassador) — gates who can see/book
+// it. Legacy single-string values and the old "Both" shorthand (=
+// Student+Staff) still normalize correctly.
+export function normalizeGroup(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (raw === "Both") return ["Student", "Staff"];
+  return [raw || "Student"];
+}
+
 export function groupMatches(serviceGroup, requiredGroup) {
-  const group = serviceGroup || "Student";
-  return group === "Both" || group === requiredGroup;
+  return normalizeGroup(serviceGroup).includes(requiredGroup);
+}
+
+// Maps an account to the Group bucket it belongs in for
+// Service/Enrollment eligibility — Staff accounts split into "Teacher"
+// (StaffRole exactly "Teacher") vs "Staff" (every other role), matching how
+// the Accounts tab already separates them.
+export function roleGroupOf(user) {
+  if (user.UserType === "Staff") return (user.StaffRole || "Teacher") === "Teacher" ? "Teacher" : "Staff";
+  return user.UserType;
 }
 
 // Click-to-sort for any list of plain objects. Pass keys directly present on

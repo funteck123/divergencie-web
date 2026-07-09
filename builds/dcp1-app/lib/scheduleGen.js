@@ -17,12 +17,21 @@ function fmtDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-// Every Service belongs to a Group ("Student", "Staff", or "Both"), which
-// gates who can book its slots: Trial accounts only book services open to
-// Student, Interview accounts only ones open to Staff. "Both" satisfies
-// either. Services created before this field existed default to "Student".
+// Every Service belongs to one or more Groups (Student, Teacher, Staff,
+// Management, Parent, Ambassador) — an array now, since a service can be
+// open to several account types at once. Gates who can book/enroll: Trial
+// accounts only book services open to Student, Interview accounts only
+// ones open to Staff. Legacy single-string values ("Student"/"Staff") and
+// the old "Both" shorthand (= Student+Staff) still normalize correctly for
+// services/data created before this was an array.
+export function normalizeGroup(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (raw === "Both") return ["Student", "Staff"];
+  return [raw || "Student"];
+}
+
 export function serviceGroupOf(db, serviceId) {
-  return db.services.find((s) => s.ServiceID === serviceId)?.Group || "Student";
+  return normalizeGroup(db.services.find((s) => s.ServiceID === serviceId)?.Group);
 }
 
 export function requiredGroupForBookingType(type) {
@@ -30,8 +39,7 @@ export function requiredGroupForBookingType(type) {
 }
 
 export function groupMatches(serviceGroup, requiredGroup) {
-  const group = serviceGroup || "Student";
-  return group === "Both" || group === requiredGroup;
+  return normalizeGroup(serviceGroup).includes(requiredGroup);
 }
 
 // ScheduleItems are generated grouped by occurrence (all of one Occurrence's
@@ -80,7 +88,7 @@ export function ensureScheduleGenerated(db) {
           ServiceID: service.ServiceID,
           ServiceName: service.Name,
           ServiceType: service.Type,
-          ServiceGroup: service.Group || "Student",
+          ServiceGroup: normalizeGroup(service.Group),
           OccuranceID: occ.OccuranceID,
           Date: fmtDate(cursor),
           Time: occ.Time,

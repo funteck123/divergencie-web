@@ -9,18 +9,25 @@ export async function GET() {
   return NextResponse.json({ services: db.services });
 }
 
-// A Service's Group gates who can book it (Trial accounts only see
-// Student-eligible ones, Interview accounts only Staff-eligible ones);
-// "Both" is eligible for either.
-function isStudentEligible(group) {
-  return group === "Student" || group === "Both";
+// A Service's Group is an array of the account types it's open to — gates
+// who can book/enroll it (Trial accounts only see ones including Student,
+// Interview accounts only ones including Staff).
+export const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
+
+function isValidGroup(group) {
+  return Array.isArray(group) && group.length > 0 && group.every((g) => ALL_GROUPS.includes(g));
 }
 
-// Fields that only apply to Student-eligible services (Group Student/Both).
-// Rate+Currency replace MonthlyCost/Compensation as the billing amount for
-// these — Staff-only services keep MonthlyCost/Compensation unchanged.
-function applyStudentOnlyFields(service, body, group) {
-  if (isStudentEligible(group)) {
+// Fields that only apply to services open to Student or Teacher (the two
+// "attends a cohort" account types). Rate+Currency replace MonthlyCost/
+// Compensation as the billing amount for these — every other group keeps
+// MonthlyCost/Compensation unchanged.
+function hasCohortFields(group) {
+  return group.includes("Student") || group.includes("Teacher");
+}
+
+function applyCohortServiceFields(service, body, group) {
+  if (hasCohortFields(group)) {
     service.Batch = body.batch || "";
     service.Board = body.board || "";
     service.CourseClass = body.courseClass || "";
@@ -36,20 +43,20 @@ function applyStudentOnlyFields(service, body, group) {
   }
 }
 
-// body: { name, type, group: "Student" | "Staff" | "Both", monthlyCost,
+// body: { name, type, group: string[] (subset of ALL_GROUPS), monthlyCost,
 //         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?, currency?, rate?
-//         (all Student-eligible-only), occurrences: [{day, time, duration, facilitator}] }
+//         (all Student/Teacher-only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
 // only book services open to Student, Interview accounts only ones open to
-// Staff. "Both" makes a Service bookable by either. Student-only fields are
-// silently dropped if sent for a Staff-only service.
+// Staff. A service can belong to several groups at once. Cohort-only fields
+// are silently dropped if sent for a service not open to Student/Teacher.
 export async function POST(req) {
   const body = await req.json();
   const { name, type, group, monthlyCost, occurrences } = body;
 
-  if (!name || !type || !["Student", "Staff", "Both"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
+  if (!name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
-      { error: "name, type, group (Student/Staff), and at least one occurrence are required." },
+      { error: `name, type, group (non-empty subset of ${ALL_GROUPS.join(", ")}), and at least one occurrence are required.` },
       { status: 400 }
     );
   }
@@ -73,7 +80,7 @@ export async function POST(req) {
     MonthlyCost: Number(monthlyCost) || 0,
     OccuranceList: occuranceList,
   };
-  applyStudentOnlyFields(service, body, group);
+  applyCohortServiceFields(service, body, group);
   db.services.push(service);
   ensureScheduleGenerated(db);
   writeDB(db);
@@ -93,9 +100,9 @@ export async function PATCH(req) {
   const body = await req.json();
   const { serviceId, name, type, group, monthlyCost, occurrences } = body;
 
-  if (!serviceId || !name || !type || !["Student", "Staff", "Both"].includes(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
+  if (!serviceId || !name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
-      { error: "serviceId, name, type, group (Student/Staff), and at least one occurrence are required." },
+      { error: `serviceId, name, type, group (non-empty subset of ${ALL_GROUPS.join(", ")}), and at least one occurrence are required.` },
       { status: 400 }
     );
   }
@@ -109,7 +116,7 @@ export async function PATCH(req) {
   service.Group = group;
   service.MonthlyCost = Number(monthlyCost) || 0;
   delete service.Code;
-  applyStudentOnlyFields(service, body, group);
+  applyCohortServiceFields(service, body, group);
   service.OccuranceList = occurrences.map((o) => ({
     OccuranceID: o.occuranceId || nextId(db, "OCC"),
     Day: o.day,

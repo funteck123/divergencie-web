@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
-import { api, groupMatches, useSort } from "@/lib/client";
+import { api, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
@@ -1000,13 +1000,14 @@ function CreateAccount({ onCreated, users }) {
 
 /* ---------------- Services ---------------- */
 const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "" };
+const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
 
 function Services() {
   const [services, setServices] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [name, setName] = useState("");
   const [type, setType] = useState("Class");
-  const [group, setGroup] = useState("Student");
+  const [group, setGroup] = useState(["Student"]);
   const [batch, setBatch] = useState("");
   const [board, setBoard] = useState("");
   const [courseClass, setCourseClass] = useState("");
@@ -1019,7 +1020,11 @@ function Services() {
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
-  const studentEligible = group === "Student" || group === "Both";
+  const cohortEligible = group.includes("Student") || group.includes("Teacher");
+
+  function toggleGroup(g) {
+    setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
+  }
 
   async function load() {
     const { services } = await api("/api/services");
@@ -1033,7 +1038,7 @@ function Services() {
     setEditingId(null);
     setName("");
     setType("Class");
-    setGroup("Student");
+    setGroup(["Student"]);
     setBatch("");
     setBoard("");
     setCourseClass("");
@@ -1050,7 +1055,7 @@ function Services() {
     setEditingId(s.ServiceID);
     setName(s.Name);
     setType(s.Type);
-    setGroup(s.Group || "Student");
+    setGroup(normalizeGroup(s.Group));
     setBatch(s.Batch || "");
     setBoard(s.Board || "");
     setCourseClass(s.CourseClass || "");
@@ -1084,6 +1089,10 @@ function Services() {
   async function submit(e) {
     e.preventDefault();
     setError("");
+    if (group.length === 0) {
+      setError("Select at least one group this service is open to.");
+      return;
+    }
     try {
       if (editingId) {
         await api("/api/services", {
@@ -1139,12 +1148,20 @@ function Services() {
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
           <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
-          <select className="field" value={group} onChange={(e) => setGroup(e.target.value)}>
-            <option value="Student">Student (Trial-eligible)</option>
-            <option value="Staff">Staff (Interview-eligible)</option>
-            <option value="Both">Both (Trial + Interview eligible)</option>
-          </select>
-          {studentEligible ? (
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Open to (Trial books Student-open services, Interview books Staff-open ones)
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {ALL_GROUPS.map((g) => (
+                <label key={g} className="flex items-center gap-1 text-sm">
+                  <input type="checkbox" checked={group.includes(g)} onChange={() => toggleGroup(g)} />
+                  {g}
+                </label>
+              ))}
+            </div>
+          </div>
+          {cohortEligible ? (
             <>
               <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
               <input className="field" placeholder="Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
@@ -1254,61 +1271,24 @@ function Services() {
         </form>
       </div>
 
-      <div className="card">
-        <h2 className="font-semibold mb-4">Student Services</h2>
-        <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "max-content", minWidth: "100%" }}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Group</th>
-              <th>Batch</th>
-              <th>Board</th>
-              <th>Course/Class</th>
-              <th>Subject Code</th>
-              <th>Subject Name</th>
-              <th>Full Subject Name</th>
-              <th>Rate</th>
-              <th>Occurrences</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {services
-              .filter((s) => ["Student", "Both"].includes(s.Group || "Student"))
-              .map((s) => (
-                <tr key={s.ServiceID}>
-                  <td>{s.ServiceID}</td>
-                  <td>{s.Name}</td>
-                  <td>{s.Type}</td>
-                  <td>{s.Group || "Student"}</td>
-                  <td>{s.Batch || "—"}</td>
-                  <td>{s.Board || "—"}</td>
-                  <td>{s.CourseClass || "—"}</td>
-                  <td>{s.SubjectCode || "—"}</td>
-                  <td>{s.SubjectName || "—"}</td>
-                  <td>{s.FullSubjectName || "—"}</td>
-                  <td>{s.Currency || "INR"} {s.Rate ?? 0}</td>
-                  <td style={{ color: "var(--muted)" }}>
-                    {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
-                  </td>
-                  <td>
-                    <button className="btn-ghost" onClick={() => startEdit(s)}>
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-        </div>
-      </div>
+      {ALL_GROUPS.map((g) => (
+        <ServiceGroupTable key={g} groupName={g} services={services.filter((s) => groupMatches(s.Group, g))} onEdit={startEdit} />
+      ))}
+    </div>
+  );
+}
 
-      <div className="card">
-        <h2 className="font-semibold mb-4">Staff Services</h2>
-        <div style={{ overflowX: "auto" }}>
+// One table per Group — Student/Teacher services carry the cohort fields
+// (Batch/Board/Subject.../Rate), every other group just shows Compensation,
+// since those are the only two attribute shapes a service can have.
+function ServiceGroupTable({ groupName, services, onEdit }) {
+  const isCohort = groupName === "Student" || groupName === "Teacher";
+  const colSpan = isCohort ? 13 : 7;
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">{groupName} Services</h2>
+      <div style={{ overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
@@ -1316,34 +1296,62 @@ function Services() {
               <th>Name</th>
               <th>Type</th>
               <th>Group</th>
-              <th>Compensation</th>
+              {isCohort ? (
+                <>
+                  <th>Batch</th>
+                  <th>Board</th>
+                  <th>Course/Class</th>
+                  <th>Subject Code</th>
+                  <th>Subject Name</th>
+                  <th>Full Subject Name</th>
+                  <th>Rate</th>
+                </>
+              ) : (
+                <th>Compensation</th>
+              )}
               <th>Occurrences</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {services
-              .filter((s) => (s.Group || "Student") === "Staff")
-              .map((s) => (
-                <tr key={s.ServiceID}>
-                  <td>{s.ServiceID}</td>
-                  <td>{s.Name}</td>
-                  <td>{s.Type}</td>
-                  <td>{s.Group}</td>
+            {services.map((s) => (
+              <tr key={s.ServiceID}>
+                <td>{s.ServiceID}</td>
+                <td>{s.Name}</td>
+                <td>{s.Type}</td>
+                <td>{normalizeGroup(s.Group).join(", ")}</td>
+                {isCohort ? (
+                  <>
+                    <td>{s.Batch || "—"}</td>
+                    <td>{s.Board || "—"}</td>
+                    <td>{s.CourseClass || "—"}</td>
+                    <td>{s.SubjectCode || "—"}</td>
+                    <td>{s.SubjectName || "—"}</td>
+                    <td>{s.FullSubjectName || "—"}</td>
+                    <td>
+                      {s.Currency || "INR"} {s.Rate ?? 0}
+                    </td>
+                  </>
+                ) : (
                   <td>{s.MonthlyCost}</td>
-                  <td style={{ color: "var(--muted)" }}>
-                    {s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}
-                  </td>
-                  <td>
-                    <button className="btn-ghost" onClick={() => startEdit(s)}>
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                )}
+                <td style={{ color: "var(--muted)" }}>{s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
+                <td>
+                  <button className="btn-ghost" onClick={() => onEdit(s)}>
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {services.length === 0 && (
+              <tr>
+                <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
+                  None yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-        </div>
       </div>
     </div>
   );
@@ -1586,7 +1594,7 @@ function Enrollments() {
       api("/api/services"),
       api("/api/enrollments"),
     ]);
-    setUsers(users.filter((u) => ["Student", "Staff"].includes(u.UserType)));
+    setUsers(users.filter((u) => ALL_GROUPS.includes(roleGroupOf(u))));
     setServices(services);
     setEnrollments(enrollments);
   }
@@ -1621,34 +1629,27 @@ function Enrollments() {
     return services.find((s) => s.ServiceID === id)?.Name || id;
   }
 
-  const studentUsers = users.filter((u) => u.UserType === "Student");
-  const staffUsers = users.filter((u) => u.UserType === "Staff");
-  const studentServices = services.filter((s) => groupMatches(s.Group, "Student"));
-  const staffServices = services.filter((s) => groupMatches(s.Group, "Staff"));
-  const studentEnrollments = enrollments.filter((e) => studentUsers.some((u) => u.UserID === e.UserID));
-  const staffEnrollments = enrollments.filter((e) => staffUsers.some((u) => u.UserID === e.UserID));
-
   const shared = { users, services, nameOf, serviceNameOf, onUpdate: updateEnrollment, onDelete: deleteEnrollment };
 
   return (
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-      <EnrollmentGroup
-        title="Student"
-        people={studentUsers}
-        eligibleServices={studentServices}
-        enrollments={studentEnrollments}
-        onEnroll={enroll}
-        {...shared}
-      />
-      <EnrollmentGroup
-        title="Staff"
-        people={staffUsers}
-        eligibleServices={staffServices}
-        enrollments={staffEnrollments}
-        onEnroll={enroll}
-        {...shared}
-      />
+      {ALL_GROUPS.map((g) => {
+        const people = users.filter((u) => roleGroupOf(u) === g);
+        const eligibleServices = services.filter((s) => groupMatches(s.Group, g));
+        const groupEnrollments = enrollments.filter((e) => people.some((u) => u.UserID === e.UserID));
+        return (
+          <EnrollmentGroup
+            key={g}
+            title={g}
+            people={people}
+            eligibleServices={eligibleServices}
+            enrollments={groupEnrollments}
+            onEnroll={enroll}
+            {...shared}
+          />
+        );
+      })}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches, sortByDateTime } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches, normalizeGroup, sortByDateTime } from "@/lib/scheduleGen";
 
 export async function GET() {
   const db = readDB();
@@ -45,7 +45,7 @@ export async function POST(req) {
     ServiceID: service.ServiceID,
     ServiceName: service.Name,
     ServiceType: serviceType, // "Trial" | "Interview" — distinguishes pool slots from real occurrences
-    ServiceGroup: service.Group || "Student",
+    ServiceGroup: normalizeGroup(service.Group),
     OccuranceID: null,
     Date: date,
     Time: time,
