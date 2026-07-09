@@ -33,7 +33,9 @@ const ID_PREFIX = {
   Student: "STU",
   Parent: "PAR",
   TrialAcc: "TRL",
-  InterviewAcc: "INT",
+  TeacherInterviewAcc: "TIN",
+  StaffInterviewAcc: "SIN",
+  AmbassadorInterviewAcc: "AIN",
   Ambassador: "AMB",
 };
 

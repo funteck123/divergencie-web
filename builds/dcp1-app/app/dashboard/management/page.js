@@ -7,6 +7,37 @@ import { api, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/c
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
+// The three pending Interview tracks — each converts to its own final
+// account type (see CONVERT_MAP in api/convert/route.js).
+const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
+const INTERVIEW_ACC_LABEL = {
+  TeacherInterviewAcc: "Teacher Interview",
+  StaffInterviewAcc: "Staff Interview",
+  AmbassadorInterviewAcc: "Ambassador Interview",
+};
+const CONVERT_LABEL = {
+  TrialAcc: "Student",
+  TeacherInterviewAcc: "Staff (Teacher)",
+  StaffInterviewAcc: "Staff",
+  AmbassadorInterviewAcc: "Ambassador",
+};
+// Booking type (sent to /api/schedule + /api/schedule/pick) -> the Group a
+// Service must be open to for that booking type — mirrors REQUIRED_GROUP in
+// lib/scheduleGen.js (duplicated here since that module can't be imported
+// into a "use client" file — it pulls in lib/db.js's fs usage).
+const BOOKING_TYPES = ["Trial", "TeacherInterview", "StaffInterview", "AmbassadorInterview"];
+const REQUIRED_GROUP_FOR_BOOKING_TYPE = {
+  Trial: "Student",
+  TeacherInterview: "Teacher",
+  StaffInterview: "Staff",
+  AmbassadorInterview: "Ambassador",
+};
+const BOOKING_TYPE_LABEL = {
+  Trial: "Trial",
+  TeacherInterview: "Interview — Teacher",
+  StaffInterview: "Interview — Staff",
+  AmbassadorInterview: "Interview — Ambassador",
+};
 
 export default function ManagementDashboard() {
   return <DashboardShell allowedType="Management">{(user) => <Body user={user} />}</DashboardShell>;
@@ -106,7 +137,7 @@ function Applications() {
             <tr key={r.RegFormID}>
               <td>{r.RegFormID}</td>
               <td>{r.Name}</td>
-              <td>{r.RequestedType}</td>
+              <td>{BOOKING_TYPE_LABEL[r.RequestedType] || r.RequestedType}</td>
               <td>
                 <Badge kind={r.Status === "Pending" ? "pending" : r.Status === "Approved" ? "good" : "bad"}>
                   {r.Status}
@@ -173,7 +204,7 @@ function Pipeline() {
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead
     const trialAccs = users.filter((u) => u.UserType === "TrialAcc");
-    const interviewAccs = users.filter((u) => u.UserType === "InterviewAcc");
+    const interviewAccs = users.filter((u) => INTERVIEW_ACC_TYPES.includes(u.UserType));
     const trials = [];
     const interviews = [];
     for (const acc of trialAccs) {
@@ -532,7 +563,7 @@ function Accounts() {
   const managementUsers = users.filter((u) => u.UserType === "Management");
   const parentUsers = users.filter((u) => u.UserType === "Parent");
   const ambassadorUsers = users.filter((u) => u.UserType === "Ambassador");
-  const pendingUsers = users.filter((u) => ["TrialAcc", "InterviewAcc"].includes(u.UserType));
+  const trialPendingUsers = users.filter((u) => u.UserType === "TrialAcc");
 
   function studentNamesOf(studentIds) {
     if (!studentIds || studentIds.length === 0) return "—";
@@ -592,13 +623,18 @@ function Accounts() {
 
       <AccountGroupTable title="Ambassador Accounts" rows={ambassadorUsers} columns={[]} {...sharedProps} />
 
-      <AccountGroupTable
-        title="Pending Accounts (Trial/Interview)"
-        rows={pendingUsers}
-        columns={[{ header: "Type", render: (u) => u.UserType }]}
-        showConvert
-        {...sharedProps}
-      />
+      <AccountGroupTable title="Pending Trial Accounts" rows={trialPendingUsers} columns={[]} showConvert {...sharedProps} />
+
+      {INTERVIEW_ACC_TYPES.map((t) => (
+        <AccountGroupTable
+          key={t}
+          title={`Pending ${INTERVIEW_ACC_LABEL[t]} Accounts`}
+          rows={users.filter((u) => u.UserType === t)}
+          columns={[]}
+          showConvert
+          {...sharedProps}
+        />
+      ))}
     </div>
   );
 }
@@ -669,9 +705,9 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                     </td>
                   )}
                   <td className="flex gap-2">
-                    {showConvert && ["TrialAcc", "InterviewAcc"].includes(u.UserType) && u.Status !== "Converted" && (
+                    {showConvert && CONVERT_LABEL[u.UserType] && u.Status !== "Converted" && (
                       <button className="btn" onClick={() => convert(u.UserID)}>
-                        Convert to {u.UserType === "TrialAcc" ? "Student" : "Staff"}
+                        Convert to {CONVERT_LABEL[u.UserType]}
                       </button>
                     )}
                     <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
@@ -865,7 +901,17 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   );
 }
 
-const CREATABLE_TYPES = ["Parent", "Student", "Staff", "TrialAcc", "InterviewAcc", "Management", "Ambassador"];
+const CREATABLE_TYPES = [
+  "Parent",
+  "Student",
+  "Staff",
+  "TrialAcc",
+  "TeacherInterviewAcc",
+  "StaffInterviewAcc",
+  "AmbassadorInterviewAcc",
+  "Management",
+  "Ambassador",
+];
 
 function CreateAccount({ onCreated, users }) {
   const [userType, setUserType] = useState("Parent");
@@ -933,7 +979,7 @@ function CreateAccount({ onCreated, users }) {
           <select className="field" value={userType} onChange={(e) => setUserType(e.target.value)}>
             {CREATABLE_TYPES.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {INTERVIEW_ACC_LABEL[t] || t}
               </option>
             ))}
           </select>
@@ -1150,7 +1196,7 @@ function Services() {
           <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-              Open to (Trial books Student-open services, Interview books Staff-open ones)
+              Open to (Trial books Student-open services; each Interview track books its own matching group — Teacher/Staff/Ambassador)
             </label>
             <div className="flex flex-wrap gap-3">
               {ALL_GROUPS.map((g) => (
@@ -1416,7 +1462,7 @@ function SchedulePool() {
   }
 
   const serviceSlots = items.filter((i) => i.OccuranceID !== null);
-  const requiredGroup = serviceType === "Trial" ? "Student" : "Staff";
+  const requiredGroup = REQUIRED_GROUP_FOR_BOOKING_TYPE[serviceType] || "Staff";
   const eligibleServices = services.filter((s) => groupMatches(s.Group, requiredGroup));
 
   return (
@@ -1437,8 +1483,11 @@ function SchedulePool() {
               setServiceId("");
             }}
           >
-            <option value="Trial">Trial</option>
-            <option value="Interview">Interview</option>
+            {BOOKING_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {BOOKING_TYPE_LABEL[t]}
+              </option>
+            ))}
           </select>
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
             <option value="">Select service…</option>
@@ -1524,23 +1573,26 @@ function SchedulePool() {
                 </td>
               </tr>
             ))}
-            {pendingInterviews.map((i) => (
-              <tr key={i.InterviewID}>
-                <td>Interview</td>
-                <td>{i.RequesterName}</td>
-                <td>{i.Slot?.ServiceName}</td>
-                <td>{i.Slot?.Date}</td>
-                <td>{i.Slot?.Time}</td>
-                <td className="space-x-2">
-                  <button className="btn" onClick={() => actOnRequest("Interview", i.InterviewID, "approve")}>
-                    Approve
-                  </button>
-                  <button className="btn-ghost" onClick={() => actOnRequest("Interview", i.InterviewID, "reject")}>
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {pendingInterviews.map((i) => {
+              const bookingType = i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview";
+              return (
+                <tr key={i.InterviewID}>
+                  <td>{INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview"}</td>
+                  <td>{i.RequesterName}</td>
+                  <td>{i.Slot?.ServiceName}</td>
+                  <td>{i.Slot?.Date}</td>
+                  <td>{i.Slot?.Time}</td>
+                  <td className="space-x-2">
+                    <button className="btn" onClick={() => actOnRequest(bookingType, i.InterviewID, "approve")}>
+                      Approve
+                    </button>
+                    <button className="btn-ghost" onClick={() => actOnRequest(bookingType, i.InterviewID, "reject")}>
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
             {pendingTrials.length === 0 && pendingInterviews.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ color: "var(--muted)" }}>

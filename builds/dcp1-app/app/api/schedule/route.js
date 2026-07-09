@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches, normalizeGroup, sortByDateTime } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches, normalizeGroup, sortByDateTime, BOOKING_TYPES } from "@/lib/scheduleGen";
 
 export async function GET() {
   const db = readDB();
@@ -12,18 +12,18 @@ export async function GET() {
   return NextResponse.json({ scheduleItems: sortByDateTime(db.scheduleItems), openPoolSlots });
 }
 
-// Management creates an open-pool slot for a Trial or Interview session.
-// Every Trial/Interview is for a specific Service (e.g. "trying out" a real
-// class, or interviewing for a role tied to a real service) — so serviceId
-// is required, not optional.
-// body: { serviceType: "Trial" | "Interview", serviceId, date, time, duration, facilitator }
+// Management creates an open-pool slot for a Trial or one of the three
+// Interview tracks. Every slot is for a specific Service (e.g. "trying out"
+// a real class, or interviewing for a role tied to a real service) — so
+// serviceId is required, not optional.
+// body: { serviceType: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", serviceId, date, time, duration, facilitator }
 export async function POST(req) {
   const body = await req.json();
   const { serviceType, serviceId, date, time, duration, facilitator } = body;
 
-  if (!["Trial", "Interview"].includes(serviceType) || !serviceId || !date || !time) {
+  if (!BOOKING_TYPES.includes(serviceType) || !serviceId || !date || !time) {
     return NextResponse.json(
-      { error: "serviceType (Trial/Interview), serviceId, date, and time are required." },
+      { error: `serviceType (${BOOKING_TYPES.join("/")}), serviceId, date, and time are required.` },
       { status: 400 }
     );
   }
@@ -35,7 +35,7 @@ export async function POST(req) {
   const requiredGroup = requiredGroupForBookingType(serviceType);
   if (!groupMatches(service.Group, requiredGroup)) {
     return NextResponse.json(
-      { error: `${serviceType} slots require a ${requiredGroup} (or Both) group Service.` },
+      { error: `${serviceType} slots require a ${requiredGroup}-open Service.` },
       { status: 400 }
     );
   }
@@ -44,7 +44,7 @@ export async function POST(req) {
     ScheduleID: nextId(db, "SCH"),
     ServiceID: service.ServiceID,
     ServiceName: service.Name,
-    ServiceType: serviceType, // "Trial" | "Interview" — distinguishes pool slots from real occurrences
+    ServiceType: serviceType, // distinguishes pool slots (Trial/*Interview) from real occurrences
     ServiceGroup: normalizeGroup(service.Group),
     OccuranceID: null,
     Date: date,

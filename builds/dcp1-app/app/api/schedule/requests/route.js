@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
+import { BOOKING_TYPES } from "@/lib/scheduleGen";
 
 // Pending Trial/Interview requests, joined with slot + requester name, for
 // Management to approve or reject.
@@ -8,6 +9,14 @@ export async function GET() {
 
   function nameOf(userId) {
     return db.users.find((u) => u.UserID === userId)?.Name || userId;
+  }
+  // The interviewItem itself doesn't record which of the three Interview
+  // tracks it's for — that lives on the requester's own UserType
+  // (TeacherInterviewAcc/StaffInterviewAcc/AmbassadorInterviewAcc). Expose it
+  // as RequesterType so Management's approve/reject buttons can send the
+  // right booking type back to PATCH.
+  function typeOf(userId) {
+    return db.users.find((u) => u.UserID === userId)?.UserType || null;
   }
   function slotOf(scheduleId) {
     return db.scheduleItems.find((s) => s.ScheduleID === scheduleId) || null;
@@ -19,16 +28,21 @@ export async function GET() {
 
   const pendingInterviews = db.interviewItems
     .filter((i) => i.Status === "Pending")
-    .map((i) => ({ ...i, RequesterName: nameOf(i.InterviewAccID), Slot: slotOf(i.ScheduleItemID) }));
+    .map((i) => ({
+      ...i,
+      RequesterName: nameOf(i.InterviewAccID),
+      RequesterType: typeOf(i.InterviewAccID),
+      Slot: slotOf(i.ScheduleItemID),
+    }));
 
   return NextResponse.json({ pendingTrials, pendingInterviews });
 }
 
-// body: { type: "Trial" | "Interview", id, action: "approve" | "reject" }
+// body: { type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", id, action: "approve" | "reject" }
 export async function PATCH(req) {
   const { type, id, action } = await req.json();
-  if (!["Trial", "Interview"].includes(type) || !["approve", "reject"].includes(action)) {
-    return NextResponse.json({ error: "type must be Trial/Interview, action approve/reject." }, { status: 400 });
+  if (!BOOKING_TYPES.includes(type) || !["approve", "reject"].includes(action)) {
+    return NextResponse.json({ error: `type must be one of ${BOOKING_TYPES.join("/")}, action approve/reject.` }, { status: 400 });
   }
 
   const db = readDB();

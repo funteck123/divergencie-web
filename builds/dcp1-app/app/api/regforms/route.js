@@ -26,6 +26,17 @@ function randomPassword() {
   return Math.random().toString(36).slice(-8);
 }
 
+// RequestedType -> the pending UserType/ID prefix it creates on approval.
+// Each Interview track produces its own distinct pending account so it
+// converts to the right final type later (see CONVERT_MAP in
+// api/convert/route.js) — mirrors ID_PREFIX in api/users/route.js.
+const REQUEST_TYPE_MAP = {
+  Trial: { userType: "TrialAcc", prefix: "TRL" },
+  TeacherInterview: { userType: "TeacherInterviewAcc", prefix: "TIN" },
+  StaffInterview: { userType: "StaffInterviewAcc", prefix: "SIN" },
+  AmbassadorInterview: { userType: "AmbassadorInterviewAcc", prefix: "AIN" },
+};
+
 // action: "approve" | "reject"
 export async function PATCH(req) {
   const { regFormId, action } = await req.json();
@@ -44,9 +55,12 @@ export async function PATCH(req) {
   }
 
   if (action === "approve") {
-    const type = form.RequestedType; // "Trial" | "Interview"
-    const userType = type === "Trial" ? "TrialAcc" : "InterviewAcc";
-    const userId = nextId(db, type === "Trial" ? "TRL" : "INT");
+    const mapping = REQUEST_TYPE_MAP[form.RequestedType];
+    if (!mapping) {
+      return NextResponse.json({ error: `Unknown RequestedType "${form.RequestedType}".` }, { status: 400 });
+    }
+    const { userType, prefix } = mapping;
+    const userId = nextId(db, prefix);
 
     const user = {
       UserID: userId,

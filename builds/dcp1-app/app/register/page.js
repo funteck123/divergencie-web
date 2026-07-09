@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { api } from "@/lib/client";
 
+const REQUESTED_TYPE_LABEL = {
+  Trial: "trial",
+  TeacherInterview: "teacher interview",
+  StaffInterview: "staff interview",
+  AmbassadorInterview: "ambassador interview",
+};
+
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,7 +42,7 @@ export default function RegisterPage() {
           <h1 className="text-xl font-semibold mb-2">Application submitted</h1>
           <p style={{ color: "var(--muted)" }}>
             Management will review your request. If approved, you&apos;ll be given login
-            credentials separately to book a {requestedType.toLowerCase()} slot.
+            credentials separately to book a {REQUESTED_TYPE_LABEL[requestedType] || requestedType.toLowerCase()} slot.
           </p>
           <a href="/" className="btn inline-block mt-4">
             Back to sign in
@@ -83,7 +90,9 @@ export default function RegisterPage() {
               onChange={(e) => setRequestedType(e.target.value)}
             >
               <option value="Trial">Trial (Student)</option>
-              <option value="Interview">Interview (Staff)</option>
+              <option value="TeacherInterview">Interview — Teacher</option>
+              <option value="StaffInterview">Interview — Staff</option>
+              <option value="AmbassadorInterview">Interview — Ambassador</option>
             </select>
           </div>
 

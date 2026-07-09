@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime, requiredGroupForBookingType } from "@/lib/scheduleGen";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -29,7 +29,9 @@ export async function GET(req) {
   // Includes manually-offered Trial/Interview slots AND every auto-generated
   // Service occurrence (OccuranceID set) — any real class session doubles as
   // an open pool slot. Gated by ServiceGroup: Trial only sees services open
-  // to Student, Interview only ones open to Staff ("Both" satisfies either).
+  // to Student; each Interview track (Teacher/Staff/Ambassador) only sees
+  // services open to its own matching Group — derived from this account's
+  // own UserType ("TeacherInterviewAcc" -> requiredGroupForBookingType("TeacherInterview") -> "Teacher").
   // Multiple accounts may hold a Pending request on the same slot;
   // Management approves one.
   const myRequestedTrialSlotIds = new Set(
@@ -46,12 +48,13 @@ export async function GET(req) {
         groupMatches(s.ServiceGroup, "Student")
     )
   );
+  const interviewRequiredGroup = requiredGroupForBookingType(user.UserType.replace(/Acc$/, ""));
   const availableInterviewSlots = sortByDateTime(
     db.scheduleItems.filter(
       (s) =>
         !isSlotBooked(db, s.ScheduleID) &&
         !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
-        groupMatches(s.ServiceGroup, "Staff")
+        groupMatches(s.ServiceGroup, interviewRequiredGroup)
     )
   );
 

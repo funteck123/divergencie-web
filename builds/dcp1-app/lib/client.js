@@ -24,7 +24,9 @@ export function roleHomePath(userType) {
       return "/dashboard/management";
     case "TrialAcc":
       return "/dashboard/trial";
-    case "InterviewAcc":
+    case "TeacherInterviewAcc":
+    case "StaffInterviewAcc":
+    case "AmbassadorInterviewAcc":
       return "/dashboard/interview";
     case "Student":
       return "/dashboard/student";

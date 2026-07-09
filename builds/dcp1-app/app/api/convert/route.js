@@ -15,10 +15,22 @@ function randomPassword() {
   return Math.random().toString(36).slice(-8);
 }
 
-// body: { accountId } — the TrialAcc or InterviewAcc UserID to convert.
+// Every pending account type converts to exactly one final type — this is
+// the only mapping that decides it. TeacherInterviewAcc and StaffInterviewAcc
+// both become Staff, differing only in the StaffRole they start with;
+// AmbassadorInterviewAcc becomes Ambassador directly (no StaffRole/Course).
+const CONVERT_MAP = {
+  TrialAcc: { newType: "Student", prefix: "STU", extra: () => ({ Course: "" }) },
+  TeacherInterviewAcc: { newType: "Staff", prefix: "STF", extra: () => ({ StaffRole: "Teacher" }) },
+  StaffInterviewAcc: { newType: "Staff", prefix: "STF", extra: () => ({ StaffRole: "Staff" }) },
+  AmbassadorInterviewAcc: { newType: "Ambassador", prefix: "AMB", extra: () => ({}) },
+};
+
+// body: { accountId } — the pending account UserID to convert (TrialAcc,
+// TeacherInterviewAcc, StaffInterviewAcc, or AmbassadorInterviewAcc).
 // The old record is kept forever (Status: "Converted") but can still log in —
-// the same Trial/Interview account is reused to request Trials/Interviews for
-// other Services later, it isn't a one-time-use account.
+// the same pending account is reused to request Trials/Interviews for other
+// Services later, it isn't a one-time-use account.
 // Invoices already billed to the TrialAcc's ID (e.g. the one-month-advance
 // Trial invoice) are reassigned to the new Student so billing history carries
 // over; everything else about the new account starts fresh.
@@ -28,24 +40,27 @@ export async function POST(req) {
 
   const oldUser = db.users.find((u) => u.UserID === accountId);
   if (!oldUser) return NextResponse.json({ error: "Account not found." }, { status: 404 });
-  if (!["TrialAcc", "InterviewAcc"].includes(oldUser.UserType)) {
-    return NextResponse.json({ error: "Only TrialAcc/InterviewAcc can be converted." }, { status: 400 });
+  const mapping = CONVERT_MAP[oldUser.UserType];
+  if (!mapping) {
+    return NextResponse.json(
+      { error: `Only ${Object.keys(CONVERT_MAP).join("/")} can be converted.` },
+      { status: 400 }
+    );
   }
   if (oldUser.Status === "Converted") {
     return NextResponse.json({ error: "Already converted." }, { status: 400 });
   }
 
-  const newType = oldUser.UserType === "TrialAcc" ? "Student" : "Staff";
-  const newUserId = nextId(db, newType === "Student" ? "STU" : "STF");
+  const { newType, prefix, extra } = mapping;
+  const newUserId = nextId(db, prefix);
 
   const newUser = {
     UserID: newUserId,
     UserType: newType,
     Name: oldUser.Name,
     Status: "Active",
-    Timezone: "Asia/Kolkata",
-    ...(newType === "Student" ? { Course: "" } : {}),
-    ...(newType === "Staff" ? { StaffRole: "Teacher" } : {}),
+    ...(["Student", "Staff"].includes(newType) ? { Timezone: "Asia/Kolkata" } : {}),
+    ...extra(),
   };
   const username = makeUsername(oldUser.Name, db);
   const password = randomPassword();

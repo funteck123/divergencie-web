@@ -4,8 +4,19 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import { api, groupMatches } from "@/lib/client";
 
+const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
+
+// Each interview track only sees/books services open to its own Group —
+// mirrors REQUIRED_GROUP in lib/scheduleGen.js (duplicated here rather than
+// imported since that module pulls in lib/db.js's fs usage, which can't be
+// bundled into a "use client" page).
+const INTERVIEW_GROUP = { TeacherInterviewAcc: "Teacher", StaffInterviewAcc: "Staff", AmbassadorInterviewAcc: "Ambassador" };
+function bookingTypeFor(userType) {
+  return userType.replace(/Acc$/, "");
+}
+
 export default function InterviewDashboard() {
-  return <DashboardShell allowedType="InterviewAcc">{(user) => <Body user={user} />}</DashboardShell>;
+  return <DashboardShell allowedType={INTERVIEW_ACC_TYPES}>{(user) => <Body user={user} />}</DashboardShell>;
 }
 
 function Body({ user }) {
@@ -32,7 +43,7 @@ function Body({ user }) {
     try {
       await api("/api/schedule/pick", {
         method: "POST",
-        body: JSON.stringify({ scheduleId, userId: user.UserID, type: "Interview" }),
+        body: JSON.stringify({ scheduleId, userId: user.UserID, type: bookingTypeFor(user.UserType) }),
       });
       load();
     } catch (e) {
@@ -52,7 +63,7 @@ function Body({ user }) {
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
-  const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Staff"));
+  const eligibleServices = data.services.filter((s) => groupMatches(s.Group, INTERVIEW_GROUP[user.UserType] || "Staff"));
   const slotsForService = serviceId ? data.availableInterviewSlots.filter((s) => s.ServiceID === serviceId) : [];
 
   return (
@@ -121,7 +132,8 @@ function Body({ user }) {
                     </a>
                   )}
                   <p className="text-sm mt-1" style={{ color: "var(--good)" }}>
-                    Offer accepted — Management will convert you to a Staff account shortly.
+                    Offer accepted — Management will convert you to a{" "}
+                    {user.UserType === "AmbassadorInterviewAcc" ? "n Ambassador" : " Staff"} account shortly.
                   </p>
                 </div>
               )}

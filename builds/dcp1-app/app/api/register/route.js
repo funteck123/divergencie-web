@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { BOOKING_TYPES } from "@/lib/scheduleGen";
 
 // Public endpoint: anyone can submit a RegForm. No account, no schedule pick
 // happens here — Management reviews it later and, separately, creates open
@@ -11,8 +12,8 @@ export async function POST(req) {
   if (!name || !requestedType) {
     return NextResponse.json({ error: "Name and requested type are required." }, { status: 400 });
   }
-  if (!["Trial", "Interview"].includes(requestedType)) {
-    return NextResponse.json({ error: "requestedType must be Trial or Interview." }, { status: 400 });
+  if (!BOOKING_TYPES.includes(requestedType)) {
+    return NextResponse.json({ error: `requestedType must be one of ${BOOKING_TYPES.join(", ")}.` }, { status: 400 });
   }
 
   const db = readDB();

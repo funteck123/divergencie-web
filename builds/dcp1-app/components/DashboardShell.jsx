@@ -10,7 +10,8 @@ export default function DashboardShell({ allowedType, children }) {
 
   useEffect(() => {
     const u = getCurrentUser();
-    if (!u || u.UserType !== allowedType) {
+    const allowed = Array.isArray(allowedType) ? allowedType.includes(u?.UserType) : u?.UserType === allowedType;
+    if (!u || !allowed) {
       router.replace("/");
       return;
     }

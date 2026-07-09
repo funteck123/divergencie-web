@@ -20,10 +20,10 @@ function fmtDate(d) {
 // Every Service belongs to one or more Groups (Student, Teacher, Staff,
 // Management, Parent, Ambassador) — an array now, since a service can be
 // open to several account types at once. Gates who can book/enroll: Trial
-// accounts only book services open to Student, Interview accounts only
-// ones open to Staff. Legacy single-string values ("Student"/"Staff") and
-// the old "Both" shorthand (= Student+Staff) still normalize correctly for
-// services/data created before this was an array.
+// accounts only book services open to Student, each Interview track only
+// sees services open to its matching Group. Legacy single-string values
+// ("Student"/"Staff") and the old "Both" shorthand (= Student+Staff) still
+// normalize correctly for services/data created before this was an array.
 export function normalizeGroup(raw) {
   if (Array.isArray(raw)) return raw;
   if (raw === "Both") return ["Student", "Staff"];
@@ -34,8 +34,21 @@ export function serviceGroupOf(db, serviceId) {
   return normalizeGroup(db.services.find((s) => s.ServiceID === serviceId)?.Group);
 }
 
+// Booking type -> the Group a Service must include to be bookable under it.
+// Trial always leads to a Student account; each Interview track leads to a
+// specific final account type (see CONVERT_MAP in api/convert/route.js), so
+// each gets its own required Group instead of one shared "Staff" bucket.
+const REQUIRED_GROUP = {
+  Trial: "Student",
+  TeacherInterview: "Teacher",
+  StaffInterview: "Staff",
+  AmbassadorInterview: "Ambassador",
+};
+
+export const BOOKING_TYPES = Object.keys(REQUIRED_GROUP);
+
 export function requiredGroupForBookingType(type) {
-  return type === "Trial" ? "Student" : "Staff";
+  return REQUIRED_GROUP[type] || "Staff";
 }
 
 export function groupMatches(serviceGroup, requiredGroup) {

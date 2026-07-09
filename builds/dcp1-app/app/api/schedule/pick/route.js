@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { serviceGroupOf, requiredGroupForBookingType, groupMatches } from "@/lib/scheduleGen";
+import { serviceGroupOf, requiredGroupForBookingType, groupMatches, BOOKING_TYPES } from "@/lib/scheduleGen";
 
-// body: { scheduleId, userId, type: "Trial" | "Interview" }
+// body: { scheduleId, userId, type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview" }
 // Multiple accounts may request the same slot ("double booking") — Management
 // approves one via PATCH /api/schedule/requests, which is what actually locks
 // the slot (see isSlotBooked). This route only records a Pending request.
@@ -13,13 +13,13 @@ export async function POST(req) {
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
   if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
 
-  if (!["Trial", "Interview"].includes(type)) {
-    return NextResponse.json({ error: "type must be Trial or Interview." }, { status: 400 });
+  if (!BOOKING_TYPES.includes(type)) {
+    return NextResponse.json({ error: `type must be one of ${BOOKING_TYPES.join("/")}.` }, { status: 400 });
   }
   const requiredGroup = requiredGroupForBookingType(type);
   if (!groupMatches(serviceGroupOf(db, slot.ServiceID), requiredGroup)) {
     return NextResponse.json(
-      { error: `${type} accounts can only book ${requiredGroup} (or Both) group services.` },
+      { error: `${type} accounts can only book ${requiredGroup}-open services.` },
       { status: 400 }
     );
   }
