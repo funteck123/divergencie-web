@@ -1,5 +1,9 @@
 # System Blueprint — v4
 
+**History:** accurate as of commit `e25c18f` (security(auth): add server-side session auth +
+ownership checks across every API route) — the last code commit reflected in this document.
+Superseded by `dcp1-uml-v5.md`, which covers everything committed after this hash.
+
 Reflects the codebase as implemented (not the original v3 pre-build plan). Superseded/renamed
 concepts from v3 are noted inline. Legend:
 

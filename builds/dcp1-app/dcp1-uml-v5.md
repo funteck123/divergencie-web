@@ -1,5 +1,9 @@
 # System Blueprint — v5
 
+**History:** accurate as of commit `febee0c` (rebrand: rename "Education Management" to "DC
+Portal") — the last code commit reflected in this document. Any commit after `febee0c` may not
+yet be captured here; check `git log --oneline` against this hash to see what's newer.
+
 Reflects the codebase as implemented. v4 → v5 changes are called out inline; everything else is
 carried forward unchanged from v4 (which itself superseded the v3 pre-build plan — see that
 document's inline notes for the v3→v4 diff). The app itself was rebranded from "Education
