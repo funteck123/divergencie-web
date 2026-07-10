@@ -18,7 +18,7 @@ export default function MyInfo({ user, linkedChildren }) {
     ["Type", user.UserType],
     ["Status", user.Status],
   ];
-  if (["Student", "Teacher", "Staff"].includes(user.UserType)) {
+  if (["Student", "Teacher", "Staff", "Ambassador"].includes(user.UserType)) {
     rows.push(["Timezone", timezoneLabel(user.Timezone)]);
   }
   if (user.UserType === "Student") rows.push(["Course", user.Course || "—"]);

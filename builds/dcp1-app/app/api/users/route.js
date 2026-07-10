@@ -125,10 +125,7 @@ export async function POST(req) {
   const userId = nextId(db, ID_PREFIX[userType]);
   const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
   if (userType === "Parent") user.StudentIDs = studentIds;
-  if (userType === "Staff") {
-    user.Timezone = normalizeTimezone(timezone);
-  }
-  if (userType === "Teacher") {
+  if (["Staff", "Teacher", "Ambassador"].includes(userType)) {
     user.Timezone = normalizeTimezone(timezone);
   }
   if (userType === "Student") {

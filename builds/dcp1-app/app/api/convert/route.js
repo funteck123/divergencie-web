@@ -20,16 +20,31 @@ function randomPassword() {
 // UserTypes (not one "Staff" type with a role flag), so TeacherInterviewAcc
 // and StaffInterviewAcc land on different final types, each with its own ID
 // prefix. AmbassadorInterviewAcc becomes Ambassador directly.
-// Department is fixed for Teacher/Ambassador (their own type name) and Role
-// starts blank on all three for Management to fill in via Edit — mirrors
-// FIXED_DEPARTMENT/ROLE_ELIGIBLE in api/users/route.js (duplicated since
-// that's a POST/PATCH-only concern, not worth sharing a module for two
-// object literals).
+// Department is fixed for Teacher/Ambassador (their own type name) and Role/
+// PassportNumber start blank on all three for Management to fill in via
+// Edit — mirrors FIXED_DEPARTMENT/ROLE_ELIGIBLE in api/users/route.js
+// (duplicated since that's a POST/PATCH-only concern, not worth sharing a
+// module for two object literals). Every field applyDepartment/applyRole/
+// applyPassportNumber would set on a directly-created account of the same
+// UserType is set here too, so converted and directly-created accounts have
+// the same shape (no missing keys).
 const CONVERT_MAP = {
   TrialAcc: { newType: "Student", prefix: "STU", extra: () => ({ Course: "" }) },
-  TeacherInterviewAcc: { newType: "Teacher", prefix: "TCH", extra: () => ({ Department: "Teacher", Role: "" }) },
-  StaffInterviewAcc: { newType: "Staff", prefix: "STF", extra: () => ({ Role: "" }) },
-  AmbassadorInterviewAcc: { newType: "Ambassador", prefix: "AMB", extra: () => ({ Department: "Ambassador", Role: "" }) },
+  TeacherInterviewAcc: {
+    newType: "Teacher",
+    prefix: "TCH",
+    extra: () => ({ Department: "Teacher", Role: "", PassportNumber: "" }),
+  },
+  StaffInterviewAcc: {
+    newType: "Staff",
+    prefix: "STF",
+    extra: () => ({ Department: "", Role: "", PassportNumber: "" }),
+  },
+  AmbassadorInterviewAcc: {
+    newType: "Ambassador",
+    prefix: "AMB",
+    extra: () => ({ Department: "Ambassador", Role: "", PassportNumber: "" }),
+  },
 };
 
 // body: { accountId } — the pending account UserID to convert (TrialAcc,
@@ -66,7 +81,7 @@ export async function POST(req) {
     Name: oldUser.Name,
     Status: "Active",
     Currency: "INR",
-    ...(["Student", "Teacher", "Staff"].includes(newType) ? { Timezone: "Asia/Kolkata" } : {}),
+    ...(["Student", "Teacher", "Staff", "Ambassador"].includes(newType) ? { Timezone: "Asia/Kolkata" } : {}),
     ...extra(),
   };
   const username = makeUsername(oldUser.Name, db);

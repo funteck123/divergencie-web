@@ -648,6 +648,7 @@ function Accounts() {
           { header: "Role", render: (u) => u.Role || "—" },
           { header: "Department", render: (u) => u.Department || "—" },
           { header: "Passport #", render: (u) => u.PassportNumber || "—" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
           { header: "Currency", render: (u) => u.Currency || "INR" },
         ]}
         {...sharedProps}
@@ -811,7 +812,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       fields.course = course;
       fields.batch = batch;
     }
-    if (["Student", "Teacher", "Staff"].includes(user.UserType)) fields.timezone = timezone;
+    if (["Student", "Teacher", "Staff", "Ambassador"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
     if (password.trim()) fields.password = password;
     onSave(fields);
@@ -921,7 +922,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </div>
       )}
 
-      {["Student", "Teacher", "Staff"].includes(user.UserType) && (
+      {["Student", "Teacher", "Staff", "Ambassador"].includes(user.UserType) && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Timezone
@@ -1027,6 +1028,7 @@ function CreateAccount({ onCreated, users }) {
         body.batch = batch;
         body.timezone = timezone;
       }
+      if (userType === "Ambassador") body.timezone = timezone;
       const res = await api("/api/users", { method: "POST", body: JSON.stringify(body) });
       setIssued(res.credentials);
       reset();
@@ -1114,7 +1116,7 @@ function CreateAccount({ onCreated, users }) {
           </>
         )}
 
-        {["Student", "Teacher", "Staff"].includes(userType) && (
+        {["Student", "Teacher", "Staff", "Ambassador"].includes(userType) && (
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Timezone
@@ -2045,7 +2047,7 @@ function Billing() {
         <ManualBillingForm
           title="Create Paycheck (manual)"
           personLabel="Staff"
-          people={users.filter((u) => u.UserType === "Staff")}
+          people={users.filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType))}
           services={services}
           onSubmit={async ({ personId, serviceId, year, month, amount }) => {
             await api("/api/paychecks", {
