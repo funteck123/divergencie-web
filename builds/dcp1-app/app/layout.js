@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "DCP1 — Education Management",
+  title: "DC Portal",
   description: "Local learning-project build of the DCP1 system blueprint",
 };
 

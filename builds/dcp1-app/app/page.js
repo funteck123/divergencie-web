@@ -36,7 +36,7 @@ export default function LoginPage() {
           <div className="text-sm tracking-widest uppercase" style={{ color: "var(--muted)" }}>
             DCP1
           </div>
-          <h1 className="text-2xl font-semibold mt-1">Education Management</h1>
+          <h1 className="text-2xl font-semibold mt-1">DC Portal</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="card space-y-4">
