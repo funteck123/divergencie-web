@@ -600,6 +600,7 @@ function Accounts() {
         columns={[
           { header: "Role", render: (u) => u.Role || "—" },
           { header: "Department", render: (u) => u.Department || "—" },
+          { header: "Passport #", render: (u) => u.PassportNumber || "—" },
           { header: "Batch", render: (u) => u.Batch || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
         ]}
@@ -613,6 +614,7 @@ function Accounts() {
         columns={[
           { header: "Role", render: (u) => u.Role || "—" },
           { header: "Department", render: (u) => u.Department || "—" },
+          { header: "Passport #", render: (u) => u.PassportNumber || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
         ]}
         showSchedule
@@ -634,6 +636,7 @@ function Accounts() {
         columns={[
           { header: "Role", render: (u) => u.Role || "—" },
           { header: "Department", render: (u) => u.Department || "—" },
+          { header: "Passport #", render: (u) => u.PassportNumber || "—" },
         ]}
         {...sharedProps}
       />
@@ -766,6 +769,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
   const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
   const [role, setRole] = useState(user.Role || "");
+  const [passportNumber, setPassportNumber] = useState(user.PassportNumber || "");
   const [course, setCourse] = useState(user.Course || "");
   const [batch, setBatch] = useState(user.Batch || "");
   const [department, setDepartment] = useState(user.Department || "");
@@ -784,7 +788,10 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     e.preventDefault();
     const fields = { name, username };
     if (user.Status !== "Converted") fields.status = status;
-    if (ROLE_ELIGIBLE.includes(user.UserType)) fields.role = role;
+    if (ROLE_ELIGIBLE.includes(user.UserType)) {
+      fields.role = role;
+      fields.passportNumber = passportNumber;
+    }
     if (user.UserType === "Staff") fields.department = department;
     if (user.UserType === "Teacher") fields.batch = batch;
     if (user.UserType === "Student") {
@@ -842,6 +849,15 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             Role
           </label>
           <input className="field" value={role} onChange={(e) => setRole(e.target.value)} />
+        </div>
+      )}
+
+      {ROLE_ELIGIBLE.includes(user.UserType) && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Passport / IC Number
+          </label>
+          <input className="field" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} />
         </div>
       )}
 
@@ -941,6 +957,7 @@ function CreateAccount({ onCreated, users }) {
   const [name, setName] = useState("");
   const [studentIds, setStudentIds] = useState([]);
   const [role, setRole] = useState("");
+  const [passportNumber, setPassportNumber] = useState("");
   const [course, setCourse] = useState("");
   const [batch, setBatch] = useState("");
   const [department, setDepartment] = useState("");
@@ -958,6 +975,7 @@ function CreateAccount({ onCreated, users }) {
     setName("");
     setStudentIds([]);
     setRole("");
+    setPassportNumber("");
     setCourse("");
     setBatch("");
     setDepartment("");
@@ -970,7 +988,10 @@ function CreateAccount({ onCreated, users }) {
     try {
       const body = { userType, name };
       if (userType === "Parent") body.studentIds = studentIds;
-      if (ROLE_ELIGIBLE.includes(userType)) body.role = role;
+      if (ROLE_ELIGIBLE.includes(userType)) {
+        body.role = role;
+        body.passportNumber = passportNumber;
+      }
       if (userType === "Staff") {
         body.department = department;
         body.timezone = timezone;
@@ -1030,7 +1051,15 @@ function CreateAccount({ onCreated, users }) {
         )}
 
         {ROLE_ELIGIBLE.includes(userType) && (
-          <input className="field" placeholder="Role (e.g. SM Assistant)" value={role} onChange={(e) => setRole(e.target.value)} />
+          <>
+            <input className="field" placeholder="Role (e.g. SM Assistant)" value={role} onChange={(e) => setRole(e.target.value)} />
+            <input
+              className="field"
+              placeholder="Passport / IC Number"
+              value={passportNumber}
+              onChange={(e) => setPassportNumber(e.target.value)}
+            />
+          </>
         )}
 
         {userType === "Staff" && (

@@ -212,12 +212,16 @@ export async function drawDocumentPDF(data) {
 // .Payslip.PDF — a plain boxed key/value header, a gray section-bar table
 // for the current month's Earnings/Deductions, and a second boxed table for
 // Year-To-Date figures. Unlike drawDocumentPDF (branded invoice look), this
-// is a flat statutory-payslip style with no logo/color accents.
+// is a flat statutory-payslip style with no logo/color accents. The
+// Earnings/Deductions line-item columns (S.No/Item/Quantity/Rate/Amount)
+// mirror drawDocumentPDF's item table so the two documents stay symmetrical
+// even though their visual styles differ.
 //
 // data: {
-//   company, period, emplNo, name, department, icPassport, epfNo, socsoNo, taxNo,
-//   earnings: [{ label, rate, amount }], grossPay,
-//   deductions: [{ label, rate, amount }], nettPay,
+//   company, period, emplNo, name, department, role, icPassport, epfNo, socsoNo, taxNo,
+//   earnings: [{ item, quantity, rate, amount }], grossPay,
+//   deductions: [{ item, quantity, rate, amount }], nettPay,
+//   employerSocso,
 //   ytd: [{ label, value }],
 // }
 const PS_GRAY = "#C7C7C7";
@@ -252,6 +256,7 @@ export async function drawPayslipPDF(data) {
     ["Empl No.:", data.emplNo],
     ["Name:", data.name],
     ["Department:", data.department],
+    ["Role:", data.role],
     ["IC/Passport:", data.icPassport],
     ["EPF No.:", data.epfNo],
     ["SOCSO No.:", data.socsoNo],
@@ -273,8 +278,21 @@ export async function drawPayslipPDF(data) {
     hy += headerRowH;
   }
 
+  // Middle name/role line — mirrors drawDocumentPDF's mid-page party block
+  // (Student Name / Class Name) so the two documents read symmetrically,
+  // even though everything here is already in the header box above too.
+  const midY = headerTop + headerH + 20;
+  ctx.fillStyle = PS_TEXT;
+  ctx.font = "bold 10px Roboto";
+  ctx.textAlign = "left";
+  ctx.fillText("Name:", MARGIN_L, midY);
+  ctx.fillText("Role:", MARGIN_L + 220, midY);
+  ctx.font = "10px Roboto";
+  ctx.fillText(data.name || "", MARGIN_L + 50, midY);
+  ctx.fillText(data.role || "—", MARGIN_L + 258, midY);
+
   // CURRENT MONTH PAYROLL DETAIL
-  let y = headerTop + headerH + 24;
+  let y = midY + 16;
   const sectionH = 20;
   psRow(ctx, MARGIN_L, y, PS_TABLE_W, sectionH, PS_GRAY);
   ctx.fillStyle = PS_TEXT;
@@ -283,39 +301,54 @@ export async function drawPayslipPDF(data) {
   ctx.fillText("CURRENT MONTH PAYROLL DETAIL", MARGIN_L + PS_TABLE_W / 2, y + 14);
   y += sectionH;
 
-  const colRates = MARGIN_R - 150;
+  const colSno = MARGIN_L + 8;
+  const colItem = MARGIN_L + 46;
+  const colQty = MARGIN_R - 170;
+  const colRate = MARGIN_R - 100;
   const colAmount = MARGIN_R - 8;
+  const lineH = 16;
 
   function payrollTable(title, rows, totalLabel, totalValue) {
-    const headH = 18;
+    const headH = 16;
     psRow(ctx, MARGIN_L, y, PS_TABLE_W, headH, PS_GRAY_LIGHT);
     ctx.fillStyle = PS_TEXT;
-    ctx.font = "bold 10px Roboto";
+    ctx.font = "bold 9px Roboto";
     ctx.textAlign = "left";
-    ctx.fillText(title, MARGIN_L + 8, y + 13);
-    ctx.textAlign = "right";
-    ctx.fillText("Rates", colRates, y + 13);
-    ctx.fillText("Amount", colAmount, y + 13);
+    ctx.fillText(title, MARGIN_L + 8, y + 11);
     y += headH;
 
-    const lineH = 16;
-    for (const r of rows) {
+    const colHeadH = 14;
+    psRow(ctx, MARGIN_L, y, PS_TABLE_W, colHeadH, null);
+    ctx.fillStyle = PS_TEXT;
+    ctx.font = "bold 8px Roboto";
+    ctx.textAlign = "left";
+    ctx.fillText("S.No.", colSno, y + 10);
+    ctx.fillText("Item", colItem, y + 10);
+    ctx.textAlign = "right";
+    ctx.fillText("Quantity", colQty, y + 10);
+    ctx.fillText("Rate", colRate, y + 10);
+    ctx.fillText("Amount", colAmount, y + 10);
+    y += colHeadH;
+
+    rows.forEach((r, i) => {
       psRow(ctx, MARGIN_L, y, PS_TABLE_W, lineH, null);
       ctx.fillStyle = PS_TEXT;
       ctx.font = "9px Roboto";
       ctx.textAlign = "left";
-      ctx.fillText(r.label, MARGIN_L + 8, y + 12);
+      ctx.fillText(String(i + 1), colSno, y + 12);
+      ctx.fillText(r.item, colItem, y + 12);
       ctx.textAlign = "right";
-      ctx.fillText(r.rate || "", colRates, y + 12);
+      ctx.fillText(String(r.quantity ?? 1), colQty, y + 12);
+      ctx.fillText(Number(r.rate).toFixed(2), colRate, y + 12);
       ctx.fillText(Number(r.amount).toFixed(2), colAmount, y + 12);
       y += lineH;
-    }
+    });
     if (rows.length === 0) {
       psRow(ctx, MARGIN_L, y, PS_TABLE_W, lineH, null);
       ctx.font = "9px Roboto";
       ctx.textAlign = "left";
       ctx.fillStyle = "#777777";
-      ctx.fillText("—", MARGIN_L + 8, y + 12);
+      ctx.fillText("—", colSno, y + 12);
       y += lineH;
     }
 
@@ -332,6 +365,18 @@ export async function drawPayslipPDF(data) {
   payrollTable("EARNINGS", data.earnings, "GROSS PAY", data.grossPay);
   y += 4;
   payrollTable("DEDUCTIONS", data.deductions, "NETT PAY", data.nettPay);
+
+  // Employer SOCSO — auto-calculated (1.75% of Gross Pay), sits right below
+  // Nett Pay same as the reference payslip. Everything else identity-wise
+  // (IC/EPF/SOCSO No./TAX No.) stays blank since we don't collect it.
+  psRow(ctx, MARGIN_L, y, PS_TABLE_W, lineH, null);
+  ctx.fillStyle = PS_TEXT;
+  ctx.font = "9px Roboto";
+  ctx.textAlign = "left";
+  ctx.fillText("Employer SOCSO", MARGIN_L + 8, y + 12);
+  ctx.textAlign = "right";
+  ctx.fillText(Number(data.employerSocso).toFixed(2), colAmount, y + 12);
+  y += lineH;
 
   // YEAR-TO-DATE PAYROLL DETAIL
   y += 24;

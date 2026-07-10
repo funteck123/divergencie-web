@@ -45,8 +45,8 @@ export const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
 // editable) — Staff instead picks one of DEPARTMENTS. Role is free text on
 // all three: for Staff it's their job title, for Teacher/Ambassador it's
 // whatever descriptor Management wants to record (e.g. "Subject Lead").
-const ROLE_ELIGIBLE = ["Teacher", "Staff", "Ambassador"];
-const FIXED_DEPARTMENT = { Teacher: "Teacher", Ambassador: "Ambassador" };
+export const ROLE_ELIGIBLE = ["Teacher", "Staff", "Ambassador"];
+export const FIXED_DEPARTMENT = { Teacher: "Teacher", Ambassador: "Ambassador" };
 
 // Batch is the cohort attribute for Student and Teacher accounts (which
 // cohort/intake they belong to) — independent of Department now that
@@ -77,14 +77,25 @@ function applyRole(user, userType, role) {
   }
 }
 
+// Passport/IC number — shown on the Teacher/Staff/Ambassador payslip PDF,
+// same eligibility as Role.
+function applyPassportNumber(user, userType, passportNumber) {
+  if (ROLE_ELIGIBLE.includes(userType)) {
+    user.PassportNumber = passportNumber || "";
+  } else {
+    delete user.PassportNumber;
+  }
+}
+
 // Management creates any account type directly from the Accounts tab.
 // Student/Teacher/Staff created here start fresh (no linked Trial/Interview
 // record, no invoice carry-over) — that history only exists via /api/convert.
 // body: { userType, name, studentIds?: [] (Parent), role? (Teacher/Staff/
-//         Ambassador job title, free text), course?, batch?, department?
-//         (Staff only — Teacher/Ambassador get a fixed value), timezone? }
+//         Ambassador job title, free text), passportNumber? (Teacher/Staff/
+//         Ambassador), course?, batch?, department? (Staff only — Teacher/
+//         Ambassador get a fixed value), timezone? }
 export async function POST(req) {
-  const { userType, name, studentIds, role, course, batch, department, timezone } = await req.json();
+  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone } = await req.json();
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -118,6 +129,7 @@ export async function POST(req) {
   applyBatch(user, userType, batch);
   applyDepartment(user, userType, department);
   applyRole(user, userType, role);
+  applyPassportNumber(user, userType, passportNumber);
 
   const username = makeUsername(name, db);
   const password = randomPassword();
@@ -135,12 +147,25 @@ export async function POST(req) {
 // state stamped by /api/convert alongside ConvertedToUserID, and can't be
 // set or cleared from this endpoint.
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
-//         role?, batch?, department? (Staff only), studentIds?: [], username?, password? }
+//         role?, passportNumber?, batch?, department? (Staff only),
+//         studentIds?: [], username?, password? }
 export async function PATCH(req) {
-  const { userId, name, status, timezone, course, role, batch, department, studentIds, username, password } =
-    await req.json();
+  const {
+    userId,
+    name,
+    status,
+    timezone,
+    course,
+    role,
+    passportNumber,
+    batch,
+    department,
+    studentIds,
+    username,
+    password,
+  } = await req.json();
   if (
-    [name, status, timezone, course, role, batch, department, studentIds, username, password].every(
+    [name, status, timezone, course, role, passportNumber, batch, department, studentIds, username, password].every(
       (v) => v === undefined
     )
   ) {
@@ -154,9 +179,6 @@ export async function PATCH(req) {
   }
   if (timezone !== undefined && !isValidTimezone(timezone)) {
     return NextResponse.json({ error: "timezone is not a recognized IANA timezone." }, { status: 400 });
-  }
-  if (department && !DEPARTMENTS.includes(department)) {
-    return NextResponse.json({ error: `department must be one of ${DEPARTMENTS.join(", ")}.` }, { status: 400 });
   }
   if (studentIds !== undefined && !Array.isArray(studentIds)) {
     return NextResponse.json({ error: "studentIds must be an array." }, { status: 400 });
@@ -174,6 +196,9 @@ export async function PATCH(req) {
   if (status !== undefined && user.Status === "Converted") {
     return NextResponse.json({ error: "Converted accounts' status can't be edited here." }, { status: 400 });
   }
+  if (user.UserType === "Staff" && department && !DEPARTMENTS.includes(department)) {
+    return NextResponse.json({ error: `department must be one of ${DEPARTMENTS.join(", ")}.` }, { status: 400 });
+  }
 
   let cred;
   if (username !== undefined || password !== undefined) {
@@ -189,6 +214,7 @@ export async function PATCH(req) {
   if (timezone !== undefined) user.Timezone = timezone;
   if (course !== undefined) user.Course = course;
   if (role !== undefined) applyRole(user, user.UserType, role);
+  if (passportNumber !== undefined) applyPassportNumber(user, user.UserType, passportNumber);
   if (studentIds !== undefined) user.StudentIDs = studentIds;
   if (batch !== undefined) applyBatch(user, user.UserType, batch);
   if (department !== undefined) applyDepartment(user, user.UserType, department);
