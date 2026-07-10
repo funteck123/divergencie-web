@@ -278,21 +278,8 @@ export async function drawPayslipPDF(data) {
     hy += headerRowH;
   }
 
-  // Middle name/role line — mirrors drawDocumentPDF's mid-page party block
-  // (Student Name / Class Name) so the two documents read symmetrically,
-  // even though everything here is already in the header box above too.
-  const midY = headerTop + headerH + 20;
-  ctx.fillStyle = PS_TEXT;
-  ctx.font = "bold 10px Roboto";
-  ctx.textAlign = "left";
-  ctx.fillText("Name:", MARGIN_L, midY);
-  ctx.fillText("Role:", MARGIN_L + 220, midY);
-  ctx.font = "10px Roboto";
-  ctx.fillText(data.name || "", MARGIN_L + 50, midY);
-  ctx.fillText(data.role || "—", MARGIN_L + 258, midY);
-
   // CURRENT MONTH PAYROLL DETAIL
-  let y = midY + 16;
+  let y = headerTop + headerH + 24;
   const sectionH = 20;
   psRow(ctx, MARGIN_L, y, PS_TABLE_W, sectionH, PS_GRAY);
   ctx.fillStyle = PS_TEXT;
