@@ -35,8 +35,10 @@ export async function GET(req) {
     role,
     timezone: normalizeTimezone(user.Timezone),
     // dcp1-app students can be enrolled across multiple unrelated Services,
-    // unlike p26's one-class-per-student model — no single "class name" to show.
-    className: "",
+    // unlike p26's one-class-per-student model — no single "class name" to
+    // show, so this stays blank for Student. Teacher/Staff instead show
+    // their Batch/Department in the same template slot.
+    className: user.UserType === "Teacher" ? user.Batch || "" : user.UserType === "Staff" ? user.Department || "" : "",
   };
   const entries = buildEntries(db, userId);
 

@@ -157,8 +157,10 @@ export async function drawSchedule(entity, entries) {
   const timezoneCoord = [theme.timezoneCoord[0] + 25, theme.timezoneCoord[1] - 10];
 
   ctx.fillText(fitText(ctx, entity.name, theme.nameMaxWidth), nameCoord[0], nameCoord[1]);
-  if (entity.role === "student") {
-    ctx.fillText(fitText(ctx, entity.className || "", theme.classMaxWidth), classCoord[0], classCoord[1]);
+  // Student's class-name slot stays blank (no single class to show — see
+  // route.js); Teacher/Staff use the same slot for Batch/Department instead.
+  if (entity.className) {
+    ctx.fillText(fitText(ctx, entity.className, theme.classMaxWidth), classCoord[0], classCoord[1]);
   }
   ctx.fillText(fitText(ctx, `${timezoneLabel} Time`, theme.timezoneMaxWidth), timezoneCoord[0], timezoneCoord[1]);
 
