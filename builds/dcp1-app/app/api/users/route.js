@@ -97,6 +97,57 @@ function applyCurrency(user, currency) {
   user.Currency = currency || "INR";
 }
 
+// Student-only contact/admin fields. TimesheetURL/ProgressTrackerURL are
+// links Management sets manually per student (no generation logic here —
+// just stored strings). GroupSent/GCRSent/ScheduleSent are a private
+// onboarding checklist for Management (has the student's Group/Google
+// Classroom Room/Schedule actually been communicated to them yet) — not
+// derived from anything, just flags Management toggles by hand.
+function applyStudentExtras(user, userType, fields) {
+  if (userType !== "Student") {
+    for (const key of [
+      "WhatsAppNumber",
+      "ParentWhatsAppNumber",
+      "Email",
+      "School",
+      "Location",
+      "Notes",
+      "TimesheetURL",
+      "ProgressTrackerURL",
+      "GroupSent",
+      "GCRSent",
+      "ScheduleSent",
+    ]) {
+      delete user[key];
+    }
+    return;
+  }
+  const {
+    whatsappNumber,
+    parentWhatsappNumber,
+    email,
+    school,
+    location,
+    notes,
+    timesheetUrl,
+    progressTrackerUrl,
+    groupSent,
+    gcrSent,
+    scheduleSent,
+  } = fields;
+  if (whatsappNumber !== undefined) user.WhatsAppNumber = whatsappNumber || "";
+  if (parentWhatsappNumber !== undefined) user.ParentWhatsAppNumber = parentWhatsappNumber || "";
+  if (email !== undefined) user.Email = email || "";
+  if (school !== undefined) user.School = school || "";
+  if (location !== undefined) user.Location = location || "";
+  if (notes !== undefined) user.Notes = notes || "";
+  if (timesheetUrl !== undefined) user.TimesheetURL = timesheetUrl || "";
+  if (progressTrackerUrl !== undefined) user.ProgressTrackerURL = progressTrackerUrl || "";
+  if (groupSent !== undefined) user.GroupSent = Boolean(groupSent);
+  if (gcrSent !== undefined) user.GCRSent = Boolean(gcrSent);
+  if (scheduleSent !== undefined) user.ScheduleSent = Boolean(scheduleSent);
+}
+
 // Management creates any account type directly from the Accounts tab.
 // Student/Teacher/Staff created here start fresh (no linked Trial/Interview
 // record, no invoice carry-over) — that history only exists via /api/convert.
@@ -109,8 +160,8 @@ export async function POST(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency } =
-    await req.json();
+  const body = await req.json();
+  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency } = body;
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -146,6 +197,7 @@ export async function POST(req) {
   applyRole(user, userType, role);
   applyPassportNumber(user, userType, passportNumber);
   applyCurrency(user, currency);
+  applyStudentExtras(user, userType, body);
 
   const username = makeUsername(name, db);
   const password = randomPassword();
@@ -169,6 +221,7 @@ export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
+  const patchBody = await req.json();
   const {
     userId,
     name,
@@ -183,11 +236,44 @@ export async function PATCH(req) {
     studentIds,
     username,
     password,
-  } = await req.json();
+    whatsappNumber,
+    parentWhatsappNumber,
+    email,
+    school,
+    location,
+    notes,
+    timesheetUrl,
+    progressTrackerUrl,
+    groupSent,
+    gcrSent,
+    scheduleSent,
+  } = patchBody;
   if (
-    [name, status, timezone, course, role, passportNumber, batch, department, currency, studentIds, username, password].every(
-      (v) => v === undefined
-    )
+    [
+      name,
+      status,
+      timezone,
+      course,
+      role,
+      passportNumber,
+      batch,
+      department,
+      currency,
+      studentIds,
+      username,
+      password,
+      whatsappNumber,
+      parentWhatsappNumber,
+      email,
+      school,
+      location,
+      notes,
+      timesheetUrl,
+      progressTrackerUrl,
+      groupSent,
+      gcrSent,
+      scheduleSent,
+    ].every((v) => v === undefined)
   ) {
     return NextResponse.json({ error: "at least one field to update is required." }, { status: 400 });
   }
@@ -242,6 +328,7 @@ export async function PATCH(req) {
   if (batch !== undefined) applyBatch(user, user.UserType, batch);
   if (department !== undefined) applyDepartment(user, user.UserType, department);
   if (currency !== undefined) applyCurrency(user, currency);
+  applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
   writeDB(db);

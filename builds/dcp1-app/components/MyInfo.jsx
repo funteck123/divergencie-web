@@ -29,6 +29,37 @@ export default function MyInfo({ user, linkedChildren }) {
     rows.push(["Passport / IC Number", user.PassportNumber || "—"]);
   }
   rows.push(["Currency", user.Currency || "INR"]);
+  if (user.UserType === "Student") {
+    rows.push(["WhatsApp Number", user.WhatsAppNumber || "—"]);
+    rows.push(["Parent WhatsApp Number", user.ParentWhatsAppNumber || "—"]);
+    rows.push(["Email", user.Email || "—"]);
+    rows.push(["School", user.School || "—"]);
+    rows.push(["Location", user.Location || "—"]);
+    rows.push(["Notes", user.Notes || "—"]);
+    // Onboarding tracker (GroupSent/GCRSent/ScheduleSent) is a private
+    // Management checklist, not shown here — Timesheet/Progress Tracker are
+    // for the student's own use, so they do belong on this card.
+    rows.push([
+      "Timesheet",
+      user.TimesheetURL ? (
+        <a key="timesheet" href={user.TimesheetURL} target="_blank" rel="noreferrer">
+          {user.TimesheetURL}
+        </a>
+      ) : (
+        "—"
+      ),
+    ]);
+    rows.push([
+      "Progress Tracker",
+      user.ProgressTrackerURL ? (
+        <a key="progress" href={user.ProgressTrackerURL} target="_blank" rel="noreferrer">
+          {user.ProgressTrackerURL}
+        </a>
+      ) : (
+        "—"
+      ),
+    ]);
+  }
 
   return (
     <div className="card">

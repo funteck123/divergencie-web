@@ -584,6 +584,40 @@ function Accounts() {
           { header: "Batch", render: (u) => u.Batch || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
           { header: "Currency", render: (u) => u.Currency || "INR" },
+          { header: "WhatsApp #", render: (u) => u.WhatsAppNumber || "—" },
+          { header: "Parent WhatsApp #", render: (u) => u.ParentWhatsAppNumber || "—" },
+          { header: "Email", render: (u) => u.Email || "—" },
+          { header: "School", render: (u) => u.School || "—" },
+          { header: "Location", render: (u) => u.Location || "—" },
+          {
+            header: "Notes",
+            render: (u) => (u.Notes ? <span title={u.Notes}>{u.Notes.length > 24 ? `${u.Notes.slice(0, 24)}…` : u.Notes}</span> : "—"),
+          },
+          {
+            header: "Timesheet",
+            render: (u) =>
+              u.TimesheetURL ? (
+                <a href={u.TimesheetURL} target="_blank" rel="noreferrer">
+                  Open
+                </a>
+              ) : (
+                "—"
+              ),
+          },
+          {
+            header: "Progress Tracker",
+            render: (u) =>
+              u.ProgressTrackerURL ? (
+                <a href={u.ProgressTrackerURL} target="_blank" rel="noreferrer">
+                  Open
+                </a>
+              ) : (
+                "—"
+              ),
+          },
+          { header: "Group Sent", render: (u) => (u.GroupSent ? "✓" : "—") },
+          { header: "GCR Sent", render: (u) => (u.GCRSent ? "✓" : "—") },
+          { header: "Schedule Sent", render: (u) => (u.ScheduleSent ? "✓" : "—") },
         ]}
         showSchedule
         {...sharedProps}
@@ -785,6 +819,17 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
   const [username, setUsername] = useState(user.Username || "");
   const [password, setPassword] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState(user.WhatsAppNumber || "");
+  const [parentWhatsappNumber, setParentWhatsappNumber] = useState(user.ParentWhatsAppNumber || "");
+  const [email, setEmail] = useState(user.Email || "");
+  const [school, setSchool] = useState(user.School || "");
+  const [location, setLocation] = useState(user.Location || "");
+  const [notes, setNotes] = useState(user.Notes || "");
+  const [timesheetUrl, setTimesheetUrl] = useState(user.TimesheetURL || "");
+  const [progressTrackerUrl, setProgressTrackerUrl] = useState(user.ProgressTrackerURL || "");
+  const [groupSent, setGroupSent] = useState(Boolean(user.GroupSent));
+  const [gcrSent, setGcrSent] = useState(Boolean(user.GCRSent));
+  const [scheduleSent, setScheduleSent] = useState(Boolean(user.ScheduleSent));
 
   const students = users.filter((u) => u.UserType === "Student");
 
@@ -805,6 +850,17 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     if (user.UserType === "Student") {
       fields.course = course;
       fields.batch = batch;
+      fields.whatsappNumber = whatsappNumber;
+      fields.parentWhatsappNumber = parentWhatsappNumber;
+      fields.email = email;
+      fields.school = school;
+      fields.location = location;
+      fields.notes = notes;
+      fields.timesheetUrl = timesheetUrl;
+      fields.progressTrackerUrl = progressTrackerUrl;
+      fields.groupSent = groupSent;
+      fields.gcrSent = gcrSent;
+      fields.scheduleSent = scheduleSent;
     }
     if (["Student", "Teacher", "Staff", "Ambassador"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
@@ -911,6 +967,86 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           </label>
           <input className="field" value={course} onChange={(e) => setCourse(e.target.value)} />
         </div>
+      )}
+
+      {user.UserType === "Student" && (
+        <>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              WhatsApp Number
+            </label>
+            <input className="field" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Parent WhatsApp Number
+            </label>
+            <input
+              className="field"
+              value={parentWhatsappNumber}
+              onChange={(e) => setParentWhatsappNumber(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Email
+            </label>
+            <input className="field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              School
+            </label>
+            <input className="field" value={school} onChange={(e) => setSchool(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Location
+            </label>
+            <input className="field" value={location} onChange={(e) => setLocation(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Notes
+            </label>
+            <textarea className="field" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Timesheet URL
+            </label>
+            <input className="field" value={timesheetUrl} onChange={(e) => setTimesheetUrl(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Progress Tracker URL
+            </label>
+            <input
+              className="field"
+              value={progressTrackerUrl}
+              onChange={(e) => setProgressTrackerUrl(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Onboarding tracker (private — not shown to the student)
+            </label>
+            <div className="flex gap-4 text-sm">
+              <label className="flex items-center gap-1">
+                <input type="checkbox" checked={groupSent} onChange={(e) => setGroupSent(e.target.checked)} />
+                Group sent
+              </label>
+              <label className="flex items-center gap-1">
+                <input type="checkbox" checked={gcrSent} onChange={(e) => setGcrSent(e.target.checked)} />
+                GCR sent
+              </label>
+              <label className="flex items-center gap-1">
+                <input type="checkbox" checked={scheduleSent} onChange={(e) => setScheduleSent(e.target.checked)} />
+                Schedule sent
+              </label>
+            </div>
+          </div>
+        </>
       )}
 
       {["Student", "Teacher"].includes(user.UserType) && (
