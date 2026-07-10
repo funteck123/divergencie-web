@@ -191,7 +191,7 @@ function ChildCard({ child, services, onSetPaid }) {
             <tr key={i.InvoiceID}>
               <td>{i.Month}/{i.Year}</td>
               <td>{serviceNameOf(i.ServiceID)}</td>
-              <td>{i.Amount}</td>
+              <td>{student?.Currency || "INR"} {i.Amount}</td>
               <td className="flex items-center gap-2">
                 {i.StudentPaidFlag ? (
                   <>

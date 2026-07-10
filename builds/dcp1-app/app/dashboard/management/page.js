@@ -589,6 +589,7 @@ function Accounts() {
           { header: "Course", render: (u) => u.Course || "—" },
           { header: "Batch", render: (u) => u.Batch || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR" },
         ]}
         showSchedule
         {...sharedProps}
@@ -603,6 +604,7 @@ function Accounts() {
           { header: "Passport #", render: (u) => u.PassportNumber || "—" },
           { header: "Batch", render: (u) => u.Batch || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR" },
         ]}
         showSchedule
         {...sharedProps}
@@ -616,17 +618,26 @@ function Accounts() {
           { header: "Department", render: (u) => u.Department || "—" },
           { header: "Passport #", render: (u) => u.PassportNumber || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR" },
         ]}
         showSchedule
         {...sharedProps}
       />
 
-      <AccountGroupTable title="Management Accounts" rows={managementUsers} columns={[]} {...sharedProps} />
+      <AccountGroupTable
+        title="Management Accounts"
+        rows={managementUsers}
+        columns={[{ header: "Currency", render: (u) => u.Currency || "INR" }]}
+        {...sharedProps}
+      />
 
       <AccountGroupTable
         title="Parent Accounts"
         rows={parentUsers}
-        columns={[{ header: "Linked Student(s)", render: (u) => studentNamesOf(u.StudentIDs) }]}
+        columns={[
+          { header: "Linked Student(s)", render: (u) => studentNamesOf(u.StudentIDs) },
+          { header: "Currency", render: (u) => u.Currency || "INR" },
+        ]}
         {...sharedProps}
       />
 
@@ -637,6 +648,7 @@ function Accounts() {
           { header: "Role", render: (u) => u.Role || "—" },
           { header: "Department", render: (u) => u.Department || "—" },
           { header: "Passport #", render: (u) => u.PassportNumber || "—" },
+          { header: "Currency", render: (u) => u.Currency || "INR" },
         ]}
         {...sharedProps}
       />
@@ -773,6 +785,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [course, setCourse] = useState(user.Course || "");
   const [batch, setBatch] = useState(user.Batch || "");
   const [department, setDepartment] = useState(user.Department || "");
+  const [currency, setCurrency] = useState(user.Currency || "INR");
   const [timezone, setTimezone] = useState(normalizeTimezone(user.Timezone));
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
   const [username, setUsername] = useState(user.Username || "");
@@ -786,7 +799,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
 
   function submit(e) {
     e.preventDefault();
-    const fields = { name, username };
+    const fields = { name, username, currency };
     if (user.Status !== "Converted") fields.status = status;
     if (ROLE_ELIGIBLE.includes(user.UserType)) {
       fields.role = role;
@@ -841,6 +854,13 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           New password (leave blank to keep current)
         </label>
         <input className="field" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+          Currency (invoice/paycheck totals are shown in this account&apos;s Currency)
+        </label>
+        <input className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)} />
       </div>
 
       {ROLE_ELIGIBLE.includes(user.UserType) && (
@@ -961,6 +981,7 @@ function CreateAccount({ onCreated, users }) {
   const [course, setCourse] = useState("");
   const [batch, setBatch] = useState("");
   const [department, setDepartment] = useState("");
+  const [currency, setCurrency] = useState("INR");
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [issued, setIssued] = useState(null);
   const [error, setError] = useState("");
@@ -979,6 +1000,7 @@ function CreateAccount({ onCreated, users }) {
     setCourse("");
     setBatch("");
     setDepartment("");
+    setCurrency("INR");
     setTimezone("Asia/Kolkata");
   }
 
@@ -986,7 +1008,7 @@ function CreateAccount({ onCreated, users }) {
     e.preventDefault();
     setError("");
     try {
-      const body = { userType, name };
+      const body = { userType, name, currency };
       if (userType === "Parent") body.studentIds = studentIds;
       if (ROLE_ELIGIBLE.includes(userType)) {
         body.role = role;
@@ -1032,6 +1054,14 @@ function CreateAccount({ onCreated, users }) {
         </div>
 
         <input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+
+        <input
+          className="field"
+          style={{ maxWidth: 100 }}
+          placeholder="Currency"
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+        />
 
         {userType === "Parent" && (
           <div>
@@ -1935,6 +1965,12 @@ function Billing() {
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
+  // Amount's currency is the billed person's Currency, not the Service's —
+  // Services keep their own Currency (the rate's denomination) but the
+  // final invoice/paycheck total is always shown in the billed person's.
+  function currencyOf(id) {
+    return users.find((u) => u.UserID === id)?.Currency || "INR";
+  }
   function serviceNameOf(id) {
     const s = services.find((s) => s.ServiceID === id);
     return s ? s.Name : id;
@@ -2027,6 +2063,7 @@ function Billing() {
           rows={invoices}
           idKey="InvoiceID"
           nameOf={nameOf}
+          currencyOf={currencyOf}
           personKey="StudentID"
           serviceNameOf={serviceNameOf}
           onPatch={patchInvoice}
@@ -2042,6 +2079,7 @@ function Billing() {
           rows={paychecks}
           idKey="PaycheckID"
           nameOf={nameOf}
+          currencyOf={currencyOf}
           personKey="StaffID"
           serviceNameOf={serviceNameOf}
           onPatch={patchPaycheck}
@@ -2110,7 +2148,7 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
   );
 }
 
-function BillingTable({ rows, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
+function BillingTable({ rows, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const decorated = rows.map((r) => ({ ...r, _person: nameOf(r[personKey]), _period: r.Year * 100 + r.Month }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
   return (
@@ -2137,6 +2175,7 @@ function BillingTable({ rows, idKey, nameOf, personKey, serviceNameOf, onPatch, 
             row={r}
             idKey={idKey}
             nameOf={nameOf}
+            currencyOf={currencyOf}
             personKey={personKey}
             serviceNameOf={serviceNameOf}
             onPatch={onPatch}
@@ -2157,7 +2196,7 @@ function BillingTable({ rows, idKey, nameOf, personKey, serviceNameOf, onPatch, 
   );
 }
 
-function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
+function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const [editing, setEditing] = useState(false);
   const [scheduledHours, setScheduledHours] = useState(row.ScheduledHours);
   const [attendedHours, setAttendedHours] = useState(row.AttendedHours);
@@ -2229,7 +2268,7 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
             onChange={(e) => setAmount(e.target.value)}
           />
         ) : (
-          row.Amount
+          `${currencyOf(row[personKey])} ${row.Amount}`
         )}
       </td>
       <td>

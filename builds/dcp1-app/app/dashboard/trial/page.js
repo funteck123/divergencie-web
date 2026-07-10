@@ -153,7 +153,7 @@ function Body({ user }) {
             {data.invoices.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
-                <td>{i.Amount}</td>
+                <td>{data.user.Currency || "INR"} {i.Amount}</td>
                 <td>{i.INRDue}</td>
                 <td>
                   <span className={`badge ${i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>

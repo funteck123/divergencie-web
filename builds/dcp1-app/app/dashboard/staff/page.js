@@ -207,7 +207,7 @@ function Body({ user }) {
                 <td>{p.Month}/{p.Year}</td>
                 <td>{serviceNameOf(p.ServiceID)}</td>
                 <td>{p.AttendedHours}</td>
-                <td>{p.Amount}</td>
+                <td>{data.user.Currency || "INR"} {p.Amount}</td>
                 <td>{p.INRDue}</td>
                 <td>
                   {p.StaffReceivedFlag ? (

@@ -87,15 +87,24 @@ function applyPassportNumber(user, userType, passportNumber) {
   }
 }
 
+// Every account type carries a Currency — Services have their own Currency
+// too (the rate's denomination), but the invoice/paycheck's final total is
+// always shown in the billed user's Currency, not the Service's.
+function applyCurrency(user, currency) {
+  user.Currency = currency || "INR";
+}
+
 // Management creates any account type directly from the Accounts tab.
 // Student/Teacher/Staff created here start fresh (no linked Trial/Interview
 // record, no invoice carry-over) — that history only exists via /api/convert.
 // body: { userType, name, studentIds?: [] (Parent), role? (Teacher/Staff/
 //         Ambassador job title, free text), passportNumber? (Teacher/Staff/
 //         Ambassador), course?, batch?, department? (Staff only — Teacher/
-//         Ambassador get a fixed value), timezone? }
+//         Ambassador get a fixed value), timezone?, currency? (every type,
+//         defaults to "INR") }
 export async function POST(req) {
-  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone } = await req.json();
+  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency } =
+    await req.json();
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -130,6 +139,7 @@ export async function POST(req) {
   applyDepartment(user, userType, department);
   applyRole(user, userType, role);
   applyPassportNumber(user, userType, passportNumber);
+  applyCurrency(user, currency);
 
   const username = makeUsername(name, db);
   const password = randomPassword();
@@ -148,7 +158,7 @@ export async function POST(req) {
 // set or cleared from this endpoint.
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
 //         role?, passportNumber?, batch?, department? (Staff only),
-//         studentIds?: [], username?, password? }
+//         currency?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
   const {
     userId,
@@ -160,12 +170,13 @@ export async function PATCH(req) {
     passportNumber,
     batch,
     department,
+    currency,
     studentIds,
     username,
     password,
   } = await req.json();
   if (
-    [name, status, timezone, course, role, passportNumber, batch, department, studentIds, username, password].every(
+    [name, status, timezone, course, role, passportNumber, batch, department, currency, studentIds, username, password].every(
       (v) => v === undefined
     )
   ) {
@@ -218,6 +229,7 @@ export async function PATCH(req) {
   if (studentIds !== undefined) user.StudentIDs = studentIds;
   if (batch !== undefined) applyBatch(user, user.UserType, batch);
   if (department !== undefined) applyDepartment(user, user.UserType, department);
+  if (currency !== undefined) applyCurrency(user, currency);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
   writeDB(db);

@@ -36,6 +36,8 @@ export function roleHomePath(userType) {
       return "/dashboard/staff";
     case "Parent":
       return "/dashboard/parent";
+    case "Ambassador":
+      return "/dashboard/ambassador";
     default:
       return "/";
   }

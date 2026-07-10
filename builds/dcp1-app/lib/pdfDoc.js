@@ -218,7 +218,7 @@ export async function drawDocumentPDF(data) {
 // even though their visual styles differ.
 //
 // data: {
-//   company, period, emplNo, name, department, role, icPassport, epfNo, socsoNo, taxNo,
+//   company, period, emplNo, name, department, role, currency, icPassport, epfNo, socsoNo, taxNo,
 //   earnings: [{ item, quantity, rate, amount }], grossPay,
 //   deductions: [{ item, quantity, rate, amount }], nettPay,
 //   employerSocso,
@@ -257,6 +257,7 @@ export async function drawPayslipPDF(data) {
     ["Name:", data.name],
     ["Department:", data.department],
     ["Role:", data.role],
+    ["Currency:", data.currency],
     ["IC/Passport:", data.icPassport],
     ["EPF No.:", data.epfNo],
     ["SOCSO No.:", data.socsoNo],
@@ -345,7 +346,7 @@ export async function drawPayslipPDF(data) {
     ctx.textAlign = "left";
     ctx.fillText(totalLabel, MARGIN_L + 8, y + 12);
     ctx.textAlign = "right";
-    ctx.fillText(Number(totalValue).toFixed(2), colAmount, y + 12);
+    ctx.fillText(`${data.currency} ${Number(totalValue).toFixed(2)}`, colAmount, y + 12);
     y += lineH;
   }
 
@@ -362,7 +363,7 @@ export async function drawPayslipPDF(data) {
   ctx.textAlign = "left";
   ctx.fillText("Employer SOCSO", MARGIN_L + 8, y + 12);
   ctx.textAlign = "right";
-  ctx.fillText(Number(data.employerSocso).toFixed(2), colAmount, y + 12);
+  ctx.fillText(`${data.currency} ${Number(data.employerSocso).toFixed(2)}`, colAmount, y + 12);
   y += lineH;
 
   // YEAR-TO-DATE PAYROLL DETAIL

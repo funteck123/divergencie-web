@@ -207,7 +207,7 @@ function Body({ user }) {
                 <td>{i.Month}/{i.Year}</td>
                 <td>{serviceNameOf(i.ServiceID)}</td>
                 <td>{i.AttendedHours}</td>
-                <td>{i.Amount}</td>
+                <td>{data.user.Currency || "INR"} {i.Amount}</td>
                 <td>{i.INRDue}</td>
                 <td className="flex items-center gap-2">
                   {i.StudentPaidFlag ? (

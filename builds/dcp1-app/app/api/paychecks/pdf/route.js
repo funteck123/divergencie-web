@@ -39,6 +39,9 @@ export async function GET(req) {
     name: staff?.Name || paycheck.StaffID,
     department,
     role: staff?.Role || "",
+    // Final total is shown in the Staff/Teacher/Ambassador's Currency, not
+    // the Service's (Service.Currency is only the rate's denomination).
+    currency: staff?.Currency || service?.Currency || "INR",
     icPassport: staff?.PassportNumber || "",
     epfNo: "",
     socsoNo: "",

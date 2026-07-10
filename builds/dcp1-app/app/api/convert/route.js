@@ -65,6 +65,7 @@ export async function POST(req) {
     UserType: newType,
     Name: oldUser.Name,
     Status: "Active",
+    Currency: "INR",
     ...(["Student", "Teacher", "Staff"].includes(newType) ? { Timezone: "Asia/Kolkata" } : {}),
     ...extra(),
   };

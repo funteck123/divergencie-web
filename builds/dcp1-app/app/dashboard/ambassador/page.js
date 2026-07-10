@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
-import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import { api, useSort } from "@/lib/client";
 
-export default function TeacherDashboard() {
-  return <DashboardShell allowedType="Teacher">{(user) => <Body user={user} />}</DashboardShell>;
+// Ambassador accounts can be enrolled in Ambassador-group Services (see
+// ALL_GROUPS in management/page.js) but aren't part of the bulk paycheck
+// "generate" run (paychecks/route.js only covers Teacher/Staff) — so unlike
+// the Staff/Teacher dashboards, there's no Paychecks section here yet.
+export default function AmbassadorDashboard() {
+  return <DashboardShell allowedType="Ambassador">{(user) => <Body user={user} />}</DashboardShell>;
 }
 
 function Body({ user }) {
@@ -44,33 +47,11 @@ function Body({ user }) {
     }
   }
 
-  async function markPaycheckReceived(paycheckId) {
-    setError("");
-    try {
-      await api("/api/paychecks", {
-        method: "PATCH",
-        body: JSON.stringify({ paycheckId, staffReceivedFlag: true }),
-      });
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
-  }
-
   const scheduleRows = (data?.scheduleItems || []).map((s) => ({ ...s, _dt: s.Date + s.Time }));
-  const paycheckRows = (data?.paychecks || [])
-    .filter((p) => p.Status !== "Draft")
-    .map((p) => ({ ...p, _period: p.Year * 100 + p.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
-  const paySort = useSort(paycheckRows, "_period", "desc");
   const enrolledServices = (data?.enrollments || [])
     .map((e) => (data.services || []).find((s) => s.ServiceID === e.ServiceID))
     .filter(Boolean);
-
-  function serviceNameOf(id) {
-    const s = (data?.services || []).find((s) => s.ServiceID === id);
-    return s ? s.Name : "—";
-  }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
@@ -126,15 +107,10 @@ function Body({ user }) {
             <button className={view === "list" ? "btn" : "btn-ghost"} onClick={() => setView("list")}>
               List
             </button>
-            <button className={view === "image" ? "btn" : "btn-ghost"} onClick={() => setView("image")}>
-              Schedule Image
-            </button>
           </div>
         </div>
         {view === "weekly" ? (
           <WeeklyOccurrences services={enrolledServices} />
-        ) : view === "image" ? (
-          <ScheduleImage userId={user.UserID} userName={user.Name} />
         ) : view === "calendar" ? (
           <ScheduleCalendar
             scheduleItems={data.scheduleItems}
@@ -185,55 +161,6 @@ function Body({ user }) {
             </tbody>
           </table>
         )}
-      </div>
-
-      <div className="card">
-        <h2 className="font-semibold mb-4">My Paychecks</h2>
-        <table>
-          <thead>
-            <tr>
-              <SortableTh label="Period" sortKeyName="_period" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <th>Service</th>
-              <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <th>Received</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {paySort.sorted.map((p) => (
-              <tr key={p.PaycheckID}>
-                <td>{p.Month}/{p.Year}</td>
-                <td>{serviceNameOf(p.ServiceID)}</td>
-                <td>{p.AttendedHours}</td>
-                <td>{data.user.Currency || "INR"} {p.Amount}</td>
-                <td>{p.INRDue}</td>
-                <td>
-                  {p.StaffReceivedFlag ? (
-                    <span className="badge badge-good">Received ✓</span>
-                  ) : (
-                    <button className="btn-ghost" onClick={() => markPaycheckReceived(p.PaycheckID)}>
-                      Mark as received
-                    </button>
-                  )}
-                </td>
-                <td>
-                  <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/paychecks/pdf?paycheckId=${p.PaycheckID}`} download>
-                    PDF
-                  </a>
-                </td>
-              </tr>
-            ))}
-            {paySort.sorted.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ color: "var(--muted)" }}>
-                  No paychecks yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
       </div>
     </div>
   );

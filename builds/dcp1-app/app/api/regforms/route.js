@@ -67,6 +67,7 @@ export async function PATCH(req) {
       UserType: userType,
       Name: form.Name,
       Status: "Active",
+      Currency: "INR",
     };
     const username = makeUsername(form.Name, db);
     const password = randomPassword();
