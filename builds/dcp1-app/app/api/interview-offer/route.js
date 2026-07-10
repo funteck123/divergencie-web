@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
+import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 
 // body: { interviewId, action: "send" | "accept" | "waitlist" | "reject" | "unsend", feedback?, offerLetterLink? }
 // "feedback" is Management's note on the task submission, left when sending
@@ -12,6 +13,13 @@ export async function POST(req) {
   const db = readDB();
   const item = db.interviewItems.find((i) => i.InterviewID === interviewId);
   if (!item) return NextResponse.json({ error: "Interview item not found." }, { status: 404 });
+
+  // "accept" is the interviewee accepting their own offer; every other
+  // action (send/waitlist/reject/unsend) is a Management-only decision.
+  const { error } = action === "accept"
+    ? requireSelfOrManagement(req, item.InterviewAccID)
+    : requireManagement(req);
+  if (error) return error;
 
   if (action === "send") {
     if (feedback !== undefined) item.TaskFeedback = feedback;

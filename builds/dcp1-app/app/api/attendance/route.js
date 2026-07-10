@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
   return NextResponse.json({ attendanceItems: db.attendanceItems });
 }
@@ -9,6 +13,9 @@ export async function GET() {
 // body: { scheduleItemId, userId, status, loggedDuration }
 export async function POST(req) {
   const { scheduleItemId, userId, status, loggedDuration } = await req.json();
+  const { error } = requireSelfOrManagement(req, userId);
+  if (error) return error;
+
   const db = readDB();
 
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleItemId);

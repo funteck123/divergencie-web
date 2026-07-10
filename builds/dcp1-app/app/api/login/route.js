@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
+import { sessionCookieFor } from "@/lib/session";
 
 export async function POST(req) {
   const { username, password } = await req.json();
@@ -19,5 +20,8 @@ export async function POST(req) {
   // A converted TrialAcc/InterviewAcc still logs in as itself — it's reused to
   // request Trials/Interviews for other Services later, not a one-time login.
 
-  return NextResponse.json({ user });
+  const res = NextResponse.json({ user });
+  const cookie = sessionCookieFor(user);
+  res.cookies.set(cookie.name, cookie.value, cookie.options);
+  return res;
 }

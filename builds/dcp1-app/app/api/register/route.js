@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { BOOKING_TYPES } from "@/lib/scheduleGen";
+import { requireManagement } from "@/lib/authz";
 
 // Public endpoint: anyone can submit a RegForm. No account, no schedule pick
 // happens here — Management reviews it later and, separately, creates open
@@ -31,7 +32,10 @@ export async function POST(req) {
   return NextResponse.json({ regForm });
 }
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
   return NextResponse.json({ regForms: db.regForms });
 }

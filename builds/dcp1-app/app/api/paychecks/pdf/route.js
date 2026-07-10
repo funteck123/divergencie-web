@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawPayslipPDF } from "@/lib/pdfDoc";
 import { FIXED_DEPARTMENT } from "@/app/api/users/route";
+import { requireSelfOrManagement } from "@/lib/authz";
 
 const MONTH_ABBR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 // Employer SOCSO Category 1 is ~1.75% of gross wage (statutory table
@@ -15,6 +16,9 @@ export async function GET(req) {
   const db = readDB();
   const paycheck = db.paychecks.find((p) => p.PaycheckID === paycheckId);
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
+
+  const { error } = requireSelfOrManagement(req, paycheck.StaffID);
+  if (error) return error;
 
   const staff = db.users.find((u) => u.UserID === paycheck.StaffID);
   const service = db.services.find((s) => s.ServiceID === paycheck.ServiceID);

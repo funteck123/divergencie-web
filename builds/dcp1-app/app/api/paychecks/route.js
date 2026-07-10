@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { computeHoursAndAmount } from "@/lib/billing";
+import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
   return NextResponse.json({ paychecks: db.paychecks });
 }
@@ -11,6 +15,9 @@ export async function GET() {
 // action "manual": drafts a single Paycheck for an arbitrary staffId/serviceId/
 // year/month/amount — for one-off cases the bulk generator doesn't cover.
 export async function POST(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { action } = body;
 
@@ -89,6 +96,10 @@ export async function POST(req) {
       INRAmount: 0,
       INRDue: 0,
       Status: "Draft",
+      // Flags a $0 draft that's $0 because no schedule data exists for this
+      // Service/month (missing occurrences), not because the payout is
+      // legitimately zero — Management should check for a schedule gap.
+      ...(scheduledHours <= 0 ? { Note: "No scheduled hours found for this Service/month." } : {}),
     };
     db.paychecks.push(paycheck);
     created.push(paycheck);
@@ -98,11 +109,19 @@ export async function POST(req) {
 }
 
 // body: { paycheckId, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, staffReceivedFlag }
+// The Staff/Teacher/Ambassador may only ever toggle staffReceivedFlag on
+// their own paycheck — every other field is a Management-only billing edit.
 export async function PATCH(req) {
   const { paycheckId, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, staffReceivedFlag } = await req.json();
   const db = readDB();
   const paycheck = db.paychecks.find((p) => p.PaycheckID === paycheckId);
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
+
+  const managementOnly = [scheduledHours, attendedHours, amount, inrAmount, inrDue, status].some((v) => v !== undefined);
+  const { error } = managementOnly
+    ? requireManagement(req)
+    : requireSelfOrManagement(req, paycheck.StaffID);
+  if (error) return error;
 
   if (scheduledHours !== undefined) paycheck.ScheduledHours = Number(scheduledHours);
   if (attendedHours !== undefined) paycheck.AttendedHours = Number(attendedHours);
@@ -118,6 +137,9 @@ export async function PATCH(req) {
 
 // body: { paycheckId }
 export async function DELETE(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const { paycheckId } = await req.json();
   const db = readDB();
   const index = db.paychecks.findIndex((p) => p.PaycheckID === paycheckId);

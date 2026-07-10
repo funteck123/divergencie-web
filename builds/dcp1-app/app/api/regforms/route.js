@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { requireManagement } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
   const regForms = db.regForms.map((form) => {
     if (!form.CreatedUserID) return form;
@@ -39,6 +43,9 @@ const REQUEST_TYPE_MAP = {
 
 // action: "approve" | "reject"
 export async function PATCH(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const { regFormId, action } = await req.json();
   const db = readDB();
 

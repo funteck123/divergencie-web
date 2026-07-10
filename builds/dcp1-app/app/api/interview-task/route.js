@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
+import { requireSelfOrManagement } from "@/lib/authz";
 
 // body: { interviewId, link }
 export async function POST(req) {
@@ -7,6 +8,9 @@ export async function POST(req) {
   const db = readDB();
   const item = db.interviewItems.find((i) => i.InterviewID === interviewId);
   if (!item) return NextResponse.json({ error: "Interview item not found." }, { status: 404 });
+
+  const { error } = requireSelfOrManagement(req, item.InterviewAccID);
+  if (error) return error;
 
   item.TaskSubmissionLink = link;
   item.Status = "TaskSubmitted";

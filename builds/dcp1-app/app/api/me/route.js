@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime, requiredGroupForBookingType } from "@/lib/scheduleGen";
+import { requireSelfOrManagement } from "@/lib/authz";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
+
+  const { error } = requireSelfOrManagement(req, userId);
+  if (error) return error;
+
   const db = readDB();
   ensureScheduleGenerated(db);
   writeDB(db);

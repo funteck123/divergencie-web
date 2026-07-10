@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { BOOKING_TYPES } from "@/lib/scheduleGen";
+import { requireManagement } from "@/lib/authz";
 
 // Pending Trial/Interview requests, joined with slot + requester name, for
 // Management to approve or reject.
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
 
   function nameOf(userId) {
@@ -40,6 +44,9 @@ export async function GET() {
 
 // body: { type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", id, action: "approve" | "reject" }
 export async function PATCH(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const { type, id, action } = await req.json();
   if (!BOOKING_TYPES.includes(type) || !["approve", "reject"].includes(action)) {
     return NextResponse.json({ error: `type must be one of ${BOOKING_TYPES.join("/")}, action approve/reject.` }, { status: 400 });

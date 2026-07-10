@@ -14,8 +14,13 @@ export function setCurrentUser(user) {
   localStorage.setItem(KEY, JSON.stringify(user));
 }
 
+// localStorage only ever drove the UI (which dashboard to render) — the
+// actual session cookie is httpOnly and cleared server-side via POST
+// /api/logout. Clearing localStorage without that call would leave a valid
+// cookie behind (the API would still authenticate the old session).
 export function logout() {
   localStorage.removeItem(KEY);
+  fetch("/api/logout", { method: "POST" }).catch(() => {});
 }
 
 export function roleHomePath(userType) {
@@ -101,6 +106,15 @@ export async function api(path, options = {}) {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
+  // A 401 means the session cookie is missing/expired even though stale
+  // localStorage still thinks we're logged in (e.g. cookie expired after 7
+  // days) — without this, every dashboard would hang on "Loading…" forever
+  // since load() calls aren't wrapped in try/catch. Bounce to login instead.
+  if (res.status === 401 && typeof window !== "undefined") {
+    localStorage.removeItem(KEY);
+    window.location.href = "/";
+    return new Promise(() => {}); // navigation is in flight; never resolve
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error(data.error || `Request to ${path} failed`);

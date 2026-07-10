@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
+import { requireSelfOrParentOrManagement } from "@/lib/authz";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -16,6 +17,9 @@ export async function GET(req) {
   const db = readDB();
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
+
+  const { error } = requireSelfOrParentOrManagement(req, db, invoice.StudentID);
+  if (error) return error;
 
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const service = db.services.find((s) => s.ServiceID === invoice.ServiceID);

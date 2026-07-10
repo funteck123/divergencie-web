@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
+import { requireSession, requireManagement } from "@/lib/authz";
+import { CURRENCIES } from "@/lib/accountTypes";
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireSession(req);
+  if (error) return error;
+
   const db = readDB();
   ensureScheduleGenerated(db);
   writeDB(db);
@@ -49,6 +54,9 @@ function applyCohortServiceFields(service, body, group) {
 // Staff. A service can belong to several groups at once. Cohort-only fields
 // are silently dropped if sent for a service not open to Student/Teacher.
 export async function POST(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { name, type, group, rate, currency, occurrences } = body;
 
@@ -57,6 +65,12 @@ export async function POST(req) {
       { error: `name, type, group (non-empty subset of ${ALL_GROUPS.join(", ")}), and at least one occurrence are required.` },
       { status: 400 }
     );
+  }
+  if (rate !== undefined && Number(rate) < 0) {
+    return NextResponse.json({ error: "rate cannot be negative." }, { status: 400 });
+  }
+  if (currency !== undefined && !CURRENCIES.includes(currency)) {
+    return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
   const db = readDB();
@@ -96,6 +110,9 @@ export async function POST(req) {
 // going forward. Student/Teacher-only fields are dropped if the Service is
 // edited to a Group without either.
 export async function PATCH(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { serviceId, name, type, group, rate, currency, occurrences } = body;
 
@@ -104,6 +121,12 @@ export async function PATCH(req) {
       { error: `serviceId, name, type, group (non-empty subset of ${ALL_GROUPS.join(", ")}), and at least one occurrence are required.` },
       { status: 400 }
     );
+  }
+  if (rate !== undefined && Number(rate) < 0) {
+    return NextResponse.json({ error: "rate cannot be negative." }, { status: 400 });
+  }
+  if (currency !== undefined && !CURRENCIES.includes(currency)) {
+    return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
   const db = readDB();

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawSchedule } from "@/lib/scheduleImage";
 import { normalizeTimezone } from "@/lib/timezones";
+import { requireSelfOrManagement } from "@/lib/authz";
 
 function buildEntries(db, userId) {
   const enrolledServiceIds = new Set(db.enrollments.filter((e) => e.UserID === userId).map((e) => e.ServiceID));
@@ -19,6 +20,9 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const download = searchParams.get("download") === "1";
+
+  const { error } = requireSelfOrManagement(req, userId);
+  if (error) return error;
 
   const db = readDB();
   const user = db.users.find((u) => u.UserID === userId);

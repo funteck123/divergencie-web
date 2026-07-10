@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches, normalizeGroup, sortByDateTime, BOOKING_TYPES } from "@/lib/scheduleGen";
+import { requireSession, requireManagement } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireSession(req);
+  if (error) return error;
+
   const db = readDB();
   ensureScheduleGenerated(db);
   writeDB(db);
@@ -18,6 +22,9 @@ export async function GET() {
 // serviceId is required, not optional.
 // body: { serviceType: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", serviceId, date, time, duration, facilitator }
 export async function POST(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const body = await req.json();
   const { serviceType, serviceId, date, time, duration, facilitator } = body;
 

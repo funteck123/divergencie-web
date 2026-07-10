@@ -1,8 +1,19 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { isValidTimezone, normalizeTimezone } from "@/lib/timezones";
+import { requireManagement } from "@/lib/authz";
+import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
 
-export async function GET() {
+// Re-exported for existing importers (e.g. api/paychecks/pdf/route.js) —
+// lib/accountTypes.js is the single source of truth now, shared with the
+// client-side dashboard, but this route re-exports so nothing else has to
+// change its import path.
+export { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT };
+
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
   // Management needs to see issued credentials persistently (not just at the
   // moment an account is created/converted) — join from db.credentials by UserID.
@@ -39,14 +50,6 @@ const ID_PREFIX = {
   AmbassadorInterviewAcc: "AIN",
   Ambassador: "AMB",
 };
-
-export const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
-// Teacher/Ambassador Department is fixed to their own type name (not user
-// editable) — Staff instead picks one of DEPARTMENTS. Role is free text on
-// all three: for Staff it's their job title, for Teacher/Ambassador it's
-// whatever descriptor Management wants to record (e.g. "Subject Lead").
-export const ROLE_ELIGIBLE = ["Teacher", "Staff", "Ambassador"];
-export const FIXED_DEPARTMENT = { Teacher: "Teacher", Ambassador: "Ambassador" };
 
 // Batch is the cohort attribute for Student and Teacher accounts (which
 // cohort/intake they belong to) — independent of Department now that
@@ -103,6 +106,9 @@ function applyCurrency(user, currency) {
 //         Ambassador get a fixed value), timezone?, currency? (every type,
 //         defaults to "INR") }
 export async function POST(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency } =
     await req.json();
   if (!userType || !ID_PREFIX[userType]) {
@@ -119,6 +125,9 @@ export async function POST(req) {
   }
   if (userType === "Staff" && department && !DEPARTMENTS.includes(department)) {
     return NextResponse.json({ error: `department must be one of ${DEPARTMENTS.join(", ")}.` }, { status: 400 });
+  }
+  if (currency !== undefined && !CURRENCIES.includes(currency)) {
+    return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
   const db = readDB();
@@ -157,6 +166,9 @@ export async function POST(req) {
 //         role?, passportNumber?, batch?, department? (Staff only),
 //         currency?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const {
     userId,
     name,
@@ -206,6 +218,9 @@ export async function PATCH(req) {
   }
   if (user.UserType === "Staff" && department && !DEPARTMENTS.includes(department)) {
     return NextResponse.json({ error: `department must be one of ${DEPARTMENTS.join(", ")}.` }, { status: 400 });
+  }
+  if (currency !== undefined && !CURRENCIES.includes(currency)) {
+    return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
   let cred;

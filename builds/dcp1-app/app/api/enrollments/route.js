@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { requireManagement } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const db = readDB();
   return NextResponse.json({ enrollments: db.enrollments });
 }
 
 // body: { userId, serviceId }
 export async function POST(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const { userId, serviceId } = await req.json();
   const db = readDB();
 
@@ -27,6 +34,9 @@ export async function POST(req) {
 
 // body: { enrolmentId, userId, serviceId }
 export async function PATCH(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const { enrolmentId, userId, serviceId } = await req.json();
   const db = readDB();
 
@@ -54,6 +64,9 @@ export async function PATCH(req) {
 
 // body: { enrolmentId }
 export async function DELETE(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
   const { enrolmentId } = await req.json();
   const db = readDB();
   const index = db.enrollments.findIndex((e) => e.EnrolmentID === enrolmentId);

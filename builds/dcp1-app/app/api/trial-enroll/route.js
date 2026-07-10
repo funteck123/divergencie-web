@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { requireManagement } from "@/lib/authz";
 
 // Management's action after reading a Trial's Feedback and deciding it went
 // well: add the trialed Service to the Student account and bill one month
@@ -9,6 +10,9 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 // that must already have happened.
 // body: { trialId }
 export async function POST(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const { trialId } = await req.json();
   const db = readDB();
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
+import { requireManagement } from "@/lib/authz";
 
 function makeUsername(name, db) {
   const base = name.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -56,6 +57,9 @@ const CONVERT_MAP = {
 // Trial invoice) are reassigned to the new Student so billing history carries
 // over; everything else about the new account starts fresh.
 export async function POST(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
   const { accountId } = await req.json();
   const db = readDB();
 

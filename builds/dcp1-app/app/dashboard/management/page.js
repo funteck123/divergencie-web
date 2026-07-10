@@ -5,6 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import { api, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
+import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
 // The three pending Interview tracks — each converts to its own final
@@ -38,13 +39,6 @@ const BOOKING_TYPE_LABEL = {
   StaffInterview: "Interview — Staff",
   AmbassadorInterview: "Interview — Ambassador",
 };
-// Mirrors DEPARTMENTS/ROLE_ELIGIBLE/FIXED_DEPARTMENT in api/users/route.js
-// (duplicated for the same reason as BOOKING_TYPES above — that module
-// can't be imported client-side).
-const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
-const ROLE_ELIGIBLE = ["Teacher", "Staff", "Ambassador"];
-const FIXED_DEPARTMENT = { Teacher: "Teacher", Ambassador: "Ambassador" };
-
 export default function ManagementDashboard() {
   return <DashboardShell allowedType="Management">{(user) => <Body user={user} />}</DashboardShell>;
 }
@@ -861,7 +855,13 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
           Currency (invoice/paycheck totals are shown in this account&apos;s Currency)
         </label>
-        <input className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)} />
+        <select className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       {ROLE_ELIGIBLE.includes(user.UserType) && (
@@ -1057,13 +1057,13 @@ function CreateAccount({ onCreated, users }) {
 
         <input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
 
-        <input
-          className="field"
-          style={{ maxWidth: 100 }}
-          placeholder="Currency"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        />
+        <select className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
 
         {userType === "Parent" && (
           <div>
@@ -1328,13 +1328,13 @@ function Services() {
             </>
           )}
           <div className="flex gap-2">
-            <input
-              className="field"
-              style={{ maxWidth: 100 }}
-              placeholder="Currency"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-            />
+            <select className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+              {CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
             <input
               className="field"
               type="number"
@@ -2229,7 +2229,14 @@ function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch
 
   return (
     <tr>
-      <td>{nameOf(row[personKey])}</td>
+      <td>
+        {nameOf(row[personKey])}
+        {row.Note && (
+          <span className="badge badge-pending ml-2" title={row.Note}>
+            ⚠ {row.Note}
+          </span>
+        )}
+      </td>
       <td>{serviceNameOf(row.ServiceID)}</td>
       <td>{row.Month}/{row.Year}</td>
       <td>
