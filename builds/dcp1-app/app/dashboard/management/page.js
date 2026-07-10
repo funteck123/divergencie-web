@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import { api, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
-import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
+import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
 // The three pending Interview tracks — each converts to its own final
@@ -911,10 +911,10 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
           Currency (invoice/paycheck totals are shown in this account&apos;s Currency)
         </label>
-        <select className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
-          {CURRENCIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
+        <select className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+          {CURRENCIES_FULL.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.code} — {c.name}
             </option>
           ))}
         </select>
@@ -1193,10 +1193,10 @@ function CreateAccount({ onCreated, users }) {
 
         <input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
 
-        <select className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
-          {CURRENCIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
+        <select className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+          {CURRENCIES_FULL.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.code} — {c.name}
             </option>
           ))}
         </select>
@@ -1464,10 +1464,10 @@ function Services() {
             </>
           )}
           <div className="flex gap-2">
-            <select className="field" style={{ maxWidth: 100 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
-              {CURRENCIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
+            <select className="field" style={{ maxWidth: 160 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+              {CURRENCIES_FULL.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} — {c.name}
                 </option>
               ))}
             </select>
