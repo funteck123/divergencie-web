@@ -38,9 +38,12 @@ const BOOKING_TYPE_LABEL = {
   StaffInterview: "Interview — Staff",
   AmbassadorInterview: "Interview — Ambassador",
 };
-// Mirrors DEPARTMENTS in api/users/route.js (duplicated for the same reason
-// as BOOKING_TYPES above — that module can't be imported client-side).
+// Mirrors DEPARTMENTS/ROLE_ELIGIBLE/FIXED_DEPARTMENT in api/users/route.js
+// (duplicated for the same reason as BOOKING_TYPES above — that module
+// can't be imported client-side).
 const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
+const ROLE_ELIGIBLE = ["Teacher", "Staff", "Ambassador"];
+const FIXED_DEPARTMENT = { Teacher: "Teacher", Ambassador: "Ambassador" };
 
 export default function ManagementDashboard() {
   return <DashboardShell allowedType="Management">{(user) => <Body user={user} />}</DashboardShell>;
@@ -595,6 +598,8 @@ function Accounts() {
         title="Teacher Accounts"
         rows={teacherUsers}
         columns={[
+          { header: "Role", render: (u) => u.Role || "—" },
+          { header: "Department", render: (u) => u.Department || "—" },
           { header: "Batch", render: (u) => u.Batch || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
         ]}
@@ -606,7 +611,7 @@ function Accounts() {
         title="Staff Accounts"
         rows={otherStaffUsers}
         columns={[
-          { header: "Role", render: (u) => u.StaffRole || "—" },
+          { header: "Role", render: (u) => u.Role || "—" },
           { header: "Department", render: (u) => u.Department || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
         ]}
@@ -623,7 +628,15 @@ function Accounts() {
         {...sharedProps}
       />
 
-      <AccountGroupTable title="Ambassador Accounts" rows={ambassadorUsers} columns={[]} {...sharedProps} />
+      <AccountGroupTable
+        title="Ambassador Accounts"
+        rows={ambassadorUsers}
+        columns={[
+          { header: "Role", render: (u) => u.Role || "—" },
+          { header: "Department", render: (u) => u.Department || "—" },
+        ]}
+        {...sharedProps}
+      />
 
       <AccountGroupTable title="Pending Trial Accounts" rows={trialPendingUsers} columns={[]} showConvert {...sharedProps} />
 
@@ -752,7 +765,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
 function EditAccountForm({ user, users, onSave, onCancel }) {
   const [name, setName] = useState(user.Name);
   const [status, setStatus] = useState(user.Status === "Converted" ? "Active" : user.Status || "Active");
-  const [staffRole, setStaffRole] = useState(user.StaffRole || "");
+  const [role, setRole] = useState(user.Role || "");
   const [course, setCourse] = useState(user.Course || "");
   const [batch, setBatch] = useState(user.Batch || "");
   const [department, setDepartment] = useState(user.Department || "");
@@ -771,10 +784,8 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     e.preventDefault();
     const fields = { name, username };
     if (user.Status !== "Converted") fields.status = status;
-    if (user.UserType === "Staff") {
-      fields.staffRole = staffRole;
-      fields.department = department;
-    }
+    if (ROLE_ELIGIBLE.includes(user.UserType)) fields.role = role;
+    if (user.UserType === "Staff") fields.department = department;
     if (user.UserType === "Teacher") fields.batch = batch;
     if (user.UserType === "Student") {
       fields.course = course;
@@ -825,12 +836,12 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         <input className="field" value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
 
-      {user.UserType === "Staff" && (
+      {ROLE_ELIGIBLE.includes(user.UserType) && (
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Role
           </label>
-          <input className="field" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
+          <input className="field" value={role} onChange={(e) => setRole(e.target.value)} />
         </div>
       )}
 
@@ -848,6 +859,12 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             ))}
           </select>
         </div>
+      )}
+
+      {FIXED_DEPARTMENT[user.UserType] && (
+        <p className="text-sm" style={{ color: "var(--muted)" }}>
+          Department: {FIXED_DEPARTMENT[user.UserType]} (fixed for this account type)
+        </p>
       )}
 
       {user.UserType === "Student" && (
@@ -923,7 +940,7 @@ function CreateAccount({ onCreated, users }) {
   const [userType, setUserType] = useState("Parent");
   const [name, setName] = useState("");
   const [studentIds, setStudentIds] = useState([]);
-  const [staffRole, setStaffRole] = useState("");
+  const [role, setRole] = useState("");
   const [course, setCourse] = useState("");
   const [batch, setBatch] = useState("");
   const [department, setDepartment] = useState("");
@@ -940,7 +957,7 @@ function CreateAccount({ onCreated, users }) {
   function reset() {
     setName("");
     setStudentIds([]);
-    setStaffRole("");
+    setRole("");
     setCourse("");
     setBatch("");
     setDepartment("");
@@ -953,8 +970,8 @@ function CreateAccount({ onCreated, users }) {
     try {
       const body = { userType, name };
       if (userType === "Parent") body.studentIds = studentIds;
+      if (ROLE_ELIGIBLE.includes(userType)) body.role = role;
       if (userType === "Staff") {
-        body.staffRole = staffRole;
         body.department = department;
         body.timezone = timezone;
       }
@@ -1012,18 +1029,19 @@ function CreateAccount({ onCreated, users }) {
           </div>
         )}
 
+        {ROLE_ELIGIBLE.includes(userType) && (
+          <input className="field" placeholder="Role (e.g. SM Assistant)" value={role} onChange={(e) => setRole(e.target.value)} />
+        )}
+
         {userType === "Staff" && (
-          <>
-            <input className="field" placeholder="Role (e.g. SM Assistant)" value={staffRole} onChange={(e) => setStaffRole(e.target.value)} />
-            <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
-              <option value="">Select department…</option>
-              {DEPARTMENTS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </>
+          <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+            <option value="">Select department…</option>
+            {DEPARTMENTS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
         )}
 
         {userType === "Teacher" && (

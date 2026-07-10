@@ -49,9 +49,9 @@ const THEMES = {
     timezoneCoord: [1422, 256],
     rowAreaTop: 425,
   },
-  // Staff whose StaffRole is "Teacher" get the Teacher Schedule template;
-  // every other StaffRole gets the plain Staff Schedule template. Both
-  // share the same field layout (Name / Batch-or-Department / Time Zone
+  // Teacher accounts get the Teacher Schedule template; Staff accounts get
+  // the plain Staff Schedule template. Both share the same field layout
+  // (Name / Batch-or-Department / Time Zone
   // drawn side by side below the logo, with the day header starting right
   // below that row — rowAreaTop is pushed down accordingly so the redrawn
   // grid never collides with the taller header).

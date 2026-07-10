@@ -41,30 +41,50 @@ const ID_PREFIX = {
 };
 
 export const DEPARTMENTS = ["Marketing", "Finance", "HR", "IT", "PR"];
+// Teacher/Ambassador Department is fixed to their own type name (not user
+// editable) — Staff instead picks one of DEPARTMENTS. Role is free text on
+// all three: for Staff it's their job title, for Teacher/Ambassador it's
+// whatever descriptor Management wants to record (e.g. "Subject Lead").
+const ROLE_ELIGIBLE = ["Teacher", "Staff", "Ambassador"];
+const FIXED_DEPARTMENT = { Teacher: "Teacher", Ambassador: "Ambassador" };
 
-// Batch is the cohort attribute for Student and Teacher accounts (same
-// concept for both — which cohort/intake they belong to). Staff instead
-// gets Department (which department they work in) — the two are mutually
-// exclusive, never both present on the same account. Teacher and Staff are
-// separate UserTypes (not one "Staff" type with a role flag), so this is a
-// straight type check now.
-function applyCohortField(user, userType, batch, department) {
+// Batch is the cohort attribute for Student and Teacher accounts (which
+// cohort/intake they belong to) — independent of Department now that
+// Teacher/Ambassador also carry a Department value.
+function applyBatch(user, userType, batch) {
   if (userType === "Student" || userType === "Teacher") {
     user.Batch = batch || "";
-    delete user.Department;
+  } else {
+    delete user.Batch;
+  }
+}
+
+function applyDepartment(user, userType, department) {
+  if (FIXED_DEPARTMENT[userType]) {
+    user.Department = FIXED_DEPARTMENT[userType];
   } else if (userType === "Staff") {
     user.Department = department || "";
-    delete user.Batch;
+  } else {
+    delete user.Department;
+  }
+}
+
+function applyRole(user, userType, role) {
+  if (ROLE_ELIGIBLE.includes(userType)) {
+    user.Role = role || "";
+  } else {
+    delete user.Role;
   }
 }
 
 // Management creates any account type directly from the Accounts tab.
 // Student/Teacher/Staff created here start fresh (no linked Trial/Interview
 // record, no invoice carry-over) — that history only exists via /api/convert.
-// body: { userType, name, studentIds?: [] (Parent), staffRole? (Staff job
-//         title, free text), course?, batch?, department?, timezone? }
+// body: { userType, name, studentIds?: [] (Parent), role? (Teacher/Staff/
+//         Ambassador job title, free text), course?, batch?, department?
+//         (Staff only — Teacher/Ambassador get a fixed value), timezone? }
 export async function POST(req) {
-  const { userType, name, studentIds, staffRole, course, batch, department, timezone } = await req.json();
+  const { userType, name, studentIds, role, course, batch, department, timezone } = await req.json();
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -86,7 +106,6 @@ export async function POST(req) {
   const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
   if (userType === "Parent") user.StudentIDs = studentIds;
   if (userType === "Staff") {
-    user.StaffRole = staffRole || "";
     user.Timezone = normalizeTimezone(timezone);
   }
   if (userType === "Teacher") {
@@ -96,7 +115,9 @@ export async function POST(req) {
     user.Course = course || "";
     user.Timezone = normalizeTimezone(timezone);
   }
-  applyCohortField(user, userType, batch, department);
+  applyBatch(user, userType, batch);
+  applyDepartment(user, userType, department);
+  applyRole(user, userType, role);
 
   const username = makeUsername(name, db);
   const password = randomPassword();
@@ -114,12 +135,12 @@ export async function POST(req) {
 // state stamped by /api/convert alongside ConvertedToUserID, and can't be
 // set or cleared from this endpoint.
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
-//         staffRole?, batch?, department?, studentIds?: [], username?, password? }
+//         role?, batch?, department? (Staff only), studentIds?: [], username?, password? }
 export async function PATCH(req) {
-  const { userId, name, status, timezone, course, staffRole, batch, department, studentIds, username, password } =
+  const { userId, name, status, timezone, course, role, batch, department, studentIds, username, password } =
     await req.json();
   if (
-    [name, status, timezone, course, staffRole, batch, department, studentIds, username, password].every(
+    [name, status, timezone, course, role, batch, department, studentIds, username, password].every(
       (v) => v === undefined
     )
   ) {
@@ -167,11 +188,10 @@ export async function PATCH(req) {
   if (status !== undefined) user.Status = status;
   if (timezone !== undefined) user.Timezone = timezone;
   if (course !== undefined) user.Course = course;
-  if (staffRole !== undefined) user.StaffRole = staffRole;
+  if (role !== undefined) applyRole(user, user.UserType, role);
   if (studentIds !== undefined) user.StudentIDs = studentIds;
-  if (batch !== undefined || department !== undefined) {
-    applyCohortField(user, user.UserType, batch, department);
-  }
+  if (batch !== undefined) applyBatch(user, user.UserType, batch);
+  if (department !== undefined) applyDepartment(user, user.UserType, department);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
   writeDB(db);

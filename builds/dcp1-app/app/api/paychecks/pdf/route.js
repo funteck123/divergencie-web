@@ -27,7 +27,7 @@ export async function GET(req) {
     period: `END-${MONTH_ABBR[paycheck.Month - 1]}-${paycheck.Year}`,
     emplNo: paycheck.StaffID,
     name: staff?.Name || paycheck.StaffID,
-    department: staff?.Department || staff?.StaffRole || "",
+    department: staff?.Department || "",
     icPassport: "",
     epfNo: "",
     socsoNo: "",
