@@ -1,0 +1,236 @@
+/* ─── Fonts — Self-Hosted (marketing shell, from v6) ──────────────── */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi-500.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi-900.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@import "tailwindcss";
+
+/* ─── Dark mode variant (Tailwind v4, marketing shell only — dcp1
+   dashboard classes below don't define .dark overrides, so toggling
+   theme on marketing pages doesn't affect dashboard appearance) ──── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Brand tokens — Light mode (default), marketing shell ───────── */
+:root {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f4f4f4;
+  --bg-tertiary:   #d5e8f0;
+  --navy:          #1a3c5e;
+  --gold:          #e8a832;
+  --sky:           #4a9fd4;
+  --coral:         #e05a4e;
+  --charcoal:      #5c5248;
+  --text-primary:  #1a1a1a;
+  --text-muted:    #666666;
+  --footer-text:   #888888;
+  --gold-light-bg: #fff8e7;
+  --info-bg:       #d5e8f0;
+  --border-subtle: rgba(0,0,0,0.08);
+
+  --badge-student:    #16a34a;
+  --badge-parent:     #e11d48;
+  --badge-teacher:    #0d9488;
+  --badge-staff:      #2563eb;
+  --badge-ambassador: #d97706;
+  --badge-management: #7c3aed;
+}
+
+/* ─── Brand tokens — Dark mode ─────────────────────────────────── */
+.dark {
+  --bg-primary:    #0a0a0a;
+  --bg-secondary:  #111111;
+  --bg-tertiary:   #1a1a1a;
+  --navy:          #1a3c5e;
+  --gold:          #e8a832;
+  --gold-dim:      #c9a030;
+  --text-primary:  #ffffff;
+  --text-muted:    rgba(255,255,255,0.55);
+  --footer-text:   rgba(255,255,255,0.4);
+  --border-subtle: rgba(255,255,255,0.08);
+  --gold-light-bg: #1a1500;
+  --info-bg:       #0d1a24;
+}
+
+html {
+  font-family: "Satoshi", var(--font-inter), sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-right {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-in {
+  animation-duration: 0.7s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in { animation-name: fade-in; }
+.slide-in-from-bottom-4 { animation-name: slide-up; }
+.slide-in-from-bottom-8 { animation-name: slide-up; animation-delay: 0.1s; }
+.slide-in-from-bottom-12 { animation-name: slide-up; animation-delay: 0.2s; }
+.slide-in-from-bottom-16 { animation-name: slide-up; animation-delay: 0.3s; }
+.slide-in-from-right { animation-name: slide-right; }
+
+/* ─── Performance & Accessibility ─────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.perf-mode *,
+.perf-mode {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* DC Portal dashboard shell (from dcp1-app), scoped to its own
+   token names (bg/panel/text/accent etc, distinct from the marketing
+   tokens above) and its own component classes (card/field/btn/badge/
+   table), so the two style systems coexist without collision. */
+:root {
+  --bg: #ffffff;
+  --panel: #f8fafc;
+  --panel-2: #eef2f7;
+  --border: #d7dee8;
+  --text: #16233d;
+  --muted: #64748b;
+  --accent: #3b82f6;
+  --accent-2: #60a5fa;
+  --good: #34d399;
+  --warn: #fbbf24;
+  --bad: #f87171;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.field {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.field:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.btn {
+  background: var(--accent);
+  color: white;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.btn:hover {
+  background: var(--accent-2);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-pending { background: rgba(251,191,36,0.15); color: var(--warn); }
+.badge-good { background: rgba(52,211,153,0.15); color: var(--good); }
+.badge-bad { background: rgba(248,113,113,0.15); color: var(--bad); }
+.badge-info { background: rgba(59,130,246,0.15); color: var(--accent-2); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
