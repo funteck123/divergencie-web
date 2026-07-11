@@ -40,3 +40,6 @@ data/
 src/generated/sandbox/
 prisma/generated/
 .vercel
+
+# Reference-only copies (v6, dcp1-app) — not needed for v7 (repo root) or Vercel
+builds
