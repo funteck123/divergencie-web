@@ -6,7 +6,10 @@ const nextConfig = {
   // v7 lives nested inside the divergencie repo, which has its own
   // package-lock.json at the root — without this, Turbopack infers the
   // wrong workspace root from the outer lockfile and resolves node_modules
-  // incorrectly.
+  // incorrectly. Leave outputFileTracingRoot to Vercel's own monorepo
+  // detection (setting it explicitly to this directory breaks Vercel's
+  // deploy-packaging step: "ENOENT .next/package.json") — the mismatch
+  // warning this produces locally is harmless, build output is unaffected.
   turbopack: {
     root: path.resolve(import.meta.dirname),
   },

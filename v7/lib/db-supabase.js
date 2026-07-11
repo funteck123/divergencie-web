@@ -6,9 +6,13 @@ import { createClient } from "@supabase/supabase-js";
 // Each table stores its record as a JSONB blob keyed by that collection's own
 // ID field, so no route needs to know column shapes — only this file does.
 
+// V7_-prefixed: this app now shares a Vercel project with v6 (same project,
+// Root Directory repointed to builds/v7), which already has its own
+// SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY etc. for v6's separate Supabase
+// project. Distinct names avoid overwriting or colliding with those.
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  process.env.V7_SUPABASE_URL,
+  process.env.V7_SUPABASE_SERVICE_ROLE_KEY,
   { auth: { persistSession: false } }
 );
 
