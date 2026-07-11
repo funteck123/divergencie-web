@@ -2445,10 +2445,15 @@ function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch
       <td>
         <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
       </td>
-      <td>
+      <td className="flex items-center gap-2">
         <span className={`badge ${row[flagKey] ? "badge-good" : "badge-pending"}`}>
           {row[flagKey] ? flagLabel : "—"}
         </span>
+        {row.PaymentProofPath && (
+          <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/proof?invoiceId=${row[idKey]}`} target="_blank" rel="noreferrer">
+            Proof
+          </a>
+        )}
       </td>
       <td className="space-x-2">
         {editing ? (

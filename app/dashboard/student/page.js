@@ -7,6 +7,7 @@ import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
+import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
 
 export default function StudentDashboard() {
@@ -55,6 +56,16 @@ function Body({ user }) {
     } catch (e) {
       setError(e.message);
     }
+  }
+
+  async function confirmPaid(invoiceId, file) {
+    const form = new FormData();
+    form.append("invoiceId", invoiceId);
+    form.append("file", file);
+    const res = await fetch("/api/invoices/mark-paid", { method: "POST", body: form });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || "Could not confirm payment.");
+    load();
   }
 
   const scheduleRows = (data?.scheduleItems || []).map((s) => ({ ...s, _dt: s.Date + s.Time }));
@@ -188,7 +199,14 @@ function Body({ user }) {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">My Invoices</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold">My Invoices</h2>
+          {process.env.NEXT_PUBLIC_STRIPE_GATEWAY && (
+            <a className="btn" href={process.env.NEXT_PUBLIC_STRIPE_GATEWAY} target="_blank" rel="noreferrer">
+              Pay by card online
+            </a>
+          )}
+        </div>
         <table>
           <thead>
             <tr>
@@ -209,19 +227,12 @@ function Body({ user }) {
                 <td>{i.AttendedHours}</td>
                 <td>{data.user.Currency || "INR"} {i.Amount}</td>
                 <td>{i.INRDue}</td>
-                <td className="flex items-center gap-2">
-                  {i.StudentPaidFlag ? (
-                    <>
-                      <span className="badge badge-good">Paid ✓</span>
-                      <button className="btn-ghost" onClick={() => setInvoicePaid(i.InvoiceID, false)}>
-                        Mark as unpaid
-                      </button>
-                    </>
-                  ) : (
-                    <button className="btn-ghost" onClick={() => setInvoicePaid(i.InvoiceID, true)}>
-                      Mark as paid
-                    </button>
-                  )}
+                <td>
+                  <InvoicePaidControl
+                    invoice={i}
+                    onMarkUnpaid={(id) => setInvoicePaid(id, false)}
+                    onConfirmPaid={confirmPaid}
+                  />
                 </td>
                 <td>
                   <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${i.InvoiceID}`} download>

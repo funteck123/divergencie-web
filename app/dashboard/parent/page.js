@@ -6,6 +6,7 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
+import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
 
 export default function ParentDashboard() {
@@ -38,6 +39,16 @@ function Body({ user }) {
     }
   }
 
+  async function confirmPaid(invoiceId, file) {
+    const form = new FormData();
+    form.append("invoiceId", invoiceId);
+    form.append("file", file);
+    const res = await fetch("/api/invoices/mark-paid", { method: "POST", body: form });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || "Could not confirm payment.");
+    load();
+  }
+
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const linkedChildren = data.children.map((c) => c.student).filter(Boolean);
@@ -54,14 +65,20 @@ function Body({ user }) {
         </div>
       ) : (
         data.children.map((child) => (
-          <ChildCard key={child.student?.UserID} child={child} services={data.services} onSetPaid={setInvoicePaid} />
+          <ChildCard
+            key={child.student?.UserID}
+            child={child}
+            services={data.services}
+            onSetPaid={setInvoicePaid}
+            onConfirmPaid={confirmPaid}
+          />
         ))
       )}
     </div>
   );
 }
 
-function ChildCard({ child, services, onSetPaid }) {
+function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
   const { student, schedule, attendance, invoices, enrollments } = child;
   const [view, setView] = useState("weekly");
   const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
@@ -192,19 +209,12 @@ function ChildCard({ child, services, onSetPaid }) {
               <td>{i.Month}/{i.Year}</td>
               <td>{serviceNameOf(i.ServiceID)}</td>
               <td>{student?.Currency || "INR"} {i.Amount}</td>
-              <td className="flex items-center gap-2">
-                {i.StudentPaidFlag ? (
-                  <>
-                    <span className="badge badge-good">Paid ✓</span>
-                    <button className="btn-ghost" onClick={() => onSetPaid(i.InvoiceID, false)}>
-                      Mark as unpaid
-                    </button>
-                  </>
-                ) : (
-                  <button className="btn-ghost" onClick={() => onSetPaid(i.InvoiceID, true)}>
-                    Mark as paid
-                  </button>
-                )}
+              <td>
+                <InvoicePaidControl
+                  invoice={i}
+                  onMarkUnpaid={(id) => onSetPaid(id, false)}
+                  onConfirmPaid={onConfirmPaid}
+                />
               </td>
               <td>
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${i.InvoiceID}`} download>
