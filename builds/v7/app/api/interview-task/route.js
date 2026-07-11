@@ -5,7 +5,7 @@ import { requireSelfOrManagement } from "@/lib/authz";
 // body: { interviewId, link }
 export async function POST(req) {
   const { interviewId, link } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const item = db.interviewItems.find((i) => i.InterviewID === interviewId);
   if (!item) return NextResponse.json({ error: "Interview item not found." }, { status: 404 });
 
@@ -14,6 +14,6 @@ export async function POST(req) {
 
   item.TaskSubmissionLink = link;
   item.Status = "TaskSubmitted";
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ interviewItem: item });
 }

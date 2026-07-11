@@ -14,7 +14,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const invoiceId = searchParams.get("invoiceId");
 
-  const db = readDB();
+  const db = await readDB();
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 

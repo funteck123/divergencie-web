@@ -6,7 +6,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json({ attendanceItems: db.attendanceItems });
 }
 
@@ -16,7 +16,7 @@ export async function POST(req) {
   const { error } = requireSelfOrManagement(req, userId);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
 
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleItemId);
   if (!slot) return NextResponse.json({ error: "Schedule item not found." }, { status: 404 });
@@ -39,6 +39,6 @@ export async function POST(req) {
     LoggedBy: userId,
   };
   db.attendanceItems.push(item);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ attendanceItem: item });
 }

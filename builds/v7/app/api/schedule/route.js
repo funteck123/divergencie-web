@@ -7,9 +7,9 @@ export async function GET(req) {
   const { error } = requireSession(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   ensureScheduleGenerated(db);
-  writeDB(db);
+  await writeDB(db);
   // Every unbooked slot is open pool — manually-offered Trial/Interview slots
   // and auto-generated Service occurrences alike.
   const openPoolSlots = sortByDateTime(db.scheduleItems.filter((s) => !isSlotBooked(db, s.ScheduleID)));
@@ -35,7 +35,7 @@ export async function POST(req) {
     );
   }
 
-  const db = readDB();
+  const db = await readDB();
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
@@ -60,7 +60,7 @@ export async function POST(req) {
     Facilitator: facilitator || "",
   };
   db.scheduleItems.push(item);
-  writeDB(db);
+  await writeDB(db);
 
   return NextResponse.json({ scheduleItem: item });
 }

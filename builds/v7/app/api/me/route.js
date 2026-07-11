@@ -10,9 +10,9 @@ export async function GET(req) {
   const { error } = requireSelfOrManagement(req, userId);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   ensureScheduleGenerated(db);
-  writeDB(db);
+  await writeDB(db);
 
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });

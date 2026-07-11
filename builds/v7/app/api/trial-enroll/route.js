@@ -14,7 +14,7 @@ export async function POST(req) {
   if (error) return error;
 
   const { trialId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
 
   const trial = db.trialItems.find((t) => t.TrialID === trialId);
   if (!trial) return NextResponse.json({ error: "Trial not found." }, { status: 404 });
@@ -71,7 +71,7 @@ export async function POST(req) {
   }
 
   trial.ServiceAdded = true;
-  writeDB(db);
+  await writeDB(db);
 
   return NextResponse.json({ enrollment, invoice });
 }

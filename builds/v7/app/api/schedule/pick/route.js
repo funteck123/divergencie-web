@@ -12,7 +12,7 @@ export async function POST(req) {
   const { error } = requireSelfOrManagement(req, userId);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
 
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
   if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
@@ -45,7 +45,7 @@ export async function POST(req) {
       ServiceAdded: false,
     };
     db.trialItems.push(item);
-    writeDB(db);
+    await writeDB(db);
     return NextResponse.json({ trialItem: item });
   }
 
@@ -65,6 +65,6 @@ export async function POST(req) {
     Status: "Pending",
   };
   db.interviewItems.push(item);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ interviewItem: item });
 }

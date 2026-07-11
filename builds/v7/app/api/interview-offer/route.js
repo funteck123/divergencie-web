@@ -10,7 +10,7 @@ import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 // overwrites the link/feedback in place.
 export async function POST(req) {
   const { interviewId, action, feedback, offerLetterLink } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const item = db.interviewItems.find((i) => i.InterviewID === interviewId);
   if (!item) return NextResponse.json({ error: "Interview item not found." }, { status: 404 });
 
@@ -40,6 +40,6 @@ export async function POST(req) {
   } else {
     return NextResponse.json({ error: "action must be send, accept, waitlist, reject, or unsend." }, { status: 400 });
   }
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ interviewItem: item });
 }

@@ -7,7 +7,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json({ invoices: db.invoices });
 }
 
@@ -30,7 +30,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    const db = readDB();
+    const db = await readDB();
     const y = Number(year);
     const m = Number(month);
     const dup = db.invoices.find(
@@ -56,7 +56,7 @@ export async function POST(req) {
       Status: "Draft",
     };
     db.invoices.push(invoice);
-    writeDB(db);
+    await writeDB(db);
     return NextResponse.json({ invoice });
   }
 
@@ -64,7 +64,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
   }
   const { year, month } = body;
-  const db = readDB();
+  const db = await readDB();
 
   const studentIds = new Set(db.users.filter((u) => u.UserType === "Student").map((u) => u.UserID));
   const studentEnrollments = db.enrollments.filter((e) => studentIds.has(e.UserID));
@@ -103,7 +103,7 @@ export async function POST(req) {
     db.invoices.push(invoice);
     created.push(invoice);
   }
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ created });
 }
 
@@ -112,7 +112,7 @@ export async function POST(req) {
 // their own invoice — every other field is a Management-only billing edit.
 export async function PATCH(req) {
   const { invoiceId, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, studentPaidFlag } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
@@ -130,7 +130,7 @@ export async function PATCH(req) {
   if (status !== undefined) invoice.Status = status;
   if (studentPaidFlag !== undefined) invoice.StudentPaidFlag = Boolean(studentPaidFlag);
 
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ invoice });
 }
 
@@ -140,11 +140,11 @@ export async function DELETE(req) {
   if (authError) return authError;
 
   const { invoiceId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const index = db.invoices.findIndex((i) => i.InvoiceID === invoiceId);
   if (index === -1) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
   db.invoices.splice(index, 1);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ ok: true });
 }

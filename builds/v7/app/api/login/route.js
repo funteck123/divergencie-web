@@ -4,7 +4,7 @@ import { sessionCookieFor } from "@/lib/session";
 
 export async function POST(req) {
   const { username, password } = await req.json();
-  const db = readDB();
+  const db = await readDB();
 
   const cred = db.credentials.find(
     (c) => c.Username === username && c.Password === password

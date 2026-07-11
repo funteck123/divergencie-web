@@ -9,7 +9,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
 
   function nameOf(userId) {
     return db.users.find((u) => u.UserID === userId)?.Name || userId;
@@ -52,7 +52,7 @@ export async function PATCH(req) {
     return NextResponse.json({ error: `type must be one of ${BOOKING_TYPES.join("/")}, action approve/reject.` }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
 
   if (type === "Trial") {
     const item = db.trialItems.find((t) => t.TrialID === id);
@@ -63,7 +63,7 @@ export async function PATCH(req) {
 
     if (action === "reject") {
       item.Status = "Rejected";
-      writeDB(db);
+      await writeDB(db);
       return NextResponse.json({ trialItem: item });
     }
 
@@ -72,7 +72,7 @@ export async function PATCH(req) {
     // Student account; billing only starts if/when Management does that via
     // POST /api/trial-enroll, after feedback comes in.
     item.Status = "Scheduled";
-    writeDB(db);
+    await writeDB(db);
     return NextResponse.json({ trialItem: item });
   }
 
@@ -83,6 +83,6 @@ export async function PATCH(req) {
   }
 
   item.Status = action === "approve" ? "Scheduled" : "Rejected";
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ interviewItem: item });
 }

@@ -61,7 +61,7 @@ export async function POST(req) {
   if (error) return error;
 
   const { accountId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
 
   const oldUser = db.users.find((u) => u.UserID === accountId);
   if (!oldUser) return NextResponse.json({ error: "Account not found." }, { status: 404 });
@@ -103,6 +103,6 @@ export async function POST(req) {
   oldUser.Status = "Converted";
   oldUser.ConvertedToUserID = newUserId;
 
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ oldUser, newUser, credentials: { username, password } });
 }

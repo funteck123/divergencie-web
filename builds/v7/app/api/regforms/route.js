@@ -6,7 +6,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   const regForms = db.regForms.map((form) => {
     if (!form.CreatedUserID) return form;
     const cred = db.credentials.find((c) => c.UserID === form.CreatedUserID);
@@ -47,7 +47,7 @@ export async function PATCH(req) {
   if (authError) return authError;
 
   const { regFormId, action } = await req.json();
-  const db = readDB();
+  const db = await readDB();
 
   const form = db.regForms.find((r) => r.RegFormID === regFormId);
   if (!form) return NextResponse.json({ error: "RegForm not found." }, { status: 404 });
@@ -57,7 +57,7 @@ export async function PATCH(req) {
 
   if (action === "reject") {
     form.Status = "Rejected";
-    writeDB(db);
+    await writeDB(db);
     return NextResponse.json({ regForm: form });
   }
 
@@ -83,7 +83,7 @@ export async function PATCH(req) {
 
     form.Status = "Approved";
     form.CreatedUserID = userId;
-    writeDB(db);
+    await writeDB(db);
 
     return NextResponse.json({ regForm: form, user, credentials: { username, password } });
   }

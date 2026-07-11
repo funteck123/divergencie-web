@@ -12,7 +12,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "name and email are required." }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
   const lead = {
     LeadID: nextId(db, "LEAD"),
     Name: name,
@@ -24,7 +24,7 @@ export async function POST(req) {
     CreatedAt: new Date().toISOString(),
   };
   db.leads.push(lead);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ lead });
 }
 
@@ -33,6 +33,6 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json({ leads: db.leads });
 }

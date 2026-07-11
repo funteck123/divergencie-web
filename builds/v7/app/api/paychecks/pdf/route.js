@@ -13,7 +13,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const paycheckId = searchParams.get("paycheckId");
 
-  const db = readDB();
+  const db = await readDB();
   const paycheck = db.paychecks.find((p) => p.PaycheckID === paycheckId);
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 

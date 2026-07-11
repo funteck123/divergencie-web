@@ -14,7 +14,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   // Management needs to see issued credentials persistently (not just at the
   // moment an account is created/converted) — join from db.credentials by UserID.
   const users = db.users.map((u) => {
@@ -181,7 +181,7 @@ export async function POST(req) {
     return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
   const userId = nextId(db, ID_PREFIX[userType]);
   const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
   if (userType === "Parent") user.StudentIDs = studentIds;
@@ -203,7 +203,7 @@ export async function POST(req) {
   const password = randomPassword();
   db.users.push(user);
   db.credentials.push({ UserID: userId, Username: username, Password: password });
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ user, credentials: { username, password } });
 }
 
@@ -296,7 +296,7 @@ export async function PATCH(req) {
     return NextResponse.json({ error: "password cannot be blank." }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
   if (status !== undefined && user.Status === "Converted") {
@@ -331,6 +331,6 @@ export async function PATCH(req) {
   applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ user });
 }

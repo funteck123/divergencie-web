@@ -17,7 +17,7 @@ export async function POST(req) {
     return NextResponse.json({ error: `requestedType must be one of ${BOOKING_TYPES.join(", ")}.` }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
   const regForm = {
     RegFormID: nextId(db, "REG"),
     Name: name,
@@ -27,7 +27,7 @@ export async function POST(req) {
     SubmittedAt: new Date().toISOString(),
   };
   db.regForms.push(regForm);
-  writeDB(db);
+  await writeDB(db);
 
   return NextResponse.json({ regForm });
 }
@@ -36,6 +36,6 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json({ regForms: db.regForms });
 }

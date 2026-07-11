@@ -6,7 +6,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json({ enrollments: db.enrollments });
 }
 
@@ -16,7 +16,7 @@ export async function POST(req) {
   if (authError) return authError;
 
   const { userId, serviceId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
 
   const user = db.users.find((u) => u.UserID === userId);
   const service = db.services.find((s) => s.ServiceID === serviceId);
@@ -28,7 +28,7 @@ export async function POST(req) {
 
   const enrollment = { EnrolmentID: nextId(db, "ENR"), UserID: userId, ServiceID: serviceId };
   db.enrollments.push(enrollment);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ enrollment });
 }
 
@@ -38,7 +38,7 @@ export async function PATCH(req) {
   if (authError) return authError;
 
   const { enrolmentId, userId, serviceId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
 
   const enrollment = db.enrollments.find((e) => e.EnrolmentID === enrolmentId);
   if (!enrollment) return NextResponse.json({ error: "Enrollment not found." }, { status: 404 });
@@ -58,7 +58,7 @@ export async function PATCH(req) {
 
   enrollment.UserID = nextUserId;
   enrollment.ServiceID = nextServiceId;
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ enrollment });
 }
 
@@ -68,11 +68,11 @@ export async function DELETE(req) {
   if (authError) return authError;
 
   const { enrolmentId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const index = db.enrollments.findIndex((e) => e.EnrolmentID === enrolmentId);
   if (index === -1) return NextResponse.json({ error: "Enrollment not found." }, { status: 404 });
 
   db.enrollments.splice(index, 1);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ ok: true });
 }

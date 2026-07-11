@@ -7,7 +7,7 @@ export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json({ paychecks: db.paychecks });
 }
 
@@ -29,7 +29,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    const db = readDB();
+    const db = await readDB();
     const y = Number(year);
     const m = Number(month);
     const dup = db.paychecks.find(
@@ -55,7 +55,7 @@ export async function POST(req) {
       Status: "Draft",
     };
     db.paychecks.push(paycheck);
-    writeDB(db);
+    await writeDB(db);
     return NextResponse.json({ paycheck });
   }
 
@@ -63,7 +63,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
   }
   const { year, month } = body;
-  const db = readDB();
+  const db = await readDB();
 
   const staffIds = new Set(
     db.users.filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType)).map((u) => u.UserID)
@@ -104,7 +104,7 @@ export async function POST(req) {
     db.paychecks.push(paycheck);
     created.push(paycheck);
   }
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ created });
 }
 
@@ -113,7 +113,7 @@ export async function POST(req) {
 // their own paycheck — every other field is a Management-only billing edit.
 export async function PATCH(req) {
   const { paycheckId, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, staffReceivedFlag } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const paycheck = db.paychecks.find((p) => p.PaycheckID === paycheckId);
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
@@ -131,7 +131,7 @@ export async function PATCH(req) {
   if (status !== undefined) paycheck.Status = status;
   if (staffReceivedFlag !== undefined) paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
 
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ paycheck });
 }
 
@@ -141,11 +141,11 @@ export async function DELETE(req) {
   if (authError) return authError;
 
   const { paycheckId } = await req.json();
-  const db = readDB();
+  const db = await readDB();
   const index = db.paychecks.findIndex((p) => p.PaycheckID === paycheckId);
   if (index === -1) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
   db.paychecks.splice(index, 1);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ ok: true });
 }

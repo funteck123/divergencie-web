@@ -8,9 +8,9 @@ export async function GET(req) {
   const { error } = requireSession(req);
   if (error) return error;
 
-  const db = readDB();
+  const db = await readDB();
   ensureScheduleGenerated(db);
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ services: db.services });
 }
 
@@ -73,7 +73,7 @@ export async function POST(req) {
     return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
 
   const serviceId = nextId(db, "SVC");
   const occuranceList = occurrences.map((o) => ({
@@ -96,7 +96,7 @@ export async function POST(req) {
   applyCohortServiceFields(service, body, group);
   db.services.push(service);
   ensureScheduleGenerated(db);
-  writeDB(db);
+  await writeDB(db);
 
   return NextResponse.json({ service });
 }
@@ -129,7 +129,7 @@ export async function PATCH(req) {
     return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
@@ -149,7 +149,7 @@ export async function PATCH(req) {
   }));
 
   ensureScheduleGenerated(db);
-  writeDB(db);
+  await writeDB(db);
 
   return NextResponse.json({ service });
 }
