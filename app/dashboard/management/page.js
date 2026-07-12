@@ -1618,8 +1618,8 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
 function SchedulePool() {
   const [items, setItems] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
-  const [poolView, setPoolView] = useState("list");
-  const [serviceView, setServiceView] = useState("list");
+  const [poolView, setPoolView] = useState("calendar");
+  const [serviceView, setServiceView] = useState("calendar");
   const [pendingTrials, setPendingTrials] = useState([]);
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [services, setServices] = useState([]);
