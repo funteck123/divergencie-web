@@ -35,7 +35,6 @@ export default function MyInfo({ user, linkedChildren }) {
     rows.push(["Email", user.Email || "—"]);
     rows.push(["School", user.School || "—"]);
     rows.push(["Location", user.Location || "—"]);
-    rows.push(["Notes", user.Notes || "—"]);
     // Onboarding tracker (GroupSent/GCRSent/ScheduleSent) is a private
     // Management checklist, not shown here — Timesheet/Progress Tracker are
     // for the student's own use, so they do belong on this card.
