@@ -191,17 +191,22 @@ function Pipeline() {
   const [services, setServices] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [issued, setIssued] = useState({});
+  const [pendingTrials, setPendingTrials] = useState([]);
+  const [pendingInterviews, setPendingInterviews] = useState([]);
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ users }, { services }, { invoices }] = await Promise.all([
+    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }] = await Promise.all([
       api("/api/users"),
       api("/api/services"),
       api("/api/invoices"),
+      api("/api/schedule/requests"),
     ]);
     setUsers(users);
     setServices(services);
     setInvoices(invoices);
+    setPendingTrials(pendingTrials);
+    setPendingInterviews(pendingInterviews);
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead — run
     // every account's fetch concurrently rather than one at a time (this was
@@ -262,6 +267,16 @@ function Pipeline() {
     try {
       const res = await api("/api/convert", { method: "POST", body: JSON.stringify({ accountId }) });
       setIssued((prev) => ({ ...prev, [accountId]: res.credentials }));
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function actOnRequest(type, id, action) {
+    setError("");
+    try {
+      await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -403,6 +418,68 @@ function Pipeline() {
             ))}
             {interviewItems.length === 0 && (
               <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="card md:col-span-2">
+        <h2 className="font-semibold mb-4">Pending Requests</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Requester</th>
+              <th>Service</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {pendingTrials.map((t) => (
+              <tr key={t.TrialID}>
+                <td>Trial</td>
+                <td>{t.RequesterName}</td>
+                <td>{t.Slot?.ServiceName}</td>
+                <td>{t.Slot?.Date}</td>
+                <td>{t.Slot?.Time}</td>
+                <td className="space-x-2">
+                  <button className="btn" onClick={() => actOnRequest("Trial", t.TrialID, "approve")}>
+                    Approve
+                  </button>
+                  <button className="btn-ghost" onClick={() => actOnRequest("Trial", t.TrialID, "reject")}>
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {pendingInterviews.map((i) => {
+              const bookingType = i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview";
+              return (
+                <tr key={i.InterviewID}>
+                  <td>{INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview"}</td>
+                  <td>{i.RequesterName}</td>
+                  <td>{i.Slot?.ServiceName}</td>
+                  <td>{i.Slot?.Date}</td>
+                  <td>{i.Slot?.Time}</td>
+                  <td className="space-x-2">
+                    <button className="btn" onClick={() => actOnRequest(bookingType, i.InterviewID, "approve")}>
+                      Approve
+                    </button>
+                    <button className="btn-ghost" onClick={() => actOnRequest(bookingType, i.InterviewID, "reject")}>
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+            {pendingTrials.length === 0 && pendingInterviews.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                  No pending requests.
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
@@ -1620,8 +1697,6 @@ function SchedulePool() {
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
   const [poolView, setPoolView] = useState("calendar");
   const [serviceView, setServiceView] = useState("calendar");
-  const [pendingTrials, setPendingTrials] = useState([]);
-  const [pendingInterviews, setPendingInterviews] = useState([]);
   const [services, setServices] = useState([]);
   const [serviceType, setServiceType] = useState("Trial");
   const [serviceId, setServiceId] = useState("");
@@ -1632,16 +1707,13 @@ function SchedulePool() {
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ scheduleItems, openPoolSlots }, { services }, { pendingTrials, pendingInterviews }] = await Promise.all([
+    const [{ scheduleItems, openPoolSlots }, { services }] = await Promise.all([
       api("/api/schedule"),
       api("/api/services"),
-      api("/api/schedule/requests"),
     ]);
     setItems(scheduleItems);
     setOpenPoolSlots(openPoolSlots);
     setServices(services);
-    setPendingTrials(pendingTrials);
-    setPendingInterviews(pendingInterviews);
   }
   useEffect(() => {
     load();
@@ -1658,16 +1730,6 @@ function SchedulePool() {
       setDate("");
       setTime("");
       setFacilitator("");
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
-  }
-
-  async function actOnRequest(type, id, action) {
-    setError("");
-    try {
-      await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -1770,65 +1832,6 @@ function SchedulePool() {
           </table>
         )}
 
-        <h3 className="font-semibold mt-6 mb-2">Pending Requests</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Requester</th>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingTrials.map((t) => (
-              <tr key={t.TrialID}>
-                <td>Trial</td>
-                <td>{t.RequesterName}</td>
-                <td>{t.Slot?.ServiceName}</td>
-                <td>{t.Slot?.Date}</td>
-                <td>{t.Slot?.Time}</td>
-                <td className="space-x-2">
-                  <button className="btn" onClick={() => actOnRequest("Trial", t.TrialID, "approve")}>
-                    Approve
-                  </button>
-                  <button className="btn-ghost" onClick={() => actOnRequest("Trial", t.TrialID, "reject")}>
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {pendingInterviews.map((i) => {
-              const bookingType = i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview";
-              return (
-                <tr key={i.InterviewID}>
-                  <td>{INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview"}</td>
-                  <td>{i.RequesterName}</td>
-                  <td>{i.Slot?.ServiceName}</td>
-                  <td>{i.Slot?.Date}</td>
-                  <td>{i.Slot?.Time}</td>
-                  <td className="space-x-2">
-                    <button className="btn" onClick={() => actOnRequest(bookingType, i.InterviewID, "approve")}>
-                      Approve
-                    </button>
-                    <button className="btn-ghost" onClick={() => actOnRequest(bookingType, i.InterviewID, "reject")}>
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-            {pendingTrials.length === 0 && pendingInterviews.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>
-                  No pending requests.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
       </div>
 
       <div className="card">
