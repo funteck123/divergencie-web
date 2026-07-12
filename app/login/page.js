@@ -18,7 +18,7 @@ export default function LoginPage() {
     try {
       const { user } = await api("/api/login", {
         method: "POST",
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
       setCurrentUser(user);
       router.push(roleHomePath(user.UserType));

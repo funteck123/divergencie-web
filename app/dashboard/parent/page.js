@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
+import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
@@ -118,11 +119,16 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
           <button className={view === "list" ? "btn" : "btn-ghost"} onClick={() => setView("list")}>
             List
           </button>
+          <button className={view === "image" ? "btn" : "btn-ghost"} onClick={() => setView("image")}>
+            Schedule Image
+          </button>
         </div>
       </div>
       <div className="mb-4">
         {view === "weekly" ? (
           <WeeklyOccurrences services={enrolledServices} />
+        ) : view === "image" ? (
+          <ScheduleImage userId={student.UserID} userName={student.Name} />
         ) : view === "calendar" ? (
           <ScheduleCalendar scheduleItems={schedule} attendanceItems={attendance} readOnly />
         ) : (

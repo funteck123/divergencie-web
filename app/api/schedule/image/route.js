@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawSchedule } from "@/lib/scheduleImage";
 import { normalizeTimezone } from "@/lib/timezones";
-import { requireSelfOrManagement } from "@/lib/authz";
+import { requireSelfOrParentOrManagement } from "@/lib/authz";
 
 function buildEntries(db, userId) {
   const enrolledServiceIds = new Set(db.enrollments.filter((e) => e.UserID === userId).map((e) => e.ServiceID));
@@ -21,10 +21,10 @@ export async function GET(req) {
   const userId = searchParams.get("userId");
   const download = searchParams.get("download") === "1";
 
-  const { error } = requireSelfOrManagement(req, userId);
+  const db = await readDB();
+  const { error } = requireSelfOrParentOrManagement(req, db, userId);
   if (error) return error;
 
-  const db = await readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
   if (!["Student", "Teacher", "Staff"].includes(user.UserType)) {

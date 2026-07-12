@@ -7,7 +7,7 @@ export async function POST(req) {
   const db = await readDB();
 
   const cred = db.credentials.find(
-    (c) => c.Username === username && c.Password === password
+    (c) => c.Username === (username || "").trim() && c.Password === password
   );
   if (!cred) {
     return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
