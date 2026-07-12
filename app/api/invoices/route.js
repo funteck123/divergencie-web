@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { computeHoursAndAmount, ratesOf } from "@/lib/billing";
+import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 
 export async function GET(req) {
@@ -45,6 +46,13 @@ export async function POST(req) {
     const service = db.services.find((s) => s.ServiceID === serviceId);
     const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === serviceId);
     const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
+    const invoiceAmount = Number(amount) || 0;
+    // Auto-filled using the currency's rate as of the 1st of this invoice's
+    // own month (not "today") — see lib/fxRates.js. Left at 0, same as
+    // before this existed, when there's no rate to auto-fill (unsupported
+    // currency, or the FX source is unreachable); Management can always
+    // override it either way.
+    const fxRate = await getRateToINR(db, currency, y, m);
     const invoice = {
       InvoiceID: nextId(db, "INV"),
       StudentID: studentId,
@@ -53,9 +61,9 @@ export async function POST(req) {
       Month: m,
       ScheduledHours: null,
       AttendedHours: null,
-      Amount: Number(amount) || 0,
+      Amount: invoiceAmount,
       Currency: currency,
-      INRAmount: 0,
+      INRAmount: fxRate != null ? Math.round(invoiceAmount * fxRate * 100) / 100 : 0,
       INRDue: 0,
       Status: "Draft",
     };
@@ -86,6 +94,7 @@ export async function POST(req) {
       year,
       month,
     });
+    const fxRate = await getRateToINR(db, currency, year, month);
 
     const invoice = {
       InvoiceID: nextId(db, "INV"),
@@ -97,7 +106,7 @@ export async function POST(req) {
       AttendedHours: attendedHours,
       Amount: amount,
       Currency: currency,
-      INRAmount: 0,
+      INRAmount: fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0,
       INRDue: 0,
       Status: "Draft",
       // Flags a $0 draft that's $0 because no schedule data exists for this

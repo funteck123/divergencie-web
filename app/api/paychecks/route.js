@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { computeHoursAndAmount } from "@/lib/billing";
+import { computeHoursAndAmount, ratesOf } from "@/lib/billing";
+import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 
 export async function GET(req) {
@@ -41,6 +42,15 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    const service = db.services.find((s) => s.ServiceID === serviceId);
+    const enrollment = db.enrollments.find((e) => e.UserID === staffId && e.ServiceID === serviceId);
+    const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
+    const paycheckAmount = Number(amount) || 0;
+    // Auto-filled using the currency's rate as of the 1st of this
+    // paycheck's own month — see lib/fxRates.js. Left at 0 (same as before
+    // this existed) when there's no rate to auto-fill; Management can
+    // always override it either way.
+    const fxRate = await getRateToINR(db, currency, y, m);
     const paycheck = {
       PaycheckID: nextId(db, "PAY"),
       StaffID: staffId,
@@ -49,8 +59,9 @@ export async function POST(req) {
       Month: m,
       ScheduledHours: null,
       AttendedHours: null,
-      Amount: Number(amount) || 0,
-      INRAmount: 0,
+      Amount: paycheckAmount,
+      Currency: currency,
+      INRAmount: fxRate != null ? Math.round(paycheckAmount * fxRate * 100) / 100 : 0,
       INRDue: 0,
       Status: "Draft",
     };
@@ -77,12 +88,13 @@ export async function POST(req) {
     );
     if (exists) continue;
 
-    const { scheduledHours, attendedHours, amount } = computeHoursAndAmount(db, {
+    const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       year,
       month,
     });
+    const fxRate = await getRateToINR(db, currency, year, month);
 
     const paycheck = {
       PaycheckID: nextId(db, "PAY"),
@@ -93,7 +105,8 @@ export async function POST(req) {
       ScheduledHours: scheduledHours,
       AttendedHours: attendedHours,
       Amount: amount,
-      INRAmount: 0,
+      Currency: currency,
+      INRAmount: fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0,
       INRDue: 0,
       Status: "Draft",
       // Flags a $0 draft that's $0 because no schedule data exists for this
