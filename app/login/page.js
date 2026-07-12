@@ -41,7 +41,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex bg-white dark:bg-[var(--bg-primary)] overflow-hidden">
+    <main className="min-h-screen flex bg-white dark:bg-[var(--bg-primary)] overflow-hidden" style={{ zoom: 0.75 }}>
       {/* Left Panel: Brand & Stats (Desktop Only) */}
       <div className="hidden lg:flex flex-1 bg-[var(--navy)] relative overflow-hidden flex-col justify-center p-20 text-white">
         <div className="absolute inset-0 opacity-20">
