@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
+import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
@@ -1617,6 +1618,8 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
 function SchedulePool() {
   const [items, setItems] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
+  const [poolView, setPoolView] = useState("list");
+  const [serviceView, setServiceView] = useState("list");
   const [pendingTrials, setPendingTrials] = useState([]);
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [services, setServices] = useState([]);
@@ -1729,29 +1732,43 @@ function SchedulePool() {
           </button>
         </form>
 
-        <h3 className="font-semibold mt-6 mb-2">Open pool slots</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Instructor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {openPoolSlots.map((s) => (
-              <tr key={s.ScheduleID}>
-                <td>{s.ServiceType}</td>
-                <td>{s.ServiceName}</td>
-                <td>{s.Date}</td>
-                <td>{s.Time}</td>
-                <td>{s.Facilitator}</td>
+        <div className="flex items-center justify-between mt-6 mb-2">
+          <h3 className="font-semibold">Open pool slots</h3>
+          <div className="flex gap-2">
+            <button className={poolView === "list" ? "btn" : "btn-ghost"} onClick={() => setPoolView("list")}>
+              List
+            </button>
+            <button className={poolView === "calendar" ? "btn" : "btn-ghost"} onClick={() => setPoolView("calendar")}>
+              Calendar
+            </button>
+          </div>
+        </div>
+        {poolView === "calendar" ? (
+          <ScheduleCalendar scheduleItems={openPoolSlots} attendanceItems={[]} readOnly />
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Instructor</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {openPoolSlots.map((s) => (
+                <tr key={s.ScheduleID}>
+                  <td>{s.ServiceType}</td>
+                  <td>{s.ServiceName}</td>
+                  <td>{s.Date}</td>
+                  <td>{s.Time}</td>
+                  <td>{s.Facilitator}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
         <h3 className="font-semibold mt-6 mb-2">Pending Requests</h3>
         <table>
@@ -1815,29 +1832,43 @@ function SchedulePool() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Service Schedule (auto-generated)</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Hrs</th>
-              <th>Instructor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {serviceSlots.map((s) => (
-              <tr key={s.ScheduleID}>
-                <td>{s.ServiceName}</td>
-                <td>{s.Date}</td>
-                <td>{s.Time}</td>
-                <td>{s.Duration}</td>
-                <td>{s.Facilitator}</td>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold">Service Schedule (auto-generated)</h2>
+          <div className="flex gap-2">
+            <button className={serviceView === "list" ? "btn" : "btn-ghost"} onClick={() => setServiceView("list")}>
+              List
+            </button>
+            <button className={serviceView === "calendar" ? "btn" : "btn-ghost"} onClick={() => setServiceView("calendar")}>
+              Calendar
+            </button>
+          </div>
+        </div>
+        {serviceView === "calendar" ? (
+          <ScheduleCalendar scheduleItems={serviceSlots} attendanceItems={[]} readOnly />
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Hrs</th>
+                <th>Instructor</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {serviceSlots.map((s) => (
+                <tr key={s.ScheduleID}>
+                  <td>{s.ServiceName}</td>
+                  <td>{s.Date}</td>
+                  <td>{s.Time}</td>
+                  <td>{s.Duration}</td>
+                  <td>{s.Facilitator}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
