@@ -57,7 +57,7 @@ const allStats = [
 
 export default function Stats() {
   return (
-    <section className="py-24 min-h-screen flex flex-col justify-center bg-white dark:bg-[var(--bg-primary)] overflow-hidden">
+    <section className="py-24 bg-white dark:bg-[var(--bg-primary)] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-16">

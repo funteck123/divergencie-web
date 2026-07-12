@@ -4,7 +4,7 @@ import { ShieldCheck, Award, Video, Zap, Info } from "lucide-react";
 
 export default function Partners() {
   return (
-    <section className="py-24 min-h-screen flex flex-col justify-center bg-[var(--bg-secondary)] dark:bg-[var(--bg-primary)]">
+    <section className="py-24 bg-[var(--bg-secondary)] dark:bg-[var(--bg-primary)]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-20 items-center mb-20">
           <div>
