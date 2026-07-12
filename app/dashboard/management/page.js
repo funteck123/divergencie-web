@@ -1413,7 +1413,7 @@ function Services() {
     setRates(
       Array.isArray(s.Rates) && s.Rates.length > 0
         ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "" }))
-        : [{ currency: s.Currency || "INR", rate: s.Rate ?? "" }]
+        : [{ currency: s.Currency || "INR", rate: s.Rate ?? "", description: "" }]
     );
     setOccurrences(
       s.OccuranceList.map((o) => ({
