@@ -162,6 +162,12 @@ body {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1.25rem;
+  /* Without this, a card containing a wide/max-content table (e.g. the
+     Services group tables) forces its CSS grid/flex track to grow past
+     its assigned width on narrow viewports, bleeding off the page —
+     grid/flex items default to min-width: auto, which lets intrinsic
+     content size win over the track size. */
+  min-width: 0;
 }
 
 .field {
