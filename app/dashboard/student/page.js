@@ -8,7 +8,7 @@ import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
-import { api, useSort } from "@/lib/client";
+import { api, formatRates, useSort } from "@/lib/client";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -107,7 +107,7 @@ function Body({ user }) {
               <tr key={s.ServiceID}>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
-                <td>{s.Currency || "INR"} {s.Rate ?? 0}</td>
+                <td>{formatRates(s)}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>
@@ -225,7 +225,7 @@ function Body({ user }) {
                 <td>{i.Month}/{i.Year}</td>
                 <td>{serviceNameOf(i.ServiceID)}</td>
                 <td>{i.AttendedHours}</td>
-                <td>{data.user.Currency || "INR"} {i.Amount}</td>
+                <td>{i.Currency || data.user.Currency || "INR"} {i.Amount}</td>
                 <td>{i.INRDue}</td>
                 <td>
                   <InvoicePaidControl

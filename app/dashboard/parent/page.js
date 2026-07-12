@@ -221,7 +221,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
             <tr key={i.InvoiceID}>
               <td>{i.Month}/{i.Year}</td>
               <td>{serviceNameOf(i.ServiceID)}</td>
-              <td>{student?.Currency || "INR"} {i.Amount}</td>
+              <td>{i.Currency || student?.Currency || "INR"} {i.Amount}</td>
               <td>
                 <InvoicePaidControl
                   invoice={i}

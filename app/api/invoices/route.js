@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { computeHoursAndAmount } from "@/lib/billing";
+import { computeHoursAndAmount, ratesOf } from "@/lib/billing";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 
 export async function GET(req) {
@@ -42,6 +42,9 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    const service = db.services.find((s) => s.ServiceID === serviceId);
+    const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === serviceId);
+    const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
     const invoice = {
       InvoiceID: nextId(db, "INV"),
       StudentID: studentId,
@@ -51,6 +54,7 @@ export async function POST(req) {
       ScheduledHours: null,
       AttendedHours: null,
       Amount: Number(amount) || 0,
+      Currency: currency,
       INRAmount: 0,
       INRDue: 0,
       Status: "Draft",
@@ -76,7 +80,7 @@ export async function POST(req) {
     );
     if (exists) continue;
 
-    const { scheduledHours, attendedHours, amount } = computeHoursAndAmount(db, {
+    const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       year,
@@ -92,6 +96,7 @@ export async function POST(req) {
       ScheduledHours: scheduledHours,
       AttendedHours: attendedHours,
       Amount: amount,
+      Currency: currency,
       INRAmount: 0,
       INRDue: 0,
       Status: "Draft",

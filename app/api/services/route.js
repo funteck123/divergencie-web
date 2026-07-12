@@ -22,6 +22,41 @@ function isValidGroup(group) {
   return Array.isArray(group) && group.length > 0 && group.every((g) => ALL_GROUPS.includes(g));
 }
 
+// A Service can now offer more than one currency — whoever enrolls in it
+// picks one of the currencies listed here (see /api/enrollments). Accepts
+// either the current { currency, rate }[] shape, or (for any older caller)
+// a single top-level currency/rate pair, normalized into a one-entry list.
+function normalizeRates(body) {
+  if (Array.isArray(body.rates)) return body.rates;
+  if (body.rate !== undefined || body.currency !== undefined) {
+    return [{ currency: body.currency, rate: body.rate }];
+  }
+  return [];
+}
+
+function validateRates(rates) {
+  if (!Array.isArray(rates) || rates.length === 0) {
+    return "At least one currency/rate is required.";
+  }
+  const seen = new Set();
+  for (const r of rates) {
+    const currency = r.currency || "INR";
+    if (!CURRENCIES.includes(currency)) {
+      return `currency must be one of ${CURRENCIES.join(", ")}.`;
+    }
+    if (Number(r.rate) < 0 || Number.isNaN(Number(r.rate))) {
+      return "rate cannot be negative.";
+    }
+    if (seen.has(currency)) return `Duplicate currency: ${currency}.`;
+    seen.add(currency);
+  }
+  return null;
+}
+
+function toStoredRates(rates) {
+  return rates.map((r) => ({ Currency: r.currency || "INR", Rate: Number(r.rate) || 0 }));
+}
+
 // Rate + Currency is the one billing field every service has now, regardless
 // of Group — Compensation/MonthlyCost was a separate term for the same
 // concept and has been removed. Batch/Board/Subject fields are still
@@ -45,7 +80,8 @@ function applyCohortServiceFields(service, body, group) {
   }
 }
 
-// body: { name, type, group: string[] (subset of ALL_GROUPS), rate, currency?,
+// body: { name, type, group: string[] (subset of ALL_GROUPS),
+//         rates: [{ currency, rate }] (at least one),
 //         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?
 //         (Student/Teacher-only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
@@ -57,7 +93,8 @@ export async function POST(req) {
   if (authError) return authError;
 
   const body = await req.json();
-  const { name, type, group, rate, currency, occurrences } = body;
+  const { name, type, group, occurrences } = body;
+  const rates = normalizeRates(body);
 
   if (!name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -65,12 +102,8 @@ export async function POST(req) {
       { status: 400 }
     );
   }
-  if (rate !== undefined && Number(rate) < 0) {
-    return NextResponse.json({ error: "rate cannot be negative." }, { status: 400 });
-  }
-  if (currency !== undefined && !CURRENCIES.includes(currency)) {
-    return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
-  }
+  const ratesError = validateRates(rates);
+  if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
 
   const db = await readDB();
 
@@ -83,13 +116,17 @@ export async function POST(req) {
     Facilitator: o.facilitator,
   }));
 
+  const storedRates = toStoredRates(rates);
   const service = {
     ServiceID: serviceId,
     Type: type,
     Group: group,
     Name: name,
-    Currency: currency || "INR",
-    Rate: Number(rate) || 0,
+    Rates: storedRates,
+    // Kept in sync with Rates[0] for any display code still reading the
+    // singular fields directly.
+    Currency: storedRates[0].Currency,
+    Rate: storedRates[0].Rate,
     OccuranceList: occuranceList,
   };
   applyCohortServiceFields(service, body, group);
@@ -100,7 +137,7 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, rate, currency?,
+// body: { serviceId, name, type, group, rates: [{ currency, rate }],
 //         occurrences: [{occuranceId?, day, time, duration, facilitator}], + the Student/Teacher-only fields listed above }
 // Occurrences are replaced wholesale: existing ones keep their OccuranceID
 // (so already-generated ScheduleItems still trace back to them), new ones
@@ -108,12 +145,18 @@ export async function POST(req) {
 // never rewritten — edits only change what ensureScheduleGenerated produces
 // going forward. Student/Teacher-only fields are dropped if the Service is
 // edited to a Group without either.
+//
+// Removing a currency that an existing Enrollment already uses is allowed —
+// that enrollment's own Currency is untouched and its billing keeps using
+// whatever rate it locked in until Management changes the enrollment itself
+// (see /api/enrollments); it just won't be offered to new enrollments.
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
-  const { serviceId, name, type, group, rate, currency, occurrences } = body;
+  const { serviceId, name, type, group, occurrences } = body;
+  const rates = normalizeRates(body);
 
   if (!serviceId || !name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
     return NextResponse.json(
@@ -121,22 +164,20 @@ export async function PATCH(req) {
       { status: 400 }
     );
   }
-  if (rate !== undefined && Number(rate) < 0) {
-    return NextResponse.json({ error: "rate cannot be negative." }, { status: 400 });
-  }
-  if (currency !== undefined && !CURRENCIES.includes(currency)) {
-    return NextResponse.json({ error: `currency must be one of ${CURRENCIES.join(", ")}.` }, { status: 400 });
-  }
+  const ratesError = validateRates(rates);
+  if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
 
   const db = await readDB();
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
+  const storedRates = toStoredRates(rates);
   service.Name = name;
   service.Type = type;
   service.Group = group;
-  service.Currency = currency || "INR";
-  service.Rate = Number(rate) || 0;
+  service.Rates = storedRates;
+  service.Currency = storedRates[0].Currency;
+  service.Rate = storedRates[0].Rate;
   delete service.Code;
   applyCohortServiceFields(service, body, group);
   service.OccuranceList = occurrences.map((o) => ({

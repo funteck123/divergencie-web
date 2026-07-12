@@ -7,7 +7,7 @@ import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
-import { api, useSort } from "@/lib/client";
+import { api, formatRates, useSort } from "@/lib/client";
 
 export default function StaffDashboard() {
   return <DashboardShell allowedType="Staff">{(user) => <Body user={user} />}</DashboardShell>;
@@ -96,7 +96,7 @@ function Body({ user }) {
               <tr key={s.ServiceID}>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
-                <td>{s.Currency || "INR"} {s.Rate ?? 0}</td>
+                <td>{formatRates(s)}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>

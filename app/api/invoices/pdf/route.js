@@ -37,9 +37,11 @@ export async function GET(req) {
     secondaryLabel: "Class Name",
     secondaryValue: service?.CourseClass || service?.Name || invoice.ServiceID,
     balanceLabel: "Balance Due:",
-    // The final total is shown in the Student's Currency, not the Service's
-    // (Service.Currency is only the rate's denomination).
-    currency: student?.Currency || service?.Currency || "INR",
+    // A Service can offer several currencies now — the invoice itself
+    // records which one this bill was actually generated in (the
+    // enrollment's chosen currency), falling back to the Student's own
+    // Currency only for older invoices created before this field existed.
+    currency: invoice.Currency || student?.Currency || service?.Currency || "INR",
     balance: invoice.Amount,
     // Quantity is always 1 (one billing line for this month), Rate equals
     // the actual Amount charged — Quantity x Rate must equal Amount on a
