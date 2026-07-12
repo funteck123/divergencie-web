@@ -18,7 +18,7 @@ const locations = [
 
 export default function GlobalReach() {
   return (
-    <section className="py-24 bg-[var(--bg-secondary)] overflow-hidden">
+    <section className="py-24 min-h-screen flex flex-col justify-center bg-[var(--bg-secondary)] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-3xl mx-auto mb-16">
           <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">

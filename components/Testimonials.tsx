@@ -39,7 +39,7 @@ export default function Testimonials() {
   }, [current]);
 
   return (
-    <section className="py-24 bg-[var(--bg-secondary)] dark:bg-[var(--bg-primary)] overflow-hidden">
+    <section className="py-24 min-h-screen flex flex-col justify-center bg-[var(--bg-secondary)] dark:bg-[var(--bg-primary)] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-20">
           <div>
