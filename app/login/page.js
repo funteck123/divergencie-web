@@ -41,24 +41,24 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex bg-white dark:bg-[var(--bg-primary)] overflow-hidden" style={{ zoom: 0.75 }}>
+    <main className="min-h-screen flex bg-white dark:bg-[var(--bg-primary)] overflow-hidden">
       {/* Left Panel: Brand & Stats (Desktop Only) */}
-      <div className="hidden lg:flex flex-1 bg-[var(--navy)] relative overflow-hidden flex-col justify-center p-20 text-white">
+      <div className="hidden lg:flex flex-1 bg-[var(--navy)] relative overflow-hidden flex-col justify-center p-12 text-white">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,var(--gold)_0%,transparent_60%)]"></div>
           <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_bottom_right,var(--sky)_0%,transparent_60%)]"></div>
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <Link href="/" className="flex items-center gap-3 mb-20 group">
+          <Link href="/" className="flex items-center gap-3 mb-10 group">
             <Image src="/assets/images/logo.jpg" alt="DivergenCIE logo" width={40} height={40} className="w-10 h-10 object-cover group-hover:scale-110 transition-transform rounded-lg" />
             <span className="text-xl font-black tracking-tight text-white">Divergen<span className="text-[var(--gold)]">CIE</span></span>
           </Link>
 
           <h1 className="text-6xl font-black leading-none mb-8 uppercase tracking-tight">Your A* Journey Starts <span className="text-[var(--gold)]">Here.</span></h1>
-          <p className="text-white/60 text-lg mb-16 font-medium">Access your personalised dashboard to track progress, attend sessions, and close your A* gaps.</p>
+          <p className="text-white/60 text-lg mb-8 font-medium">Access your personalised dashboard to track progress, attend sessions, and close your A* gaps.</p>
 
-          <div className="grid grid-cols-3 gap-8 mb-20">
+          <div className="grid grid-cols-3 gap-8 mb-10">
             {[
               { val: "40+", label: "Toppers" },
               { val: "98%", label: "A* Rate" },
@@ -71,7 +71,7 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <div className="p-8 border border-white/10 bg-white/5 backdrop-blur-sm">
+          <div className="p-6 border border-white/10 bg-white/5 backdrop-blur-sm">
             <p className="text-white/80 italic mb-6 leading-relaxed">&quot;The portal made it so easy to track my past paper scores and see exactly which topics I needed to fix. Went from a 6 to a 9 in IGCSE Maths.&quot;</p>
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-[var(--gold)]/20 border border-[var(--gold)] flex items-center justify-center font-black text-[var(--gold)] text-xs">AR</div>
@@ -85,13 +85,13 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel: Form */}
-      <div className="flex-1 flex flex-col justify-center p-8 md:p-20 relative">
-        <Link href="/" className="absolute top-12 left-12 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white transition-colors group">
+      <div className="flex-1 flex flex-col justify-center p-8 md:p-12 relative">
+        <Link href="/" className="absolute top-6 left-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white transition-colors group">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to site
         </Link>
 
         <div className="max-w-md w-full mx-auto">
-          <div className="mb-12">
+          <div className="mb-8">
             <h2 className="text-4xl font-black text-[var(--navy)] dark:text-white uppercase mb-2">Welcome Back</h2>
             <p className="text-[var(--text-muted)] font-medium">Sign in to your DivergenCIE portal.</p>
           </div>
@@ -103,7 +103,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Username</label>
               <input
@@ -155,7 +155,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-12">
+          <div className="mt-6">
             <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
               Don&apos;t have an account? <Link href="/register" className="text-[var(--gold)] border-b border-[var(--gold)] pb-1 ml-1">Apply for a trial or interview</Link>
             </p>
