@@ -26,9 +26,11 @@ function Body({ user }) {
   const [serviceId, setServiceId] = useState("");
 
   async function load() {
-    const bundle = await api(`/api/me?userId=${user.UserID}`);
+    const [bundle, { scheduleItems }] = await Promise.all([
+      api(`/api/me?userId=${user.UserID}`),
+      api("/api/schedule"),
+    ]);
     setData(bundle);
-    const { scheduleItems } = await api("/api/schedule");
     const map = {};
     scheduleItems.forEach((s) => (map[s.ScheduleID] = s));
     setScheduleById(map);
