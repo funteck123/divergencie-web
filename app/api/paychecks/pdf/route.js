@@ -38,6 +38,8 @@ export async function GET(req) {
 
   const buffer = await drawPayslipPDF({
     company: "DivergenCIE Coaching",
+    registeredAs: "Intelligent Institute of Education",
+    regNo: "UDYAM-JH-01-0013549 | Ministry of MSME, Govt. of India",
     period: `END-${MONTH_ABBR[paycheck.Month - 1]}-${paycheck.Year}`,
     emplNo: paycheck.StaffID,
     name: staff?.Name || paycheck.StaffID,
