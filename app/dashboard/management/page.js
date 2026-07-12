@@ -2478,12 +2478,14 @@ function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch
   return (
     <tr>
       <td>
-        {nameOf(row[personKey])}
-        {row.Note && (
-          <span className="badge badge-pending ml-2" title={row.Note}>
-            ⚠ {row.Note}
-          </span>
-        )}
+        <span className="flex items-center gap-1">
+          {nameOf(row[personKey])}
+          {row.Note && (
+            <span className="badge badge-pending" title={row.Note} style={{ cursor: "help" }}>
+              ⚠
+            </span>
+          )}
+        </span>
       </td>
       <td>{serviceNameOf(row.ServiceID)}</td>
       <td>{row.Month}/{row.Year}</td>
@@ -2557,53 +2559,57 @@ function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch
       <td>
         <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
       </td>
-      <td className="flex items-center gap-2">
-        <span className={`badge ${row[flagKey] ? "badge-good" : "badge-pending"}`}>
-          {row[flagKey] ? flagLabel : "—"}
-        </span>
-        {row.PaymentProofPath && (
-          <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/proof?invoiceId=${row[idKey]}`} target="_blank" rel="noreferrer">
-            Proof
-          </a>
-        )}
-      </td>
-      <td className="space-x-2">
-        {editing ? (
-          <>
-            <button className="btn" onClick={save}>
-              Save
-            </button>
-            <button className="btn-ghost" onClick={cancel}>
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="btn-ghost" onClick={() => setEditing(true)}>
-              Edit
-            </button>
-            {isDraft ? (
-              <button className="btn" onClick={() => onPatch(row[idKey], { status: "Sent" })}>
-                Send
-              </button>
-            ) : (
-              <button className="btn-ghost" onClick={() => onPatch(row[idKey], { status: "Draft" })}>
-                Unsend
-              </button>
-            )}
-            <a
-              className="btn-ghost"
-              style={{ whiteSpace: "nowrap" }}
-              href={idKey === "InvoiceID" ? `/api/invoices/pdf?invoiceId=${row[idKey]}` : `/api/paychecks/pdf?paycheckId=${row[idKey]}`}
-              download
-            >
-              PDF
+      <td>
+        <span className="flex items-center gap-2 flex-wrap">
+          <span className={`badge ${row[flagKey] ? "badge-good" : "badge-pending"}`}>
+            {row[flagKey] ? flagLabel : "Unpaid"}
+          </span>
+          {row.PaymentProofPath && (
+            <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/proof?invoiceId=${row[idKey]}`} target="_blank" rel="noreferrer">
+              Proof
             </a>
-            <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
-              Delete
-            </button>
-          </>
-        )}
+          )}
+        </span>
+      </td>
+      <td>
+        <span className="flex items-center gap-1 flex-wrap">
+          {editing ? (
+            <>
+              <button className="btn" onClick={save}>
+                Save
+              </button>
+              <button className="btn-ghost" onClick={cancel}>
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn-ghost" onClick={() => setEditing(true)}>
+                Edit
+              </button>
+              {isDraft ? (
+                <button className="btn" onClick={() => onPatch(row[idKey], { status: "Sent" })}>
+                  Send
+                </button>
+              ) : (
+                <button className="btn-ghost" onClick={() => onPatch(row[idKey], { status: "Draft" })}>
+                  Unsend
+                </button>
+              )}
+              <a
+                className="btn-ghost"
+                style={{ whiteSpace: "nowrap" }}
+                href={idKey === "InvoiceID" ? `/api/invoices/pdf?invoiceId=${row[idKey]}` : `/api/paychecks/pdf?paycheckId=${row[idKey]}`}
+                download
+              >
+                PDF
+              </a>
+              <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
+                Delete
+              </button>
+            </>
+          )}
+        </span>
       </td>
     </tr>
   );
