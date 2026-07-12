@@ -36,6 +36,15 @@ export async function GET(req) {
   const employerSocso = Math.round(paycheck.Amount * EMPLOYER_SOCSO_RATE * 100) / 100;
   const ytdEmployerSocso = Math.round(ytdGross * EMPLOYER_SOCSO_RATE * 100) / 100;
 
+  // Optional converted-total line: only shown when the staff's own Currency
+  // genuinely differs from what this paycheck was billed in, and only when
+  // it's INR — INRAmount is the one converted figure we always have (FX rate
+  // as of the 1st of this paycheck's own month), so it's only safe to label
+  // as "the staff's currency" when that currency really is INR.
+  const staffCurrency = staff?.Currency || "INR";
+  const paycheckCurrency = paycheck.Currency || staffCurrency;
+  const showConvertedTotal = staffCurrency !== paycheckCurrency && staffCurrency === "INR";
+
   const buffer = await drawPayslipPDF({
     company: "DivergenCIE Coaching",
     registeredAs: "Intelligent Institute of Education",
@@ -45,9 +54,10 @@ export async function GET(req) {
     name: staff?.Name || paycheck.StaffID,
     department,
     role: staff?.Role || "",
-    // Final total is shown in the Staff/Teacher/Ambassador's Currency, not
-    // the Service's (Service.Currency is only the rate's denomination).
-    currency: staff?.Currency || service?.Currency || "INR",
+    // Payslip totals must show the currency the paycheck was actually billed
+    // in (Paycheck.Currency, from the enrollment's resolved rate) — falling
+    // back to the staff's own Currency only if that's somehow missing.
+    currency: paycheck.Currency || staff?.Currency || service?.Currency || "INR",
     icPassport: staff?.PassportNumber || "",
     epfNo: "",
     socsoNo: "",
@@ -57,6 +67,7 @@ export async function GET(req) {
     deductions: [],
     nettPay: paycheck.Amount,
     employerSocso,
+    ...(showConvertedTotal ? { convertedTotal: { currency: "INR", amount: paycheck.INRAmount } } : {}),
     ytd: [
       { label: "YTD Basic", value: 0 },
       { label: "YTD Gross", value: ytdGross },
