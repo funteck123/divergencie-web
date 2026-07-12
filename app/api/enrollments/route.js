@@ -11,24 +11,27 @@ export async function GET(req) {
   return NextResponse.json({ enrollments: db.enrollments });
 }
 
-// A Service can offer more than one currency (Service.Rates) — the
-// enrollment records which one this particular person is billed in.
-// Defaults to the service's first/only currency if none is given.
-function resolveCurrency(service, currency) {
+// A Service can offer more than one rate, including duplicate currencies
+// (e.g. two USD tiers) — the enrollment records which specific rate this
+// person is billed at (RateID), not just a currency. Defaults to the
+// service's first/only rate if none is given. Currency is cached on the
+// enrollment too, purely for display — RateID is what billing actually uses.
+function resolveRate(service, rateId) {
   const rates = ratesOf(service);
-  if (!currency) return rates[0].Currency;
-  if (!rates.some((r) => r.Currency === currency)) {
-    return { error: `currency must be one of: ${rates.map((r) => r.Currency).join(", ")}.` };
+  if (!rateId) return rates[0];
+  const match = rates.find((r) => r.RateID === rateId);
+  if (!match) {
+    return { error: `rateId must be one of: ${rates.map((r) => `${r.RateID} (${r.Currency} ${r.Rate})`).join(", ")}.` };
   }
-  return currency;
+  return match;
 }
 
-// body: { userId, serviceId, currency? }
+// body: { userId, serviceId, rateId? }
 export async function POST(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { userId, serviceId, currency } = await req.json();
+  const { userId, serviceId, rateId } = await req.json();
   const db = await readDB();
 
   const user = db.users.find((u) => u.UserID === userId);
@@ -39,21 +42,27 @@ export async function POST(req) {
   const dup = db.enrollments.find((e) => e.UserID === userId && e.ServiceID === serviceId);
   if (dup) return NextResponse.json({ error: "Already enrolled." }, { status: 400 });
 
-  const resolved = resolveCurrency(service, currency);
+  const resolved = resolveRate(service, rateId);
   if (resolved?.error) return NextResponse.json({ error: resolved.error }, { status: 400 });
 
-  const enrollment = { EnrolmentID: nextId(db, "ENR"), UserID: userId, ServiceID: serviceId, Currency: resolved };
+  const enrollment = {
+    EnrolmentID: nextId(db, "ENR"),
+    UserID: userId,
+    ServiceID: serviceId,
+    RateID: resolved.RateID,
+    Currency: resolved.Currency,
+  };
   db.enrollments.push(enrollment);
   await writeDB(db);
   return NextResponse.json({ enrollment });
 }
 
-// body: { enrolmentId, userId, serviceId, currency? }
+// body: { enrolmentId, userId, serviceId, rateId? }
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { enrolmentId, userId, serviceId, currency } = await req.json();
+  const { enrolmentId, userId, serviceId, rateId } = await req.json();
   const db = await readDB();
 
   const enrollment = db.enrollments.find((e) => e.EnrolmentID === enrolmentId);
@@ -72,12 +81,13 @@ export async function PATCH(req) {
   );
   if (dup) return NextResponse.json({ error: "Already enrolled." }, { status: 400 });
 
-  const resolved = resolveCurrency(service, currency || enrollment.Currency);
+  const resolved = resolveRate(service, rateId || enrollment.RateID);
   if (resolved?.error) return NextResponse.json({ error: resolved.error }, { status: 400 });
 
   enrollment.UserID = nextUserId;
   enrollment.ServiceID = nextServiceId;
-  enrollment.Currency = resolved;
+  enrollment.RateID = resolved.RateID;
+  enrollment.Currency = resolved.Currency;
   await writeDB(db);
   return NextResponse.json({ enrollment });
 }

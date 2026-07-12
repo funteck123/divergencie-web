@@ -22,10 +22,12 @@ function isValidGroup(group) {
   return Array.isArray(group) && group.length > 0 && group.every((g) => ALL_GROUPS.includes(g));
 }
 
-// A Service can now offer more than one currency — whoever enrolls in it
-// picks one of the currencies listed here (see /api/enrollments). Accepts
-// either the current { currency, rate }[] shape, or (for any older caller)
-// a single top-level currency/rate pair, normalized into a one-entry list.
+// A Service can now offer more than one rate — whoever enrolls in it picks
+// one specific rate (see /api/enrollments), not just a currency, since two
+// rates can share the same currency (e.g. two different USD tiers). Accepts
+// either the current { currency, rate, rateId? }[] shape, or (for any older
+// caller) a single top-level currency/rate pair, normalized into a
+// one-entry list.
 function normalizeRates(body) {
   if (Array.isArray(body.rates)) return body.rates;
   if (body.rate !== undefined || body.currency !== undefined) {
@@ -36,9 +38,8 @@ function normalizeRates(body) {
 
 function validateRates(rates) {
   if (!Array.isArray(rates) || rates.length === 0) {
-    return "At least one currency/rate is required.";
+    return "At least one rate is required.";
   }
-  const seen = new Set();
   for (const r of rates) {
     const currency = r.currency || "INR";
     if (!CURRENCIES.includes(currency)) {
@@ -47,14 +48,19 @@ function validateRates(rates) {
     if (Number(r.rate) < 0 || Number.isNaN(Number(r.rate))) {
       return "rate cannot be negative.";
     }
-    if (seen.has(currency)) return `Duplicate currency: ${currency}.`;
-    seen.add(currency);
   }
   return null;
 }
 
-function toStoredRates(rates) {
-  return rates.map((r) => ({ Currency: r.currency || "INR", Rate: Number(r.rate) || 0 }));
+// Rates are replaced wholesale, same pattern as occurrences: a rate that
+// already has a rateId (an existing rate being edited/kept) keeps it, so
+// Enrollments already pointing at it stay valid; a new rate gets a fresh id.
+function toStoredRates(db, rates) {
+  return rates.map((r) => ({
+    RateID: r.rateId || nextId(db, "RATE"),
+    Currency: r.currency || "INR",
+    Rate: Number(r.rate) || 0,
+  }));
 }
 
 // Rate + Currency is the one billing field every service has now, regardless
@@ -81,7 +87,7 @@ function applyCohortServiceFields(service, body, group) {
 }
 
 // body: { name, type, group: string[] (subset of ALL_GROUPS),
-//         rates: [{ currency, rate }] (at least one),
+//         rates: [{ currency, rate }] (at least one, duplicate currencies allowed),
 //         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?
 //         (Student/Teacher-only), occurrences: [{day, time, duration, facilitator}] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
@@ -116,7 +122,7 @@ export async function POST(req) {
     Facilitator: o.facilitator,
   }));
 
-  const storedRates = toStoredRates(rates);
+  const storedRates = toStoredRates(db, rates);
   const service = {
     ServiceID: serviceId,
     Type: type,
@@ -137,17 +143,17 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, rates: [{ currency, rate }],
+// body: { serviceId, name, type, group, rates: [{ rateId?, currency, rate }],
 //         occurrences: [{occuranceId?, day, time, duration, facilitator}], + the Student/Teacher-only fields listed above }
-// Occurrences are replaced wholesale: existing ones keep their OccuranceID
-// (so already-generated ScheduleItems still trace back to them), new ones
-// get a fresh ID. Already-generated ScheduleItems are historical and are
-// never rewritten — edits only change what ensureScheduleGenerated produces
-// going forward. Student/Teacher-only fields are dropped if the Service is
-// edited to a Group without either.
+// Occurrences and rates are both replaced wholesale: existing ones keep
+// their id (so already-generated ScheduleItems / existing Enrollments still
+// trace back to them), new ones get a fresh id. Already-generated
+// ScheduleItems are historical and are never rewritten — edits only change
+// what ensureScheduleGenerated produces going forward. Student/Teacher-only
+// fields are dropped if the Service is edited to a Group without either.
 //
-// Removing a currency that an existing Enrollment already uses is allowed —
-// that enrollment's own Currency is untouched and its billing keeps using
+// Removing a rate that an existing Enrollment already uses is allowed —
+// that enrollment's own RateID is untouched and its billing keeps using
 // whatever rate it locked in until Management changes the enrollment itself
 // (see /api/enrollments); it just won't be offered to new enrollments.
 export async function PATCH(req) {
@@ -171,7 +177,7 @@ export async function PATCH(req) {
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
-  const storedRates = toStoredRates(rates);
+  const storedRates = toStoredRates(db, rates);
   service.Name = name;
   service.Type = type;
   service.Group = group;

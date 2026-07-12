@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
-import { ratesOf } from "@/lib/billing";
+import { ratesOf, rateById } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
 
@@ -1412,7 +1412,7 @@ function Services() {
     setFullSubjectName(s.FullSubjectName || "");
     setRates(
       Array.isArray(s.Rates) && s.Rates.length > 0
-        ? s.Rates.map((r) => ({ currency: r.Currency, rate: r.Rate }))
+        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate }))
         : [{ currency: s.Currency || "INR", rate: s.Rate ?? "" }]
     );
     setOccurrences(
@@ -1553,7 +1553,7 @@ function Services() {
           )}
           <div className="space-y-2">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
-              Currencies offered (whoever enrolls picks one of these)
+              Rates offered (whoever enrolls picks one of these — duplicate currencies allowed, e.g. two USD tiers)
             </label>
             {rates.map((r, i) => (
               <div key={i} className="flex gap-2 items-center">
@@ -1584,7 +1584,7 @@ function Services() {
               </div>
             ))}
             <button type="button" className="btn-ghost" onClick={addRate}>
-              + Add currency
+              + Add rate
             </button>
           </div>
           <div className="space-y-2">
@@ -1930,10 +1930,10 @@ function Enrollments() {
     load();
   }, []);
 
-  async function enroll(userId, serviceId, currency) {
+  async function enroll(userId, serviceId, rateId) {
     setError("");
     try {
-      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, currency }) });
+      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, rateId }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -1985,7 +1985,7 @@ function Enrollments() {
 function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, onUpdate, onDelete }) {
   const [userId, setUserId] = useState("");
   const [serviceId, setServiceId] = useState("");
-  const [currency, setCurrency] = useState("");
+  const [rateId, setRateId] = useState("");
 
   const selectedService = eligibleServices.find((s) => s.ServiceID === serviceId);
   const availableRates = selectedService ? ratesOf(selectedService) : [];
@@ -1993,15 +1993,15 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   function pickService(id) {
     setServiceId(id);
     const svc = eligibleServices.find((s) => s.ServiceID === id);
-    setCurrency(svc ? ratesOf(svc)[0].Currency : "");
+    setRateId(svc ? ratesOf(svc)[0].RateID : "");
   }
 
   function submit(e) {
     e.preventDefault();
-    onEnroll(userId, serviceId, currency);
+    onEnroll(userId, serviceId, rateId);
     setUserId("");
     setServiceId("");
-    setCurrency("");
+    setRateId("");
   }
 
   return (
@@ -2026,9 +2026,9 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             ))}
           </select>
           {availableRates.length > 0 && (
-            <select className="field" value={currency} onChange={(e) => setCurrency(e.target.value)} required>
+            <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
               {availableRates.map((r) => (
-                <option key={r.Currency} value={r.Currency}>
+                <option key={r.RateID} value={r.RateID}>
                   {r.Currency} {r.Rate}
                 </option>
               ))}
@@ -2046,7 +2046,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             <tr>
               <th>Person</th>
               <th>Service</th>
-              <th>Currency</th>
+              <th>Rate</th>
               <th></th>
             </tr>
           </thead>
@@ -2081,7 +2081,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
   const [editing, setEditing] = useState(false);
   const [userId, setUserId] = useState(enrollment.UserID);
   const [serviceId, setServiceId] = useState(enrollment.ServiceID);
-  const [currency, setCurrency] = useState(enrollment.Currency || "");
+  const [rateId, setRateId] = useState(enrollment.RateID || "");
   const [error, setError] = useState("");
 
   const editingService = services.find((s) => s.ServiceID === serviceId);
@@ -2090,13 +2090,13 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
   function pickService(id) {
     setServiceId(id);
     const svc = services.find((s) => s.ServiceID === id);
-    setCurrency(svc ? ratesOf(svc)[0].Currency : "");
+    setRateId(svc ? ratesOf(svc)[0].RateID : "");
   }
 
   function cancel() {
     setUserId(enrollment.UserID);
     setServiceId(enrollment.ServiceID);
-    setCurrency(enrollment.Currency || "");
+    setRateId(enrollment.RateID || "");
     setError("");
     setEditing(false);
   }
@@ -2104,7 +2104,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
   async function save() {
     setError("");
     try {
-      await onUpdate(enrollment.EnrolmentID, { userId, serviceId, currency });
+      await onUpdate(enrollment.EnrolmentID, { userId, serviceId, rateId });
       setEditing(false);
     } catch (e) {
       setError(e.message);
@@ -2140,9 +2140,9 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
         </td>
         <td>
-          <select className="field" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+          <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)}>
             {availableRates.map((r) => (
-              <option key={r.Currency} value={r.Currency}>
+              <option key={r.RateID} value={r.RateID}>
                 {r.Currency} {r.Rate}
               </option>
             ))}
@@ -2164,7 +2164,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
     <tr>
       <td>{nameOf(enrollment.UserID)}</td>
       <td>{serviceNameOf(enrollment.ServiceID)}</td>
-      <td>{enrollment.Currency || "—"}</td>
+      <td>{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
       <td className="space-x-2">
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit

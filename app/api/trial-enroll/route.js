@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
-import { ratesOf } from "@/lib/billing";
+import { ratesOf, rateById } from "@/lib/billing";
 
 // Management's action after reading a Trial's Feedback and deciding it went
 // well: add the trialed Service to the Student account and bill one month
@@ -40,14 +40,16 @@ export async function POST(req) {
 
   let enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === trial.ServiceID);
   if (!enrollment) {
-    // Defaults to the Service's first/only currency — Management can change
-    // the enrollment's currency afterward (Enrollments tab) if this Student
-    // should be billed in a different one of the Service's offered currencies.
+    // Defaults to the Service's first/only rate — Management can change the
+    // enrollment's rate afterward (Enrollments tab) if this Student should be
+    // billed at a different one of the Service's offered rates.
+    const defaultRate = ratesOf(service)[0];
     enrollment = {
       EnrolmentID: nextId(db, "ENR"),
       UserID: studentId,
       ServiceID: trial.ServiceID,
-      Currency: ratesOf(service)[0].Currency,
+      RateID: defaultRate.RateID,
+      Currency: defaultRate.Currency,
     };
     db.enrollments.push(enrollment);
   }
@@ -70,7 +72,7 @@ export async function POST(req) {
       Month: month,
       ScheduledHours: null,
       AttendedHours: null,
-      Amount: ratesOf(service).find((r) => r.Currency === enrollment.Currency)?.Rate ?? ratesOf(service)[0].Rate,
+      Amount: rateById(service, enrollment.RateID).Rate,
       Currency: enrollment.Currency,
       INRAmount: 0,
       INRDue: 0,
