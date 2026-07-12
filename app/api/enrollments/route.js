@@ -26,12 +26,23 @@ function resolveRate(service, rateId) {
   return match;
 }
 
-// body: { userId, serviceId, rateId? }
+// Start/End Date are plain "YYYY-MM-DD" strings, both optional — no
+// StartDate means "active since always", no EndDate means "still ongoing".
+// Validated only for format/order, not against any external constraint.
+function validateDateRange(startDate, endDate) {
+  const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+  if (startDate && !dateRe.test(startDate)) return "startDate must be in YYYY-MM-DD format.";
+  if (endDate && !dateRe.test(endDate)) return "endDate must be in YYYY-MM-DD format.";
+  if (startDate && endDate && startDate > endDate) return "startDate must not be after endDate.";
+  return null;
+}
+
+// body: { userId, serviceId, rateId?, startDate?, endDate? }
 export async function POST(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { userId, serviceId, rateId } = await req.json();
+  const { userId, serviceId, rateId, startDate, endDate } = await req.json();
   const db = await readDB();
 
   const user = db.users.find((u) => u.UserID === userId);
@@ -45,24 +56,33 @@ export async function POST(req) {
   const resolved = resolveRate(service, rateId);
   if (resolved?.error) return NextResponse.json({ error: resolved.error }, { status: 400 });
 
+  const dateError = validateDateRange(startDate, endDate);
+  if (dateError) return NextResponse.json({ error: dateError }, { status: 400 });
+
   const enrollment = {
     EnrolmentID: nextId(db, "ENR"),
     UserID: userId,
     ServiceID: serviceId,
     RateID: resolved.RateID,
     Currency: resolved.Currency,
+    StartDate: startDate || "",
+    EndDate: endDate || "",
   };
   db.enrollments.push(enrollment);
   await writeDB(db);
   return NextResponse.json({ enrollment });
 }
 
-// body: { enrolmentId, userId, serviceId, rateId? }
+// body: { enrolmentId, userId, serviceId, rateId?, startDate?, endDate? }
+// startDate/endDate are always fully replaced when provided (including
+// explicit "" to clear one) so a start or end date can be removed after
+// being set, not just added — this is meant to be freely editable, per the
+// original request, not a one-time-set field.
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { enrolmentId, userId, serviceId, rateId } = await req.json();
+  const { enrolmentId, userId, serviceId, rateId, startDate, endDate } = await req.json();
   const db = await readDB();
 
   const enrollment = db.enrollments.find((e) => e.EnrolmentID === enrolmentId);
@@ -84,10 +104,17 @@ export async function PATCH(req) {
   const resolved = resolveRate(service, rateId || enrollment.RateID);
   if (resolved?.error) return NextResponse.json({ error: resolved.error }, { status: 400 });
 
+  const nextStartDate = startDate !== undefined ? startDate : enrollment.StartDate;
+  const nextEndDate = endDate !== undefined ? endDate : enrollment.EndDate;
+  const dateError = validateDateRange(nextStartDate, nextEndDate);
+  if (dateError) return NextResponse.json({ error: dateError }, { status: 400 });
+
   enrollment.UserID = nextUserId;
   enrollment.ServiceID = nextServiceId;
   enrollment.RateID = resolved.RateID;
   enrollment.Currency = resolved.Currency;
+  enrollment.StartDate = nextStartDate || "";
+  enrollment.EndDate = nextEndDate || "";
   await writeDB(db);
   return NextResponse.json({ enrollment });
 }

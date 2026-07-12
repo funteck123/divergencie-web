@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf } from "@/lib/billing";
+import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 
@@ -45,6 +45,24 @@ export async function POST(req) {
     }
     const service = db.services.find((s) => s.ServiceID === serviceId);
     const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === serviceId);
+
+    if (enrollment && !isEnrollmentActiveForMonth(enrollment, y, m)) {
+      return NextResponse.json(
+        { error: `This enrollment is not active in ${m}/${y} (Start/End Date range).` },
+        { status: 400 }
+      );
+    }
+    const matchedRate = service ? rateById(service, enrollment?.RateID) : null;
+    if (matchedRate?.BillingType === "OneOff") {
+      const already = db.invoices.some((i) => i.StudentID === studentId && i.ServiceID === serviceId);
+      if (already) {
+        return NextResponse.json(
+          { error: "This is a One-off rate — an invoice for this Student/Service already exists and none further will be created." },
+          { status: 400 }
+        );
+      }
+    }
+
     const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
     const invoiceAmount = Number(amount) || 0;
     // Auto-filled using the currency's rate as of the 1st of this invoice's
@@ -83,9 +101,19 @@ export async function POST(req) {
 
   const created = [];
   for (const enr of studentEnrollments) {
-    const exists = db.invoices.find(
-      (i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID && i.Year === year && i.Month === month
-    );
+    if (!isEnrollmentActiveForMonth(enr, year, month)) continue;
+
+    const service = db.services.find((s) => s.ServiceID === enr.ServiceID);
+    const matchedRate = service ? rateById(service, enr.RateID) : null;
+    const isOneOff = matchedRate?.BillingType === "OneOff";
+
+    // OneOff: exactly one invoice ever for this Student/Service, regardless
+    // of month. Monthly/Hourly: the usual one-per-month dedup.
+    const exists = isOneOff
+      ? db.invoices.some((i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID)
+      : db.invoices.some(
+          (i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID && i.Year === year && i.Month === month
+        );
     if (exists) continue;
 
     const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {

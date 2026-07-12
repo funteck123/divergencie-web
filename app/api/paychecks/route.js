@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf } from "@/lib/billing";
+import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
 
@@ -44,6 +44,24 @@ export async function POST(req) {
     }
     const service = db.services.find((s) => s.ServiceID === serviceId);
     const enrollment = db.enrollments.find((e) => e.UserID === staffId && e.ServiceID === serviceId);
+
+    if (enrollment && !isEnrollmentActiveForMonth(enrollment, y, m)) {
+      return NextResponse.json(
+        { error: `This enrollment is not active in ${m}/${y} (Start/End Date range).` },
+        { status: 400 }
+      );
+    }
+    const matchedRate = service ? rateById(service, enrollment?.RateID) : null;
+    if (matchedRate?.BillingType === "OneOff") {
+      const already = db.paychecks.some((p) => p.StaffID === staffId && p.ServiceID === serviceId);
+      if (already) {
+        return NextResponse.json(
+          { error: "This is a One-off rate — a paycheck for this Staff/Service already exists and none further will be created." },
+          { status: 400 }
+        );
+      }
+    }
+
     const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
     const paycheckAmount = Number(amount) || 0;
     // Auto-filled using the currency's rate as of the 1st of this
@@ -83,9 +101,19 @@ export async function POST(req) {
 
   const created = [];
   for (const enr of staffEnrollments) {
-    const exists = db.paychecks.find(
-      (p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID && p.Year === year && p.Month === month
-    );
+    if (!isEnrollmentActiveForMonth(enr, year, month)) continue;
+
+    const service = db.services.find((s) => s.ServiceID === enr.ServiceID);
+    const matchedRate = service ? rateById(service, enr.RateID) : null;
+    const isOneOff = matchedRate?.BillingType === "OneOff";
+
+    // OneOff: exactly one paycheck ever for this Staff/Service, regardless
+    // of month. Monthly/Hourly: the usual one-per-month dedup.
+    const exists = isOneOff
+      ? db.paychecks.some((p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID)
+      : db.paychecks.some(
+          (p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID && p.Year === year && p.Month === month
+        );
     if (exists) continue;
 
     const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {

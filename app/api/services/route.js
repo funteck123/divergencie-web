@@ -3,6 +3,7 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
 import { CURRENCIES } from "@/lib/accountTypes";
+import { BILLING_TYPES } from "@/lib/billing";
 
 export async function GET(req) {
   const { error } = requireSession(req);
@@ -51,6 +52,9 @@ function validateRates(rates) {
     if (r.description && String(r.description).length > 40) {
       return "A rate's description must be 40 characters or fewer.";
     }
+    if (r.billingType && !BILLING_TYPES.includes(r.billingType)) {
+      return `billingType must be one of ${BILLING_TYPES.join(", ")}.`;
+    }
   }
   return null;
 }
@@ -64,6 +68,7 @@ function toStoredRates(db, rates) {
     Currency: r.currency || "INR",
     Rate: Number(r.rate) || 0,
     Description: (r.description || "").trim(),
+    BillingType: r.billingType || "Monthly",
   }));
 }
 

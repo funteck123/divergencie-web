@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
-import { ratesOf, rateById } from "@/lib/billing";
+import { ratesOf, rateById, BILLING_TYPES } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
 
@@ -1366,7 +1366,7 @@ function Services() {
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [fullSubjectName, setFullSubjectName] = useState("");
-  const [rates, setRates] = useState([{ currency: "INR", rate: "", description: "" }]);
+  const [rates, setRates] = useState([{ currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
@@ -1395,7 +1395,7 @@ function Services() {
     setSubjectCode("");
     setSubjectName("");
     setFullSubjectName("");
-    setRates([{ currency: "INR", rate: "", description: "" }]);
+    setRates([{ currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
     setOccurrences([{ ...EMPTY_OCC }]);
   }
 
@@ -1412,8 +1412,8 @@ function Services() {
     setFullSubjectName(s.FullSubjectName || "");
     setRates(
       Array.isArray(s.Rates) && s.Rates.length > 0
-        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "" }))
-        : [{ currency: s.Currency || "INR", rate: s.Rate ?? "", description: "" }]
+        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "", billingType: r.BillingType || "Monthly" }))
+        : [{ currency: s.Currency || "INR", rate: s.Rate ?? "", description: "", billingType: "Monthly" }]
     );
     setOccurrences(
       s.OccuranceList.map((o) => ({
@@ -1440,7 +1440,7 @@ function Services() {
     setRates((prev) => prev.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
   }
   function addRate() {
-    setRates((prev) => [...prev, { currency: "INR", rate: "", description: "" }]);
+    setRates((prev) => [...prev, { currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
   }
   function removeRate(i) {
     setRates((prev) => prev.filter((_, idx) => idx !== i));
@@ -1584,6 +1584,18 @@ function Services() {
                   value={r.description}
                   onChange={(e) => updateRate(i, "description", e.target.value)}
                 />
+                <select
+                  className="field"
+                  style={{ maxWidth: 120 }}
+                  value={r.billingType}
+                  onChange={(e) => updateRate(i, "billingType", e.target.value)}
+                >
+                  {BILLING_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
                 {rates.length > 1 && (
                   <button type="button" className="btn-ghost" onClick={() => removeRate(i)}>
                     ✕
@@ -1938,10 +1950,10 @@ function Enrollments() {
     load();
   }, []);
 
-  async function enroll(userId, serviceId, rateId) {
+  async function enroll(userId, serviceId, rateId, startDate, endDate) {
     setError("");
     try {
-      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, rateId }) });
+      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, rateId, startDate, endDate }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -1994,6 +2006,8 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   const [userId, setUserId] = useState("");
   const [serviceId, setServiceId] = useState("");
   const [rateId, setRateId] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const selectedService = eligibleServices.find((s) => s.ServiceID === serviceId);
   const availableRates = selectedService ? ratesOf(selectedService) : [];
@@ -2006,10 +2020,12 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
 
   function submit(e) {
     e.preventDefault();
-    onEnroll(userId, serviceId, rateId);
+    onEnroll(userId, serviceId, rateId, startDate, endDate);
     setUserId("");
     setServiceId("");
     setRateId("");
+    setStartDate("");
+    setEndDate("");
   }
 
   return (
@@ -2042,6 +2058,18 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
               ))}
             </select>
           )}
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Start date (optional)
+            </label>
+            <input className="field" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              End date (optional — leave blank if ongoing)
+            </label>
+            <input className="field" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          </div>
           <button className="btn" type="submit">
             Enroll
           </button>
@@ -2055,6 +2083,8 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
               <th>Person</th>
               <th>Service</th>
               <th>Rate</th>
+              <th>Start</th>
+              <th>End</th>
               <th></th>
             </tr>
           </thead>
@@ -2073,7 +2103,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             ))}
             {enrollments.length === 0 && (
               <tr>
-                <td colSpan={4} style={{ color: "var(--muted)" }}>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
                   No {title.toLowerCase()} enrollments yet.
                 </td>
               </tr>
@@ -2090,6 +2120,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
   const [userId, setUserId] = useState(enrollment.UserID);
   const [serviceId, setServiceId] = useState(enrollment.ServiceID);
   const [rateId, setRateId] = useState(enrollment.RateID || "");
+  const [startDate, setStartDate] = useState(enrollment.StartDate || "");
+  const [endDate, setEndDate] = useState(enrollment.EndDate || "");
   const [error, setError] = useState("");
 
   const editingService = services.find((s) => s.ServiceID === serviceId);
@@ -2105,6 +2137,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
     setUserId(enrollment.UserID);
     setServiceId(enrollment.ServiceID);
     setRateId(enrollment.RateID || "");
+    setStartDate(enrollment.StartDate || "");
+    setEndDate(enrollment.EndDate || "");
     setError("");
     setEditing(false);
   }
@@ -2112,7 +2146,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
   async function save() {
     setError("");
     try {
-      await onUpdate(enrollment.EnrolmentID, { userId, serviceId, rateId });
+      await onUpdate(enrollment.EnrolmentID, { userId, serviceId, rateId, startDate, endDate });
       setEditing(false);
     } catch (e) {
       setError(e.message);
@@ -2156,6 +2190,12 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
             ))}
           </select>
         </td>
+        <td>
+          <input className="field" style={{ width: 145 }} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </td>
+        <td>
+          <input className="field" style={{ width: 145 }} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </td>
         <td className="space-x-2">
           <button className="btn" onClick={save}>
             Save
@@ -2173,6 +2213,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
       <td>{nameOf(enrollment.UserID)}</td>
       <td>{serviceNameOf(enrollment.ServiceID)}</td>
       <td>{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
+      <td>{enrollment.StartDate || "—"}</td>
+      <td>{enrollment.EndDate || "—"}</td>
       <td className="space-x-2">
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
