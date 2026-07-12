@@ -202,21 +202,17 @@ function Pipeline() {
     setServices(services);
     setInvoices(invoices);
     // trial/interview items aren't exposed as a top-level list endpoint;
-    // derive them from each pending account's /api/me bundle instead
+    // derive them from each pending account's /api/me bundle instead — run
+    // every account's fetch concurrently rather than one at a time (this was
+    // a real N+1: sequential /api/me calls, one per pending account).
     const trialAccs = users.filter((u) => u.UserType === "TrialAcc");
     const interviewAccs = users.filter((u) => INTERVIEW_ACC_TYPES.includes(u.UserType));
-    const trials = [];
-    const interviews = [];
-    for (const acc of trialAccs) {
-      const bundle = await api(`/api/me?userId=${acc.UserID}`);
-      trials.push(...bundle.trialItems);
-    }
-    for (const acc of interviewAccs) {
-      const bundle = await api(`/api/me?userId=${acc.UserID}`);
-      interviews.push(...bundle.interviewItems);
-    }
-    setTrialItems(trials);
-    setInterviewItems(interviews);
+    const [trialBundles, interviewBundles] = await Promise.all([
+      Promise.all(trialAccs.map((acc) => api(`/api/me?userId=${acc.UserID}`))),
+      Promise.all(interviewAccs.map((acc) => api(`/api/me?userId=${acc.UserID}`))),
+    ]);
+    setTrialItems(trialBundles.flatMap((b) => b.trialItems));
+    setInterviewItems(interviewBundles.flatMap((b) => b.interviewItems));
   }
   useEffect(() => {
     load();

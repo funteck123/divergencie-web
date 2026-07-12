@@ -11,8 +11,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  ensureScheduleGenerated(db);
-  await writeDB(db);
+  if (ensureScheduleGenerated(db) > 0) await writeDB(db);
 
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });

@@ -9,8 +9,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  ensureScheduleGenerated(db);
-  await writeDB(db);
+  if (ensureScheduleGenerated(db) > 0) await writeDB(db);
   return NextResponse.json({ services: db.services });
 }
 
