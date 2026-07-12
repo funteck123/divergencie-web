@@ -190,9 +190,16 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
         </tbody>
       </table>
 
-      <h3 className="text-sm mb-2" style={{ color: "var(--muted)" }}>
-        Invoices
-      </h3>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm" style={{ color: "var(--muted)" }}>
+          Invoices
+        </h3>
+        {process.env.NEXT_PUBLIC_STRIPE_GATEWAY && (
+          <a className="btn" href={process.env.NEXT_PUBLIC_STRIPE_GATEWAY} target="_blank" rel="noreferrer">
+            Pay by card online
+          </a>
+        )}
+      </div>
       <table>
         <thead>
           <tr>
