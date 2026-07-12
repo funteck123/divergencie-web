@@ -44,12 +44,23 @@ export async function GET(req) {
   const myRequestedInterviewSlotIds = new Set(
     interviewItems.filter((i) => i.Status !== "Rejected").map((i) => i.ScheduleItemID)
   );
+  // Use the Service's current Group, not the ScheduleItem's own baked-in
+  // ServiceGroup snapshot — a Service's Group can be edited after its
+  // schedule items already exist (e.g. adding "Teacher" to a Student-only
+  // service later), and those older items are otherwise never rewritten
+  // (intentionally, for occurrence/attendance history), so their stale
+  // snapshot would silently keep matching the group it had at generation
+  // time forever, hiding real availability from newly-eligible accounts.
+  function currentGroupOf(scheduleItem) {
+    return db.services.find((svc) => svc.ServiceID === scheduleItem.ServiceID)?.Group ?? scheduleItem.ServiceGroup;
+  }
+
   const availableTrialSlots = sortByDateTime(
     db.scheduleItems.filter(
       (s) =>
         !isSlotBooked(db, s.ScheduleID) &&
         !myRequestedTrialSlotIds.has(s.ScheduleID) &&
-        groupMatches(s.ServiceGroup, "Student")
+        groupMatches(currentGroupOf(s), "Student")
     )
   );
   const interviewRequiredGroup = requiredGroupForBookingType(user.UserType.replace(/Acc$/, ""));
@@ -58,7 +69,7 @@ export async function GET(req) {
       (s) =>
         !isSlotBooked(db, s.ScheduleID) &&
         !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
-        groupMatches(s.ServiceGroup, interviewRequiredGroup)
+        groupMatches(currentGroupOf(s), interviewRequiredGroup)
     )
   );
 
