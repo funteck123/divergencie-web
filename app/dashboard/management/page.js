@@ -7,7 +7,7 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
 import { ratesOf, rateById } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
-import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, RATE_CURRENCIES } from "@/lib/accountTypes";
+import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
 // The three pending Interview tracks — each converts to its own final
@@ -1563,7 +1563,7 @@ function Services() {
                   value={r.currency}
                   onChange={(e) => updateRate(i, "currency", e.target.value)}
                 >
-                  {RATE_CURRENCIES.map((c) => (
+                  {CURRENCIES_FULL.map((c) => (
                     <option key={c.code} value={c.code}>
                       {c.code} — {c.name}
                     </option>
