@@ -1366,7 +1366,7 @@ function Services() {
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [fullSubjectName, setFullSubjectName] = useState("");
-  const [rates, setRates] = useState([{ currency: "INR", rate: "" }]);
+  const [rates, setRates] = useState([{ currency: "INR", rate: "", description: "" }]);
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
@@ -1395,7 +1395,7 @@ function Services() {
     setSubjectCode("");
     setSubjectName("");
     setFullSubjectName("");
-    setRates([{ currency: "INR", rate: "" }]);
+    setRates([{ currency: "INR", rate: "", description: "" }]);
     setOccurrences([{ ...EMPTY_OCC }]);
   }
 
@@ -1412,7 +1412,7 @@ function Services() {
     setFullSubjectName(s.FullSubjectName || "");
     setRates(
       Array.isArray(s.Rates) && s.Rates.length > 0
-        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate }))
+        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "" }))
         : [{ currency: s.Currency || "INR", rate: s.Rate ?? "" }]
     );
     setOccurrences(
@@ -1440,7 +1440,7 @@ function Services() {
     setRates((prev) => prev.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
   }
   function addRate() {
-    setRates((prev) => [...prev, { currency: "INR", rate: "" }]);
+    setRates((prev) => [...prev, { currency: "INR", rate: "", description: "" }]);
   }
   function removeRate(i) {
     setRates((prev) => prev.filter((_, idx) => idx !== i));
@@ -1575,6 +1575,14 @@ function Services() {
                   placeholder="Rate"
                   value={r.rate}
                   onChange={(e) => updateRate(i, "rate", e.target.value)}
+                />
+                <input
+                  className="field"
+                  style={{ maxWidth: 140 }}
+                  placeholder="Description (optional)"
+                  maxLength={40}
+                  value={r.description}
+                  onChange={(e) => updateRate(i, "description", e.target.value)}
                 />
                 {rates.length > 1 && (
                   <button type="button" className="btn-ghost" onClick={() => removeRate(i)}>
@@ -2029,7 +2037,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
               {availableRates.map((r) => (
                 <option key={r.RateID} value={r.RateID}>
-                  {r.Currency} {r.Rate}
+                  {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
                 </option>
               ))}
             </select>
@@ -2143,7 +2151,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
           <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)}>
             {availableRates.map((r) => (
               <option key={r.RateID} value={r.RateID}>
-                {r.Currency} {r.Rate}
+                {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
               </option>
             ))}
           </select>

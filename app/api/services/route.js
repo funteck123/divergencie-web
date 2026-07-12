@@ -48,6 +48,9 @@ function validateRates(rates) {
     if (Number(r.rate) < 0 || Number.isNaN(Number(r.rate))) {
       return "rate cannot be negative.";
     }
+    if (r.description && String(r.description).length > 40) {
+      return "A rate's description must be 40 characters or fewer.";
+    }
   }
   return null;
 }
@@ -60,6 +63,7 @@ function toStoredRates(db, rates) {
     RateID: r.rateId || nextId(db, "RATE"),
     Currency: r.currency || "INR",
     Rate: Number(r.rate) || 0,
+    Description: (r.description || "").trim(),
   }));
 }
 
