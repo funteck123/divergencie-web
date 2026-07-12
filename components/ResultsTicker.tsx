@@ -17,7 +17,7 @@ export default function ResultsTicker() {
   return (
     <div className="w-full bg-white dark:bg-black border-b border-[var(--border-subtle)] flex items-stretch h-14 overflow-hidden relative">
       {/* Fixed Part (Left) */}
-      <div className="flex-shrink-0 bg-[var(--gold)] text-black dark:text-white px-6 flex flex-col justify-center items-center z-20 shadow-[10px_0_15px_rgba(0,0,0,0.1)]">
+      <div className="flex-shrink-0 bg-[var(--gold)] text-white dark:text-black px-6 flex flex-col justify-center items-center z-20 shadow-[10px_0_15px_rgba(0,0,0,0.1)]">
         <span className="text-[10px] font-black tracking-tighter leading-none">2025–26</span>
         <span className="text-sm font-black tracking-widest uppercase leading-none mt-1">RESULTS</span>
       </div>
