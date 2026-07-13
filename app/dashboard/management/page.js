@@ -2257,12 +2257,6 @@ function Billing() {
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
-  // Amount's currency is the billed person's Currency, not the Service's —
-  // Services keep their own Currency (the rate's denomination) but the
-  // final invoice/paycheck total is always shown in the billed person's.
-  function currencyOf(id) {
-    return users.find((u) => u.UserID === id)?.Currency || "INR";
-  }
   function serviceNameOf(id) {
     const s = services.find((s) => s.ServiceID === id);
     return s ? s.Name : id;
@@ -2355,7 +2349,6 @@ function Billing() {
           rows={invoices}
           idKey="InvoiceID"
           nameOf={nameOf}
-          currencyOf={currencyOf}
           personKey="StudentID"
           serviceNameOf={serviceNameOf}
           onPatch={patchInvoice}
@@ -2371,7 +2364,6 @@ function Billing() {
           rows={paychecks}
           idKey="PaycheckID"
           nameOf={nameOf}
-          currencyOf={currencyOf}
           personKey="StaffID"
           serviceNameOf={serviceNameOf}
           onPatch={patchPaycheck}
@@ -2440,7 +2432,7 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
   );
 }
 
-function BillingTable({ rows, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
+function BillingTable({ rows, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const decorated = rows.map((r) => ({ ...r, _person: nameOf(r[personKey]), _period: r.Year * 100 + r.Month }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
   return (
@@ -2468,7 +2460,6 @@ function BillingTable({ rows, idKey, nameOf, currencyOf, personKey, serviceNameO
             row={r}
             idKey={idKey}
             nameOf={nameOf}
-            currencyOf={currencyOf}
             personKey={personKey}
             serviceNameOf={serviceNameOf}
             onPatch={onPatch}
@@ -2489,7 +2480,7 @@ function BillingTable({ rows, idKey, nameOf, currencyOf, personKey, serviceNameO
   );
 }
 
-function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
+function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, flagKey, flagLabel }) {
   const [editing, setEditing] = useState(false);
   const [scheduledHours, setScheduledHours] = useState(row.ScheduledHours);
   const [attendedHours, setAttendedHours] = useState(row.AttendedHours);
