@@ -214,7 +214,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
             <th>Service</th>
             <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <th>Amount Due</th>
-            <th>Total ({student?.Currency || "INR"})</th>
+            <th>Total Due ({student?.Currency || "INR"})</th>
             <th>Paid</th>
             <th></th>
           </tr>
@@ -224,9 +224,9 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
             <tr key={i.InvoiceID}>
               <td>{i.Month}/{i.Year}</td>
               <td>{serviceNameOf(i.ServiceID)}</td>
-              <td>{i.Currency || student?.Currency || "INR"} {i.Amount}</td>
-              <td>{i.Currency || student?.Currency || "INR"} {amountDueInOwnCurrency(i, student?.Currency).toFixed(2)}</td>
-              <td>{i.ConvertedTotal != null ? `${student?.Currency || "INR"} ${i.ConvertedTotal.toFixed(2)}` : "—"}</td>
+              <td>{i.Currency || "INR"} {i.Amount}</td>
+              <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
+              <td>{i.ConvertedDue != null ? `${student?.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
               <td>
                 <InvoicePaidControl
                   invoice={i}

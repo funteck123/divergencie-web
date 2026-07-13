@@ -55,9 +55,12 @@ export async function GET(req) {
     department,
     role: staff?.Role || "",
     // Payslip totals must show the currency the paycheck was actually billed
-    // in (Paycheck.Currency, from the enrollment's resolved rate) — falling
-    // back to the staff's own Currency only if that's somehow missing.
-    currency: paycheck.Currency || staff?.Currency || service?.Currency || "INR",
+    // in (Paycheck.Currency, from the enrollment's resolved rate). Legacy
+    // paychecks predating this field fall back to the Service's own
+    // Currency (a stable historical fact), never to the staff's CURRENT
+    // profile Currency — that can change after the fact and would mislabel
+    // an old INR paycheck as whatever currency the staff uses today.
+    currency: paycheck.Currency || service?.Currency || "INR",
     // The header "Currency:" row is the staff's own home/payroll currency —
     // a distinct concept from the billed currency above (e.g. an INR-paid
     // teacher billed in USD for a specific service still has "INR" as their

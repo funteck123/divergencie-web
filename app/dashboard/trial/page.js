@@ -148,7 +148,7 @@ function Body({ user }) {
               <th>Period</th>
               <th>Amount</th>
               <th>Amount Due</th>
-              <th>Total ({data.user.Currency || "INR"})</th>
+              <th>Total Due ({data.user.Currency || "INR"})</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -157,9 +157,9 @@ function Body({ user }) {
             {data.invoices.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
-                <td>{i.Currency || data.user.Currency || "INR"} {i.Amount}</td>
-                <td>{i.Currency || data.user.Currency || "INR"} {amountDueInOwnCurrency(i, data.user.Currency).toFixed(2)}</td>
-                <td>{i.ConvertedTotal != null ? `${data.user.Currency || "INR"} ${i.ConvertedTotal.toFixed(2)}` : "—"}</td>
+                <td>{i.Currency || "INR"} {i.Amount}</td>
+                <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
+                <td>{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
                   <span className={`badge ${i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
                 </td>

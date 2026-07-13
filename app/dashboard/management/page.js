@@ -2570,11 +2570,11 @@ function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch
             onChange={(e) => setAmount(e.target.value)}
           />
         ) : (
-          `${row.Currency || currencyOf(row[personKey])} ${row.Amount}`
+          `${row.Currency || "INR"} ${row.Amount}`
         )}
       </td>
       <td>
-        {`${row.Currency || currencyOf(row[personKey])} ${amountDueInOwnCurrency(row, currencyOf(row[personKey])).toFixed(2)}`}
+        {`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}
       </td>
       <td>
         {editing ? (

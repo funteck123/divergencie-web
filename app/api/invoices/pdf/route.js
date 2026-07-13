@@ -25,7 +25,13 @@ export async function GET(req) {
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const service = db.services.find((s) => s.ServiceID === invoice.ServiceID);
 
-  const invoiceCurrency = invoice.Currency || student?.Currency || service?.Currency || "INR";
+  // Legacy invoices predate the Currency field entirely (created when INR
+  // was the only currency in the system) — fall back to the Service's own
+  // Currency (a stable historical fact), never to the Student's CURRENT
+  // profile Currency, which may have changed since this invoice was billed
+  // and would mislabel an old INR invoice as whatever currency the student
+  // uses today.
+  const invoiceCurrency = invoice.Currency || service?.Currency || "INR";
   // Extra "Total (<student's own currency>)" line — only when it actually
   // differs from what this invoice was billed in (no INR-only restriction;
   // convertRecordTotal supports any target currency by pivoting through the

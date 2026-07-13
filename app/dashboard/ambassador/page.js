@@ -195,7 +195,7 @@ function Body({ user }) {
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <th>Amount Due</th>
-              <th>Total ({data.user.Currency || "INR"})</th>
+              <th>Total Due ({data.user.Currency || "INR"})</th>
               <th>Received</th>
               <th></th>
             </tr>
@@ -206,9 +206,9 @@ function Body({ user }) {
                 <td>{p.Month}/{p.Year}</td>
                 <td>{serviceNameOf(p.ServiceID)}</td>
                 <td>{p.AttendedHours}</td>
-                <td>{p.Currency || data.user.Currency || "INR"} {p.Amount}</td>
-                <td>{p.Currency || data.user.Currency || "INR"} {amountDueInOwnCurrency(p, data.user.Currency).toFixed(2)}</td>
-                <td>{p.ConvertedTotal != null ? `${data.user.Currency || "INR"} ${p.ConvertedTotal.toFixed(2)}` : "—"}</td>
+                <td>{p.Currency || "INR"} {p.Amount}</td>
+                <td>{p.Currency || "INR"} {amountDueInOwnCurrency(p).toFixed(2)}</td>
+                <td>{p.ConvertedDue != null ? `${data.user.Currency || "INR"} ${p.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
                   {p.StaffReceivedFlag ? (
                     <span className="badge badge-good">Received ✓</span>

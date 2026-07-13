@@ -216,7 +216,7 @@ function Body({ user }) {
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <th>Amount Due</th>
-              <th>Total ({data.user.Currency || "INR"})</th>
+              <th>Total Due ({data.user.Currency || "INR"})</th>
               <th>Paid</th>
               <th></th>
             </tr>
@@ -227,9 +227,9 @@ function Body({ user }) {
                 <td>{i.Month}/{i.Year}</td>
                 <td>{serviceNameOf(i.ServiceID)}</td>
                 <td>{i.AttendedHours}</td>
-                <td>{i.Currency || data.user.Currency || "INR"} {i.Amount}</td>
-                <td>{i.Currency || data.user.Currency || "INR"} {amountDueInOwnCurrency(i, data.user.Currency).toFixed(2)}</td>
-                <td>{i.ConvertedTotal != null ? `${data.user.Currency || "INR"} ${i.ConvertedTotal.toFixed(2)}` : "—"}</td>
+                <td>{i.Currency || "INR"} {i.Amount}</td>
+                <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
+                <td>{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
                   <InvoicePaidControl
                     invoice={i}

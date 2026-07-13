@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime, requiredGroupForBookingType } from "@/lib/scheduleGen";
 import { requireSelfOrManagement } from "@/lib/authz";
-import { convertRecordTotal } from "@/lib/fxRates";
+import { convertINRAmount } from "@/lib/fxRates";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -30,17 +30,18 @@ export async function GET(req) {
   const rawInvoices = db.invoices.filter((i) => i.StudentID === userId && i.Status !== "Draft");
   const rawPaychecks = db.paychecks.filter((p) => p.StaffID === userId && p.Status !== "Draft");
 
-  // ConvertedTotal is the record's total in the viewer's OWN profile
-  // Currency (may differ from both the record's own Currency and from
-  // INR) — pivots through the record's already-frozen INRAmount, see
-  // lib/fxRates.js. Tracked so we only persist the FX cache (db.fxRates)
-  // back to the DB when a lookup actually added a new entry.
+  // ConvertedDue is the outstanding INR Due converted into the viewer's OWN
+  // profile Currency (may differ from the record's own billed Currency) —
+  // pairs with Amount Due (same balance, shown in the record's own
+  // currency instead). See lib/fxRates.js. Tracked so we only persist the
+  // FX cache (db.fxRates) back to the DB when a lookup actually added a
+  // new entry.
   const fxRatesBefore = Object.keys(db.fxRates || {}).length;
   const invoices = await Promise.all(
-    rawInvoices.map(async (i) => ({ ...i, ConvertedTotal: await convertRecordTotal(db, i, user.Currency || "INR") }))
+    rawInvoices.map(async (i) => ({ ...i, ConvertedDue: await convertINRAmount(db, i.INRDue, user.Currency || "INR", i.Year, i.Month) }))
   );
   const paychecks = await Promise.all(
-    rawPaychecks.map(async (p) => ({ ...p, ConvertedTotal: await convertRecordTotal(db, p, user.Currency || "INR") }))
+    rawPaychecks.map(async (p) => ({ ...p, ConvertedDue: await convertINRAmount(db, p.INRDue, user.Currency || "INR", p.Year, p.Month) }))
   );
 
   // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
@@ -96,7 +97,7 @@ export async function GET(req) {
         const childServiceIds = new Set(childEnroll.map((e) => e.ServiceID));
         const childInvoices = db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft");
         const childInvoicesWithTotals = await Promise.all(
-          childInvoices.map(async (i) => ({ ...i, ConvertedTotal: await convertRecordTotal(db, i, child?.Currency || "INR") }))
+          childInvoices.map(async (i) => ({ ...i, ConvertedDue: await convertINRAmount(db, i.INRDue, child?.Currency || "INR", i.Year, i.Month) }))
         );
         return {
           student: child,
