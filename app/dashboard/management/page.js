@@ -1366,11 +1366,16 @@ function Services() {
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [fullSubjectName, setFullSubjectName] = useState("");
+  const [recordingsLink, setRecordingsLink] = useState("");
+  const [syllabusLink, setSyllabusLink] = useState("");
+  const [worksheetsLink, setWorksheetsLink] = useState("");
+  const [gcrLink, setGcrLink] = useState("");
   const [rates, setRates] = useState([{ currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
   const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
+  const studentLinksEligible = group.includes("Student");
 
   function toggleGroup(g) {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -1395,6 +1400,10 @@ function Services() {
     setSubjectCode("");
     setSubjectName("");
     setFullSubjectName("");
+    setRecordingsLink("");
+    setSyllabusLink("");
+    setWorksheetsLink("");
+    setGcrLink("");
     setRates([{ currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
     setOccurrences([{ ...EMPTY_OCC }]);
   }
@@ -1410,6 +1419,10 @@ function Services() {
     setSubjectCode(s.SubjectCode || "");
     setSubjectName(s.SubjectName || "");
     setFullSubjectName(s.FullSubjectName || "");
+    setRecordingsLink(s.RecordingsLink || "");
+    setSyllabusLink(s.SyllabusLink || "");
+    setWorksheetsLink(s.WorksheetsLink || "");
+    setGcrLink(s.GCRLink || "");
     setRates(
       Array.isArray(s.Rates) && s.Rates.length > 0
         ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "", billingType: r.BillingType || "Monthly" }))
@@ -1472,6 +1485,10 @@ function Services() {
             subjectCode,
             subjectName,
             fullSubjectName,
+            recordingsLink,
+            syllabusLink,
+            worksheetsLink,
+            gcrLink,
             rates,
             occurrences,
           }),
@@ -1489,6 +1506,10 @@ function Services() {
             subjectCode,
             subjectName,
             fullSubjectName,
+            recordingsLink,
+            syllabusLink,
+            worksheetsLink,
+            gcrLink,
             rates,
             occurrences,
           }),
@@ -1548,6 +1569,37 @@ function Services() {
                 placeholder="Full Subject Name"
                 value={fullSubjectName}
                 onChange={(e) => setFullSubjectName(e.target.value)}
+              />
+            </>
+          )}
+          {studentLinksEligible && (
+            <>
+              <label className="text-sm block" style={{ color: "var(--muted)" }}>
+                Resource links (shown on the Student&apos;s own Resources section for this service)
+              </label>
+              <input
+                className="field"
+                placeholder="Recordings link"
+                value={recordingsLink}
+                onChange={(e) => setRecordingsLink(e.target.value)}
+              />
+              <input
+                className="field"
+                placeholder="Syllabus link"
+                value={syllabusLink}
+                onChange={(e) => setSyllabusLink(e.target.value)}
+              />
+              <input
+                className="field"
+                placeholder="Worksheets link"
+                value={worksheetsLink}
+                onChange={(e) => setWorksheetsLink(e.target.value)}
+              />
+              <input
+                className="field"
+                placeholder="Google Classroom link"
+                value={gcrLink}
+                onChange={(e) => setGcrLink(e.target.value)}
               />
             </>
           )}

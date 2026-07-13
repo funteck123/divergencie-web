@@ -4,12 +4,14 @@ import Link from "next/link";
 
 // Service-based: apply per enrolled Service (a recording/syllabus/etc. is
 // specific to that class). User-based: apply once to the account overall,
-// not per service.
+// not per service. `linkField` names the Service field Management can set
+// (see app/api/services/route.js's applyStudentLinkFields) — when set, the
+// button opens that link directly instead of the internal placeholder page.
 const SERVICE_FEATURES = [
-  { slug: "recordings", label: "Recordings" },
-  { slug: "syllabus", label: "Syllabus" },
-  { slug: "worksheets", label: "Worksheets" },
-  { slug: "gcr", label: "Google Classroom" },
+  { slug: "recordings", label: "Recordings", linkField: "RecordingsLink" },
+  { slug: "syllabus", label: "Syllabus", linkField: "SyllabusLink" },
+  { slug: "worksheets", label: "Worksheets", linkField: "WorksheetsLink" },
+  { slug: "gcr", label: "Google Classroom", linkField: "GCRLink" },
 ];
 const USER_FEATURES = [
   { slug: "timesheet", label: "Timesheet" },
@@ -40,15 +42,22 @@ export default function ResourcesSection({ services }) {
             <div key={s.ServiceID} className="p-3 rounded" style={{ background: "var(--panel-2)" }}>
               <div className="font-medium mb-2">{s.Name}</div>
               <div className="flex gap-2 flex-wrap">
-                {SERVICE_FEATURES.map((f) => (
-                  <Link
-                    key={f.slug}
-                    className="btn-ghost"
-                    href={`/dashboard/resources/${f.slug}?serviceId=${encodeURIComponent(s.ServiceID)}&serviceName=${encodeURIComponent(s.Name)}`}
-                  >
-                    {f.label}
-                  </Link>
-                ))}
+                {SERVICE_FEATURES.map((f) => {
+                  const externalLink = s[f.linkField];
+                  return externalLink ? (
+                    <a key={f.slug} className="btn-ghost" href={externalLink} target="_blank" rel="noreferrer">
+                      {f.label}
+                    </a>
+                  ) : (
+                    <Link
+                      key={f.slug}
+                      className="btn-ghost"
+                      href={`/dashboard/resources/${f.slug}?serviceId=${encodeURIComponent(s.ServiceID)}&serviceName=${encodeURIComponent(s.Name)}`}
+                    >
+                      {f.label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}

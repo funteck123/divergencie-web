@@ -95,6 +95,22 @@ function applyCohortServiceFields(service, body, group) {
   }
 }
 
+// Resource links (Recordings/Syllabus/Worksheets/Google Classroom) shown on
+// the Student Resources section — only meaningful for services actually
+// open to Student, same gating pattern as the cohort fields above.
+function applyStudentLinkFields(service, body, group) {
+  if (group.includes("Student")) {
+    service.RecordingsLink = (body.recordingsLink || "").trim();
+    service.SyllabusLink = (body.syllabusLink || "").trim();
+    service.WorksheetsLink = (body.worksheetsLink || "").trim();
+    service.GCRLink = (body.gcrLink || "").trim();
+  } else {
+    for (const key of ["RecordingsLink", "SyllabusLink", "WorksheetsLink", "GCRLink"]) {
+      delete service[key];
+    }
+  }
+}
+
 // body: { name, type, group: string[] (subset of ALL_GROUPS),
 //         rates: [{ currency, rate }] (at least one, duplicate currencies allowed),
 //         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?
@@ -145,6 +161,7 @@ export async function POST(req) {
     OccuranceList: occuranceList,
   };
   applyCohortServiceFields(service, body, group);
+  applyStudentLinkFields(service, body, group);
   db.services.push(service);
   ensureScheduleGenerated(db);
   await writeDB(db);
@@ -195,6 +212,7 @@ export async function PATCH(req) {
   service.Rate = storedRates[0].Rate;
   delete service.Code;
   applyCohortServiceFields(service, body, group);
+  applyStudentLinkFields(service, body, group);
   service.OccuranceList = occurrences.map((o) => ({
     OccuranceID: o.occuranceId || nextId(db, "OCC"),
     Day: o.day,
