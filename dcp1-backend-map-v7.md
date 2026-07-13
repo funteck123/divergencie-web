@@ -1,4 +1,4 @@
-# Backend Code Map — v6
+# Backend Code Map — v7
 
 **Scope:** every file under `app/api/**/route.js` and `lib/**/*.js`. Companion to `dcp1-uml-v6.md`
 (the conceptual System Blueprint) — this document is exhaustive at the function level instead:

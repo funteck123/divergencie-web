@@ -1,7 +1,7 @@
-# Frontend Code Map — v6
+# Frontend Code Map — v7
 
 **Scope:** every file under `app/dashboard/**/*.js` (9 files) and `components/*.jsx`/`*.tsx`
-(21 files). Companion to `dcp1-uml-v6.md` (System Blueprint) and `dcp1-backend-map-v6.md`
+(21 files). Companion to `dcp1-uml-v6.md` (System Blueprint) and `dcp1-backend-map-v7.md`
 (exhaustive API/lib map) — this document is the same exhaustive treatment for the frontend:
 every React component, every prop, every `useState`/`useRef`/`useEffect`, and every internal
 handler function is accounted for.
@@ -15,7 +15,7 @@ a thin wrapper: `<DashboardShell allowedType={...}>{(user) => <Body user={user} 
 the same file, which are NOT exported (module-private, only used within that one page).
 
 **History:** accurate as of commit `9397cf1` — same cutoff as `dcp1-uml-v6.md` and
-`dcp1-backend-map-v6.md`.
+`dcp1-backend-map-v7.md`.
 
 ---
 
