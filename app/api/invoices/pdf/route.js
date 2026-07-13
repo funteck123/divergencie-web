@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { readDB } from "@/lib/db";
+import { readDB, writeDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
+import { convertRecordTotal } from "@/lib/fxRates";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -24,6 +25,20 @@ export async function GET(req) {
   const student = db.users.find((u) => u.UserID === invoice.StudentID);
   const service = db.services.find((s) => s.ServiceID === invoice.ServiceID);
 
+  const invoiceCurrency = invoice.Currency || student?.Currency || service?.Currency || "INR";
+  // Extra "Total (<student's own currency>)" line — only when it actually
+  // differs from what this invoice was billed in (no INR-only restriction;
+  // convertRecordTotal supports any target currency by pivoting through the
+  // invoice's own already-frozen INRAmount, see lib/fxRates.js).
+  const studentCurrency = student?.Currency || "INR";
+  let convertedTotal = null;
+  if (studentCurrency !== invoiceCurrency) {
+    const fxRatesBefore = Object.keys(db.fxRates || {}).length;
+    const amount = await convertRecordTotal(db, invoice, studentCurrency);
+    if (amount != null) convertedTotal = { currency: studentCurrency, amount };
+    if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) await writeDB(db);
+  }
+
   const dueDate = new Date(invoice.Year, invoice.Month - 1, 1);
   const buffer = await drawDocumentPDF({
     docType: "Invoice",
@@ -41,7 +56,7 @@ export async function GET(req) {
     // records which one this bill was actually generated in (the
     // enrollment's chosen currency), falling back to the Student's own
     // Currency only for older invoices created before this field existed.
-    currency: invoice.Currency || student?.Currency || service?.Currency || "INR",
+    currency: invoiceCurrency,
     balance: invoice.Amount,
     // Quantity is always 1 (one billing line for this month), Rate equals
     // the actual Amount charged — Quantity x Rate must equal Amount on a
@@ -60,6 +75,7 @@ export async function GET(req) {
     discountPercent: 0,
     total: invoice.Amount,
     terms: TERMS,
+    ...(convertedTotal ? { convertedTotal } : {}),
   });
 
   return new NextResponse(buffer, {
