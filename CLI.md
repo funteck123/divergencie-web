@@ -132,50 +132,10 @@ client uses to launch the server process.
 }
 ```
 
-## Known limitation — pending manual step
+## Bookkeeping list — now live
 
-The `apikeys` bookkeeping list (`dcp1 apikeys list` / `delete`) round-trips
-through a Postgres function, `read_full_db()`, that hasn't yet been updated
-to include the new `apiKeys` collection (a live production DB function
-change, intentionally left for manual review rather than applied
-unattended). Until that's run, minted keys work perfectly for
-authentication (verification needs no DB lookup at all — see above), but
-won't show up in `apikeys list`, and `apikeys delete` will report "not
-found" even though the key is still valid until its expiry.
-
-To fix, run this once against the Supabase project (Dashboard → SQL Editor,
-or via the Management API):
-
-```sql
-CREATE OR REPLACE FUNCTION public.read_full_db()
- RETURNS jsonb
- LANGUAGE plpgsql
- SECURITY DEFINER
-AS $function$
-declare
-  result jsonb;
-begin
-  select jsonb_build_object(
-    'users', coalesce((select jsonb_agg(data) from users), '[]'::jsonb),
-    'credentials', coalesce((select jsonb_agg(data) from credentials), '[]'::jsonb),
-    'regForms', coalesce((select jsonb_agg(data) from regforms), '[]'::jsonb),
-    'services', coalesce((select jsonb_agg(data) from services), '[]'::jsonb),
-    'scheduleItems', coalesce((select jsonb_agg(data) from scheduleitems), '[]'::jsonb),
-    'enrollments', coalesce((select jsonb_agg(data) from enrollments), '[]'::jsonb),
-    'trialItems', coalesce((select jsonb_agg(data) from trialitems), '[]'::jsonb),
-    'interviewItems', coalesce((select jsonb_agg(data) from interviewitems), '[]'::jsonb),
-    'attendanceItems', coalesce((select jsonb_agg(data) from attendanceitems), '[]'::jsonb),
-    'invoices', coalesce((select jsonb_agg(data) from invoices), '[]'::jsonb),
-    'paychecks', coalesce((select jsonb_agg(data) from paychecks), '[]'::jsonb),
-    'leads', coalesce((select jsonb_agg(data) from leads), '[]'::jsonb),
-    'apiKeys', coalesce((select jsonb_agg(data) from apikeys), '[]'::jsonb),
-    'counters', coalesce((select jsonb_object_agg(prefix, value) from counters), '{}'::jsonb),
-    'fxRates', coalesce((select jsonb_object_agg(cache_key, rate) from fxrates), '{}'::jsonb)
-  ) into result;
-  return result;
-end;
-$function$
-```
-
-(The `apikeys` table itself already exists — this only updates the
-aggregation function to include it.)
+`dcp1 apikeys list` / `apikeys delete` round-trip through Postgres's
+`read_full_db()` function, which was updated to include the new `apiKeys`
+collection (verified working end-to-end: mint → list → delete). Deleting
+a key still only removes its bookkeeping record — see the revocation
+trade-off above — but the list itself is accurate.
