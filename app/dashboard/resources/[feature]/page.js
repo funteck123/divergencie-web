@@ -39,8 +39,10 @@ function Body() {
   // Only ever render an href that's actually http(s) — this value came
   // through a URL query param (ultimately from a Management-entered field),
   // so guard against anything else (e.g. a stray "javascript:" value)
-  // ending up in an <a href>.
-  const validLink = /^https?:\/\//i.test(link) ? link : "";
+  // ending up in an <a href>. No real link set yet for this Service/feature
+  // falls back to a placeholder destination so the button is never hidden —
+  // Management can set the real one anytime via the Service's edit form.
+  const validLink = /^https?:\/\//i.test(link) ? link : "https://google.com";
 
   return (
     <div className="space-y-4">
@@ -53,11 +55,9 @@ function Body() {
           {serviceName ? ` — ${serviceName}` : ""}
         </h2>
         <p style={{ color: "var(--muted)" }}>In-app {label} is coming soon.</p>
-        {validLink && (
-          <a className="btn" href={validLink} target="_blank" rel="noreferrer">
-            Access {label}
-          </a>
-        )}
+        <a className="btn" href={validLink} target="_blank" rel="noreferrer">
+          Access {label}
+        </a>
       </div>
     </div>
   );
