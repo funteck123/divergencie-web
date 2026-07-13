@@ -6,11 +6,8 @@ import DashboardShell from "@/components/DashboardShell";
 const FEATURE_LABELS = {
   recordings: "Recordings",
   syllabus: "Syllabus",
-  notes: "Notes",
   worksheets: "Worksheets",
-  exams: "Exams",
-  books: "Books",
-  gcr: "GCR",
+  gcr: "Google Classroom",
   timesheet: "Timesheet",
   "progress-tracker": "Progress Tracker",
 };

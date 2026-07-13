@@ -8,11 +8,8 @@ import Link from "next/link";
 const SERVICE_FEATURES = [
   { slug: "recordings", label: "Recordings" },
   { slug: "syllabus", label: "Syllabus" },
-  { slug: "notes", label: "Notes" },
   { slug: "worksheets", label: "Worksheets" },
-  { slug: "exams", label: "Exams" },
-  { slug: "books", label: "Books" },
-  { slug: "gcr", label: "GCR" },
+  { slug: "gcr", label: "Google Classroom" },
 ];
 const USER_FEATURES = [
   { slug: "timesheet", label: "Timesheet" },
