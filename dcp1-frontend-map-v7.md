@@ -15,7 +15,11 @@ a thin wrapper: `<DashboardShell allowedType={...}>{(user) => <Body user={user} 
 the same file, which are NOT exported (module-private, only used within that one page).
 
 **History:** accurate as of commit `9397cf1` — same cutoff as `dcp1-uml-v6.md` and
-`dcp1-backend-map-v7.md`.
+`dcp1-backend-map-v7.md` for everything below. **Checked (not extended)** against commit
+`8b49316` (CLI + MCP server, the same commit that extended the backend map's Part 3) — that
+commit touched zero files under `app/dashboard/**` or `components/**` (verified via
+`git show --stat`), so there is nothing new to document here; the CLI/MCP layer is a pure
+backend/terminal addition with no corresponding UI.
 
 ---
 

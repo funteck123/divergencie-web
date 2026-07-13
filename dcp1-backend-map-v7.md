@@ -12,11 +12,15 @@ functions are its public "methods," module-level constants are its public "attri
 non-exported functions/consts are marked private (`-`) the same way a UML private member would
 be. `(async)` is noted where a function returns a Promise.
 
-**History:** accurate as of commit `9397cf1` (the UML v6 commit) — same cutoff as `dcp1-uml-v6.md`.
+**History:** accurate as of commit `9397cf1` (the UML v6 commit) — same cutoff as `dcp1-uml-v6.md`
+for Parts 1-2 below. **Extended** as of commit `8b49316` (CLI + MCP server) to also cover
+`app/api/apikeys/route.js` (added to Part 1), `lib/session.js`'s API-key additions (updated in
+place in Part 2), and a new Part 3 covering `cli/**` and `mcp/**` — nothing below was removed or
+renumbered from the original v7 cutoff, only added to.
 
 ---
 
-## Part 1 — API Routes (`app/api/**/route.js`, 25 files)
+## Part 1 — API Routes (`app/api/**/route.js`, 26 files)
 
 Every Next.js route file exports one function per HTTP method it handles (`GET`/`POST`/`PATCH`/
 `DELETE`), each receiving `req` and returning a `NextResponse`. Grouped below by domain area.
@@ -32,6 +36,21 @@ Every Next.js route file exports one function per HTTP method it handles (`GET`/
 #### app/api/logout/route.js
 - imports: `NextResponse` (next/server), `clearedSessionCookie` (@/lib/session)
 - `POST()` (async) — clears the session cookie, returns `{ ok: true }`.
+- private: none
+
+#### app/api/apikeys/route.js  (NEW — commit `8b49316`)
+- imports: `NextResponse` (next/server), `readDB, writeDB` (@/lib/db), `signApiKey`
+  (@/lib/session), `requireSelfOrManagement, requireManagement` (@/lib/authz)
+- `POST(req)` (async) — self-or-management (target user); body `{ userId, label?,
+  expiresInDays? }`; validates the target user exists; mints a Bearer token via
+  `signApiKey()` (see `lib/session.js`), pushes a bookkeeping record `{ ApiKeyID, UserID,
+  UserType, Label, CreatedAt, ExpiresAt }` onto `db.apiKeys`; returns the token (only ever
+  returned here, at mint time — never persisted) plus the bookkeeping fields.
+- `GET(req)` (async) — Management-only; returns `db.apiKeys || []` (every issued key's
+  bookkeeping record, never the tokens themselves).
+- `DELETE(req)` (async) — body `{ apiKeyId }`; looks up the record first to determine its
+  owner, then self-or-management auth against that owner; removes the bookkeeping record.
+  Does NOT cryptographically revoke the token before its own expiry (see `lib/session.js`).
 - private: none
 
 ### Public Intake
@@ -400,7 +419,7 @@ Buffer with `Content-Disposition: attachment` and `Cache-Control: no-store`.
   - `- SOURCES` (const array of URL-builder functions, not exported)
   - `- cacheKey(currency, year, month)` — builds `"{currency}-{year}-{MM}"`
 
-### lib/db.js
+### lib/db.js  (EXTENDED — commit `8b49316`, new `apiKeys` collection)
 - imports: `fs`, `path`, `* as supabaseBackend` (./db-supabase)
 - `readDB()` (async) — delegates to `supabaseBackend.readDB()` if `DB_BACKEND=supabase`, else
   `readDBJson()`
@@ -411,11 +430,14 @@ Buffer with `Content-Disposition: attachment` and `Cache-Control: no-store`.
   - `- readDBJson()` — creates `data/db.json` with an `EMPTY` shape if missing, reads/parses it,
     merges onto `EMPTY` to backfill missing keys
   - `- writeDBJson(db)` — `JSON.stringify`s and writes to `DB_PATH`
-  - `- DB_PATH`, `- EMPTY`, `- BACKEND` (module-local, not exported)
+  - `- DB_PATH`, `- EMPTY`, `- BACKEND` (module-local, not exported) — `EMPTY` gained a 13th
+    key, `apiKeys: []`, for `app/api/apikeys/route.js`'s bookkeeping records.
 
-### lib/db-supabase.js
+### lib/db-supabase.js  (EXTENDED — commit `8b49316`, new `apiKeys` collection)
 - imports: `createClient` (@supabase/supabase-js)
 - `readDB()` (async) — calls Postgres RPC `read_full_db()`; returns the aggregated DB JSON blob
+  (this RPC's own SQL definition was separately updated, outside this file, to also aggregate
+  the new `apikeys` table into the `apiKeys` key of its returned JSON — see `CLI.md`)
 - `writeDB(db)` (async) — for each `COLLECTIONS` entry, concurrently calls RPC
   `sync_table(p_table, p_rows, p_ids)` (upsert+delete-stale in one round trip); then upserts
   `counters` rows; then upserts `fxrates` rows and deletes stale ones no longer in the current
@@ -427,7 +449,8 @@ Buffer with `Content-Disposition: attachment` and `Cache-Control: no-store`.
   `enrollments→[enrollments,EnrolmentID]`, `trialItems→[trialitems,TrialID]`,
   `interviewItems→[interviewitems,InterviewID]`, `attendanceItems→[attendanceitems,
   AttendanceID]`, `invoices→[invoices,InvoiceID]`, `paychecks→[paychecks,PaycheckID]`,
-  `leads→[leads,LeadID]` (counters/fxRates handled separately, not part of COLLECTIONS)
+  `leads→[leads,LeadID]`, `apiKeys→[apikeys,ApiKeyID]` (NEW) (counters/fxRates handled
+  separately, not part of COLLECTIONS)
 - private: none besides COLLECTIONS/supabase client
 
 ### lib/client.js  ("use client" — the one lib/ file meant for browser use)
@@ -505,19 +528,37 @@ Buffer with `Content-Disposition: attachment` and `Cache-Control: no-store`.
     `GRID_TOP_LEFT_X`, `GRID_COL_WIDTH`, `GRID_COL_PADDING`, `ROW_AREA`, `TIME_COL_LEFT`,
     `TIME_COL_WIDTH`, `FALLBACK_TIMES`, `THEMES`
 
-### lib/session.js
+### lib/session.js  (EXTENDED — commit `8b49316`, API-key additions)
 - imports: `crypto`
 - `export const SESSION_COOKIE` = `"dcp1_session"`
 - `sessionCookieFor(user)` — HMAC-SHA256-signs `{userId, userType, iat}`; returns a cookie
   descriptor (`httpOnly`, `sameSite: "lax"`, `path: "/"`, `maxAge: 604800`)
 - `clearedSessionCookie()` — same shape, empty value, `maxAge: 0`
-- `getSession(req)` — reads+verifies the session cookie; returns `{userId, userType}` or `null`
+- `signApiKey({ userId, userType, expiresInSeconds = API_KEY_DEFAULT_TTL_SECONDS })` (NEW) —
+  mints a long-lived Bearer token using the exact same `sign()` used for session cookies, just
+  with a `kind: "apikey"` marker, a random `apiKeyId` (embedded in the token AND meant to be
+  stored separately as a DB bookkeeping record — see `app/api/apikeys/route.js`), and an `exp`
+  timestamp (default 90 days out); returns `{ token, apiKeyId, iat, exp }`.
+- `getSession(req)` (CHANGED) — now checks TWO sources in order: (1) the session cookie, same
+  as before; (2) if no valid cookie, an `Authorization: Bearer <token>` header, verified the
+  same way but additionally requiring `kind === "apikey"`. Returns `{userId, userType}` from
+  whichever source verified, or `null` if neither did. A cookie is preferred when both happen
+  to be present. Every existing caller (`lib/authz.js`'s `requireX` functions, unchanged) keeps
+  working exactly as before — this function's contract/shape didn't change, only what it checks.
 - private:
+  - `- API_KEY_DEFAULT_TTL_SECONDS = 60*60*24*90` (NEW, module-local const, not exported) — 90
+    days.
   - `- base64url(input)` — `Buffer.from(input).toString("base64url")`
   - `- sign(payload)` — base64url-encodes + HMAC-SHA256-signs (env `SESSION_SECRET`, warns on an
     insecure dev fallback in production); returns `"{body}.{sig}"`
-  - `- verify(token)` — recomputes HMAC, compares via `crypto.timingSafeEqual` (constant-time);
-    returns the parsed payload or `null` (never throws)
+  - `- verify(token)` (CHANGED) — recomputes HMAC, compares via `crypto.timingSafeEqual`
+    (constant-time); parses the payload and NEW: additionally checks a `payload.exp` field if
+    present (only ever set on API-key tokens — session cookies rely on the cookie's own
+    `maxAge` instead) and returns `null` if expired; returns the parsed payload or `null`
+    (never throws) otherwise. This is the ONLY place API-key revocation-by-expiry is enforced —
+    there is no database lookup anywhere in this verification path (see
+    `app/api/apikeys/route.js`'s DELETE for what deleting a key's bookkeeping record does and
+    does NOT do).
 
 ### lib/storage.js
 - imports: `createClient` (@supabase/supabase-js)
@@ -543,3 +584,121 @@ Buffer with `Content-Disposition: attachment` and `Cache-Control: no-store`.
 *(Note: `lib/schedule-image/` contains only an `assets/` subdirectory — fonts, template PNGs,
 logo — referenced by `lib/pdfDoc.js` and `lib/scheduleImage.js` via
 `path.join(process.cwd(), "lib", "schedule-image", "assets")`; no additional JS modules there.)*
+
+---
+
+## Part 3 — CLI & MCP (`cli/**`, `mcp/**`, 3 files)  (NEW — commit `8b49316`)
+
+Full-parity terminal/agent access to the same `app/api/**` routes documented in Part 1,
+authenticated via the `apikeys` mechanism documented in Part 2's `lib/session.js` entry. Not
+Next.js route files — plain Node ESM scripts, run directly (`node cli/dcp1.mjs ...`) or as a
+long-running stdio process (`node mcp/server.mjs`). See `CLI.md` for user-facing usage docs;
+this section is the same exhaustive function-level treatment as Parts 1-2.
+
+### cli/core.mjs
+- imports: `fs`, `path`, `os` (Node built-ins only — no npm dependencies)
+- `loadConfig()` — reads/parses `~/.dcp1/config.json`; returns `{}` on any read/parse failure
+  (missing file, corrupt JSON, etc.) rather than throwing.
+- `saveConfig(config)` — `mkdir -p ~/.dcp1`, then writes `config` as pretty-printed JSON with
+  file mode `0o600` (owner-read/write only — the file holds a Bearer credential).
+- `clearConfig()` — deletes `~/.dcp1/config.json`; swallows the error if it's already gone
+  (idempotent).
+- `resolveAuth()` — merges config: `DCP1_API_URL`/`DCP1_API_KEY` env vars take priority over
+  `loadConfig()`'s `baseUrl`/`token`, falling back to `http://localhost:3000` if neither is set;
+  returns `{ baseUrl, token, config }`.
+- `apiRequest(method, urlPath, body)` (async) — the JSON request/response client every CLI
+  command and MCP tool goes through: throws if no token is resolved; sends
+  `Authorization: Bearer <token>` + JSON body; parses the response JSON; throws
+  `Error(data.error || "... failed (HTTP <status>)")` on any non-2xx response; else returns the
+  parsed data.
+- `apiRequestBinary(urlPath)` (async) — same auth/error-handling shape as `apiRequest`, but for
+  the 3 binary-response GET routes (invoice/paycheck PDFs, schedule PNG); returns a `Buffer`
+  instead of parsed JSON; on error, tries to parse the response body as JSON for an `.error`
+  field, falling back to the raw text.
+- `loginAndMintKey(baseUrl, username, password, { label, expiresInDays } = {})` (async) — the
+  CLI/MCP bootstrap flow: `POST /api/login` with the given credentials (real password, used
+  once), extracts the `Set-Cookie` session cookie from the raw response headers (this is the
+  ONE place in the whole CLI/MCP layer that ever holds a session cookie — everywhere else uses
+  only the minted API key), immediately uses that cookie for one `POST /api/apikeys` call
+  (`{ userId: <from login response>, label, expiresInDays }`), then calls `saveConfig()` with
+  the resulting token/apiKeyId/userId/userType and returns that same data. The cookie is never
+  stored or reused after this function returns.
+- private: `- CONFIG_DIR = ~/.dcp1`, `- CONFIG_PATH = ~/.dcp1/config.json` (module-local, not
+  exported)
+
+### cli/dcp1.mjs  (executable, `#!/usr/bin/env node`; `package.json`'s `bin.dcp1`)
+- imports: `apiRequest, apiRequestBinary, loginAndMintKey, loadConfig, clearConfig, resolveAuth`
+  (./core.mjs), `fs`
+- `main()` (async, not exported — the script's own entry point, invoked unconditionally at the
+  bottom of the file via `main().catch(...)`) — parses `process.argv`, dispatches to one of 15
+  command groups (see below), prints the result as pretty JSON via `print()`, and on any thrown
+  `Error` prints `"Error: <message>"` to stderr and exits with code 1.
+- private (all non-exported — this file has no exports, it's a script, not a module others
+  import):
+  - `- parseArgs(argv)` — hand-rolled flag parser (no npm dependency): splits `argv` into
+    `positional` (non-`--` args) and `flags` (`--key value`, `--key=value`, or bare `--key` as
+    `true`); returns `{ positional, flags }`.
+  - `- bodyFromFlags(flags)` — the `--json '<raw JSON>'` escape hatch used by most create/update
+    commands (rather than a hand-rolled `--flag` per field, since body shapes vary a lot between
+    routes — Users/Services especially); `JSON.parse`s `flags.json`, throwing a clearer error
+    message on invalid JSON; returns `undefined` if `--json` wasn't passed at all.
+  - `- print(data)` — `console.log(JSON.stringify(data, null, 2))`.
+  - `- writeBinary(buffer, outPath, defaultName)` (async) — writes a `Buffer` to `outPath` (or
+    `defaultName` if `--out` wasn't given) via `fs.writeFileSync`; logs the byte count and path.
+  - `- HELP` (const, not exported) — the full usage string printed by `dcp1 help`.
+  - **Command dispatch inside `main()`** (all inline `if (group === "...")` branches, not
+    separate named functions — listed here as the effective command surface):
+    - `login <username> <password> [--label] [--expires-days]` → `loginAndMintKey()`
+    - `logout` → `clearConfig()`
+    - `whoami` → prints the cached `loadConfig()` identity
+    - `apikeys create --user <id> [--label] [--expires-days]` / `list` / `delete <id>` →
+      `POST`/`GET`/`DELETE /api/apikeys`
+    - `users list` / `create --json` / `update <userId> --json` → `/api/users`
+    - `services list` / `create --json` / `update <serviceId> --json` → `/api/services`
+    - `enrollments list` / `create --json` / `update <id> --json` / `delete <id>` →
+      `/api/enrollments`
+    - `schedule list` / `create --json` / `pick --json` / `requests list` / `requests review
+      --json` / `image <userId> [--out]` → `/api/schedule`, `/api/schedule/pick`,
+      `/api/schedule/requests`, `/api/schedule/image` (binary)
+    - `attendance list` / `log --json` → `/api/attendance`
+    - `invoices list` / `generate --year --month` / `manual --json` / `update <id> --json` /
+      `delete <id>` / `pdf <id> [--out]` → `/api/invoices`, `/api/invoices/pdf` (binary)
+    - `paychecks list` / `generate --year --month` / `manual --json` / `update <id> --json` /
+      `delete <id>` / `pdf <id> [--out]` → `/api/paychecks`, `/api/paychecks/pdf` (binary)
+    - `trial feedback --json` / `enroll --json` → `/api/trial-feedback`, `/api/trial-enroll`
+    - `interview task --json` / `offer --json` → `/api/interview-task`, `/api/interview-offer`
+    - `convert <accountId>` → `/api/convert`
+    - `regforms list` / `review --json` → `/api/regforms`
+    - `leads list` / `create --json` → `/api/leads`
+    - `me [<userId>]` (defaults to the logged-in account's own id) → `/api/me`
+    - `help` / `--help` / `-h` / no args → prints `HELP`
+    - anything else → throws "Unknown command"
+
+### mcp/server.mjs  (executable, `#!/usr/bin/env node`; run via `npm run mcp`)
+- imports: `McpServer` (@modelcontextprotocol/sdk/server/mcp.js), `StdioServerTransport`
+  (@modelcontextprotocol/sdk/server/stdio.js), `z` (zod), `apiRequest, apiRequestBinary,
+  loginAndMintKey, loadConfig, resolveAuth` (../cli/core.mjs)
+- Not a set of exported functions — a script that constructs one `McpServer` instance,
+  registers 5 tools on it, and connects it to a `StdioServerTransport` (unconditional top-level
+  `await server.connect(transport)` at the bottom of the file, same "runs immediately" shape as
+  `cli/dcp1.mjs`'s `main()`).
+- Registered tools (each via `server.registerTool(name, {title, description, inputSchema}, cb)`):
+  - `dcp1_api_catalog` — no input; returns the module-level `API_CATALOG` string (a condensed,
+    hand-written route reference covering every group documented in Part 1, kept in sync
+    manually rather than generated).
+  - `dcp1_whoami` — no input; throws if `resolveAuth()` has no token; else returns
+    `{ userId, userType, baseUrl }` from `loadConfig()`/`resolveAuth()`.
+  - `dcp1_login` — input `{ username, password, label?, expiresInDays? }`; calls
+    `loginAndMintKey()`, returns `{ loggedInAs, userType, expiresAt }`.
+  - `dcp1_request` — input `{ method: "GET"|"POST"|"PATCH"|"DELETE", path, body? }`; the one
+    full-parity tool — calls `apiRequest(method, path, body)` directly and returns its result.
+    Every other tool exists to make this one discoverable/usable, not to duplicate its coverage.
+  - `dcp1_download` — input `{ path }`; calls `apiRequestBinary(path)`, returns
+    `{ bytes, base64 }`.
+- private:
+  - `- callTool(fn)` (async) — shared wrapper every tool callback goes through: awaits `fn()`,
+    wraps a successful result as MCP's `{ content: [{ type: "text", text: JSON.stringify(...) }] }`
+    shape; on a thrown error, returns the same shape with the error message and `isError: true`
+    instead of letting the exception propagate to the MCP transport.
+  - `- API_CATALOG` (const, not exported) — the multi-paragraph route-reference string returned
+    by `dcp1_api_catalog`.
