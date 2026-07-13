@@ -8,6 +8,7 @@ const FEATURE_LABELS = {
   syllabus: "Syllabus",
   notes: "Notes",
   worksheets: "Worksheets",
+  exams: "Exams",
   gcr: "GCR",
   timesheet: "Timesheet",
   "progress-tracker": "Progress Tracker",
