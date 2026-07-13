@@ -1,0 +1,87 @@
+import { NextResponse } from "next/server";
+import { readDB, writeDB } from "@/lib/db";
+import { signApiKey } from "@/lib/session";
+import { requireSelfOrManagement, requireManagement } from "@/lib/authz";
+
+// Mints a long-lived Bearer token (see lib/session.js's signApiKey) for
+// CLI/MCP/agent use — the token itself is never stored, only returned once
+// in this response; the DB record is bookkeeping only (id/label/expiry for
+// Management's "issued keys" list), not what authenticates future requests.
+//
+// body: { userId, label?, expiresInDays? }
+// Self-service (a user minting their own key, e.g. the CLI's `login`
+// bootstrap flow) or Management minting a key on behalf of anyone.
+export async function POST(req) {
+  const { userId, label, expiresInDays } = await req.json();
+  if (!userId) {
+    return NextResponse.json({ error: "userId is required." }, { status: 400 });
+  }
+
+  const { error: authError } = requireSelfOrManagement(req, userId);
+  if (authError) return authError;
+
+  const db = await readDB();
+  const user = db.users.find((u) => u.UserID === userId);
+  if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
+
+  const expiresInSeconds =
+    expiresInDays !== undefined ? Math.max(0, Number(expiresInDays)) * 60 * 60 * 24 : undefined;
+  const { token, apiKeyId, iat, exp } = signApiKey({
+    userId: user.UserID,
+    userType: user.UserType,
+    ...(expiresInSeconds !== undefined ? { expiresInSeconds } : {}),
+  });
+
+  db.apiKeys = db.apiKeys || [];
+  db.apiKeys.push({
+    ApiKeyID: apiKeyId,
+    UserID: user.UserID,
+    UserType: user.UserType,
+    Label: (label || "").trim(),
+    CreatedAt: iat,
+    ExpiresAt: exp,
+  });
+  await writeDB(db);
+
+  return NextResponse.json({
+    token,
+    apiKeyId,
+    userId: user.UserID,
+    userType: user.UserType,
+    createdAt: iat,
+    expiresAt: exp,
+  });
+}
+
+// Management-only: lists every issued key's bookkeeping record (never the
+// token itself, which was only ever returned once at creation time).
+export async function GET(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
+  const db = await readDB();
+  return NextResponse.json({ apiKeys: db.apiKeys || [] });
+}
+
+// body: { apiKeyId }
+// Removes the bookkeeping record only — does NOT cryptographically revoke
+// an already-issued token before its own expiry (see lib/session.js's
+// signApiKey comment). Self-service (a user deleting their own key) or
+// Management deleting anyone's.
+export async function DELETE(req) {
+  const { apiKeyId } = await req.json();
+  if (!apiKeyId) {
+    return NextResponse.json({ error: "apiKeyId is required." }, { status: 400 });
+  }
+
+  const db = await readDB();
+  const record = (db.apiKeys || []).find((k) => k.ApiKeyID === apiKeyId);
+  if (!record) return NextResponse.json({ error: "API key not found." }, { status: 404 });
+
+  const { error } = requireSelfOrManagement(req, record.UserID);
+  if (error) return error;
+
+  db.apiKeys = db.apiKeys.filter((k) => k.ApiKeyID !== apiKeyId);
+  await writeDB(db);
+  return NextResponse.json({ ok: true });
+}

@@ -25,6 +25,11 @@ rm data/db.json
 npm run seed
 ```
 
+## CLI & MCP
+
+The whole app is also drivable from the terminal (or by an MCP-aware
+agent) as any user — see `CLI.md`.
+
 ## How the pieces map to the UML doc (dcp1-uml-v3.md)
 
 | UML class | Where it lives in this build |
