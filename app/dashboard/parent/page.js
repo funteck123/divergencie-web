@@ -9,6 +9,7 @@ import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
+import { amountDueInOwnCurrency } from "@/lib/billing";
 
 export default function ParentDashboard() {
   return <DashboardShell allowedType="Parent">{(user) => <Body user={user} />}</DashboardShell>;
@@ -212,6 +213,8 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
             <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <th>Service</th>
             <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+            <th>Amount Due</th>
+            <th>Total ({student?.Currency || "INR"})</th>
             <th>Paid</th>
             <th></th>
           </tr>
@@ -222,6 +225,8 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
               <td>{i.Month}/{i.Year}</td>
               <td>{serviceNameOf(i.ServiceID)}</td>
               <td>{i.Currency || student?.Currency || "INR"} {i.Amount}</td>
+              <td>{i.Currency || student?.Currency || "INR"} {amountDueInOwnCurrency(i, student?.Currency).toFixed(2)}</td>
+              <td>{i.ConvertedTotal != null ? `${student?.Currency || "INR"} ${i.ConvertedTotal.toFixed(2)}` : "—"}</td>
               <td>
                 <InvoicePaidControl
                   invoice={i}
@@ -237,7 +242,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
             </tr>
           ))}
           {invSort.sorted.length === 0 && (
-            <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
+            <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
           )}
         </tbody>
       </table>

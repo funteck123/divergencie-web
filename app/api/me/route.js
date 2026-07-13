@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime, requiredGroupForBookingType } from "@/lib/scheduleGen";
 import { requireSelfOrManagement } from "@/lib/authz";
+import { convertRecordTotal } from "@/lib/fxRates";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -26,8 +27,21 @@ export async function GET(req) {
 
   // Draft invoices/paychecks are an internal Management staging state (before
   // INR pricing is set and it's marked Sent) — not visible to the account.
-  const invoices = db.invoices.filter((i) => i.StudentID === userId && i.Status !== "Draft");
-  const paychecks = db.paychecks.filter((p) => p.StaffID === userId && p.Status !== "Draft");
+  const rawInvoices = db.invoices.filter((i) => i.StudentID === userId && i.Status !== "Draft");
+  const rawPaychecks = db.paychecks.filter((p) => p.StaffID === userId && p.Status !== "Draft");
+
+  // ConvertedTotal is the record's total in the viewer's OWN profile
+  // Currency (may differ from both the record's own Currency and from
+  // INR) — pivots through the record's already-frozen INRAmount, see
+  // lib/fxRates.js. Tracked so we only persist the FX cache (db.fxRates)
+  // back to the DB when a lookup actually added a new entry.
+  const fxRatesBefore = Object.keys(db.fxRates || {}).length;
+  const invoices = await Promise.all(
+    rawInvoices.map(async (i) => ({ ...i, ConvertedTotal: await convertRecordTotal(db, i, user.Currency || "INR") }))
+  );
+  const paychecks = await Promise.all(
+    rawPaychecks.map(async (p) => ({ ...p, ConvertedTotal: await convertRecordTotal(db, p, user.Currency || "INR") }))
+  );
 
   // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
   // Includes manually-offered Trial/Interview slots AND every auto-generated
@@ -75,18 +89,28 @@ export async function GET(req) {
 
   let children = [];
   if (user.UserType === "Parent" && Array.isArray(user.StudentIDs)) {
-    children = user.StudentIDs.map((sid) => {
-      const child = db.users.find((u) => u.UserID === sid);
-      const childEnroll = db.enrollments.filter((e) => e.UserID === sid);
-      const childServiceIds = new Set(childEnroll.map((e) => e.ServiceID));
-      return {
-        student: child,
-        enrollments: childEnroll,
-        schedule: sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID))),
-        attendance: db.attendanceItems.filter((a) => a.UserID === sid),
-        invoices: db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft"),
-      };
-    });
+    children = await Promise.all(
+      user.StudentIDs.map(async (sid) => {
+        const child = db.users.find((u) => u.UserID === sid);
+        const childEnroll = db.enrollments.filter((e) => e.UserID === sid);
+        const childServiceIds = new Set(childEnroll.map((e) => e.ServiceID));
+        const childInvoices = db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft");
+        const childInvoicesWithTotals = await Promise.all(
+          childInvoices.map(async (i) => ({ ...i, ConvertedTotal: await convertRecordTotal(db, i, child?.Currency || "INR") }))
+        );
+        return {
+          student: child,
+          enrollments: childEnroll,
+          schedule: sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID))),
+          attendance: db.attendanceItems.filter((a) => a.UserID === sid),
+          invoices: childInvoicesWithTotals,
+        };
+      })
+    );
+  }
+
+  if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) {
+    await writeDB(db);
   }
 
   return NextResponse.json({

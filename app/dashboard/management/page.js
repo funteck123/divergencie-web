@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
-import { ratesOf, rateById, BILLING_TYPES } from "@/lib/billing";
+import { ratesOf, rateById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
 
@@ -2453,6 +2453,7 @@ function BillingTable({ rows, idKey, nameOf, currencyOf, personKey, serviceNameO
           <SortableTh label="Scheduled hrs" sortKeyName="ScheduledHours" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
           <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
           <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <th>Amount Due</th>
           <th>INR Amount</th>
           <th>INR Due</th>
           <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
@@ -2478,7 +2479,7 @@ function BillingTable({ rows, idKey, nameOf, currencyOf, personKey, serviceNameO
         ))}
         {sorted.length === 0 && (
           <tr>
-            <td colSpan={11} style={{ color: "var(--muted)" }}>
+            <td colSpan={12} style={{ color: "var(--muted)" }}>
               None generated yet.
             </td>
           </tr>
@@ -2571,6 +2572,9 @@ function Row({ row, idKey, nameOf, currencyOf, personKey, serviceNameOf, onPatch
         ) : (
           `${row.Currency || currencyOf(row[personKey])} ${row.Amount}`
         )}
+      </td>
+      <td>
+        {`${row.Currency || currencyOf(row[personKey])} ${amountDueInOwnCurrency(row, currencyOf(row[personKey])).toFixed(2)}`}
       </td>
       <td>
         {editing ? (

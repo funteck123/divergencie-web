@@ -8,6 +8,7 @@ import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import { api, formatRates, useSort } from "@/lib/client";
+import { amountDueInOwnCurrency } from "@/lib/billing";
 
 export default function StaffDashboard() {
   return <DashboardShell allowedType="Staff">{(user) => <Body user={user} />}</DashboardShell>;
@@ -196,7 +197,8 @@ function Body({ user }) {
               <th>Service</th>
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
+              <th>Amount Due</th>
+              <th>Total ({data.user.Currency || "INR"})</th>
               <th>Received</th>
               <th></th>
             </tr>
@@ -208,7 +210,8 @@ function Body({ user }) {
                 <td>{serviceNameOf(p.ServiceID)}</td>
                 <td>{p.AttendedHours}</td>
                 <td>{p.Currency || data.user.Currency || "INR"} {p.Amount}</td>
-                <td>{p.INRDue}</td>
+                <td>{p.Currency || data.user.Currency || "INR"} {amountDueInOwnCurrency(p, data.user.Currency).toFixed(2)}</td>
+                <td>{p.ConvertedTotal != null ? `${data.user.Currency || "INR"} ${p.ConvertedTotal.toFixed(2)}` : "—"}</td>
                 <td>
                   {p.StaffReceivedFlag ? (
                     <span className="badge badge-good">Received ✓</span>
@@ -227,7 +230,7 @@ function Body({ user }) {
             ))}
             {paySort.sorted.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ color: "var(--muted)" }}>
+                <td colSpan={8} style={{ color: "var(--muted)" }}>
                   No paychecks yet.
                 </td>
               </tr>

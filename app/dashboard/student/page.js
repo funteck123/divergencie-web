@@ -9,6 +9,7 @@ import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, formatRates, useSort } from "@/lib/client";
+import { amountDueInOwnCurrency } from "@/lib/billing";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -214,7 +215,8 @@ function Body({ user }) {
               <th>Service</th>
               <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
-              <SortableTh label="INR Due" sortKeyName="INRDue" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+              <th>Amount Due</th>
+              <th>Total ({data.user.Currency || "INR"})</th>
               <th>Paid</th>
               <th></th>
             </tr>
@@ -226,7 +228,8 @@ function Body({ user }) {
                 <td>{serviceNameOf(i.ServiceID)}</td>
                 <td>{i.AttendedHours}</td>
                 <td>{i.Currency || data.user.Currency || "INR"} {i.Amount}</td>
-                <td>{i.INRDue}</td>
+                <td>{i.Currency || data.user.Currency || "INR"} {amountDueInOwnCurrency(i, data.user.Currency).toFixed(2)}</td>
+                <td>{i.ConvertedTotal != null ? `${data.user.Currency || "INR"} ${i.ConvertedTotal.toFixed(2)}` : "—"}</td>
                 <td>
                   <InvoicePaidControl
                     invoice={i}
@@ -243,7 +246,7 @@ function Body({ user }) {
             ))}
             {invSort.sorted.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ color: "var(--muted)" }}>
+                <td colSpan={8} style={{ color: "var(--muted)" }}>
                   No invoices yet.
                 </td>
               </tr>

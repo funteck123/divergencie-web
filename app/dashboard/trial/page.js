@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import { api, groupMatches } from "@/lib/client";
+import { amountDueInOwnCurrency } from "@/lib/billing";
 
 export default function TrialDashboard() {
   return <DashboardShell allowedType="TrialAcc">{(user) => <Body user={user} />}</DashboardShell>;
@@ -146,7 +147,8 @@ function Body({ user }) {
             <tr>
               <th>Period</th>
               <th>Amount</th>
-              <th>INR Due</th>
+              <th>Amount Due</th>
+              <th>Total ({data.user.Currency || "INR"})</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -156,7 +158,8 @@ function Body({ user }) {
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
                 <td>{i.Currency || data.user.Currency || "INR"} {i.Amount}</td>
-                <td>{i.INRDue}</td>
+                <td>{i.Currency || data.user.Currency || "INR"} {amountDueInOwnCurrency(i, data.user.Currency).toFixed(2)}</td>
+                <td>{i.ConvertedTotal != null ? `${data.user.Currency || "INR"} ${i.ConvertedTotal.toFixed(2)}` : "—"}</td>
                 <td>
                   <span className={`badge ${i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
                 </td>
@@ -171,7 +174,7 @@ function Body({ user }) {
             ))}
             {data.invoices.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ color: "var(--muted)" }}>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>
                   No invoices yet.
                 </td>
               </tr>
