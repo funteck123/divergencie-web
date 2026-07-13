@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
-import { convertRecordTotal } from "@/lib/fxRates";
+import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
+import { amountDueInOwnCurrency } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -32,18 +33,22 @@ export async function GET(req) {
   // and would mislabel an old INR invoice as whatever currency the student
   // uses today.
   const invoiceCurrency = invoice.Currency || service?.Currency || "INR";
-  // Extra "Total (<student's own currency>)" line — only when it actually
-  // differs from what this invoice was billed in (no INR-only restriction;
-  // convertRecordTotal supports any target currency by pivoting through the
-  // invoice's own already-frozen INRAmount, see lib/fxRates.js).
+  // The item table stays in whatever currency this invoice was actually
+  // billed in (its own native record of the charge) — but the headline
+  // figures (Balance Due box, and the final Total line) are always shown in
+  // the student's OWN currency, converted via lib/fxRates.js, falling back
+  // to the native currency/amount if a conversion genuinely can't be
+  // resolved (so the document is never left blank).
   const studentCurrency = student?.Currency || "INR";
-  let convertedTotal = null;
-  if (studentCurrency !== invoiceCurrency) {
-    const fxRatesBefore = Object.keys(db.fxRates || {}).length;
-    const amount = await convertRecordTotal(db, invoice, studentCurrency);
-    if (amount != null) convertedTotal = { currency: studentCurrency, amount };
-    if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) await writeDB(db);
-  }
+  const fxRatesBefore = Object.keys(db.fxRates || {}).length;
+  const convertedTotalAmount = await convertRecordTotal(db, invoice, studentCurrency);
+  const convertedDueAmount = await convertINRAmount(db, invoice.INRDue, studentCurrency, invoice.Year, invoice.Month);
+  if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) await writeDB(db);
+
+  const displayCurrency = convertedTotalAmount != null ? studentCurrency : invoiceCurrency;
+  const displayTotal = convertedTotalAmount != null ? convertedTotalAmount : invoice.Amount;
+  const displayDueCurrency = convertedDueAmount != null ? studentCurrency : invoiceCurrency;
+  const displayDue = convertedDueAmount != null ? convertedDueAmount : amountDueInOwnCurrency(invoice, invoiceCurrency);
 
   const dueDate = new Date(invoice.Year, invoice.Month - 1, 1);
   const buffer = await drawDocumentPDF({
@@ -58,12 +63,13 @@ export async function GET(req) {
     secondaryLabel: "Class Name",
     secondaryValue: service?.CourseClass || service?.Name || invoice.ServiceID,
     balanceLabel: "Balance Due:",
-    // A Service can offer several currencies now — the invoice itself
-    // records which one this bill was actually generated in (the
-    // enrollment's chosen currency), falling back to the Student's own
-    // Currency only for older invoices created before this field existed.
-    currency: invoiceCurrency,
-    balance: invoice.Amount,
+    // Balance Due is the outstanding amount (from INR Due), in the
+    // student's own currency — NOT the invoice's gross Amount.
+    currency: displayDueCurrency,
+    balance: displayDue,
+    // Total line has its own independent currency/amount pair — see
+    // totalCurrency below — since its conversion can succeed/fail
+    // independently of Balance Due's.
     // Quantity is always 1 (one billing line for this month), Rate equals
     // the actual Amount charged — Quantity x Rate must equal Amount on a
     // real invoice. Service.Rate is a monthly figure, not per-hour, so it
@@ -79,9 +85,12 @@ export async function GET(req) {
     ],
     taxPercent: 0,
     discountPercent: 0,
-    total: invoice.Amount,
+    // The final Total line is the full charge, converted into the
+    // student's own currency — the item table above still shows the
+    // native billed amount, so nothing about the original charge is lost.
+    total: displayTotal,
+    totalCurrency: displayCurrency,
     terms: TERMS,
-    ...(convertedTotal ? { convertedTotal } : {}),
   });
 
   return new NextResponse(buffer, {
