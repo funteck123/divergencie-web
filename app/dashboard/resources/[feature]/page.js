@@ -9,6 +9,7 @@ const FEATURE_LABELS = {
   notes: "Notes",
   worksheets: "Worksheets",
   exams: "Exams",
+  books: "Books",
   gcr: "GCR",
   timesheet: "Timesheet",
   "progress-tracker": "Progress Tracker",

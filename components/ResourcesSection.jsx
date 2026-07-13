@@ -11,6 +11,7 @@ const SERVICE_FEATURES = [
   { slug: "notes", label: "Notes" },
   { slug: "worksheets", label: "Worksheets" },
   { slug: "exams", label: "Exams" },
+  { slug: "books", label: "Books" },
   { slug: "gcr", label: "GCR" },
 ];
 const USER_FEATURES = [
