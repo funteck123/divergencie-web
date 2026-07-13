@@ -58,6 +58,11 @@ export async function GET(req) {
     // in (Paycheck.Currency, from the enrollment's resolved rate) — falling
     // back to the staff's own Currency only if that's somehow missing.
     currency: paycheck.Currency || staff?.Currency || service?.Currency || "INR",
+    // The header "Currency:" row is the staff's own home/payroll currency —
+    // a distinct concept from the billed currency above (e.g. an INR-paid
+    // teacher billed in USD for a specific service still has "INR" as their
+    // own payroll currency here).
+    staffCurrency,
     icPassport: staff?.PassportNumber || "",
     epfNo: "",
     socsoNo: "",
