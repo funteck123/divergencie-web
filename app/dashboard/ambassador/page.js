@@ -6,8 +6,8 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
-import { api, formatRates, useSort } from "@/lib/client";
-import { amountDueInOwnCurrency } from "@/lib/billing";
+import { api, formatRate, useSort } from "@/lib/client";
+import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
 
 // Ambassador accounts can be enrolled in Ambassador-group Services (see
 // ALL_GROUPS in management/page.js) and are included in the bulk paycheck
@@ -66,8 +66,15 @@ function Body({ user }) {
     .map((p) => ({ ...p, _period: p.Year * 100 + p.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const paySort = useSort(paycheckRows, "_period", "desc");
+  // Attach the ONE rate this account is actually enrolled at (its own
+  // RateID) — a Service can offer several rates/currencies, but a user
+  // should only ever see the rate that applies to them, not every option
+  // Management could pick from.
   const enrolledServices = (data?.enrollments || [])
-    .map((e) => (data.services || []).find((s) => s.ServiceID === e.ServiceID))
+    .map((e) => {
+      const s = (data.services || []).find((s) => s.ServiceID === e.ServiceID);
+      return s ? { ...s, _myRate: rateById(s, e.RateID) } : null;
+    })
     .filter(Boolean);
 
   function serviceNameOf(id) {
@@ -99,7 +106,7 @@ function Body({ user }) {
               <tr key={s.ServiceID}>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
-                <td>{formatRates(s)}</td>
+                <td>{formatRate(s._myRate)}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>

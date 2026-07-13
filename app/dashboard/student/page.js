@@ -8,8 +8,8 @@ import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
-import { api, formatRates, useSort } from "@/lib/client";
-import { amountDueInOwnCurrency } from "@/lib/billing";
+import { api, formatRate, useSort } from "@/lib/client";
+import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -75,8 +75,15 @@ function Body({ user }) {
     .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
+  // Attach the ONE rate this account is actually enrolled at (its own
+  // RateID) — a Service can offer several rates/currencies, but a user
+  // should only ever see the rate that applies to them, not every option
+  // Management could pick from.
   const enrolledServices = (data?.enrollments || [])
-    .map((e) => (data.services || []).find((s) => s.ServiceID === e.ServiceID))
+    .map((e) => {
+      const s = (data.services || []).find((s) => s.ServiceID === e.ServiceID);
+      return s ? { ...s, _myRate: rateById(s, e.RateID) } : null;
+    })
     .filter(Boolean);
 
   function serviceNameOf(id) {
@@ -108,7 +115,7 @@ function Body({ user }) {
               <tr key={s.ServiceID}>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
-                <td>{formatRates(s)}</td>
+                <td>{formatRate(s._myRate)}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>
