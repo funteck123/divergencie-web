@@ -28,6 +28,7 @@ export default function MyInfo({ user, linkedChildren }) {
     rows.push(["Department", user.Department || "—"]);
     rows.push(["Passport / IC Number", user.PassportNumber || "—"]);
     rows.push(["WhatsApp Number", user.WhatsAppNumber || "—"]);
+    rows.push(["Email", user.Email || "—"]);
   }
   rows.push(["Currency", user.Currency || "INR"]);
   if (user.UserType === "Student") {

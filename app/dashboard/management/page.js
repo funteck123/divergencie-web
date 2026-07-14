@@ -920,6 +920,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       fields.role = role;
       fields.passportNumber = passportNumber;
       fields.whatsappNumber = whatsappNumber;
+      fields.email = email;
     }
     if (user.UserType === "Staff") fields.department = department;
     if (user.UserType === "Teacher") fields.batch = batch;
@@ -1020,6 +1021,15 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             WhatsApp Number
           </label>
           <input className="field" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} />
+        </div>
+      )}
+
+      {ROLE_ELIGIBLE.includes(user.UserType) && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Email
+          </label>
+          <input className="field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
       )}
 
@@ -1201,6 +1211,7 @@ function CreateAccount({ onCreated, users }) {
   const [role, setRole] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [course, setCourse] = useState("");
   const [batch, setBatch] = useState("");
   const [department, setDepartment] = useState("");
@@ -1221,6 +1232,7 @@ function CreateAccount({ onCreated, users }) {
     setRole("");
     setPassportNumber("");
     setWhatsappNumber("");
+    setEmail("");
     setCourse("");
     setBatch("");
     setDepartment("");
@@ -1238,6 +1250,7 @@ function CreateAccount({ onCreated, users }) {
         body.role = role;
         body.passportNumber = passportNumber;
         body.whatsappNumber = whatsappNumber;
+        body.email = email;
       }
       if (userType === "Staff") {
         body.department = department;
@@ -1314,6 +1327,13 @@ function CreateAccount({ onCreated, users }) {
               placeholder="WhatsApp Number"
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
+            />
+            <input
+              className="field"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <input
               className="field"

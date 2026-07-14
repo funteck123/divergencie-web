@@ -104,6 +104,18 @@ function applyWhatsAppNumber(user, userType, whatsappNumber) {
   }
 }
 
+// Teacher/Staff/Ambassador's own contact email — same pattern as
+// applyWhatsAppNumber above (ROLE_ELIGIBLE eligibility, reuses Student's
+// Email field name since the two buckets never overlap, Student left
+// untouched here since applyStudentExtras owns that case).
+function applyEmail(user, userType, email) {
+  if (ROLE_ELIGIBLE.includes(userType)) {
+    user.Email = email || "";
+  } else if (userType !== "Student") {
+    delete user.Email;
+  }
+}
+
 // Every account type carries a Currency — Services have their own Currency
 // too (the rate's denomination), but the invoice/paycheck's final total is
 // always shown in the billed user's Currency, not the Service's.
@@ -121,7 +133,6 @@ function applyStudentExtras(user, userType, fields) {
   if (userType !== "Student") {
     for (const key of [
       "ParentWhatsAppNumber",
-      "Email",
       "School",
       "Location",
       "Notes",
@@ -166,9 +177,9 @@ function applyStudentExtras(user, userType, fields) {
 // record, no invoice carry-over) — that history only exists via /api/convert.
 // body: { userType, name, studentIds?: [] (Parent), role? (Teacher/Staff/
 //         Ambassador job title, free text), passportNumber? (Teacher/Staff/
-//         Ambassador), whatsappNumber? (Teacher/Staff/Ambassador — Student's
-//         own WhatsApp number is a separate field, set via the Student-only
-//         extras below), course?, batch?, department? (Staff only — Teacher/
+//         Ambassador), whatsappNumber?, email? (Teacher/Staff/Ambassador —
+//         Student's own WhatsApp/Email are separate fields, set via the
+//         Student-only extras below), course?, batch?, department? (Staff only — Teacher/
 //         Ambassador get a fixed value), timezone?, currency? (every type,
 //         defaults to "INR") }
 export async function POST(req) {
@@ -176,7 +187,7 @@ export async function POST(req) {
   if (error) return error;
 
   const body = await req.json();
-  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency, whatsappNumber } = body;
+  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency, whatsappNumber, email } = body;
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -212,6 +223,7 @@ export async function POST(req) {
   applyRole(user, userType, role);
   applyPassportNumber(user, userType, passportNumber);
   applyWhatsAppNumber(user, userType, whatsappNumber);
+  applyEmail(user, userType, email);
   applyCurrency(user, currency);
   applyStudentExtras(user, userType, body);
 
@@ -231,9 +243,9 @@ export async function POST(req) {
 // state stamped by /api/convert alongside ConvertedToUserID, and can't be
 // set or cleared from this endpoint.
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
-//         role?, passportNumber?, whatsappNumber? (Teacher/Staff/Ambassador
-//         — same field name doubles as Student's own WhatsApp number below,
-//         routed by UserType), batch?, department? (Staff only),
+//         role?, passportNumber?, whatsappNumber?, email? (Teacher/Staff/
+//         Ambassador — same field names double as Student's own WhatsApp/
+//         Email below, routed by UserType), batch?, department? (Staff only),
 //         currency?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
@@ -343,6 +355,7 @@ export async function PATCH(req) {
   if (role !== undefined) applyRole(user, user.UserType, role);
   if (passportNumber !== undefined) applyPassportNumber(user, user.UserType, passportNumber);
   if (whatsappNumber !== undefined) applyWhatsAppNumber(user, user.UserType, whatsappNumber);
+  if (email !== undefined) applyEmail(user, user.UserType, email);
   if (studentIds !== undefined) user.StudentIDs = studentIds;
   if (batch !== undefined) applyBatch(user, user.UserType, batch);
   if (department !== undefined) applyDepartment(user, user.UserType, department);
