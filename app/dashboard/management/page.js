@@ -919,6 +919,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     if (ROLE_ELIGIBLE.includes(user.UserType)) {
       fields.role = role;
       fields.passportNumber = passportNumber;
+      fields.whatsappNumber = whatsappNumber;
     }
     if (user.UserType === "Staff") fields.department = department;
     if (user.UserType === "Teacher") fields.batch = batch;
@@ -1010,6 +1011,15 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             Passport / IC Number
           </label>
           <input className="field" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} />
+        </div>
+      )}
+
+      {ROLE_ELIGIBLE.includes(user.UserType) && (
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            WhatsApp Number
+          </label>
+          <input className="field" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} />
         </div>
       )}
 
@@ -1190,6 +1200,7 @@ function CreateAccount({ onCreated, users }) {
   const [studentIds, setStudentIds] = useState([]);
   const [role, setRole] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
   const [course, setCourse] = useState("");
   const [batch, setBatch] = useState("");
   const [department, setDepartment] = useState("");
@@ -1209,6 +1220,7 @@ function CreateAccount({ onCreated, users }) {
     setStudentIds([]);
     setRole("");
     setPassportNumber("");
+    setWhatsappNumber("");
     setCourse("");
     setBatch("");
     setDepartment("");
@@ -1225,6 +1237,7 @@ function CreateAccount({ onCreated, users }) {
       if (ROLE_ELIGIBLE.includes(userType)) {
         body.role = role;
         body.passportNumber = passportNumber;
+        body.whatsappNumber = whatsappNumber;
       }
       if (userType === "Staff") {
         body.department = department;
@@ -1296,6 +1309,12 @@ function CreateAccount({ onCreated, users }) {
         {ROLE_ELIGIBLE.includes(userType) && (
           <>
             <input className="field" placeholder="Role (e.g. SM Assistant)" value={role} onChange={(e) => setRole(e.target.value)} />
+            <input
+              className="field"
+              placeholder="WhatsApp Number"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+            />
             <input
               className="field"
               placeholder="Passport / IC Number"
