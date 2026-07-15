@@ -90,6 +90,8 @@ DivergenCIE CLI — operate the app from the terminal as any user.
   dcp1 schedule requests list
   dcp1 schedule requests review --json '{"type":"Trial","id":"...","action":"approve"}'
   dcp1 schedule image <userId> [--out schedule.png]
+  dcp1 schedule admin-image [--out admin-weekly-schedule.png]   (Management only — every
+    occurrence across every Service for the whole week, one image)
 
   dcp1 attendance list
   dcp1 attendance log --json '{"scheduleItemId":"...","userId":"...","status":"Present","loggedDuration":1}'
@@ -244,6 +246,10 @@ async function main() {
       if (!userId) throw new Error("Usage: dcp1 schedule image <userId> [--out schedule.png]");
       const buffer = await apiRequestBinary(`/api/schedule/image?userId=${encodeURIComponent(userId)}&download=1`);
       return writeBinary(buffer, flags.out, `schedule-${userId}.png`);
+    }
+    if (action === "admin-image") {
+      const buffer = await apiRequestBinary(`/api/schedule/admin-image?download=1`);
+      return writeBinary(buffer, flags.out, `admin-weekly-schedule.png`);
     }
     throw new Error(`Unknown action "schedule ${action}". Run \`dcp1 help\`.`);
   }

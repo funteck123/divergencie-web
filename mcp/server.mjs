@@ -51,6 +51,10 @@ Schedule / Booking
   GET  /api/schedule/requests               — Management only
   PATCH /api/schedule/requests {type, id, action: "approve"|"reject"}  — Management only
   GET  /api/schedule/image?userId=<id>&download=1  — binary PNG (self/parent/Management)
+  GET  /api/schedule/admin-image?download=1  — binary PNG (Management only) — every
+       occurrence across every Service for the whole week in one image; same-slot
+       conflicts (two occurrences sharing a day+time) stack as separate colored
+       blocks instead of overlapping
 
 Trial / Interview flows
   POST /api/trial-feedback  {trialId, feedback}          — self or Management

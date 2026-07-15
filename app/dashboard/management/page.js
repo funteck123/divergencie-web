@@ -1987,6 +1987,9 @@ function SchedulePool() {
             <button className={serviceView === "calendar" ? "btn" : "btn-ghost"} onClick={() => setServiceView("calendar")}>
               Calendar
             </button>
+            <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href="/api/schedule/admin-image?download=1" download>
+              Download Weekly Schedule Image
+            </a>
           </div>
         </div>
         {serviceView === "calendar" ? (
