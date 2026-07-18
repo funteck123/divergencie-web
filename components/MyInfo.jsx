@@ -61,6 +61,28 @@ export default function MyInfo({ user, linkedChildren }) {
       ),
     ]);
   }
+  if (user.UserType === "Staff") {
+    rows.push([
+      "Work Folder",
+      user.WorkFolderURL ? (
+        <a key="workfolder" href={user.WorkFolderURL} target="_blank" rel="noreferrer">
+          {user.WorkFolderURL}
+        </a>
+      ) : (
+        "—"
+      ),
+    ]);
+    rows.push([
+      "Timesheet",
+      user.TimesheetURL ? (
+        <a key="timesheet" href={user.TimesheetURL} target="_blank" rel="noreferrer">
+          {user.TimesheetURL}
+        </a>
+      ) : (
+        "—"
+      ),
+    ]);
+  }
 
   return (
     <div className="card">

@@ -114,8 +114,18 @@ export async function GET(req) {
     await writeDB(db);
   }
 
+  // Notes is a private Management admin field (see the Student Accounts
+  // table in the Management dashboard) — never surface it to the account's
+  // own self-view or to a Parent viewing their child's record.
+  const { Notes: _userNotes, ...userSafe } = user;
+  const childrenSafe = children?.map(({ student, ...rest }) => {
+    if (!student) return { student, ...rest };
+    const { Notes: _childNotes, ...studentSafe } = student;
+    return { student: studentSafe, ...rest };
+  });
+
   return NextResponse.json({
-    user,
+    user: userSafe,
     enrollments,
     scheduleItems,
     attendanceItems,
@@ -125,7 +135,7 @@ export async function GET(req) {
     paychecks,
     availableTrialSlots,
     availableInterviewSlots,
-    children,
+    children: childrenSafe,
     services: db.services,
   });
 }

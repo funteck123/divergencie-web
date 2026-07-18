@@ -722,6 +722,28 @@ function Accounts() {
           { header: "Passport #", render: (u) => u.PassportNumber || "—" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
           { header: "Currency", render: (u) => u.Currency || "INR" },
+          {
+            header: "Work Folder",
+            render: (u) =>
+              u.WorkFolderURL ? (
+                <a href={u.WorkFolderURL} target="_blank" rel="noreferrer">
+                  Open
+                </a>
+              ) : (
+                "—"
+              ),
+          },
+          {
+            header: "Timesheet",
+            render: (u) =>
+              u.TimesheetURL ? (
+                <a href={u.TimesheetURL} target="_blank" rel="noreferrer">
+                  Open
+                </a>
+              ) : (
+                "—"
+              ),
+          },
         ]}
         showSchedule
         {...sharedProps}
@@ -901,6 +923,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [location, setLocation] = useState(user.Location || "");
   const [notes, setNotes] = useState(user.Notes || "");
   const [timesheetUrl, setTimesheetUrl] = useState(user.TimesheetURL || "");
+  const [workFolderUrl, setWorkFolderUrl] = useState(user.WorkFolderURL || "");
   const [progressTrackerUrl, setProgressTrackerUrl] = useState(user.ProgressTrackerURL || "");
   const [groupSent, setGroupSent] = useState(Boolean(user.GroupSent));
   const [gcrSent, setGcrSent] = useState(Boolean(user.GCRSent));
@@ -922,7 +945,11 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       fields.whatsappNumber = whatsappNumber;
       fields.email = email;
     }
-    if (user.UserType === "Staff") fields.department = department;
+    if (user.UserType === "Staff") {
+      fields.department = department;
+      fields.workFolderUrl = workFolderUrl;
+      fields.timesheetUrl = timesheetUrl;
+    }
     if (user.UserType === "Teacher") fields.batch = batch;
     if (user.UserType === "Student") {
       fields.course = course;
@@ -1053,6 +1080,23 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           Department: {FIXED_DEPARTMENT[user.UserType]} (fixed for this account type)
         </p>
+      )}
+
+      {user.UserType === "Staff" && (
+        <>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Work Folder URL (Google Drive)
+            </label>
+            <input className="field" value={workFolderUrl} onChange={(e) => setWorkFolderUrl(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Timesheet URL
+            </label>
+            <input className="field" value={timesheetUrl} onChange={(e) => setTimesheetUrl(e.target.value)} />
+          </div>
+        </>
       )}
 
       {user.UserType === "Student" && (
@@ -1215,6 +1259,8 @@ function CreateAccount({ onCreated, users }) {
   const [course, setCourse] = useState("");
   const [batch, setBatch] = useState("");
   const [department, setDepartment] = useState("");
+  const [workFolderUrl, setWorkFolderUrl] = useState("");
+  const [timesheetUrl, setTimesheetUrl] = useState("");
   const [currency, setCurrency] = useState("INR");
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [issued, setIssued] = useState(null);
@@ -1236,6 +1282,8 @@ function CreateAccount({ onCreated, users }) {
     setCourse("");
     setBatch("");
     setDepartment("");
+    setWorkFolderUrl("");
+    setTimesheetUrl("");
     setCurrency("INR");
     setTimezone("Asia/Kolkata");
   }
@@ -1255,6 +1303,8 @@ function CreateAccount({ onCreated, users }) {
       if (userType === "Staff") {
         body.department = department;
         body.timezone = timezone;
+        body.workFolderUrl = workFolderUrl;
+        body.timesheetUrl = timesheetUrl;
       }
       if (userType === "Teacher") {
         body.batch = batch;
@@ -1345,14 +1395,28 @@ function CreateAccount({ onCreated, users }) {
         )}
 
         {userType === "Staff" && (
-          <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
-            <option value="">Select department…</option>
-            {DEPARTMENTS.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
+          <>
+            <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+              <option value="">Select department…</option>
+              {DEPARTMENTS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <input
+              className="field"
+              placeholder="Work Folder URL (Google Drive)"
+              value={workFolderUrl}
+              onChange={(e) => setWorkFolderUrl(e.target.value)}
+            />
+            <input
+              className="field"
+              placeholder="Timesheet URL"
+              value={timesheetUrl}
+              onChange={(e) => setTimesheetUrl(e.target.value)}
+            />
+          </>
         )}
 
         {userType === "Teacher" && (

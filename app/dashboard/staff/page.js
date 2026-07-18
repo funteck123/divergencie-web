@@ -6,7 +6,7 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
-import ResourcesSection from "@/components/ResourcesSection";
+import StaffResources from "@/components/StaffResources";
 import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
@@ -122,7 +122,7 @@ function Body({ user }) {
         </table>
       </div>
 
-      <ResourcesSection services={enrolledServices} />
+      <StaffResources user={data.user} />
 
       <div className="card">
         <div className="flex items-center justify-between mb-4">

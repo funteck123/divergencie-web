@@ -123,25 +123,33 @@ function applyCurrency(user, currency) {
   user.Currency = currency || "INR";
 }
 
-// Student-only contact/admin fields. TimesheetURL/ProgressTrackerURL are
-// links Management sets manually per student (no generation logic here —
-// just stored strings). GroupSent/GCRSent/ScheduleSent are a private
-// onboarding checklist for Management (has the student's Group/Google
-// Classroom Room/Schedule actually been communicated to them yet) — not
-// derived from anything, just flags Management toggles by hand.
+// Staff's own Work Folder (Google Drive) and Timesheet links — properties of
+// the Staff account itself, not tied to any Service/enrollment, which is why
+// they're set here instead of through the per-Service Resources section.
+// TimesheetURL is the same field name Student uses for its own Timesheet
+// (applyStudentExtras owns that case) since the two UserType buckets never
+// overlap.
+function applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl } = {}) {
+  if (userType === "Staff") {
+    if (workFolderUrl !== undefined) user.WorkFolderURL = workFolderUrl || "";
+    if (timesheetUrl !== undefined) user.TimesheetURL = timesheetUrl || "";
+  } else {
+    delete user.WorkFolderURL;
+    if (userType !== "Student") delete user.TimesheetURL;
+  }
+}
+
+// Student-only contact/admin fields. ProgressTrackerURL is a link
+// Management sets manually per student (no generation logic here — just a
+// stored string). GroupSent/GCRSent/ScheduleSent are a private onboarding
+// checklist for Management (has the student's Group/Google Classroom Room/
+// Schedule actually been communicated to them yet) — not derived from
+// anything, just flags Management toggles by hand. TimesheetURL is NOT
+// deleted here for non-Student — applyStaffExtras above owns that field's
+// deletion for every UserType except Student/Staff.
 function applyStudentExtras(user, userType, fields) {
   if (userType !== "Student") {
-    for (const key of [
-      "ParentWhatsAppNumber",
-      "School",
-      "Location",
-      "Notes",
-      "TimesheetURL",
-      "ProgressTrackerURL",
-      "GroupSent",
-      "GCRSent",
-      "ScheduleSent",
-    ]) {
+    for (const key of ["ParentWhatsAppNumber", "School", "Location", "Notes", "ProgressTrackerURL", "GroupSent", "GCRSent", "ScheduleSent"]) {
       delete user[key];
     }
     return;
@@ -179,7 +187,9 @@ function applyStudentExtras(user, userType, fields) {
 //         Ambassador job title, free text), passportNumber? (Teacher/Staff/
 //         Ambassador), whatsappNumber?, email? (Teacher/Staff/Ambassador —
 //         Student's own WhatsApp/Email are separate fields, set via the
-//         Student-only extras below), course?, batch?, department? (Staff only — Teacher/
+//         Student-only extras below), workFolderUrl?, timesheetUrl? (Staff
+//         only — Work Folder/Timesheet are Staff account attributes, not
+//         tied to a Service), course?, batch?, department? (Staff only — Teacher/
 //         Ambassador get a fixed value), timezone?, currency? (every type,
 //         defaults to "INR") }
 export async function POST(req) {
@@ -187,7 +197,7 @@ export async function POST(req) {
   if (error) return error;
 
   const body = await req.json();
-  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency, whatsappNumber, email } = body;
+  const { userType, name, studentIds, role, passportNumber, course, batch, department, timezone, currency, whatsappNumber, email, workFolderUrl, timesheetUrl } = body;
   if (!userType || !ID_PREFIX[userType]) {
     return NextResponse.json({ error: `userType must be one of ${Object.keys(ID_PREFIX).join(", ")}.` }, { status: 400 });
   }
@@ -225,6 +235,7 @@ export async function POST(req) {
   applyWhatsAppNumber(user, userType, whatsappNumber);
   applyEmail(user, userType, email);
   applyCurrency(user, currency);
+  applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, userType, body);
 
   const username = makeUsername(name, db);
@@ -245,7 +256,8 @@ export async function POST(req) {
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
 //         role?, passportNumber?, whatsappNumber?, email? (Teacher/Staff/
 //         Ambassador — same field names double as Student's own WhatsApp/
-//         Email below, routed by UserType), batch?, department? (Staff only),
+//         Email below, routed by UserType), workFolderUrl?, timesheetUrl?
+//         (Staff only), batch?, department? (Staff only),
 //         currency?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
@@ -277,6 +289,7 @@ export async function PATCH(req) {
     groupSent,
     gcrSent,
     scheduleSent,
+    workFolderUrl,
   } = patchBody;
   if (
     [
@@ -303,6 +316,7 @@ export async function PATCH(req) {
       groupSent,
       gcrSent,
       scheduleSent,
+      workFolderUrl,
     ].every((v) => v === undefined)
   ) {
     return NextResponse.json({ error: "at least one field to update is required." }, { status: 400 });
@@ -360,6 +374,7 @@ export async function PATCH(req) {
   if (batch !== undefined) applyBatch(user, user.UserType, batch);
   if (department !== undefined) applyDepartment(user, user.UserType, department);
   if (currency !== undefined) applyCurrency(user, currency);
+  if (workFolderUrl !== undefined || timesheetUrl !== undefined) applyStaffExtras(user, user.UserType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
