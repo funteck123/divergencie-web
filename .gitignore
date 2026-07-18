@@ -43,3 +43,7 @@ prisma/generated/
 
 # Reference-only copies (v6, dcp1-app) — not needed for v7 (repo root) or Vercel
 builds
+
+# Local Supabase data backups — contains real PII (names, phone numbers,
+# passport/IC numbers). This repo is public — never commit these.
+/backups/
