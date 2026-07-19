@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "DivergenCIE — DC Portal",
+  title: "DivergenCIE Coaching - Best IGCSE & A Level, IELTS, SAT Country & World Topper Teachers",
   description: "DivergenCIE marketing site and DC Portal (student/staff/management dashboards)",
 };
 
