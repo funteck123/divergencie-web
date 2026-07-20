@@ -7,6 +7,7 @@ import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import StaffResources from "@/components/StaffResources";
+import GuidesSection from "@/components/GuidesSection";
 import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
@@ -123,6 +124,7 @@ function Body({ user }) {
       </div>
 
       <StaffResources user={data.user} />
+      <GuidesSection guides={data.guides} />
 
       <div className="card">
         <div className="flex items-center justify-between mb-4">

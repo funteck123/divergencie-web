@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
+import GuidesSection from "@/components/GuidesSection";
 import { api, groupMatches } from "@/lib/client";
 import { amountDueInOwnCurrency } from "@/lib/billing";
 
@@ -62,6 +63,8 @@ function Body({ user }) {
   return (
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+
+      <GuidesSection guides={data.guides} />
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Trial Sessions</h2>

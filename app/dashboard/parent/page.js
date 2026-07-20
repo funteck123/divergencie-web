@@ -6,6 +6,7 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
+import GuidesSection from "@/components/GuidesSection";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
@@ -60,6 +61,8 @@ function Body({ user }) {
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
 
       <MyInfo user={data.user} linkedChildren={linkedChildren} />
+
+      <GuidesSection guides={data.guides} />
 
       {data.children.length === 0 ? (
         <div className="card">

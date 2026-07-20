@@ -7,9 +7,9 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
 import { ratesOf, rateById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
-import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL } from "@/lib/accountTypes";
+import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 
-const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing"];
+const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing", "Guides"];
 // The three pending Interview tracks — each converts to its own final
 // account type (see CONVERT_MAP in api/convert/route.js).
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
@@ -67,6 +67,7 @@ function Body() {
       {tab === "Schedule Pool" && <SchedulePool />}
       {tab === "Enrollments" && <Enrollments />}
       {tab === "Billing" && <Billing />}
+      {tab === "Guides" && <Guides />}
     </div>
   );
 }
@@ -2807,5 +2808,170 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
         </span>
       </td>
     </tr>
+  );
+}
+
+// Static named-link buttons shown on portal dashboards (see
+// components/GuidesSection.jsx) — Management points each one at any URL
+// and ticks which portal(s) it should appear on. GUIDE_AUDIENCES (see
+// lib/accountTypes.js) groups the raw UserType values one checkbox per
+// dashboard — "Interview" covers all three interview account types at once
+// since they share a single dashboard.
+function Guides() {
+  const [guides, setGuides] = useState([]);
+  const [error, setError] = useState("");
+
+  async function load() {
+    const { guides } = await api("/api/guides");
+    setGuides(guides);
+  }
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function create(name, url, userTypes) {
+    setError("");
+    try {
+      await api("/api/guides", { method: "POST", body: JSON.stringify({ name, url, userTypes }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function update(guideId, patch) {
+    setError("");
+    try {
+      await api("/api/guides", { method: "PATCH", body: JSON.stringify({ guideId, ...patch }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function remove(guideId) {
+    setError("");
+    try {
+      await api("/api/guides", { method: "DELETE", body: JSON.stringify({ guideId }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+
+      <div className="card">
+        <h2 className="font-semibold mb-4">Add a Guide</h2>
+        <GuideForm onSubmit={create} />
+      </div>
+
+      <div className="card">
+        <h2 className="font-semibold mb-4">Existing Guides</h2>
+        {guides.length === 0 ? (
+          <p style={{ color: "var(--muted)" }}>No guides yet — add one above.</p>
+        ) : (
+          <div className="space-y-4">
+            {guides.map((g) => (
+              <GuideRow key={g.GuideID} guide={g} onUpdate={update} onDelete={remove} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function GuideForm({ initial, onSubmit, submitLabel = "Add Guide" }) {
+  const [name, setName] = useState(initial?.Name || "");
+  const [url, setUrl] = useState(initial?.Url || "");
+  const [audienceKeys, setAudienceKeys] = useState(
+    GUIDE_AUDIENCES.filter((a) => a.userTypes.every((t) => initial?.UserTypes?.includes(t))).map((a) => a.key)
+  );
+
+  function toggleAudience(key) {
+    setAudienceKeys((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  }
+
+  function submit(e) {
+    e.preventDefault();
+    const userTypes = GUIDE_AUDIENCES.filter((a) => audienceKeys.includes(a.key)).flatMap((a) => a.userTypes);
+    onSubmit(name, url, userTypes);
+    if (!initial) {
+      setName("");
+      setUrl("");
+      setAudienceKeys([]);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-3">
+      <input className="field" placeholder="Button name (e.g. Student Handbook)" value={name} onChange={(e) => setName(e.target.value)} required />
+      <input className="field" type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required />
+      <div>
+        <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+          Show on
+        </label>
+        <div className="flex gap-3 flex-wrap">
+          {GUIDE_AUDIENCES.map((a) => (
+            <label key={a.key} className="flex items-center gap-1 text-sm">
+              <input type="checkbox" checked={audienceKeys.includes(a.key)} onChange={() => toggleAudience(a.key)} />
+              {a.label}
+            </label>
+          ))}
+        </div>
+      </div>
+      <button className="btn" type="submit">
+        {submitLabel}
+      </button>
+    </form>
+  );
+}
+
+function GuideRow({ guide, onUpdate, onDelete }) {
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return (
+      <div className="p-3 rounded" style={{ background: "var(--panel-2)" }}>
+        <GuideForm
+          initial={guide}
+          submitLabel="Save"
+          onSubmit={(name, url, userTypes) => {
+            onUpdate(guide.GuideID, { name, url, userTypes });
+            setEditing(false);
+          }}
+        />
+        <button className="btn-ghost mt-2" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  const audienceLabels = GUIDE_AUDIENCES.filter((a) => a.userTypes.some((t) => guide.UserTypes?.includes(t))).map((a) => a.label);
+
+  return (
+    <div className="p-3 rounded flex items-center justify-between gap-3 flex-wrap" style={{ background: "var(--panel-2)" }}>
+      <div>
+        <div className="font-medium">{guide.Name}</div>
+        <div className="text-sm" style={{ color: "var(--muted)" }}>
+          {guide.Url}
+        </div>
+        <div className="text-sm" style={{ color: "var(--muted)" }}>
+          Shown on: {audienceLabels.join(", ") || "none"}
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button className="btn-ghost" onClick={() => setEditing(true)}>
+          Edit
+        </button>
+        <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(guide.GuideID)}>
+          Delete
+        </button>
+      </div>
+    </div>
   );
 }

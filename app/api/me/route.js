@@ -137,5 +137,6 @@ export async function GET(req) {
     availableInterviewSlots,
     children: childrenSafe,
     services: db.services,
+    guides: (db.guides || []).filter((g) => (g.UserTypes || []).includes(user.UserType)),
   });
 }
