@@ -7,6 +7,7 @@ import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import GuidesSection from "@/components/GuidesSection";
+import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
@@ -76,6 +77,8 @@ function Body({ user }) {
             services={data.services}
             onSetPaid={setInvoicePaid}
             onConfirmPaid={confirmPaid}
+            parentUserId={data.user.UserID}
+            onRescheduleSubmitted={load}
           />
         ))
       )}
@@ -83,8 +86,8 @@ function Body({ user }) {
   );
 }
 
-function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
-  const { student, schedule, attendance, invoices, enrollments } = child;
+function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, onRescheduleSubmitted }) {
+  const { student, schedule, attendance, invoices, enrollments, rescheduleRequests } = child;
   const [view, setView] = useState("weekly");
   const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
   const invoiceRows = invoices
@@ -143,6 +146,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
                 <SortableTh label="Date" sortKeyName="_dt" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Time</th>
                 <th>Instructor</th>
+                <th>Reschedule</th>
               </tr>
             </thead>
             <tbody>
@@ -152,10 +156,18 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid }) {
                   <td>{s.Date}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator || "—"}</td>
+                  <td>
+                    <RescheduleControl
+                      slot={s}
+                      userId={parentUserId}
+                      pendingRequest={(rescheduleRequests || []).find((r) => r.ScheduleItemID === s.ScheduleID)}
+                      onSubmitted={onRescheduleSubmitted}
+                    />
+                  </td>
                 </tr>
               ))}
               {schedSort.sorted.length === 0 && (
-                <tr><td colSpan={4} style={{ color: "var(--muted)" }}>No sessions scheduled.</td></tr>
+                <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No sessions scheduled.</td></tr>
               )}
             </tbody>
           </table>

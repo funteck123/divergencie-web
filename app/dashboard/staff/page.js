@@ -8,6 +8,7 @@ import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
 import StaffResources from "@/components/StaffResources";
 import GuidesSection from "@/components/GuidesSection";
+import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
@@ -164,6 +165,7 @@ function Body({ user }) {
                 <SortableTh label="Hrs" sortKeyName="Duration" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Instructor</th>
                 <th>Attendance</th>
+                <th>Reschedule</th>
               </tr>
             </thead>
             <tbody>
@@ -185,12 +187,20 @@ function Body({ user }) {
                         <AttendanceForm defaultHrs={s.Duration} onSubmit={(status, hrs) => logAttendance(s.ScheduleID, status, hrs)} />
                       )}
                     </td>
+                    <td>
+                      <RescheduleControl
+                        slot={s}
+                        userId={user.UserID}
+                        pendingRequest={(data.rescheduleRequests || []).find((r) => r.ScheduleItemID === s.ScheduleID)}
+                        onSubmitted={load}
+                      />
+                    </td>
                   </tr>
                 );
               })}
               {schedSort.sorted.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ color: "var(--muted)" }}>
+                  <td colSpan={7} style={{ color: "var(--muted)" }}>
                     No sessions yet — ask Management to enroll you in a Service.
                   </td>
                 </tr>

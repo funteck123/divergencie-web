@@ -99,12 +99,16 @@ export async function GET(req) {
         const childInvoicesWithTotals = await Promise.all(
           childInvoices.map(async (i) => ({ ...i, ConvertedDue: await convertINRAmount(db, i.INRDue, child?.Currency || "INR", i.Year, i.Month) }))
         );
+        const childSchedule = sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID)));
         return {
           student: child,
           enrollments: childEnroll,
-          schedule: sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID))),
+          schedule: childSchedule,
           attendance: db.attendanceItems.filter((a) => a.UserID === sid),
           invoices: childInvoicesWithTotals,
+          rescheduleRequests: (db.rescheduleRequests || []).filter(
+            (r) => r.Status === "Pending" && childSchedule.some((s) => s.ScheduleID === r.ScheduleItemID)
+          ),
         };
       })
     );
@@ -138,5 +142,11 @@ export async function GET(req) {
     children: childrenSafe,
     services: db.services,
     guides: (db.guides || []).filter((g) => (g.UserTypes || []).includes(user.UserType)),
+    // Only Pending — once approved the slot's own RescheduledDate/Time
+    // already shows it (see ScheduleItem), and a rejected request has
+    // nothing left for the requester to act on.
+    rescheduleRequests: (db.rescheduleRequests || []).filter(
+      (r) => r.Status === "Pending" && scheduleItems.some((s) => s.ScheduleID === r.ScheduleItemID)
+    ),
   });
 }

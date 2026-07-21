@@ -1903,6 +1903,7 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
 function SchedulePool() {
   const [items, setItems] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
+  const [rescheduleRequests, setRescheduleRequests] = useState([]);
   const [poolView, setPoolView] = useState("calendar");
   const [serviceView, setServiceView] = useState("calendar");
   const [services, setServices] = useState([]);
@@ -1915,17 +1916,39 @@ function SchedulePool() {
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ scheduleItems, openPoolSlots }, { services }] = await Promise.all([
+    const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }] = await Promise.all([
       api("/api/schedule"),
       api("/api/services"),
+      api("/api/schedule/reschedule-requests"),
     ]);
     setItems(scheduleItems);
     setOpenPoolSlots(openPoolSlots);
     setServices(services);
+    setRescheduleRequests(rescheduleRequests);
   }
   useEffect(() => {
     load();
   }, []);
+
+  async function directReschedule(scheduleId, rescheduledDate, rescheduledTime) {
+    setError("");
+    try {
+      await api("/api/schedule", { method: "PATCH", body: JSON.stringify({ scheduleId, rescheduledDate, rescheduledTime }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  async function reviewRescheduleRequest(requestId, action) {
+    setError("");
+    try {
+      await api("/api/schedule/reschedule-requests", { method: "PATCH", body: JSON.stringify({ requestId, action }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
 
   async function submit(e) {
     e.preventDefault();
@@ -2068,6 +2091,7 @@ function SchedulePool() {
                 <th>Time</th>
                 <th>Hrs</th>
                 <th>Instructor</th>
+                <th>Reschedule</th>
               </tr>
             </thead>
             <tbody>
@@ -2078,6 +2102,14 @@ function SchedulePool() {
                   <td>{s.Time}</td>
                   <td>{s.Duration}</td>
                   <td>{s.Facilitator}</td>
+                  <td>
+                    <RescheduleCell
+                      slot={s}
+                      pendingRequest={rescheduleRequests.find((r) => r.ScheduleItemID === s.ScheduleID)}
+                      onDirectReschedule={directReschedule}
+                      onReviewRequest={reviewRescheduleRequest}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -2085,6 +2117,83 @@ function SchedulePool() {
         )}
       </div>
     </div>
+  );
+}
+
+// One cell handles all three reschedule states for a single occurrence:
+// already rescheduled (badge + clear button), a pending self-service
+// request awaiting Management's approve/reject, or neither (a "Reschedule"
+// button opening an inline date/time form for Management's own direct
+// reschedule — applies immediately, no approval needed).
+function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequest }) {
+  const [editing, setEditing] = useState(false);
+  const [date, setDate] = useState(slot.RescheduledDate || "");
+  const [time, setTime] = useState(slot.RescheduledTime || "");
+
+  if (pendingRequest) {
+    return (
+      <div className="text-sm">
+        <div>
+          Requested: {pendingRequest.RequestedDate} {pendingRequest.RequestedTime}
+        </div>
+        <div className="text-xs mb-1" style={{ color: "var(--muted)" }}>
+          by {pendingRequest.RequesterName}
+        </div>
+        <div className="flex gap-2">
+          <button className="btn-ghost" onClick={() => onReviewRequest(pendingRequest.RescheduleRequestID, "approve")}>
+            Approve
+          </button>
+          <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onReviewRequest(pendingRequest.RescheduleRequestID, "reject")}>
+            Reject
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (editing) {
+    return (
+      <div className="flex gap-2 items-center flex-wrap">
+        <input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        <button
+          className="btn-ghost"
+          onClick={() => {
+            onDirectReschedule(slot.ScheduleID, date, time);
+            setEditing(false);
+          }}
+        >
+          Save
+        </button>
+        <button className="btn-ghost" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  if (slot.RescheduledDate) {
+    return (
+      <div className="text-sm">
+        <div>
+          → {slot.RescheduledDate} {slot.RescheduledTime}
+        </div>
+        <div className="flex gap-2">
+          <button className="btn-ghost" onClick={() => setEditing(true)}>
+            Edit
+          </button>
+          <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDirectReschedule(slot.ScheduleID, "", "")}>
+            Clear
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <button className="btn-ghost" onClick={() => setEditing(true)}>
+      Reschedule
+    </button>
   );
 }
 

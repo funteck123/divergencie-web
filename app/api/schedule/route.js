@@ -63,3 +63,29 @@ export async function POST(req) {
 
   return NextResponse.json({ scheduleItem: item });
 }
+
+// Management's direct reschedule — applies immediately, no approval step
+// (unlike a self-service suggestion, see app/api/schedule/reschedule-requests/
+// route.js, which requires Management to approve before this same effect
+// happens). Original Date/Time are never touched — RescheduledDate/Time are
+// a separate pair of fields so the original slot stays the historical
+// record (attendance, invoices, etc. all still key off the original).
+// body: { scheduleId, rescheduledDate, rescheduledTime } — either passed as
+// "" clears an existing reschedule.
+export async function PATCH(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
+  const { scheduleId, rescheduledDate, rescheduledTime } = await req.json();
+  if (!scheduleId) return NextResponse.json({ error: "scheduleId is required." }, { status: 400 });
+
+  const db = await readDB();
+  const item = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
+  if (!item) return NextResponse.json({ error: "Schedule item not found." }, { status: 404 });
+
+  if (rescheduledDate !== undefined) item.RescheduledDate = rescheduledDate;
+  if (rescheduledTime !== undefined) item.RescheduledTime = rescheduledTime;
+  await writeDB(db);
+
+  return NextResponse.json({ scheduleItem: item });
+}
