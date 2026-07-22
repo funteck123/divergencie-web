@@ -9,7 +9,7 @@ import { ratesOf, rateById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 
-const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule Pool", "Enrollments", "Billing", "Guides"];
+const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides"];
 // The three pending Interview tracks — each converts to its own final
 // account type (see CONVERT_MAP in api/convert/route.js).
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
@@ -64,7 +64,7 @@ function Body() {
       {tab === "Pipeline" && <Pipeline />}
       {tab === "Accounts" && <Accounts />}
       {tab === "Services" && <Services />}
-      {tab === "Schedule Pool" && <SchedulePool />}
+      {tab === "Schedule" && <SchedulePool />}
       {tab === "Enrollments" && <Enrollments />}
       {tab === "Billing" && <Billing />}
       {tab === "Guides" && <Guides />}
@@ -2075,12 +2075,25 @@ function SchedulePool() {
             <button className={serviceView === "calendar" ? "btn" : "btn-ghost"} onClick={() => setServiceView("calendar")}>
               Calendar
             </button>
-            <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href="/api/schedule/admin-image?download=1" download>
-              Download Weekly Schedule Image
-            </a>
+            <button className={serviceView === "image" ? "btn" : "btn-ghost"} onClick={() => setServiceView("image")}>
+              Weekly Schedule Image
+            </button>
           </div>
         </div>
-        {serviceView === "calendar" ? (
+        {serviceView === "image" ? (
+          <div className="space-y-3">
+            <img
+              src="/api/schedule/admin-image"
+              alt="Weekly schedule"
+              style={{ maxWidth: "100%", borderRadius: 8, border: "1px solid var(--border)" }}
+            />
+            <div>
+              <a className="btn-ghost" href="/api/schedule/admin-image?download=1" download="DC_Admin_Weekly_Schedule.png">
+                Download PNG
+              </a>
+            </div>
+          </div>
+        ) : serviceView === "calendar" ? (
           <ScheduleCalendar scheduleItems={serviceSlots} attendanceItems={[]} readOnly />
         ) : (
           <table>
