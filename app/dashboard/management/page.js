@@ -1904,6 +1904,7 @@ function SchedulePool() {
   const [items, setItems] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
   const [rescheduleRequests, setRescheduleRequests] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const [poolView, setPoolView] = useState("calendar");
   const [serviceView, setServiceView] = useState("calendar");
   const [services, setServices] = useState([]);
@@ -1916,15 +1917,17 @@ function SchedulePool() {
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }] = await Promise.all([
+    const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }, { enrollments }] = await Promise.all([
       api("/api/schedule"),
       api("/api/services"),
       api("/api/schedule/reschedule-requests"),
+      api("/api/enrollments"),
     ]);
     setItems(scheduleItems);
     setOpenPoolSlots(openPoolSlots);
     setServices(services);
     setRescheduleRequests(rescheduleRequests);
+    setEnrollments(enrollments);
   }
   useEffect(() => {
     load();
@@ -1967,7 +1970,11 @@ function SchedulePool() {
     }
   }
 
-  const serviceSlots = items.filter((i) => i.OccuranceID !== null);
+  // Only occurrences of a Service someone's actually enrolled in — an
+  // auto-generated occurrence for a Service with zero enrollments (e.g.
+  // set up but never staffed/assigned) is noise here, not a real class.
+  const enrolledServiceIds = new Set(enrollments.map((e) => e.ServiceID));
+  const serviceSlots = items.filter((i) => i.OccuranceID !== null && enrolledServiceIds.has(i.ServiceID));
   const requiredGroup = REQUIRED_GROUP_FOR_BOOKING_TYPE[serviceType] || "Staff";
   const eligibleServices = services.filter((s) => groupMatches(s.Group, requiredGroup));
 
