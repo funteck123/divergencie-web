@@ -10,7 +10,12 @@ import { requireManagement } from "@/lib/authz";
 // overlapping.
 function buildAllEntries(db) {
   const entries = [];
+  // Same rule as the Schedule tab's List/Calendar views (see SchedulePool
+  // in app/dashboard/management/page.js) — a Service nobody's enrolled in
+  // isn't a real class, so it shouldn't appear on the weekly image either.
+  const enrolledServiceIds = new Set(db.enrollments.map((e) => e.ServiceID));
   for (const s of db.services) {
+    if (!enrolledServiceIds.has(s.ServiceID)) continue;
     for (const o of s.OccuranceList || []) {
       entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator });
     }
