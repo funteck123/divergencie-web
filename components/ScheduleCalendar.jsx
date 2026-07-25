@@ -19,7 +19,7 @@ function fmtDate(y, m, d) {
 // Navigation is unbounded in both directions — months beyond the schedule's
 // generation horizon (~1 month ahead) just render empty, same as any month
 // with no sessions.
-export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false }) {
+export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -154,12 +154,14 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                   const normalizedGroup = normalizeGroup(s.ServiceGroup);
                   const groupStyle = colorByGroup
                     ? { background: groupGradient(normalizedGroup), color: "#fff" }
+                    : portalColor
+                    ? { background: portalColor, color: "#fff" }
                     : {};
                   return (
                     <div key={s.ScheduleID}>
                       <button
                         type="button"
-                        className={colorByGroup ? "badge" : `badge badge-${kind}`}
+                        className={colorByGroup || portalColor ? "badge" : `badge badge-${kind}`}
                         style={{ display: "block", width: "100%", textAlign: "left", cursor: clickable ? "pointer" : "default", ...groupStyle }}
                         onClick={() => clickable && setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID)}
                         title={`${s.ServiceName} — ${normalizedGroup.join(" + ")}`}

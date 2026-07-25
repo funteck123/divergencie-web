@@ -2080,7 +2080,13 @@ function SchedulePool() {
               {openPoolSlots.map((s) => (
                 <tr key={s.ScheduleID}>
                   <td>{s.ServiceType}</td>
-                  <td>{s.ServiceName}</td>
+                  <td>
+                    <span
+                      title={normalizeGroup(s.ServiceGroup).join(" + ")}
+                      style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, background: groupGradient(normalizeGroup(s.ServiceGroup)), marginRight: 6 }}
+                    />
+                    {s.ServiceName}
+                  </td>
                   <td>{s.Date}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator}</td>

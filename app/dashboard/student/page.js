@@ -11,7 +11,7 @@ import GuidesSection from "@/components/GuidesSection";
 import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
-import { api, formatRate, useSort } from "@/lib/client";
+import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
 
 export default function StudentDashboard() {
@@ -165,6 +165,7 @@ function Body({ user }) {
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
+            portalColor={GROUP_COLORS.Student}
           />
         ) : (
           <table>

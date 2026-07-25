@@ -10,7 +10,7 @@ import StaffResources from "@/components/StaffResources";
 import GuidesSection from "@/components/GuidesSection";
 import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
-import { api, formatRate, useSort } from "@/lib/client";
+import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
 
 export default function StaffDashboard() {
@@ -154,6 +154,7 @@ function Body({ user }) {
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
+            portalColor={GROUP_COLORS.Staff}
           />
         ) : (
           <table>
