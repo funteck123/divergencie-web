@@ -1528,7 +1528,9 @@ const TYPE_OPTIONS_BY_GROUP = {
   Parent: ["Book", "Course", "Counselling", "Admissions"],
   Ambassador: ["Book", "Course", "Counselling", "Admissions"],
   Management: ["Book", "Course", "Counselling", "Admissions"],
-  Staff: ["Department", "Role", "Admin"],
+  // Staff-role services only ever use one Type for now — Role/Department
+  // already capture what distinguishes one from another.
+  Staff: ["Staff"],
 };
 function typeOptionsFor(group) {
   const seen = new Set();
@@ -1837,7 +1839,7 @@ function Services() {
       return;
     }
     const body = isStaffRole
-      ? { name, type, group, role, department, rates: flatRates, occurrences: flatOccurrences }
+      ? { name, type: "Staff", group, role, department, rates: flatRates, occurrences: flatOccurrences }
       : {
           name,
           type,
@@ -1896,7 +1898,11 @@ function Services() {
               ))}
             </div>
           </div>
-          <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
+          {isStaffRole ? (
+            <input className="field" value="Staff" disabled />
+          ) : (
+            <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
+          )}
           {isStaffRole && (
             <>
               <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
