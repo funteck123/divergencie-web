@@ -97,6 +97,7 @@ function Applications() {
   const [regForms, setRegForms] = useState([]);
   const [issued, setIssued] = useState({}); // regFormId -> {username,password}
   const [error, setError] = useState("");
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(regForms, "RegFormID");
 
   async function load() {
     const { regForms } = await api("/api/regforms");
@@ -127,16 +128,16 @@ function Applications() {
       <table>
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Status</th>
+            <SortableTh label="ID" sortKeyName="RegFormID" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <SortableTh label="Name" sortKeyName="Name" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <SortableTh label="Type" sortKeyName="RequestedType" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
             <th>Credentials</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {regForms.map((r) => (
+          {sorted.map((r) => (
             <tr key={r.RegFormID}>
               <td>{r.RegFormID}</td>
               <td>{r.Name}</td>
@@ -305,6 +306,33 @@ function Pipeline() {
     );
   }
 
+  const trialRows = trialItems.map((t) => ({ ...t, _name: nameOf(t.TrialAccID), _service: serviceNameOf(t.ServiceID) }));
+  const trialSort = useSort(trialRows, "_name");
+  const interviewRows = interviewItems.map((i) => ({ ...i, _name: nameOf(i.InterviewAccID), _service: serviceNameOf(i.ServiceID) }));
+  const interviewSort = useSort(interviewRows, "_name");
+  const pendingRows = [
+    ...pendingTrials.map((t) => ({
+      ...t,
+      _type: "Trial",
+      _requester: t.RequesterName,
+      _service: t.Slot?.ServiceName,
+      _date: t.Slot?.Date,
+      _time: t.Slot?.Time,
+      _isTrial: true,
+    })),
+    ...pendingInterviews.map((i) => ({
+      ...i,
+      _type: INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview",
+      _requester: i.RequesterName,
+      _service: i.Slot?.ServiceName,
+      _date: i.Slot?.Date,
+      _time: i.Slot?.Time,
+      _isTrial: false,
+      _bookingType: i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview",
+    })),
+  ];
+  const pendingSort = useSort(pendingRows, "_date");
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {error && <p style={{ color: "var(--bad)" }} className="md:col-span-2">{error}</p>}
@@ -313,9 +341,9 @@ function Pipeline() {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Service</th>
-              <th>Status</th>
+              <SortableTh label="Name" sortKeyName="_name" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
+              <SortableTh label="Service" sortKeyName="_service" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
+              <SortableTh label="Status" sortKeyName="Status" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <th>Feedback</th>
               <th></th>
               <th>Invoice</th>
@@ -323,12 +351,12 @@ function Pipeline() {
             </tr>
           </thead>
           <tbody>
-            {trialItems.map((t) => {
+            {trialSort.sorted.map((t) => {
               const invoice = invoiceFor(t);
               return (
                 <tr key={t.TrialID}>
-                  <td>{nameOf(t.TrialAccID)}</td>
-                  <td>{serviceNameOf(t.ServiceID)}</td>
+                  <td>{t._name}</td>
+                  <td>{t._service}</td>
                   <td><span className="badge badge-info">{t.Status}</span></td>
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
                   <td>
@@ -364,9 +392,9 @@ function Pipeline() {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Service</th>
-              <th>Status</th>
+              <SortableTh label="Name" sortKeyName="_name" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
+              <SortableTh label="Service" sortKeyName="_service" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
+              <SortableTh label="Status" sortKeyName="Status" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <th>Task</th>
               <th>Offer</th>
               <th></th>
@@ -374,10 +402,10 @@ function Pipeline() {
             </tr>
           </thead>
           <tbody>
-            {interviewItems.map((i) => (
+            {interviewSort.sorted.map((i) => (
               <tr key={i.InterviewID}>
-                <td>{nameOf(i.InterviewAccID)}</td>
-                <td>{serviceNameOf(i.ServiceID)}</td>
+                <td>{i._name}</td>
+                <td>{i._service}</td>
                 <td><span className="badge badge-info">{i.Status}</span></td>
                 <td style={{ color: "var(--muted)" }}>
                   {i.TaskSubmissionLink ? (
@@ -430,52 +458,50 @@ function Pipeline() {
         <table>
           <thead>
             <tr>
-              <th>Type</th>
-              <th>Requester</th>
-              <th>Service</th>
-              <th>Date</th>
-              <th>Time</th>
+              <SortableTh label="Type" sortKeyName="_type" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
+              <SortableTh label="Requester" sortKeyName="_requester" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
+              <SortableTh label="Service" sortKeyName="_service" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
+              <SortableTh label="Date" sortKeyName="_date" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
+              <SortableTh label="Time" sortKeyName="_time" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {pendingTrials.map((t) => (
-              <tr key={t.TrialID}>
-                <td>Trial</td>
-                <td>{t.RequesterName}</td>
-                <td>{t.Slot?.ServiceName}</td>
-                <td>{t.Slot?.Date}</td>
-                <td>{t.Slot?.Time}</td>
-                <td className="space-x-2">
-                  <button className="btn" onClick={() => actOnRequest("Trial", t.TrialID, "approve")}>
-                    Approve
-                  </button>
-                  <button className="btn-ghost" onClick={() => actOnRequest("Trial", t.TrialID, "reject")}>
-                    Reject
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {pendingInterviews.map((i) => {
-              const bookingType = i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview";
-              return (
-                <tr key={i.InterviewID}>
-                  <td>{INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview"}</td>
-                  <td>{i.RequesterName}</td>
-                  <td>{i.Slot?.ServiceName}</td>
-                  <td>{i.Slot?.Date}</td>
-                  <td>{i.Slot?.Time}</td>
+            {pendingSort.sorted.map((row) =>
+              row._isTrial ? (
+                <tr key={row.TrialID}>
+                  <td>{row._type}</td>
+                  <td>{row._requester}</td>
+                  <td>{row._service}</td>
+                  <td>{row._date}</td>
+                  <td>{row._time}</td>
                   <td className="space-x-2">
-                    <button className="btn" onClick={() => actOnRequest(bookingType, i.InterviewID, "approve")}>
+                    <button className="btn" onClick={() => actOnRequest("Trial", row.TrialID, "approve")}>
                       Approve
                     </button>
-                    <button className="btn-ghost" onClick={() => actOnRequest(bookingType, i.InterviewID, "reject")}>
+                    <button className="btn-ghost" onClick={() => actOnRequest("Trial", row.TrialID, "reject")}>
                       Reject
                     </button>
                   </td>
                 </tr>
-              );
-            })}
+              ) : (
+                <tr key={row.InterviewID}>
+                  <td>{row._type}</td>
+                  <td>{row._requester}</td>
+                  <td>{row._service}</td>
+                  <td>{row._date}</td>
+                  <td>{row._time}</td>
+                  <td className="space-x-2">
+                    <button className="btn" onClick={() => actOnRequest(row._bookingType, row.InterviewID, "approve")}>
+                      Approve
+                    </button>
+                    <button className="btn-ghost" onClick={() => actOnRequest(row._bookingType, row.InterviewID, "reject")}>
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              )
+            )}
             {pendingTrials.length === 0 && pendingInterviews.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ color: "var(--muted)" }}>
@@ -656,18 +682,19 @@ function Accounts() {
         title="Student Accounts"
         rows={studentUsers}
         columns={[
-          { header: "Course", render: (u) => u.Course || "—" },
-          { header: "Batch", render: (u) => u.Batch || "—" },
-          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
-          { header: "Currency", render: (u) => u.Currency || "INR" },
-          { header: "WhatsApp #", render: (u) => u.WhatsAppNumber || "—" },
-          { header: "Parent WhatsApp #", render: (u) => u.ParentWhatsAppNumber || "—" },
-          { header: "Email", render: (u) => u.Email || "—" },
-          { header: "School", render: (u) => u.School || "—" },
-          { header: "Location", render: (u) => u.Location || "—" },
+          { header: "Course", render: (u) => u.Course || "—", sortValue: (u) => u.Course || "" },
+          { header: "Batch", render: (u) => u.Batch || "—", sortValue: (u) => u.Batch || "" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone), sortValue: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
+          { header: "WhatsApp #", render: (u) => u.WhatsAppNumber || "—", sortValue: (u) => u.WhatsAppNumber || "" },
+          { header: "Parent WhatsApp #", render: (u) => u.ParentWhatsAppNumber || "—", sortValue: (u) => u.ParentWhatsAppNumber || "" },
+          { header: "Email", render: (u) => u.Email || "—", sortValue: (u) => u.Email || "" },
+          { header: "School", render: (u) => u.School || "—", sortValue: (u) => u.School || "" },
+          { header: "Location", render: (u) => u.Location || "—", sortValue: (u) => u.Location || "" },
           {
             header: "Notes",
             render: (u) => (u.Notes ? <span title={u.Notes}>{u.Notes.length > 24 ? `${u.Notes.slice(0, 24)}…` : u.Notes}</span> : "—"),
+            sortValue: (u) => u.Notes || "",
           },
           {
             header: "Timesheet",
@@ -679,6 +706,7 @@ function Accounts() {
               ) : (
                 "—"
               ),
+            sortValue: (u) => (u.TimesheetURL ? 1 : 0),
           },
           {
             header: "Progress Tracker",
@@ -690,10 +718,11 @@ function Accounts() {
               ) : (
                 "—"
               ),
+            sortValue: (u) => (u.ProgressTrackerURL ? 1 : 0),
           },
-          { header: "Group Sent", render: (u) => (u.GroupSent ? "✓" : "—") },
-          { header: "GCR Sent", render: (u) => (u.GCRSent ? "✓" : "—") },
-          { header: "Schedule Sent", render: (u) => (u.ScheduleSent ? "✓" : "—") },
+          { header: "Group Sent", render: (u) => (u.GroupSent ? "✓" : "—"), sortValue: (u) => (u.GroupSent ? 1 : 0) },
+          { header: "GCR Sent", render: (u) => (u.GCRSent ? "✓" : "—"), sortValue: (u) => (u.GCRSent ? 1 : 0) },
+          { header: "Schedule Sent", render: (u) => (u.ScheduleSent ? "✓" : "—"), sortValue: (u) => (u.ScheduleSent ? 1 : 0) },
         ]}
         showSchedule
         {...sharedProps}
@@ -703,12 +732,12 @@ function Accounts() {
         title="Teacher Accounts"
         rows={teacherUsers}
         columns={[
-          { header: "Role", render: (u) => u.Role || "—" },
-          { header: "Department", render: (u) => u.Department || "—" },
-          { header: "Passport #", render: (u) => u.PassportNumber || "—" },
-          { header: "Batch", render: (u) => u.Batch || "—" },
-          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
-          { header: "Currency", render: (u) => u.Currency || "INR" },
+          { header: "Role", render: (u) => u.Role || "—", sortValue: (u) => u.Role || "" },
+          { header: "Department", render: (u) => u.Department || "—", sortValue: (u) => u.Department || "" },
+          { header: "Passport #", render: (u) => u.PassportNumber || "—", sortValue: (u) => u.PassportNumber || "" },
+          { header: "Batch", render: (u) => u.Batch || "—", sortValue: (u) => u.Batch || "" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone), sortValue: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
         ]}
         showSchedule
         {...sharedProps}
@@ -718,11 +747,11 @@ function Accounts() {
         title="Staff Accounts"
         rows={otherStaffUsers}
         columns={[
-          { header: "Role", render: (u) => u.Role || "—" },
-          { header: "Department", render: (u) => u.Department || "—" },
-          { header: "Passport #", render: (u) => u.PassportNumber || "—" },
-          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
-          { header: "Currency", render: (u) => u.Currency || "INR" },
+          { header: "Role", render: (u) => u.Role || "—", sortValue: (u) => u.Role || "" },
+          { header: "Department", render: (u) => u.Department || "—", sortValue: (u) => u.Department || "" },
+          { header: "Passport #", render: (u) => u.PassportNumber || "—", sortValue: (u) => u.PassportNumber || "" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone), sortValue: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
           {
             header: "Work Folder",
             render: (u) =>
@@ -733,6 +762,7 @@ function Accounts() {
               ) : (
                 "—"
               ),
+            sortValue: (u) => (u.WorkFolderURL ? 1 : 0),
           },
           {
             header: "Timesheet",
@@ -744,6 +774,7 @@ function Accounts() {
               ) : (
                 "—"
               ),
+            sortValue: (u) => (u.TimesheetURL ? 1 : 0),
           },
         ]}
         showSchedule
@@ -753,7 +784,7 @@ function Accounts() {
       <AccountGroupTable
         title="Management Accounts"
         rows={managementUsers}
-        columns={[{ header: "Currency", render: (u) => u.Currency || "INR" }]}
+        columns={[{ header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" }]}
         {...sharedProps}
       />
 
@@ -761,8 +792,8 @@ function Accounts() {
         title="Parent Accounts"
         rows={parentUsers}
         columns={[
-          { header: "Linked Student(s)", render: (u) => studentNamesOf(u.StudentIDs) },
-          { header: "Currency", render: (u) => u.Currency || "INR" },
+          { header: "Linked Student(s)", render: (u) => studentNamesOf(u.StudentIDs), sortValue: (u) => studentNamesOf(u.StudentIDs) },
+          { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
         ]}
         {...sharedProps}
       />
@@ -771,11 +802,11 @@ function Accounts() {
         title="Ambassador Accounts"
         rows={ambassadorUsers}
         columns={[
-          { header: "Role", render: (u) => u.Role || "—" },
-          { header: "Department", render: (u) => u.Department || "—" },
-          { header: "Passport #", render: (u) => u.PassportNumber || "—" },
-          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone) },
-          { header: "Currency", render: (u) => u.Currency || "INR" },
+          { header: "Role", render: (u) => u.Role || "—", sortValue: (u) => u.Role || "" },
+          { header: "Department", render: (u) => u.Department || "—", sortValue: (u) => u.Department || "" },
+          { header: "Passport #", render: (u) => u.PassportNumber || "—", sortValue: (u) => u.PassportNumber || "" },
+          { header: "Timezone", render: (u) => timezoneLabel(u.Timezone), sortValue: (u) => timezoneLabel(u.Timezone) },
+          { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
         ]}
         {...sharedProps}
       />
@@ -804,6 +835,21 @@ function Accounts() {
 function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert }) {
   const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
 
+  // Columns that render plain text/values can be sorted directly off their
+  // own `render(u)` output; ones that render JSX (links, badges, truncated
+  // Notes) instead provide a `sortValue(u)` accessor returning the
+  // underlying primitive — copied onto each row under a synthetic __colN
+  // key so useSort's plain a[sortKey] lookup works the same way for every
+  // column, dynamic or fixed.
+  const sortableRows = rows.map((u) => {
+    const extra = {};
+    columns.forEach((c, i) => {
+      if (c.sortValue) extra[`__col${i}`] = c.sortValue(u);
+    });
+    return { ...u, ...extra };
+  });
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(sortableRows, "Name");
+
   return (
     <div className="card">
       <h2 className="font-semibold mb-4">{title}</h2>
@@ -811,19 +857,23 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Status</th>
-              {columns.map((c) => (
-                <th key={c.header}>{c.header}</th>
-              ))}
+              <SortableTh label="ID" sortKeyName="UserID" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Name" sortKeyName="Name" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              {columns.map((c, i) =>
+                c.sortValue ? (
+                  <SortableTh key={c.header} label={c.header} sortKeyName={`__col${i}`} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                ) : (
+                  <th key={c.header}>{c.header}</th>
+                )
+              )}
               <th>New credentials</th>
               {showSchedule && <th>Schedule</th>}
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((u) => (
+            {sorted.map((u) => (
               <Fragment key={u.UserID}>
                 <tr>
                   <td>{u.UserID}</td>
@@ -1858,6 +1908,14 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const colSpan = isCohort ? 13 : 7;
 
+  const sortableServices = services.map((s) => ({
+    ...s,
+    _group: normalizeGroup(s.Group).join(", "),
+    _rate: s.Rates?.[0]?.Rate ?? 0,
+    _occ: s.OccuranceList.map((o) => `${o.Day} ${o.Time}`).join(", "),
+  }));
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(sortableServices, "Name");
+
   return (
     <div className="card">
       <h2 className="font-semibold mb-4">{groupName} Services</h2>
@@ -1865,27 +1923,27 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Group</th>
+              <SortableTh label="ID" sortKeyName="ServiceID" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Name" sortKeyName="Name" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Type" sortKeyName="Type" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Group" sortKeyName="_group" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               {isCohort && (
                 <>
-                  <th>Batch</th>
-                  <th>Board</th>
-                  <th>Course/Class</th>
-                  <th>Subject Code</th>
-                  <th>Subject Name</th>
-                  <th>Full Subject Name</th>
+                  <SortableTh label="Batch" sortKeyName="Batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Board" sortKeyName="Board" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Course/Class" sortKeyName="CourseClass" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Subject Code" sortKeyName="SubjectCode" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Subject Name" sortKeyName="SubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Full Subject Name" sortKeyName="FullSubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 </>
               )}
-              <th>Rate</th>
-              <th>Occurrences</th>
+              <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Occurrences" sortKeyName="_occ" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {services.map((s) => (
+            {sorted.map((s) => (
               <tr key={s.ServiceID}>
                 <td>{s.ServiceID}</td>
                 <td>{s.Name}</td>
@@ -2006,6 +2064,9 @@ function SchedulePool() {
   const requiredGroup = REQUIRED_GROUP_FOR_BOOKING_TYPE[serviceType] || "Staff";
   const eligibleServices = services.filter((s) => groupMatches(s.Group, requiredGroup));
 
+  const openPoolSort = useSort(openPoolSlots, "Date");
+  const serviceSlotsSort = useSort(serviceSlots, "Date");
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="card">
@@ -2077,15 +2138,15 @@ function SchedulePool() {
           <table>
             <thead>
               <tr>
-                <th>Type</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Instructor</th>
+                <SortableTh label="Type" sortKeyName="ServiceType" sortKey={openPoolSort.sortKey} sortDir={openPoolSort.sortDir} onSort={openPoolSort.toggleSort} />
+                <SortableTh label="Service" sortKeyName="ServiceName" sortKey={openPoolSort.sortKey} sortDir={openPoolSort.sortDir} onSort={openPoolSort.toggleSort} />
+                <SortableTh label="Date" sortKeyName="Date" sortKey={openPoolSort.sortKey} sortDir={openPoolSort.sortDir} onSort={openPoolSort.toggleSort} />
+                <SortableTh label="Time" sortKeyName="Time" sortKey={openPoolSort.sortKey} sortDir={openPoolSort.sortDir} onSort={openPoolSort.toggleSort} />
+                <SortableTh label="Instructor" sortKeyName="Facilitator" sortKey={openPoolSort.sortKey} sortDir={openPoolSort.sortDir} onSort={openPoolSort.toggleSort} />
               </tr>
             </thead>
             <tbody>
-              {openPoolSlots.map((s) => (
+              {openPoolSort.sorted.map((s) => (
                 <tr key={s.ScheduleID}>
                   <td>{s.ServiceType}</td>
                   <td>
@@ -2140,16 +2201,16 @@ function SchedulePool() {
           <table>
             <thead>
               <tr>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Hrs</th>
-                <th>Instructor</th>
+                <SortableTh label="Service" sortKeyName="ServiceName" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
+                <SortableTh label="Date" sortKeyName="Date" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
+                <SortableTh label="Time" sortKeyName="Time" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
+                <SortableTh label="Hrs" sortKeyName="Duration" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
+                <SortableTh label="Instructor" sortKeyName="Facilitator" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <th>Reschedule</th>
               </tr>
             </thead>
             <tbody>
-              {serviceSlots.map((s) => (
+              {serviceSlotsSort.sorted.map((s) => (
                 <tr key={s.ScheduleID}>
                   <td>
                     <span
@@ -2340,6 +2401,14 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   const selectedService = eligibleServices.find((s) => s.ServiceID === serviceId);
   const availableRates = selectedService ? ratesOf(selectedService) : [];
 
+  const enrollmentRows = enrollments.map((e) => ({
+    ...e,
+    _person: nameOf(e.UserID),
+    _service: serviceNameOf(e.ServiceID),
+    _rate: e.Currency ? `${e.Currency} ${rateById(services.find((s) => s.ServiceID === e.ServiceID), e.RateID)?.Rate ?? ""}` : "",
+  }));
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(enrollmentRows, "_person");
+
   function pickService(id) {
     setServiceId(id);
     const svc = eligibleServices.find((s) => s.ServiceID === id);
@@ -2408,16 +2477,16 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
         <table>
           <thead>
             <tr>
-              <th>Person</th>
-              <th>Service</th>
-              <th>Rate</th>
-              <th>Start</th>
-              <th>End</th>
+              <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Service" sortKeyName="_service" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Start" sortKeyName="StartDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="End" sortKeyName="EndDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {enrollments.map((e) => (
+            {sorted.map((e) => (
               <EnrollmentRow
                 key={e.EnrolmentID}
                 enrollment={e}
