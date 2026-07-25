@@ -3,14 +3,19 @@ import { readDB } from "@/lib/db";
 import { drawSchedule } from "@/lib/scheduleImage";
 import { normalizeTimezone } from "@/lib/timezones";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
+import { batchesOf } from "@/lib/billing";
 
+// Only the specific Batch each enrollment points to — a Service can now have
+// several Batches, and an enrollment only grants a seat in one of them.
 function buildEntries(db, userId) {
-  const enrolledServiceIds = new Set(db.enrollments.filter((e) => e.UserID === userId).map((e) => e.ServiceID));
-  const services = db.services.filter((s) => enrolledServiceIds.has(s.ServiceID));
+  const myEnrollments = db.enrollments.filter((e) => e.UserID === userId);
   const entries = [];
-  for (const s of services) {
-    for (const o of s.OccuranceList || []) {
-      entries.push({ name: s.Name, day: o.Day, time: o.Time });
+  for (const e of myEnrollments) {
+    const service = db.services.find((s) => s.ServiceID === e.ServiceID);
+    if (!service) continue;
+    const batch = e.BatchID ? batchesOf(service).find((b) => b.BatchID === e.BatchID) : batchesOf(service)[0];
+    for (const o of batch?.OccuranceList || []) {
+      entries.push({ name: service.Name, day: o.Day, time: o.Time });
     }
   }
   return entries;

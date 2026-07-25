@@ -4,21 +4,25 @@ import { drawAdminSchedule } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
 import { normalizeGroup } from "@/lib/scheduleGen";
 
-// Flattens every Service's OccuranceList into one flat list — the whole
-// week's recurring pattern across every service at once, not any one
-// person's. See drawAdminSchedule (lib/scheduleImage.js) for how same-slot
-// conflicts (two occurrences sharing a day+time) are rendered without
-// overlapping.
+// Flattens every Service's Batches' OccuranceList into one flat list — the
+// whole week's recurring pattern across every service/batch at once, not
+// any one person's. See drawAdminSchedule (lib/scheduleImage.js) for how
+// same-slot conflicts (two occurrences sharing a day+time) are rendered
+// without overlapping.
 function buildAllEntries(db) {
   const entries = [];
   // Same rule as the Schedule tab's List/Calendar views (see SchedulePool
-  // in app/dashboard/management/page.js) — a Service nobody's enrolled in
+  // in app/dashboard/management/page.js) — a Batch nobody's enrolled in
   // isn't a real class, so it shouldn't appear on the weekly image either.
-  const enrolledServiceIds = new Set(db.enrollments.map((e) => e.ServiceID));
+  const enrolledBatchKeys = new Set(db.enrollments.map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
   for (const s of db.services) {
-    if (!enrolledServiceIds.has(s.ServiceID)) continue;
-    for (const o of s.OccuranceList || []) {
-      entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
+    for (const c of s.OptionalComponents || []) {
+      for (const b of c.Batches || []) {
+        if (!enrolledBatchKeys.has(`${s.ServiceID}::${b.BatchID}`)) continue;
+        for (const o of b.OccuranceList || []) {
+          entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
+        }
+      }
     }
   }
   return entries;

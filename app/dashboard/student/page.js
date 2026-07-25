@@ -12,7 +12,7 @@ import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
-import { amountDueInOwnCurrency, rateById } from "@/lib/billing";
+import { amountDueInOwnCurrency, rateById, batchesOf } from "@/lib/billing";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -78,14 +78,16 @@ function Body({ user }) {
     .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
-  // Attach the ONE rate this account is actually enrolled at (its own
-  // RateID) — a Service can offer several rates/currencies, but a user
-  // should only ever see the rate that applies to them, not every option
+  // Attach the ONE Batch+rate this account is actually enrolled at (its own
+  // BatchID/RateID) — a Service can offer several Batches/rates, but a user
+  // should only ever see the one that applies to them, not every option
   // Management could pick from.
   const enrolledServices = (data?.enrollments || [])
     .map((e) => {
       const s = (data.services || []).find((s) => s.ServiceID === e.ServiceID);
-      return s ? { ...s, _myRate: rateById(s, e.RateID) } : null;
+      if (!s) return null;
+      const myBatch = e.BatchID ? batchesOf(s).find((b) => b.BatchID === e.BatchID) : batchesOf(s)[0];
+      return { ...s, _myRate: rateById(s, e.BatchID, e.RateID), _myBatch: myBatch };
     })
     .filter(Boolean);
 
@@ -120,7 +122,7 @@ function Body({ user }) {
                 <td>{s.Type}</td>
                 <td>{formatRate(s._myRate)}</td>
                 <td style={{ color: "var(--muted)" }}>
-                  {(s.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
+                  {(s._myBatch?.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>
               </tr>
             ))}

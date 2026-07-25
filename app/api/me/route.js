@@ -25,8 +25,17 @@ export async function GET(req) {
   // and should keep showing ended ones.
   const todayStr = new Date().toISOString().slice(0, 10);
   const activeEnrollments = enrollments.filter((e) => !e.EndDate || e.EndDate >= todayStr);
+  // Keyed by ServiceID+BatchID, not ServiceID alone — a Service can have
+  // several Batches now, and an enrollment only grants visibility into the
+  // one Batch it's actually in. ScheduleItems without a BatchID (open-pool
+  // Trial/Interview slots, not batch-derived) still match on ServiceID alone.
   const enrolledServiceIds = new Set(activeEnrollments.map((e) => e.ServiceID));
-  const scheduleItems = sortByDateTime(db.scheduleItems.filter((s) => enrolledServiceIds.has(s.ServiceID)));
+  const enrolledBatchKeys = new Set(activeEnrollments.map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
+  const scheduleItems = sortByDateTime(
+    db.scheduleItems.filter((s) =>
+      s.BatchID ? enrolledBatchKeys.has(`${s.ServiceID}::${s.BatchID}`) : enrolledServiceIds.has(s.ServiceID)
+    )
+  );
   const attendanceItems = db.attendanceItems.filter((a) => a.UserID === userId);
 
   const trialItems = db.trialItems.filter((t) => t.TrialAccID === userId);
@@ -103,11 +112,16 @@ export async function GET(req) {
         const childEnroll = db.enrollments.filter((e) => e.UserID === sid);
         const childActiveEnroll = childEnroll.filter((e) => !e.EndDate || e.EndDate >= todayStr);
         const childServiceIds = new Set(childActiveEnroll.map((e) => e.ServiceID));
+        const childBatchKeys = new Set(childActiveEnroll.map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
         const childInvoices = db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft");
         const childInvoicesWithTotals = await Promise.all(
           childInvoices.map(async (i) => ({ ...i, ConvertedDue: await convertINRAmount(db, i.INRDue, child?.Currency || "INR", i.Year, i.Month) }))
         );
-        const childSchedule = sortByDateTime(db.scheduleItems.filter((s) => childServiceIds.has(s.ServiceID)));
+        const childSchedule = sortByDateTime(
+          db.scheduleItems.filter((s) =>
+            s.BatchID ? childBatchKeys.has(`${s.ServiceID}::${s.BatchID}`) : childServiceIds.has(s.ServiceID)
+          )
+        );
         return {
           student: child,
           enrollments: childEnroll,

@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
-import { ratesOf, rateById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
+import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 
@@ -1514,17 +1514,30 @@ function CreateAccount({ onCreated, users }) {
 
 /* ---------------- Services ---------------- */
 const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "" };
+const EMPTY_RATE = { currency: "INR", rate: "", description: "", billingType: "Monthly", group: "" };
 const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
+// Type is free text (no enum enforced server-side) — these are just the
+// dropdown suggestions offered, swapped based on which Group the Service is
+// open to: academic groups get the curriculum-content taxonomy, a Staff-only
+// service gets a department/role-flavored one instead.
+const TYPE_OPTIONS_ACADEMIC = ["Book", "Course", "Counselling", "Admissions"];
+const TYPE_OPTIONS_STAFF = ["Department", "Role", "Admin"];
+
+function emptyBatch() {
+  return { batchName: "", rates: [{ ...EMPTY_RATE }], occurrences: [{ ...EMPTY_OCC }] };
+}
+function emptyComponent() {
+  return { componentName: "", batches: [emptyBatch()] };
+}
 
 function Services() {
   const [services, setServices] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [name, setName] = useState("");
-  const [type, setType] = useState("Class");
+  const [type, setType] = useState("Course");
   const [group, setGroup] = useState(["Student"]);
-  const [batch, setBatch] = useState("");
   const [board, setBoard] = useState("");
-  const [courseClass, setCourseClass] = useState("");
+  const [course, setCourse] = useState("");
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [fullSubjectName, setFullSubjectName] = useState("");
@@ -1532,12 +1545,13 @@ function Services() {
   const [syllabusLink, setSyllabusLink] = useState("");
   const [worksheetsLink, setWorksheetsLink] = useState("");
   const [gcrLink, setGcrLink] = useState("");
-  const [rates, setRates] = useState([{ currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
-  const [occurrences, setOccurrences] = useState([{ ...EMPTY_OCC }]);
+  const [components, setComponents] = useState([emptyComponent()]);
   const [error, setError] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
   const studentLinksEligible = group.includes("Student");
+  const staffOnly = group.length > 0 && group.every((g) => g === "Staff");
+  const typeOptions = staffOnly ? TYPE_OPTIONS_STAFF : TYPE_OPTIONS_ACADEMIC;
 
   function toggleGroup(g) {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -1554,11 +1568,10 @@ function Services() {
   function resetForm() {
     setEditingId(null);
     setName("");
-    setType("Class");
+    setType("Course");
     setGroup(["Student"]);
-    setBatch("");
     setBoard("");
-    setCourseClass("");
+    setCourse("");
     setSubjectCode("");
     setSubjectName("");
     setFullSubjectName("");
@@ -1566,8 +1579,7 @@ function Services() {
     setSyllabusLink("");
     setWorksheetsLink("");
     setGcrLink("");
-    setRates([{ currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
-    setOccurrences([{ ...EMPTY_OCC }]);
+    setComponents([emptyComponent()]);
   }
 
   function startEdit(s) {
@@ -1575,9 +1587,8 @@ function Services() {
     setName(s.Name);
     setType(s.Type);
     setGroup(normalizeGroup(s.Group));
-    setBatch(s.Batch || "");
     setBoard(s.Board || "");
-    setCourseClass(s.CourseClass || "");
+    setCourse(s.Course || "");
     setSubjectCode(s.SubjectCode || "");
     setSubjectName(s.SubjectName || "");
     setFullSubjectName(s.FullSubjectName || "");
@@ -1585,40 +1596,108 @@ function Services() {
     setSyllabusLink(s.SyllabusLink || "");
     setWorksheetsLink(s.WorksheetsLink || "");
     setGcrLink(s.GCRLink || "");
-    setRates(
-      Array.isArray(s.Rates) && s.Rates.length > 0
-        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "", billingType: r.BillingType || "Monthly" }))
-        : [{ currency: s.Currency || "INR", rate: s.Rate ?? "", description: "", billingType: "Monthly" }]
-    );
-    setOccurrences(
-      s.OccuranceList.map((o) => ({
-        occuranceId: o.OccuranceID,
-        day: o.Day,
-        time: o.Time,
-        duration: o.Duration,
-        facilitator: o.Facilitator,
-      }))
+    setComponents(
+      (s.OptionalComponents || []).length > 0
+        ? s.OptionalComponents.map((c) => ({
+            componentId: c.ComponentID,
+            componentName: c.ComponentName || "",
+            batches: (c.Batches || []).map((b) => ({
+              batchId: b.BatchID,
+              batchName: b.BatchName || "",
+              rates: (b.Rates || []).map((r) => ({
+                rateId: r.RateID,
+                currency: r.Currency,
+                rate: r.Rate,
+                description: r.Description || "",
+                billingType: r.BillingType || "Monthly",
+                group: r.Group || "",
+              })),
+              occurrences: (b.OccuranceList || []).map((o) => ({
+                occuranceId: o.OccuranceID,
+                day: o.Day,
+                time: o.Time,
+                duration: o.Duration,
+                facilitator: o.Facilitator,
+              })),
+            })),
+          }))
+        : [emptyComponent()]
     );
   }
 
-  function updateOcc(i, field, value) {
-    setOccurrences((prev) => prev.map((o, idx) => (idx === i ? { ...o, [field]: value } : o)));
+  // Nested-array update helpers: components[ci].batches[bi].rates[ri] /
+  // .occurrences[oi] — each setter replaces just the one leaf being edited,
+  // rebuilding the arrays above it immutably.
+  function updateComponent(ci, field, value) {
+    setComponents((prev) => prev.map((c, i) => (i === ci ? { ...c, [field]: value } : c)));
   }
-  function addOcc() {
-    setOccurrences((prev) => [...prev, { ...EMPTY_OCC }]);
+  function addComponent() {
+    setComponents((prev) => [...prev, emptyComponent()]);
   }
-  function removeOcc(i) {
-    setOccurrences((prev) => prev.filter((_, idx) => idx !== i));
+  function removeComponent(ci) {
+    setComponents((prev) => prev.filter((_, i) => i !== ci));
   }
 
-  function updateRate(i, field, value) {
-    setRates((prev) => prev.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
+  function updateBatch(ci, bi, field, value) {
+    setComponents((prev) =>
+      prev.map((c, i) => (i !== ci ? c : { ...c, batches: c.batches.map((b, j) => (j === bi ? { ...b, [field]: value } : b)) }))
+    );
   }
-  function addRate() {
-    setRates((prev) => [...prev, { currency: "INR", rate: "", description: "", billingType: "Monthly" }]);
+  function addBatch(ci) {
+    setComponents((prev) => prev.map((c, i) => (i !== ci ? c : { ...c, batches: [...c.batches, emptyBatch()] })));
   }
-  function removeRate(i) {
-    setRates((prev) => prev.filter((_, idx) => idx !== i));
+  function removeBatch(ci, bi) {
+    setComponents((prev) => prev.map((c, i) => (i !== ci ? c : { ...c, batches: c.batches.filter((_, j) => j !== bi) })));
+  }
+
+  function updateRate(ci, bi, ri, field, value) {
+    setComponents((prev) =>
+      prev.map((c, i) =>
+        i !== ci
+          ? c
+          : {
+              ...c,
+              batches: c.batches.map((b, j) =>
+                j !== bi ? b : { ...b, rates: b.rates.map((r, k) => (k === ri ? { ...r, [field]: value } : r)) }
+              ),
+            }
+      )
+    );
+  }
+  function addRate(ci, bi) {
+    setComponents((prev) =>
+      prev.map((c, i) => (i !== ci ? c : { ...c, batches: c.batches.map((b, j) => (j !== bi ? b : { ...b, rates: [...b.rates, { ...EMPTY_RATE }] })) }))
+    );
+  }
+  function removeRate(ci, bi, ri) {
+    setComponents((prev) =>
+      prev.map((c, i) => (i !== ci ? c : { ...c, batches: c.batches.map((b, j) => (j !== bi ? b : { ...b, rates: b.rates.filter((_, k) => k !== ri) })) }))
+    );
+  }
+
+  function updateOcc(ci, bi, oi, field, value) {
+    setComponents((prev) =>
+      prev.map((c, i) =>
+        i !== ci
+          ? c
+          : {
+              ...c,
+              batches: c.batches.map((b, j) =>
+                j !== bi ? b : { ...b, occurrences: b.occurrences.map((o, k) => (k === oi ? { ...o, [field]: value } : o)) }
+              ),
+            }
+      )
+    );
+  }
+  function addOcc(ci, bi) {
+    setComponents((prev) =>
+      prev.map((c, i) => (i !== ci ? c : { ...c, batches: c.batches.map((b, j) => (j !== bi ? b : { ...b, occurrences: [...b.occurrences, { ...EMPTY_OCC }] })) }))
+    );
+  }
+  function removeOcc(ci, bi, oi) {
+    setComponents((prev) =>
+      prev.map((c, i) => (i !== ci ? c : { ...c, batches: c.batches.map((b, j) => (j !== bi ? b : { ...b, occurrences: b.occurrences.filter((_, k) => k !== oi) })) }))
+    );
   }
 
   async function submit(e) {
@@ -1628,54 +1707,30 @@ function Services() {
       setError("Select at least one group this service is open to.");
       return;
     }
-    if (rates.length === 0) {
-      setError("At least one currency/rate is required.");
+    if (components.length === 0 || components.some((c) => c.batches.length === 0)) {
+      setError("At least one batch (with a rate and an occurrence) is required per component.");
       return;
     }
+    const body = {
+      name,
+      type,
+      group,
+      board,
+      course,
+      subjectCode,
+      subjectName,
+      fullSubjectName,
+      recordingsLink,
+      syllabusLink,
+      worksheetsLink,
+      gcrLink,
+      components,
+    };
     try {
       if (editingId) {
-        await api("/api/services", {
-          method: "PATCH",
-          body: JSON.stringify({
-            serviceId: editingId,
-            name,
-            type,
-            group,
-            batch,
-            board,
-            courseClass,
-            subjectCode,
-            subjectName,
-            fullSubjectName,
-            recordingsLink,
-            syllabusLink,
-            worksheetsLink,
-            gcrLink,
-            rates,
-            occurrences,
-          }),
-        });
+        await api("/api/services", { method: "PATCH", body: JSON.stringify({ serviceId: editingId, ...body }) });
       } else {
-        await api("/api/services", {
-          method: "POST",
-          body: JSON.stringify({
-            name,
-            type,
-            group,
-            batch,
-            board,
-            courseClass,
-            subjectCode,
-            subjectName,
-            fullSubjectName,
-            recordingsLink,
-            syllabusLink,
-            worksheetsLink,
-            gcrLink,
-            rates,
-            occurrences,
-          }),
-        });
+        await api("/api/services", { method: "POST", body: JSON.stringify(body) });
       }
       resetForm();
       load();
@@ -1701,7 +1756,6 @@ function Services() {
         <h2 className="font-semibold mb-4">{editingId ? `Edit Service (${editingId})` : "Create Service"}</h2>
         <form onSubmit={submit} className="space-y-3">
           <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
-          <input className="field" placeholder="Type (e.g. Class, Workshop)" value={type} onChange={(e) => setType(e.target.value)} />
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Open to (Trial books Student-open services; each Interview track books its own matching group — Teacher/Staff/Ambassador)
@@ -1715,15 +1769,20 @@ function Services() {
               ))}
             </div>
           </div>
+          <input className="field" list="type-options" placeholder="Type" value={type} onChange={(e) => setType(e.target.value)} />
+          <datalist id="type-options">
+            {typeOptions.map((t) => (
+              <option key={t} value={t} />
+            ))}
+          </datalist>
           {cohortEligible && (
             <>
-              <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
-              <input className="field" placeholder="Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
+              <input className="field" placeholder="Curriculum / Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
               <input
                 className="field"
-                placeholder="Course/Class (e.g. IGCSE Year 10)"
-                value={courseClass}
-                onChange={(e) => setCourseClass(e.target.value)}
+                placeholder="Course (e.g. IGCSE, A-Level, SAT)"
+                value={course}
+                onChange={(e) => setCourse(e.target.value)}
               />
               <input
                 className="field"
@@ -1776,104 +1835,136 @@ function Services() {
               />
             </>
           )}
-          <div className="space-y-2">
+
+          <div className="space-y-3">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
-              Rates offered (whoever enrolls picks one of these — duplicate currencies allowed, e.g. two USD tiers)
+              Optional Components (e.g. distinct exam papers within one subject — most subjects just need one, left unnamed)
             </label>
-            {rates.map((r, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <select
-                  className="field"
-                  style={{ maxWidth: 160 }}
-                  value={r.currency}
-                  onChange={(e) => updateRate(i, "currency", e.target.value)}
-                >
-                  {CURRENCIES_FULL.map((c) => (
-                    <option key={c.code} value={c.code}>
-                      {c.code} — {c.name}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="field"
-                  type="number"
-                  placeholder="Rate"
-                  value={r.rate}
-                  onChange={(e) => updateRate(i, "rate", e.target.value)}
-                />
-                <input
-                  className="field"
-                  style={{ maxWidth: 140 }}
-                  placeholder="Description (optional)"
-                  maxLength={40}
-                  value={r.description}
-                  onChange={(e) => updateRate(i, "description", e.target.value)}
-                />
-                <select
-                  className="field"
-                  style={{ maxWidth: 120 }}
-                  value={r.billingType}
-                  onChange={(e) => updateRate(i, "billingType", e.target.value)}
-                >
-                  {BILLING_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-                {rates.length > 1 && (
-                  <button type="button" className="btn-ghost" onClick={() => removeRate(i)}>
-                    ✕
-                  </button>
-                )}
+            {components.map((c, ci) => (
+              <div key={ci} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.6rem" }} className="space-y-2">
+                <div className="flex gap-2 items-center">
+                  <input
+                    className="field"
+                    placeholder="Component name (optional — e.g. Pure Mathematics 1)"
+                    value={c.componentName}
+                    onChange={(e) => updateComponent(ci, "componentName", e.target.value)}
+                  />
+                  {components.length > 1 && (
+                    <button type="button" className="btn-ghost" onClick={() => removeComponent(ci)}>
+                      ✕ Component
+                    </button>
+                  )}
+                </div>
+
+                {c.batches.map((b, bi) => (
+                  <div key={bi} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.5rem", background: "var(--panel-2)" }} className="space-y-2">
+                    <div className="flex gap-2 items-center">
+                      <input
+                        className="field"
+                        placeholder="Batch name (e.g. B14)"
+                        value={b.batchName}
+                        onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
+                      />
+                      {c.batches.length > 1 && (
+                        <button type="button" className="btn-ghost" onClick={() => removeBatch(ci, bi)}>
+                          ✕ Batch
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs" style={{ color: "var(--muted)" }}>
+                        Rates (whoever enrolls in this batch picks one — a rate can optionally be reserved for one Group)
+                      </label>
+                      {b.rates.map((r, ri) => (
+                        <div key={ri} className="flex gap-2 items-center">
+                          <select className="field" style={{ maxWidth: 130 }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
+                            {CURRENCIES_FULL.map((cur) => (
+                              <option key={cur.code} value={cur.code}>
+                                {cur.code}
+                              </option>
+                            ))}
+                          </select>
+                          <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} />
+                          <input
+                            className="field"
+                            style={{ maxWidth: 120 }}
+                            placeholder="Description"
+                            maxLength={40}
+                            value={r.description}
+                            onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
+                          />
+                          <select className="field" style={{ maxWidth: 110 }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
+                            {BILLING_TYPES.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                          <select className="field" style={{ maxWidth: 130 }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
+                            <option value="">Any of the above</option>
+                            {group.map((g) => (
+                              <option key={g} value={g}>
+                                {g} only
+                              </option>
+                            ))}
+                          </select>
+                          {b.rates.length > 1 && (
+                            <button type="button" className="btn-ghost" onClick={() => removeRate(ci, bi, ri)}>
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" className="btn-ghost" onClick={() => addRate(ci, bi)}>
+                        + Add rate
+                      </button>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs" style={{ color: "var(--muted)" }}>
+                        Recurring occurrences
+                      </label>
+                      {b.occurrences.map((o, oi) => (
+                        <div key={oi} className="flex gap-2 items-center">
+                          <select className="field" value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
+                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
+                              <option key={d}>{d}</option>
+                            ))}
+                          </select>
+                          <input className="field" type="time" value={o.time} onChange={(e) => updateOcc(ci, bi, oi, "time", e.target.value)} />
+                          <input
+                            className="field"
+                            type="number"
+                            step="0.5"
+                            placeholder="Hrs"
+                            value={o.duration}
+                            onChange={(e) => updateOcc(ci, bi, oi, "duration", e.target.value)}
+                          />
+                          <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateOcc(ci, bi, oi, "facilitator", e.target.value)} />
+                          {b.occurrences.length > 1 && (
+                            <button type="button" className="btn-ghost" onClick={() => removeOcc(ci, bi, oi)}>
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" className="btn-ghost" onClick={() => addOcc(ci, bi)}>
+                        + Add occurrence
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button type="button" className="btn-ghost" onClick={() => addBatch(ci)}>
+                  + Add batch
+                </button>
               </div>
             ))}
-            <button type="button" className="btn-ghost" onClick={addRate}>
-              + Add rate
+            <button type="button" className="btn-ghost" onClick={addComponent}>
+              + Add optional component
             </button>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm" style={{ color: "var(--muted)" }}>
-              Recurring occurrences
-            </label>
-            {occurrences.map((o, i) => (
-              <div key={i} className="flex gap-2 items-center">
-                <select className="field" value={o.day} onChange={(e) => updateOcc(i, "day", e.target.value)}>
-                  {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-                    <option key={d}>{d}</option>
-                  ))}
-                </select>
-                <input
-                  className="field"
-                  type="time"
-                  value={o.time}
-                  onChange={(e) => updateOcc(i, "time", e.target.value)}
-                />
-                <input
-                  className="field"
-                  type="number"
-                  step="0.5"
-                  placeholder="Hrs"
-                  value={o.duration}
-                  onChange={(e) => updateOcc(i, "duration", e.target.value)}
-                />
-                <input
-                  className="field"
-                  placeholder="Instructor"
-                  value={o.facilitator}
-                  onChange={(e) => updateOcc(i, "facilitator", e.target.value)}
-                />
-                {occurrences.length > 1 && (
-                  <button type="button" className="btn-ghost" onClick={() => removeOcc(i)}>
-                    ✕
-                  </button>
-                )}
-              </div>
-            ))}
-            <button type="button" className="btn-ghost" onClick={addOcc}>
-              + Add occurrence
-            </button>
-          </div>
+
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
           <div className="space-x-2">
             <button className="btn" type="submit">
@@ -1901,20 +1992,33 @@ function Services() {
   );
 }
 
-// One table per Group — every service shows Rate (the one billing field);
-// Student/Teacher services additionally carry the cohort curriculum fields
-// (Batch/Board/Subject...).
+// One row per (Service, Component, Batch) — a Service can now have several
+// Batches (across one or more Optional Components), so the flat one-row-
+// per-service table becomes one row per Batch, with the Service/Component
+// name repeated for context. Student/Teacher services additionally carry
+// the cohort curriculum fields (Board/Course/Subject...).
 function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
-  const colSpan = isCohort ? 13 : 7;
+  const colSpan = isCohort ? 12 : 7;
 
-  const sortableServices = services.map((s) => ({
-    ...s,
-    _group: normalizeGroup(s.Group).join(", "),
-    _rate: s.Rates?.[0]?.Rate ?? 0,
-    _occ: s.OccuranceList.map((o) => `${o.Day} ${o.Time}`).join(", "),
-  }));
-  const { sorted, sortKey, sortDir, toggleSort } = useSort(sortableServices, "Name");
+  const rows = services.flatMap((s) =>
+    (s.OptionalComponents || []).flatMap((c) =>
+      (c.Batches || []).map((b) => ({
+        service: s,
+        component: c,
+        batch: b,
+        ServiceID: s.ServiceID,
+        Name: s.Name,
+        Type: s.Type,
+        _group: normalizeGroup(s.Group).join(", "),
+        _component: c.ComponentName || "—",
+        _batch: b.BatchName || "—",
+        _rate: b.Rates?.[0]?.Rate ?? 0,
+        _occ: (b.OccuranceList || []).map((o) => `${o.Day} ${o.Time}`).join(", "),
+      }))
+    )
+  );
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(rows, "Name");
 
   return (
     <div className="card">
@@ -1929,49 +2033,47 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
               <SortableTh label="Group" sortKeyName="_group" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               {isCohort && (
                 <>
-                  <SortableTh label="Batch" sortKeyName="Batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                   <SortableTh label="Board" sortKeyName="Board" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Course/Class" sortKeyName="CourseClass" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Subject Code" sortKeyName="SubjectCode" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Subject Name" sortKeyName="SubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Full Subject Name" sortKeyName="FullSubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Course" sortKeyName="Course" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Subject" sortKeyName="SubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 </>
               )}
+              <SortableTh label="Component" sortKeyName="_component" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Occurrences" sortKeyName="_occ" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {sorted.map((s) => (
-              <tr key={s.ServiceID}>
-                <td>{s.ServiceID}</td>
-                <td>{s.Name}</td>
-                <td>{s.Type}</td>
-                <td>{normalizeGroup(s.Group).join(", ")}</td>
+            {sorted.map((row) => (
+              <tr key={row.batch.BatchID}>
+                <td>{row.ServiceID}</td>
+                <td>{row.Name}</td>
+                <td>{row.Type}</td>
+                <td>{row._group}</td>
                 {isCohort && (
                   <>
-                    <td>{s.Batch || "—"}</td>
-                    <td>{s.Board || "—"}</td>
-                    <td>{s.CourseClass || "—"}</td>
-                    <td>{s.SubjectCode || "—"}</td>
-                    <td>{s.SubjectName || "—"}</td>
-                    <td>{s.FullSubjectName || "—"}</td>
+                    <td>{row.service.Board || "—"}</td>
+                    <td>{row.service.Course || "—"}</td>
+                    <td>{row.service.SubjectName || "—"}</td>
                   </>
                 )}
-                <td>{formatRates(s)}</td>
-                <td style={{ color: "var(--muted)" }}>{s.OccuranceList.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
+                <td>{row._component}</td>
+                <td>{row._batch}</td>
+                <td>{formatRates(row.batch.Rates)}</td>
+                <td style={{ color: "var(--muted)" }}>{(row.batch.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
                 <td>
-                  <button className="btn-ghost" onClick={() => onEdit(s)}>
+                  <button className="btn-ghost" onClick={() => onEdit(row.service)}>
                     Edit
                   </button>
-                  <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(s.ServiceID)}>
+                  <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(row.ServiceID)}>
                     Delete
                   </button>
                 </td>
               </tr>
             ))}
-            {services.length === 0 && (
+            {rows.length === 0 && (
               <tr>
                 <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
                   None yet.
@@ -2339,10 +2441,10 @@ function Enrollments() {
     load();
   }, []);
 
-  async function enroll(userId, serviceId, rateId, startDate, endDate) {
+  async function enroll(userId, serviceId, batchId, rateId, startDate, endDate) {
     setError("");
     try {
-      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, rateId, startDate, endDate }) });
+      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, batchId, rateId, startDate, endDate }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -2365,8 +2467,12 @@ function Enrollments() {
   function serviceNameOf(id) {
     return services.find((s) => s.ServiceID === id)?.Name || id;
   }
+  function batchNameOf(serviceId, batchId) {
+    const service = services.find((s) => s.ServiceID === serviceId);
+    return batchesOf(service).find((b) => b.BatchID === batchId)?.BatchName || batchId || "—";
+  }
 
-  const shared = { users, services, nameOf, serviceNameOf, onUpdate: updateEnrollment, onDelete: deleteEnrollment };
+  const shared = { users, services, nameOf, serviceNameOf, batchNameOf, onUpdate: updateEnrollment, onDelete: deleteEnrollment };
 
   return (
     <div className="space-y-6">
@@ -2391,35 +2497,53 @@ function Enrollments() {
   );
 }
 
-function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, onUpdate, onDelete }) {
+function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
   const [userId, setUserId] = useState("");
   const [serviceId, setServiceId] = useState("");
+  const [batchId, setBatchId] = useState("");
   const [rateId, setRateId] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const selectedUser = people.find((u) => u.UserID === userId);
   const selectedService = eligibleServices.find((s) => s.ServiceID === serviceId);
-  const availableRates = selectedService ? ratesOf(selectedService) : [];
+  const availableBatches = selectedService ? batchesOf(selectedService) : [];
+  const selectedBatch = availableBatches.find((b) => b.BatchID === batchId);
+  // Only rates this user's own account type is allowed to enroll at — an
+  // unset Rate.Group is open to anyone the Service itself is open to.
+  const availableRates = (selectedBatch ? ratesOf(selectedService, batchId) : []).filter(
+    (r) => !r.Group || r.Group === selectedUser?.UserType
+  );
 
   const enrollmentRows = enrollments.map((e) => ({
     ...e,
     _person: nameOf(e.UserID),
     _service: serviceNameOf(e.ServiceID),
-    _rate: e.Currency ? `${e.Currency} ${rateById(services.find((s) => s.ServiceID === e.ServiceID), e.RateID)?.Rate ?? ""}` : "",
+    _batch: batchNameOf(e.ServiceID, e.BatchID),
+    _rate: e.Currency ? `${e.Currency} ${rateById(services.find((s) => s.ServiceID === e.ServiceID), e.BatchID, e.RateID)?.Rate ?? ""}` : "",
   }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(enrollmentRows, "_person");
 
   function pickService(id) {
     setServiceId(id);
     const svc = eligibleServices.find((s) => s.ServiceID === id);
-    setRateId(svc ? ratesOf(svc)[0].RateID : "");
+    const batches = svc ? batchesOf(svc) : [];
+    const firstBatch = batches[0];
+    setBatchId(firstBatch?.BatchID || "");
+    setRateId(firstBatch ? ratesOf(svc, firstBatch.BatchID)[0]?.RateID || "" : "");
+  }
+
+  function pickBatch(id) {
+    setBatchId(id);
+    setRateId(ratesOf(selectedService, id)[0]?.RateID || "");
   }
 
   function submit(e) {
     e.preventDefault();
-    onEnroll(userId, serviceId, rateId, startDate, endDate);
+    onEnroll(userId, serviceId, batchId, rateId, startDate, endDate);
     setUserId("");
     setServiceId("");
+    setBatchId("");
     setRateId("");
     setStartDate("");
     setEndDate("");
@@ -2446,6 +2570,15 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
               </option>
             ))}
           </select>
+          {availableBatches.length > 1 && (
+            <select className="field" value={batchId} onChange={(e) => pickBatch(e.target.value)} required>
+              {availableBatches.map((b) => (
+                <option key={b.BatchID} value={b.BatchID}>
+                  {b.BatchName}
+                </option>
+              ))}
+            </select>
+          )}
           {availableRates.length > 0 && (
             <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
               {availableRates.map((r) => (
@@ -2479,6 +2612,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             <tr>
               <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Start" sortKeyName="StartDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="End" sortKeyName="EndDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
@@ -2494,13 +2628,14 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                 services={services}
                 nameOf={nameOf}
                 serviceNameOf={serviceNameOf}
+                batchNameOf={batchNameOf}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
               />
             ))}
             {enrollments.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>
+                <td colSpan={7} style={{ color: "var(--muted)" }}>
                   No {title.toLowerCase()} enrollments yet.
                 </td>
               </tr>
@@ -2512,27 +2647,40 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   );
 }
 
-function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onUpdate, onDelete }) {
+function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
   const [userId, setUserId] = useState(enrollment.UserID);
   const [serviceId, setServiceId] = useState(enrollment.ServiceID);
+  const [batchId, setBatchId] = useState(enrollment.BatchID || "");
   const [rateId, setRateId] = useState(enrollment.RateID || "");
   const [startDate, setStartDate] = useState(enrollment.StartDate || "");
   const [endDate, setEndDate] = useState(enrollment.EndDate || "");
   const [error, setError] = useState("");
 
+  const editingUser = users.find((u) => u.UserID === userId);
   const editingService = services.find((s) => s.ServiceID === serviceId);
-  const availableRates = editingService ? ratesOf(editingService) : [];
+  const availableBatches = editingService ? batchesOf(editingService) : [];
+  const availableRates = (editingService && batchId ? ratesOf(editingService, batchId) : []).filter(
+    (r) => !r.Group || r.Group === editingUser?.UserType
+  );
 
   function pickService(id) {
     setServiceId(id);
     const svc = services.find((s) => s.ServiceID === id);
-    setRateId(svc ? ratesOf(svc)[0].RateID : "");
+    const firstBatch = svc ? batchesOf(svc)[0] : null;
+    setBatchId(firstBatch?.BatchID || "");
+    setRateId(firstBatch ? ratesOf(svc, firstBatch.BatchID)[0]?.RateID || "" : "");
+  }
+
+  function pickBatch(id) {
+    setBatchId(id);
+    setRateId(ratesOf(editingService, id)[0]?.RateID || "");
   }
 
   function cancel() {
     setUserId(enrollment.UserID);
     setServiceId(enrollment.ServiceID);
+    setBatchId(enrollment.BatchID || "");
     setRateId(enrollment.RateID || "");
     setStartDate(enrollment.StartDate || "");
     setEndDate(enrollment.EndDate || "");
@@ -2543,7 +2691,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
   async function save() {
     setError("");
     try {
-      await onUpdate(enrollment.EnrolmentID, { userId, serviceId, rateId, startDate, endDate });
+      await onUpdate(enrollment.EnrolmentID, { userId, serviceId, batchId, rateId, startDate, endDate });
       setEditing(false);
     } catch (e) {
       setError(e.message);
@@ -2579,6 +2727,15 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
         </td>
         <td>
+          <select className="field" value={batchId} onChange={(e) => pickBatch(e.target.value)}>
+            {availableBatches.map((b) => (
+              <option key={b.BatchID} value={b.BatchID}>
+                {b.BatchName}
+              </option>
+            ))}
+          </select>
+        </td>
+        <td>
           <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)}>
             {availableRates.map((r) => (
               <option key={r.RateID} value={r.RateID}>
@@ -2609,7 +2766,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, onU
     <tr>
       <td>{nameOf(enrollment.UserID)}</td>
       <td>{serviceNameOf(enrollment.ServiceID)}</td>
-      <td>{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
+      <td>{batchNameOf(enrollment.ServiceID, enrollment.BatchID)}</td>
+      <td>{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.BatchID, enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
       <td>{enrollment.StartDate || "—"}</td>
       <td>{enrollment.EndDate || "—"}</td>
       <td className="space-x-2">

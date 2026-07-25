@@ -23,23 +23,16 @@ function isValidGroup(group) {
   return Array.isArray(group) && group.length > 0 && group.every((g) => ALL_GROUPS.includes(g));
 }
 
-// A Service can now offer more than one rate — whoever enrolls in it picks
-// one specific rate (see /api/enrollments), not just a currency, since two
-// rates can share the same currency (e.g. two different USD tiers). Accepts
-// either the current { currency, rate, rateId? }[] shape, or (for any older
-// caller) a single top-level currency/rate pair, normalized into a
-// one-entry list.
-function normalizeRates(body) {
-  if (Array.isArray(body.rates)) return body.rates;
-  if (body.rate !== undefined || body.currency !== undefined) {
-    return [{ currency: body.currency, rate: body.rate }];
-  }
-  return [];
+// A Rate optionally carries its own single Group (one of ALL_GROUPS) — when
+// set, only a user of that account type may enroll at that rate (see
+// /api/enrollments). Unset means any group the Service itself is open to.
+function isValidRateGroup(g) {
+  return g === undefined || g === "" || ALL_GROUPS.includes(g);
 }
 
 function validateRates(rates) {
   if (!Array.isArray(rates) || rates.length === 0) {
-    return "At least one rate is required.";
+    return "Each batch needs at least one rate.";
   }
   for (const r of rates) {
     const currency = r.currency || "INR";
@@ -55,13 +48,34 @@ function validateRates(rates) {
     if (r.billingType && !BILLING_TYPES.includes(r.billingType)) {
       return `billingType must be one of ${BILLING_TYPES.join(", ")}.`;
     }
+    if (!isValidRateGroup(r.group)) {
+      return `A rate's group must be one of ${ALL_GROUPS.join(", ")}, or left unset.`;
+    }
   }
   return null;
 }
 
-// Rates are replaced wholesale, same pattern as occurrences: a rate that
-// already has a rateId (an existing rate being edited/kept) keeps it, so
-// Enrollments already pointing at it stay valid; a new rate gets a fresh id.
+function validateOccurrences(occurrences) {
+  return Array.isArray(occurrences) && occurrences.length > 0;
+}
+
+function validateBatches(batches) {
+  if (!Array.isArray(batches) || batches.length === 0) {
+    return "At least one batch is required.";
+  }
+  for (const b of batches) {
+    if (!b.batchName) return "Each batch needs a name.";
+    if (!validateOccurrences(b.occurrences)) return "Each batch needs at least one occurrence.";
+    const ratesError = validateRates(b.rates);
+    if (ratesError) return ratesError;
+  }
+  return null;
+}
+
+// Rates/Occurrences are replaced wholesale within a batch, same as before:
+// one that already has an id (existing, being edited/kept) keeps it, so
+// Enrollments/ScheduleItems already pointing at it stay valid; a new one
+// gets a fresh id. Batches themselves follow the same rule via batchId.
 function toStoredRates(db, rates) {
   return rates.map((r) => ({
     RateID: r.rateId || nextId(db, "RATE"),
@@ -69,27 +83,53 @@ function toStoredRates(db, rates) {
     Rate: Number(r.rate) || 0,
     Description: (r.description || "").trim(),
     BillingType: r.billingType || "Monthly",
+    Group: r.group || "",
   }));
 }
 
-// Rate + Currency is the one billing field every service has now, regardless
-// of Group — Compensation/MonthlyCost was a separate term for the same
-// concept and has been removed. Batch/Board/Subject fields are still
-// Student/Teacher-only (a service's curriculum details, not its billing).
+function toStoredOccurrences(db, occurrences) {
+  return occurrences.map((o) => ({
+    OccuranceID: o.occuranceId || nextId(db, "OCC"),
+    Day: o.day,
+    Time: o.time,
+    Duration: Number(o.duration),
+    Facilitator: o.facilitator,
+  }));
+}
+
+function toStoredBatches(db, batches) {
+  return batches.map((b) => ({
+    BatchID: b.batchId || nextId(db, "BATCH"),
+    BatchName: b.batchName,
+    OccuranceList: toStoredOccurrences(db, b.occurrences),
+    Rates: toStoredRates(db, b.rates),
+  }));
+}
+
+function toStoredComponents(db, components) {
+  return components.map((c) => ({
+    ComponentID: c.componentId || nextId(db, "COMP"),
+    ComponentName: (c.componentName || "").trim(),
+    Batches: toStoredBatches(db, c.batches),
+  }));
+}
+
+// Course/Curriculum fields are still Student/Teacher-only (a service's
+// curriculum details, not its billing) — Rate + Currency is the one billing
+// field every service has now, regardless of Group.
 function hasCohortFields(group) {
   return group.includes("Student") || group.includes("Teacher");
 }
 
 function applyCohortServiceFields(service, body, group) {
   if (hasCohortFields(group)) {
-    service.Batch = body.batch || "";
     service.Board = body.board || "";
-    service.CourseClass = body.courseClass || "";
+    service.Course = body.course || "";
     service.SubjectCode = body.subjectCode || "";
     service.SubjectName = body.subjectName || "";
     service.FullSubjectName = body.fullSubjectName || "";
   } else {
-    for (const key of ["Batch", "Board", "CourseClass", "SubjectCode", "SubjectName", "FullSubjectName"]) {
+    for (const key of ["Board", "Course", "SubjectCode", "SubjectName", "FullSubjectName"]) {
       delete service[key];
     }
   }
@@ -111,54 +151,45 @@ function applyStudentLinkFields(service, body, group) {
   }
 }
 
-// body: { name, type, group: string[] (subset of ALL_GROUPS),
-//         rates: [{ currency, rate }] (at least one, duplicate currencies allowed),
-//         batch?, board?, courseClass?, subjectCode?, subjectName?, fullSubjectName?
-//         (Student/Teacher-only), occurrences: [{day, time, duration, facilitator}] }
+// body: { name, type, group: string[] (subset of ALL_GROUPS), board?, course?,
+//         subjectCode?, subjectName?, fullSubjectName? (Student/Teacher-only),
+//         components: [{ componentName?, batches: [{ batchName, occurrences: [...],
+//         rates: [{ currency, rate, billingType?, description?, group? }] }] }] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
 // only book services open to Student, Interview accounts only ones open to
 // Staff. A service can belong to several groups at once. Cohort-only fields
 // are silently dropped if sent for a service not open to Student/Teacher.
+// A Service holds one or more OptionalComponents (e.g. distinct exam papers
+// within one subject — most subjects just have a single unnamed component),
+// each of which holds one or more Batches, each of which holds its own
+// Rates + Occurrences. A Batch is the level someone actually enrolls into:
+// they pick a Batch, then a Rate within it (see /api/enrollments).
 export async function POST(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
-  const { name, type, group, occurrences } = body;
-  const rates = normalizeRates(body);
+  const { name, type, group, components } = body;
 
-  if (!name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
+  if (!name || !type || !isValidGroup(group)) {
     return NextResponse.json(
-      { error: `name, type, group (non-empty subset of ${ALL_GROUPS.join(", ")}), and at least one occurrence are required.` },
+      { error: `name, type, and group (non-empty subset of ${ALL_GROUPS.join(", ")}) are required.` },
       { status: 400 }
     );
   }
-  const ratesError = validateRates(rates);
-  if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
+  const componentsError = Array.isArray(components) && components.length > 0
+    ? components.map((c) => validateBatches(c.batches)).find(Boolean)
+    : "At least one component (with at least one batch) is required.";
+  if (componentsError) return NextResponse.json({ error: componentsError }, { status: 400 });
 
   const db = await readDB();
 
-  const serviceId = nextId(db, "SVC");
-  const occuranceList = occurrences.map((o) => ({
-    OccuranceID: nextId(db, "OCC"),
-    Day: o.day,
-    Time: o.time,
-    Duration: Number(o.duration),
-    Facilitator: o.facilitator,
-  }));
-
-  const storedRates = toStoredRates(db, rates);
   const service = {
-    ServiceID: serviceId,
+    ServiceID: nextId(db, "SVC"),
     Type: type,
     Group: group,
     Name: name,
-    Rates: storedRates,
-    // Kept in sync with Rates[0] for any display code still reading the
-    // singular fields directly.
-    Currency: storedRates[0].Currency,
-    Rate: storedRates[0].Rate,
-    OccuranceList: occuranceList,
+    OptionalComponents: toStoredComponents(db, components),
   };
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
@@ -169,57 +200,48 @@ export async function POST(req) {
   return NextResponse.json({ service });
 }
 
-// body: { serviceId, name, type, group, rates: [{ rateId?, currency, rate }],
-//         occurrences: [{occuranceId?, day, time, duration, facilitator}], + the Student/Teacher-only fields listed above }
-// Occurrences and rates are both replaced wholesale: existing ones keep
-// their id (so already-generated ScheduleItems / existing Enrollments still
-// trace back to them), new ones get a fresh id. Already-generated
-// ScheduleItems are historical and are never rewritten — edits only change
-// what ensureScheduleGenerated produces going forward. Student/Teacher-only
-// fields are dropped if the Service is edited to a Group without either.
+// body: { serviceId, name, type, group, components: [{ componentId?, componentName?,
+//         batches: [{ batchId?, batchName, occurrences: [{occuranceId?, ...}],
+//         rates: [{ rateId?, ... }] }] }], + the Student/Teacher-only fields listed above }
+// Components/Batches/Rates/Occurrences are all replaced wholesale each edit:
+// anything that already has an id (existing, being kept) keeps it, so
+// already-generated ScheduleItems / existing Enrollments still trace back to
+// it; anything new gets a fresh id. Already-generated ScheduleItems are
+// historical and are never rewritten — edits only change what
+// ensureScheduleGenerated produces going forward.
 //
-// Removing a rate that an existing Enrollment already uses is allowed —
-// that enrollment's own RateID is untouched and its billing keeps using
-// whatever rate it locked in until Management changes the enrollment itself
+// Removing a rate/batch that an existing Enrollment already uses is allowed
+// — that enrollment's own BatchID/RateID are untouched and its billing keeps
+// using whatever it locked in until Management changes the enrollment itself
 // (see /api/enrollments); it just won't be offered to new enrollments.
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
-  const { serviceId, name, type, group, occurrences } = body;
-  const rates = normalizeRates(body);
+  const { serviceId, name, type, group, components } = body;
 
-  if (!serviceId || !name || !type || !isValidGroup(group) || !Array.isArray(occurrences) || occurrences.length === 0) {
+  if (!serviceId || !name || !type || !isValidGroup(group)) {
     return NextResponse.json(
-      { error: `serviceId, name, type, group (non-empty subset of ${ALL_GROUPS.join(", ")}), and at least one occurrence are required.` },
+      { error: `serviceId, name, type, and group (non-empty subset of ${ALL_GROUPS.join(", ")}) are required.` },
       { status: 400 }
     );
   }
-  const ratesError = validateRates(rates);
-  if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
+  const componentsError = Array.isArray(components) && components.length > 0
+    ? components.map((c) => validateBatches(c.batches)).find(Boolean)
+    : "At least one component (with at least one batch) is required.";
+  if (componentsError) return NextResponse.json({ error: componentsError }, { status: 400 });
 
   const db = await readDB();
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
-  const storedRates = toStoredRates(db, rates);
   service.Name = name;
   service.Type = type;
   service.Group = group;
-  service.Rates = storedRates;
-  service.Currency = storedRates[0].Currency;
-  service.Rate = storedRates[0].Rate;
-  delete service.Code;
+  service.OptionalComponents = toStoredComponents(db, components);
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
-  service.OccuranceList = occurrences.map((o) => ({
-    OccuranceID: o.occuranceId || nextId(db, "OCC"),
-    Day: o.day,
-    Time: o.time,
-    Duration: Number(o.duration),
-    Facilitator: o.facilitator,
-  }));
 
   ensureScheduleGenerated(db);
   await writeDB(db);

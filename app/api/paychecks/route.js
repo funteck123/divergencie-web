@@ -33,8 +33,12 @@ export async function POST(req) {
     const db = await readDB();
     const y = Number(year);
     const m = Number(month);
+    const service = db.services.find((s) => s.ServiceID === serviceId);
+    const enrollment = db.enrollments.find((e) => e.UserID === staffId && e.ServiceID === serviceId);
+    const batchId = enrollment?.BatchID;
+
     const dup = db.paychecks.find(
-      (p) => p.StaffID === staffId && p.ServiceID === serviceId && p.Year === y && p.Month === m
+      (p) => p.StaffID === staffId && p.ServiceID === serviceId && p.BatchID === batchId && p.Year === y && p.Month === m
     );
     if (dup) {
       return NextResponse.json(
@@ -42,8 +46,6 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    const service = db.services.find((s) => s.ServiceID === serviceId);
-    const enrollment = db.enrollments.find((e) => e.UserID === staffId && e.ServiceID === serviceId);
 
     if (enrollment && !isEnrollmentActiveForMonth(enrollment, y, m)) {
       return NextResponse.json(
@@ -51,9 +53,9 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    const matchedRate = service ? rateById(service, enrollment?.RateID) : null;
+    const matchedRate = service ? rateById(service, batchId, enrollment?.RateID) : null;
     if (matchedRate?.BillingType === "OneOff") {
-      const already = db.paychecks.some((p) => p.StaffID === staffId && p.ServiceID === serviceId);
+      const already = db.paychecks.some((p) => p.StaffID === staffId && p.ServiceID === serviceId && p.BatchID === batchId);
       if (already) {
         return NextResponse.json(
           { error: "This is a One-off rate — a paycheck for this Staff/Service already exists and none further will be created." },
@@ -62,7 +64,7 @@ export async function POST(req) {
       }
     }
 
-    const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
+    const currency = enrollment?.Currency || (service ? ratesOf(service, batchId)[0].Currency : "INR");
     const paycheckAmount = Number(amount) || 0;
     // Auto-filled using the currency's rate as of the 1st of this
     // paycheck's own month — see lib/fxRates.js. Left at 0 (same as before
@@ -73,6 +75,7 @@ export async function POST(req) {
       PaycheckID: nextId(db, "PAY"),
       StaffID: staffId,
       ServiceID: serviceId,
+      BatchID: batchId || "",
       Year: y,
       Month: m,
       ScheduledHours: null,
@@ -104,21 +107,22 @@ export async function POST(req) {
     if (!isEnrollmentActiveForMonth(enr, year, month)) continue;
 
     const service = db.services.find((s) => s.ServiceID === enr.ServiceID);
-    const matchedRate = service ? rateById(service, enr.RateID) : null;
+    const matchedRate = service ? rateById(service, enr.BatchID, enr.RateID) : null;
     const isOneOff = matchedRate?.BillingType === "OneOff";
 
-    // OneOff: exactly one paycheck ever for this Staff/Service, regardless
-    // of month. Monthly/Hourly: the usual one-per-month dedup.
+    // OneOff: exactly one paycheck ever for this Staff/Service/Batch,
+    // regardless of month. Monthly/Hourly: the usual one-per-month dedup.
     const exists = isOneOff
-      ? db.paychecks.some((p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID)
+      ? db.paychecks.some((p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID && p.BatchID === enr.BatchID)
       : db.paychecks.some(
-          (p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID && p.Year === year && p.Month === month
+          (p) => p.StaffID === enr.UserID && p.ServiceID === enr.ServiceID && p.BatchID === enr.BatchID && p.Year === year && p.Month === month
         );
     if (exists) continue;
 
     const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
+      batchId: enr.BatchID,
       year,
       month,
     });
@@ -128,6 +132,7 @@ export async function POST(req) {
       PaycheckID: nextId(db, "PAY"),
       StaffID: enr.UserID,
       ServiceID: enr.ServiceID,
+      BatchID: enr.BatchID || "",
       Year: year,
       Month: month,
       ScheduledHours: scheduledHours,

@@ -34,8 +34,16 @@ export async function POST(req) {
     const db = await readDB();
     const y = Number(year);
     const m = Number(month);
+    const service = db.services.find((s) => s.ServiceID === serviceId);
+    // A student may hold more than one enrollment in the same Service now
+    // (different Batches), so this resolves to whichever enrollment is
+    // passed/found first — fine for the manual one-off path, which a human
+    // is filling in directly.
+    const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === serviceId);
+    const batchId = enrollment?.BatchID;
+
     const dup = db.invoices.find(
-      (i) => i.StudentID === studentId && i.ServiceID === serviceId && i.Year === y && i.Month === m
+      (i) => i.StudentID === studentId && i.ServiceID === serviceId && i.BatchID === batchId && i.Year === y && i.Month === m
     );
     if (dup) {
       return NextResponse.json(
@@ -43,8 +51,6 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    const service = db.services.find((s) => s.ServiceID === serviceId);
-    const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === serviceId);
 
     if (enrollment && !isEnrollmentActiveForMonth(enrollment, y, m)) {
       return NextResponse.json(
@@ -52,9 +58,9 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    const matchedRate = service ? rateById(service, enrollment?.RateID) : null;
+    const matchedRate = service ? rateById(service, batchId, enrollment?.RateID) : null;
     if (matchedRate?.BillingType === "OneOff") {
-      const already = db.invoices.some((i) => i.StudentID === studentId && i.ServiceID === serviceId);
+      const already = db.invoices.some((i) => i.StudentID === studentId && i.ServiceID === serviceId && i.BatchID === batchId);
       if (already) {
         return NextResponse.json(
           { error: "This is a One-off rate — an invoice for this Student/Service already exists and none further will be created." },
@@ -63,7 +69,7 @@ export async function POST(req) {
       }
     }
 
-    const currency = enrollment?.Currency || (service ? ratesOf(service)[0].Currency : "INR");
+    const currency = enrollment?.Currency || (service ? ratesOf(service, batchId)[0].Currency : "INR");
     const invoiceAmount = Number(amount) || 0;
     // Auto-filled using the currency's rate as of the 1st of this invoice's
     // own month (not "today") — see lib/fxRates.js. Left at 0, same as
@@ -75,6 +81,7 @@ export async function POST(req) {
       InvoiceID: nextId(db, "INV"),
       StudentID: studentId,
       ServiceID: serviceId,
+      BatchID: batchId || "",
       Year: y,
       Month: m,
       ScheduledHours: null,
@@ -104,21 +111,24 @@ export async function POST(req) {
     if (!isEnrollmentActiveForMonth(enr, year, month)) continue;
 
     const service = db.services.find((s) => s.ServiceID === enr.ServiceID);
-    const matchedRate = service ? rateById(service, enr.RateID) : null;
+    const matchedRate = service ? rateById(service, enr.BatchID, enr.RateID) : null;
     const isOneOff = matchedRate?.BillingType === "OneOff";
 
-    // OneOff: exactly one invoice ever for this Student/Service, regardless
-    // of month. Monthly/Hourly: the usual one-per-month dedup.
+    // OneOff: exactly one invoice ever for this Student/Service/Batch,
+    // regardless of month. Monthly/Hourly: the usual one-per-month dedup.
+    // Both scoped by BatchID too, so a student holding two enrollments in
+    // the same Service (different Batches) gets one invoice per Batch.
     const exists = isOneOff
-      ? db.invoices.some((i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID)
+      ? db.invoices.some((i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID && i.BatchID === enr.BatchID)
       : db.invoices.some(
-          (i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID && i.Year === year && i.Month === month
+          (i) => i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID && i.BatchID === enr.BatchID && i.Year === year && i.Month === month
         );
     if (exists) continue;
 
     const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
+      batchId: enr.BatchID,
       year,
       month,
     });
@@ -128,6 +138,7 @@ export async function POST(req) {
       InvoiceID: nextId(db, "INV"),
       StudentID: enr.UserID,
       ServiceID: enr.ServiceID,
+      BatchID: enr.BatchID || "",
       Year: year,
       Month: month,
       ScheduledHours: scheduledHours,

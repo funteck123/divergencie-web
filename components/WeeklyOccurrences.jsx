@@ -9,7 +9,7 @@ export default function WeeklyOccurrences({ services }) {
   const byDay = {};
   for (const s of services) {
     const label = s.Code ? `${s.Code} · ${s.Name}` : s.Name;
-    for (const o of s.OccuranceList || []) {
+    for (const o of s._myBatch?.OccuranceList || []) {
       (byDay[o.Day] ||= []).push({ ...o, serviceLabel: label });
     }
   }

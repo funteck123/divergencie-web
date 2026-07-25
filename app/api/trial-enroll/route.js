@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
-import { ratesOf, rateById } from "@/lib/billing";
+import { batchesOf, ratesOf, rateById } from "@/lib/billing";
 
 // Management's action after reading a Trial's Feedback and deciding it went
 // well: add the trialed Service to the Student account and bill one month
@@ -38,16 +38,20 @@ export async function POST(req) {
   const service = db.services.find((s) => s.ServiceID === trial.ServiceID);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
-  let enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === trial.ServiceID);
+  // Defaults to the Service's first Batch (Trial-eligible services are
+  // expected to be single-batch) — Management can move the enrollment to a
+  // different Batch/rate afterward (Enrollments tab) if needed.
+  const defaultBatch = batchesOf(service)[0];
+  let enrollment = db.enrollments.find(
+    (e) => e.UserID === studentId && e.ServiceID === trial.ServiceID && e.BatchID === defaultBatch?.BatchID
+  );
   if (!enrollment) {
-    // Defaults to the Service's first/only rate — Management can change the
-    // enrollment's rate afterward (Enrollments tab) if this Student should be
-    // billed at a different one of the Service's offered rates.
-    const defaultRate = ratesOf(service)[0];
+    const defaultRate = ratesOf(service, defaultBatch?.BatchID)[0];
     enrollment = {
       EnrolmentID: nextId(db, "ENR"),
       UserID: studentId,
       ServiceID: trial.ServiceID,
+      BatchID: defaultBatch?.BatchID || "",
       RateID: defaultRate.RateID,
       Currency: defaultRate.Currency,
     };
@@ -58,21 +62,28 @@ export async function POST(req) {
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
 
-  // Don't double-bill if an invoice for this Student/Service/month already
-  // exists (e.g. bulk "Generate Drafts" already ran for the current month).
+  // Don't double-bill if an invoice for this Student/Service/Batch/month
+  // already exists (e.g. bulk "Generate Drafts" already ran for the current
+  // month).
   let invoice = db.invoices.find(
-    (i) => i.StudentID === studentId && i.ServiceID === trial.ServiceID && i.Year === year && i.Month === month
+    (i) =>
+      i.StudentID === studentId &&
+      i.ServiceID === trial.ServiceID &&
+      i.BatchID === enrollment.BatchID &&
+      i.Year === year &&
+      i.Month === month
   );
   if (!invoice) {
     invoice = {
       InvoiceID: nextId(db, "INV"),
       StudentID: studentId,
       ServiceID: trial.ServiceID,
+      BatchID: enrollment.BatchID,
       Year: year,
       Month: month,
       ScheduledHours: null,
       AttendedHours: null,
-      Amount: rateById(service, enrollment.RateID).Rate,
+      Amount: rateById(service, enrollment.BatchID, enrollment.RateID).Rate,
       Currency: enrollment.Currency,
       INRAmount: 0,
       INRDue: 0,

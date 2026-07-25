@@ -11,7 +11,7 @@ import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
-import { amountDueInOwnCurrency } from "@/lib/billing";
+import { amountDueInOwnCurrency, batchesOf } from "@/lib/billing";
 
 export default function ParentDashboard() {
   return <DashboardShell allowedType="Parent">{(user) => <Body user={user} />}</DashboardShell>;
@@ -96,7 +96,12 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
   const enrolledServices = (enrollments || [])
-    .map((e) => (services || []).find((s) => s.ServiceID === e.ServiceID))
+    .map((e) => {
+      const s = (services || []).find((s) => s.ServiceID === e.ServiceID);
+      if (!s) return null;
+      const myBatch = e.BatchID ? batchesOf(s).find((b) => b.BatchID === e.BatchID) : batchesOf(s)[0];
+      return { ...s, _myBatch: myBatch };
+    })
     .filter(Boolean);
 
   function serviceNameOf(id) {

@@ -15,10 +15,11 @@ import { requireSession, requireManagement } from "@/lib/authz";
 // of an enrolled Student. Keeps reschedule requests scoped to people
 // actually in the class, not any authenticated account.
 function isTiedToSlot(db, userId, slot) {
-  if (db.enrollments.some((e) => e.UserID === userId && e.ServiceID === slot.ServiceID)) return true;
+  const matchesSlot = (e) => e.ServiceID === slot.ServiceID && (!slot.BatchID || e.BatchID === slot.BatchID);
+  if (db.enrollments.some((e) => e.UserID === userId && matchesSlot(e))) return true;
   const user = db.users.find((u) => u.UserID === userId);
   if (user?.UserType === "Parent" && Array.isArray(user.StudentIDs)) {
-    return user.StudentIDs.some((sid) => db.enrollments.some((e) => e.UserID === sid && e.ServiceID === slot.ServiceID));
+    return user.StudentIDs.some((sid) => db.enrollments.some((e) => e.UserID === sid && matchesSlot(e)));
   }
   return false;
 }

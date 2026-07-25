@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
-import { ratesOf } from "@/lib/billing";
+import { batchesOf, ratesOf } from "@/lib/billing";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -11,19 +11,43 @@ export async function GET(req) {
   return NextResponse.json({ enrollments: db.enrollments });
 }
 
-// A Service can offer more than one rate, including duplicate currencies
-// (e.g. two USD tiers) — the enrollment records which specific rate this
-// person is billed at (RateID), not just a currency. Defaults to the
-// service's first/only rate if none is given. Currency is cached on the
-// enrollment too, purely for display — RateID is what billing actually uses.
-function resolveRate(service, rateId) {
-  const rates = ratesOf(service);
+// A Service can have more than one Batch, and a Batch can offer more than
+// one rate, including duplicate currencies (e.g. two USD tiers) — the
+// enrollment records which specific Batch (BatchID) and which specific rate
+// within it (RateID) this person is enrolled/billed at. Defaults to the
+// service's first Batch/rate if none is given. Currency is cached on the
+// enrollment too, purely for display — BatchID+RateID is what billing
+// actually uses.
+function resolveBatch(service, batchId) {
+  const batches = batchesOf(service);
+  if (batches.length === 0) return { error: "This Service has no batches to enroll into." };
+  if (!batchId) return batches[0];
+  const match = batches.find((b) => b.BatchID === batchId);
+  if (!match) {
+    return { error: `batchId must be one of: ${batches.map((b) => `${b.BatchID} (${b.BatchName})`).join(", ")}.` };
+  }
+  return match;
+}
+
+function resolveRate(service, batchId, rateId) {
+  const rates = ratesOf(service, batchId);
   if (!rateId) return rates[0];
   const match = rates.find((r) => r.RateID === rateId);
   if (!match) {
     return { error: `rateId must be one of: ${rates.map((r) => `${r.RateID} (${r.Currency} ${r.Rate})`).join(", ")}.` };
   }
   return match;
+}
+
+// A Rate can carry its own Group (one of ALL_GROUPS) restricting who may
+// enroll at it — e.g. a Batch offering a "Teacher" rate alongside a
+// "Student" rate on the same Batch. An unset Rate.Group means any account
+// type the Service itself is open to may use it.
+function rateGroupError(rate, userType) {
+  if (rate.Group && rate.Group !== userType) {
+    return `This rate is reserved for ${rate.Group} accounts, not ${userType}.`;
+  }
+  return null;
 }
 
 // Start/End Date are plain "YYYY-MM-DD" strings, both optional — no
@@ -37,12 +61,12 @@ function validateDateRange(startDate, endDate) {
   return null;
 }
 
-// body: { userId, serviceId, rateId?, startDate?, endDate? }
+// body: { userId, serviceId, batchId?, rateId?, startDate?, endDate? }
 export async function POST(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { userId, serviceId, rateId, startDate, endDate } = await req.json();
+  const { userId, serviceId, batchId, rateId, startDate, endDate } = await req.json();
   const db = await readDB();
 
   const user = db.users.find((u) => u.UserID === userId);
@@ -50,11 +74,21 @@ export async function POST(req) {
   if (!user || !service) {
     return NextResponse.json({ error: "User or Service not found." }, { status: 404 });
   }
-  const dup = db.enrollments.find((e) => e.UserID === userId && e.ServiceID === serviceId);
-  if (dup) return NextResponse.json({ error: "Already enrolled." }, { status: 400 });
 
-  const resolved = resolveRate(service, rateId);
+  const resolvedBatch = resolveBatch(service, batchId);
+  if (resolvedBatch?.error) return NextResponse.json({ error: resolvedBatch.error }, { status: 400 });
+
+  // A user can hold at most one enrollment per (Service, Batch) — but may
+  // hold several across different Batches of the same Service.
+  const dup = db.enrollments.find(
+    (e) => e.UserID === userId && e.ServiceID === serviceId && e.BatchID === resolvedBatch.BatchID
+  );
+  if (dup) return NextResponse.json({ error: "Already enrolled in this batch." }, { status: 400 });
+
+  const resolved = resolveRate(service, resolvedBatch.BatchID, rateId);
   if (resolved?.error) return NextResponse.json({ error: resolved.error }, { status: 400 });
+  const groupError = rateGroupError(resolved, user.UserType);
+  if (groupError) return NextResponse.json({ error: groupError }, { status: 400 });
 
   const dateError = validateDateRange(startDate, endDate);
   if (dateError) return NextResponse.json({ error: dateError }, { status: 400 });
@@ -63,6 +97,7 @@ export async function POST(req) {
     EnrolmentID: nextId(db, "ENR"),
     UserID: userId,
     ServiceID: serviceId,
+    BatchID: resolvedBatch.BatchID,
     RateID: resolved.RateID,
     Currency: resolved.Currency,
     StartDate: startDate || "",
@@ -73,7 +108,7 @@ export async function POST(req) {
   return NextResponse.json({ enrollment });
 }
 
-// body: { enrolmentId, userId, serviceId, rateId?, startDate?, endDate? }
+// body: { enrolmentId, userId, serviceId, batchId?, rateId?, startDate?, endDate? }
 // startDate/endDate are always fully replaced when provided (including
 // explicit "" to clear one) so a start or end date can be removed after
 // being set, not just added — this is meant to be freely editable, per the
@@ -82,7 +117,7 @@ export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { enrolmentId, userId, serviceId, rateId, startDate, endDate } = await req.json();
+  const { enrolmentId, userId, serviceId, batchId, rateId, startDate, endDate } = await req.json();
   const db = await readDB();
 
   const enrollment = db.enrollments.find((e) => e.EnrolmentID === enrolmentId);
@@ -96,13 +131,23 @@ export async function PATCH(req) {
   if (!user || !service) {
     return NextResponse.json({ error: "User or Service not found." }, { status: 404 });
   }
-  const dup = db.enrollments.find(
-    (e) => e.EnrolmentID !== enrolmentId && e.UserID === nextUserId && e.ServiceID === nextServiceId
-  );
-  if (dup) return NextResponse.json({ error: "Already enrolled." }, { status: 400 });
 
-  const resolved = resolveRate(service, rateId || enrollment.RateID);
+  const resolvedBatch = resolveBatch(service, batchId || enrollment.BatchID);
+  if (resolvedBatch?.error) return NextResponse.json({ error: resolvedBatch.error }, { status: 400 });
+
+  const dup = db.enrollments.find(
+    (e) =>
+      e.EnrolmentID !== enrolmentId &&
+      e.UserID === nextUserId &&
+      e.ServiceID === nextServiceId &&
+      e.BatchID === resolvedBatch.BatchID
+  );
+  if (dup) return NextResponse.json({ error: "Already enrolled in this batch." }, { status: 400 });
+
+  const resolved = resolveRate(service, resolvedBatch.BatchID, rateId || enrollment.RateID);
   if (resolved?.error) return NextResponse.json({ error: resolved.error }, { status: 400 });
+  const groupError = rateGroupError(resolved, user.UserType);
+  if (groupError) return NextResponse.json({ error: groupError }, { status: 400 });
 
   const nextStartDate = startDate !== undefined ? startDate : enrollment.StartDate;
   const nextEndDate = endDate !== undefined ? endDate : enrollment.EndDate;
@@ -111,6 +156,7 @@ export async function PATCH(req) {
 
   enrollment.UserID = nextUserId;
   enrollment.ServiceID = nextServiceId;
+  enrollment.BatchID = resolvedBatch.BatchID;
   enrollment.RateID = resolved.RateID;
   enrollment.Currency = resolved.Currency;
   enrollment.StartDate = nextStartDate || "";
