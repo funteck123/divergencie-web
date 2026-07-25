@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { GROUP_COLORS, groupGradient, normalizeGroup } from "@/lib/client";
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_LABELS = [
@@ -18,7 +19,7 @@ function fmtDate(y, m, d) {
 // Navigation is unbounded in both directions — months beyond the schedule's
 // generation horizon (~1 month ahead) just render empty, same as any month
 // with no sessions.
-export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false }) {
+export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -100,6 +101,17 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
         <div style={{ width: 132 }} />
       </div>
 
+      {colorByGroup && (
+        <div className="flex gap-3 flex-wrap mb-3 text-xs" style={{ color: "var(--muted)" }}>
+          {Object.entries(GROUP_COLORS).map(([group, color]) => (
+            <div key={group} className="flex items-center gap-1">
+              <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, background: color }} />
+              {group}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="grid grid-cols-7 gap-1 mb-1">
         {DAY_LABELS.map((d) => (
           <div key={d} className="text-xs text-center" style={{ color: "var(--muted)" }}>
@@ -139,14 +151,18 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                   const att = attendanceFor(s.ScheduleID);
                   const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
                   const clickable = !readOnly && !att;
+                  const normalizedGroup = normalizeGroup(s.ServiceGroup);
+                  const groupStyle = colorByGroup
+                    ? { background: groupGradient(normalizedGroup), color: "#fff" }
+                    : {};
                   return (
                     <div key={s.ScheduleID}>
                       <button
                         type="button"
-                        className={`badge badge-${kind}`}
-                        style={{ display: "block", width: "100%", textAlign: "left", cursor: clickable ? "pointer" : "default" }}
+                        className={colorByGroup ? "badge" : `badge badge-${kind}`}
+                        style={{ display: "block", width: "100%", textAlign: "left", cursor: clickable ? "pointer" : "default", ...groupStyle }}
                         onClick={() => clickable && setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID)}
-                        title={s.ServiceName}
+                        title={`${s.ServiceName} — ${normalizedGroup.join(" + ")}`}
                       >
                         {s.Time} {s.ServiceName}
                         {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}

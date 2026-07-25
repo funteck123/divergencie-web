@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
-import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort } from "@/lib/client";
+import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
 import { ratesOf, rateById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
@@ -2064,7 +2064,7 @@ function SchedulePool() {
           </div>
         </div>
         {poolView === "calendar" ? (
-          <ScheduleCalendar scheduleItems={openPoolSlots} attendanceItems={[]} readOnly />
+          <ScheduleCalendar scheduleItems={openPoolSlots} attendanceItems={[]} readOnly colorByGroup />
         ) : (
           <table>
             <thead>
@@ -2121,7 +2121,7 @@ function SchedulePool() {
             </div>
           </div>
         ) : serviceView === "calendar" ? (
-          <ScheduleCalendar scheduleItems={serviceSlots} attendanceItems={[]} readOnly />
+          <ScheduleCalendar scheduleItems={serviceSlots} attendanceItems={[]} readOnly colorByGroup />
         ) : (
           <table>
             <thead>
@@ -2137,7 +2137,13 @@ function SchedulePool() {
             <tbody>
               {serviceSlots.map((s) => (
                 <tr key={s.ScheduleID}>
-                  <td>{s.ServiceName}</td>
+                  <td>
+                    <span
+                      title={normalizeGroup(s.ServiceGroup).join(" + ")}
+                      style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, background: groupGradient(normalizeGroup(s.ServiceGroup)), marginRight: 6 }}
+                    />
+                    {s.ServiceName}
+                  </td>
                   <td>{s.Date}</td>
                   <td>{s.Time}</td>
                   <td>{s.Duration}</td>
