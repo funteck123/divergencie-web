@@ -867,6 +867,14 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                         Convert to {CONVERT_LABEL[u.UserType]}
                       </button>
                     )}
+                    {(u.Status === "Active" || u.Status === "Inactive") && (
+                      <button
+                        className="btn-ghost"
+                        onClick={() => saveEdit(u.UserID, { status: u.Status === "Active" ? "Inactive" : "Active" })}
+                      >
+                        {u.Status === "Active" ? "Deactivate" : "Activate"}
+                      </button>
+                    )}
                     <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
                       {editingId === u.UserID ? "Close" : "Edit"}
                     </button>
