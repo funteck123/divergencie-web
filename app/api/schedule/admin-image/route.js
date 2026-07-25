@@ -3,12 +3,16 @@ import { readDB } from "@/lib/db";
 import { drawAdminSchedule } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
 import { normalizeGroup } from "@/lib/scheduleGen";
+import { batchesOf } from "@/lib/billing";
 
 // Flattens every Service's Batches' OccuranceList into one flat list — the
 // whole week's recurring pattern across every service/batch at once, not
-// any one person's. See drawAdminSchedule (lib/scheduleImage.js) for how
-// same-slot conflicts (two occurrences sharing a day+time) are rendered
-// without overlapping.
+// any one person's. A Staff-role Service (Role/Department, no Batches — see
+// applyStaffRoleFields in app/api/services/route.js) contributes its
+// OccuranceList directly via the same pseudo-batch batchesOf already
+// returns nothing for, so it's handled as a fallback below. See
+// drawAdminSchedule (lib/scheduleImage.js) for how same-slot conflicts (two
+// occurrences sharing a day+time) are rendered without overlapping.
 function buildAllEntries(db) {
   const entries = [];
   // Same rule as the Schedule tab's List/Calendar views (see SchedulePool
@@ -16,12 +20,12 @@ function buildAllEntries(db) {
   // isn't a real class, so it shouldn't appear on the weekly image either.
   const enrolledBatchKeys = new Set(db.enrollments.map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
   for (const s of db.services) {
-    for (const c of s.OptionalComponents || []) {
-      for (const b of c.Batches || []) {
-        if (!enrolledBatchKeys.has(`${s.ServiceID}::${b.BatchID}`)) continue;
-        for (const o of b.OccuranceList || []) {
-          entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
-        }
+    const batches = batchesOf(s);
+    const effective = batches.length > 0 ? batches : [{ BatchID: "", OccuranceList: s.OccuranceList || [] }];
+    for (const b of effective) {
+      if (!enrolledBatchKeys.has(`${s.ServiceID}::${b.BatchID || ""}`)) continue;
+      for (const o of b.OccuranceList || []) {
+        entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
       }
     }
   }

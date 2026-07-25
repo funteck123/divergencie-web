@@ -1516,10 +1516,87 @@ function CreateAccount({ onCreated, users }) {
 const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "" };
 const EMPTY_RATE = { currency: "INR", rate: "", description: "", billingType: "Monthly", group: "" };
 const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
-// Type is free text (no enum enforced server-side) — this is just the
-// dropdown of suggestions offered; typing anything else adds a new one.
-// Kept as one combined list regardless of which Group(s) are selected.
-const TYPE_OPTIONS = ["Book", "Course", "Counselling", "Admissions", "Department", "Role", "Admin"];
+// Type is free text (no enum enforced server-side) — these are just the
+// dropdown suggestions offered, based on which Group(s) are selected. A
+// Service open to several Groups at once offers the UNION of each group's
+// options (not just one), so e.g. Teacher+Staff offers both sets — fixes
+// the earlier bug where a non-Staff-only combination silently dropped the
+// Staff-flavored options entirely.
+const TYPE_OPTIONS_BY_GROUP = {
+  Student: ["Book", "Course", "Counselling", "Admissions"],
+  Teacher: ["Book", "Course", "Counselling", "Admissions"],
+  Parent: ["Book", "Course", "Counselling", "Admissions"],
+  Ambassador: ["Book", "Course", "Counselling", "Admissions"],
+  Management: ["Book", "Course", "Counselling", "Admissions"],
+  Staff: ["Department", "Role", "Admin"],
+};
+function typeOptionsFor(group) {
+  const seen = new Set();
+  const options = [];
+  for (const g of group) {
+    for (const t of TYPE_OPTIONS_BY_GROUP[g] || []) {
+      if (!seen.has(t)) {
+        seen.add(t);
+        options.push(t);
+      }
+    }
+  }
+  return options;
+}
+
+// A styled replacement for <input list=...>/<datalist> — the native
+// datalist popup renders with the browser's own (often jarring, e.g. plain
+// black) styling that ignores the app's theme. This is a plain editable
+// text input with its own app-styled dropdown panel: pick a suggestion, or
+// just type any custom value — nothing is enforced.
+function EditableCombobox({ value, onChange, options, placeholder }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ position: "relative" }}>
+      <input
+        className="field"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+      />
+      {open && options.length > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            zIndex: 20,
+            top: "100%",
+            left: 0,
+            right: 0,
+            marginTop: 4,
+            maxHeight: 220,
+            overflowY: "auto",
+            background: "var(--panel)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+          }}
+        >
+          {options.map((o) => (
+            <div
+              key={o}
+              onMouseDown={() => {
+                onChange(o);
+                setOpen(false);
+              }}
+              style={{ padding: "0.5rem 0.75rem", cursor: "pointer" }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--panel-2)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              {o}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function emptyBatch() {
   return { batchName: "", rates: [{ ...EMPTY_RATE }], occurrences: [{ ...EMPTY_OCC }] };
@@ -1544,10 +1621,20 @@ function Services() {
   const [worksheetsLink, setWorksheetsLink] = useState("");
   const [gcrLink, setGcrLink] = useState("");
   const [components, setComponents] = useState([emptyComponent()]);
+  const [role, setRole] = useState("");
+  const [department, setDepartment] = useState(DEPARTMENTS[0]);
+  const [flatRates, setFlatRates] = useState([{ ...EMPTY_RATE }]);
+  const [flatOccurrences, setFlatOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [error, setError] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
   const studentLinksEligible = group.includes("Student");
+  // A Staff-role Service (an internal role like "Associate Project Manager")
+  // is open ONLY to Staff — no batch/cohort concept applies (there's no
+  // "class" of students) — Role/Department + flat Rates/Occurrences instead
+  // of the nested Component/Batch editor.
+  const isStaffRole = group.length === 1 && group[0] === "Staff";
+  const typeOptions = typeOptionsFor(group);
 
   function toggleGroup(g) {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -1576,6 +1663,10 @@ function Services() {
     setWorksheetsLink("");
     setGcrLink("");
     setComponents([emptyComponent()]);
+    setRole("");
+    setDepartment(DEPARTMENTS[0]);
+    setFlatRates([{ ...EMPTY_RATE }]);
+    setFlatOccurrences([{ ...EMPTY_OCC }]);
   }
 
   function startEdit(s) {
@@ -1619,6 +1710,39 @@ function Services() {
           }))
         : [emptyComponent()]
     );
+    setRole(s.Role || "");
+    setDepartment(DEPARTMENTS.includes(s.Department) ? s.Department : DEPARTMENTS[0]);
+    setFlatRates(
+      Array.isArray(s.Rates) && s.Rates.length > 0
+        ? s.Rates.map((r) => ({ rateId: r.RateID, currency: r.Currency, rate: r.Rate, description: r.Description || "", billingType: r.BillingType || "Monthly", group: r.Group || "" }))
+        : [{ ...EMPTY_RATE }]
+    );
+    setFlatOccurrences(
+      Array.isArray(s.OccuranceList) && s.OccuranceList.length > 0
+        ? s.OccuranceList.map((o) => ({ occuranceId: o.OccuranceID, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator }))
+        : [{ ...EMPTY_OCC }]
+    );
+  }
+
+  // Flat Rates/Occurrences editing (Staff-role services only) — same
+  // update-one-leaf-immutably pattern as the nested component/batch helpers.
+  function updateFlatRate(ri, field, value) {
+    setFlatRates((prev) => prev.map((r, i) => (i === ri ? { ...r, [field]: value } : r)));
+  }
+  function addFlatRate() {
+    setFlatRates((prev) => [...prev, { ...EMPTY_RATE }]);
+  }
+  function removeFlatRate(ri) {
+    setFlatRates((prev) => prev.filter((_, i) => i !== ri));
+  }
+  function updateFlatOcc(oi, field, value) {
+    setFlatOccurrences((prev) => prev.map((o, i) => (i === oi ? { ...o, [field]: value } : o)));
+  }
+  function addFlatOcc() {
+    setFlatOccurrences((prev) => [...prev, { ...EMPTY_OCC }]);
+  }
+  function removeFlatOcc(oi) {
+    setFlatOccurrences((prev) => prev.filter((_, i) => i !== oi));
   }
 
   // Nested-array update helpers: components[ci].batches[bi].rates[ri] /
@@ -1703,25 +1827,32 @@ function Services() {
       setError("Select at least one group this service is open to.");
       return;
     }
-    if (components.length === 0 || components.some((c) => c.batches.length === 0)) {
+    if (isStaffRole) {
+      if (flatRates.length === 0 || flatOccurrences.length === 0) {
+        setError("At least one rate and one occurrence are required.");
+        return;
+      }
+    } else if (components.length === 0 || components.some((c) => c.batches.length === 0)) {
       setError("At least one batch (with a rate and an occurrence) is required per component.");
       return;
     }
-    const body = {
-      name,
-      type,
-      group,
-      board,
-      course,
-      subjectCode,
-      subjectName,
-      fullSubjectName,
-      recordingsLink,
-      syllabusLink,
-      worksheetsLink,
-      gcrLink,
-      components,
-    };
+    const body = isStaffRole
+      ? { name, type, group, role, department, rates: flatRates, occurrences: flatOccurrences }
+      : {
+          name,
+          type,
+          group,
+          board,
+          course,
+          subjectCode,
+          subjectName,
+          fullSubjectName,
+          recordingsLink,
+          syllabusLink,
+          worksheetsLink,
+          gcrLink,
+          components,
+        };
     try {
       if (editingId) {
         await api("/api/services", { method: "PATCH", body: JSON.stringify({ serviceId: editingId, ...body }) });
@@ -1765,12 +1896,19 @@ function Services() {
               ))}
             </div>
           </div>
-          <input className="field" list="type-options" placeholder="Type" value={type} onChange={(e) => setType(e.target.value)} />
-          <datalist id="type-options">
-            {TYPE_OPTIONS.map((t) => (
-              <option key={t} value={t} />
-            ))}
-          </datalist>
+          <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
+          {isStaffRole && (
+            <>
+              <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
+              <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+                {DEPARTMENTS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
           {cohortEligible && (
             <>
               <input className="field" placeholder="Curriculum / Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
@@ -1832,6 +1970,81 @@ function Services() {
             </>
           )}
 
+          {isStaffRole && (
+            <div className="space-y-2">
+              <label className="text-sm" style={{ color: "var(--muted)" }}>
+                Rates
+              </label>
+              {flatRates.map((r, ri) => (
+                <div key={ri} className="flex gap-2 items-center">
+                  <select className="field" style={{ maxWidth: 130 }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
+                    {CURRENCIES_FULL.map((cur) => (
+                      <option key={cur.code} value={cur.code}>
+                        {cur.code}
+                      </option>
+                    ))}
+                  </select>
+                  <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateFlatRate(ri, "rate", e.target.value)} />
+                  <input
+                    className="field"
+                    style={{ maxWidth: 120 }}
+                    placeholder="Description"
+                    maxLength={40}
+                    value={r.description}
+                    onChange={(e) => updateFlatRate(ri, "description", e.target.value)}
+                  />
+                  <select className="field" style={{ maxWidth: 110 }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
+                    {BILLING_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                  {flatRates.length > 1 && (
+                    <button type="button" className="btn-ghost" onClick={() => removeFlatRate(ri)}>
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" className="btn-ghost" onClick={addFlatRate}>
+                + Add rate
+              </button>
+
+              <label className="text-sm block" style={{ color: "var(--muted)" }}>
+                Recurring occurrences
+              </label>
+              {flatOccurrences.map((o, oi) => (
+                <div key={oi} className="flex gap-2 items-center">
+                  <select className="field" value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
+                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
+                      <option key={d}>{d}</option>
+                    ))}
+                  </select>
+                  <input className="field" type="time" value={o.time} onChange={(e) => updateFlatOcc(oi, "time", e.target.value)} />
+                  <input
+                    className="field"
+                    type="number"
+                    step="0.5"
+                    placeholder="Hrs"
+                    value={o.duration}
+                    onChange={(e) => updateFlatOcc(oi, "duration", e.target.value)}
+                  />
+                  <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateFlatOcc(oi, "facilitator", e.target.value)} />
+                  {flatOccurrences.length > 1 && (
+                    <button type="button" className="btn-ghost" onClick={() => removeFlatOcc(oi)}>
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" className="btn-ghost" onClick={addFlatOcc}>
+                + Add occurrence
+              </button>
+            </div>
+          )}
+
+          {!isStaffRole && (
           <div className="space-y-3">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
               Optional Components (e.g. distinct exam papers within one subject — most subjects just need one, left unnamed)
@@ -1960,6 +2173,7 @@ function Services() {
               + Add optional component
             </button>
           </div>
+          )}
 
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
           <div className="space-x-2">
@@ -1995,14 +2209,18 @@ function Services() {
 // the cohort curriculum fields (Board/Course/Subject...).
 function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
-  const colSpan = isCohort ? 12 : 7;
+  const isStaffGroup = groupName === "Staff";
+  const colSpan = isCohort ? 12 : isStaffGroup ? 9 : 7;
 
-  const rows = services.flatMap((s) =>
-    (s.OptionalComponents || []).flatMap((c) =>
+  // A Staff-role Service (Role/Department, no Batches) contributes exactly
+  // one row per Service, with rate/occurrence pulled straight off it instead
+  // of off a Batch.
+  const rows = services.flatMap((s) => {
+    const nested = (s.OptionalComponents || []).flatMap((c) =>
       (c.Batches || []).map((b) => ({
         service: s,
-        component: c,
         batch: b,
+        rowKey: b.BatchID,
         ServiceID: s.ServiceID,
         Name: s.Name,
         Type: s.Type,
@@ -2012,8 +2230,24 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
         _rate: b.Rates?.[0]?.Rate ?? 0,
         _occ: (b.OccuranceList || []).map((o) => `${o.Day} ${o.Time}`).join(", "),
       }))
-    )
-  );
+    );
+    if (nested.length > 0) return nested;
+    return [
+      {
+        service: s,
+        batch: { Rates: s.Rates || [], OccuranceList: s.OccuranceList || [] },
+        rowKey: s.ServiceID,
+        ServiceID: s.ServiceID,
+        Name: s.Name,
+        Type: s.Type,
+        _group: normalizeGroup(s.Group).join(", "),
+        _component: "—",
+        _batch: "—",
+        _rate: s.Rates?.[0]?.Rate ?? 0,
+        _occ: (s.OccuranceList || []).map((o) => `${o.Day} ${o.Time}`).join(", "),
+      },
+    ];
+  });
   const { sorted, sortKey, sortDir, toggleSort } = useSort(rows, "Name");
 
   return (
@@ -2034,8 +2268,18 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                   <SortableTh label="Subject" sortKeyName="SubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 </>
               )}
-              <SortableTh label="Component" sortKeyName="_component" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              {isStaffGroup && (
+                <>
+                  <SortableTh label="Role" sortKeyName="Role" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Department" sortKeyName="Department" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                </>
+              )}
+              {!isStaffGroup && (
+                <>
+                  <SortableTh label="Component" sortKeyName="_component" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                </>
+              )}
               <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Occurrences" sortKeyName="_occ" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <th></th>
@@ -2043,7 +2287,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
           </thead>
           <tbody>
             {sorted.map((row) => (
-              <tr key={row.batch.BatchID}>
+              <tr key={row.rowKey}>
                 <td>{row.ServiceID}</td>
                 <td>{row.Name}</td>
                 <td>{row.Type}</td>
@@ -2055,8 +2299,18 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                     <td>{row.service.SubjectName || "—"}</td>
                   </>
                 )}
-                <td>{row._component}</td>
-                <td>{row._batch}</td>
+                {isStaffGroup && (
+                  <>
+                    <td>{row.service.Role || "—"}</td>
+                    <td>{row.service.Department || "—"}</td>
+                  </>
+                )}
+                {!isStaffGroup && (
+                  <>
+                    <td>{row._component}</td>
+                    <td>{row._batch}</td>
+                  </>
+                )}
                 <td>{formatRates(row.batch.Rates)}</td>
                 <td style={{ color: "var(--muted)" }}>{(row.batch.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
                 <td>

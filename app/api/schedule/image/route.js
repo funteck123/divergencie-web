@@ -13,8 +13,13 @@ function buildEntries(db, userId) {
   for (const e of myEnrollments) {
     const service = db.services.find((s) => s.ServiceID === e.ServiceID);
     if (!service) continue;
-    const batch = e.BatchID ? batchesOf(service).find((b) => b.BatchID === e.BatchID) : batchesOf(service)[0];
-    for (const o of batch?.OccuranceList || []) {
+    const batches = batchesOf(service);
+    // A Staff-role Service (Role/Department, no Batches) keeps its
+    // OccuranceList directly on the Service.
+    const occurrences = batches.length > 0
+      ? (e.BatchID ? batches.find((b) => b.BatchID === e.BatchID) : batches[0])?.OccuranceList
+      : service.OccuranceList;
+    for (const o of occurrences || []) {
       entries.push({ name: service.Name, day: o.Day, time: o.Time });
     }
   }

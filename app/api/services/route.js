@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
-import { CURRENCIES } from "@/lib/accountTypes";
+import { CURRENCIES, DEPARTMENTS } from "@/lib/accountTypes";
 import { BILLING_TYPES } from "@/lib/billing";
 
 export async function GET(req) {
@@ -114,6 +114,22 @@ function toStoredComponents(db, components) {
   }));
 }
 
+// A Staff-role Service (an internal role like "Associate Project Manager")
+// is open ONLY to Staff — no cohort/batch concept applies to it (there's no
+// "class" of students), so it skips the OptionalComponents/Batches nesting
+// entirely and keeps Role/Department/Rates/OccuranceList directly on
+// itself, same shape as before the Batch redesign.
+function isStaffRoleService(group) {
+  return group.length === 1 && group[0] === "Staff";
+}
+
+function applyStaffRoleFields(db, service, body) {
+  service.Role = (body.role || "").trim();
+  service.Department = DEPARTMENTS.includes(body.department) ? body.department : "";
+  service.Rates = toStoredRates(db, body.rates || []);
+  service.OccuranceList = toStoredOccurrences(db, body.occurrences || []);
+}
+
 // Course/Curriculum fields are still Student/Teacher-only (a service's
 // curriculum details, not its billing) — Rate + Currency is the one billing
 // field every service has now, regardless of Group.
@@ -177,10 +193,19 @@ export async function POST(req) {
       { status: 400 }
     );
   }
-  const componentsError = Array.isArray(components) && components.length > 0
-    ? components.map((c) => validateBatches(c.batches)).find(Boolean)
-    : "At least one component (with at least one batch) is required.";
-  if (componentsError) return NextResponse.json({ error: componentsError }, { status: 400 });
+  const staffRole = isStaffRoleService(group);
+  if (!staffRole) {
+    const componentsError = Array.isArray(components) && components.length > 0
+      ? components.map((c) => validateBatches(c.batches)).find(Boolean)
+      : "At least one component (with at least one batch) is required.";
+    if (componentsError) return NextResponse.json({ error: componentsError }, { status: 400 });
+  } else {
+    const ratesError = validateRates(body.rates || []);
+    if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
+    if (!validateOccurrences(body.occurrences)) {
+      return NextResponse.json({ error: "At least one occurrence is required." }, { status: 400 });
+    }
+  }
 
   const db = await readDB();
 
@@ -189,8 +214,12 @@ export async function POST(req) {
     Type: type,
     Group: group,
     Name: name,
-    OptionalComponents: toStoredComponents(db, components),
   };
+  if (staffRole) {
+    applyStaffRoleFields(db, service, body);
+  } else {
+    service.OptionalComponents = toStoredComponents(db, components);
+  }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
   db.services.push(service);
@@ -227,10 +256,19 @@ export async function PATCH(req) {
       { status: 400 }
     );
   }
-  const componentsError = Array.isArray(components) && components.length > 0
-    ? components.map((c) => validateBatches(c.batches)).find(Boolean)
-    : "At least one component (with at least one batch) is required.";
-  if (componentsError) return NextResponse.json({ error: componentsError }, { status: 400 });
+  const staffRole = isStaffRoleService(group);
+  if (!staffRole) {
+    const componentsError = Array.isArray(components) && components.length > 0
+      ? components.map((c) => validateBatches(c.batches)).find(Boolean)
+      : "At least one component (with at least one batch) is required.";
+    if (componentsError) return NextResponse.json({ error: componentsError }, { status: 400 });
+  } else {
+    const ratesError = validateRates(body.rates || []);
+    if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
+    if (!validateOccurrences(body.occurrences)) {
+      return NextResponse.json({ error: "At least one occurrence is required." }, { status: 400 });
+    }
+  }
 
   const db = await readDB();
   const service = db.services.find((s) => s.ServiceID === serviceId);
@@ -239,7 +277,13 @@ export async function PATCH(req) {
   service.Name = name;
   service.Type = type;
   service.Group = group;
-  service.OptionalComponents = toStoredComponents(db, components);
+  if (staffRole) {
+    applyStaffRoleFields(db, service, body);
+    delete service.OptionalComponents;
+  } else {
+    service.OptionalComponents = toStoredComponents(db, components);
+    for (const key of ["Role", "Department", "Rates", "OccuranceList"]) delete service[key];
+  }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
 

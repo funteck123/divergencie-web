@@ -86,8 +86,12 @@ function Body({ user }) {
     .map((e) => {
       const s = (data.services || []).find((s) => s.ServiceID === e.ServiceID);
       if (!s) return null;
-      const myBatch = e.BatchID ? batchesOf(s).find((b) => b.BatchID === e.BatchID) : batchesOf(s)[0];
-      return { ...s, _myRate: rateById(s, e.BatchID, e.RateID), _myBatch: myBatch };
+      const batches = batchesOf(s);
+      const myBatch = e.BatchID ? batches.find((b) => b.BatchID === e.BatchID) : batches[0];
+      // A Staff-role Service (Role/Department, no Batches) keeps its
+      // OccuranceList directly on the Service.
+      const myOccurrences = batches.length > 0 ? myBatch?.OccuranceList || [] : s.OccuranceList || [];
+      return { ...s, _myRate: rateById(s, e.BatchID, e.RateID), _myBatch: myBatch, _myOccurrences: myOccurrences };
     })
     .filter(Boolean);
 
@@ -122,7 +126,7 @@ function Body({ user }) {
                 <td>{s.Type}</td>
                 <td>{formatRate(s._myRate)}</td>
                 <td style={{ color: "var(--muted)" }}>
-                  {(s._myBatch?.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
+                  {(s._myOccurrences || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
                 </td>
               </tr>
             ))}

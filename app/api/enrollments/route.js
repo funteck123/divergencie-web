@@ -20,7 +20,9 @@ export async function GET(req) {
 // actually uses.
 function resolveBatch(service, batchId) {
   const batches = batchesOf(service);
-  if (batches.length === 0) return { error: "This Service has no batches to enroll into." };
+  // A Staff-role Service (Role/Department, no Batches) enrolls directly at
+  // the Service level — no batch to pick.
+  if (batches.length === 0) return { BatchID: "", BatchName: "" };
   if (!batchId) return batches[0];
   const match = batches.find((b) => b.BatchID === batchId);
   if (!match) {

@@ -99,8 +99,12 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
     .map((e) => {
       const s = (services || []).find((s) => s.ServiceID === e.ServiceID);
       if (!s) return null;
-      const myBatch = e.BatchID ? batchesOf(s).find((b) => b.BatchID === e.BatchID) : batchesOf(s)[0];
-      return { ...s, _myBatch: myBatch };
+      const batches = batchesOf(s);
+      const myBatch = e.BatchID ? batches.find((b) => b.BatchID === e.BatchID) : batches[0];
+      // A Staff-role Service (Role/Department, no Batches) keeps its
+      // OccuranceList directly on the Service.
+      const myOccurrences = batches.length > 0 ? myBatch?.OccuranceList || [] : s.OccuranceList || [];
+      return { ...s, _myBatch: myBatch, _myOccurrences: myOccurrences };
     })
     .filter(Boolean);
 
