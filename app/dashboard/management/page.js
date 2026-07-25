@@ -1626,6 +1626,17 @@ function Services() {
     }
   }
 
+  async function deleteService(serviceId) {
+    if (!window.confirm("Delete this Service? Only possible if no enrollment has ever referenced it.")) return;
+    setError("");
+    try {
+      await api("/api/services", { method: "DELETE", body: JSON.stringify({ serviceId }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
   return (
     <div className="grid gap-6 md:grid-cols-2 items-start">
       <div className="card">
@@ -1820,7 +1831,13 @@ function Services() {
       </div>
 
       {ALL_GROUPS.map((g) => (
-        <ServiceGroupTable key={g} groupName={g} services={services.filter((s) => groupMatches(s.Group, g))} onEdit={startEdit} />
+        <ServiceGroupTable
+          key={g}
+          groupName={g}
+          services={services.filter((s) => groupMatches(s.Group, g))}
+          onEdit={startEdit}
+          onDelete={deleteService}
+        />
       ))}
     </div>
   );
@@ -1829,7 +1846,7 @@ function Services() {
 // One table per Group — every service shows Rate (the one billing field);
 // Student/Teacher services additionally carry the cohort curriculum fields
 // (Batch/Board/Subject...).
-function ServiceGroupTable({ groupName, services, onEdit }) {
+function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const colSpan = isCohort ? 13 : 7;
 
@@ -1881,6 +1898,9 @@ function ServiceGroupTable({ groupName, services, onEdit }) {
                 <td>
                   <button className="btn-ghost" onClick={() => onEdit(s)}>
                     Edit
+                  </button>
+                  <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(s.ServiceID)}>
+                    Delete
                   </button>
                 </td>
               </tr>

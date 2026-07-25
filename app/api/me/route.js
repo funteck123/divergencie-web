@@ -18,7 +18,14 @@ export async function GET(req) {
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
 
   const enrollments = db.enrollments.filter((e) => e.UserID === userId);
-  const enrolledServiceIds = new Set(enrollments.map((e) => e.ServiceID));
+  // Schedule only reflects still-active enrollments (no EndDate, or EndDate
+  // hasn't passed yet) — an ended enrollment's Service shouldn't keep
+  // showing up in the calendar/list views. `enrollments` itself (returned
+  // below) stays unfiltered — the Enrollments table is a historical record
+  // and should keep showing ended ones.
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const activeEnrollments = enrollments.filter((e) => !e.EndDate || e.EndDate >= todayStr);
+  const enrolledServiceIds = new Set(activeEnrollments.map((e) => e.ServiceID));
   const scheduleItems = sortByDateTime(db.scheduleItems.filter((s) => enrolledServiceIds.has(s.ServiceID)));
   const attendanceItems = db.attendanceItems.filter((a) => a.UserID === userId);
 
@@ -94,7 +101,8 @@ export async function GET(req) {
       user.StudentIDs.map(async (sid) => {
         const child = db.users.find((u) => u.UserID === sid);
         const childEnroll = db.enrollments.filter((e) => e.UserID === sid);
-        const childServiceIds = new Set(childEnroll.map((e) => e.ServiceID));
+        const childActiveEnroll = childEnroll.filter((e) => !e.EndDate || e.EndDate >= todayStr);
+        const childServiceIds = new Set(childActiveEnroll.map((e) => e.ServiceID));
         const childInvoices = db.invoices.filter((i) => i.StudentID === sid && i.Status !== "Draft");
         const childInvoicesWithTotals = await Promise.all(
           childInvoices.map(async (i) => ({ ...i, ConvertedDue: await convertINRAmount(db, i.INRDue, child?.Currency || "INR", i.Year, i.Month) }))

@@ -226,3 +226,35 @@ export async function PATCH(req) {
 
   return NextResponse.json({ service });
 }
+
+// Only allowed if no enrollment has ever referenced this Service — ended
+// enrollments count too, not just currently-active ones, since an ended
+// enrollment still means real billing/attendance history exists for it.
+// Deleting also removes its auto-generated ScheduleItems (regenerable,
+// no independent value) — but never touches enrollments/invoices/paychecks
+// themselves, since the block above guarantees none exist for this Service.
+export async function DELETE(req) {
+  const { error: authError } = requireManagement(req);
+  if (authError) return authError;
+
+  const { serviceId } = await req.json();
+  if (!serviceId) return NextResponse.json({ error: "serviceId is required." }, { status: 400 });
+
+  const db = await readDB();
+  const service = db.services.find((s) => s.ServiceID === serviceId);
+  if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
+
+  const enrollmentCount = db.enrollments.filter((e) => e.ServiceID === serviceId).length;
+  if (enrollmentCount > 0) {
+    return NextResponse.json(
+      { error: `Cannot delete — ${enrollmentCount} enrollment${enrollmentCount === 1 ? "" : "s"} (past or present) reference this Service.` },
+      { status: 409 }
+    );
+  }
+
+  db.services = db.services.filter((s) => s.ServiceID !== serviceId);
+  db.scheduleItems = db.scheduleItems.filter((s) => s.ServiceID !== serviceId);
+  await writeDB(db);
+
+  return NextResponse.json({ ok: true });
+}
