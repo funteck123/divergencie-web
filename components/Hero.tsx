@@ -15,7 +15,7 @@ export default function Hero() {
           playsInline
           className="w-full h-full object-cover brightness-[0.4]"
         >
-          <source src="/assets/videos/hero_video.mp4" type="video/mp4" />
+          <source src="/assets/videos/hero_video_360p.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-black/80 to-transparent"></div>
         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/80 to-transparent"></div>
