@@ -1524,12 +1524,10 @@ const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Amba
 // Staff-flavored options entirely.
 const TYPE_OPTIONS_BY_GROUP = {
   Student: ["Book", "Course", "Counselling", "Admissions"],
-  Teacher: ["Book", "Course", "Counselling", "Admissions"],
-  Parent: ["Book", "Course", "Counselling", "Admissions"],
-  Ambassador: ["Book", "Course", "Counselling", "Admissions"],
-  Management: ["Book", "Course", "Counselling", "Admissions"],
-  // Staff-role services only ever use one Type for now — Role/Department
-  // already capture what distinguishes one from another.
+  Teacher: ["Teacher"],
+  Parent: ["Parent"],
+  Ambassador: ["Ambassador"],
+  Management: ["Management"],
   Staff: ["Staff"],
 };
 function typeOptionsFor(group) {
@@ -1688,28 +1686,28 @@ function Services() {
     setComponents(
       (s.OptionalComponents || []).length > 0
         ? s.OptionalComponents.map((c) => ({
-            componentId: c.ComponentID,
-            componentName: c.ComponentName || "",
-            batches: (c.Batches || []).map((b) => ({
-              batchId: b.BatchID,
-              batchName: b.BatchName || "",
-              rates: (b.Rates || []).map((r) => ({
-                rateId: r.RateID,
-                currency: r.Currency,
-                rate: r.Rate,
-                description: r.Description || "",
-                billingType: r.BillingType || "Monthly",
-                group: r.Group || "",
-              })),
-              occurrences: (b.OccuranceList || []).map((o) => ({
-                occuranceId: o.OccuranceID,
-                day: o.Day,
-                time: o.Time,
-                duration: o.Duration,
-                facilitator: o.Facilitator,
-              })),
+          componentId: c.ComponentID,
+          componentName: c.ComponentName || "",
+          batches: (c.Batches || []).map((b) => ({
+            batchId: b.BatchID,
+            batchName: b.BatchName || "",
+            rates: (b.Rates || []).map((r) => ({
+              rateId: r.RateID,
+              currency: r.Currency,
+              rate: r.Rate,
+              description: r.Description || "",
+              billingType: r.BillingType || "Monthly",
+              group: r.Group || "",
             })),
-          }))
+            occurrences: (b.OccuranceList || []).map((o) => ({
+              occuranceId: o.OccuranceID,
+              day: o.Day,
+              time: o.Time,
+              duration: o.Duration,
+              facilitator: o.Facilitator,
+            })),
+          })),
+        }))
         : [emptyComponent()]
     );
     setRole(s.Role || "");
@@ -1778,11 +1776,11 @@ function Services() {
         i !== ci
           ? c
           : {
-              ...c,
-              batches: c.batches.map((b, j) =>
-                j !== bi ? b : { ...b, rates: b.rates.map((r, k) => (k === ri ? { ...r, [field]: value } : r)) }
-              ),
-            }
+            ...c,
+            batches: c.batches.map((b, j) =>
+              j !== bi ? b : { ...b, rates: b.rates.map((r, k) => (k === ri ? { ...r, [field]: value } : r)) }
+            ),
+          }
       )
     );
   }
@@ -1803,11 +1801,11 @@ function Services() {
         i !== ci
           ? c
           : {
-              ...c,
-              batches: c.batches.map((b, j) =>
-                j !== bi ? b : { ...b, occurrences: b.occurrences.map((o, k) => (k === oi ? { ...o, [field]: value } : o)) }
-              ),
-            }
+            ...c,
+            batches: c.batches.map((b, j) =>
+              j !== bi ? b : { ...b, occurrences: b.occurrences.map((o, k) => (k === oi ? { ...o, [field]: value } : o)) }
+            ),
+          }
       )
     );
   }
@@ -1839,22 +1837,22 @@ function Services() {
       return;
     }
     const body = isStaffRole
-      ? { name, type: "Staff", group, role, department, rates: flatRates, occurrences: flatOccurrences }
+      ? { name, type, group, role, department, rates: flatRates, occurrences: flatOccurrences }
       : {
-          name,
-          type,
-          group,
-          board,
-          course,
-          subjectCode,
-          subjectName,
-          fullSubjectName,
-          recordingsLink,
-          syllabusLink,
-          worksheetsLink,
-          gcrLink,
-          components,
-        };
+        name,
+        type,
+        group,
+        board,
+        course,
+        subjectCode,
+        subjectName,
+        fullSubjectName,
+        recordingsLink,
+        syllabusLink,
+        worksheetsLink,
+        gcrLink,
+        components,
+      };
     try {
       if (editingId) {
         await api("/api/services", { method: "PATCH", body: JSON.stringify({ serviceId: editingId, ...body }) });
@@ -1898,11 +1896,7 @@ function Services() {
               ))}
             </div>
           </div>
-          {isStaffRole ? (
-            <input className="field" value="Staff" disabled />
-          ) : (
-            <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
-          )}
+          <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
           {isStaffRole && (
             <>
               <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
@@ -2051,134 +2045,134 @@ function Services() {
           )}
 
           {!isStaffRole && (
-          <div className="space-y-3">
-            <label className="text-sm" style={{ color: "var(--muted)" }}>
-              Optional Components (e.g. distinct exam papers within one subject — most subjects just need one, left unnamed)
-            </label>
-            {components.map((c, ci) => (
-              <div key={ci} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.6rem" }} className="space-y-2">
-                <div className="flex gap-2 items-center">
-                  <input
-                    className="field"
-                    placeholder="Component name (optional — e.g. Pure Mathematics 1)"
-                    value={c.componentName}
-                    onChange={(e) => updateComponent(ci, "componentName", e.target.value)}
-                  />
-                  {components.length > 1 && (
-                    <button type="button" className="btn-ghost" onClick={() => removeComponent(ci)}>
-                      ✕ Component
-                    </button>
-                  )}
-                </div>
-
-                {c.batches.map((b, bi) => (
-                  <div key={bi} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.5rem", background: "var(--panel-2)" }} className="space-y-2">
-                    <div className="flex gap-2 items-center">
-                      <input
-                        className="field"
-                        placeholder="Batch name (e.g. B14)"
-                        value={b.batchName}
-                        onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
-                      />
-                      {c.batches.length > 1 && (
-                        <button type="button" className="btn-ghost" onClick={() => removeBatch(ci, bi)}>
-                          ✕ Batch
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs" style={{ color: "var(--muted)" }}>
-                        Rates (whoever enrolls in this batch picks one — a rate can optionally be reserved for one Group)
-                      </label>
-                      {b.rates.map((r, ri) => (
-                        <div key={ri} className="flex gap-2 items-center">
-                          <select className="field" style={{ maxWidth: 130 }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
-                            {CURRENCIES_FULL.map((cur) => (
-                              <option key={cur.code} value={cur.code}>
-                                {cur.code}
-                              </option>
-                            ))}
-                          </select>
-                          <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} />
-                          <input
-                            className="field"
-                            style={{ maxWidth: 120 }}
-                            placeholder="Description"
-                            maxLength={40}
-                            value={r.description}
-                            onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
-                          />
-                          <select className="field" style={{ maxWidth: 110 }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
-                            {BILLING_TYPES.map((t) => (
-                              <option key={t} value={t}>
-                                {t}
-                              </option>
-                            ))}
-                          </select>
-                          <select className="field" style={{ maxWidth: 130 }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
-                            <option value="">Any of the above</option>
-                            {group.map((g) => (
-                              <option key={g} value={g}>
-                                {g} only
-                              </option>
-                            ))}
-                          </select>
-                          {b.rates.length > 1 && (
-                            <button type="button" className="btn-ghost" onClick={() => removeRate(ci, bi, ri)}>
-                              ✕
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button type="button" className="btn-ghost" onClick={() => addRate(ci, bi)}>
-                        + Add rate
+            <div className="space-y-3">
+              <label className="text-sm" style={{ color: "var(--muted)" }}>
+                Optional Components (e.g. distinct exam papers within one subject — most subjects just need one, left unnamed)
+              </label>
+              {components.map((c, ci) => (
+                <div key={ci} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.6rem" }} className="space-y-2">
+                  <div className="flex gap-2 items-center">
+                    <input
+                      className="field"
+                      placeholder="Component name (optional — e.g. Pure Mathematics 1)"
+                      value={c.componentName}
+                      onChange={(e) => updateComponent(ci, "componentName", e.target.value)}
+                    />
+                    {components.length > 1 && (
+                      <button type="button" className="btn-ghost" onClick={() => removeComponent(ci)}>
+                        ✕ Component
                       </button>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs" style={{ color: "var(--muted)" }}>
-                        Recurring occurrences
-                      </label>
-                      {b.occurrences.map((o, oi) => (
-                        <div key={oi} className="flex gap-2 items-center">
-                          <select className="field" value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
-                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-                              <option key={d}>{d}</option>
-                            ))}
-                          </select>
-                          <input className="field" type="time" value={o.time} onChange={(e) => updateOcc(ci, bi, oi, "time", e.target.value)} />
-                          <input
-                            className="field"
-                            type="number"
-                            step="0.5"
-                            placeholder="Hrs"
-                            value={o.duration}
-                            onChange={(e) => updateOcc(ci, bi, oi, "duration", e.target.value)}
-                          />
-                          <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateOcc(ci, bi, oi, "facilitator", e.target.value)} />
-                          {b.occurrences.length > 1 && (
-                            <button type="button" className="btn-ghost" onClick={() => removeOcc(ci, bi, oi)}>
-                              ✕
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button type="button" className="btn-ghost" onClick={() => addOcc(ci, bi)}>
-                        + Add occurrence
-                      </button>
-                    </div>
+                    )}
                   </div>
-                ))}
-                <button type="button" className="btn-ghost" onClick={() => addBatch(ci)}>
-                  + Add batch
-                </button>
-              </div>
-            ))}
-            <button type="button" className="btn-ghost" onClick={addComponent}>
-              + Add optional component
-            </button>
-          </div>
+
+                  {c.batches.map((b, bi) => (
+                    <div key={bi} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.5rem", background: "var(--panel-2)" }} className="space-y-2">
+                      <div className="flex gap-2 items-center">
+                        <input
+                          className="field"
+                          placeholder="Batch name (e.g. B14)"
+                          value={b.batchName}
+                          onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
+                        />
+                        {c.batches.length > 1 && (
+                          <button type="button" className="btn-ghost" onClick={() => removeBatch(ci, bi)}>
+                            ✕ Batch
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs" style={{ color: "var(--muted)" }}>
+                          Rates (whoever enrolls in this batch picks one — a rate can optionally be reserved for one Group)
+                        </label>
+                        {b.rates.map((r, ri) => (
+                          <div key={ri} className="flex gap-2 items-center">
+                            <select className="field" style={{ maxWidth: 130 }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
+                              {CURRENCIES_FULL.map((cur) => (
+                                <option key={cur.code} value={cur.code}>
+                                  {cur.code}
+                                </option>
+                              ))}
+                            </select>
+                            <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} />
+                            <input
+                              className="field"
+                              style={{ maxWidth: 120 }}
+                              placeholder="Description"
+                              maxLength={40}
+                              value={r.description}
+                              onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
+                            />
+                            <select className="field" style={{ maxWidth: 110 }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
+                              {BILLING_TYPES.map((t) => (
+                                <option key={t} value={t}>
+                                  {t}
+                                </option>
+                              ))}
+                            </select>
+                            <select className="field" style={{ maxWidth: 130 }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
+                              <option value="">Any of the above</option>
+                              {group.map((g) => (
+                                <option key={g} value={g}>
+                                  {g} only
+                                </option>
+                              ))}
+                            </select>
+                            {b.rates.length > 1 && (
+                              <button type="button" className="btn-ghost" onClick={() => removeRate(ci, bi, ri)}>
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <button type="button" className="btn-ghost" onClick={() => addRate(ci, bi)}>
+                          + Add rate
+                        </button>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs" style={{ color: "var(--muted)" }}>
+                          Recurring occurrences
+                        </label>
+                        {b.occurrences.map((o, oi) => (
+                          <div key={oi} className="flex gap-2 items-center">
+                            <select className="field" value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
+                              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
+                                <option key={d}>{d}</option>
+                              ))}
+                            </select>
+                            <input className="field" type="time" value={o.time} onChange={(e) => updateOcc(ci, bi, oi, "time", e.target.value)} />
+                            <input
+                              className="field"
+                              type="number"
+                              step="0.5"
+                              placeholder="Hrs"
+                              value={o.duration}
+                              onChange={(e) => updateOcc(ci, bi, oi, "duration", e.target.value)}
+                            />
+                            <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateOcc(ci, bi, oi, "facilitator", e.target.value)} />
+                            {b.occurrences.length > 1 && (
+                              <button type="button" className="btn-ghost" onClick={() => removeOcc(ci, bi, oi)}>
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <button type="button" className="btn-ghost" onClick={() => addOcc(ci, bi)}>
+                          + Add occurrence
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button type="button" className="btn-ghost" onClick={() => addBatch(ci)}>
+                    + Add batch
+                  </button>
+                </div>
+              ))}
+              <button type="button" className="btn-ghost" onClick={addComponent}>
+                + Add optional component
+              </button>
+            </div>
           )}
 
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
