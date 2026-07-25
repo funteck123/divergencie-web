@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawAdminSchedule } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
+import { normalizeGroup } from "@/lib/scheduleGen";
 
 // Flattens every Service's OccuranceList into one flat list — the whole
 // week's recurring pattern across every service at once, not any one
@@ -17,7 +18,7 @@ function buildAllEntries(db) {
   for (const s of db.services) {
     if (!enrolledServiceIds.has(s.ServiceID)) continue;
     for (const o of s.OccuranceList || []) {
-      entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator });
+      entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
     }
   }
   return entries;
