@@ -1516,12 +1516,10 @@ function CreateAccount({ onCreated, users }) {
 const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "" };
 const EMPTY_RATE = { currency: "INR", rate: "", description: "", billingType: "Monthly", group: "" };
 const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
-// Type is free text (no enum enforced server-side) — these are just the
-// dropdown suggestions offered, swapped based on which Group the Service is
-// open to: academic groups get the curriculum-content taxonomy, a Staff-only
-// service gets a department/role-flavored one instead.
-const TYPE_OPTIONS_ACADEMIC = ["Book", "Course", "Counselling", "Admissions"];
-const TYPE_OPTIONS_STAFF = ["Department", "Role", "Admin"];
+// Type is free text (no enum enforced server-side) — this is just the
+// dropdown of suggestions offered; typing anything else adds a new one.
+// Kept as one combined list regardless of which Group(s) are selected.
+const TYPE_OPTIONS = ["Book", "Course", "Counselling", "Admissions", "Department", "Role", "Admin"];
 
 function emptyBatch() {
   return { batchName: "", rates: [{ ...EMPTY_RATE }], occurrences: [{ ...EMPTY_OCC }] };
@@ -1550,8 +1548,6 @@ function Services() {
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
   const studentLinksEligible = group.includes("Student");
-  const staffOnly = group.length > 0 && group.every((g) => g === "Staff");
-  const typeOptions = staffOnly ? TYPE_OPTIONS_STAFF : TYPE_OPTIONS_ACADEMIC;
 
   function toggleGroup(g) {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -1771,7 +1767,7 @@ function Services() {
           </div>
           <input className="field" list="type-options" placeholder="Type" value={type} onChange={(e) => setType(e.target.value)} />
           <datalist id="type-options">
-            {typeOptions.map((t) => (
+            {TYPE_OPTIONS.map((t) => (
               <option key={t} value={t} />
             ))}
           </datalist>
