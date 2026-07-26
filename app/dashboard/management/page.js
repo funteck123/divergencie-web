@@ -2349,6 +2349,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const leadCols = isCohort ? 7 : isStaffGroup ? 6 : 4; // toggle+ID+Type+Group + cohort/staff extras (cols before Component)
   const [expandedTypes, setExpandedTypes] = useState(new Set());
   const [expandedBoards, setExpandedBoards] = useState(new Set());
+  const [expandedCourses, setExpandedCourses] = useState(new Set());
   const [expandedSubjects, setExpandedSubjects] = useState(new Set());
   const [expandedServices, setExpandedServices] = useState(new Set());
   const [expandedComponents, setExpandedComponents] = useState(new Set());
@@ -2510,53 +2511,61 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
     );
   }
 
-  // Type is always the outer grouping; Board/Subject only apply within a
-  // Type-group's services that actually have curriculum fields (Board or
-  // SubjectName set) — a service without them (Staff-role, or a Type like
-  // Book/Counselling/Admissions) renders directly under Type instead.
-  function renderBoardSubject(typeRows) {
+  // Catalog levels — Type, and (cohort-only) Board -> Course -> Subject —
+  // are stable categories, not just a count-based grouping: each ALWAYS
+  // gets its own row and always requires a click to expand, even when
+  // there's only one value underneath it (unlike Component/Batch below,
+  // which are per-Service internal structure and collapse away when
+  // trivial). Type additionally shows every category this Group's Type
+  // taxonomy defines (see TYPE_OPTIONS_BY_GROUP), including ones with zero
+  // services, so e.g. "Admissions"/"Counselling" are visible even when
+  // empty — that placeholder behavior is Type-only, not repeated deeper.
+  function renderBoardCourseSubject(typeRows) {
     if (!isCohort) return typeRows.map(renderServiceLeaf);
 
     const withSubject = typeRows.filter((r) => r.service.Board || r.service.SubjectName);
     const withoutSubject = typeRows.filter((r) => !(r.service.Board || r.service.SubjectName));
 
     const byBoard = groupKeepOrder(withSubject, (r) => r.service.Board || "—");
-    const boardEntries = [...byBoard.entries()];
-    const skipBoard = boardEntries.length <= 1;
 
-    const boardNodes = (skipBoard ? [[null, withSubject]] : boardEntries).flatMap(([boardKey, boardRows]) => {
-      if (boardRows.length === 0) return [];
+    const boardNodes = [...byBoard.entries()].map(([boardKey, boardRows]) => {
       const boardToggleKey = `${groupName}::${boardKey}`;
-      const boardOpen = skipBoard || expandedBoards.has(boardToggleKey);
-      const bySubject = groupKeepOrder(boardRows, (r) => `${r.service.SubjectCode || ""}::${r.service.SubjectName || "—"}`);
-      const subjectEntries = [...bySubject.entries()];
+      const boardOpen = expandedBoards.has(boardToggleKey);
+      const byCourse = groupKeepOrder(boardRows, (r) => r.service.Course || "—");
 
-      const subjectNodes = boardOpen
-        ? subjectEntries.flatMap(([, subjectRows]) => {
-            if (subjectRows.length === 1) return renderServiceLeaf(subjectRows[0]);
-            const subjectLabel = subjectRows[0].service.SubjectName || "—";
-            const subjectToggleKey = `${boardToggleKey}::${subjectLabel}`;
-            const subjectOpen = expandedSubjects.has(subjectToggleKey);
-            return (
-              <Fragment key={subjectToggleKey}>
-                <GroupRow
-                  label={subjectLabel}
-                  isOpen={subjectOpen}
-                  onToggle={() => toggleIn(setExpandedSubjects, subjectToggleKey)}
-                  atCol={6}
-                  totalCols={colSpan}
-                />
-                {subjectOpen && subjectRows.map(renderServiceLeaf)}
-              </Fragment>
-            );
-          })
-        : null;
-
-      if (skipBoard) return subjectNodes;
       return (
         <Fragment key={boardToggleKey}>
           <GroupRow label={boardKey} isOpen={boardOpen} onToggle={() => toggleIn(setExpandedBoards, boardToggleKey)} atCol={4} totalCols={colSpan} />
-          {boardOpen && subjectNodes}
+          {boardOpen &&
+            [...byCourse.entries()].map(([courseKey, courseRows]) => {
+              const courseToggleKey = `${boardToggleKey}::${courseKey}`;
+              const courseOpen = expandedCourses.has(courseToggleKey);
+              const bySubject = groupKeepOrder(courseRows, (r) => `${r.service.SubjectCode || ""}::${r.service.SubjectName || "—"}`);
+
+              return (
+                <Fragment key={courseToggleKey}>
+                  <GroupRow label={courseKey} isOpen={courseOpen} onToggle={() => toggleIn(setExpandedCourses, courseToggleKey)} atCol={5} totalCols={colSpan} />
+                  {courseOpen &&
+                    [...bySubject.entries()].map(([, subjectRows]) => {
+                      const subjectLabel = subjectRows[0].service.SubjectName || "—";
+                      const subjectToggleKey = `${courseToggleKey}::${subjectLabel}`;
+                      const subjectOpen = expandedSubjects.has(subjectToggleKey);
+                      return (
+                        <Fragment key={subjectToggleKey}>
+                          <GroupRow
+                            label={subjectLabel}
+                            isOpen={subjectOpen}
+                            onToggle={() => toggleIn(setExpandedSubjects, subjectToggleKey)}
+                            atCol={6}
+                            totalCols={colSpan}
+                          />
+                          {subjectOpen && subjectRows.map(renderServiceLeaf)}
+                        </Fragment>
+                      );
+                    })}
+                </Fragment>
+              );
+            })}
         </Fragment>
       );
     });
@@ -2565,16 +2574,24 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   }
 
   const byType = groupKeepOrder(sorted, (r) => r.Type || "—");
-  const typeEntries = [...byType.entries()];
-  const skipType = typeEntries.length <= 1;
+  // Union of Types actually present in the data with every category this
+  // Group's Type taxonomy defines — a category with zero services still
+  // gets its own (empty) row.
+  const allTypeKeys = [...new Set([...byType.keys(), ...(TYPE_OPTIONS_BY_GROUP[groupName] || [])])];
 
-  const body = (skipType ? [[null, sorted]] : typeEntries).flatMap(([typeKey, typeRows]) => {
-    if (skipType) return renderBoardSubject(typeRows);
+  const body = allTypeKeys.flatMap((typeKey) => {
+    const typeRows = byType.get(typeKey) || [];
     const isTypeOpen = expandedTypes.has(typeKey);
     return (
       <Fragment key={typeKey}>
         <GroupRow label={typeKey} isOpen={isTypeOpen} onToggle={() => toggleIn(setExpandedTypes, typeKey)} atCol={2} totalCols={colSpan} />
-        {isTypeOpen && renderBoardSubject(typeRows)}
+        {isTypeOpen && (typeRows.length > 0 ? renderBoardCourseSubject(typeRows) : (
+          <tr style={{ background: "var(--panel-2)" }}>
+            <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
+              No services yet.
+            </td>
+          </tr>
+        ))}
       </Fragment>
     );
   });
@@ -2614,16 +2631,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
               <th></th>
             </tr>
           </thead>
-          <tbody>
-            {body}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
-                  None yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
+          <tbody>{body}</tbody>
         </table>
       </div>
     </div>
