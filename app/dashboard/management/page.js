@@ -2206,51 +2206,53 @@ function Services() {
   );
 }
 
-// One row per (Service, Component, Batch) — a Service can now have several
-// Batches (across one or more Optional Components), so the flat one-row-
-// per-service table becomes one row per Batch, with the Service/Component
-// name repeated for context. Student/Teacher services additionally carry
+// One row per Service — a Service can have several Batches (across one or
+// more Optional Components), but instead of repeating the Service's own ID/
+// Name/Type/Group on one row per Batch, a Service with more than one Batch
+// collapses to a single summary row with an expand toggle; expanding it
+// reveals one indented row per Batch (Component name shown alongside, since
+// most subjects only ever use one unnamed Component). A Service with
+// exactly one Batch just shows it inline, same as before — no expand click
+// needed for the common case. Student/Teacher services additionally carry
 // the cohort curriculum fields (Board/Course/Subject...).
 function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const isStaffGroup = groupName === "Staff";
-  const colSpan = isCohort ? 12 : isStaffGroup ? 9 : 7;
+  const colSpan = isCohort ? 13 : 10;
+  const [expanded, setExpanded] = useState(new Set());
 
-  // A Staff-role Service (Role/Department, no Batches) contributes exactly
-  // one row per Service, with rate/occurrence pulled straight off it instead
-  // of off a Batch.
-  const rows = services.flatMap((s) => {
-    const nested = (s.OptionalComponents || []).flatMap((c) =>
+  function toggle(serviceId) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(serviceId)) next.delete(serviceId);
+      else next.add(serviceId);
+      return next;
+    });
+  }
+
+  // A Staff-role Service (Role/Department, no Batches) always has exactly
+  // one pseudo-leaf pulled straight off itself instead of off a Batch.
+  const rows = services.map((s) => {
+    const leaves = (s.OptionalComponents || []).flatMap((c) =>
       (c.Batches || []).map((b) => ({
-        service: s,
-        batch: b,
-        rowKey: b.BatchID,
-        ServiceID: s.ServiceID,
-        Name: s.Name,
-        Type: s.Type,
-        _group: normalizeGroup(s.Group).join(", "),
-        _component: c.ComponentName || "—",
-        _batch: b.BatchName || "—",
-        _rate: b.Rates?.[0]?.Rate ?? 0,
-        _occ: (b.OccuranceList || []).map((o) => `${o.Day} ${o.Time}`).join(", "),
+        component: c.ComponentName || "—",
+        batch: b.BatchName || "—",
+        rates: b.Rates,
+        occurrences: b.OccuranceList,
+        key: b.BatchID,
       }))
     );
-    if (nested.length > 0) return nested;
-    return [
-      {
-        service: s,
-        batch: { Rates: s.Rates || [], OccuranceList: s.OccuranceList || [] },
-        rowKey: s.ServiceID,
-        ServiceID: s.ServiceID,
-        Name: s.Name,
-        Type: s.Type,
-        _group: normalizeGroup(s.Group).join(", "),
-        _component: "—",
-        _batch: "—",
-        _rate: s.Rates?.[0]?.Rate ?? 0,
-        _occ: (s.OccuranceList || []).map((o) => `${o.Day} ${o.Time}`).join(", "),
-      },
-    ];
+    if (leaves.length === 0) {
+      leaves.push({ component: "—", batch: "—", rates: s.Rates || [], occurrences: s.OccuranceList || [], key: s.ServiceID });
+    }
+    return {
+      service: s,
+      leaves,
+      ServiceID: s.ServiceID,
+      Name: s.Name,
+      Type: s.Type,
+      _group: normalizeGroup(s.Group).join(", "),
+    };
   });
   const { sorted, sortKey, sortDir, toggleSort } = useSort(rows, "Name");
 
@@ -2261,6 +2263,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
+              <th></th>
               <SortableTh label="ID" sortKeyName="ServiceID" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Name" sortKeyName="Name" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Type" sortKeyName="Type" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
@@ -2280,53 +2283,84 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
               )}
               {!isStaffGroup && (
                 <>
-                  <SortableTh label="Component" sortKeyName="_component" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <th>Component</th>
+                  <th>Batch</th>
                 </>
               )}
-              <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Occurrences" sortKeyName="_occ" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <th>Rate</th>
+              <th>Occurrences</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {sorted.map((row) => (
-              <tr key={row.rowKey}>
-                <td>{row.ServiceID}</td>
-                <td>{row.Name}</td>
-                <td>{row.Type}</td>
-                <td>{row._group}</td>
-                {isCohort && (
-                  <>
-                    <td>{row.service.Board || "—"}</td>
-                    <td>{row.service.Course || "—"}</td>
-                    <td>{row.service.SubjectName || "—"}</td>
-                  </>
-                )}
-                {isStaffGroup && (
-                  <>
-                    <td>{row.service.Role || "—"}</td>
-                    <td>{row.service.Department || "—"}</td>
-                  </>
-                )}
-                {!isStaffGroup && (
-                  <>
-                    <td>{row._component}</td>
-                    <td>{row._batch}</td>
-                  </>
-                )}
-                <td>{formatRates(row.batch.Rates)}</td>
-                <td style={{ color: "var(--muted)" }}>{(row.batch.OccuranceList || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
-                <td>
-                  <button className="btn-ghost" onClick={() => onEdit(row.service)}>
-                    Edit
-                  </button>
-                  <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(row.ServiceID)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {sorted.map((row) => {
+              const isOpen = expanded.has(row.ServiceID);
+              const single = row.leaves.length === 1 ? row.leaves[0] : null;
+              return (
+                <Fragment key={row.ServiceID}>
+                  <tr>
+                    <td>
+                      {row.leaves.length > 1 && (
+                        <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggle(row.ServiceID)}>
+                          {isOpen ? "▾" : "▸"}
+                        </button>
+                      )}
+                    </td>
+                    <td>{row.ServiceID}</td>
+                    <td>{row.Name}</td>
+                    <td>{row.Type}</td>
+                    <td>{row._group}</td>
+                    {isCohort && (
+                      <>
+                        <td>{row.service.Board || "—"}</td>
+                        <td>{row.service.Course || "—"}</td>
+                        <td>{row.service.SubjectName || "—"}</td>
+                      </>
+                    )}
+                    {isStaffGroup && (
+                      <>
+                        <td>{row.service.Role || "—"}</td>
+                        <td>{row.service.Department || "—"}</td>
+                      </>
+                    )}
+                    {!isStaffGroup && (
+                      <>
+                        <td>{single ? single.component : `${row.leaves.length} batches`}</td>
+                        <td>{single ? single.batch : "—"}</td>
+                      </>
+                    )}
+                    <td>{single ? formatRates(single.rates) : "—"}</td>
+                    <td style={{ color: "var(--muted)" }}>
+                      {single ? (single.occurrences || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ") : "—"}
+                    </td>
+                    <td>
+                      <button className="btn-ghost" onClick={() => onEdit(row.service)}>
+                        Edit
+                      </button>
+                      <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(row.ServiceID)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  {isOpen &&
+                    row.leaves.map((leaf) => (
+                      <tr key={leaf.key} style={{ background: "var(--panel-2)" }}>
+                        <td></td>
+                        <td colSpan={isCohort ? 7 : isStaffGroup ? 6 : 4} style={{ color: "var(--muted)" }} />
+                        {!isStaffGroup && (
+                          <>
+                            <td>{leaf.component}</td>
+                            <td>{leaf.batch}</td>
+                          </>
+                        )}
+                        <td>{formatRates(leaf.rates)}</td>
+                        <td style={{ color: "var(--muted)" }}>{(leaf.occurrences || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
+                        <td></td>
+                      </tr>
+                    ))}
+                </Fragment>
+              );
+            })}
             {rows.length === 0 && (
               <tr>
                 <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
