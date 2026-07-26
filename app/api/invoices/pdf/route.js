@@ -3,7 +3,7 @@ import { readDB, writeDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
-import { amountDueInOwnCurrency } from "@/lib/billing";
+import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -61,7 +61,7 @@ export async function GET(req) {
     partyLabel: "Student Name",
     partyName: student?.Name || invoice.StudentID,
     secondaryLabel: "Class Name",
-    secondaryValue: service?.CourseClass || service?.Name || invoice.ServiceID,
+    secondaryValue: service?.Course || (service ? lineItemName(service, invoice.BatchID) : invoice.ServiceID),
     balanceLabel: "Balance Due:",
     // Balance Due is the outstanding amount (from INR Due), in the
     // student's own currency — NOT the invoice's gross Amount.
@@ -77,7 +77,7 @@ export async function GET(req) {
     // Quantity x Rate that didn't match Amount at all).
     lineItems: [
       {
-        item: service?.Name || invoice.ServiceID,
+        item: service ? lineItemName(service, invoice.BatchID) : invoice.ServiceID,
         quantity: 1,
         rate: invoice.Amount,
         amount: invoice.Amount,

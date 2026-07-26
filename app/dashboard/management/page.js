@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
-import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
+import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 
@@ -1615,7 +1615,6 @@ function Services() {
   const [course, setCourse] = useState("");
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
-  const [fullSubjectName, setFullSubjectName] = useState("");
   const [recordingsLink, setRecordingsLink] = useState("");
   const [syllabusLink, setSyllabusLink] = useState("");
   const [worksheetsLink, setWorksheetsLink] = useState("");
@@ -1657,7 +1656,6 @@ function Services() {
     setCourse("");
     setSubjectCode("");
     setSubjectName("");
-    setFullSubjectName("");
     setRecordingsLink("");
     setSyllabusLink("");
     setWorksheetsLink("");
@@ -1678,7 +1676,6 @@ function Services() {
     setCourse(s.Course || "");
     setSubjectCode(s.SubjectCode || "");
     setSubjectName(s.SubjectName || "");
-    setFullSubjectName(s.FullSubjectName || "");
     setRecordingsLink(s.RecordingsLink || "");
     setSyllabusLink(s.SyllabusLink || "");
     setWorksheetsLink(s.WorksheetsLink || "");
@@ -1846,7 +1843,6 @@ function Services() {
         course,
         subjectCode,
         subjectName,
-        fullSubjectName,
         recordingsLink,
         syllabusLink,
         worksheetsLink,
@@ -1933,12 +1929,6 @@ function Services() {
                 placeholder="Subject Name"
                 value={subjectName}
                 onChange={(e) => setSubjectName(e.target.value)}
-              />
-              <input
-                className="field"
-                placeholder="Full Subject Name"
-                value={fullSubjectName}
-                onChange={(e) => setFullSubjectName(e.target.value)}
               />
             </>
           )}
@@ -3205,9 +3195,9 @@ function Billing() {
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
-  function serviceNameOf(id) {
+  function serviceNameOf(id, batchId) {
     const s = services.find((s) => s.ServiceID === id);
-    return s ? s.Name : id;
+    return s ? lineItemName(s, batchId) : id;
   }
 
   async function generate() {
@@ -3469,7 +3459,7 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
           )}
         </span>
       </td>
-      <td>{serviceNameOf(row.ServiceID)}</td>
+      <td>{serviceNameOf(row.ServiceID, row.BatchID)}</td>
       <td>{row.Month}/{row.Year}</td>
       <td>
         {editing ? (

@@ -11,7 +11,7 @@ import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
-import { amountDueInOwnCurrency, batchesOf } from "@/lib/billing";
+import { amountDueInOwnCurrency, batchesOf, lineItemName } from "@/lib/billing";
 
 export default function ParentDashboard() {
   return <DashboardShell allowedType="Parent">{(user) => <Body user={user} />}</DashboardShell>;
@@ -108,9 +108,9 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
     })
     .filter(Boolean);
 
-  function serviceNameOf(id) {
+  function serviceNameOf(id, batchId) {
     const s = (services || []).find((s) => s.ServiceID === id);
-    return s ? (s.Code ? `${s.Code} · ${s.Name}` : s.Name) : "—";
+    return s ? lineItemName(s, batchId) : "—";
   }
 
   function scheduleItemFor(scheduleItemId) {
@@ -247,7 +247,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
           {invSort.sorted.map((i) => (
             <tr key={i.InvoiceID}>
               <td>{i.Month}/{i.Year}</td>
-              <td>{serviceNameOf(i.ServiceID)}</td>
+              <td>{serviceNameOf(i.ServiceID, i.BatchID)}</td>
               <td>{i.Currency || "INR"} {i.Amount}</td>
               <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
               <td>{i.ConvertedDue != null ? `${student?.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>

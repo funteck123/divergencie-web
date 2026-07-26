@@ -11,7 +11,7 @@ import GuidesSection from "@/components/GuidesSection";
 import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
-import { amountDueInOwnCurrency, rateById, batchesOf } from "@/lib/billing";
+import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
 
 export default function StaffDashboard() {
   return <DashboardShell allowedType="Staff">{(user) => <Body user={user} />}</DashboardShell>;
@@ -84,9 +84,9 @@ function Body({ user }) {
     })
     .filter(Boolean);
 
-  function serviceNameOf(id) {
+  function serviceNameOf(id, batchId) {
     const s = (data?.services || []).find((s) => s.ServiceID === id);
-    return s ? s.Name : "—";
+    return s ? lineItemName(s, batchId) : "—";
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -236,7 +236,7 @@ function Body({ user }) {
             {paySort.sorted.map((p) => (
               <tr key={p.PaycheckID}>
                 <td>{p.Month}/{p.Year}</td>
-                <td>{serviceNameOf(p.ServiceID)}</td>
+                <td>{serviceNameOf(p.ServiceID, p.BatchID)}</td>
                 <td>{p.AttendedHours}</td>
                 <td>{p.Currency || "INR"} {p.Amount}</td>
                 <td>{p.Currency || "INR"} {amountDueInOwnCurrency(p).toFixed(2)}</td>

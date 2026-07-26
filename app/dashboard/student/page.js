@@ -12,7 +12,7 @@ import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
-import { amountDueInOwnCurrency, rateById, batchesOf } from "@/lib/billing";
+import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -95,9 +95,9 @@ function Body({ user }) {
     })
     .filter(Boolean);
 
-  function serviceNameOf(id) {
+  function serviceNameOf(id, batchId) {
     const s = (data?.services || []).find((s) => s.ServiceID === id);
-    return s ? s.Name : "—";
+    return s ? lineItemName(s, batchId) : "—";
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -254,7 +254,7 @@ function Body({ user }) {
             {invSort.sorted.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
-                <td>{serviceNameOf(i.ServiceID)}</td>
+                <td>{serviceNameOf(i.ServiceID, i.BatchID)}</td>
                 <td>{i.AttendedHours}</td>
                 <td>{i.Currency || "INR"} {i.Amount}</td>
                 <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>

@@ -3,7 +3,7 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
 import { CURRENCIES, DEPARTMENTS } from "@/lib/accountTypes";
-import { BILLING_TYPES } from "@/lib/billing";
+import { BILLING_TYPES, batchFullName } from "@/lib/billing";
 
 export async function GET(req) {
   const { error } = requireSession(req);
@@ -143,11 +143,34 @@ function applyCohortServiceFields(service, body, group) {
     service.Course = body.course || "";
     service.SubjectCode = body.subjectCode || "";
     service.SubjectName = body.subjectName || "";
-    service.FullSubjectName = body.fullSubjectName || "";
   } else {
-    for (const key of ["Board", "Course", "SubjectCode", "SubjectName", "FullSubjectName"]) {
+    for (const key of ["Board", "Course", "SubjectCode", "SubjectName"]) {
       delete service[key];
     }
+  }
+  // FullSubjectName used to be typed by hand here — it's now auto-generated
+  // (see stampFullNames below) as Batch.FullName instead, so this field is
+  // never written anymore. Left in place on any Service that already has it
+  // stored from before, but slated for removal from the DB entirely later.
+  delete service.FullSubjectName;
+}
+
+// Auto-generates the long-form name used on invoice/paycheck line items
+// (Batch + Board + SubjectCode + SubjectName — see lib/billing.js's
+// batchFullName) and stores it as Batch.FullName, or Service.FullName for a
+// Staff-role Service (no Batches, no Board/Subject to compose from — falls
+// back to the Service's own Name). Never accepted from the client; always
+// recomputed from whatever Board/Subject/Batch values were just saved.
+function stampFullNames(service) {
+  const components = service.OptionalComponents || [];
+  if (components.length > 0) {
+    for (const c of components) {
+      for (const b of c.Batches || []) {
+        b.FullName = batchFullName(service, b);
+      }
+    }
+  } else {
+    service.FullName = batchFullName(service, null);
   }
 }
 
@@ -168,7 +191,7 @@ function applyStudentLinkFields(service, body, group) {
 }
 
 // body: { name, type, group: string[] (subset of ALL_GROUPS), board?, course?,
-//         subjectCode?, subjectName?, fullSubjectName? (Student/Teacher-only),
+//         subjectCode?, subjectName? (Student/Teacher-only),
 //         components: [{ componentName?, batches: [{ batchName, occurrences: [...],
 //         rates: [{ currency, rate, billingType?, description?, group? }] }] }] }
 // Group determines which pool a Service's slots fall into: Trial accounts can
@@ -222,6 +245,7 @@ export async function POST(req) {
   }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
+  stampFullNames(service);
   db.services.push(service);
   ensureScheduleGenerated(db);
   await writeDB(db);
@@ -286,6 +310,7 @@ export async function PATCH(req) {
   }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
+  stampFullNames(service);
 
   ensureScheduleGenerated(db);
   await writeDB(db);

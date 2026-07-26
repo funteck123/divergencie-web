@@ -3,6 +3,7 @@ import { readDB } from "@/lib/db";
 import { drawPayslipPDF } from "@/lib/pdfDoc";
 import { FIXED_DEPARTMENT } from "@/app/api/users/route";
 import { requireSelfOrManagement } from "@/lib/authz";
+import { lineItemName } from "@/lib/billing";
 
 const MONTH_ABBR = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 // Employer SOCSO Category 1 is ~1.75% of gross wage (statutory table
@@ -70,7 +71,7 @@ export async function GET(req) {
     epfNo: "",
     socsoNo: "",
     taxNo: "",
-    earnings: [{ item: service?.Name || paycheck.ServiceID, quantity: 1, rate: paycheck.Amount, amount: paycheck.Amount }],
+    earnings: [{ item: service ? lineItemName(service, paycheck.BatchID) : paycheck.ServiceID, quantity: 1, rate: paycheck.Amount, amount: paycheck.Amount }],
     grossPay: paycheck.Amount,
     deductions: [],
     nettPay: paycheck.Amount,
