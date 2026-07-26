@@ -3,6 +3,7 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
 import { CURRENCIES, DEPARTMENTS } from "@/lib/accountTypes";
+import { normalizeTimezone } from "@/lib/timezones";
 import { BILLING_TYPES, batchFullName } from "@/lib/billing";
 
 export async function GET(req) {
@@ -94,6 +95,10 @@ function toStoredOccurrences(db, occurrences) {
     Time: o.time,
     Duration: Number(o.duration),
     Facilitator: o.facilitator,
+    // The timezone the Day/Time above are meant in — must always be set,
+    // defaulting to IST (Asia/Kolkata) same as normalizeTimezone's own
+    // fallback for a User's own Timezone.
+    Timezone: normalizeTimezone(o.timezone),
   }));
 }
 
@@ -175,10 +180,11 @@ function stampFullNames(service) {
 }
 
 // Resource links (Recordings/Syllabus/Worksheets/Google Classroom) shown on
-// the Student Resources section — only meaningful for services actually
-// open to Student, same gating pattern as the cohort fields above.
+// the account's own Resources section — meaningful for any cohort service
+// (Student's own Resources tab AND Teacher's, both read the same fields via
+// components/ResourcesSection.jsx), same gating as the cohort fields above.
 function applyStudentLinkFields(service, body, group) {
-  if (group.includes("Student")) {
+  if (hasCohortFields(group)) {
     service.RecordingsLink = (body.recordingsLink || "").trim();
     service.SyllabusLink = (body.syllabusLink || "").trim();
     service.WorksheetsLink = (body.worksheetsLink || "").trim();
@@ -187,6 +193,32 @@ function applyStudentLinkFields(service, body, group) {
     for (const key of ["RecordingsLink", "SyllabusLink", "WorksheetsLink", "GCRLink"]) {
       delete service[key];
     }
+  }
+}
+
+// A freeform, named link list any Service can carry regardless of Type —
+// e.g. a Book service attaching a "Questions" link and an "Answers" link
+// (one Service, not a separate Service per link, per the Questions/Answers
+// merge). Entries missing a name or url are dropped rather than stored
+// half-filled. Existing ids are preserved on edit like Rates/Occurrences.
+function toStoredLinks(db, links) {
+  return (Array.isArray(links) ? links : [])
+    .filter((l) => l.name && l.url)
+    .map((l) => ({
+      LinkID: l.linkId || nextId(db, "LINK"),
+      Name: l.name.trim(),
+      Url: l.url.trim(),
+    }));
+}
+
+// University is specific to Admissions-typed services (offer-letter/target-
+// university consulting) — gated on Type, not Group, since Admissions can
+// in principle be open to any Group.
+function applyAdmissionsFields(service, body, type) {
+  if (type === "Admissions") {
+    service.University = (body.university || "").trim();
+  } else {
+    delete service.University;
   }
 }
 
@@ -245,6 +277,8 @@ export async function POST(req) {
   }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
+  applyAdmissionsFields(service, body, type);
+  service.Links = toStoredLinks(db, body.links);
   stampFullNames(service);
   db.services.push(service);
   ensureScheduleGenerated(db);
@@ -310,6 +344,8 @@ export async function PATCH(req) {
   }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
+  applyAdmissionsFields(service, body, type);
+  service.Links = toStoredLinks(db, body.links);
   stampFullNames(service);
 
   ensureScheduleGenerated(db);

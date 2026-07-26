@@ -1513,7 +1513,8 @@ function CreateAccount({ onCreated, users }) {
 }
 
 /* ---------------- Services ---------------- */
-const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "" };
+const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "", timezone: "Asia/Kolkata" };
+const EMPTY_LINK = { name: "", url: "" };
 const EMPTY_RATE = { currency: "INR", rate: "", description: "", billingType: "Monthly", group: "" };
 const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
 // Type is free text (no enum enforced server-side) — these are just the
@@ -1624,16 +1625,25 @@ function Services() {
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
   const [flatRates, setFlatRates] = useState([{ ...EMPTY_RATE }]);
   const [flatOccurrences, setFlatOccurrences] = useState([{ ...EMPTY_OCC }]);
+  const [university, setUniversity] = useState("");
+  const [links, setLinks] = useState([{ ...EMPTY_LINK }]);
   const [error, setError] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
-  const studentLinksEligible = group.includes("Student");
   // A Staff-role Service (an internal role like "Associate Project Manager")
   // is open ONLY to Staff — no batch/cohort concept applies (there's no
   // "class" of students) — Role/Department + flat Rates/Occurrences instead
   // of the nested Component/Batch editor.
   const isStaffRole = group.length === 1 && group[0] === "Staff";
+  const isAdmissions = type === "Admissions";
   const typeOptions = typeOptionsFor(group);
+  // Academic-session suggestions for an Admissions Batch's name — current
+  // year forward, Fall/Spring pairs — same freeform-combobox pattern as
+  // Type, so any custom value can still be typed.
+  const sessionOptions = (() => {
+    const y = new Date().getFullYear();
+    return [0, 1, 2].flatMap((i) => [`Fall ${y + i}`, `Spring ${y + i + 1}`]);
+  })();
 
   function toggleGroup(g) {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -1665,6 +1675,8 @@ function Services() {
     setDepartment(DEPARTMENTS[0]);
     setFlatRates([{ ...EMPTY_RATE }]);
     setFlatOccurrences([{ ...EMPTY_OCC }]);
+    setUniversity("");
+    setLinks([{ ...EMPTY_LINK }]);
   }
 
   function startEdit(s) {
@@ -1702,6 +1714,7 @@ function Services() {
               time: o.Time,
               duration: o.Duration,
               facilitator: o.Facilitator,
+              timezone: o.Timezone || "Asia/Kolkata",
             })),
           })),
         }))
@@ -1716,8 +1729,14 @@ function Services() {
     );
     setFlatOccurrences(
       Array.isArray(s.OccuranceList) && s.OccuranceList.length > 0
-        ? s.OccuranceList.map((o) => ({ occuranceId: o.OccuranceID, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator }))
+        ? s.OccuranceList.map((o) => ({ occuranceId: o.OccuranceID, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, timezone: o.Timezone || "Asia/Kolkata" }))
         : [{ ...EMPTY_OCC }]
+    );
+    setUniversity(s.University || "");
+    setLinks(
+      Array.isArray(s.Links) && s.Links.length > 0
+        ? s.Links.map((l) => ({ linkId: l.LinkID, name: l.Name, url: l.Url }))
+        : [{ ...EMPTY_LINK }]
     );
   }
 
@@ -1740,6 +1759,18 @@ function Services() {
   }
   function removeFlatOcc(oi) {
     setFlatOccurrences((prev) => prev.filter((_, i) => i !== oi));
+  }
+
+  // Resource Links — a freeform, named link list any Service can carry
+  // regardless of Type (see toStoredLinks in app/api/services/route.js).
+  function updateLink(li, field, value) {
+    setLinks((prev) => prev.map((l, i) => (i === li ? { ...l, [field]: value } : l)));
+  }
+  function addLink() {
+    setLinks((prev) => [...prev, { ...EMPTY_LINK }]);
+  }
+  function removeLink(li) {
+    setLinks((prev) => prev.filter((_, i) => i !== li));
   }
 
   // Nested-array update helpers: components[ci].batches[bi].rates[ri] /
@@ -1834,7 +1865,7 @@ function Services() {
       return;
     }
     const body = isStaffRole
-      ? { name, type: "Staff", group, role, department, rates: flatRates, occurrences: flatOccurrences }
+      ? { name, type: "Staff", group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
       : {
         name,
         type,
@@ -1847,7 +1878,9 @@ function Services() {
         syllabusLink,
         worksheetsLink,
         gcrLink,
+        university,
         components,
+        links,
       };
     try {
       if (editingId) {
@@ -1909,6 +1942,9 @@ function Services() {
               </select>
             </>
           )}
+          {isAdmissions && (
+            <input className="field" placeholder="University" value={university} onChange={(e) => setUniversity(e.target.value)} />
+          )}
           {cohortEligible && (
             <>
               <input className="field" placeholder="Curriculum / Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
@@ -1932,10 +1968,10 @@ function Services() {
               />
             </>
           )}
-          {studentLinksEligible && (
+          {cohortEligible && (
             <>
               <label className="text-sm block" style={{ color: "var(--muted)" }}>
-                Resource links (shown on the Student&apos;s own Resources section for this service)
+                Resource links (shown on the Student&apos;s and Teacher&apos;s own Resources section for this service)
               </label>
               <input
                 className="field"
@@ -1963,6 +1999,26 @@ function Services() {
               />
             </>
           )}
+
+          <div className="space-y-2">
+            <label className="text-sm" style={{ color: "var(--muted)" }}>
+              Resource Links (freeform, named — e.g. a Book service with a &quot;Questions&quot; link and an &quot;Answers&quot; link)
+            </label>
+            {links.map((l, li) => (
+              <div key={li} className="flex gap-2 items-center">
+                <input className="field" style={{ maxWidth: 160 }} placeholder="Link name (e.g. Answers)" value={l.name} onChange={(e) => updateLink(li, "name", e.target.value)} />
+                <input className="field" placeholder="URL" value={l.url} onChange={(e) => updateLink(li, "url", e.target.value)} />
+                {links.length > 1 && (
+                  <button type="button" className="btn-ghost" onClick={() => removeLink(li)}>
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+            <button type="button" className="btn-ghost" onClick={addLink}>
+              + Add link
+            </button>
+          </div>
 
           {isStaffRole && (
             <div className="space-y-2">
@@ -2025,6 +2081,7 @@ function Services() {
                     onChange={(e) => updateFlatOcc(oi, "duration", e.target.value)}
                   />
                   <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateFlatOcc(oi, "facilitator", e.target.value)} />
+                  <TimezoneSelect value={o.timezone} onChange={(v) => updateFlatOcc(oi, "timezone", v)} />
                   {flatOccurrences.length > 1 && (
                     <button type="button" className="btn-ghost" onClick={() => removeFlatOcc(oi)}>
                       ✕
@@ -2061,13 +2118,24 @@ function Services() {
 
                   {c.batches.map((b, bi) => (
                     <div key={bi} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.5rem", background: "var(--panel-2)" }} className="space-y-2">
-                      <div className="flex gap-2 items-center">
-                        <input
-                          className="field"
-                          placeholder="Batch name (e.g. B14)"
-                          value={b.batchName}
-                          onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
-                        />
+                      <div className="flex gap-2 items-center" style={{ flex: 1 }}>
+                        {isAdmissions ? (
+                          <div style={{ flex: 1 }}>
+                            <EditableCombobox
+                              value={b.batchName}
+                              onChange={(v) => updateBatch(ci, bi, "batchName", v)}
+                              options={sessionOptions}
+                              placeholder="Academic Session (e.g. Fall 2026)"
+                            />
+                          </div>
+                        ) : (
+                          <input
+                            className="field"
+                            placeholder="Batch name (e.g. B14)"
+                            value={b.batchName}
+                            onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
+                          />
+                        )}
                         {c.batches.length > 1 && (
                           <button type="button" className="btn-ghost" onClick={() => removeBatch(ci, bi)}>
                             ✕ Batch
@@ -2145,6 +2213,7 @@ function Services() {
                               onChange={(e) => updateOcc(ci, bi, oi, "duration", e.target.value)}
                             />
                             <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateOcc(ci, bi, oi, "facilitator", e.target.value)} />
+                            <TimezoneSelect value={o.timezone} onChange={(v) => updateOcc(ci, bi, oi, "timezone", v)} />
                             {b.occurrences.length > 1 && (
                               <button type="button" className="btn-ghost" onClick={() => removeOcc(ci, bi, oi)}>
                                 ✕
