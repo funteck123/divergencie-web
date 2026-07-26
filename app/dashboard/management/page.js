@@ -1865,7 +1865,7 @@ function Services() {
       return;
     }
     const body = isStaffRole
-      ? { name, type: "Staff", group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
+      ? { name, type, group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
       : {
         name,
         type,
@@ -1925,11 +1925,7 @@ function Services() {
               ))}
             </div>
           </div>
-          {isStaffRole ? (
-            <input className="field" value="Staff" disabled />
-          ) : (
-            <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
-          )}
+          <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
           {isStaffRole && (
             <>
               <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
