@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
-import { api, formatRates, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
+import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
 import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnCurrency } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
@@ -2206,48 +2206,93 @@ function Services() {
   );
 }
 
-// One row per Service — a Service can have several Batches (across one or
-// more Optional Components), but instead of repeating the Service's own ID/
-// Name/Type/Group on one row per Batch, a Service with more than one Batch
-// collapses to a single summary row with an expand toggle; expanding it
-// reveals one indented row per Batch (Component name shown alongside, since
-// most subjects only ever use one unnamed Component). A Service with
-// exactly one Batch just shows it inline, same as before — no expand click
-// needed for the common case. Student/Teacher services additionally carry
-// the cohort curriculum fields (Board/Course/Subject...).
+// A single cell that shows one item plainly, or (when there's more than
+// one) a collapsed "N rates"/"N occurrences" summary with its own expand
+// toggle — same progressive-disclosure idea as the Service/Component/Batch
+// rows above it, just scoped to one cell instead of a whole row since Rates
+// and Occurrences have no ID/Name of their own to repeat.
+function renderOccurrence(o) {
+  return `${o.Day} ${o.Time} (${o.Duration}h)`;
+}
+function RatesCell({ rates }) {
+  return <ExpandableCell items={rates} renderItem={(r) => formatRate(r, { showDescription: true })} label="rates" />;
+}
+function OccurrencesCell({ occurrences }) {
+  return <ExpandableCell items={occurrences} renderItem={renderOccurrence} label="occurrences" />;
+}
+
+function ExpandableCell({ items, renderItem, label }) {
+  const [open, setOpen] = useState(false);
+  if (!items || items.length === 0) return "—";
+  if (items.length === 1) return renderItem(items[0]);
+  return (
+    <div>
+      <button type="button" className="btn-ghost" style={{ padding: "0 0.3rem" }} onClick={() => setOpen((o) => !o)}>
+        {open ? "▾" : "▸"} {items.length} {label}
+      </button>
+      {open && (
+        <div className="space-y-1" style={{ marginTop: 4 }}>
+          {items.map((it, i) => (
+            <div key={i}>{renderItem(it)}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// One row per Service, expanding level by level to match the data's own
+// nesting (Service -> OptionalComponents -> Batches) instead of ever
+// repeating the Service's own ID/Name/Type/Group once per Batch:
+//   - 1 component, 1 batch (the common case): everything shown inline, no
+//     click needed.
+//   - 1 component, N batches: Service row expands straight to Batch rows
+//     (the Component level is skipped — nothing to disambiguate when
+//     there's only one).
+//   - N components: Service row expands to Component rows; a Component
+//     with only 1 batch shows it inline, one with N batches gets its own
+//     expand toggle down to Batch rows.
+// Student/Teacher services additionally carry the cohort curriculum fields
+// (Board/Course/Subject...).
 function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const isStaffGroup = groupName === "Staff";
   const colSpan = isCohort ? 13 : 10;
-  const [expanded, setExpanded] = useState(new Set());
+  const leadCols = isCohort ? 7 : isStaffGroup ? 6 : 4; // toggle+ID+Name+Type+Group + cohort/staff extras
+  const [expandedServices, setExpandedServices] = useState(new Set());
+  const [expandedComponents, setExpandedComponents] = useState(new Set());
 
-  function toggle(serviceId) {
-    setExpanded((prev) => {
+  function toggleIn(setFn, key) {
+    setFn((prev) => {
       const next = new Set(prev);
-      if (next.has(serviceId)) next.delete(serviceId);
-      else next.add(serviceId);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }
 
-  // A Staff-role Service (Role/Department, no Batches) always has exactly
-  // one pseudo-leaf pulled straight off itself instead of off a Batch.
+  function batchLeaf(b) {
+    return { name: b.BatchName || "—", rates: b.Rates, occurrences: b.OccuranceList, key: b.BatchID };
+  }
+
+  // A Staff-role Service (Role/Department, no Batches) is modeled as one
+  // pseudo-component holding one pseudo-batch pulled straight off itself.
   const rows = services.map((s) => {
-    const leaves = (s.OptionalComponents || []).flatMap((c) =>
-      (c.Batches || []).map((b) => ({
-        component: c.ComponentName || "—",
-        batch: b.BatchName || "—",
-        rates: b.Rates,
-        occurrences: b.OccuranceList,
-        key: b.BatchID,
-      }))
-    );
-    if (leaves.length === 0) {
-      leaves.push({ component: "—", batch: "—", rates: s.Rates || [], occurrences: s.OccuranceList || [], key: s.ServiceID });
+    const components = (s.OptionalComponents || []).map((c) => ({
+      name: c.ComponentName || "—",
+      key: c.ComponentID,
+      batches: (c.Batches || []).map(batchLeaf),
+    }));
+    if (components.length === 0) {
+      components.push({
+        name: "—",
+        key: s.ServiceID,
+        batches: [{ name: "—", rates: s.Rates || [], occurrences: s.OccuranceList || [], key: s.ServiceID }],
+      });
     }
     return {
       service: s,
-      leaves,
+      components,
       ServiceID: s.ServiceID,
       Name: s.Name,
       Type: s.Type,
@@ -2255,6 +2300,17 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
     };
   });
   const { sorted, sortKey, sortDir, toggleSort } = useSort(rows, "Name");
+
+  function renderLead(cells) {
+    return (
+      <>
+        <td></td>
+        <td colSpan={leadCols - 1} style={{ color: "var(--muted)" }}>
+          {cells}
+        </td>
+      </>
+    );
+  }
 
   return (
     <div className="card">
@@ -2294,15 +2350,18 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
           </thead>
           <tbody>
             {sorted.map((row) => {
-              const isOpen = expanded.has(row.ServiceID);
-              const single = row.leaves.length === 1 ? row.leaves[0] : null;
+              const isServiceOpen = expandedServices.has(row.ServiceID);
+              const singleComponent = row.components.length === 1 ? row.components[0] : null;
+              const singleLeaf = singleComponent && singleComponent.batches.length === 1 ? singleComponent.batches[0] : null;
+              const serviceExpandable = !singleLeaf;
+
               return (
                 <Fragment key={row.ServiceID}>
                   <tr>
                     <td>
-                      {row.leaves.length > 1 && (
-                        <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggle(row.ServiceID)}>
-                          {isOpen ? "▾" : "▸"}
+                      {serviceExpandable && (
+                        <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedServices, row.ServiceID)}>
+                          {isServiceOpen ? "▾" : "▸"}
                         </button>
                       )}
                     </td>
@@ -2325,13 +2384,13 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                     )}
                     {!isStaffGroup && (
                       <>
-                        <td>{single ? single.component : `${row.leaves.length} batches`}</td>
-                        <td>{single ? single.batch : "—"}</td>
+                        <td>{singleLeaf ? singleComponent.name : singleComponent ? singleComponent.name : `${row.components.length} components`}</td>
+                        <td>{singleLeaf ? singleLeaf.name : singleComponent ? `${singleComponent.batches.length} batches` : "—"}</td>
                       </>
                     )}
-                    <td>{single ? formatRates(single.rates) : "—"}</td>
+                    <td>{singleLeaf ? <RatesCell rates={singleLeaf.rates} /> : "—"}</td>
                     <td style={{ color: "var(--muted)" }}>
-                      {single ? (single.occurrences || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ") : "—"}
+                      {singleLeaf ? <OccurrencesCell occurrences={singleLeaf.occurrences} /> : "—"}
                     </td>
                     <td>
                       <button className="btn-ghost" onClick={() => onEdit(row.service)}>
@@ -2342,22 +2401,68 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                       </button>
                     </td>
                   </tr>
-                  {isOpen &&
-                    row.leaves.map((leaf) => (
-                      <tr key={leaf.key} style={{ background: "var(--panel-2)" }}>
-                        <td></td>
-                        <td colSpan={isCohort ? 7 : isStaffGroup ? 6 : 4} style={{ color: "var(--muted)" }} />
+
+                  {isServiceOpen && singleComponent &&
+                    // Only one Component — skip straight to its Batch rows.
+                    singleComponent.batches.map((b) => (
+                      <tr key={b.key} style={{ background: "var(--panel-2)" }}>
+                        {renderLead(null)}
                         {!isStaffGroup && (
                           <>
-                            <td>{leaf.component}</td>
-                            <td>{leaf.batch}</td>
+                            <td>{singleComponent.name}</td>
+                            <td>{b.name}</td>
                           </>
                         )}
-                        <td>{formatRates(leaf.rates)}</td>
-                        <td style={{ color: "var(--muted)" }}>{(leaf.occurrences || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)`).join(", ")}</td>
+                        <td><RatesCell rates={b.rates} /></td>
+                        <td style={{ color: "var(--muted)" }}><OccurrencesCell occurrences={b.occurrences} /></td>
                         <td></td>
                       </tr>
                     ))}
+
+                  {isServiceOpen && !singleComponent &&
+                    row.components.map((c) => {
+                      const isComponentOpen = expandedComponents.has(c.key);
+                      const componentSingleLeaf = c.batches.length === 1 ? c.batches[0] : null;
+                      return (
+                        <Fragment key={c.key}>
+                          <tr style={{ background: "var(--panel-2)" }}>
+                            <td></td>
+                            <td colSpan={leadCols - 2} />
+                            <td>
+                              {!componentSingleLeaf && (
+                                <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedComponents, c.key)}>
+                                  {isComponentOpen ? "▾" : "▸"} {c.name}
+                                </button>
+                              )}
+                              {componentSingleLeaf && c.name}
+                            </td>
+                            {!isStaffGroup && <td>{componentSingleLeaf ? componentSingleLeaf.name : `${c.batches.length} batches`}</td>}
+                            <td>{componentSingleLeaf ? <RatesCell rates={componentSingleLeaf.rates} /> : "—"}</td>
+                            <td style={{ color: "var(--muted)" }}>
+                              {componentSingleLeaf ? <OccurrencesCell occurrences={componentSingleLeaf.occurrences} /> : "—"}
+                            </td>
+                            <td></td>
+                          </tr>
+                          {isComponentOpen &&
+                            !componentSingleLeaf &&
+                            c.batches.map((b) => (
+                              <tr key={b.key} style={{ background: "var(--panel-2)" }}>
+                                <td></td>
+                                <td colSpan={leadCols - 1} />
+                                {!isStaffGroup && (
+                                  <>
+                                    <td></td>
+                                    <td>{b.name}</td>
+                                  </>
+                                )}
+                                <td><RatesCell rates={b.rates} /></td>
+                                <td style={{ color: "var(--muted)" }}><OccurrencesCell occurrences={b.occurrences} /></td>
+                                <td></td>
+                              </tr>
+                            ))}
+                        </Fragment>
+                      );
+                    })}
                 </Fragment>
               );
             })}
