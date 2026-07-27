@@ -2480,13 +2480,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
     return (
       <Fragment key={row.ServiceID}>
         <tr>
-          <td>
-            {serviceExpandable && (
-              <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedServices, row.ServiceID)}>
-                {isServiceOpen ? "▾" : "▸"}
-              </button>
-            )}
-          </td>
+          <td></td>
           <td>{row.ServiceID}</td>
           <td>{row._group}</td>
           <td>{row.Type}</td>
@@ -2501,8 +2495,22 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
           {showDepartment && <td>{row.service.Department || "—"}</td>}
           {showComponentBatch && (
             <>
-              <td>{singleComponent ? singleComponent.name : `${row.components.length} components`}</td>
-              <td>{singleLeaf ? singleLeaf.name : singleComponent ? `${singleComponent.batches.length} batches` : "—"}</td>
+              <td>
+                {!singleComponent && serviceExpandable && (
+                  <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedServices, row.ServiceID)}>
+                    {isServiceOpen ? "▾" : "▸"}
+                  </button>
+                )}
+                {singleComponent ? singleComponent.name : `${row.components.length} components`}
+              </td>
+              <td>
+                {singleComponent && serviceExpandable && (
+                  <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedServices, row.ServiceID)}>
+                    {isServiceOpen ? "▾" : "▸"}
+                  </button>
+                )}
+                {singleLeaf ? singleLeaf.name : singleComponent ? `${singleComponent.batches.length} batches` : "—"}
+              </td>
             </>
           )}
           <td>{singleLeaf ? <RatesCell rates={singleLeaf.rates} /> : "—"}</td>
