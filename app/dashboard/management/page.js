@@ -2554,15 +2554,17 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                 <tr style={{ background: "var(--panel-2)" }}>
                   <td></td>
                   <td colSpan={leadCols - 1} />
-                  <td>
-                    {!componentSingleLeaf && (
-                      <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedComponents, c.key)}>
-                        {isComponentOpen ? "▾" : "▸"} {c.name}
-                      </button>
-                    )}
-                    {componentSingleLeaf && c.name}
-                  </td>
-                  {showComponentBatch && <td>{componentSingleLeaf ? componentSingleLeaf.name : `${c.batches.length} batches`}</td>}
+                  <td>{c.name}</td>
+                  {showComponentBatch && (
+                    <td>
+                      {!componentSingleLeaf && (
+                        <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => toggleIn(setExpandedComponents, c.key)}>
+                          {isComponentOpen ? "▾" : "▸"}
+                        </button>
+                      )}
+                      {componentSingleLeaf ? componentSingleLeaf.name : `${c.batches.length} batches`}
+                    </td>
+                  )}
                   <td>{componentSingleLeaf ? <RatesCell rates={componentSingleLeaf.rates} /> : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>
                     {componentSingleLeaf ? <OccurrencesCell occurrences={componentSingleLeaf.occurrences} /> : "—"}
