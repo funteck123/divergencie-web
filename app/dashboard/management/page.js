@@ -2412,8 +2412,8 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
             )}
           </td>
           <td>{row.ServiceID}</td>
-          <td>{row.Type}</td>
           <td>{row._group}</td>
+          <td>{row.Type}</td>
           {isCohort && (
             <>
               <td>{row.service.Board || "—"}</td>
@@ -2584,7 +2584,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
     const isTypeOpen = expandedTypes.has(typeKey);
     return (
       <Fragment key={typeKey}>
-        <GroupRow label={typeKey} isOpen={isTypeOpen} onToggle={() => toggleIn(setExpandedTypes, typeKey)} atCol={2} totalCols={colSpan} />
+        <GroupRow label={typeKey} isOpen={isTypeOpen} onToggle={() => toggleIn(setExpandedTypes, typeKey)} atCol={3} totalCols={colSpan} />
         {isTypeOpen && (typeRows.length > 0 ? renderBoardCourseSubject(typeRows) : (
           <tr style={{ background: "var(--panel-2)" }}>
             <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
@@ -2605,8 +2605,8 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
             <tr>
               <th></th>
               <SortableTh label="ID" sortKeyName="ServiceID" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Type" sortKeyName="Type" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <SortableTh label="Group" sortKeyName="_group" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              <SortableTh label="Type" sortKeyName="Type" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               {isCohort && (
                 <>
                   <SortableTh label="Board" sortKeyName="Board" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
