@@ -1522,20 +1522,14 @@ const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Amba
 // Service open to several Groups at once offers the UNION of each group's
 // options (not just one), so e.g. Teacher+Staff offers both sets — fixes
 // the earlier bug where a non-Staff-only combination silently dropped the
-// Staff-flavored options entirely.
-const TYPE_OPTIONS_BY_GROUP = {
-  Student: ["Book", "Course", "Counselling", "Admissions"],
-  Teacher: ["Teacher"],
-  Parent: ["Parent"],
-  Ambassador: ["Ambassador"],
-  Management: ["Management"],
-  Staff: ["Staff"],
-};
-function typeOptionsFor(group) {
+// Staff-flavored options entirely. `categoriesByGroup` is fetched from
+// /api/service-type-categories (Management-editable — see the "Type
+// categories" editor on each group's table below), not a hardcoded list.
+function typeOptionsFor(group, categoriesByGroup) {
   const seen = new Set();
   const options = [];
   for (const g of group) {
-    for (const t of TYPE_OPTIONS_BY_GROUP[g] || []) {
+    for (const t of categoriesByGroup?.[g] || []) {
       if (!seen.has(t)) {
         seen.add(t);
         options.push(t);
@@ -1627,6 +1621,7 @@ function Services() {
   const [flatOccurrences, setFlatOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [university, setUniversity] = useState("");
   const [links, setLinks] = useState([{ ...EMPTY_LINK }]);
+  const [categoriesByGroup, setCategoriesByGroup] = useState({});
   const [error, setError] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
@@ -1636,7 +1631,7 @@ function Services() {
   // of the nested Component/Batch editor.
   const isStaffRole = group.length === 1 && group[0] === "Staff";
   const isAdmissions = type === "Admissions";
-  const typeOptions = typeOptionsFor(group);
+  const typeOptions = typeOptionsFor(group, categoriesByGroup);
   // Academic-session suggestions for an Admissions Batch's name — current
   // year forward, Fall/Spring pairs — same freeform-combobox pattern as
   // Type, so any custom value can still be typed.
@@ -1653,8 +1648,17 @@ function Services() {
     const { services } = await api("/api/services");
     setServices(services);
   }
+  async function loadCategories() {
+    const { categories } = await api("/api/service-type-categories");
+    setCategoriesByGroup(categories);
+  }
+  async function saveCategories(g, types) {
+    await api("/api/service-type-categories", { method: "PATCH", body: JSON.stringify({ group: g, types }) });
+    loadCategories();
+  }
   useEffect(() => {
     load();
+    loadCategories();
   }, []);
 
   function resetForm() {
@@ -2255,6 +2259,8 @@ function Services() {
           services={services.filter((s) => groupMatches(s.Group, g))}
           onEdit={startEdit}
           onDelete={deleteService}
+          typeCategories={categoriesByGroup[g] || []}
+          onSaveTypeCategories={(types) => saveCategories(g, types)}
         />
       ))}
     </div>
@@ -2342,7 +2348,7 @@ function GroupRow({ label, isOpen, onToggle, atCol, totalCols }) {
 // lib/billing.js's lineItemName). A Staff-role Service (Role/Department, no
 // Batches) has nothing to drill into below its own row, so it's shown flat
 // with no expand at all.
-function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
+function ServiceGroupTable({ groupName, services, onEdit, onDelete, typeCategories, onSaveTypeCategories }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const isStaffGroup = groupName === "Staff";
   const colSpan = isCohort ? 12 : 9;
@@ -2353,6 +2359,17 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const [expandedSubjects, setExpandedSubjects] = useState(new Set());
   const [expandedServices, setExpandedServices] = useState(new Set());
   const [expandedComponents, setExpandedComponents] = useState(new Set());
+  const [newCategory, setNewCategory] = useState("");
+
+  function addCategory() {
+    const v = newCategory.trim();
+    if (!v || (typeCategories || []).includes(v)) return;
+    onSaveTypeCategories([...(typeCategories || []), v]);
+    setNewCategory("");
+  }
+  function removeCategory(t) {
+    onSaveTypeCategories((typeCategories || []).filter((x) => x !== t));
+  }
 
   function toggleIn(setFn, key) {
     setFn((prev) => {
@@ -2517,9 +2534,10 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   // there's only one value underneath it (unlike Component/Batch below,
   // which are per-Service internal structure and collapse away when
   // trivial). Type additionally shows every category this Group's Type
-  // taxonomy defines (see TYPE_OPTIONS_BY_GROUP), including ones with zero
-  // services, so e.g. "Admissions"/"Counselling" are visible even when
-  // empty — that placeholder behavior is Type-only, not repeated deeper.
+  // taxonomy defines (Management-editable — see the "Type categories"
+  // editor above, backed by /api/service-type-categories), including ones
+  // with zero services, so e.g. "Admissions"/"Counselling" are visible even
+  // when empty — that placeholder behavior is Type-only, not repeated deeper.
   function renderBoardCourseSubject(typeRows) {
     if (!isCohort) return typeRows.map(renderServiceLeaf);
 
@@ -2577,7 +2595,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   // Union of Types actually present in the data with every category this
   // Group's Type taxonomy defines — a category with zero services still
   // gets its own (empty) row.
-  const allTypeKeys = [...new Set([...byType.keys(), ...(TYPE_OPTIONS_BY_GROUP[groupName] || [])])];
+  const allTypeKeys = [...new Set([...byType.keys(), ...(typeCategories || [])])];
 
   const body = allTypeKeys.flatMap((typeKey) => {
     const typeRows = byType.get(typeKey) || [];
@@ -2598,7 +2616,36 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">{groupName} Services</h2>
+      <h2 className="font-semibold mb-2">{groupName} Services</h2>
+      <div className="flex items-center gap-2 flex-wrap mb-4">
+        <span className="text-sm" style={{ color: "var(--muted)" }}>
+          Type categories (always shown, even empty):
+        </span>
+        {(typeCategories || []).map((t) => (
+          <span key={t} className="badge badge-info flex items-center gap-1">
+            {t}
+            <button type="button" onClick={() => removeCategory(t)} style={{ lineHeight: 1 }}>
+              ✕
+            </button>
+          </span>
+        ))}
+        <input
+          className="field"
+          style={{ maxWidth: 140, height: 28 }}
+          placeholder="Add category"
+          value={newCategory}
+          onChange={(e) => setNewCategory(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addCategory();
+            }
+          }}
+        />
+        <button type="button" className="btn-ghost" onClick={addCategory}>
+          + Add
+        </button>
+      </div>
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
