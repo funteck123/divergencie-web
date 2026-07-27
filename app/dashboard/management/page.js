@@ -1911,7 +1911,7 @@ function Services() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 items-start">
+    <div className="space-y-6">
       <div className="card">
         <h2 className="font-semibold mb-4">{editingId ? `Edit Service (${editingId})` : "Create Service"}</h2>
         <form onSubmit={submit} className="space-y-3">
