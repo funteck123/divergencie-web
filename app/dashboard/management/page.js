@@ -2409,9 +2409,19 @@ function GroupRow({ label, isOpen, onToggle, atCol, totalCols }) {
 // with no expand at all.
 function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
-  const isStaffGroup = groupName === "Staff";
-  const colSpan = isCohort ? 13 : 10;
-  const leadCols = isCohort ? 7 : isStaffGroup ? 6 : 4; // toggle+ID+Type+Group + cohort/staff extras (cols before Component)
+  // Role/Department show for any group whose services can be the flat
+  // "no Batch, just Role" shape (see isRoleBasedService in
+  // app/api/services/route.js) — every group except Student. Department
+  // is Staff-only. Teacher is the one group that can genuinely have BOTH
+  // real cohort Batch services (shared with Student) AND its own Teacher-
+  // only Role services, so it keeps Component/Batch too; the other
+  // role-only groups (Staff/Ambassador/Parent/Management) never have a
+  // real Batch use case and drop those columns entirely.
+  const showRole = groupName !== "Student";
+  const showDepartment = groupName === "Staff";
+  const showComponentBatch = isCohort;
+  const leadCols = 4 + (isCohort ? 3 : 0) + (showRole ? 1 : 0) + (showDepartment ? 1 : 0); // toggle+ID+Group+Type + cohort/role/department extras (cols before Component)
+  const colSpan = leadCols + (showComponentBatch ? 2 : 0) + 4; // + Component/Batch + Rate + Occurrences + Name + Actions
   const [expandedTypes, setExpandedTypes] = useState(new Set());
   const [expandedBoards, setExpandedBoards] = useState(new Set());
   const [expandedCourses, setExpandedCourses] = useState(new Set());
@@ -2487,13 +2497,9 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
               <td>{row.service.SubjectName || "—"}</td>
             </>
           )}
-          {isStaffGroup && (
-            <>
-              <td>{row.service.Role || "—"}</td>
-              <td>{row.service.Department || "—"}</td>
-            </>
-          )}
-          {!isStaffGroup && (
+          {showRole && <td>{row.service.Role || "—"}</td>}
+          {showDepartment && <td>{row.service.Department || "—"}</td>}
+          {showComponentBatch && (
             <>
               <td>{singleComponent ? singleComponent.name : `${row.components.length} components`}</td>
               <td>{singleLeaf ? singleLeaf.name : singleComponent ? `${singleComponent.batches.length} batches` : "—"}</td>
@@ -2518,7 +2524,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
             <tr key={b.key} style={{ background: "var(--panel-2)" }}>
               <td></td>
               <td colSpan={leadCols - 1} />
-              {!isStaffGroup && (
+              {showComponentBatch && (
                 <>
                   <td>{singleComponent.name}</td>
                   <td>{b.name}</td>
@@ -2548,7 +2554,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                     )}
                     {componentSingleLeaf && c.name}
                   </td>
-                  {!isStaffGroup && <td>{componentSingleLeaf ? componentSingleLeaf.name : `${c.batches.length} batches`}</td>}
+                  {showComponentBatch && <td>{componentSingleLeaf ? componentSingleLeaf.name : `${c.batches.length} batches`}</td>}
                   <td>{componentSingleLeaf ? <RatesCell rates={componentSingleLeaf.rates} /> : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>
                     {componentSingleLeaf ? <OccurrencesCell occurrences={componentSingleLeaf.occurrences} /> : "—"}
@@ -2562,7 +2568,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                     <tr key={b.key} style={{ background: "var(--panel-2)" }}>
                       <td></td>
                       <td colSpan={leadCols - 1} />
-                      {!isStaffGroup && (
+                      {showComponentBatch && (
                         <>
                           <td></td>
                           <td>{b.name}</td>
@@ -2684,13 +2690,9 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                   <SortableTh label="Subject" sortKeyName="SubjectName" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                 </>
               )}
-              {isStaffGroup && (
-                <>
-                  <SortableTh label="Role" sortKeyName="Role" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Department" sortKeyName="Department" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                </>
-              )}
-              {!isStaffGroup && (
+              {showRole && <SortableTh label="Role" sortKeyName="Role" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />}
+              {showDepartment && <SortableTh label="Department" sortKeyName="Department" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />}
+              {showComponentBatch && (
                 <>
                   <th>Component</th>
                   <th>Batch</th>
