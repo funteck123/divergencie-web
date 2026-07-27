@@ -119,18 +119,24 @@ function toStoredComponents(db, components) {
   }));
 }
 
-// A Staff-role Service (an internal role like "Associate Project Manager")
-// is open ONLY to Staff — no cohort/batch concept applies to it (there's no
-// "class" of students), so it skips the OptionalComponents/Batches nesting
-// entirely and keeps Role/Department/Rates/OccuranceList directly on
-// itself, same shape as before the Batch redesign.
-function isStaffRoleService(group) {
-  return group.length === 1 && group[0] === "Staff";
+// A role-based Service (an internal role like "Associate Project Manager",
+// or any simple administrative service open to exactly one non-Student
+// group) has no cohort/batch concept — there's no "class" of students — so
+// it skips the OptionalComponents/Batches nesting entirely and keeps Role/
+// Rates/OccuranceList directly on itself. Department (one of DEPARTMENTS)
+// only applies to Staff specifically; the other groups just get Role.
+const ROLE_BASED_GROUPS = ["Staff", "Teacher", "Ambassador", "Parent", "Management"];
+function isRoleBasedService(group) {
+  return group.length === 1 && ROLE_BASED_GROUPS.includes(group[0]);
 }
 
-function applyStaffRoleFields(db, service, body) {
+function applyRoleBasedFields(db, service, body, group) {
   service.Role = (body.role || "").trim();
-  service.Department = DEPARTMENTS.includes(body.department) ? body.department : "";
+  if (group[0] === "Staff") {
+    service.Department = DEPARTMENTS.includes(body.department) ? body.department : "";
+  } else {
+    delete service.Department;
+  }
   service.Rates = toStoredRates(db, body.rates || []);
   service.OccuranceList = toStoredOccurrences(db, body.occurrences || []);
 }
@@ -211,14 +217,16 @@ function toStoredLinks(db, links) {
     }));
 }
 
-// University is specific to Admissions-typed services (offer-letter/target-
-// university consulting) — gated on Type, not Group, since Admissions can
-// in principle be open to any Group.
+// University/Country are specific to Admissions-typed services (offer-
+// letter/target-university consulting) — gated on Type, not Group, since
+// Admissions can in principle be open to any Group.
 function applyAdmissionsFields(service, body, type) {
   if (type === "Admissions") {
     service.University = (body.university || "").trim();
+    service.Country = (body.country || "").trim();
   } else {
     delete service.University;
+    delete service.Country;
   }
 }
 
@@ -248,8 +256,8 @@ export async function POST(req) {
       { status: 400 }
     );
   }
-  const staffRole = isStaffRoleService(group);
-  if (!staffRole) {
+  const roleBased = isRoleBasedService(group);
+  if (!roleBased) {
     const componentsError = Array.isArray(components) && components.length > 0
       ? components.map((c) => validateBatches(c.batches)).find(Boolean)
       : "At least one component (with at least one batch) is required.";
@@ -270,8 +278,8 @@ export async function POST(req) {
     Group: group,
     Name: name,
   };
-  if (staffRole) {
-    applyStaffRoleFields(db, service, body);
+  if (roleBased) {
+    applyRoleBasedFields(db, service, body, group);
   } else {
     service.OptionalComponents = toStoredComponents(db, components);
   }
@@ -314,8 +322,8 @@ export async function PATCH(req) {
       { status: 400 }
     );
   }
-  const staffRole = isStaffRoleService(group);
-  if (!staffRole) {
+  const roleBased = isRoleBasedService(group);
+  if (!roleBased) {
     const componentsError = Array.isArray(components) && components.length > 0
       ? components.map((c) => validateBatches(c.batches)).find(Boolean)
       : "At least one component (with at least one batch) is required.";
@@ -335,8 +343,8 @@ export async function PATCH(req) {
   service.Name = name;
   service.Type = type;
   service.Group = group;
-  if (staffRole) {
-    applyStaffRoleFields(db, service, body);
+  if (roleBased) {
+    applyRoleBasedFields(db, service, body, group);
     delete service.OptionalComponents;
   } else {
     service.OptionalComponents = toStoredComponents(db, components);

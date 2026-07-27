@@ -1626,15 +1626,19 @@ function Services() {
   const [flatRates, setFlatRates] = useState([{ ...EMPTY_RATE }]);
   const [flatOccurrences, setFlatOccurrences] = useState([{ ...EMPTY_OCC }]);
   const [university, setUniversity] = useState("");
+  const [country, setCountry] = useState("");
   const [links, setLinks] = useState([{ ...EMPTY_LINK }]);
+  const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
   const [error, setError] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
-  // A Staff-role Service (an internal role like "Associate Project Manager")
-  // is open ONLY to Staff — no batch/cohort concept applies (there's no
-  // "class" of students) — Role/Department + flat Rates/Occurrences instead
-  // of the nested Component/Batch editor.
-  const isStaffRole = group.length === 1 && group[0] === "Staff";
+  // A role-based Service (an internal role like "Associate Project Manager",
+  // or any simple administrative service open to exactly one non-Student
+  // group) has no batch/cohort concept (there's no "class" of students) —
+  // Role(/Department for Staff only) + flat Rates/Occurrences instead of
+  // the nested Component/Batch editor.
+  const isRoleBasedService = group.length === 1 && ["Staff", "Teacher", "Ambassador", "Parent", "Management"].includes(group[0]);
+  const isStaffRole = isRoleBasedService && group[0] === "Staff";
   const isAdmissions = type === "Admissions";
   const typeOptions = typeOptionsFor(group);
   // Academic-session suggestions for an Admissions Batch's name — current
@@ -1644,6 +1648,35 @@ function Services() {
     const y = new Date().getFullYear();
     return [0, 1, 2].flatMap((i) => [`Fall ${y + i}`, `Spring ${y + i + 1}`]);
   })();
+
+  // Auto-generated Name suggestion, per Type — Course/Book use the same
+  // Board/Course/Subject fields but NOT Batch (Name is one value per
+  // Service, while a Service can have several differently-named Batches,
+  // so baking one batch's name into it would be wrong/stale the moment a
+  // second batch exists — see lib/billing.js's per-Batch FullName for the
+  // batch-specific version used on invoices instead).
+  function computeSuggestedName() {
+    const firstBatchName = components[0]?.batches?.[0]?.batchName || "";
+    if (isRoleBasedService) {
+      return [`DC ${group[0]}`, role].filter(Boolean).join(" - ");
+    }
+    if (type === "Admissions") {
+      const head = [country, "Admissions Consulting"].filter(Boolean).join(" ");
+      return [head, university, firstBatchName].filter(Boolean).join(" - ");
+    }
+    if (type === "Counselling") {
+      return ["DC Counselling", firstBatchName].filter(Boolean).join(" - ");
+    }
+    if (type === "Book") {
+      return [board, course, subjectCode, subjectName, "Booklet"].filter(Boolean).join(" ");
+    }
+    return [board, course, subjectCode, subjectName].filter(Boolean).join(" ");
+  }
+  const suggestedName = computeSuggestedName();
+  useEffect(() => {
+    if (!nameManuallyEdited) setName(suggestedName);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestedName, nameManuallyEdited]);
 
   function toggleGroup(g) {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -1676,12 +1709,18 @@ function Services() {
     setFlatRates([{ ...EMPTY_RATE }]);
     setFlatOccurrences([{ ...EMPTY_OCC }]);
     setUniversity("");
+    setCountry("");
     setLinks([{ ...EMPTY_LINK }]);
+    setNameManuallyEdited(false);
   }
 
   function startEdit(s) {
     setEditingId(s.ServiceID);
     setName(s.Name);
+    // Editing an existing Service should never silently overwrite its real
+    // stored Name with a freshly auto-generated suggestion — treat the
+    // loaded value as if it were already manually set.
+    setNameManuallyEdited(true);
     setType(s.Type);
     setGroup(normalizeGroup(s.Group));
     setBoard(s.Board || "");
@@ -1733,6 +1772,7 @@ function Services() {
         : [{ ...EMPTY_OCC }]
     );
     setUniversity(s.University || "");
+    setCountry(s.Country || "");
     setLinks(
       Array.isArray(s.Links) && s.Links.length > 0
         ? s.Links.map((l) => ({ linkId: l.LinkID, name: l.Name, url: l.Url }))
@@ -1855,7 +1895,7 @@ function Services() {
       setError("Select at least one group this service is open to.");
       return;
     }
-    if (isStaffRole) {
+    if (isRoleBasedService) {
       if (flatRates.length === 0 || flatOccurrences.length === 0) {
         setError("At least one rate and one occurrence are required.");
         return;
@@ -1864,7 +1904,7 @@ function Services() {
       setError("At least one batch (with a rate and an occurrence) is required per component.");
       return;
     }
-    const body = isStaffRole
+    const body = isRoleBasedService
       ? { name, type, group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
       : {
         name,
@@ -1879,6 +1919,7 @@ function Services() {
         worksheetsLink,
         gcrLink,
         university,
+        country,
         components,
         links,
       };
@@ -1911,7 +1952,26 @@ function Services() {
       <div className="card">
         <h2 className="font-semibold mb-4">{editingId ? `Edit Service (${editingId})` : "Create Service"}</h2>
         <form onSubmit={submit} className="space-y-3">
-          <input className="field" placeholder="Service name" value={name} onChange={(e) => setName(e.target.value)} required />
+          <div className="flex gap-2 items-center">
+            <input
+              className="field"
+              placeholder="Service name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setNameManuallyEdited(true);
+              }}
+              required
+            />
+            <button
+              type="button"
+              className="btn-ghost"
+              title="Fill from the fields below"
+              onClick={() => setNameManuallyEdited(false)}
+            >
+              ↺ Suggest
+            </button>
+          </div>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Open to (Trial books Student-open services; each Interview track books its own matching group — Teacher/Staff/Ambassador)
@@ -1926,20 +1986,25 @@ function Services() {
             </div>
           </div>
           <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
-          {isStaffRole && (
+          {isRoleBasedService && (
             <>
               <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
-              <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
-                {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
+              {isStaffRole && (
+                <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              )}
             </>
           )}
           {isAdmissions && (
-            <input className="field" placeholder="University" value={university} onChange={(e) => setUniversity(e.target.value)} />
+            <>
+              <input className="field" placeholder="Country (e.g. UK)" value={country} onChange={(e) => setCountry(e.target.value)} />
+              <input className="field" placeholder="University" value={university} onChange={(e) => setUniversity(e.target.value)} />
+            </>
           )}
           {cohortEligible && (
             <>
@@ -2016,7 +2081,7 @@ function Services() {
             </button>
           </div>
 
-          {isStaffRole && (
+          {isRoleBasedService && (
             <div className="space-y-2">
               <label className="text-sm" style={{ color: "var(--muted)" }}>
                 Rates
@@ -2091,7 +2156,7 @@ function Services() {
             </div>
           )}
 
-          {!isStaffRole && (
+          {!isRoleBasedService && (
             <div className="space-y-3">
               <label className="text-sm" style={{ color: "var(--muted)" }}>
                 Optional Components (e.g. distinct exam papers within one subject — most subjects just need one, left unnamed)
