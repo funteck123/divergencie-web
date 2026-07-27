@@ -2345,7 +2345,7 @@ function GroupRow({ label, isOpen, onToggle, atCol, totalCols }) {
 function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   const isStaffGroup = groupName === "Staff";
-  const colSpan = isCohort ? 12 : 9;
+  const colSpan = isCohort ? 13 : 10;
   const leadCols = isCohort ? 7 : isStaffGroup ? 6 : 4; // toggle+ID+Type+Group + cohort/staff extras (cols before Component)
   const [expandedTypes, setExpandedTypes] = useState(new Set());
   const [expandedBoards, setExpandedBoards] = useState(new Set());
@@ -2386,6 +2386,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
       service: s,
       components,
       ServiceID: s.ServiceID,
+      Name: s.Name,
       Type: s.Type,
       _group: normalizeGroup(s.Group).join(", "),
     };
@@ -2435,6 +2436,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
           )}
           <td>{singleLeaf ? <RatesCell rates={singleLeaf.rates} /> : "—"}</td>
           <td style={{ color: "var(--muted)" }}>{singleLeaf ? <OccurrencesCell occurrences={singleLeaf.occurrences} /> : "—"}</td>
+          <td>{row.Name}</td>
           <td>
             <button className="btn-ghost" onClick={() => onEdit(row.service)}>
               Edit
@@ -2459,6 +2461,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
               )}
               <td><RatesCell rates={b.rates} /></td>
               <td style={{ color: "var(--muted)" }}><OccurrencesCell occurrences={b.occurrences} /></td>
+              <td></td>
               <td></td>
             </tr>
           ))}
@@ -2486,6 +2489,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                     {componentSingleLeaf ? <OccurrencesCell occurrences={componentSingleLeaf.occurrences} /> : "—"}
                   </td>
                   <td></td>
+                  <td></td>
                 </tr>
                 {isComponentOpen &&
                   !componentSingleLeaf &&
@@ -2501,6 +2505,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
                       )}
                       <td><RatesCell rates={b.rates} /></td>
                       <td style={{ color: "var(--muted)" }}><OccurrencesCell occurrences={b.occurrences} /></td>
+                      <td></td>
                       <td></td>
                     </tr>
                   ))}
@@ -2628,6 +2633,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
               )}
               <th>Rate</th>
               <th>Occurrences</th>
+              <SortableTh label="Name" sortKeyName="Name" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
               <th></th>
             </tr>
           </thead>
