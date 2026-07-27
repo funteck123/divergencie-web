@@ -2316,7 +2316,7 @@ function groupKeepOrder(list, keyFn) {
 // be several different services underneath), so everything after its own
 // label column is always blank. `atCol` is the 0-based column index the
 // label itself lives in; `totalCols` is this table's full column count.
-function GroupRow({ label, isOpen, onToggle, atCol, totalCols, onRemove }) {
+function GroupRow({ label, isOpen, onToggle, atCol, totalCols }) {
   const lead = atCol - 1; // cols 1..atCol-1 (ID/Name/... already decided by an ancestor group)
   const trail = totalCols - atCol - 1; // cols atCol+1..end
   return (
@@ -2327,11 +2327,6 @@ function GroupRow({ label, isOpen, onToggle, atCol, totalCols, onRemove }) {
         <button type="button" className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={onToggle}>
           {isOpen ? "▾" : "▸"} {label}
         </button>
-        {onRemove && (
-          <button type="button" className="btn-ghost" title="Remove this empty category" onClick={onRemove}>
-            ✕
-          </button>
-        )}
       </td>
       {trail > 0 && <td colSpan={trail} />}
     </tr>
@@ -2607,14 +2602,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete, typeCategori
     const isTypeOpen = expandedTypes.has(typeKey);
     return (
       <Fragment key={typeKey}>
-        <GroupRow
-          label={typeKey}
-          isOpen={isTypeOpen}
-          onToggle={() => toggleIn(setExpandedTypes, typeKey)}
-          atCol={3}
-          totalCols={colSpan}
-          onRemove={typeRows.length === 0 ? () => removeCategory(typeKey) : undefined}
-        />
+        <GroupRow label={typeKey} isOpen={isTypeOpen} onToggle={() => toggleIn(setExpandedTypes, typeKey)} atCol={3} totalCols={colSpan} />
         {isTypeOpen && (typeRows.length > 0 ? renderBoardCourseSubject(typeRows) : (
           <tr style={{ background: "var(--panel-2)" }}>
             <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
@@ -2625,35 +2613,39 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete, typeCategori
       </Fragment>
     );
   });
-  body.push(
-    <tr key="__add-category" style={{ background: "var(--panel-2)" }}>
-      <td></td>
-      <td colSpan={colSpan - 1}>
-        <div className="flex items-center gap-2">
-          <input
-            className="field"
-            style={{ maxWidth: 160, height: 28 }}
-            placeholder="Add Type category"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addCategory();
-              }
-            }}
-          />
-          <button type="button" className="btn-ghost" onClick={addCategory}>
-            + Add
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">{groupName} Services</h2>
+      <h2 className="font-semibold mb-2">{groupName} Services</h2>
+      <div className="flex items-center gap-2 flex-wrap mb-4">
+        <span className="text-sm" style={{ color: "var(--muted)" }}>
+          Type categories (always shown, even empty):
+        </span>
+        {(typeCategories || []).map((t) => (
+          <span key={t} className="badge badge-info flex items-center gap-1">
+            {t}
+            <button type="button" onClick={() => removeCategory(t)} style={{ lineHeight: 1 }}>
+              ✕
+            </button>
+          </span>
+        ))}
+        <input
+          className="field"
+          style={{ maxWidth: 140, height: 28 }}
+          placeholder="Add category"
+          value={newCategory}
+          onChange={(e) => setNewCategory(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addCategory();
+            }
+          }}
+        />
+        <button type="button" className="btn-ghost" onClick={addCategory}>
+          + Add
+        </button>
+      </div>
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
