@@ -9,7 +9,7 @@ import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnC
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 
-const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Audit Log"];
+const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Tickets", "Audit Log"];
 // The three pending Interview tracks — each converts to its own final
 // account type (see CONVERT_MAP in api/convert/route.js).
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
@@ -68,6 +68,7 @@ function Body() {
       {tab === "Enrollments" && <Enrollments />}
       {tab === "Billing" && <Billing />}
       {tab === "Guides" && <Guides />}
+      {tab === "Tickets" && <Tickets />}
       {tab === "Audit Log" && <AuditLog />}
     </div>
   );
@@ -3851,6 +3852,102 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
         </span>
       </td>
     </tr>
+  );
+}
+
+// Generic issue-reporting tickets — any account type can raise one (see
+// components/DashboardShell.jsx's ReportIssueButton), only Management can
+// close it (app/api/tickets/route.js). Simple full-list view since ticket
+// volume is expected to be low, unlike the auditlog/applogs tables.
+function Tickets() {
+  const [tickets, setTickets] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const [showClosed, setShowClosed] = useState(false);
+
+  async function load() {
+    setError("");
+    try {
+      const [{ tickets }, { users }] = await Promise.all([api("/api/tickets"), api("/api/users")]);
+      setTickets(tickets);
+      setUsers(users);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+  useEffect(() => {
+    load();
+  }, []);
+
+  function nameOf(id) {
+    const u = users.find((u) => u.UserID === id);
+    return u ? `${u.Name} (${u.UserType})` : id;
+  }
+
+  async function close(ticketId) {
+    try {
+      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  const visible = tickets.filter((t) => showClosed || !t.ClosedAt).sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
+  const openCount = tickets.filter((t) => !t.ClosedAt).length;
+
+  return (
+    <div className="card space-y-4">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <h2 className="font-semibold">Tickets {openCount > 0 && <span className="badge badge-pending">{openCount} open</span>}</h2>
+        <label className="text-sm flex items-center gap-2" style={{ color: "var(--muted)" }}>
+          <input type="checkbox" checked={showClosed} onChange={(e) => setShowClosed(e.target.checked)} />
+          Show closed
+        </label>
+      </div>
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr>
+              <th className="text-left">Sender</th>
+              <th className="text-left">Message</th>
+              <th className="text-left">Attachment</th>
+              <th className="text-left">Created</th>
+              <th className="text-left">Closed</th>
+              <th className="text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((t) => (
+              <tr key={t.TicketID}>
+                <td>{nameOf(t.SenderUserID)}</td>
+                <td style={{ maxWidth: 320, whiteSpace: "pre-wrap" }}>{t.Message}</td>
+                <td>
+                  {t.AttachmentURL ? (
+                    <a href={t.AttachmentURL} target="_blank" rel="noreferrer">Link</a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+                <td>{new Date(t.CreatedAt).toLocaleString()}</td>
+                <td>{t.ClosedAt ? new Date(t.ClosedAt).toLocaleString() : "—"}</td>
+                <td>
+                  {!t.ClosedAt && (
+                    <button className="btn-ghost" onClick={() => close(t.TicketID)}>Close</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {visible.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ color: "var(--muted)" }}>No {showClosed ? "" : "open "}tickets.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
