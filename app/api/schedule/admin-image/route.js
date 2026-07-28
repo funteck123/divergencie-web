@@ -25,6 +25,9 @@ function buildAllEntries(db) {
     for (const b of effective) {
       if (!enrolledBatchKeys.has(`${s.ServiceID}::${b.BatchID || ""}`)) continue;
       for (const o of b.OccuranceList || []) {
+        // An occurrence with no Day/Time set yet (e.g. a resource-only
+        // service pending a real schedule) has nothing to draw — skip it.
+        if (!o.Day || !o.Time) continue;
         entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
       }
     }

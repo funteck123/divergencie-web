@@ -7,9 +7,16 @@ const DAY_ORDER = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 // shows actual dated sessions.
 export default function WeeklyOccurrences({ services }) {
   const byDay = {};
+  let unscheduledCount = 0;
   for (const s of services) {
     const label = s.Code ? `${s.Code} · ${s.Name}` : s.Name;
     for (const o of s._myOccurrences || []) {
+      // No Day/Time set yet (e.g. a resource-only service pending a real
+      // schedule) — not a day of the week, so it can't appear on this grid.
+      if (!o.Day || !o.Time) {
+        unscheduledCount++;
+        continue;
+      }
       (byDay[o.Day] ||= []).push({ ...o, serviceLabel: label });
     }
   }
@@ -19,11 +26,22 @@ export default function WeeklyOccurrences({ services }) {
   const hasAny = DAY_ORDER.some((d) => (byDay[d] || []).length > 0);
 
   if (!hasAny) {
-    return <p style={{ color: "var(--muted)" }}>No recurring occurrences yet.</p>;
+    return (
+      <p style={{ color: "var(--muted)" }}>
+        No recurring occurrences yet.
+        {unscheduledCount > 0 && ` (${unscheduledCount} not scheduled yet)`}
+      </p>
+    );
   }
 
   return (
-    <div className="grid grid-cols-7 gap-1">
+    <>
+      {unscheduledCount > 0 && (
+        <p className="text-xs mb-1" style={{ color: "var(--muted)" }}>
+          {unscheduledCount} enrollment{unscheduledCount === 1 ? "" : "s"} not scheduled yet — not shown below.
+        </p>
+      )}
+      <div className="grid grid-cols-7 gap-1">
       {DAY_ORDER.map((day) => (
         <div
           key={day}
@@ -47,6 +65,7 @@ export default function WeeklyOccurrences({ services }) {
           </div>
         </div>
       ))}
-    </div>
+      </div>
+    </>
   );
 }

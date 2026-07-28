@@ -117,7 +117,12 @@ function Body({ user }) {
                 <td>{s.Type}</td>
                 <td>{formatRate(s._myRate)}</td>
                 <td style={{ color: "var(--muted)" }}>
-                  {(s._myOccurrences || []).map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") || "—"}
+                  {(() => {
+                    const scheduled = (s._myOccurrences || []).filter((o) => o.Day && o.Time);
+                    return scheduled.length
+                      ? scheduled.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ")
+                      : "Not scheduled yet";
+                  })()}
                 </td>
               </tr>
             ))}

@@ -20,6 +20,9 @@ function buildEntries(db, userId) {
       ? (e.BatchID ? batches.find((b) => b.BatchID === e.BatchID) : batches[0])?.OccuranceList
       : service.OccuranceList;
     for (const o of occurrences || []) {
+      // An occurrence with no Day/Time set yet (e.g. a resource-only
+      // service pending a real schedule) has nothing to draw — skip it.
+      if (!o.Day || !o.Time) continue;
       entries.push({ name: service.Name, day: o.Day, time: o.Time });
     }
   }
