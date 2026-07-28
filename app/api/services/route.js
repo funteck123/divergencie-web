@@ -65,7 +65,6 @@ function validateBatches(batches) {
     return "At least one batch is required.";
   }
   for (const b of batches) {
-    if (!b.batchName) return "Each batch needs a name.";
     if (!validateOccurrences(b.occurrences)) return "Each batch needs at least one occurrence.";
     const ratesError = validateRates(b.rates);
     if (ratesError) return ratesError;
