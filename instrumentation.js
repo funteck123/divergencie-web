@@ -6,18 +6,29 @@ export async function register() {
     const Sentry = await import("@sentry/nextjs");
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
-      tracesSampleRate: 0.1,
+      // Kept low on purpose — performance tracing burns through the free
+      // tier's span quota far faster than error events do; 5% is enough to
+      // spot a systemic slowdown without paying for a trace on every
+      // successful request. Bump this only if you actually need it and are
+      // watching the quota.
+      tracesSampleRate: 0.05,
       // sendDefaultPii OFF on purpose — this app handles student/staff
       // names, emails, invoice amounts, WhatsApp numbers. Sentry's default
       // is to attach request headers/cookies/IP automatically; we don't
       // want any of that leaving the server. beforeSend below is a second,
-      // explicit layer on top of this for known-sensitive fields.
-      sendDefaultPii: false,
-      beforeSend(event) {
+      // explicit layer on top of this for known-sensitive fields, plus
+      // noise filtering to keep the free-tier event quota for errors that
+      // actually matter.
+      beforeSend(event, hint) {
         if (event.request) {
           delete event.request.cookies;
           delete event.request.headers;
         }
+        // A 404 (route/resource genuinely not found) isn't a bug — it's
+        // expected traffic (bad links, bots, typo'd URLs). Don't spend
+        // quota on it.
+        const status = event.contexts?.response?.status_code ?? hint?.originalException?.statusCode;
+        if (status === 404) return null;
         return event;
       },
     });
