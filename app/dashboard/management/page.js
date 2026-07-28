@@ -3884,9 +3884,9 @@ function Tickets() {
     return u ? `${u.Name} (${u.UserType})` : id;
   }
 
-  async function close(ticketId) {
+  async function setTicketState(ticketId, action) {
     try {
-      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId }) });
+      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -3933,8 +3933,10 @@ function Tickets() {
                 <td>{new Date(t.CreatedAt).toLocaleString()}</td>
                 <td>{t.ClosedAt ? new Date(t.ClosedAt).toLocaleString() : "—"}</td>
                 <td>
-                  {!t.ClosedAt && (
-                    <button className="btn-ghost" onClick={() => close(t.TicketID)}>Close</button>
+                  {!t.ClosedAt ? (
+                    <button className="btn-ghost" onClick={() => setTicketState(t.TicketID, "close")}>Close</button>
+                  ) : (
+                    <button className="btn-ghost" onClick={() => setTicketState(t.TicketID, "reopen")}>Reopen</button>
                   )}
                 </td>
               </tr>

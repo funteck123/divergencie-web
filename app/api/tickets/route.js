@@ -45,27 +45,35 @@ export async function POST(req) {
   return NextResponse.json({ ticket });
 }
 
-// body: { ticketId }
-// Management-only, one-directional (no reopen exposed) — matches "only
-// admin can close" from the original request. Idempotent: closing an
-// already-closed ticket just returns it unchanged rather than erroring,
-// since double-clicking Close shouldn't be a failure case.
+// body: { ticketId, action?: "close" | "reopen" } — action defaults to
+// "close" (unchanged behavior for existing callers). Both directions are
+// Management-only and idempotent: closing an already-closed ticket or
+// reopening an already-open one just returns it unchanged rather than
+// erroring, since double-clicking a button shouldn't be a failure case.
 export async function PATCH(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { ticketId } = await req.json();
+  const { ticketId, action } = await req.json();
   if (!ticketId) return NextResponse.json({ error: "ticketId is required." }, { status: 400 });
+  if (action !== undefined && !["close", "reopen"].includes(action)) {
+    return NextResponse.json({ error: "action must be close or reopen." }, { status: 400 });
+  }
 
   const db = await readDB();
   const ticket = (db.tickets || []).find((t) => t.TicketID === ticketId);
   if (!ticket) return NextResponse.json({ error: "Ticket not found." }, { status: 404 });
 
-  if (!ticket.ClosedAt) {
+  if ((action || "close") === "close" && !ticket.ClosedAt) {
     ticket.ClosedAt = new Date().toISOString();
     ticket.ClosedBy = session.userId;
     await writeDB(db);
     await logAudit({ actorUserId: session.userId, action: "close", entityType: "Ticket", entityId: ticket.TicketID, summary: `Closed ticket ${ticket.TicketID}` });
+  } else if (action === "reopen" && ticket.ClosedAt) {
+    ticket.ClosedAt = "";
+    ticket.ClosedBy = "";
+    await writeDB(db);
+    await logAudit({ actorUserId: session.userId, action: "reopen", entityType: "Ticket", entityId: ticket.TicketID, summary: `Reopened ticket ${ticket.TicketID}` });
   }
 
   return NextResponse.json({ ticket });
