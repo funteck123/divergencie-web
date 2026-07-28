@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
+import { logAudit } from "@/lib/logging";
 
 // Self-service reschedule proposals for an existing ScheduleItem — separate
 // from Management's own direct reschedule (PATCH /api/schedule, applies
@@ -87,7 +88,7 @@ export async function POST(req) {
 
 // body: { requestId, action: "approve" | "reject" }
 export async function PATCH(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { requestId, action } = await req.json();
@@ -105,6 +106,7 @@ export async function PATCH(req) {
   if (action === "reject") {
     request.Status = "Rejected";
     await writeDB(db);
+    await logAudit({ actorUserId: session.userId, action: "reject", entityType: "RescheduleRequest", entityId: request.RescheduleRequestID, summary: `Rejected reschedule request ${request.RescheduleRequestID}`, snapshot: request });
     return NextResponse.json({ rescheduleRequest: request });
   }
 
@@ -115,6 +117,14 @@ export async function PATCH(req) {
   slot.RescheduledTime = request.RequestedTime;
   request.Status = "Approved";
   await writeDB(db);
+  await logAudit({
+    actorUserId: session.userId,
+    action: "approve",
+    entityType: "RescheduleRequest",
+    entityId: request.RescheduleRequestID,
+    summary: `Approved reschedule request ${request.RescheduleRequestID} — moved to ${request.RequestedDate} ${request.RequestedTime}`,
+    snapshot: { request, scheduleItem: slot },
+  });
 
   return NextResponse.json({ rescheduleRequest: request, scheduleItem: slot });
 }

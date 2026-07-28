@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { uploadPaymentProof } from "@/lib/storage";
+import { logAudit } from "@/lib/logging";
 
 // Marking an invoice paid (by the student themselves or their parent)
 // requires a payment-proof attachment — separate from the plain PATCH
@@ -23,13 +24,14 @@ export async function POST(req) {
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
-  const { error } = requireSelfOrParentOrManagement(req, db, invoice.StudentID);
+  const { session, error } = requireSelfOrParentOrManagement(req, db, invoice.StudentID);
   if (error) return error;
 
   const path = await uploadPaymentProof(invoiceId, file);
   invoice.StudentPaidFlag = true;
   invoice.PaymentProofPath = path;
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Invoice", entityId: invoiceId, summary: `Marked invoice ${invoiceId} as paid with proof attached` });
 
   return NextResponse.json({ invoice });
 }

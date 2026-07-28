@@ -9,7 +9,7 @@ import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnC
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 
-const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides"];
+const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Audit Log"];
 // The three pending Interview tracks — each converts to its own final
 // account type (see CONVERT_MAP in api/convert/route.js).
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
@@ -68,6 +68,7 @@ function Body() {
       {tab === "Enrollments" && <Enrollments />}
       {tab === "Billing" && <Billing />}
       {tab === "Guides" && <Guides />}
+      {tab === "Audit Log" && <AuditLog />}
     </div>
   );
 }
@@ -3850,6 +3851,113 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
         </span>
       </td>
     </tr>
+  );
+}
+
+// Read-only, paginated view over the auditlog table (see lib/logging.js /
+// app/api/auditlog/route.js) — records every Management mutation across
+// Services/Users/Invoices/Paychecks/Enrollments/reschedule approvals/API
+// keys. Insert-only on the backend (no edit/delete route exists for this
+// data), so what's shown here is the full, trustworthy history.
+const ENTITY_TYPES = ["Service", "User", "Invoice", "Paycheck", "Enrollment", "RescheduleRequest", "ApiKey"];
+function AuditLog() {
+  const [entries, setEntries] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [entityType, setEntityType] = useState("");
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+  const limit = 50;
+
+  async function load() {
+    setError("");
+    try {
+      const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+      if (entityType) params.set("entityType", entityType);
+      const [{ entries, total }, { users }] = await Promise.all([
+        api(`/api/auditlog?${params}`),
+        api("/api/users"),
+      ]);
+      setEntries(entries);
+      setTotal(total);
+      setUsers(users);
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offset, entityType]);
+
+  function nameOf(id) {
+    return users.find((u) => u.UserID === id)?.Name || id || "—";
+  }
+
+  return (
+    <div className="card space-y-4">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <h2 className="font-semibold">Audit Log</h2>
+        <div className="flex gap-2 items-center">
+          <select
+            className="field"
+            value={entityType}
+            onChange={(e) => {
+              setEntityType(e.target.value);
+              setOffset(0);
+            }}
+          >
+            <option value="">All entity types</option>
+            {ENTITY_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr>
+              <th className="text-left">When</th>
+              <th className="text-left">Actor</th>
+              <th className="text-left">Action</th>
+              <th className="text-left">Entity</th>
+              <th className="text-left">Summary</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((e) => (
+              <tr key={e.AuditID}>
+                <td>{new Date(e.Timestamp).toLocaleString()}</td>
+                <td>{nameOf(e.ActorUserID)}</td>
+                <td>{e.Action}</td>
+                <td>{e.EntityType}{e.EntityID ? ` · ${e.EntityID}` : ""}</td>
+                <td>{e.Summary}</td>
+              </tr>
+            ))}
+            {entries.length === 0 && (
+              <tr>
+                <td colSpan={5} style={{ color: "var(--muted)" }}>No entries.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="flex justify-between items-center">
+        <span className="text-sm" style={{ color: "var(--muted)" }}>
+          {total === 0 ? "0" : `${offset + 1}–${Math.min(offset + limit, total)}`} of {total}
+        </span>
+        <div className="flex gap-2">
+          <button className="btn-ghost" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - limit))}>
+            Previous
+          </button>
+          <button className="btn-ghost" disabled={offset + limit >= total} onClick={() => setOffset(offset + limit)}>
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

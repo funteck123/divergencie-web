@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@sentry/nextjs": "^10.68.0",
     "@supabase/supabase-js": "^2.110.2",
     "canvas": "^3.2.3",
     "firebase-admin": "^13.0.2",

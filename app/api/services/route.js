@@ -5,6 +5,7 @@ import { requireSession, requireManagement } from "@/lib/authz";
 import { CURRENCIES, DEPARTMENTS } from "@/lib/accountTypes";
 import { normalizeTimezone } from "@/lib/timezones";
 import { BILLING_TYPES, batchFullName } from "@/lib/billing";
+import { logAudit } from "@/lib/logging";
 
 export async function GET(req) {
   const { error } = requireSession(req);
@@ -238,7 +239,7 @@ function applyAdmissionsFields(service, body, type) {
 // Rates + Occurrences. A Batch is the level someone actually enrolls into:
 // they pick a Batch, then a Rate within it (see /api/enrollments).
 export async function POST(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
@@ -282,6 +283,7 @@ export async function POST(req) {
   db.services.push(service);
   ensureScheduleGenerated(db);
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "create", entityType: "Service", entityId: service.ServiceID, summary: `Created "${service.Name}"` });
 
   return NextResponse.json({ service });
 }
@@ -301,7 +303,7 @@ export async function POST(req) {
 // using whatever it locked in until Management changes the enrollment itself
 // (see /api/enrollments); it just won't be offered to new enrollments.
 export async function PATCH(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
@@ -327,6 +329,7 @@ export async function PATCH(req) {
   const db = await readDB();
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
+  const before = JSON.parse(JSON.stringify(service));
 
   service.Name = name;
   service.Type = type;
@@ -346,6 +349,14 @@ export async function PATCH(req) {
 
   ensureScheduleGenerated(db);
   await writeDB(db);
+  await logAudit({
+    actorUserId: session.userId,
+    action: "edit",
+    entityType: "Service",
+    entityId: service.ServiceID,
+    summary: `Edited "${service.Name}"`,
+    snapshot: { before, after: service },
+  });
 
   return NextResponse.json({ service });
 }
@@ -357,7 +368,7 @@ export async function PATCH(req) {
 // no independent value) — but never touches enrollments/invoices/paychecks
 // themselves, since the block above guarantees none exist for this Service.
 export async function DELETE(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { serviceId } = await req.json();
@@ -378,6 +389,14 @@ export async function DELETE(req) {
   db.services = db.services.filter((s) => s.ServiceID !== serviceId);
   db.scheduleItems = db.scheduleItems.filter((s) => s.ServiceID !== serviceId);
   await writeDB(db);
+  await logAudit({
+    actorUserId: session.userId,
+    action: "delete",
+    entityType: "Service",
+    entityId: serviceId,
+    summary: `Deleted "${service.Name}"`,
+    snapshot: service,
+  });
 
   return NextResponse.json({ ok: true });
 }

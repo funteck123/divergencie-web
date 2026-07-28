@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { signApiKey } from "@/lib/session";
 import { requireSelfOrManagement, requireManagement } from "@/lib/authz";
+import { logAudit } from "@/lib/logging";
 
 // Mints a long-lived Bearer token (see lib/session.js's signApiKey) for
 // CLI/MCP/agent use — the token itself is never stored, only returned once
@@ -17,7 +18,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "userId is required." }, { status: 400 });
   }
 
-  const { error: authError } = requireSelfOrManagement(req, userId);
+  const { session, error: authError } = requireSelfOrManagement(req, userId);
   if (authError) return authError;
 
   const db = await readDB();
@@ -32,16 +33,21 @@ export async function POST(req) {
     ...(expiresInSeconds !== undefined ? { expiresInSeconds } : {}),
   });
 
-  db.apiKeys = db.apiKeys || [];
-  db.apiKeys.push({
+  const record = {
     ApiKeyID: apiKeyId,
     UserID: user.UserID,
     UserType: user.UserType,
     Label: (label || "").trim(),
     CreatedAt: iat,
     ExpiresAt: exp,
-  });
+  };
+  db.apiKeys = db.apiKeys || [];
+  db.apiKeys.push(record);
   await writeDB(db);
+  // The token itself is never logged (or stored anywhere) — only the
+  // bookkeeping record, same as what's already shown in Management's
+  // "issued keys" list.
+  await logAudit({ actorUserId: session.userId, action: "create", entityType: "ApiKey", entityId: apiKeyId, summary: `Issued API key for ${user.UserID}${label ? ` ("${label}")` : ""}`, snapshot: record });
 
   return NextResponse.json({
     token,
@@ -78,10 +84,11 @@ export async function DELETE(req) {
   const record = (db.apiKeys || []).find((k) => k.ApiKeyID === apiKeyId);
   if (!record) return NextResponse.json({ error: "API key not found." }, { status: 404 });
 
-  const { error } = requireSelfOrManagement(req, record.UserID);
+  const { session, error } = requireSelfOrManagement(req, record.UserID);
   if (error) return error;
 
   db.apiKeys = db.apiKeys.filter((k) => k.ApiKeyID !== apiKeyId);
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "revoke", entityType: "ApiKey", entityId: apiKeyId, summary: `Revoked API key for ${record.UserID}`, snapshot: record });
   return NextResponse.json({ ok: true });
 }

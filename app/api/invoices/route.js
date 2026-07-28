@@ -3,6 +3,7 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
+import { logAudit } from "@/lib/logging";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -17,7 +18,7 @@ export async function GET(req) {
 // action "manual": drafts a single Invoice for an arbitrary studentId/serviceId/
 // year/month/amount — for one-off cases the bulk generator doesn't cover.
 export async function POST(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
@@ -99,6 +100,7 @@ export async function POST(req) {
     };
     db.invoices.push(invoice);
     await writeDB(db);
+    await logAudit({ actorUserId: session.userId, action: "create", entityType: "Invoice", entityId: invoice.InvoiceID, summary: `Manual invoice for ${studentId} — ${invoice.Currency} ${invoice.Amount}`, snapshot: invoice });
     return NextResponse.json({ invoice });
   }
 
@@ -173,6 +175,19 @@ export async function POST(req) {
     created.push(invoice);
   }
   await writeDB(db);
+  // One summary entry for the whole batch, not one per invoice — a monthly
+  // "Generate Drafts" run can create dozens of invoices at once, and a
+  // per-invoice audit entry for each would bury the log without adding
+  // anything a Management user would actually want to scroll through; the
+  // invoice IDs are listed in the snapshot for anyone who does need them.
+  await logAudit({
+    actorUserId: session.userId,
+    action: "generate",
+    entityType: "Invoice",
+    entityId: `${month}/${year}`,
+    summary: `Generated ${created.length} draft invoice(s) for ${month}/${year}`,
+    snapshot: { invoiceIds: created.map((i) => i.InvoiceID) },
+  });
   return NextResponse.json({ created });
 }
 
@@ -186,11 +201,12 @@ export async function PATCH(req) {
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
   const managementOnly = [scheduledHours, attendedHours, amount, inrAmount, inrDue, status].some((v) => v !== undefined);
-  const { error } = managementOnly
+  const { session, error } = managementOnly
     ? requireManagement(req)
     : requireSelfOrParentOrManagement(req, db, invoice.StudentID);
   if (error) return error;
 
+  const before = JSON.parse(JSON.stringify(invoice));
   if (scheduledHours !== undefined) invoice.ScheduledHours = Number(scheduledHours);
   if (attendedHours !== undefined) invoice.AttendedHours = Number(attendedHours);
   if (amount !== undefined) invoice.Amount = Number(amount);
@@ -200,12 +216,20 @@ export async function PATCH(req) {
   if (studentPaidFlag !== undefined) invoice.StudentPaidFlag = Boolean(studentPaidFlag);
 
   await writeDB(db);
+  await logAudit({
+    actorUserId: session.userId,
+    action: "edit",
+    entityType: "Invoice",
+    entityId: invoice.InvoiceID,
+    summary: managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`,
+    snapshot: { before, after: invoice },
+  });
   return NextResponse.json({ invoice });
 }
 
 // body: { invoiceId }
 export async function DELETE(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { invoiceId } = await req.json();
@@ -213,7 +237,8 @@ export async function DELETE(req) {
   const index = db.invoices.findIndex((i) => i.InvoiceID === invoiceId);
   if (index === -1) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
-  db.invoices.splice(index, 1);
+  const [deleted] = db.invoices.splice(index, 1);
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Invoice", entityId: invoiceId, summary: `Deleted invoice ${invoiceId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

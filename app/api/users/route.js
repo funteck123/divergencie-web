@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { isValidTimezone, normalizeTimezone } from "@/lib/timezones";
 import { requireManagement } from "@/lib/authz";
+import { logAudit } from "@/lib/logging";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
 
 // Re-exported for existing importers (e.g. api/paychecks/pdf/route.js) —
@@ -193,7 +194,7 @@ function applyStudentExtras(user, userType, fields) {
 //         Ambassador get a fixed value), timezone?, currency? (every type,
 //         defaults to "INR") }
 export async function POST(req) {
-  const { error } = requireManagement(req);
+  const { session, error } = requireManagement(req);
   if (error) return error;
 
   const body = await req.json();
@@ -243,6 +244,9 @@ export async function POST(req) {
   db.users.push(user);
   db.credentials.push({ UserID: userId, Username: username, Password: password });
   await writeDB(db);
+  // Never log credentials (username/password) — the snapshot here is the
+  // user record only, which carries no secrets.
+  await logAudit({ actorUserId: session.userId, action: "create", entityType: "User", entityId: userId, summary: `Created ${userType} "${name}"`, snapshot: user });
   return NextResponse.json({ user, credentials: { username, password } });
 }
 
@@ -260,7 +264,7 @@ export async function POST(req) {
 //         (Staff only), batch?, department? (Staff only),
 //         currency?, studentIds?: [], username?, password? }
 export async function PATCH(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const patchBody = await req.json();
@@ -343,6 +347,7 @@ export async function PATCH(req) {
   const db = await readDB();
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
+  const before = JSON.parse(JSON.stringify(user));
   if (status !== undefined && user.Status === "Converted") {
     return NextResponse.json({ error: "Converted accounts' status can't be edited here." }, { status: 400 });
   }
@@ -379,5 +384,16 @@ export async function PATCH(req) {
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
   await writeDB(db);
+  // snapshot is the user record only (before/after) — credentials
+  // (username/password) are never logged, only whether they were touched.
+  const credentialsChanged = username !== undefined || password !== undefined;
+  await logAudit({
+    actorUserId: session.userId,
+    action: "edit",
+    entityType: "User",
+    entityId: user.UserID,
+    summary: `Edited ${user.UserType} "${user.Name}"${credentialsChanged ? " (credentials reset)" : ""}`,
+    snapshot: { before, after: user },
+  });
   return NextResponse.json({ user });
 }

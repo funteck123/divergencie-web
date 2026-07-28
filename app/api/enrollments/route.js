@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
 import { batchesOf, ratesOf } from "@/lib/billing";
+import { logAudit } from "@/lib/logging";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -65,7 +66,7 @@ function validateDateRange(startDate, endDate) {
 
 // body: { userId, serviceId, batchId?, rateId?, startDate?, endDate? }
 export async function POST(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { userId, serviceId, batchId, rateId, startDate, endDate } = await req.json();
@@ -107,6 +108,7 @@ export async function POST(req) {
   };
   db.enrollments.push(enrollment);
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "create", entityType: "Enrollment", entityId: enrollment.EnrolmentID, summary: `Enrolled ${userId} in ${serviceId}`, snapshot: enrollment });
   return NextResponse.json({ enrollment });
 }
 
@@ -116,7 +118,7 @@ export async function POST(req) {
 // being set, not just added — this is meant to be freely editable, per the
 // original request, not a one-time-set field.
 export async function PATCH(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { enrolmentId, userId, serviceId, batchId, rateId, startDate, endDate } = await req.json();
@@ -124,6 +126,7 @@ export async function PATCH(req) {
 
   const enrollment = db.enrollments.find((e) => e.EnrolmentID === enrolmentId);
   if (!enrollment) return NextResponse.json({ error: "Enrollment not found." }, { status: 404 });
+  const before = JSON.parse(JSON.stringify(enrollment));
 
   const nextUserId = userId || enrollment.UserID;
   const nextServiceId = serviceId || enrollment.ServiceID;
@@ -164,12 +167,13 @@ export async function PATCH(req) {
   enrollment.StartDate = nextStartDate || "";
   enrollment.EndDate = nextEndDate || "";
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Enrollment", entityId: enrollment.EnrolmentID, summary: `Edited enrollment ${enrollment.EnrolmentID}`, snapshot: { before, after: enrollment } });
   return NextResponse.json({ enrollment });
 }
 
 // body: { enrolmentId }
 export async function DELETE(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { enrolmentId } = await req.json();
@@ -177,7 +181,8 @@ export async function DELETE(req) {
   const index = db.enrollments.findIndex((e) => e.EnrolmentID === enrolmentId);
   if (index === -1) return NextResponse.json({ error: "Enrollment not found." }, { status: 404 });
 
-  db.enrollments.splice(index, 1);
+  const [deleted] = db.enrollments.splice(index, 1);
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Enrollment", entityId: enrolmentId, summary: `Deleted enrollment ${enrolmentId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

@@ -3,6 +3,7 @@ import { readDB, writeDB, nextId } from "@/lib/db";
 import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
+import { logAudit } from "@/lib/logging";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -16,7 +17,7 @@ export async function GET(req) {
 // action "manual": drafts a single Paycheck for an arbitrary staffId/serviceId/
 // year/month/amount — for one-off cases the bulk generator doesn't cover.
 export async function POST(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const body = await req.json();
@@ -88,6 +89,7 @@ export async function POST(req) {
     };
     db.paychecks.push(paycheck);
     await writeDB(db);
+    await logAudit({ actorUserId: session.userId, action: "create", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Manual paycheck for ${staffId} — ${paycheck.Currency} ${paycheck.Amount}`, snapshot: paycheck });
     return NextResponse.json({ paycheck });
   }
 
@@ -154,6 +156,16 @@ export async function POST(req) {
     created.push(paycheck);
   }
   await writeDB(db);
+  // One summary entry for the whole batch — see the matching comment in
+  // app/api/invoices/route.js.
+  await logAudit({
+    actorUserId: session.userId,
+    action: "generate",
+    entityType: "Paycheck",
+    entityId: `${month}/${year}`,
+    summary: `Generated ${created.length} draft paycheck(s) for ${month}/${year}`,
+    snapshot: { paycheckIds: created.map((p) => p.PaycheckID) },
+  });
   return NextResponse.json({ created });
 }
 
@@ -167,11 +179,12 @@ export async function PATCH(req) {
   if (!paycheck) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
   const managementOnly = [scheduledHours, attendedHours, amount, inrAmount, inrDue, status].some((v) => v !== undefined);
-  const { error } = managementOnly
+  const { session, error } = managementOnly
     ? requireManagement(req)
     : requireSelfOrManagement(req, paycheck.StaffID);
   if (error) return error;
 
+  const before = JSON.parse(JSON.stringify(paycheck));
   if (scheduledHours !== undefined) paycheck.ScheduledHours = Number(scheduledHours);
   if (attendedHours !== undefined) paycheck.AttendedHours = Number(attendedHours);
   if (amount !== undefined) paycheck.Amount = Number(amount);
@@ -181,12 +194,20 @@ export async function PATCH(req) {
   if (staffReceivedFlag !== undefined) paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
 
   await writeDB(db);
+  await logAudit({
+    actorUserId: session.userId,
+    action: "edit",
+    entityType: "Paycheck",
+    entityId: paycheck.PaycheckID,
+    summary: managementOnly ? `Edited paycheck ${paycheck.PaycheckID}` : `Staff self-reported paycheck ${paycheck.PaycheckID} as ${staffReceivedFlag ? "received" : "not received"}`,
+    snapshot: { before, after: paycheck },
+  });
   return NextResponse.json({ paycheck });
 }
 
 // body: { paycheckId }
 export async function DELETE(req) {
-  const { error: authError } = requireManagement(req);
+  const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
   const { paycheckId } = await req.json();
@@ -194,7 +215,8 @@ export async function DELETE(req) {
   const index = db.paychecks.findIndex((p) => p.PaycheckID === paycheckId);
   if (index === -1) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
-  db.paychecks.splice(index, 1);
+  const [deleted] = db.paychecks.splice(index, 1);
   await writeDB(db);
+  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Paycheck", entityId: paycheckId, summary: `Deleted paycheck ${paycheckId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }
