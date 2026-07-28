@@ -56,16 +56,11 @@ function validateRates(rates) {
   return null;
 }
 
-function validateOccurrences(occurrences) {
-  return Array.isArray(occurrences) && occurrences.length > 0;
-}
-
 function validateBatches(batches) {
   if (!Array.isArray(batches) || batches.length === 0) {
     return "At least one batch is required.";
   }
   for (const b of batches) {
-    if (!validateOccurrences(b.occurrences)) return "Each batch needs at least one occurrence.";
     const ratesError = validateRates(b.rates);
     if (ratesError) return ratesError;
   }
@@ -264,9 +259,6 @@ export async function POST(req) {
   } else {
     const ratesError = validateRates(body.rates || []);
     if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
-    if (!validateOccurrences(body.occurrences)) {
-      return NextResponse.json({ error: "At least one occurrence is required." }, { status: 400 });
-    }
   }
 
   const db = await readDB();
@@ -330,9 +322,6 @@ export async function PATCH(req) {
   } else {
     const ratesError = validateRates(body.rates || []);
     if (ratesError) return NextResponse.json({ error: ratesError }, { status: 400 });
-    if (!validateOccurrences(body.occurrences)) {
-      return NextResponse.json({ error: "At least one occurrence is required." }, { status: 400 });
-    }
   }
 
   const db = await readDB();
