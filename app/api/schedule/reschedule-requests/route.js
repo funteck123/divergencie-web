@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { requireSession, requireManagement } from "@/lib/authz";
+import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 
 // Self-service reschedule proposals for an existing ScheduleItem — separate
 // from Management's own direct reschedule (PATCH /api/schedule, applies
@@ -46,14 +46,18 @@ export async function GET(req) {
 // body: { scheduleId, userId, requestedDate, requestedTime }
 export async function POST(req) {
   const { scheduleId, userId, requestedDate, requestedTime } = await req.json();
-  const { error } = requireSession(req);
-  if (error) return error;
 
   if (!scheduleId || !userId || !requestedDate || !requestedTime) {
     return NextResponse.json({ error: "scheduleId, userId, requestedDate, and requestedTime are required." }, { status: 400 });
   }
 
   const db = await readDB();
+  // Must be userId themself, their Parent, or Management — not just any
+  // authenticated account, which previously let anyone submit a request
+  // "as" a different enrolled userId.
+  const { error } = requireSelfOrParentOrManagement(req, db, userId);
+  if (error) return error;
+
   const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
   if (!slot) return NextResponse.json({ error: "Schedule item not found." }, { status: 404 });
 

@@ -119,7 +119,7 @@ export async function POST(req) {
         );
     if (exists) continue;
 
-    const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {
+    const { scheduledHours, attendedHours, amount, currency, billingType } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       batchId: enr.BatchID,
@@ -127,6 +127,10 @@ export async function POST(req) {
       month,
     });
     const fxRate = await getRateToINR(db, currency, year, month);
+    // See the matching comment in app/api/invoices/route.js — OneOff-billed
+    // services have no recurring schedule by design, so zero scheduledHours
+    // there is normal, not a warning-worthy state.
+    const zeroScheduleWarning = scheduledHours <= 0 && billingType !== "OneOff";
 
     const paycheck = {
       PaycheckID: nextId(db, "PAY"),
@@ -142,10 +146,9 @@ export async function POST(req) {
       INRAmount: fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0,
       INRDue: 0,
       Status: "Draft",
-      // Flags a $0 draft that's $0 because no schedule data exists for this
-      // Service/month (missing occurrences), not because the payout is
-      // legitimately zero — Management should check for a schedule gap.
-      ...(scheduledHours <= 0 ? { Note: "No scheduled hours found for this Service/month." } : {}),
+      ...(zeroScheduleWarning
+        ? { Note: "$0 — no scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." }
+        : {}),
     };
     db.paychecks.push(paycheck);
     created.push(paycheck);

@@ -130,7 +130,7 @@ export async function POST(req) {
         );
     if (exists) continue;
 
-    const { scheduledHours, attendedHours, amount, currency } = computeHoursAndAmount(db, {
+    const { scheduledHours, attendedHours, amount, currency, billingType } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       batchId: enr.BatchID,
@@ -139,6 +139,15 @@ export async function POST(req) {
     });
     const fxRate = await getRateToINR(db, currency, year, month);
     const invoiceINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
+    // A OneOff-billed service (Books, Counselling, Admissions, ...) has no
+    // recurring schedule by design — zero scheduledHours there is normal,
+    // not a problem, so it's not worth flagging. For Monthly/Hourly billing
+    // though, zero scheduledHours means computeHoursAndAmount necessarily
+    // produced a $0 amount (see lib/billing.js) with no schedule to justify
+    // it — that's the case Management actually needs to catch and fix
+    // (missing Occurrences on the Batch, or a billing type left on the
+    // wrong default).
+    const zeroScheduleWarning = scheduledHours <= 0 && billingType !== "OneOff";
 
     const invoice = {
       InvoiceID: nextId(db, "INV"),
@@ -156,10 +165,9 @@ export async function POST(req) {
       // fully unpaid, so it defaults to the full amount due, not 0.
       INRDue: invoiceINRAmount,
       Status: "Draft",
-      // Flags a $0 draft that's $0 because no schedule data exists for this
-      // Service/month (missing occurrences), not because the service is
-      // legitimately free — Management should check for a schedule gap.
-      ...(scheduledHours <= 0 ? { Note: "No scheduled hours found for this Service/month." } : {}),
+      ...(zeroScheduleWarning
+        ? { Note: "$0 — no scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." }
+        : {}),
     };
     db.invoices.push(invoice);
     created.push(invoice);

@@ -3426,6 +3426,7 @@ function Billing() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [error, setError] = useState("");
+  const [summary, setSummary] = useState("");
 
   async function load() {
     const [{ invoices }, { paychecks }, { users }, { services }] = await Promise.all([
@@ -3453,9 +3454,19 @@ function Billing() {
 
   async function generate() {
     setError("");
+    setSummary("");
     try {
-      await api("/api/invoices", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) });
-      await api("/api/paychecks", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) });
+      const [{ created: createdInvoices }, { created: createdPaychecks }] = await Promise.all([
+        api("/api/invoices", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
+        api("/api/paychecks", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
+      ]);
+      const flaggedInvoices = (createdInvoices || []).filter((i) => i.Note).length;
+      const flaggedPaychecks = (createdPaychecks || []).filter((p) => p.Note).length;
+      const parts = [`Generated ${createdInvoices?.length || 0} invoice${createdInvoices?.length === 1 ? "" : "s"}, ${createdPaychecks?.length || 0} paycheck${createdPaychecks?.length === 1 ? "" : "s"}.`];
+      if (flaggedInvoices || flaggedPaychecks) {
+        parts.push(`⚠ ${flaggedInvoices} invoice(s) and ${flaggedPaychecks} paycheck(s) came out at $0 with no scheduled hours — check their schedule/billing type before sending.`);
+      }
+      setSummary(parts.join(" "));
       load();
     } catch (e) {
       setError(e.message);
@@ -3501,6 +3512,7 @@ function Billing() {
           </button>
         </div>
         {error && <p style={{ color: "var(--bad)" }} className="mt-2">{error}</p>}
+        {summary && <p style={{ color: "var(--muted)" }} className="mt-2">{summary}</p>}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
