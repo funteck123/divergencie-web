@@ -77,6 +77,7 @@ export async function POST(req) {
     // currency, or the FX source is unreachable); Management can always
     // override it either way.
     const fxRate = await getRateToINR(db, currency, y, m);
+    const invoiceINRAmount = fxRate != null ? Math.round(invoiceAmount * fxRate * 100) / 100 : 0;
     const invoice = {
       InvoiceID: nextId(db, "INV"),
       StudentID: studentId,
@@ -88,8 +89,12 @@ export async function POST(req) {
       AttendedHours: null,
       Amount: invoiceAmount,
       Currency: currency,
-      INRAmount: fxRate != null ? Math.round(invoiceAmount * fxRate * 100) / 100 : 0,
-      INRDue: 0,
+      INRAmount: invoiceINRAmount,
+      // A freshly created invoice is fully unpaid — defaults to the full
+      // amount outstanding, not 0 (0 reads as "nothing owed", which is
+      // wrong for a brand-new Draft). Management can adjust as payments
+      // come in.
+      INRDue: invoiceINRAmount,
       Status: "Draft",
     };
     db.invoices.push(invoice);
@@ -133,6 +138,7 @@ export async function POST(req) {
       month,
     });
     const fxRate = await getRateToINR(db, currency, year, month);
+    const invoiceINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
 
     const invoice = {
       InvoiceID: nextId(db, "INV"),
@@ -145,8 +151,10 @@ export async function POST(req) {
       AttendedHours: attendedHours,
       Amount: amount,
       Currency: currency,
-      INRAmount: fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0,
-      INRDue: 0,
+      INRAmount: invoiceINRAmount,
+      // Same as the manual-create path above: a fresh Draft invoice is
+      // fully unpaid, so it defaults to the full amount due, not 0.
+      INRDue: invoiceINRAmount,
       Status: "Draft",
       // Flags a $0 draft that's $0 because no schedule data exists for this
       // Service/month (missing occurrences), not because the service is
