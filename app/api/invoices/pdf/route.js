@@ -81,6 +81,7 @@ export async function GET(req) {
         quantity: 1,
         rate: invoice.Amount,
         amount: invoice.Amount,
+        currency: invoiceCurrency,
       },
     ],
     taxPercent: 0,

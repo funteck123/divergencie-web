@@ -46,6 +46,8 @@ export async function GET(req) {
   const paycheckCurrency = paycheck.Currency || staffCurrency;
   const showConvertedTotal = staffCurrency !== paycheckCurrency && staffCurrency === "INR";
 
+  const billedCurrency = paycheck.Currency || service?.Currency || "INR";
+
   const buffer = await drawPayslipPDF({
     company: "DivergenCIE Coaching",
     registeredAs: "Intelligent Institute of Education",
@@ -61,7 +63,7 @@ export async function GET(req) {
     // Currency (a stable historical fact), never to the staff's CURRENT
     // profile Currency — that can change after the fact and would mislabel
     // an old INR paycheck as whatever currency the staff uses today.
-    currency: paycheck.Currency || service?.Currency || "INR",
+    currency: billedCurrency,
     // The header "Currency:" row is the staff's own home/payroll currency —
     // a distinct concept from the billed currency above (e.g. an INR-paid
     // teacher billed in USD for a specific service still has "INR" as their
@@ -71,7 +73,7 @@ export async function GET(req) {
     epfNo: "",
     socsoNo: "",
     taxNo: "",
-    earnings: [{ item: service ? lineItemName(service, paycheck.BatchID) : paycheck.ServiceID, quantity: 1, rate: paycheck.Amount, amount: paycheck.Amount }],
+    earnings: [{ item: service ? lineItemName(service, paycheck.BatchID) : paycheck.ServiceID, quantity: 1, rate: paycheck.Amount, amount: paycheck.Amount, currency: billedCurrency }],
     grossPay: paycheck.Amount,
     deductions: [],
     nettPay: paycheck.Amount,
