@@ -1,5 +1,10 @@
 # Changelog
 
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [0.1.1](https://github.com/funteck123/divergencie-web/compare/v0.1.0...v0.1.1) (2026-07-30)
+# Changelog
+
 All notable changes to this project are documented here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). This project is pre-1.0
 (alpha) — expect breaking changes between minor versions.
