@@ -7,6 +7,10 @@ All notable changes to this project are documented here. Format loosely follows
 ## [Unreleased]
 
 ### Added
+- Automated versioning/changelog via `commit-and-tag-version` (`npm run
+  release`) — computes the next SemVer version and rewrites this file from
+  Conventional Commits, commits and tags locally, but never pushes; push
+  stays a deliberate manual step since it triggers Vercel's production deploy.
 - Error monitoring via Sentry (server + client instrumentation), tuned for
   free-tier usage: low trace sampling (5%), 404s and browser-extension noise
   filtered out before they count against quota.

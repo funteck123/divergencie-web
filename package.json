@@ -12,7 +12,8 @@
     "lint": "eslint",
     "seed": "node scripts/seed.js",
     "migrate:supabase": "node scripts/migrate-to-supabase.mjs",
-    "mcp": "node mcp/server.mjs"
+    "mcp": "node mcp/server.mjs",
+    "release": "commit-and-tag-version"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -32,6 +33,7 @@
     "@types/node": "^22.19.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "commit-and-tag-version": "^13.1.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",

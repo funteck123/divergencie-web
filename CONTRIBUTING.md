@@ -29,25 +29,40 @@ it — this is the signal a MAJOR version bump exists for.
 This repo's commit history already mostly follows this — keep it consistent
 so it stays possible to automate later (see "Not yet automated" below).
 
-## Versioning (SemVer: `MAJOR.MINOR.PATCH`)
+## Versioning + Changelog — automated, push is still manual
 
 `package.json` is currently `0.1.0` — pre-1.0, alpha, breaking changes
-allowed between any release. Bump it by hand, per release, using this rule:
+allowed between any release. Version bump + `CHANGELOG.md` are **no longer
+hand-written** — `commit-and-tag-version` (installed as a devDependency)
+reads your Conventional Commits since the last tag and computes it for you:
 
-- Only `fix`/`docs`/`chore`/`refactor`/`perf` commits since last release → bump **PATCH**
-- Any `feat` commit since last release → bump **MINOR**
-- Any `BREAKING CHANGE` → bump **MAJOR** (or, pre-1.0, it's acceptable to
-  treat it as a MINOR bump — SemVer explicitly allows looser rules before 1.0)
-- Move to **1.0.0** deliberately, not by accident — it's a promise to users
-  that breaking changes now require a MAJOR bump. Don't cross it until
-  you mean it.
+```
+npm run release
+```
 
-## Changelog
+This reads every commit since the last `v*` tag, then:
+- bumps `package.json`/`package-lock.json` to the right next version
+  (`fix`/`docs`/`chore`/`refactor`/`perf` → PATCH, any `feat` → MINOR,
+  any `BREAKING CHANGE:` → MAJOR, or MINOR pre-1.0 per SemVer's own
+  looser pre-1.0 allowance)
+- rewrites `CHANGELOG.md`, moving `[Unreleased]` into a new dated version section
+- commits both, and creates a local git tag for the new version
 
-`CHANGELOG.md` has an `[Unreleased]` section — add your change there **in
-the same commit/PR that makes the change**, not after the fact. On release,
-rename `[Unreleased]` to the new version + date and start a fresh empty
-`[Unreleased]` section above it.
+**It does not push anything.** It stops with an on-screen reminder
+(`git push --follow-tags origin <branch>`) — pushing is a separate,
+deliberate step you run yourself, whenever you actually want that version
+live. Since `origin/main` auto-deploys to Vercel production, "push" and
+"release to production" are the same action here — don't run the push half
+until you actually mean it.
+
+Preview what a release would look like without changing anything:
+`npx commit-and-tag-version --dry-run`.
+
+Move to **1.0.0** deliberately, not automatically — it's a promise to users
+that breaking changes now require a MAJOR bump. `commit-and-tag-version`
+will follow SemVer's normal MAJOR-on-breaking-change rule once you're past
+0.x, so cross that line on purpose (e.g. `npm run release -- --release-as 1.0.0`)
+when you mean it, not because commits happened to compute it that way.
 
 ## Branch/deploy workflow (current state — no CI yet)
 
@@ -66,9 +81,12 @@ rename `[Unreleased]` to the new version + date and start a fresh empty
 
 - No GitHub Actions CI (lint/build check on PRs)
 - No staging branch/environment
-- No automated version bump or changelog generation (`semantic-release`
-  would do this once Conventional Commits are consistent — not installed yet)
 - No automated tests
+- **Deliberately not using `semantic-release`**: it's built to run in CI and
+  push/publish automatically on every merge, with no manual gate — the
+  opposite of what's wanted here (auto versioning, but a human decides when
+  to push/release). `commit-and-tag-version` does the same versioning/
+  changelog computation without forcing that.
 
-Until these exist, the discipline above is manual and depends on actually
+Until CI/tests exist, the discipline above is manual and depends on actually
 following it — that's the whole point of writing it down.
