@@ -259,8 +259,12 @@ function Body({ user }) {
             {invSort.sorted.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>{i.Month}/{i.Year}</td>
-                <td>{serviceNameOf(i.ServiceID, i.BatchID)}</td>
-                <td>{i.AttendedHours}</td>
+                <td>
+                  {Array.isArray(i.LineItems)
+                    ? i.LineItems.map((li) => serviceNameOf(li.ServiceID, li.BatchID)).join(", ")
+                    : serviceNameOf(i.ServiceID, i.BatchID)}
+                </td>
+                <td>{Array.isArray(i.LineItems) ? i.LineItems.reduce((sum, li) => sum + (Number(li.AttendedHours) || 0), 0) : i.AttendedHours}</td>
                 <td>{i.Currency || "INR"} {i.Amount}</td>
                 <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
                 <td>{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>

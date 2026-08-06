@@ -3479,6 +3479,10 @@ function Billing() {
     await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId: id, ...patch }) });
     load();
   }
+  async function patchInvoiceLineItem(id, lineItemIndex, patch) {
+    await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId: id, lineItemIndex, ...patch }) });
+    load();
+  }
   async function patchPaycheck(id, patch) {
     await api("/api/paychecks", { method: "PATCH", body: JSON.stringify({ paycheckId: id, ...patch }) });
     load();
@@ -3548,16 +3552,13 @@ function Billing() {
 
       <div className="card">
         <h2 className="font-semibold mb-4">Invoices (Students)</h2>
-        <BillingTable
+        <InvoiceBillingTable
           rows={invoices}
-          idKey="InvoiceID"
           nameOf={nameOf}
-          personKey="StudentID"
-          serviceNameOf={serviceNameOf}
+          services={services}
           onPatch={patchInvoice}
+          onPatchLineItem={patchInvoiceLineItem}
           onDelete={deleteInvoice}
-          flagKey="StudentPaidFlag"
-          flagLabel="Paid"
         />
       </div>
 
@@ -3850,6 +3851,284 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
             </>
           )}
         </span>
+      </td>
+    </tr>
+  );
+}
+
+// Invoices-only table — a monthly (combined) Invoice carries a
+// LineItems[] array, one entry per subject billed that student that
+// month; a OneOff (Books/Counselling/Admissions) invoice keeps the old
+// flat single-subject shape (see app/api/invoices/route.js). Paychecks
+// never changed shape, so they stay on the original BillingTable/Row
+// above — this is a separate component rather than a modified one so
+// that stays true without branching Row on a prop that only ever applies
+// to one of its two callers.
+function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
+  const decorated = rows.map((r) => ({ ...r, _person: nameOf(r.StudentID), _period: r.Year * 100 + r.Month }));
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
+  return (
+    <table>
+      <thead>
+        <tr>
+          <SortableTh label="Student" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <th>Subjects</th>
+          <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <th>Amount Due</th>
+          <th>INR Amount</th>
+          <th>INR Due</th>
+          <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          <th>Paid</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((r) => (
+          <InvoiceRow
+            key={r.InvoiceID}
+            row={r}
+            nameOf={nameOf}
+            services={services}
+            onPatch={onPatch}
+            onPatchLineItem={onPatchLineItem}
+            onDelete={onDelete}
+          />
+        ))}
+        {sorted.length === 0 && (
+          <tr>
+            <td colSpan={9} style={{ color: "var(--muted)" }}>
+              None generated yet.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+}
+
+function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
+  const [expanded, setExpanded] = useState(false);
+  const [editingDue, setEditingDue] = useState(false);
+  const [inrDue, setInrDue] = useState(row.INRDue);
+  const isDraft = row.Status === "Draft";
+  const isLineItemInvoice = Array.isArray(row.LineItems);
+
+  function serviceNameOf(id, batchId) {
+    const s = services.find((s) => s.ServiceID === id);
+    return s ? lineItemName(s, batchId) : id;
+  }
+
+  function remove() {
+    if (window.confirm("Delete this invoice? This cannot be undone.")) onDelete(row.InvoiceID);
+  }
+
+  function saveDue() {
+    onPatch(row.InvoiceID, { inrDue });
+    setEditingDue(false);
+  }
+  function cancelDue() {
+    setInrDue(row.INRDue);
+    setEditingDue(false);
+  }
+
+  return (
+    <>
+      <tr>
+        <td>{nameOf(row.StudentID)}</td>
+        <td>
+          {isLineItemInvoice ? (
+            <button className="btn-ghost" style={{ whiteSpace: "nowrap" }} onClick={() => setExpanded((v) => !v)}>
+              {expanded ? "▾" : "▸"} {row.LineItems.length} subject{row.LineItems.length === 1 ? "" : "s"}
+            </button>
+          ) : (
+            serviceNameOf(row.ServiceID, row.BatchID)
+          )}
+        </td>
+        <td>
+          {row.Month}/{row.Year}
+        </td>
+        <td>
+          {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
+        </td>
+        <td>{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
+        <td>{row.INRAmount}</td>
+        <td>
+          {editingDue ? (
+            <input
+              className="field"
+              style={{ width: 90 }}
+              type="number"
+              value={inrDue}
+              onChange={(e) => setInrDue(e.target.value)}
+            />
+          ) : (
+            row.INRDue
+          )}
+        </td>
+        <td>
+          <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
+        </td>
+        <td>
+          <span className="flex items-center gap-2 flex-wrap">
+            <span className={`badge ${row.StudentPaidFlag ? "badge-good" : "badge-pending"}`}>
+              {row.StudentPaidFlag ? "Paid" : "Unpaid"}
+            </span>
+            {row.PaymentProofPath && (
+              <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/proof?invoiceId=${row.InvoiceID}`} target="_blank" rel="noreferrer">
+                Proof
+              </a>
+            )}
+          </span>
+        </td>
+        <td>
+          <span className="flex items-center gap-1 flex-wrap">
+            {editingDue ? (
+              <>
+                <button className="btn" onClick={saveDue}>
+                  Save
+                </button>
+                <button className="btn-ghost" onClick={cancelDue}>
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="btn-ghost" onClick={() => setEditingDue(true)}>
+                  Edit Due
+                </button>
+                {isDraft ? (
+                  <button className="btn" onClick={() => onPatch(row.InvoiceID, { status: "Sent" })}>
+                    Send
+                  </button>
+                ) : (
+                  <button className="btn-ghost" onClick={() => onPatch(row.InvoiceID, { status: "Draft" })}>
+                    Unsend
+                  </button>
+                )}
+                <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${row.InvoiceID}`} download>
+                  PDF
+                </a>
+                <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
+                  Delete
+                </button>
+              </>
+            )}
+          </span>
+        </td>
+      </tr>
+      {isLineItemInvoice && expanded && (
+        <tr>
+          <td colSpan={9} style={{ padding: 0 }}>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Scheduled hrs</th>
+                  <th>Attended hrs</th>
+                  <th>Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {row.LineItems.map((li, idx) => (
+                  <LineItemRow
+                    key={idx}
+                    invoiceId={row.InvoiceID}
+                    lineItem={li}
+                    index={idx}
+                    serviceName={serviceNameOf(li.ServiceID, li.BatchID)}
+                    onPatchLineItem={onPatchLineItem}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem }) {
+  const [editing, setEditing] = useState(false);
+  const [scheduledHours, setScheduledHours] = useState(lineItem.ScheduledHours);
+  const [attendedHours, setAttendedHours] = useState(lineItem.AttendedHours);
+  const [amount, setAmount] = useState(lineItem.Amount);
+
+  function save() {
+    onPatchLineItem(invoiceId, index, { scheduledHours, attendedHours, amount });
+    setEditing(false);
+  }
+  function cancel() {
+    setScheduledHours(lineItem.ScheduledHours);
+    setAttendedHours(lineItem.AttendedHours);
+    setAmount(lineItem.Amount);
+    setEditing(false);
+  }
+
+  return (
+    <tr>
+      <td>
+        <span className="flex items-center gap-1">
+          {serviceName}
+          {lineItem.Note && (
+            <span className="badge badge-pending" title={lineItem.Note} style={{ cursor: "help" }}>
+              ⚠
+            </span>
+          )}
+        </span>
+      </td>
+      <td>
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 70 }}
+            type="number"
+            step="0.5"
+            value={scheduledHours ?? ""}
+            onChange={(e) => setScheduledHours(e.target.value)}
+          />
+        ) : (
+          lineItem.ScheduledHours ?? "—"
+        )}
+      </td>
+      <td>
+        {editing ? (
+          <input
+            className="field"
+            style={{ width: 70 }}
+            type="number"
+            step="0.5"
+            value={attendedHours ?? ""}
+            onChange={(e) => setAttendedHours(e.target.value)}
+          />
+        ) : (
+          lineItem.AttendedHours ?? "—"
+        )}
+      </td>
+      <td>
+        {editing ? (
+          <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+        ) : (
+          `${lineItem.Currency || "INR"} ${lineItem.Amount}`
+        )}
+      </td>
+      <td>
+        {editing ? (
+          <span className="flex gap-1">
+            <button className="btn" onClick={save}>
+              Save
+            </button>
+            <button className="btn-ghost" onClick={cancel}>
+              Cancel
+            </button>
+          </span>
+        ) : (
+          <button className="btn-ghost" onClick={() => setEditing(true)}>
+            Edit
+          </button>
+        )}
       </td>
     </tr>
   );
