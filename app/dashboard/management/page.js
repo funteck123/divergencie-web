@@ -3102,40 +3102,22 @@ function Enrollments() {
     load();
   }, []);
 
-  async function enroll(userId, serviceId, batchId, rateId, startDate, endDate) {
-    setError("");
-    try {
-      await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, batchId, rateId, startDate, endDate }) });
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
-  }
-
-  // TKT-0005: one student into several services at once, sharing one
-  // StartDate/EndDate across the whole bulk action. No new API — this
-  // just fires the existing single-enrollment POST once per selected
-  // service (same endpoint bulkEnroll below loops), each resolving to
-  // that service's own first Batch/Rate (same defaulting pickService
-  // already uses for the single-enroll form) since a per-service
-  // batch/rate picker inside a bulk UI would be its own mini-form per row
-  // for no real benefit — Management can always fix an individual
-  // enrollment's Batch/Rate afterward the same way as any other.
-  async function bulkEnroll(userId, serviceIds, startDate, endDate) {
+  // TKT-0005: one student into one or more services at once, sharing one
+  // StartDate/EndDate — `rows` is [{ serviceId, batchId, rateId }, ...],
+  // each already resolved by the form itself (its own Service/Batch/Rate
+  // pickers, same as a single enroll). No new API — just the existing
+  // single-enrollment POST once per row.
+  async function enrollMany(userId, rows, startDate, endDate) {
     setError("");
     const failures = [];
-    for (const serviceId of serviceIds) {
-      const service = services.find((s) => s.ServiceID === serviceId);
-      const firstBatch = service ? batchesOf(service)[0] : null;
-      const batchId = firstBatch?.BatchID || "";
-      const rateId = service ? ratesOf(service, batchId)[0]?.RateID || "" : "";
+    for (const row of rows) {
       try {
-        await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, batchId, rateId, startDate, endDate }) });
+        await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId: row.serviceId, batchId: row.batchId, rateId: row.rateId, startDate, endDate }) });
       } catch (e) {
-        failures.push(`${serviceNameOf(serviceId)}: ${e.message}`);
+        failures.push(`${serviceNameOf(row.serviceId)}: ${e.message}`);
       }
     }
-    if (failures.length) setError(`${failures.length} of ${serviceIds.length} enrollment(s) failed — ${failures.join("; ")}`);
+    if (failures.length) setError(`${failures.length} of ${rows.length} enrollment(s) failed — ${failures.join("; ")}`);
     load();
   }
 
@@ -3176,8 +3158,7 @@ function Enrollments() {
             people={people}
             eligibleServices={eligibleServices}
             enrollments={groupEnrollments}
-            onEnroll={enroll}
-            onBulkEnroll={bulkEnroll}
+            onEnroll={enrollMany}
             {...shared}
           />
         );
@@ -3186,23 +3167,29 @@ function Enrollments() {
   );
 }
 
-function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, onBulkEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
+function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
   const [userId, setUserId] = useState("");
-  const [serviceId, setServiceId] = useState("");
-  const [batchId, setBatchId] = useState("");
-  const [rateId, setRateId] = useState("");
+  // TKT-0005: rows is [{ serviceId, batchId, rateId }, ...] — one student,
+  // one or more services in a single enroll action, each with its own
+  // Batch/Rate picker (not defaulted) rather than a separate bulk-enroll
+  // UI. Start/End date stay shared across every row in the submission.
+  const [rows, setRows] = useState([{ serviceId: "", batchId: "", rateId: "" }]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   const selectedUser = people.find((u) => u.UserID === userId);
-  const selectedService = eligibleServices.find((s) => s.ServiceID === serviceId);
-  const availableBatches = selectedService ? batchesOf(selectedService) : [];
-  const selectedBatch = availableBatches.find((b) => b.BatchID === batchId);
-  // Only rates this user's own account type is allowed to enroll at — an
-  // unset Rate.Group is open to anyone the Service itself is open to.
-  const availableRates = (selectedBatch ? ratesOf(selectedService, batchId) : []).filter(
-    (r) => !r.Group || r.Group === selectedUser?.UserType
-  );
+
+  function rowOptions(row) {
+    const selectedService = eligibleServices.find((s) => s.ServiceID === row.serviceId);
+    const availableBatches = selectedService ? batchesOf(selectedService) : [];
+    const selectedBatch = availableBatches.find((b) => b.BatchID === row.batchId);
+    // Only rates this user's own account type is allowed to enroll at — an
+    // unset Rate.Group is open to anyone the Service itself is open to.
+    const availableRates = (selectedBatch ? ratesOf(selectedService, row.batchId) : []).filter(
+      (r) => !r.Group || r.Group === selectedUser?.UserType
+    );
+    return { selectedService, availableBatches, availableRates };
+  }
 
   const enrollmentRows = enrollments.map((e) => ({
     ...e,
@@ -3213,27 +3200,39 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(enrollmentRows, "_person");
 
-  function pickService(id) {
-    setServiceId(id);
-    const svc = eligibleServices.find((s) => s.ServiceID === id);
-    const batches = svc ? batchesOf(svc) : [];
-    const firstBatch = batches[0];
-    setBatchId(firstBatch?.BatchID || "");
-    setRateId(firstBatch ? ratesOf(svc, firstBatch.BatchID)[0]?.RateID || "" : "");
+  function updateRow(index, patch) {
+    setRows((prev) => prev.map((r, i) => (i === index ? { ...r, ...patch } : r)));
   }
 
-  function pickBatch(id) {
-    setBatchId(id);
-    setRateId(ratesOf(selectedService, id)[0]?.RateID || "");
+  function pickServiceAt(index, id) {
+    const svc = eligibleServices.find((s) => s.ServiceID === id);
+    const firstBatch = svc ? batchesOf(svc)[0] : null;
+    updateRow(index, {
+      serviceId: id,
+      batchId: firstBatch?.BatchID || "",
+      rateId: firstBatch ? ratesOf(svc, firstBatch.BatchID)[0]?.RateID || "" : "",
+    });
+  }
+
+  function pickBatchAt(index, batchId) {
+    const svc = eligibleServices.find((s) => s.ServiceID === rows[index].serviceId);
+    updateRow(index, { batchId, rateId: ratesOf(svc, batchId)[0]?.RateID || "" });
+  }
+
+  function addRow() {
+    setRows((prev) => [...prev, { serviceId: "", batchId: "", rateId: "" }]);
+  }
+
+  function removeRow(index) {
+    setRows((prev) => prev.filter((_, i) => i !== index));
   }
 
   function submit(e) {
     e.preventDefault();
-    onEnroll(userId, serviceId, batchId, rateId, startDate, endDate);
+    const validRows = rows.filter((r) => r.serviceId);
+    onEnroll(userId, validRows, startDate, endDate);
     setUserId("");
-    setServiceId("");
-    setBatchId("");
-    setRateId("");
+    setRows([{ serviceId: "", batchId: "", rateId: "" }]);
     setStartDate("");
     setEndDate("");
   }
@@ -3241,7 +3240,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div className="card">
-        <h2 className="font-semibold mb-4">Enroll a {title} into a Service</h2>
+        <h2 className="font-semibold mb-4">Enroll a {title} into Service(s)</h2>
         <form onSubmit={submit} className="space-y-3">
           <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)} required>
             <option value="">Select {title.toLowerCase()}…</option>
@@ -3251,35 +3250,57 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
               </option>
             ))}
           </select>
-          <select className="field" value={serviceId} onChange={(e) => pickService(e.target.value)} required>
-            <option value="">Select service…</option>
-            {eligibleServices.map((s) => (
-              <option key={s.ServiceID} value={s.ServiceID}>
-                {s.Name}
-              </option>
-            ))}
-          </select>
-          {availableBatches.length > 1 && (
-            <select className="field" value={batchId} onChange={(e) => pickBatch(e.target.value)} required>
-              {availableBatches.map((b) => (
-                <option key={b.BatchID} value={b.BatchID}>
-                  {b.BatchName}
-                </option>
-              ))}
-            </select>
-          )}
-          {availableRates.length > 0 && (
-            <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
-              {availableRates.map((r) => (
-                <option key={r.RateID} value={r.RateID}>
-                  {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
-                </option>
-              ))}
-            </select>
-          )}
+
+          {rows.map((row, index) => {
+            const { availableBatches, availableRates } = rowOptions(row);
+            return (
+              <div key={index} className="space-y-2 p-3" style={{ border: "1px solid var(--border)", borderRadius: 8 }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm" style={{ color: "var(--muted)" }}>
+                    Service {index + 1}
+                  </span>
+                  {rows.length > 1 && (
+                    <button type="button" className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => removeRow(index)}>
+                      Remove
+                    </button>
+                  )}
+                </div>
+                <select className="field" value={row.serviceId} onChange={(e) => pickServiceAt(index, e.target.value)} required>
+                  <option value="">Select service…</option>
+                  {eligibleServices.map((s) => (
+                    <option key={s.ServiceID} value={s.ServiceID}>
+                      {s.Name}
+                    </option>
+                  ))}
+                </select>
+                {availableBatches.length > 1 && (
+                  <select className="field" value={row.batchId} onChange={(e) => pickBatchAt(index, e.target.value)} required>
+                    {availableBatches.map((b) => (
+                      <option key={b.BatchID} value={b.BatchID}>
+                        {b.BatchName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {availableRates.length > 0 && (
+                  <select className="field" value={row.rateId} onChange={(e) => updateRow(index, { rateId: e.target.value })} required>
+                    {availableRates.map((r) => (
+                      <option key={r.RateID} value={r.RateID}>
+                        {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            );
+          })}
+          <button type="button" className="btn-ghost" onClick={addRow}>
+            + Add another service
+          </button>
+
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-              Start date (optional)
+              Start date (optional — applies to all services above)
             </label>
             <input className="field" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           </div>
@@ -3290,11 +3311,10 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             <input className="field" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </div>
           <button className="btn" type="submit">
-            Enroll
+            Enroll into {rows.filter((r) => r.serviceId).length || rows.length} service{(rows.filter((r) => r.serviceId).length || rows.length) === 1 ? "" : "s"}
           </button>
         </form>
       </div>
-      <BulkEnrollForm title={title} people={people} eligibleServices={eligibleServices} onBulkEnroll={onBulkEnroll} />
       <div className="card">
         <h2 className="font-semibold mb-4">Current {title} Enrollments</h2>
         <table>
@@ -3337,75 +3357,6 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   );
 }
 
-// TKT-0005: one student into several services at once. Batch/Rate aren't
-// pickable per-service here (see bulkEnroll's comment above) — this form
-// only collects the student, the service selection, and one shared date
-// range for the whole batch.
-function BulkEnrollForm({ title, people, eligibleServices, onBulkEnroll }) {
-  const [userId, setUserId] = useState("");
-  const [serviceIds, setServiceIds] = useState([]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  function toggleService(id) {
-    setServiceIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }
-
-  async function submit(e) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      await onBulkEnroll(userId, serviceIds, startDate, endDate);
-      setUserId("");
-      setServiceIds([]);
-      setStartDate("");
-      setEndDate("");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="card">
-      <h2 className="font-semibold mb-4">Bulk Enroll a {title} into Services</h2>
-      <form onSubmit={submit} className="space-y-3">
-        <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)} required>
-          <option value="">Select {title.toLowerCase()}…</option>
-          {people.map((u) => (
-            <option key={u.UserID} value={u.UserID}>
-              {u.Name}
-            </option>
-          ))}
-        </select>
-        <div className="space-y-1" style={{ maxHeight: 180, overflowY: "auto" }}>
-          {eligibleServices.map((s) => (
-            <label key={s.ServiceID} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={serviceIds.includes(s.ServiceID)} onChange={() => toggleService(s.ServiceID)} />
-              {s.Name}
-            </label>
-          ))}
-          {eligibleServices.length === 0 && <p style={{ color: "var(--muted)" }}>No eligible services.</p>}
-        </div>
-        <div>
-          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-            Start date (optional, applies to all selected)
-          </label>
-          <input className="field" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-        </div>
-        <div>
-          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
-            End date (optional — leave blank if ongoing)
-          </label>
-          <input className="field" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-        </div>
-        <button className="btn" type="submit" disabled={!userId || serviceIds.length === 0 || busy}>
-          {busy ? "Enrolling…" : `Enroll into ${serviceIds.length || ""} service${serviceIds.length === 1 ? "" : "s"}`}
-        </button>
-      </form>
-    </div>
-  );
-}
 
 function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
