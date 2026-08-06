@@ -242,8 +242,12 @@ function Body({ user }) {
             {paySort.sorted.map((p) => (
               <tr key={p.PaycheckID}>
                 <td>{p.Month}/{p.Year}</td>
-                <td>{serviceNameOf(p.ServiceID, p.BatchID)}</td>
-                <td>{p.AttendedHours}</td>
+                <td>
+                  {Array.isArray(p.LineItems)
+                    ? p.LineItems.map((li) => serviceNameOf(li.ServiceID, li.BatchID)).join(", ")
+                    : serviceNameOf(p.ServiceID, p.BatchID)}
+                </td>
+                <td>{Array.isArray(p.LineItems) ? p.LineItems.reduce((sum, li) => sum + (Number(li.AttendedHours) || 0), 0) : p.AttendedHours}</td>
                 <td>{p.Currency || "INR"} {p.Amount}</td>
                 <td>{p.Currency || "INR"} {amountDueInOwnCurrency(p).toFixed(2)}</td>
                 <td>{p.ConvertedDue != null ? `${data.user.Currency || "INR"} ${p.ConvertedDue.toFixed(2)}` : "—"}</td>
