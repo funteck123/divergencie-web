@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { drawSchedule } from "@/lib/scheduleImage";
-import { normalizeTimezone } from "@/lib/timezones";
+import { normalizeTimezone, convertWeeklyTime } from "@/lib/timezones";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { batchesOf } from "@/lib/billing";
 
 // Only the specific Batch each enrollment points to — a Service can now have
 // several Batches, and an enrollment only grants a seat in one of them.
-function buildEntries(db, userId) {
+//
+// Each occurrence carries its own Timezone (set when the Batch schedule was
+// created — see EMPTY_OCC in the management dashboard); that's not
+// necessarily the SAME timezone as the viewer's own profile Timezone
+// (entity.timezone, shown in the image header). Day/Time here are
+// converted into the viewer's timezone (TKT-0008) so what's printed on the
+// grid actually matches the label in the header — previously the raw
+// stored Day/Time was shown as-is, mislabeled under the viewer's own
+// timezone even when the occurrence was set in a different one.
+function buildEntries(db, userId, viewerTimezone) {
   const myEnrollments = db.enrollments.filter((e) => e.UserID === userId);
   const entries = [];
   for (const e of myEnrollments) {
@@ -23,7 +32,8 @@ function buildEntries(db, userId) {
       // An occurrence with no Day/Time set yet (e.g. a resource-only
       // service pending a real schedule) has nothing to draw — skip it.
       if (!o.Day || !o.Time) continue;
-      entries.push({ name: service.Name, day: o.Day, time: o.Time });
+      const { day, time } = convertWeeklyTime(o.Day, o.Time, normalizeTimezone(o.Timezone), viewerTimezone);
+      entries.push({ name: service.Name, day, time });
     }
   }
   return entries;
@@ -47,17 +57,21 @@ export async function GET(req) {
   let role = "student";
   if (user.UserType === "Teacher") role = "teacherRole";
   if (user.UserType === "Staff") role = "staff";
+  const viewerTimezone = normalizeTimezone(user.Timezone);
   const entity = {
     name: user.Name,
     role,
-    timezone: normalizeTimezone(user.Timezone),
-    // dcp1-app students can be enrolled across multiple unrelated Services,
-    // unlike p26's one-class-per-student model — no single "class name" to
-    // show, so this stays blank for Student. Teacher/Staff instead show
-    // their Batch/Department in the same template slot.
-    className: user.UserType === "Teacher" ? user.Batch || "" : user.UserType === "Staff" ? user.Department || "" : "",
+    timezone: viewerTimezone,
+    // TKT-0008: this slot was blank for Student (dcp1-app students can be
+    // enrolled across multiple unrelated Services, unlike p26's
+    // one-class-per-student model, so there's no single ENROLLMENT to name
+    // here) — now shows the student's own profile Course field instead
+    // (e.g. "IGCSE"), the same general-course label Management already
+    // sets on the account. Teacher/Staff keep showing their Batch/
+    // Department in the same template slot, unchanged.
+    className: user.UserType === "Teacher" ? user.Batch || "" : user.UserType === "Staff" ? user.Department || "" : user.Course || "",
   };
-  const entries = buildEntries(db, userId);
+  const entries = buildEntries(db, userId, viewerTimezone);
 
   const buffer = await drawSchedule(entity, entries);
 
