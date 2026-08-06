@@ -690,6 +690,7 @@ function Accounts() {
           { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
           { header: "WhatsApp #", render: (u) => u.WhatsAppNumber || "—", sortValue: (u) => u.WhatsAppNumber || "" },
           { header: "Parent WhatsApp #", render: (u) => u.ParentWhatsAppNumber || "—", sortValue: (u) => u.ParentWhatsAppNumber || "" },
+          { header: "Parent Email", render: (u) => u.ParentEmail || "—", sortValue: (u) => u.ParentEmail || "" },
           { header: "Email", render: (u) => u.Email || "—", sortValue: (u) => u.Email || "" },
           { header: "School", render: (u) => u.School || "—", sortValue: (u) => u.School || "" },
           { header: "Location", render: (u) => u.Location || "—", sortValue: (u) => u.Location || "" },
@@ -979,6 +980,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [password, setPassword] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState(user.WhatsAppNumber || "");
   const [parentWhatsappNumber, setParentWhatsappNumber] = useState(user.ParentWhatsAppNumber || "");
+  const [parentEmail, setParentEmail] = useState(user.ParentEmail || "");
   const [email, setEmail] = useState(user.Email || "");
   const [school, setSchool] = useState(user.School || "");
   const [location, setLocation] = useState(user.Location || "");
@@ -1017,6 +1019,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       fields.batch = batch;
       fields.whatsappNumber = whatsappNumber;
       fields.parentWhatsappNumber = parentWhatsappNumber;
+      fields.parentEmail = parentEmail;
       fields.email = email;
       fields.school = school;
       fields.location = location;
@@ -1186,6 +1189,12 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
               value={parentWhatsappNumber}
               onChange={(e) => setParentWhatsappNumber(e.target.value)}
             />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Parent Email
+            </label>
+            <input className="field" type="email" value={parentEmail} onChange={(e) => setParentEmail(e.target.value)} />
           </div>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>

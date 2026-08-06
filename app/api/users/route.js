@@ -150,7 +150,7 @@ function applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl } = {}) 
 // deletion for every UserType except Student/Staff.
 function applyStudentExtras(user, userType, fields) {
   if (userType !== "Student") {
-    for (const key of ["ParentWhatsAppNumber", "School", "Location", "Notes", "ProgressTrackerURL", "GroupSent", "GCRSent", "ScheduleSent"]) {
+    for (const key of ["ParentWhatsAppNumber", "ParentEmail", "School", "Location", "Notes", "ProgressTrackerURL", "GroupSent", "GCRSent", "ScheduleSent"]) {
       delete user[key];
     }
     return;
@@ -158,6 +158,7 @@ function applyStudentExtras(user, userType, fields) {
   const {
     whatsappNumber,
     parentWhatsappNumber,
+    parentEmail,
     email,
     school,
     location,
@@ -170,6 +171,10 @@ function applyStudentExtras(user, userType, fields) {
   } = fields;
   if (whatsappNumber !== undefined) user.WhatsAppNumber = whatsappNumber || "";
   if (parentWhatsappNumber !== undefined) user.ParentWhatsAppNumber = parentWhatsappNumber || "";
+  // Optional, Management-only (edited via EditAccountForm same as
+  // ParentWhatsAppNumber) — format validated client-side only (type="email"
+  // input), matching how the Student's own Email field is validated below.
+  if (parentEmail !== undefined) user.ParentEmail = parentEmail || "";
   if (email !== undefined) user.Email = email || "";
   if (school !== undefined) user.School = school || "";
   if (location !== undefined) user.Location = location || "";
@@ -284,6 +289,7 @@ export async function PATCH(req) {
     password,
     whatsappNumber,
     parentWhatsappNumber,
+    parentEmail,
     email,
     school,
     location,
@@ -311,6 +317,7 @@ export async function PATCH(req) {
       password,
       whatsappNumber,
       parentWhatsappNumber,
+      parentEmail,
       email,
       school,
       location,
