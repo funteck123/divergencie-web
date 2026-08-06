@@ -231,6 +231,18 @@ export async function POST(req) {
     let invoice = db.invoices.find((i) => i.LineItems && i.StudentID === enr.UserID && i.Year === y && i.Month === m);
     if (invoice?.LineItems.some((li) => li.ServiceID === enr.ServiceID && li.BatchID === enr.BatchID)) continue;
 
+    // Also skip if an OLD flat-shape invoice already covers this exact
+    // Student/Service/Batch/Year/Month — i.e. this was already billed
+    // under the pre-rewrite per-subject shape and just hasn't gone
+    // through /api/invoices/migrate-monthly yet. Without this check,
+    // running generate again for an already-invoiced month (before
+    // migrating) would silently create a second, duplicate invoice for
+    // the same subject instead of recognizing it as already billed.
+    const oldFlatAlreadyExists = db.invoices.some(
+      (i) => !i.LineItems && i.StudentID === enr.UserID && i.ServiceID === enr.ServiceID && i.BatchID === enr.BatchID && i.Year === y && i.Month === m
+    );
+    if (oldFlatAlreadyExists) continue;
+
     const { scheduledHours, attendedHours, amount, currency, billingType } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
@@ -310,6 +322,12 @@ export async function POST(req) {
 //   Invoice-level:   { invoiceId, status?, inrDue?, studentPaidFlag? } — status/inrDue Management only,
 //                    studentPaidFlag may also be set by the Student/Parent themselves
 // OneOff (legacy flat) invoice body: { invoiceId, scheduledHours?, attendedHours?, amount?, inrAmount?, inrDue?, status?, studentPaidFlag? } — unchanged.
+//
+// lineItemIndex addresses a LineItems array position — safe only because
+// generate()/manual() (above) exclusively APPEND to LineItems and nothing
+// ever removes/reorders one; there is no per-line-item DELETE endpoint. If
+// one is ever added, it must not use plain array splice — indices held by
+// an in-flight client edit would silently point at the wrong subject.
 export async function PATCH(req) {
   const body = await req.json();
   const { invoiceId, lineItemIndex, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, studentPaidFlag } = body;

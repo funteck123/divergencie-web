@@ -3991,47 +3991,71 @@ function Row({ row, idKey, nameOf, personKey, serviceNameOf, onPatch, onDelete, 
 function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
   const decorated = rows.map((r) => ({ ...r, _person: nameOf(r.StudentID), _period: r.Year * 100 + r.Month }));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
+
+  // Safety net, not a hard rule — a student can legitimately have more
+  // than one invoice in the same month (e.g. a Monthly-billed combined
+  // invoice alongside a genuinely separate OneOff purchase), so this only
+  // WARNS, never blocks. Mainly catches the pre-migrate-monthly window
+  // where an old flat-shape invoice and a freshly generated combined one
+  // could both exist for the same student/month — flag it, let Management
+  // look and decide whether it's a real duplicate to delete.
+  const monthCounts = new Map();
+  for (const r of rows) {
+    const key = `${r.StudentID}|${r.Year}|${r.Month}`;
+    monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
+  }
+  const duplicateCount = [...monthCounts.values()].filter((n) => n > 1).length;
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <SortableTh label="Student" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-          <th>Subjects</th>
-          <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-          <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-          <th>Amount Due</th>
-          <th>INR Amount</th>
-          <th>INR Due</th>
-          <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-          <th>Paid</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {sorted.map((r) => (
-          <InvoiceRow
-            key={r.InvoiceID}
-            row={r}
-            nameOf={nameOf}
-            services={services}
-            onPatch={onPatch}
-            onPatchLineItem={onPatchLineItem}
-            onDelete={onDelete}
-          />
-        ))}
-        {sorted.length === 0 && (
+    <>
+      {duplicateCount > 0 && (
+        <p className="mb-2" style={{ color: "var(--warn, #b45309)" }}>
+          ⚠ {duplicateCount} student/month{duplicateCount === 1 ? "" : "s"} with more than one invoice — check the
+          rows flagged below; if it&apos;s genuinely a duplicate bill, delete the extra one.
+        </p>
+      )}
+      <table>
+        <thead>
           <tr>
-            <td colSpan={9} style={{ color: "var(--muted)" }}>
-              None generated yet.
-            </td>
+            <SortableTh label="Student" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Subjects</th>
+            <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Amount Due</th>
+            <th>INR Amount</th>
+            <th>INR Due</th>
+            <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Paid</th>
+            <th></th>
           </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sorted.map((r) => (
+            <InvoiceRow
+              key={r.InvoiceID}
+              row={r}
+              nameOf={nameOf}
+              services={services}
+              onPatch={onPatch}
+              onPatchLineItem={onPatchLineItem}
+              onDelete={onDelete}
+              isDuplicateMonth={monthCounts.get(`${r.StudentID}|${r.Year}|${r.Month}`) > 1}
+            />
+          ))}
+          {sorted.length === 0 && (
+            <tr>
+              <td colSpan={9} style={{ color: "var(--muted)" }}>
+                None generated yet.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </>
   );
 }
 
-function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
+function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete, isDuplicateMonth }) {
   const [expanded, setExpanded] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
   const [inrDue, setInrDue] = useState(row.INRDue);
@@ -4059,7 +4083,20 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete 
   return (
     <>
       <tr>
-        <td>{nameOf(row.StudentID)}</td>
+        <td>
+          <span className="flex items-center gap-1">
+            {nameOf(row.StudentID)}
+            {isDuplicateMonth && (
+              <span
+                className="badge badge-pending"
+                style={{ cursor: "help" }}
+                title="More than one invoice exists for this student in this month. If they bill the same subjects twice, delete the duplicate — otherwise (e.g. a separate OneOff purchase) this is expected."
+              >
+                ⚠ dup?
+              </span>
+            )}
+          </span>
+        </td>
         <td>
           {isLineItemInvoice ? (
             <button className="btn-ghost" style={{ whiteSpace: "nowrap" }} onClick={() => setExpanded((v) => !v)}>
