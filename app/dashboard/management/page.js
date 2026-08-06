@@ -1641,6 +1641,7 @@ function Services() {
   const [links, setLinks] = useState([{ ...EMPTY_LINK }]);
   const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
   // A role-based Service (an internal role like "Associate Project Manager",
@@ -2324,11 +2325,25 @@ function Services() {
         </form>
       </div>
 
+      <div className="card">
+        <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+          Search services
+        </label>
+        <input
+          className="field"
+          placeholder="Search by name…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       {ALL_GROUPS.map((g) => (
         <ServiceGroupTable
           key={g}
           groupName={g}
-          services={services.filter((s) => groupMatches(s.Group, g))}
+          services={services
+            .filter((s) => groupMatches(s.Group, g))
+            .filter((s) => (s.Name || "").toLowerCase().includes(searchQuery.trim().toLowerCase()))}
           onEdit={startEdit}
           onDelete={deleteService}
         />
