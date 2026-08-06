@@ -13,6 +13,7 @@ import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
+import { formatDate } from "@/lib/formatDate";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -197,7 +198,7 @@ function Body({ user }) {
                 return (
                   <tr key={s.ScheduleID}>
                     <td>{s.ServiceName}</td>
-                    <td>{s.Date}</td>
+                    <td>{formatDate(s.Date)}</td>
                     <td>{s.Time}</td>
                     <td>{s.Duration}</td>
                     <td>{s.Facilitator || "—"}</td>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
 import { api, groupMatches } from "@/lib/client";
+import { formatDate } from "@/lib/formatDate";
 
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
 
@@ -85,7 +86,7 @@ function Body({ user }) {
           return (
             <div key={it.InterviewID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
-                {slot ? `${slot.Date} at ${slot.Time} with ${slot.Facilitator}` : it.ScheduleItemID}{" "}
+                {slot ? `${formatDate(slot.Date)} at ${slot.Time} with ${slot.Facilitator}` : it.ScheduleItemID}{" "}
                 <span className="badge badge-info">{it.Status}</span>
               </p>
 
@@ -170,7 +171,7 @@ function Body({ user }) {
             <tbody>
               {slotsForService.map((s) => (
                 <tr key={s.ScheduleID}>
-                  <td>{s.Date}</td>
+                  <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator}</td>
                   <td>

@@ -12,6 +12,7 @@ import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort } from "@/lib/client";
 import { amountDueInOwnCurrency, batchesOf, lineItemName } from "@/lib/billing";
+import { formatDate } from "@/lib/formatDate";
 
 export default function ParentDashboard() {
   return <DashboardShell allowedType="Parent">{(user) => <Body user={user} />}</DashboardShell>;
@@ -162,7 +163,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
               {schedSort.sorted.map((s) => (
                 <tr key={s.ScheduleID}>
                   <td>{s.ServiceName}</td>
-                  <td>{s.Date}</td>
+                  <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator || "—"}</td>
                   <td>
@@ -203,7 +204,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
             return (
               <tr key={a.AttendanceID}>
                 <td>{session?.ServiceName || "—"}</td>
-                <td>{a.Date}</td>
+                <td>{formatDate(a.Date)}</td>
                 <td>{session?.Time || "—"}</td>
                 <td>{session?.Facilitator || "—"}</td>
                 <td>

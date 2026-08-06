@@ -5,6 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
 import { api, groupMatches } from "@/lib/client";
 import { amountDueInOwnCurrency } from "@/lib/billing";
+import { formatDate } from "@/lib/formatDate";
 
 export default function TrialDashboard() {
   return <DashboardShell allowedType="TrialAcc">{(user) => <Body user={user} />}</DashboardShell>;
@@ -74,7 +75,7 @@ function Body({ user }) {
           return (
             <div key={t.TrialID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
-                {slot ? `${slot.Date} at ${slot.Time} with ${slot.Facilitator}` : t.ScheduleItemID}{" "}
+                {slot ? `${formatDate(slot.Date)} at ${slot.Time} with ${slot.Facilitator}` : t.ScheduleItemID}{" "}
                 <span className="badge badge-info">{t.Status}</span>
               </p>
               {t.Status === "Pending" && (
@@ -121,7 +122,7 @@ function Body({ user }) {
             <tbody>
               {slotsForService.map((s) => (
                 <tr key={s.ScheduleID}>
-                  <td>{s.Date}</td>
+                  <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator}</td>
                   <td>

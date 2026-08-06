@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { api } from "@/lib/client";
+import { formatDate } from "@/lib/formatDate";
 
 // Self-service reschedule suggestion for a single ScheduleItem — shown
 // wherever that occurrence already appears (schedule tables across every
@@ -19,7 +20,7 @@ export default function RescheduleControl({ slot, userId, pendingRequest, onSubm
   if (slot.RescheduledDate) {
     return (
       <span className="badge badge-info">
-        Rescheduled → {slot.RescheduledDate} {slot.RescheduledTime}
+        Rescheduled → {formatDate(slot.RescheduledDate)} {slot.RescheduledTime}
       </span>
     );
   }
@@ -27,7 +28,7 @@ export default function RescheduleControl({ slot, userId, pendingRequest, onSubm
   if (pendingRequest) {
     return (
       <span className="badge badge-pending">
-        Requested → {pendingRequest.RequestedDate} {pendingRequest.RequestedTime} (pending)
+        Requested → {formatDate(pendingRequest.RequestedDate)} {pendingRequest.RequestedTime} (pending)
       </span>
     );
   }

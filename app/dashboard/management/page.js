@@ -8,6 +8,7 @@ import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, gr
 import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
+import { formatDate, formatDateTime } from "@/lib/formatDate";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Tickets", "Audit Log"];
 // The three pending Interview tracks — each converts to its own final
@@ -475,7 +476,7 @@ function Pipeline() {
                   <td>{row._type}</td>
                   <td>{row._requester}</td>
                   <td>{row._service}</td>
-                  <td>{row._date}</td>
+                  <td>{formatDate(row._date)}</td>
                   <td>{row._time}</td>
                   <td className="space-x-2">
                     <button className="btn" onClick={() => actOnRequest("Trial", row.TrialID, "approve")}>
@@ -491,7 +492,7 @@ function Pipeline() {
                   <td>{row._type}</td>
                   <td>{row._requester}</td>
                   <td>{row._service}</td>
-                  <td>{row._date}</td>
+                  <td>{formatDate(row._date)}</td>
                   <td>{row._time}</td>
                   <td className="space-x-2">
                     <button className="btn" onClick={() => actOnRequest(row._bookingType, row.InterviewID, "approve")}>
@@ -2918,7 +2919,7 @@ function SchedulePool() {
                     />
                     {s.ServiceName}
                   </td>
-                  <td>{s.Date}</td>
+                  <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator}</td>
                 </tr>
@@ -2981,7 +2982,7 @@ function SchedulePool() {
                     />
                     {s.ServiceName}
                   </td>
-                  <td>{s.Date}</td>
+                  <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
                   <td>{s.Duration}</td>
                   <td>{s.Facilitator}</td>
@@ -3017,7 +3018,7 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
     return (
       <div className="text-sm">
         <div>
-          Requested: {pendingRequest.RequestedDate} {pendingRequest.RequestedTime}
+          Requested: {formatDate(pendingRequest.RequestedDate)} {pendingRequest.RequestedTime}
         </div>
         <div className="text-xs mb-1" style={{ color: "var(--muted)" }}>
           by {pendingRequest.RequesterName}
@@ -3059,7 +3060,7 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
     return (
       <div className="text-sm">
         <div>
-          → {slot.RescheduledDate} {slot.RescheduledTime}
+          → {formatDate(slot.RescheduledDate)} {slot.RescheduledTime}
         </div>
         <div className="flex gap-2">
           <button className="btn-ghost" onClick={() => setEditing(true)}>
@@ -3527,8 +3528,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
       <td>{serviceNameOf(enrollment.ServiceID)}</td>
       <td>{batchNameOf(enrollment.ServiceID, enrollment.BatchID)}</td>
       <td>{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.BatchID, enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
-      <td>{enrollment.StartDate || "—"}</td>
-      <td>{enrollment.EndDate || "—"}</td>
+      <td>{enrollment.StartDate ? formatDate(enrollment.StartDate) : "—"}</td>
+      <td>{enrollment.EndDate ? formatDate(enrollment.EndDate) : "—"}</td>
       <td className="space-x-2">
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
@@ -4332,8 +4333,8 @@ function Tickets() {
                     "—"
                   )}
                 </td>
-                <td>{new Date(t.CreatedAt).toLocaleString()}</td>
-                <td>{t.ClosedAt ? new Date(t.ClosedAt).toLocaleString() : "—"}</td>
+                <td>{formatDateTime(t.CreatedAt)}</td>
+                <td>{t.ClosedAt ? formatDateTime(t.ClosedAt) : "—"}</td>
                 <td>
                   {!t.ClosedAt ? (
                     <button className="btn-ghost" onClick={() => setTicketState(t.TicketID, "close")}>Close</button>
@@ -4430,7 +4431,7 @@ function AuditLog() {
           <tbody>
             {entries.map((e) => (
               <tr key={e.AuditID}>
-                <td>{new Date(e.Timestamp).toLocaleString()}</td>
+                <td>{formatDateTime(e.Timestamp)}</td>
                 <td>{nameOf(e.ActorUserID)}</td>
                 <td>{e.Action}</td>
                 <td>{e.EntityType}{e.EntityID ? ` · ${e.EntityID}` : ""}</td>

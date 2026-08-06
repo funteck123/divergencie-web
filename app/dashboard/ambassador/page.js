@@ -11,6 +11,7 @@ import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
+import { formatDate } from "@/lib/formatDate";
 
 // Ambassador accounts can be enrolled in Ambassador-group Services (see
 // ALL_GROUPS in management/page.js) and are included in the bulk paycheck
@@ -183,7 +184,7 @@ function Body({ user }) {
                 return (
                   <tr key={s.ScheduleID}>
                     <td>{s.ServiceName}</td>
-                    <td>{s.Date}</td>
+                    <td>{formatDate(s.Date)}</td>
                     <td>{s.Time}</td>
                     <td>{s.Duration}</td>
                     <td>{s.Facilitator || "—"}</td>
