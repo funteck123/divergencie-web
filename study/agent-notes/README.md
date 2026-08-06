@@ -8,3 +8,6 @@ comments or `AGENTS.md`).
   framework/tool in this repo with its doc/paper reference, plus the
   OpenSpec evaluation (checked: not installed, not currently recommended
   given the `swe` skill already covers the same ground).
+- [03-tickets-api-access.md](03-tickets-api-access.md) — how to pull
+  production Tickets (or any Management-only `GET` route) from the CLI via
+  a login + cookie curl session, without needing DB credentials.
