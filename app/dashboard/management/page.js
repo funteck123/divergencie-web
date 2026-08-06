@@ -3096,6 +3096,33 @@ function Enrollments() {
     }
   }
 
+  // TKT-0005: one student into several services at once, sharing one
+  // StartDate/EndDate across the whole bulk action. No new API — this
+  // just fires the existing single-enrollment POST once per selected
+  // service (same endpoint bulkEnroll below loops), each resolving to
+  // that service's own first Batch/Rate (same defaulting pickService
+  // already uses for the single-enroll form) since a per-service
+  // batch/rate picker inside a bulk UI would be its own mini-form per row
+  // for no real benefit — Management can always fix an individual
+  // enrollment's Batch/Rate afterward the same way as any other.
+  async function bulkEnroll(userId, serviceIds, startDate, endDate) {
+    setError("");
+    const failures = [];
+    for (const serviceId of serviceIds) {
+      const service = services.find((s) => s.ServiceID === serviceId);
+      const firstBatch = service ? batchesOf(service)[0] : null;
+      const batchId = firstBatch?.BatchID || "";
+      const rateId = service ? ratesOf(service, batchId)[0]?.RateID || "" : "";
+      try {
+        await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId, batchId, rateId, startDate, endDate }) });
+      } catch (e) {
+        failures.push(`${serviceNameOf(serviceId)}: ${e.message}`);
+      }
+    }
+    if (failures.length) setError(`${failures.length} of ${serviceIds.length} enrollment(s) failed — ${failures.join("; ")}`);
+    load();
+  }
+
   async function updateEnrollment(enrolmentId, patch) {
     await api("/api/enrollments", { method: "PATCH", body: JSON.stringify({ enrolmentId, ...patch }) });
     load();
@@ -3134,6 +3161,7 @@ function Enrollments() {
             eligibleServices={eligibleServices}
             enrollments={groupEnrollments}
             onEnroll={enroll}
+            onBulkEnroll={bulkEnroll}
             {...shared}
           />
         );
@@ -3142,7 +3170,7 @@ function Enrollments() {
   );
 }
 
-function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
+function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, onBulkEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
   const [userId, setUserId] = useState("");
   const [serviceId, setServiceId] = useState("");
   const [batchId, setBatchId] = useState("");
@@ -3250,6 +3278,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
           </button>
         </form>
       </div>
+      <BulkEnrollForm title={title} people={people} eligibleServices={eligibleServices} onBulkEnroll={onBulkEnroll} />
       <div className="card">
         <h2 className="font-semibold mb-4">Current {title} Enrollments</h2>
         <table>
@@ -3288,6 +3317,76 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
           </tbody>
         </table>
       </div>
+    </div>
+  );
+}
+
+// TKT-0005: one student into several services at once. Batch/Rate aren't
+// pickable per-service here (see bulkEnroll's comment above) — this form
+// only collects the student, the service selection, and one shared date
+// range for the whole batch.
+function BulkEnrollForm({ title, people, eligibleServices, onBulkEnroll }) {
+  const [userId, setUserId] = useState("");
+  const [serviceIds, setServiceIds] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  function toggleService(id) {
+    setServiceIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  }
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await onBulkEnroll(userId, serviceIds, startDate, endDate);
+      setUserId("");
+      setServiceIds([]);
+      setStartDate("");
+      setEndDate("");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">Bulk Enroll a {title} into Services</h2>
+      <form onSubmit={submit} className="space-y-3">
+        <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)} required>
+          <option value="">Select {title.toLowerCase()}…</option>
+          {people.map((u) => (
+            <option key={u.UserID} value={u.UserID}>
+              {u.Name}
+            </option>
+          ))}
+        </select>
+        <div className="space-y-1" style={{ maxHeight: 180, overflowY: "auto" }}>
+          {eligibleServices.map((s) => (
+            <label key={s.ServiceID} className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={serviceIds.includes(s.ServiceID)} onChange={() => toggleService(s.ServiceID)} />
+              {s.Name}
+            </label>
+          ))}
+          {eligibleServices.length === 0 && <p style={{ color: "var(--muted)" }}>No eligible services.</p>}
+        </div>
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            Start date (optional, applies to all selected)
+          </label>
+          <input className="field" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        </div>
+        <div>
+          <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+            End date (optional — leave blank if ongoing)
+          </label>
+          <input className="field" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        </div>
+        <button className="btn" type="submit" disabled={!userId || serviceIds.length === 0 || busy}>
+          {busy ? "Enrolling…" : `Enroll into ${serviceIds.length || ""} service${serviceIds.length === 1 ? "" : "s"}`}
+        </button>
+      </form>
     </div>
   );
 }
