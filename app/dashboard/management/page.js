@@ -3499,6 +3499,7 @@ function Billing() {
   const [paychecks, setPaychecks] = useState([]);
   const [users, setUsers] = useState([]);
   const [services, setServices] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -3506,16 +3507,18 @@ function Billing() {
   const [summary, setSummary] = useState("");
 
   async function load() {
-    const [{ invoices }, { paychecks }, { users }, { services }] = await Promise.all([
+    const [{ invoices }, { paychecks }, { users }, { services }, { enrollments }] = await Promise.all([
       api("/api/invoices"),
       api("/api/paychecks"),
       api("/api/users"),
       api("/api/services"),
+      api("/api/enrollments"),
     ]);
     setInvoices(invoices);
     setPaychecks(paychecks);
     setUsers(users);
     setServices(services);
+    setEnrollments(enrollments);
   }
   useEffect(() => {
     load();
@@ -3597,18 +3600,17 @@ function Billing() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <ManualBillingForm
-          title="Create Invoice (manual)"
-          personLabel="Student"
+        <ManualInvoiceForm
           people={users.filter((u) => u.UserType === "Student")}
           services={services}
-          onSubmit={async ({ personId, serviceId, year, month, amount }) => {
+          enrollments={enrollments}
+          onSubmitRow={async ({ personId, serviceId, year, month, amount }) => {
             await api("/api/invoices", {
               method: "POST",
               body: JSON.stringify({ action: "manual", studentId: personId, serviceId, year, month, amount }),
             });
-            load();
           }}
+          onDone={load}
         />
         <ManualBillingForm
           title="Create Paycheck (manual)"
@@ -3648,6 +3650,122 @@ function Billing() {
           onDelete={deletePaycheck}
         />
       </div>
+    </div>
+  );
+}
+
+// TKT-0013: manual invoice creation is month-wise, not one-service-at-a-
+// time — pick a student + month, get a checklist of every service they're
+// currently enrolled in (defaulting to all checked), type an amount per
+// checked subject. Submit loops the existing single-service manual POST
+// once per checked+amount-filled row (each appends a LineItem to that
+// student's combined monthly invoice — see app/api/invoices/route.js),
+// same reuse pattern as the bulk-enroll redesign. Amounts are NOT
+// auto-computed here — Management types them, same "manual" meaning as
+// before, just for several subjects in one action instead of one at a time.
+function ManualInvoiceForm({ people, services, enrollments, onSubmitRow, onDone }) {
+  const now = new Date();
+  const [personId, setPersonId] = useState("");
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [amounts, setAmounts] = useState({}); // serviceId -> amount string
+  const [checked, setChecked] = useState({}); // serviceId -> boolean
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const enrolledServices = enrollments
+    .filter((e) => e.UserID === personId)
+    .map((e) => services.find((s) => s.ServiceID === e.ServiceID))
+    .filter(Boolean);
+
+  function selectPerson(id) {
+    setPersonId(id);
+    // Default: every currently-enrolled subject pre-checked, matching the
+    // ticket's "by default all the subject are selected".
+    const nextChecked = {};
+    enrollments.filter((e) => e.UserID === id).forEach((e) => {
+      nextChecked[e.ServiceID] = true;
+    });
+    setChecked(nextChecked);
+    setAmounts({});
+  }
+
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+    const rows = enrolledServices.filter((s) => checked[s.ServiceID] && amounts[s.ServiceID]);
+    if (rows.length === 0) {
+      setError("Check at least one subject and enter an amount for it.");
+      return;
+    }
+    setBusy(true);
+    const failures = [];
+    try {
+      for (const s of rows) {
+        try {
+          await onSubmitRow({ personId, serviceId: s.ServiceID, year: Number(year), month: Number(month), amount: Number(amounts[s.ServiceID]) });
+        } catch (err) {
+          failures.push(`${s.Name}: ${err.message}`);
+        }
+      }
+      if (failures.length) {
+        setError(`${failures.length} of ${rows.length} failed — ${failures.join("; ")}`);
+      } else {
+        setPersonId("");
+        setChecked({});
+        setAmounts({});
+      }
+      onDone();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">Create Invoice (manual)</h2>
+      <form onSubmit={submit} className="space-y-3">
+        <select className="field" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
+          <option value="">Select Student…</option>
+          {people.map((p) => (
+            <option key={p.UserID} value={p.UserID}>
+              {p.Name}
+            </option>
+          ))}
+        </select>
+        <div className="flex gap-2">
+          <input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} />
+          <input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} />
+        </div>
+        {personId && (
+          <div className="space-y-2">
+            {enrolledServices.length === 0 && <p style={{ color: "var(--muted)" }}>No enrollments for this student.</p>}
+            {enrolledServices.map((s) => (
+              <div key={s.ServiceID} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={!!checked[s.ServiceID]}
+                  onChange={(e) => setChecked((prev) => ({ ...prev, [s.ServiceID]: e.target.checked }))}
+                />
+                <span className="text-sm flex-1">{s.Name}</span>
+                <input
+                  className="field"
+                  style={{ width: 110 }}
+                  type="number"
+                  placeholder="Amount"
+                  disabled={!checked[s.ServiceID]}
+                  value={amounts[s.ServiceID] || ""}
+                  onChange={(e) => setAmounts((prev) => ({ ...prev, [s.ServiceID]: e.target.value }))}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+        <button className="btn" type="submit" disabled={busy}>
+          {busy ? "Creating…" : "Create draft(s)"}
+        </button>
+      </form>
     </div>
   );
 }
