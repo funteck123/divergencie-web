@@ -4582,6 +4582,7 @@ function Tickets() {
         <table className="w-full text-sm">
           <thead>
             <tr>
+              <th className="text-left">Ticket #</th>
               <th className="text-left">Sender</th>
               <th className="text-left">Message</th>
               <th className="text-left">Attachment</th>
@@ -4593,6 +4594,7 @@ function Tickets() {
           <tbody>
             {visible.map((t) => (
               <tr key={t.TicketID}>
+                <td>{t.TicketID}</td>
                 <td>{nameOf(t.SenderUserID)}</td>
                 <td style={{ maxWidth: 320, whiteSpace: "pre-wrap" }}>{t.Message}</td>
                 <td>
@@ -4615,7 +4617,7 @@ function Tickets() {
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ color: "var(--muted)" }}>No {showClosed ? "" : "open "}tickets.</td>
+                <td colSpan={7} style={{ color: "var(--muted)" }}>No {showClosed ? "" : "open "}tickets.</td>
               </tr>
             )}
           </tbody>
