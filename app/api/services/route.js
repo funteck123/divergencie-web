@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
-import { CURRENCIES, DEPARTMENTS } from "@/lib/accountTypes";
+import { DEPARTMENTS } from "@/lib/accountTypes";
 import { normalizeTimezone } from "@/lib/timezones";
-import { BILLING_TYPES, batchFullName } from "@/lib/billing";
+import { batchFullName, validateRates } from "@/lib/billing";
 import { logAudit } from "@/lib/logging";
 
 export async function GET(req) {
@@ -23,38 +23,6 @@ export const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent"
 
 function isValidGroup(group) {
   return Array.isArray(group) && group.length > 0 && group.every((g) => ALL_GROUPS.includes(g));
-}
-
-// A Rate optionally carries its own single Group (one of ALL_GROUPS) — when
-// set, only a user of that account type may enroll at that rate (see
-// /api/enrollments). Unset means any group the Service itself is open to.
-function isValidRateGroup(g) {
-  return g === undefined || g === "" || ALL_GROUPS.includes(g);
-}
-
-function validateRates(rates) {
-  if (!Array.isArray(rates) || rates.length === 0) {
-    return "Each batch needs at least one rate.";
-  }
-  for (const r of rates) {
-    const currency = r.currency || "INR";
-    if (!CURRENCIES.includes(currency)) {
-      return `currency must be one of ${CURRENCIES.join(", ")}.`;
-    }
-    if (Number(r.rate) < 0 || Number.isNaN(Number(r.rate))) {
-      return "rate cannot be negative.";
-    }
-    if (r.description && String(r.description).length > 40) {
-      return "A rate's description must be 40 characters or fewer.";
-    }
-    if (r.billingType && !BILLING_TYPES.includes(r.billingType)) {
-      return `billingType must be one of ${BILLING_TYPES.join(", ")}.`;
-    }
-    if (!isValidRateGroup(r.group)) {
-      return `A rate's group must be one of ${ALL_GROUPS.join(", ")}, or left unset.`;
-    }
-  }
-  return null;
 }
 
 function validateBatches(batches) {

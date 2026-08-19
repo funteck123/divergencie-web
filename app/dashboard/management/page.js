@@ -3121,6 +3121,17 @@ function Enrollments() {
     load();
   }
 
+  // TKT-0015: mint a one-off custom Rate inline from the enroll form,
+  // instead of being limited to a Service's already-defined Rates. Reuses
+  // the Service's own rate storage (POST /api/services/rates) so the new
+  // Rate is a first-class RateID billing already understands — just
+  // created from the enroll form instead of the Service editor.
+  async function addCustomRate(serviceId, batchId, rate) {
+    const { rate: newRate } = await api("/api/services/rates", { method: "POST", body: JSON.stringify({ serviceId, batchId, ...rate }) });
+    await load();
+    return newRate;
+  }
+
   async function updateEnrollment(enrolmentId, patch) {
     await api("/api/enrollments", { method: "PATCH", body: JSON.stringify({ enrolmentId, ...patch }) });
     load();
@@ -3142,7 +3153,7 @@ function Enrollments() {
     return batchesOf(service).find((b) => b.BatchID === batchId)?.BatchName || batchId || "—";
   }
 
-  const shared = { users, services, nameOf, serviceNameOf, batchNameOf, onUpdate: updateEnrollment, onDelete: deleteEnrollment };
+  const shared = { users, services, nameOf, serviceNameOf, batchNameOf, onUpdate: updateEnrollment, onDelete: deleteEnrollment, onAddRate: addCustomRate };
 
   return (
     <div className="space-y-6">
@@ -3167,7 +3178,7 @@ function Enrollments() {
   );
 }
 
-function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete }) {
+function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnroll, users, services, nameOf, serviceNameOf, batchNameOf, onUpdate, onDelete, onAddRate }) {
   const [userId, setUserId] = useState("");
   // TKT-0005: rows is [{ serviceId, batchId, rateId }, ...] — one student,
   // one or more services in a single enroll action, each with its own
@@ -3176,6 +3187,38 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   const [rows, setRows] = useState([{ serviceId: "", batchId: "", rateId: "" }]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  // TKT-0015: index of the row currently showing its "new custom rate"
+  // mini-form (only one open at a time — simplest way to avoid tracking a
+  // draft per row when in practice only one is being filled in at once).
+  const [customRateRow, setCustomRateRow] = useState(null);
+  const [customRateDraft, setCustomRateDraft] = useState({ currency: "INR", rate: "", description: "", billingType: "Monthly" });
+  const [customRateError, setCustomRateError] = useState("");
+  const [addingRate, setAddingRate] = useState(false);
+
+  function openCustomRate(index) {
+    setCustomRateRow(index);
+    setCustomRateDraft({ currency: "INR", rate: "", description: "", billingType: "Monthly" });
+    setCustomRateError("");
+  }
+
+  async function submitCustomRate(index) {
+    setCustomRateError("");
+    if (!customRateDraft.rate) {
+      setCustomRateError("Enter an amount.");
+      return;
+    }
+    setAddingRate(true);
+    try {
+      const newRate = await onAddRate(rows[index].serviceId, rows[index].batchId, customRateDraft);
+      updateRow(index, { rateId: newRate.RateID });
+      setCustomRateRow(null);
+    } catch (e) {
+      setCustomRateError(e.message);
+    } finally {
+      setAddingRate(false);
+    }
+  }
 
   const selectedUser = people.find((u) => u.UserID === userId);
 
@@ -3290,6 +3333,53 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                       </option>
                     ))}
                   </select>
+                )}
+                {row.serviceId && (
+                  customRateRow === index ? (
+                    <div className="space-y-2 p-2" style={{ border: "1px dashed var(--border)", borderRadius: 6 }}>
+                      <div className="flex gap-2 items-center">
+                        <select className="field" style={{ maxWidth: 100 }} value={customRateDraft.currency} onChange={(e) => setCustomRateDraft((d) => ({ ...d, currency: e.target.value }))}>
+                          {CURRENCIES_FULL.map((cur) => (
+                            <option key={cur.code} value={cur.code}>
+                              {cur.code}
+                            </option>
+                          ))}
+                        </select>
+                        <input className="field" type="number" placeholder="Amount" value={customRateDraft.rate} onChange={(e) => setCustomRateDraft((d) => ({ ...d, rate: e.target.value }))} />
+                        <select className="field" style={{ maxWidth: 110 }} value={customRateDraft.billingType} onChange={(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))}>
+                          {BILLING_TYPES.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <input
+                        className="field"
+                        placeholder="Description (optional)"
+                        maxLength={40}
+                        value={customRateDraft.description}
+                        onChange={(e) => setCustomRateDraft((d) => ({ ...d, description: e.target.value }))}
+                      />
+                      {customRateError && (
+                        <p className="text-sm" style={{ color: "var(--bad)" }}>
+                          {customRateError}
+                        </p>
+                      )}
+                      <div className="flex gap-2">
+                        <button type="button" className="btn" disabled={addingRate} onClick={() => submitCustomRate(index)}>
+                          {addingRate ? "Adding…" : "Add rate"}
+                        </button>
+                        <button type="button" className="btn-ghost" onClick={() => setCustomRateRow(null)}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" className="btn-ghost text-sm" onClick={() => openCustomRate(index)}>
+                      + New rate for this service
+                    </button>
+                  )
                 )}
               </div>
             );
