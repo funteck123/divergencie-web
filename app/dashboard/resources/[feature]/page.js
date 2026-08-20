@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import DashboardShell from "@/components/DashboardShell";
+import { api } from "@/lib/client";
 
 const FEATURE_LABELS = {
   recordings: "Recordings",
@@ -59,6 +61,55 @@ function Body() {
           Access {label}
         </a>
       </div>
+      {feature === "worksheets" && <DriveFolderGrid link={link} />}
+    </div>
+  );
+}
+
+// Worksheets-only: if the Service's WorksheetsLink is a Google Drive folder,
+// auto-list its contents as clickable cards instead of leaving Management
+// to type out each file. Silently renders nothing for a non-Drive-folder
+// link, no link at all, or a fetch failure — the "Access Worksheets" button
+// above is always the fallback, this is purely additive.
+function DriveFolderGrid({ link }) {
+  const [files, setFiles] = useState(null);
+  const [error, setError] = useState("");
+  const isDriveFolder = /drive\.google\.com\/.*\/folders\//i.test(link || "");
+
+  useEffect(() => {
+    if (!isDriveFolder) return;
+    setFiles(null);
+    setError("");
+    api(`/api/resources/drive-folder?link=${encodeURIComponent(link)}`)
+      .then((data) => setFiles(data.files || []))
+      .catch((e) => setError(e.message));
+  }, [link, isDriveFolder]);
+
+  if (!isDriveFolder) return null;
+
+  return (
+    <div className="card space-y-3">
+      <h3 className="font-semibold">Files</h3>
+      {error && <p style={{ color: "var(--bad)" }}>Couldn&apos;t load folder contents — {error}</p>}
+      {!error && files === null && <p style={{ color: "var(--muted)" }}>Loading…</p>}
+      {files && files.length === 0 && <p style={{ color: "var(--muted)" }}>This folder is empty.</p>}
+      {files && files.length > 0 && (
+        <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}>
+          {files.map((f) => (
+            <a
+              key={f.id}
+              href={/^https?:\/\//i.test(f.webViewLink) ? f.webViewLink : "https://google.com"}
+              target="_blank"
+              rel="noreferrer"
+              className="p-3 rounded flex flex-col items-center gap-2 text-center text-sm"
+              style={{ background: "var(--panel-2)" }}
+            >
+              {f.iconLink && <img src={f.iconLink} alt="" width={32} height={32} />}
+              <span>{f.name}</span>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
