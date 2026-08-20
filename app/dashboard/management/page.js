@@ -3825,8 +3825,9 @@ function Billing() {
       <div className="card">
         <h2 className="font-semibold mb-4">Generate Drafts</h2>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-          Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. Only INR
-          Amount and INR Due need manual entry.
+          Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount
+          is auto-converted using the exchange rate as of the 1st of the invoice/paycheck&apos;s own month —
+          only INR Due is manually adjustable, for tracking partial payments.
         </p>
         <div className="flex gap-3 items-end flex-wrap">
           <div>
