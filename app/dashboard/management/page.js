@@ -92,6 +92,64 @@ function TimezoneSelect({ value, onChange }) {
   );
 }
 
+// TKT-0028: an Occurrence's Facilitator either links to a real Teacher
+// account (dropdown — display name auto-syncs on save, can never drift
+// stale again) or stays plain free text (guest/placeholder instructor with
+// no account — the field's original, still fully-supported behavior).
+// Selecting "Type a name instead…" clears the link and falls back to a
+// plain text input pre-filled with whatever name was last shown.
+function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers, onChange }) {
+  const isLinked = !!facilitatorUserId;
+  if (isLinked) {
+    return (
+      <select
+        className="field"
+        value={facilitatorUserId}
+        onChange={(e) => {
+          const teacher = teacherUsers.find((u) => u.UserID === e.target.value);
+          onChange({ facilitator: teacher?.Name || "", facilitatorUserId: teacher?.UserID || "" });
+        }}
+      >
+        {teacherUsers.map((u) => (
+          <option key={u.UserID} value={u.UserID}>
+            {u.Name}
+          </option>
+        ))}
+        <option value="">Type a name instead…</option>
+      </select>
+    );
+  }
+  return (
+    <span className="flex gap-1">
+      <input
+        className="field"
+        placeholder="Instructor"
+        value={facilitator}
+        onChange={(e) => onChange({ facilitator: e.target.value, facilitatorUserId: "" })}
+      />
+      {teacherUsers.length > 0 && (
+        <select
+          className="field"
+          style={{ maxWidth: 40 }}
+          value=""
+          title="Link to a Teacher account instead"
+          onChange={(e) => {
+            const teacher = teacherUsers.find((u) => u.UserID === e.target.value);
+            if (teacher) onChange({ facilitator: teacher.Name, facilitatorUserId: teacher.UserID });
+          }}
+        >
+          <option value="">🔗</option>
+          {teacherUsers.map((u) => (
+            <option key={u.UserID} value={u.UserID}>
+              {u.Name}
+            </option>
+          ))}
+        </select>
+      )}
+    </span>
+  );
+}
+
 function Badge({ children, kind = "info" }) {
   return <span className={`badge badge-${kind}`}>{children}</span>;
 }
@@ -1632,7 +1690,7 @@ function CreateAccount({ onCreated, users }) {
 }
 
 /* ---------------- Services ---------------- */
-const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "", timezone: "Asia/Kolkata" };
+const EMPTY_OCC = { day: "Monday", time: "16:00", duration: 1, facilitator: "", facilitatorUserId: "", timezone: "Asia/Kolkata" };
 const EMPTY_LINK = { name: "", url: "" };
 const EMPTY_RATE = { currency: "INR", rate: "", description: "", billingType: "Monthly", group: "" };
 const ALL_GROUPS = ["Student", "Teacher", "Staff", "Management", "Parent", "Ambassador"];
@@ -1802,9 +1860,14 @@ function Services() {
     setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
   }
 
+  const [teacherUsers, setTeacherUsers] = useState([]);
   async function load() {
-    const { services } = await api("/api/services");
+    const [{ services }, { users }] = await Promise.all([api("/api/services"), api("/api/users")]);
     setServices(services);
+    // TKT-0028: Occurrence's optional Facilitator-account link picks from
+    // real Teacher accounts only — Staff/Ambassador etc. can still be typed
+    // as free text (the field's original, still-supported behavior).
+    setTeacherUsers(users.filter((u) => u.UserType === "Teacher"));
   }
   useEffect(() => {
     load();
@@ -1873,6 +1936,7 @@ function Services() {
               time: o.Time,
               duration: o.Duration,
               facilitator: o.Facilitator,
+              facilitatorUserId: o.FacilitatorUserID || "",
               timezone: o.Timezone || "Asia/Kolkata",
             })),
           })),
@@ -1888,7 +1952,15 @@ function Services() {
     );
     setFlatOccurrences(
       Array.isArray(s.OccuranceList) && s.OccuranceList.length > 0
-        ? s.OccuranceList.map((o) => ({ occuranceId: o.OccuranceID, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, timezone: o.Timezone || "Asia/Kolkata" }))
+        ? s.OccuranceList.map((o) => ({
+            occuranceId: o.OccuranceID,
+            day: o.Day,
+            time: o.Time,
+            duration: o.Duration,
+            facilitator: o.Facilitator,
+            facilitatorUserId: o.FacilitatorUserID || "",
+            timezone: o.Timezone || "Asia/Kolkata",
+          }))
         : [{ ...EMPTY_OCC }]
     );
     setUniversity(s.University || "");
@@ -2261,7 +2333,15 @@ function Services() {
                     value={o.duration}
                     onChange={(e) => updateFlatOcc(oi, "duration", e.target.value)}
                   />
-                  <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateFlatOcc(oi, "facilitator", e.target.value)} />
+                  <FacilitatorInput
+                    facilitator={o.facilitator}
+                    facilitatorUserId={o.facilitatorUserId}
+                    teacherUsers={teacherUsers}
+                    onChange={({ facilitator, facilitatorUserId }) => {
+                      updateFlatOcc(oi, "facilitator", facilitator);
+                      updateFlatOcc(oi, "facilitatorUserId", facilitatorUserId);
+                    }}
+                  />
                   <TimezoneSelect value={o.timezone} onChange={(v) => updateFlatOcc(oi, "timezone", v)} />
                   {flatOccurrences.length > 1 && (
                     <button type="button" className="btn-ghost" onClick={() => removeFlatOcc(oi)}>
@@ -2393,7 +2473,15 @@ function Services() {
                               value={o.duration}
                               onChange={(e) => updateOcc(ci, bi, oi, "duration", e.target.value)}
                             />
-                            <input className="field" placeholder="Instructor" value={o.facilitator} onChange={(e) => updateOcc(ci, bi, oi, "facilitator", e.target.value)} />
+                            <FacilitatorInput
+                              facilitator={o.facilitator}
+                              facilitatorUserId={o.facilitatorUserId}
+                              teacherUsers={teacherUsers}
+                              onChange={({ facilitator, facilitatorUserId }) => {
+                                updateOcc(ci, bi, oi, "facilitator", facilitator);
+                                updateOcc(ci, bi, oi, "facilitatorUserId", facilitatorUserId);
+                              }}
+                            />
                             <TimezoneSelect value={o.timezone} onChange={(v) => updateOcc(ci, bi, oi, "timezone", v)} />
                             {b.occurrences.length > 1 && (
                               <button type="button" className="btn-ghost" onClick={() => removeOcc(ci, bi, oi)}>

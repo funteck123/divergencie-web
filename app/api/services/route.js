@@ -51,18 +51,45 @@ function toStoredRates(db, rates) {
   }));
 }
 
+// TKT-0028: Facilitator is shown across ~12 read sites (schedule tables,
+// calendars, PDFs) as "who's teaching this" — but it was purely free text,
+// typed once and never kept in sync with reality. A Teacher enrolled after
+// the Occurrence was created (or a Batch reused/copied from another) could
+// silently show a stale name forever (found via a real case: Ahmer's own
+// enrolled class showing a different Teacher's name).
+//
+// FacilitatorUserID is a new, OPTIONAL link to a real Teacher account —
+// when set, Facilitator (the actual display string every read site already
+// uses, unchanged) is derived from that account's current Name every time
+// the Service is saved, so it can never drift out of sync again. Left
+// unset, Facilitator stays exactly what it always was: plain free text,
+// still required for a guest/placeholder instructor who has no account at
+// all (confirmed real cases exist in live data — this can't become a hard
+// requirement to link an account).
+function resolveFacilitator(db, o) {
+  if (o.facilitatorUserId) {
+    const teacher = db.users.find((u) => u.UserID === o.facilitatorUserId && u.UserType === "Teacher");
+    if (teacher) return { facilitator: teacher.Name, facilitatorUserId: teacher.UserID };
+  }
+  return { facilitator: o.facilitator || "", facilitatorUserId: "" };
+}
+
 function toStoredOccurrences(db, occurrences) {
-  return occurrences.map((o) => ({
-    OccuranceID: o.occuranceId || nextId(db, "OCC"),
-    Day: o.day,
-    Time: o.time,
-    Duration: Number(o.duration),
-    Facilitator: o.facilitator,
-    // The timezone the Day/Time above are meant in — must always be set,
-    // defaulting to IST (Asia/Kolkata) same as normalizeTimezone's own
-    // fallback for a User's own Timezone.
-    Timezone: normalizeTimezone(o.timezone),
-  }));
+  return occurrences.map((o) => {
+    const { facilitator, facilitatorUserId } = resolveFacilitator(db, o);
+    return {
+      OccuranceID: o.occuranceId || nextId(db, "OCC"),
+      Day: o.day,
+      Time: o.time,
+      Duration: Number(o.duration),
+      Facilitator: facilitator,
+      FacilitatorUserID: facilitatorUserId,
+      // The timezone the Day/Time above are meant in — must always be set,
+      // defaulting to IST (Asia/Kolkata) same as normalizeTimezone's own
+      // fallback for a User's own Timezone.
+      Timezone: normalizeTimezone(o.timezone),
+    };
+  });
 }
 
 function toStoredBatches(db, batches) {
