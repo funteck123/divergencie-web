@@ -14,10 +14,13 @@ const nextConfig = {
     root: path.resolve(import.meta.dirname),
   },
   // Lets the dev server accept requests (including the HMR websocket) from
-  // the ngrok tunnel used for testing on other devices — otherwise Next.js
-  // blocks cross-origin dev resources by default and pages served through
-  // that origin can misbehave (stuck on stale/broken client bundles).
-  allowedDevOrigins: ["helping-ibex-nominally.ngrok-free.app"],
+  // tunnels used for testing on other devices — otherwise Next.js blocks
+  // cross-origin dev resources by default and pages served through that
+  // origin can misbehave (client JS never hydrates — SSR HTML still shows,
+  // but anything gated behind a client-only mount, like Nav, stays hidden).
+  // *.trycloudflare.com covers `cloudflared tunnel --url` quick tunnels,
+  // whose subdomain is random and changes every time the tunnel restarts.
+  allowedDevOrigins: ["helping-ibex-nominally.ngrok-free.app", "*.trycloudflare.com"],
   // Marketing pages (ported from v6) hotlink a couple of unsplash images.
   images: {
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
