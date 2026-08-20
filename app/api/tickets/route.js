@@ -37,6 +37,7 @@ export async function POST(req) {
     CreatedAt: new Date().toISOString(),
     ClosedAt: "",
     ClosedBy: "",
+    CloseMessage: "",
   };
   db.tickets = db.tickets || [];
   db.tickets.push(ticket);
@@ -45,11 +46,14 @@ export async function POST(req) {
   return NextResponse.json({ ticket });
 }
 
-// body: { ticketId, action?: "close" | "reopen" | "edit", message?, attachmentUrl? }
+// body: { ticketId, action?: "close" | "reopen" | "edit", message?, attachmentUrl?, closeMessage? }
 // action defaults to "close" (unchanged behavior for existing callers).
 // close/reopen are idempotent: closing an already-closed ticket or
 // reopening an already-open one just returns it unchanged rather than
-// erroring, since double-clicking a button shouldn't be a failure case.
+// erroring, since double-clicking a button shouldn't be a failure case —
+// EXCEPT closeMessage, which can still be set/updated on an already-closed
+// ticket by sending another "close" with it (e.g. adding a resolution note
+// after closing without one) without needing ClosedAt/ClosedBy to change.
 // "edit" is its own explicit action (not inferred from the mere presence
 // of `message`) so a caller can never accidentally close/reopen a ticket
 // as an unwanted side effect of an edit request, or vice versa — allowed
@@ -59,7 +63,7 @@ export async function PATCH(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { ticketId, action, message, attachmentUrl } = await req.json();
+  const { ticketId, action, message, attachmentUrl, closeMessage } = await req.json();
   if (!ticketId) return NextResponse.json({ error: "ticketId is required." }, { status: 400 });
   if (action !== undefined && !["close", "reopen", "edit"].includes(action)) {
     return NextResponse.json({ error: "action must be close, reopen, or edit." }, { status: 400 });
@@ -85,14 +89,21 @@ export async function PATCH(req) {
       summary: `Edited ticket ${ticket.TicketID}`,
       snapshot: { before, after: { Message: ticket.Message, AttachmentURL: ticket.AttachmentURL } },
     });
-  } else if ((action || "close") === "close" && !ticket.ClosedAt) {
-    ticket.ClosedAt = new Date().toISOString();
-    ticket.ClosedBy = session.userId;
-    await writeDB(db);
-    await logAudit({ actorUserId: session.userId, action: "close", entityType: "Ticket", entityId: ticket.TicketID, summary: `Closed ticket ${ticket.TicketID}` });
+  } else if ((action || "close") === "close") {
+    const wasAlreadyClosed = !!ticket.ClosedAt;
+    if (!wasAlreadyClosed) {
+      ticket.ClosedAt = new Date().toISOString();
+      ticket.ClosedBy = session.userId;
+    }
+    if (closeMessage !== undefined) ticket.CloseMessage = closeMessage.trim();
+    if (!wasAlreadyClosed || closeMessage !== undefined) {
+      await writeDB(db);
+      await logAudit({ actorUserId: session.userId, action: "close", entityType: "Ticket", entityId: ticket.TicketID, summary: `Closed ticket ${ticket.TicketID}` });
+    }
   } else if (action === "reopen" && ticket.ClosedAt) {
     ticket.ClosedAt = "";
     ticket.ClosedBy = "";
+    ticket.CloseMessage = "";
     await writeDB(db);
     await logAudit({ actorUserId: session.userId, action: "reopen", entityType: "Ticket", entityId: ticket.TicketID, summary: `Reopened ticket ${ticket.TicketID}` });
   }

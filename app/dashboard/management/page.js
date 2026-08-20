@@ -4761,9 +4761,9 @@ function Tickets() {
     return u ? `${u.Name} (${u.UserType})` : id;
   }
 
-  async function setTicketState(ticketId, action) {
+  async function setTicketState(ticketId, action, closeMessage) {
     try {
-      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action }) });
+      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action, closeMessage }) });
       load();
     } catch (e) {
       setError(e.message);
@@ -4828,6 +4828,16 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
   const [saving, setSaving] = useState(false);
   const [rowError, setRowError] = useState("");
 
+  // Closing prompts for an optional resolution note (e.g. "fixed in
+  // TKT-0022, see commit 1d48d0f") — same inline-form convention as
+  // editing, not window.prompt, to match how every other free-text input
+  // in this file works. Available whether the ticket is currently open
+  // (setting it as part of the close) or already closed (adding/updating
+  // the note afterward, without needing to reopen first).
+  const [closing, setClosing] = useState(false);
+  const [closeDraft, setCloseDraft] = useState(t.CloseMessage || "");
+  const [closeSaving, setCloseSaving] = useState(false);
+
   function startEdit() {
     setDraft(t.Message);
     setRowError("");
@@ -4848,6 +4858,21 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
       setRowError(e.message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  function startClose() {
+    setCloseDraft(t.CloseMessage || "");
+    setClosing(true);
+  }
+
+  async function confirmClose() {
+    setCloseSaving(true);
+    try {
+      await onSetState(t.TicketID, "close", closeDraft);
+      setClosing(false);
+    } finally {
+      setCloseSaving(false);
     }
   }
 
@@ -4886,15 +4911,53 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
         )}
       </td>
       <td>{formatDateTime(t.CreatedAt)}</td>
-      <td>{t.ClosedAt ? formatDateTime(t.ClosedAt) : "—"}</td>
-      <td className="space-x-2">
-        {!editing && (
-          <button className="btn-ghost" onClick={startEdit}>Edit</button>
-        )}
-        {!t.ClosedAt ? (
-          <button className="btn-ghost" onClick={() => onSetState(t.TicketID, "close")}>Close</button>
+      <td>
+        {t.ClosedAt ? (
+          <>
+            {formatDateTime(t.ClosedAt)}
+            {t.CloseMessage && (
+              <div className="text-sm" style={{ color: "var(--muted)", whiteSpace: "pre-wrap" }}>
+                {t.CloseMessage}
+              </div>
+            )}
+          </>
         ) : (
-          <button className="btn-ghost" onClick={() => onSetState(t.TicketID, "reopen")}>Reopen</button>
+          "—"
+        )}
+      </td>
+      <td className="space-x-2">
+        {closing ? (
+          <div className="space-y-1" style={{ minWidth: 200 }}>
+            <textarea
+              className="field"
+              style={{ width: "100%", minHeight: 50 }}
+              placeholder="Resolution note (optional)…"
+              value={closeDraft}
+              onChange={(e) => setCloseDraft(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <button className="btn" type="button" disabled={closeSaving} onClick={confirmClose}>
+                {closeSaving ? "Saving…" : t.ClosedAt ? "Save note" : "Confirm Close"}
+              </button>
+              <button className="btn-ghost" type="button" onClick={() => setClosing(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {!editing && (
+              <button className="btn-ghost" onClick={startEdit}>Edit</button>
+            )}
+            {!t.ClosedAt ? (
+              <button className="btn-ghost" onClick={startClose}>Close</button>
+            ) : (
+              <>
+                <button className="btn-ghost" onClick={startClose}>{t.CloseMessage ? "Edit note" : "Add note"}</button>
+                <button className="btn-ghost" onClick={() => onSetState(t.TicketID, "reopen")}>Reopen</button>
+              </>
+            )}
+          </>
         )}
       </td>
     </tr>
