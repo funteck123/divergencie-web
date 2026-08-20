@@ -3723,6 +3723,9 @@ function Billing() {
   function nameOf(id) {
     return users.find((u) => u.UserID === id)?.Name || id;
   }
+  function roleOf(id) {
+    return users.find((u) => u.UserID === id)?.UserType || "";
+  }
 
   async function generate() {
     setError("");
@@ -3836,10 +3839,11 @@ function Billing() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Paychecks (Staff)</h2>
+        <h2 className="font-semibold mb-4">Paychecks</h2>
         <PaycheckBillingTable
           rows={paychecks}
           nameOf={nameOf}
+          roleOf={roleOf}
           services={services}
           onPatch={patchPaycheck}
           onPatchLineItem={patchPaycheckLineItem}
@@ -4031,9 +4035,33 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
 // Invoice and Paycheck fields diverge (StudentID vs StaffID,
 // StudentPaidFlag vs StaffReceivedFlag, PaymentProofPath only exists on
 // invoices) even though the shapes otherwise match.
+// TKT-0030: same grouped-by-person treatment as PaycheckBillingTable, minus
+// the Type level — every invoice holder is a Student, so Person is already
+// the top grouping level. See groupPaychecksByRoleAndPerson's comment for
+// why Year/Month don't get their own header rows.
+function groupInvoicesByPerson(rows, nameOf) {
+  const byPerson = new Map();
+  for (const r of rows) {
+    if (!byPerson.has(r.StudentID)) byPerson.set(r.StudentID, []);
+    byPerson.get(r.StudentID).push(r);
+  }
+  for (const list of byPerson.values()) {
+    list.sort((a, b) => b.Year * 100 + b.Month - (a.Year * 100 + a.Month));
+  }
+  return [...byPerson.entries()]
+    .map(([studentId, rows]) => ({ studentId, name: nameOf(studentId), rows }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
-  const decorated = rows.map((r) => ({ ...r, _person: nameOf(r.StudentID), _period: r.Year * 100 + r.Month }));
-  const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
+  const [expandedPeople, setExpandedPeople] = useState(new Set());
+  function togglePerson(studentId) {
+    setExpandedPeople((prev) => {
+      const next = new Set(prev);
+      next.has(studentId) ? next.delete(studentId) : next.add(studentId);
+      return next;
+    });
+  }
 
   // Safety net, not a hard rule — a student can legitimately have more
   // than one invoice in the same month (e.g. a Monthly-billed combined
@@ -4048,6 +4076,7 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
     monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
   }
   const duplicateCount = [...monthCounts.values()].filter((n) => n > 1).length;
+  const people = groupInvoicesByPerson(rows, nameOf);
 
   return (
     <>
@@ -4057,42 +4086,52 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
           rows flagged below; if it&apos;s genuinely a duplicate bill, delete the extra one.
         </p>
       )}
+      {people.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
       <table>
         <thead>
           <tr>
-            <SortableTh label="Student" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Student</th>
             <th>Subjects</th>
-            <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-            <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Period</th>
+            <th>Amount</th>
             <th>Amount Due</th>
             <th>INR Amount</th>
             <th>INR Due</th>
-            <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Status</th>
             <th>Paid</th>
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          {sorted.map((r) => (
-            <InvoiceRow
-              key={r.InvoiceID}
-              row={r}
-              nameOf={nameOf}
-              services={services}
-              onPatch={onPatch}
-              onPatchLineItem={onPatchLineItem}
-              onDelete={onDelete}
-              isDuplicateMonth={monthCounts.get(`${r.StudentID}|${r.Year}|${r.Month}`) > 1}
-            />
-          ))}
-          {sorted.length === 0 && (
-            <tr>
-              <td colSpan={9} style={{ color: "var(--muted)" }}>
-                None generated yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
+        {people.map(({ studentId, name, rows: personRows }) => {
+          const expanded = expandedPeople.has(studentId);
+          return (
+            <tbody key={studentId}>
+              <tr>
+                <td
+                  colSpan={10}
+                  className="font-medium cursor-pointer"
+                  style={{ background: "var(--panel-2)" }}
+                  onClick={() => togglePerson(studentId)}
+                >
+                  {expanded ? "▾" : "▸"} {name} — {personRows.length} invoice{personRows.length === 1 ? "" : "s"}
+                </td>
+              </tr>
+              {expanded &&
+                personRows.map((r) => (
+                  <InvoiceRow
+                    key={r.InvoiceID}
+                    row={r}
+                    nameOf={nameOf}
+                    services={services}
+                    onPatch={onPatch}
+                    onPatchLineItem={onPatchLineItem}
+                    onDelete={onDelete}
+                    isDuplicateMonth={monthCounts.get(`${r.StudentID}|${r.Year}|${r.Month}`) > 1}
+                  />
+                ))}
+            </tbody>
+          );
+        })}
       </table>
     </>
   );
@@ -4340,9 +4379,51 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
 
 // Mirrors InvoiceBillingTable above exactly — see its comment for the
 // duplicate-month safety-net rationale.
-function PaycheckBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
-  const decorated = rows.map((r) => ({ ...r, _person: nameOf(r.StaffID), _period: r.Year * 100 + r.Month }));
-  const { sorted, sortKey, sortDir, toggleSort } = useSort(decorated, "_period", "desc");
+// TKT-0030: was one flat table sortable by column — Teacher/Staff/Ambassador
+// paychecks all mixed together under a single "(Staff)" heading, which read
+// as if Teachers weren't showing at all when in fact they were just
+// unlabeled among everyone else. Grouped Type -> Person instead; a period
+// (Year/Month) is already one atomic field per paycheck record, so within a
+// person that's just the existing Period column under period-desc sort —
+// an extra Year and Month header level each would only repeat what that
+// column already shows, at the cost of exactly the "too much on screen"
+// complaint already on file (TKT-0020/0042). Each person's row group
+// collapses by default (same ▸/▾ convention PaycheckRow already uses for
+// its own LineItems) to keep the page compact until Management actually
+// wants to look at someone.
+const STAFF_ROLE_ORDER = ["Teacher", "Staff", "Ambassador"];
+const STAFF_ROLE_LABEL = { Teacher: "Teachers", Staff: "Staff", Ambassador: "Ambassadors" };
+
+function groupPaychecksByRoleAndPerson(rows, nameOf, roleOf) {
+  const byRole = new Map(STAFF_ROLE_ORDER.map((role) => [role, new Map()]));
+  for (const r of rows) {
+    const role = STAFF_ROLE_ORDER.includes(roleOf(r.StaffID)) ? roleOf(r.StaffID) : "Staff";
+    const people = byRole.get(role);
+    if (!people.has(r.StaffID)) people.set(r.StaffID, []);
+    people.get(r.StaffID).push(r);
+  }
+  for (const people of byRole.values()) {
+    for (const list of people.values()) {
+      list.sort((a, b) => b.Year * 100 + b.Month - (a.Year * 100 + a.Month));
+    }
+  }
+  return STAFF_ROLE_ORDER.map((role) => ({
+    role,
+    people: [...byRole.get(role).entries()]
+      .map(([staffId, rows]) => ({ staffId, name: nameOf(staffId), rows }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  })).filter((g) => g.people.length > 0);
+}
+
+function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatchLineItem, onDelete }) {
+  const [expandedPeople, setExpandedPeople] = useState(new Set());
+  function togglePerson(staffId) {
+    setExpandedPeople((prev) => {
+      const next = new Set(prev);
+      next.has(staffId) ? next.delete(staffId) : next.add(staffId);
+      return next;
+    });
+  }
 
   const monthCounts = new Map();
   for (const r of rows) {
@@ -4350,6 +4431,7 @@ function PaycheckBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem
     monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
   }
   const duplicateCount = [...monthCounts.values()].filter((n) => n > 1).length;
+  const groups = groupPaychecksByRoleAndPerson(rows, nameOf, roleOf);
 
   return (
     <>
@@ -4359,43 +4441,60 @@ function PaycheckBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem
           rows flagged below; if it&apos;s genuinely a duplicate, delete the extra one.
         </p>
       )}
-      <table>
-        <thead>
-          <tr>
-            <SortableTh label="Staff" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-            <th>Subjects</th>
-            <SortableTh label="Period" sortKeyName="_period" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-            <SortableTh label="Amount" sortKeyName="Amount" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-            <th>Amount Due</th>
-            <th>INR Amount</th>
-            <th>INR Due</th>
-            <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-            <th>Received</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((r) => (
-            <PaycheckRow
-              key={r.PaycheckID}
-              row={r}
-              nameOf={nameOf}
-              services={services}
-              onPatch={onPatch}
-              onPatchLineItem={onPatchLineItem}
-              onDelete={onDelete}
-              isDuplicateMonth={monthCounts.get(`${r.StaffID}|${r.Year}|${r.Month}`) > 1}
-            />
-          ))}
-          {sorted.length === 0 && (
-            <tr>
-              <td colSpan={9} style={{ color: "var(--muted)" }}>
-                None generated yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {groups.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
+      {groups.map(({ role, people }) => (
+        <div key={role} className="mb-4">
+          <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--muted)" }}>
+            {STAFF_ROLE_LABEL[role]}
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th>Subjects</th>
+                <th>Period</th>
+                <th>Amount</th>
+                <th>Amount Due</th>
+                <th>INR Amount</th>
+                <th>INR Due</th>
+                <th>Status</th>
+                <th>Received</th>
+                <th></th>
+              </tr>
+            </thead>
+            {people.map(({ staffId, name, rows: personRows }) => {
+              const expanded = expandedPeople.has(staffId);
+              return (
+                <tbody key={staffId}>
+                  <tr>
+                    <td
+                      colSpan={10}
+                      className="font-medium cursor-pointer"
+                      style={{ background: "var(--panel-2)" }}
+                      onClick={() => togglePerson(staffId)}
+                    >
+                      {expanded ? "▾" : "▸"} {name} — {personRows.length} paycheck{personRows.length === 1 ? "" : "s"}
+                    </td>
+                  </tr>
+                  {expanded &&
+                    personRows.map((r) => (
+                      <PaycheckRow
+                        key={r.PaycheckID}
+                        row={r}
+                        nameOf={nameOf}
+                        services={services}
+                        onPatch={onPatch}
+                        onPatchLineItem={onPatchLineItem}
+                        onDelete={onDelete}
+                        isDuplicateMonth={monthCounts.get(`${r.StaffID}|${r.Year}|${r.Month}`) > 1}
+                      />
+                    ))}
+                </tbody>
+              );
+            })}
+          </table>
+        </div>
+      ))}
     </>
   );
 }
