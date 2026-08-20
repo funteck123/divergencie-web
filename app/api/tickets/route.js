@@ -45,26 +45,47 @@ export async function POST(req) {
   return NextResponse.json({ ticket });
 }
 
-// body: { ticketId, action?: "close" | "reopen" } — action defaults to
-// "close" (unchanged behavior for existing callers). Both directions are
-// Management-only and idempotent: closing an already-closed ticket or
+// body: { ticketId, action?: "close" | "reopen" | "edit", message?, attachmentUrl? }
+// action defaults to "close" (unchanged behavior for existing callers).
+// close/reopen are idempotent: closing an already-closed ticket or
 // reopening an already-open one just returns it unchanged rather than
 // erroring, since double-clicking a button shouldn't be a failure case.
+// "edit" is its own explicit action (not inferred from the mere presence
+// of `message`) so a caller can never accidentally close/reopen a ticket
+// as an unwanted side effect of an edit request, or vice versa — allowed
+// on a closed ticket too (fixing a typo shouldn't require reopening it
+// first).
 export async function PATCH(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { ticketId, action } = await req.json();
+  const { ticketId, action, message, attachmentUrl } = await req.json();
   if (!ticketId) return NextResponse.json({ error: "ticketId is required." }, { status: 400 });
-  if (action !== undefined && !["close", "reopen"].includes(action)) {
-    return NextResponse.json({ error: "action must be close or reopen." }, { status: 400 });
+  if (action !== undefined && !["close", "reopen", "edit"].includes(action)) {
+    return NextResponse.json({ error: "action must be close, reopen, or edit." }, { status: 400 });
   }
 
   const db = await readDB();
   const ticket = (db.tickets || []).find((t) => t.TicketID === ticketId);
   if (!ticket) return NextResponse.json({ error: "Ticket not found." }, { status: 404 });
 
-  if ((action || "close") === "close" && !ticket.ClosedAt) {
+  if (action === "edit") {
+    if (!message || !message.trim()) {
+      return NextResponse.json({ error: "message is required to edit a ticket." }, { status: 400 });
+    }
+    const before = { Message: ticket.Message, AttachmentURL: ticket.AttachmentURL };
+    ticket.Message = message.trim();
+    if (attachmentUrl !== undefined) ticket.AttachmentURL = attachmentUrl.trim();
+    await writeDB(db);
+    await logAudit({
+      actorUserId: session.userId,
+      action: "edit",
+      entityType: "Ticket",
+      entityId: ticket.TicketID,
+      summary: `Edited ticket ${ticket.TicketID}`,
+      snapshot: { before, after: { Message: ticket.Message, AttachmentURL: ticket.AttachmentURL } },
+    });
+  } else if ((action || "close") === "close" && !ticket.ClosedAt) {
     ticket.ClosedAt = new Date().toISOString();
     ticket.ClosedBy = session.userId;
     await writeDB(db);

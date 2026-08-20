@@ -4770,6 +4770,16 @@ function Tickets() {
     }
   }
 
+  async function editTicket(ticketId, message) {
+    try {
+      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action: "edit", message }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+      throw e; // let TicketRow know the save failed, so it keeps the editor open
+    }
+  }
+
   const visible = tickets.filter((t) => showClosed || !t.ClosedAt).sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
   const openCount = tickets.filter((t) => !t.ClosedAt).length;
 
@@ -4798,27 +4808,7 @@ function Tickets() {
           </thead>
           <tbody>
             {visible.map((t) => (
-              <tr key={t.TicketID}>
-                <td>{t.TicketID}</td>
-                <td>{nameOf(t.SenderUserID)}</td>
-                <td style={{ maxWidth: 320, whiteSpace: "pre-wrap" }}>{t.Message}</td>
-                <td>
-                  {t.AttachmentURL ? (
-                    <a href={t.AttachmentURL} target="_blank" rel="noreferrer">Link</a>
-                  ) : (
-                    "—"
-                  )}
-                </td>
-                <td>{formatDateTime(t.CreatedAt)}</td>
-                <td>{t.ClosedAt ? formatDateTime(t.ClosedAt) : "—"}</td>
-                <td>
-                  {!t.ClosedAt ? (
-                    <button className="btn-ghost" onClick={() => setTicketState(t.TicketID, "close")}>Close</button>
-                  ) : (
-                    <button className="btn-ghost" onClick={() => setTicketState(t.TicketID, "reopen")}>Reopen</button>
-                  )}
-                </td>
-              </tr>
+              <TicketRow key={t.TicketID} ticket={t} nameOf={nameOf} onSetState={setTicketState} onEdit={editTicket} />
             ))}
             {visible.length === 0 && (
               <tr>
@@ -4829,6 +4819,85 @@ function Tickets() {
         </table>
       </div>
     </div>
+  );
+}
+
+function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(t.Message);
+  const [saving, setSaving] = useState(false);
+  const [rowError, setRowError] = useState("");
+
+  function startEdit() {
+    setDraft(t.Message);
+    setRowError("");
+    setEditing(true);
+  }
+
+  async function save() {
+    if (!draft.trim()) {
+      setRowError("Message can't be empty.");
+      return;
+    }
+    setSaving(true);
+    setRowError("");
+    try {
+      await onEdit(t.TicketID, draft);
+      setEditing(false);
+    } catch (e) {
+      setRowError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <tr>
+      <td>{t.TicketID}</td>
+      <td>{nameOf(t.SenderUserID)}</td>
+      <td style={{ maxWidth: 320 }}>
+        {editing ? (
+          <div className="space-y-1">
+            <textarea
+              className="field"
+              style={{ width: "100%", minHeight: 60 }}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            />
+            {rowError && <p className="text-sm" style={{ color: "var(--bad)" }}>{rowError}</p>}
+            <div className="flex gap-2">
+              <button className="btn" type="button" disabled={saving} onClick={save}>
+                {saving ? "Saving…" : "Save"}
+              </button>
+              <button className="btn-ghost" type="button" onClick={() => setEditing(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <span style={{ whiteSpace: "pre-wrap" }}>{t.Message}</span>
+        )}
+      </td>
+      <td>
+        {t.AttachmentURL ? (
+          <a href={t.AttachmentURL} target="_blank" rel="noreferrer">Link</a>
+        ) : (
+          "—"
+        )}
+      </td>
+      <td>{formatDateTime(t.CreatedAt)}</td>
+      <td>{t.ClosedAt ? formatDateTime(t.ClosedAt) : "—"}</td>
+      <td className="space-x-2">
+        {!editing && (
+          <button className="btn-ghost" onClick={startEdit}>Edit</button>
+        )}
+        {!t.ClosedAt ? (
+          <button className="btn-ghost" onClick={() => onSetState(t.TicketID, "close")}>Close</button>
+        ) : (
+          <button className="btn-ghost" onClick={() => onSetState(t.TicketID, "reopen")}>Reopen</button>
+        )}
+      </td>
+    </tr>
   );
 }
 
