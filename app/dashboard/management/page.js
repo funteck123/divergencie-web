@@ -3414,31 +3414,46 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                     </button>
                   )}
                 </div>
-                <select className="field" value={row.serviceId} onChange={(e) => pickServiceAt(index, e.target.value)} required>
-                  <option value="">Select service…</option>
-                  {eligibleServices.map((s) => (
-                    <option key={s.ServiceID} value={s.ServiceID}>
-                      {s.Name}
-                    </option>
-                  ))}
-                </select>
-                {availableBatches.length > 1 && (
-                  <select className="field" value={row.batchId} onChange={(e) => pickBatchAt(index, e.target.value)} required>
-                    {availableBatches.map((b) => (
-                      <option key={b.BatchID} value={b.BatchID}>
-                        {b.BatchName}{batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}
+                <div>
+                  <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+                    Service
+                  </label>
+                  <select className="field" value={row.serviceId} onChange={(e) => pickServiceAt(index, e.target.value)} required>
+                    <option value="">Select service…</option>
+                    {eligibleServices.map((s) => (
+                      <option key={s.ServiceID} value={s.ServiceID}>
+                        {s.Name}
                       </option>
                     ))}
                   </select>
+                </div>
+                {availableBatches.length > 1 && (
+                  <div>
+                    <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+                      Batch
+                    </label>
+                    <select className="field" value={row.batchId} onChange={(e) => pickBatchAt(index, e.target.value)} required>
+                      {availableBatches.map((b) => (
+                        <option key={b.BatchID} value={b.BatchID}>
+                          {b.BatchName}{batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 )}
                 {availableRates.length > 0 && (
-                  <select className="field" value={row.rateId} onChange={(e) => updateRow(index, { rateId: e.target.value })} required>
-                    {availableRates.map((r) => (
-                      <option key={r.RateID} value={r.RateID}>
-                        {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
-                      </option>
-                    ))}
-                  </select>
+                  <div>
+                    <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+                      Rate
+                    </label>
+                    <select className="field" value={row.rateId} onChange={(e) => updateRow(index, { rateId: e.target.value })} required>
+                      {availableRates.map((r) => (
+                        <option key={r.RateID} value={r.RateID}>
+                          {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 )}
                 {row.serviceId && (
                   customRateRow === index ? (
