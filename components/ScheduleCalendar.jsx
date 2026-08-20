@@ -19,7 +19,14 @@ function fmtDate(y, m, d) {
 // Navigation is unbounded in both directions — months beyond the schedule's
 // generation horizon (~1 month ahead) just render empty, same as any month
 // with no sessions.
-export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor }) {
+// TKT-0037: `renderExpanded(scheduleId)`, if passed, replaces the default
+// self-only MiniAttendanceForm entirely — used by Teacher/Student
+// dashboards (SessionAttendance: full roster, log self + the allowed other
+// party) and the admin Schedule tab (read-only roster + conflict
+// resolution). Every OTHER caller (Staff/Ambassador/Parent dashboards)
+// doesn't pass it and keeps the exact original self-only behavior,
+// unaffected by this ticket's changes.
+export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor, renderExpanded }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -55,8 +62,12 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
     return map;
   }, [scheduleItems]);
 
+  // Prefer the AcceptedForBilling record when more than one exists for this
+  // session (TKT-0037) — a more meaningful glance-level status than
+  // whichever record happens to be first in the array.
   function attendanceFor(scheduleId) {
-    return attendanceItems.find((a) => a.ScheduleItemID === scheduleId);
+    const records = attendanceItems.filter((a) => a.ScheduleItemID === scheduleId);
+    return records.find((a) => a.AcceptedForBilling !== false) || records[0];
   }
 
   const firstOfMonth = new Date(year, month, 1);
@@ -150,7 +161,11 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                 {sessions.map((s) => {
                   const att = attendanceFor(s.ScheduleID);
                   const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
-                  const clickable = !readOnly && !att;
+                  // With renderExpanded, the chip is always reopenable (view
+                  // roster/resolve conflicts even after attendance exists) —
+                  // without it, the original self-only rule (only clickable
+                  // until logged) is unchanged.
+                  const clickable = renderExpanded ? true : !readOnly && !att;
                   const normalizedGroup = normalizeGroup(s.ServiceGroup);
                   const groupStyle = colorByGroup
                     ? { background: groupGradient(normalizedGroup), color: "#fff" }
@@ -173,13 +188,17 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                       </button>
                       {expandedId === s.ScheduleID && clickable && (
                         <div className="mt-1">
-                          <MiniAttendanceForm
-                            defaultHrs={s.Duration}
-                            onSubmit={(status, hrs) => {
-                              onLogAttendance(s.ScheduleID, status, hrs);
-                              setExpandedId(null);
-                            }}
-                          />
+                          {renderExpanded ? (
+                            renderExpanded(s.ScheduleID, s)
+                          ) : (
+                            <MiniAttendanceForm
+                              defaultHrs={s.Duration}
+                              onSubmit={(status, hrs) => {
+                                onLogAttendance(s.ScheduleID, status, hrs);
+                                setExpandedId(null);
+                              }}
+                            />
+                          )}
                         </div>
                       )}
                     </div>
@@ -194,7 +213,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
   );
 }
 
-function MiniAttendanceForm({ defaultHrs, onSubmit }) {
+export function MiniAttendanceForm({ defaultHrs, onSubmit }) {
   const [status, setStatus] = useState("Present");
   const [hrs, setHrs] = useState(defaultHrs);
   return (

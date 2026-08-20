@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
+import SessionAttendance from "@/components/SessionAttendance";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
 import MyInfo from "@/components/MyInfo";
@@ -23,6 +24,7 @@ function Body({ user }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [view, setView] = useState("weekly");
+  const [expandedAttendance, setExpandedAttendance] = useState(null);
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -178,6 +180,9 @@ function Body({ user }) {
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
             portalColor={GROUP_COLORS.Student}
+            renderExpanded={(scheduleId, s) => (
+              <SessionAttendance scheduleId={scheduleId} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" />
+            )}
           />
         ) : (
           <table>
@@ -195,31 +200,43 @@ function Body({ user }) {
             <tbody>
               {schedSort.sorted.map((s) => {
                 const att = attendanceFor(s.ScheduleID);
+                const expanded = expandedAttendance === s.ScheduleID;
                 return (
-                  <tr key={s.ScheduleID}>
-                    <td>{s.ServiceName}</td>
-                    <td>{formatDate(s.Date)}</td>
-                    <td>{s.Time}</td>
-                    <td>{s.Duration}</td>
-                    <td>{s.Facilitator || "—"}</td>
-                    <td>
-                      {att ? (
-                        <span className={`badge badge-${att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad"}`}>
-                          {att.Status} · {att.LoggedDuration}h
-                        </span>
-                      ) : (
-                        <AttendanceForm defaultHrs={s.Duration} onSubmit={(status, hrs) => logAttendance(s.ScheduleID, status, hrs)} />
-                      )}
-                    </td>
-                    <td>
-                      <RescheduleControl
-                        slot={s}
-                        userId={user.UserID}
-                        pendingRequest={(data.rescheduleRequests || []).find((r) => r.ScheduleItemID === s.ScheduleID)}
-                        onSubmitted={load}
-                      />
-                    </td>
-                  </tr>
+                  <Fragment key={s.ScheduleID}>
+                    <tr>
+                      <td>{s.ServiceName}</td>
+                      <td>{formatDate(s.Date)}</td>
+                      <td>{s.Time}</td>
+                      <td>{s.Duration}</td>
+                      <td>{s.Facilitator || "—"}</td>
+                      <td>
+                        <button className="btn-ghost" onClick={() => setExpandedAttendance(expanded ? null : s.ScheduleID)}>
+                          {att ? (
+                            <span className={`badge badge-${att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad"}`}>
+                              {att.Status} · {att.LoggedDuration}h
+                            </span>
+                          ) : (
+                            "Log…"
+                          )}
+                        </button>
+                      </td>
+                      <td>
+                        <RescheduleControl
+                          slot={s}
+                          userId={user.UserID}
+                          pendingRequest={(data.rescheduleRequests || []).find((r) => r.ScheduleItemID === s.ScheduleID)}
+                          onSubmitted={load}
+                        />
+                      </td>
+                    </tr>
+                    {expanded && (
+                      <tr>
+                        <td colSpan={7}>
+                          <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
               {schedSort.sorted.length === 0 && (
@@ -297,33 +314,3 @@ function Body({ user }) {
   );
 }
 
-function AttendanceForm({ defaultHrs, onSubmit }) {
-  const [status, setStatus] = useState("Present");
-  const [hrs, setHrs] = useState(defaultHrs);
-  return (
-    <form
-      className="flex gap-1 items-center"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(status, hrs);
-      }}
-    >
-      <select className="field" style={{ width: 100 }} value={status} onChange={(e) => setStatus(e.target.value)}>
-        <option>Present</option>
-        <option>Absent</option>
-        <option>Late</option>
-      </select>
-      <input
-        className="field"
-        style={{ width: 60 }}
-        type="number"
-        step="0.5"
-        value={hrs}
-        onChange={(e) => setHrs(e.target.value)}
-      />
-      <button className="btn-ghost" type="submit">
-        Log
-      </button>
-    </form>
-  );
-}

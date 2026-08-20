@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
+import SessionAttendance from "@/components/SessionAttendance";
 import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
 import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
@@ -2860,6 +2861,7 @@ function SchedulePool() {
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
   const [rescheduleRequests, setRescheduleRequests] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+  const [attendanceItems, setAttendanceItems] = useState([]);
   const [poolView, setPoolView] = useState("calendar");
   const [serviceView, setServiceView] = useState("calendar");
   const [services, setServices] = useState([]);
@@ -2870,19 +2872,22 @@ function SchedulePool() {
   const [duration, setDuration] = useState(1);
   const [facilitator, setFacilitator] = useState("");
   const [error, setError] = useState("");
+  const [expandedAttendance, setExpandedAttendance] = useState(null);
 
   async function load() {
-    const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }, { enrollments }] = await Promise.all([
+    const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }, { enrollments }, { attendanceItems }] = await Promise.all([
       api("/api/schedule"),
       api("/api/services"),
       api("/api/schedule/reschedule-requests"),
       api("/api/enrollments"),
+      api("/api/attendance"),
     ]);
     setItems(scheduleItems);
     setOpenPoolSlots(openPoolSlots);
     setServices(services);
     setRescheduleRequests(rescheduleRequests);
     setEnrollments(enrollments);
+    setAttendanceItems(attendanceItems);
   }
   useEffect(() => {
     load();
@@ -3065,7 +3070,15 @@ function SchedulePool() {
             </div>
           </div>
         ) : serviceView === "calendar" ? (
-          <ScheduleCalendar scheduleItems={serviceSlots} attendanceItems={[]} readOnly colorByGroup />
+          <ScheduleCalendar
+            scheduleItems={serviceSlots}
+            attendanceItems={attendanceItems}
+            readOnly
+            colorByGroup
+            renderExpanded={(scheduleId, s) => (
+              <SessionAttendance scheduleId={scheduleId} duration={s.Duration} isManagement />
+            )}
+          />
         ) : (
           <table>
             <thead>
@@ -3075,12 +3088,17 @@ function SchedulePool() {
                 <SortableTh label="Time" sortKeyName="Time" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <SortableTh label="Hrs" sortKeyName="Duration" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <SortableTh label="Instructor" sortKeyName="Facilitator" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
+                <th>Attendance</th>
                 <th>Reschedule</th>
               </tr>
             </thead>
             <tbody>
-              {serviceSlotsSort.sorted.map((s) => (
-                <tr key={s.ScheduleID}>
+              {serviceSlotsSort.sorted.map((s) => {
+                const expanded = expandedAttendance === s.ScheduleID;
+                const recordCount = attendanceItems.filter((a) => a.ScheduleItemID === s.ScheduleID).length;
+                return (
+                <Fragment key={s.ScheduleID}>
+                <tr>
                   <td>
                     <span
                       title={normalizeGroup(s.ServiceGroup).join(" + ")}
@@ -3093,6 +3111,11 @@ function SchedulePool() {
                   <td>{s.Duration}</td>
                   <td>{s.Facilitator}</td>
                   <td>
+                    <button className="btn-ghost" onClick={() => setExpandedAttendance(expanded ? null : s.ScheduleID)}>
+                      {recordCount > 0 ? `${recordCount} logged` : "None"}
+                    </button>
+                  </td>
+                  <td>
                     <RescheduleCell
                       slot={s}
                       pendingRequest={rescheduleRequests.find((r) => r.ScheduleItemID === s.ScheduleID)}
@@ -3101,7 +3124,16 @@ function SchedulePool() {
                     />
                   </td>
                 </tr>
-              ))}
+                {expanded && (
+                  <tr>
+                    <td colSpan={7}>
+                      <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} isManagement />
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -3818,10 +3850,10 @@ function Billing() {
           people={users.filter((u) => u.UserType === "Student")}
           services={services}
           enrollments={enrollments}
-          onSubmitRow={async ({ personId, serviceId, year, month, amount }) => {
+          onSubmitRows={async ({ personId, year, month, rows }) => {
             await api("/api/invoices", {
               method: "POST",
-              body: JSON.stringify({ action: "manual", studentId: personId, serviceId, year, month, amount }),
+              body: JSON.stringify({ action: "manual", studentId: personId, year, month, lineItems: rows }),
             });
           }}
           onDone={load}
@@ -3878,7 +3910,12 @@ function Billing() {
 // same reuse pattern as the bulk-enroll redesign. Amounts are NOT
 // auto-computed here — Management types them, same "manual" meaning as
 // before, just for several subjects in one action instead of one at a time.
-function ManualInvoiceForm({ people, services, enrollments, onSubmitRow, onDone }) {
+// TKT-0037: all checked subjects submit as ONE request now (lineItems
+// array), not one POST per subject — so the duplicate-invoice hard-block
+// on the backend (which fires against whatever already existed BEFORE
+// this request) can't mistake this form's own second/third checked
+// subject for a real duplicate.
+function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone }) {
   const now = new Date();
   const [personId, setPersonId] = useState("");
   const [year, setYear] = useState(now.getFullYear());
@@ -3914,23 +3951,19 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRow, onDone 
       return;
     }
     setBusy(true);
-    const failures = [];
     try {
-      for (const s of rows) {
-        try {
-          await onSubmitRow({ personId, serviceId: s.ServiceID, year: Number(year), month: Number(month), amount: Number(amounts[s.ServiceID]) });
-        } catch (err) {
-          failures.push(`${s.Name}: ${err.message}`);
-        }
-      }
-      if (failures.length) {
-        setError(`${failures.length} of ${rows.length} failed — ${failures.join("; ")}`);
-      } else {
-        setPersonId("");
-        setChecked({});
-        setAmounts({});
-      }
+      await onSubmitRows({
+        personId,
+        year: Number(year),
+        month: Number(month),
+        rows: rows.map((s) => ({ serviceId: s.ServiceID, amount: Number(amounts[s.ServiceID]) })),
+      });
+      setPersonId("");
+      setChecked({});
+      setAmounts({});
       onDone();
+    } catch (err) {
+      setError(err.message);
     } finally {
       setBusy(false);
     }

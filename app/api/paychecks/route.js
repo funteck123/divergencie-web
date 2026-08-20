@@ -107,30 +107,40 @@ export async function POST(req) {
       return NextResponse.json({ paycheck });
     }
 
-    let paycheck = db.paychecks.find((p) => p.LineItems && p.StaffID === staffId && p.Year === y && p.Month === m);
-    if (!paycheck) {
-      paycheck = {
-        PaycheckID: nextId(db, "PAY"),
-        StaffID: staffId,
-        Year: y,
-        Month: m,
-        LineItems: [],
-        Amount: 0,
-        Currency: staffCurrencyOf(db, staffId),
-        INRAmount: 0,
-        INRDue: 0,
-        Status: "Draft",
-      };
-      db.paychecks.push(paycheck);
+    // A manual paycheck always creates a brand-new record — if one already
+    // exists for this staff+month (either shape), that's a hard stop, not
+    // an append. See the matching comment in app/api/invoices/route.js for
+    // why the previous append-a-LineItem behavior was deliberately removed.
+    const existingForMonth = db.paychecks.find(
+      (p) => p.StaffID === staffId && p.Year === y && p.Month === m
+    );
+    if (existingForMonth) {
+      return NextResponse.json(
+        { error: `A paycheck already exists for this staff member for ${m}/${y} (${existingForMonth.PaycheckID}). Delete it first if you need to recreate it.` },
+        { status: 400 }
+      );
     }
+    const paycheck = {
+      PaycheckID: nextId(db, "PAY"),
+      StaffID: staffId,
+      Year: y,
+      Month: m,
+      LineItems: [],
+      Amount: 0,
+      Currency: staffCurrencyOf(db, staffId),
+      INRAmount: 0,
+      INRDue: 0,
+      Status: "Draft",
+    };
     const lineItem = { ServiceID: serviceId, BatchID: batchId || "", ScheduledHours: null, AttendedHours: null, Amount: paycheckAmount, Currency: currency };
     paycheck.LineItems.push(lineItem);
     const liINR = await lineItemINR(db, lineItem, y, m);
-    paycheck.INRAmount = Math.round((paycheck.INRAmount + liINR) * 100) / 100;
-    paycheck.INRDue = Math.round((paycheck.INRDue + liINR) * 100) / 100;
+    paycheck.INRAmount = Math.round(liINR * 100) / 100;
+    paycheck.INRDue = paycheck.INRAmount;
+    db.paychecks.push(paycheck);
     await refreshStaffTotal(db, paycheck);
     await writeDB(db);
-    await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Added manual line item to ${paycheck.PaycheckID} for ${staffId} — ${currency} ${paycheckAmount}`, snapshot: paycheck });
+    await logAudit({ actorUserId: session.userId, action: "create", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Manual paycheck for ${staffId}, ${m}/${y} — ${currency} ${paycheckAmount}`, snapshot: paycheck });
     return NextResponse.json({ paycheck });
   }
 
@@ -198,7 +208,7 @@ export async function POST(req) {
     );
     if (oldFlatAlreadyExists) continue;
 
-    const { scheduledHours, attendedHours, amount, currency, billingType } = computeHoursAndAmount(db, {
+    const { scheduledHours, attendedHours, amount, currency, billingType, hasUnresolvedAttendance } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       batchId: enr.BatchID,
@@ -206,6 +216,8 @@ export async function POST(req) {
       month: m,
     });
     const zeroScheduleWarning = scheduledHours <= 0;
+    // TKT-0037: same as invoices — an unresolved attendance conflict
+    // doesn't block drafting, only Sending (see PATCH below).
     const lineItem = {
       ServiceID: enr.ServiceID,
       BatchID: enr.BatchID || "",
@@ -213,8 +225,11 @@ export async function POST(req) {
       AttendedHours: attendedHours,
       Amount: amount,
       Currency: currency,
+      HasAttendanceConflict: hasUnresolvedAttendance,
       ...(zeroScheduleWarning
         ? { Note: "$0 — no scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." }
+        : hasUnresolvedAttendance
+        ? { Note: "⚠ Attendance for this subject has an unresolved conflict — resolve it in the Schedule tab before sending this paycheck." }
         : {}),
     };
 
@@ -277,6 +292,29 @@ export async function PATCH(req) {
     ? requireManagement(req)
     : requireSelfOrManagement(req, paycheck.StaffID);
   if (error) return error;
+
+  // TKT-0037: same block as invoices, re-checked LIVE at Send time (not
+  // the line item's own stored HasAttendanceConflict) — see the matching
+  // comment in app/api/invoices/route.js for why a stored flag would
+  // never clear once Management resolves the underlying conflict.
+  if (status === "Sent" && isLineItemPaycheck) {
+    const conflicted = paycheck.LineItems.filter((li) => {
+      const { hasUnresolvedAttendance } = computeHoursAndAmount(db, {
+        userId: paycheck.StaffID,
+        serviceId: li.ServiceID,
+        batchId: li.BatchID,
+        year: paycheck.Year,
+        month: paycheck.Month,
+      });
+      return hasUnresolvedAttendance;
+    });
+    if (conflicted.length > 0) {
+      return NextResponse.json(
+        { error: `Can't send — ${conflicted.length} line item(s) have an unresolved attendance conflict. Resolve in the Schedule tab first.` },
+        { status: 400 }
+      );
+    }
+  }
 
   const before = JSON.parse(JSON.stringify(paycheck));
   let summary;

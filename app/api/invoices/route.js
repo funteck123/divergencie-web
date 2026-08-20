@@ -86,91 +86,132 @@ export async function POST(req) {
   const body = await req.json();
   const { action } = body;
 
+  // body: either the original single-item shape (studentId, serviceId,
+  // year, month, amount — unchanged, still used by the CLI/MCP "one
+  // ad-hoc line item" tool) or { studentId, year, month, lineItems:
+  // [{serviceId, amount}, ...] } for the Enrollments tab's multi-select
+  // form: TKT-0037's duplicate-invoice hard-block (below) only fires
+  // against what already existed BEFORE this request — every item in one
+  // `lineItems` array is part of ONE atomic submission and lands on the
+  // same fresh invoice together, exactly like checking several subjects
+  // and hitting submit once always has.
   if (action === "manual") {
-    const { studentId, serviceId, year, month, amount } = body;
-    if (!studentId || !serviceId || !year || !month || amount === undefined) {
+    const { studentId, year, month, serviceId, amount, lineItems: rawLineItems } = body;
+    const items = Array.isArray(rawLineItems) ? rawLineItems : serviceId !== undefined ? [{ serviceId, amount }] : [];
+    if (!studentId || !year || !month || items.length === 0 || items.some((li) => !li.serviceId || li.amount === undefined)) {
       return NextResponse.json(
-        { error: "studentId, serviceId, year, month, and amount are required." },
+        { error: "studentId, year, month, and at least one {serviceId, amount} line item are required." },
         { status: 400 }
       );
     }
+
     const db = await readDB();
     const y = Number(year);
     const m = Number(month);
-    const service = db.services.find((s) => s.ServiceID === serviceId);
-    // A student may hold more than one enrollment in the same Service now
-    // (different Batches), so this resolves to whichever enrollment is
-    // passed/found first — fine for the manual one-off path, which a human
-    // is filling in directly.
-    const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === serviceId);
-    const batchId = enrollment?.BatchID;
-    const matchedRate = service ? rateById(service, batchId, enrollment?.RateID) : null;
-    const currency = enrollment?.Currency || (service ? ratesOf(service, batchId)[0].Currency : "INR");
-    const invoiceAmount = Number(amount) || 0;
 
-    if (matchedRate?.BillingType === "OneOff") {
-      const already = db.invoices.some(
-        (i) => !i.LineItems && i.StudentID === studentId && i.ServiceID === serviceId && i.BatchID === batchId
-      );
-      if (already) {
+    const oneOffCreated = [];
+    let monthlyInvoice = null;
+    // Only checked once, against state as of the start of this request —
+    // multiple Monthly/Hourly items in the same `lineItems` array all
+    // land on `monthlyInvoice` below without re-triggering this check
+    // against each other.
+    const existingMonthlyForMonth = db.invoices.find((i) => i.LineItems && i.StudentID === studentId && i.Year === y && i.Month === m);
+
+    for (const li of items) {
+      const service = db.services.find((s) => s.ServiceID === li.serviceId);
+      // A student may hold more than one enrollment in the same Service
+      // now (different Batches), so this resolves to whichever enrollment
+      // is passed/found first — fine for the manual path, which a human
+      // is filling in directly.
+      const enrollment = db.enrollments.find((e) => e.UserID === studentId && e.ServiceID === li.serviceId);
+      const batchId = enrollment?.BatchID;
+      const matchedRate = service ? rateById(service, batchId, enrollment?.RateID) : null;
+      const currency = enrollment?.Currency || (service ? ratesOf(service, batchId)[0].Currency : "INR");
+      const invoiceAmount = Number(li.amount) || 0;
+
+      if (matchedRate?.BillingType === "OneOff") {
+        const already = db.invoices.some(
+          (i) => !i.LineItems && i.StudentID === studentId && i.ServiceID === li.serviceId && i.BatchID === batchId
+        );
+        if (already) {
+          return NextResponse.json(
+            { error: `This is a One-off rate — an invoice for ${studentId}/${li.serviceId} already exists and none further will be created.` },
+            { status: 400 }
+          );
+        }
+        const fxRate = await getRateToINR(db, currency, y, m);
+        const invoiceINRAmount = fxRate != null ? Math.round(invoiceAmount * fxRate * 100) / 100 : 0;
+        const invoice = {
+          InvoiceID: nextId(db, "INV"),
+          StudentID: studentId,
+          ServiceID: li.serviceId,
+          BatchID: batchId || "",
+          Year: y,
+          Month: m,
+          ScheduledHours: null,
+          AttendedHours: null,
+          Amount: invoiceAmount,
+          Currency: currency,
+          INRAmount: invoiceINRAmount,
+          INRDue: invoiceINRAmount,
+          Status: "Draft",
+        };
+        db.invoices.push(invoice);
+        oneOffCreated.push(invoice);
+        continue;
+      }
+
+      // Monthly/Hourly: a manual invoice always creates a brand-new
+      // record for this student+month — if one already existed BEFORE
+      // this request (either shape), that's a hard stop, not an append.
+      // (Previously this appended a LineItem to whatever already
+      // existed, letting Management top up a month's invoice with more
+      // subjects in a LATER, separate action — deliberately removed:
+      // Management now deletes the existing invoice first if it needs to
+      // be regenerated, same explicit action every other "duplicate" in
+      // this app already requires. Multiple subjects in ONE submission,
+      // via `lineItems`, still all land together below.)
+      if (existingMonthlyForMonth) {
         return NextResponse.json(
-          { error: "This is a One-off rate — an invoice for this Student/Service already exists and none further will be created." },
+          { error: `An invoice already exists for this student for ${m}/${y} (${existingMonthlyForMonth.InvoiceID}). Delete it first if you need to recreate it.` },
           { status: 400 }
         );
       }
-      const fxRate = await getRateToINR(db, currency, y, m);
-      const invoiceINRAmount = fxRate != null ? Math.round(invoiceAmount * fxRate * 100) / 100 : 0;
-      const invoice = {
-        InvoiceID: nextId(db, "INV"),
-        StudentID: studentId,
-        ServiceID: serviceId,
-        BatchID: batchId || "",
-        Year: y,
-        Month: m,
-        ScheduledHours: null,
-        AttendedHours: null,
-        Amount: invoiceAmount,
-        Currency: currency,
-        INRAmount: invoiceINRAmount,
-        INRDue: invoiceINRAmount,
-        Status: "Draft",
-      };
-      db.invoices.push(invoice);
-      await writeDB(db);
-      await logAudit({ actorUserId: session.userId, action: "create", entityType: "Invoice", entityId: invoice.InvoiceID, summary: `Manual OneOff invoice for ${studentId} — ${invoice.Currency} ${invoice.Amount}`, snapshot: invoice });
-      return NextResponse.json({ invoice });
+      if (!monthlyInvoice) {
+        monthlyInvoice = {
+          InvoiceID: nextId(db, "INV"),
+          StudentID: studentId,
+          Year: y,
+          Month: m,
+          LineItems: [],
+          Amount: 0,
+          Currency: studentCurrencyOf(db, studentId),
+          INRAmount: 0,
+          INRDue: 0,
+          Status: "Draft",
+        };
+        db.invoices.push(monthlyInvoice);
+      }
+      const lineItem = { ServiceID: li.serviceId, BatchID: batchId || "", ScheduledHours: null, AttendedHours: null, Amount: invoiceAmount, Currency: currency };
+      monthlyInvoice.LineItems.push(lineItem);
+      const liINR = await lineItemINR(db, lineItem, y, m);
+      monthlyInvoice.INRAmount = Math.round((monthlyInvoice.INRAmount + liINR) * 100) / 100;
+      monthlyInvoice.INRDue = monthlyInvoice.INRAmount;
     }
 
-    // Monthly/Hourly: append a manual LineItem to that student's combined
-    // invoice for this month, creating it if it doesn't exist yet. A dup
-    // manual line for the same Service/Batch/month is allowed on purpose —
-    // unlike `generate`, a human explicitly asking for another manual line
-    // (e.g. a mid-month top-up) isn't a mistake to block.
-    let invoice = db.invoices.find((i) => i.LineItems && i.StudentID === studentId && i.Year === y && i.Month === m);
-    if (!invoice) {
-      invoice = {
-        InvoiceID: nextId(db, "INV"),
-        StudentID: studentId,
-        Year: y,
-        Month: m,
-        LineItems: [],
-        Amount: 0,
-        Currency: studentCurrencyOf(db, studentId),
-        INRAmount: 0,
-        INRDue: 0,
-        Status: "Draft",
-      };
-      db.invoices.push(invoice);
-    }
-    const lineItem = { ServiceID: serviceId, BatchID: batchId || "", ScheduledHours: null, AttendedHours: null, Amount: invoiceAmount, Currency: currency };
-    invoice.LineItems.push(lineItem);
-    const liINR = await lineItemINR(db, lineItem, y, m);
-    invoice.INRAmount = Math.round((invoice.INRAmount + liINR) * 100) / 100;
-    invoice.INRDue = Math.round((invoice.INRDue + liINR) * 100) / 100;
-    await refreshStudentTotal(db, invoice);
+    if (monthlyInvoice) await refreshStudentTotal(db, monthlyInvoice);
     await writeDB(db);
-    await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Invoice", entityId: invoice.InvoiceID, summary: `Added manual line item to ${invoice.InvoiceID} for ${studentId} — ${currency} ${invoiceAmount}`, snapshot: invoice });
-    return NextResponse.json({ invoice });
+    for (const invoice of oneOffCreated) {
+      await logAudit({ actorUserId: session.userId, action: "create", entityType: "Invoice", entityId: invoice.InvoiceID, summary: `Manual OneOff invoice for ${studentId} — ${invoice.Currency} ${invoice.Amount}`, snapshot: invoice });
+    }
+    if (monthlyInvoice) {
+      await logAudit({ actorUserId: session.userId, action: "create", entityType: "Invoice", entityId: monthlyInvoice.InvoiceID, summary: `Manual invoice for ${studentId}, ${m}/${y} — ${monthlyInvoice.LineItems.length} line item(s)`, snapshot: monthlyInvoice });
+    }
+    const created = [...oneOffCreated, ...(monthlyInvoice ? [monthlyInvoice] : [])];
+    // Legacy single-item shape (no `lineItems` array in the request) keeps
+    // returning {invoice} exactly as before — the CLI/MCP tool never sends
+    // more than one item, so `created` is always exactly one entry there.
+    return NextResponse.json(Array.isArray(rawLineItems) ? { invoices: created } : { invoice: created[0] });
   }
 
   if (action !== "generate") {
@@ -243,7 +284,7 @@ export async function POST(req) {
     );
     if (oldFlatAlreadyExists) continue;
 
-    const { scheduledHours, attendedHours, amount, currency, billingType } = computeHoursAndAmount(db, {
+    const { scheduledHours, attendedHours, amount, currency, billingType, hasUnresolvedAttendance } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       batchId: enr.BatchID,
@@ -255,6 +296,9 @@ export async function POST(req) {
     // case Management needs to catch (missing Occurrences, or a billing
     // type left on the wrong default).
     const zeroScheduleWarning = scheduledHours <= 0;
+    // TKT-0037: an unresolved attendance conflict (the accepted record
+    // disagrees with a still-present other one) doesn't block drafting —
+    // only Sending (see PATCH below), where it's actually money going out.
     const lineItem = {
       ServiceID: enr.ServiceID,
       BatchID: enr.BatchID || "",
@@ -262,8 +306,11 @@ export async function POST(req) {
       AttendedHours: attendedHours,
       Amount: amount,
       Currency: currency,
+      HasAttendanceConflict: hasUnresolvedAttendance,
       ...(zeroScheduleWarning
         ? { Note: "$0 — no scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." }
+        : hasUnresolvedAttendance
+        ? { Note: "⚠ Attendance for this subject has an unresolved conflict — resolve it in the Schedule tab before sending this invoice." }
         : {}),
     };
 
@@ -341,6 +388,35 @@ export async function PATCH(req) {
     ? requireManagement(req)
     : requireSelfOrParentOrManagement(req, db, invoice.StudentID);
   if (error) return error;
+
+  // TKT-0037: an unresolved attendance conflict on any of this invoice's
+  // own line items blocks moving it to Sent specifically — drafting was
+  // never blocked (see the generate loop above), only actually sending
+  // money out the door. Resolve via PATCH /api/attendance (Management
+  // picks which record is correct), then Send again. Re-checked LIVE here
+  // (not the line item's own stored HasAttendanceConflict, which is only
+  // ever set once at creation) — `generate` deliberately never re-touches
+  // an already-existing line item, so a stored flag would never clear
+  // even after Management resolves the underlying conflict; recomputing
+  // at Send time is what actually reflects the current state.
+  if (status === "Sent" && isLineItemInvoice) {
+    const conflicted = invoice.LineItems.filter((li) => {
+      const { hasUnresolvedAttendance } = computeHoursAndAmount(db, {
+        userId: invoice.StudentID,
+        serviceId: li.ServiceID,
+        batchId: li.BatchID,
+        year: invoice.Year,
+        month: invoice.Month,
+      });
+      return hasUnresolvedAttendance;
+    });
+    if (conflicted.length > 0) {
+      return NextResponse.json(
+        { error: `Can't send — ${conflicted.length} line item(s) have an unresolved attendance conflict. Resolve in the Schedule tab first.` },
+        { status: 400 }
+      );
+    }
+  }
 
   const before = JSON.parse(JSON.stringify(invoice));
   let summary;
