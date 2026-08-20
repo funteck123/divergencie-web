@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
-import { BOOKING_TYPES } from "@/lib/scheduleGen";
+import { BOOKING_TYPES, isSlotBooked } from "@/lib/scheduleGen";
 import { requireManagement } from "@/lib/authz";
 
 // Pending Trial/Interview requests, joined with slot + requester name, for
@@ -42,12 +42,18 @@ export async function GET(req) {
   return NextResponse.json({ pendingTrials, pendingInterviews });
 }
 
-// body: { type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", id, action: "approve" | "reject" }
+// body: { type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", id, action: "approve" | "reject", scheduleId? }
+// scheduleId is required when approving an Interview request (TKT-0021: the
+// requester never picked a slot themselves — this is where Management
+// assigns one, either an existing open-pool slot or one freshly created via
+// POST /api/schedule just before this call). Ignored for Trial (its
+// ScheduleItemID was already set when the requester picked it) and for
+// reject (no slot needed).
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { type, id, action } = await req.json();
+  const { type, id, action, scheduleId } = await req.json();
   if (!BOOKING_TYPES.includes(type) || !["approve", "reject"].includes(action)) {
     return NextResponse.json({ error: `type must be one of ${BOOKING_TYPES.join("/")}, action approve/reject.` }, { status: 400 });
   }
@@ -82,7 +88,26 @@ export async function PATCH(req) {
     return NextResponse.json({ error: `Request already ${item.Status}.` }, { status: 400 });
   }
 
-  item.Status = action === "approve" ? "Scheduled" : "Rejected";
+  if (action === "reject") {
+    item.Status = "Rejected";
+    await writeDB(db);
+    return NextResponse.json({ interviewItem: item });
+  }
+
+  if (!scheduleId) {
+    return NextResponse.json({ error: "scheduleId is required to approve an Interview request." }, { status: 400 });
+  }
+  const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
+  if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
+  if (slot.ServiceID !== item.ServiceID) {
+    return NextResponse.json({ error: "That slot isn't for the same Service this request is for." }, { status: 400 });
+  }
+  if (isSlotBooked(db, scheduleId)) {
+    return NextResponse.json({ error: "That slot is already booked." }, { status: 409 });
+  }
+
+  item.ScheduleItemID = scheduleId;
+  item.Status = "Scheduled";
   await writeDB(db);
   return NextResponse.json({ interviewItem: item });
 }

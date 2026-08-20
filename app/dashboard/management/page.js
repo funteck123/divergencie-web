@@ -199,20 +199,23 @@ function Pipeline() {
   const [issued, setIssued] = useState({});
   const [pendingTrials, setPendingTrials] = useState([]);
   const [pendingInterviews, setPendingInterviews] = useState([]);
+  const [openPoolSlots, setOpenPoolSlots] = useState([]);
   const [error, setError] = useState("");
 
   async function load() {
-    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }] = await Promise.all([
+    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlots }] = await Promise.all([
       api("/api/users"),
       api("/api/services"),
       api("/api/invoices"),
       api("/api/schedule/requests"),
+      api("/api/schedule"),
     ]);
     setUsers(users);
     setServices(services);
     setInvoices(invoices);
     setPendingTrials(pendingTrials);
     setPendingInterviews(pendingInterviews);
+    setOpenPoolSlots(openPoolSlots);
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead — run
     // every account's fetch concurrently rather than one at a time (this was
@@ -279,11 +282,27 @@ function Pipeline() {
     }
   }
 
-  async function actOnRequest(type, id, action) {
+  async function actOnRequest(type, id, action, scheduleId) {
     setError("");
     try {
-      await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action }) });
+      await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action, scheduleId }) });
       load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  // TKT-0021: approving an Interview request with a brand-new slot (rather
+  // than an existing open-pool one) — create the slot first via the same
+  // endpoint Management's Schedule tab already uses, then approve with it.
+  async function createSlotAndApprove(bookingType, interviewId, serviceId, date, time, duration, facilitator) {
+    setError("");
+    try {
+      const { scheduleItem } = await api("/api/schedule", {
+        method: "POST",
+        body: JSON.stringify({ serviceType: bookingType, serviceId, date, time, duration, facilitator }),
+      });
+      await actOnRequest(bookingType, interviewId, "approve", scheduleItem.ScheduleID);
     } catch (e) {
       setError(e.message);
     }
@@ -323,13 +342,16 @@ function Pipeline() {
       _time: t.Slot?.Time,
       _isTrial: true,
     })),
+    // TKT-0021: an Interview request never has a Slot yet at the pending
+    // stage — Management assigns one on approval — so _service comes from
+    // the request's own ServiceID, and _date/_time are always empty here.
     ...pendingInterviews.map((i) => ({
       ...i,
       _type: INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview",
       _requester: i.RequesterName,
-      _service: i.Slot?.ServiceName,
-      _date: i.Slot?.Date,
-      _time: i.Slot?.Time,
+      _service: serviceNameOf(i.ServiceID),
+      _date: "",
+      _time: "",
       _isTrial: false,
       _bookingType: i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview",
     })),
@@ -492,12 +514,17 @@ function Pipeline() {
                   <td>{row._type}</td>
                   <td>{row._requester}</td>
                   <td>{row._service}</td>
-                  <td>{formatDate(row._date)}</td>
-                  <td>{row._time}</td>
-                  <td className="space-x-2">
-                    <button className="btn" onClick={() => actOnRequest(row._bookingType, row.InterviewID, "approve")}>
-                      Approve
-                    </button>
+                  <td colSpan={2}>
+                    <InterviewSlotAssign
+                      row={row}
+                      openPoolSlots={openPoolSlots}
+                      onApproveWithSlot={(scheduleId) => actOnRequest(row._bookingType, row.InterviewID, "approve", scheduleId)}
+                      onCreateAndApprove={(date, time, duration, facilitator) =>
+                        createSlotAndApprove(row._bookingType, row.InterviewID, row.ServiceID, date, time, duration, facilitator)
+                      }
+                    />
+                  </td>
+                  <td>
                     <button className="btn-ghost" onClick={() => actOnRequest(row._bookingType, row.InterviewID, "reject")}>
                       Reject
                     </button>
@@ -515,6 +542,85 @@ function Pipeline() {
           </tbody>
         </table>
       </div>
+    </div>
+  );
+}
+
+// TKT-0021/TKT-0016: the requester never picked a slot — Management assigns
+// one right here when approving. Either pick an existing open-pool slot for
+// this same Service (future dates only), or create a brand-new one on the
+// spot via the same fields Schedule Pool's own "Offer a Slot" form uses.
+function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAndApprove }) {
+  const [mode, setMode] = useState("existing");
+  const [scheduleId, setScheduleId] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [duration, setDuration] = useState(1);
+  const [facilitator, setFacilitator] = useState("");
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const candidateSlots = openPoolSlots.filter((s) => s.ServiceID === row.ServiceID && s.Date >= todayStr);
+
+  if (mode === "existing") {
+    return (
+      <div className="flex gap-2 items-center flex-wrap">
+        <select className="field" style={{ width: 220 }} value={scheduleId} onChange={(e) => setScheduleId(e.target.value)}>
+          <option value="">Select an open slot…</option>
+          {candidateSlots.map((s) => (
+            <option key={s.ScheduleID} value={s.ScheduleID}>
+              {formatDate(s.Date)} at {s.Time} ({s.Facilitator || "no instructor set"})
+            </option>
+          ))}
+        </select>
+        <button className="btn" type="button" disabled={!scheduleId} onClick={() => onApproveWithSlot(scheduleId)}>
+          Approve
+        </button>
+        <button className="btn-ghost" type="button" onClick={() => setMode("new")}>
+          + New slot instead
+        </button>
+        {candidateSlots.length === 0 && (
+          <span className="text-sm" style={{ color: "var(--muted)" }}>
+            No open slots for this service yet.
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 items-center flex-wrap">
+      <input className="field" style={{ width: 130 }} type="date" min={todayStr} value={date} onChange={(e) => setDate(e.target.value)} />
+      <input className="field" style={{ width: 100 }} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+      <input
+        className="field"
+        style={{ width: 70 }}
+        type="number"
+        step="0.5"
+        min="0.5"
+        placeholder="Hrs"
+        value={duration}
+        onChange={(e) => setDuration(e.target.value)}
+      />
+      <input
+        className="field"
+        style={{ width: 130 }}
+        placeholder="Instructor"
+        value={facilitator}
+        onChange={(e) => setFacilitator(e.target.value)}
+      />
+      <button
+        className="btn"
+        type="button"
+        disabled={!date || !time}
+        onClick={() => onCreateAndApprove(date, time, duration, facilitator)}
+      >
+        Create &amp; Approve
+      </button>
+      {candidateSlots.length > 0 && (
+        <button className="btn-ghost" type="button" onClick={() => setMode("existing")}>
+          Use existing slot instead
+        </button>
+      )}
     </div>
   );
 }

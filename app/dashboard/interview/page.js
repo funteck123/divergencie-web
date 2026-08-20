@@ -42,13 +42,16 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function book(scheduleId) {
+  // TKT-0021: no slot picker — this just records the request against a
+  // Service. Management assigns the actual slot when approving it.
+  async function requestInterview() {
     setError("");
     try {
       await api("/api/schedule/pick", {
         method: "POST",
-        body: JSON.stringify({ scheduleId, userId: user.UserID, type: bookingTypeFor(user.UserType) }),
+        body: JSON.stringify({ serviceId, userId: user.UserID, type: bookingTypeFor(user.UserType) }),
       });
+      setServiceId("");
       load();
     } catch (e) {
       setError(e.message);
@@ -68,7 +71,9 @@ function Body({ user }) {
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const eligibleServices = data.services.filter((s) => groupMatches(s.Group, INTERVIEW_GROUP[user.UserType] || "Staff"));
-  const slotsForService = serviceId ? data.availableInterviewSlots.filter((s) => s.ServiceID === serviceId) : [];
+  const requestedServiceIds = new Set(
+    data.interviewItems.filter((it) => it.Status !== "Rejected").map((it) => it.ServiceID)
+  );
 
   return (
     <div className="space-y-6">
@@ -79,20 +84,22 @@ function Body({ user }) {
       <div className="card">
         <h2 className="font-semibold mb-4">My Interview</h2>
         {data.interviewItems.length === 0 && (
-          <p style={{ color: "var(--muted)" }}>No interview booked yet — pick a slot below.</p>
+          <p style={{ color: "var(--muted)" }}>No interview requested yet — request one below.</p>
         )}
         {data.interviewItems.map((it) => {
           const slot = scheduleById[it.ScheduleItemID];
+          const serviceName = data.services.find((s) => s.ServiceID === it.ServiceID)?.Name || it.ServiceID;
           return (
             <div key={it.InterviewID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
-                {slot ? `${formatDate(slot.Date)} at ${slot.Time} with ${slot.Facilitator}` : it.ScheduleItemID}{" "}
+                {serviceName}
+                {slot ? ` — ${formatDate(slot.Date)} at ${slot.Time} with ${slot.Facilitator}` : ""}{" "}
                 <span className="badge badge-info">{it.Status}</span>
               </p>
 
               {it.Status === "Pending" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Awaiting Management approval.
+                  Awaiting Management approval — a slot will be assigned when approved.
                 </p>
               )}
               {it.Status === "Rejected" && (
@@ -149,48 +156,25 @@ function Body({ user }) {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Available Interview Slots</h2>
-        <select className="field mb-3" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
-          <option value="">Select a service…</option>
-          {eligibleServices.map((s) => (
-            <option key={s.ServiceID} value={s.ServiceID}>
-              {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
-            </option>
-          ))}
-        </select>
-        {serviceId && (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Instructor</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {slotsForService.map((s) => (
-                <tr key={s.ScheduleID}>
-                  <td>{formatDate(s.Date)}</td>
-                  <td>{s.Time}</td>
-                  <td>{s.Facilitator}</td>
-                  <td>
-                    <button className="btn" onClick={() => book(s.ScheduleID)}>
-                      Book
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {slotsForService.length === 0 && (
-                <tr>
-                  <td colSpan={4} style={{ color: "var(--muted)" }}>
-                    No open slots for this service right now — check back later.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+        <h2 className="font-semibold mb-4">Request an Interview</h2>
+        <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
+          Pick the service you&apos;re interviewing for. No need to choose a time — Management will assign you a
+          slot once your request is approved.
+        </p>
+        <div className="flex gap-2">
+          <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+            <option value="">Select a service…</option>
+            {eligibleServices.map((s) => (
+              <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
+                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                {requestedServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
+              </option>
+            ))}
+          </select>
+          <button className="btn" disabled={!serviceId} onClick={requestInterview}>
+            Request Interview
+          </button>
+        </div>
       </div>
     </div>
   );

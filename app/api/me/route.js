@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
-import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime, requiredGroupForBookingType } from "@/lib/scheduleGen";
+import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime } from "@/lib/scheduleGen";
 import { requireSelfOrManagement } from "@/lib/authz";
 import { convertINRAmount } from "@/lib/fxRates";
 
@@ -60,20 +60,16 @@ export async function GET(req) {
     rawPaychecks.map(async (p) => ({ ...p, ConvertedDue: await convertINRAmount(db, p.INRDue, user.Currency || "INR", p.Year, p.Month) }))
   );
 
-  // Open pool slots this user (Trial/Interview) hasn't requested or booked yet.
-  // Includes manually-offered Trial/Interview slots AND every auto-generated
-  // Service occurrence (OccuranceID set) — any real class session doubles as
-  // an open pool slot. Gated by ServiceGroup: Trial only sees services open
-  // to Student; each Interview track (Teacher/Staff/Ambassador) only sees
-  // services open to its own matching Group — derived from this account's
-  // own UserType ("TeacherInterviewAcc" -> requiredGroupForBookingType("TeacherInterview") -> "Teacher").
-  // Multiple accounts may hold a Pending request on the same slot;
-  // Management approves one.
+  // Open pool slots this user (Trial only — Interview accounts no longer
+  // pick their own slot, see TKT-0021: they request an interview and
+  // Management assigns the actual slot on approval) hasn't requested or
+  // booked yet. Includes manually-offered Trial slots AND every
+  // auto-generated Service occurrence (OccuranceID set) — any real class
+  // session doubles as an open pool slot. Gated by ServiceGroup: Trial
+  // only sees services open to Student. Multiple accounts may hold a
+  // Pending request on the same slot; Management approves one.
   const myRequestedTrialSlotIds = new Set(
     trialItems.filter((t) => t.Status !== "Rejected").map((t) => t.ScheduleItemID)
-  );
-  const myRequestedInterviewSlotIds = new Set(
-    interviewItems.filter((i) => i.Status !== "Rejected").map((i) => i.ScheduleItemID)
   );
   // Use the Service's current Group, not the ScheduleItem's own baked-in
   // ServiceGroup snapshot — a Service's Group can be edited after its
@@ -92,15 +88,6 @@ export async function GET(req) {
         !isSlotBooked(db, s.ScheduleID) &&
         !myRequestedTrialSlotIds.has(s.ScheduleID) &&
         groupMatches(currentGroupOf(s), "Student")
-    )
-  );
-  const interviewRequiredGroup = requiredGroupForBookingType(user.UserType.replace(/Acc$/, ""));
-  const availableInterviewSlots = sortByDateTime(
-    db.scheduleItems.filter(
-      (s) =>
-        !isSlotBooked(db, s.ScheduleID) &&
-        !myRequestedInterviewSlotIds.has(s.ScheduleID) &&
-        groupMatches(currentGroupOf(s), interviewRequiredGroup)
     )
   );
 
@@ -160,7 +147,6 @@ export async function GET(req) {
     invoices,
     paychecks,
     availableTrialSlots,
-    availableInterviewSlots,
     children: childrenSafe,
     services: db.services,
     guides: (db.guides || []).filter((g) => (g.UserTypes || []).includes(user.UserType)),
