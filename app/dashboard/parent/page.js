@@ -10,7 +10,7 @@ import GuidesSection from "@/components/GuidesSection";
 import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
-import { api, useSort } from "@/lib/client";
+import { api, useSort, todayDateStr } from "@/lib/client";
 import { amountDueInOwnCurrency, batchesOf, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 
@@ -90,7 +90,12 @@ function Body({ user }) {
 function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, onRescheduleSubmitted }) {
   const { student, schedule, attendance, invoices, enrollments, rescheduleRequests } = child;
   const [view, setView] = useState("weekly");
-  const scheduleRows = schedule.map((s) => ({ ...s, _dt: s.Date + s.Time }));
+  // TKT-0027: hide past schedule entries by default in the List view.
+  const [showPastSchedule, setShowPastSchedule] = useState(false);
+  const todayStr = todayDateStr();
+  const scheduleRows = schedule
+    .filter((s) => showPastSchedule || s.Date >= todayStr)
+    .map((s) => ({ ...s, _dt: s.Date + s.Time }));
   const invoiceRows = invoices
     .filter((i) => i.Status !== "Draft")
     .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
@@ -141,6 +146,12 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
           </button>
         </div>
       </div>
+      {view === "list" && (
+        <label className="text-sm flex items-center gap-2 mb-2" style={{ color: "var(--muted)" }}>
+          <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
+          Show past
+        </label>
+      )}
       <div className="mb-4">
         {view === "weekly" ? (
           <WeeklyOccurrences services={enrolledServices} />
@@ -177,7 +188,11 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
                 </tr>
               ))}
               {schedSort.sorted.length === 0 && (
-                <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No sessions scheduled.</td></tr>
+                <tr>
+                  <td colSpan={5} style={{ color: "var(--muted)" }}>
+                    {schedule.length === 0 ? "No sessions scheduled." : "No upcoming sessions — check \"Show past\" to see history."}
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

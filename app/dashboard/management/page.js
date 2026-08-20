@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import SessionAttendance from "@/components/SessionAttendance";
-import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
+import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient, todayDateStr } from "@/lib/client";
 import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
@@ -2873,6 +2873,9 @@ function SchedulePool() {
   const [facilitator, setFacilitator] = useState("");
   const [error, setError] = useState("");
   const [expandedAttendance, setExpandedAttendance] = useState(null);
+  // TKT-0027: hide past sessions by default in the Service Schedule list
+  // view (today's own sessions still show).
+  const [showPastSchedule, setShowPastSchedule] = useState(false);
 
   async function load() {
     const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }, { enrollments }, { attendanceItems }] = await Promise.all([
@@ -2938,8 +2941,14 @@ function SchedulePool() {
   const requiredGroup = REQUIRED_GROUP_FOR_BOOKING_TYPE[serviceType] || "Staff";
   const eligibleServices = services.filter((s) => groupMatches(s.Group, requiredGroup));
 
+  // TKT-0027: only the List view is filtered — Calendar already scopes to
+  // one month at a time via its own navigation, a different (and already
+  // reasonable) way of bounding what's shown.
+  const todayStr = todayDateStr();
+  const serviceSlotsForList = showPastSchedule ? serviceSlots : serviceSlots.filter((s) => s.Date >= todayStr);
+
   const openPoolSort = useSort(openPoolSlots, "Date");
-  const serviceSlotsSort = useSort(serviceSlots, "Date");
+  const serviceSlotsSort = useSort(serviceSlotsForList, "Date");
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -3056,6 +3065,12 @@ function SchedulePool() {
             </button>
           </div>
         </div>
+        {serviceView === "list" && (
+          <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
+            <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
+            Show past
+          </label>
+        )}
         {serviceView === "image" ? (
           <div className="space-y-3">
             <img
@@ -3134,6 +3149,13 @@ function SchedulePool() {
                 </Fragment>
                 );
               })}
+              {serviceSlotsSort.sorted.length === 0 && (
+                <tr>
+                  <td colSpan={7} style={{ color: "var(--muted)" }}>
+                    {serviceSlots.length === 0 ? "No sessions." : "No upcoming sessions — check \"Show past\" to see history."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}

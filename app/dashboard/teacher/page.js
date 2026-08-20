@@ -11,7 +11,7 @@ import ResourcesSection from "@/components/ResourcesSection";
 import GuidesSection from "@/components/GuidesSection";
 import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
-import { api, formatRate, useSort, GROUP_COLORS } from "@/lib/client";
+import { api, formatRate, useSort, GROUP_COLORS, todayDateStr } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 
@@ -24,6 +24,11 @@ function Body({ user }) {
   const [error, setError] = useState("");
   const [view, setView] = useState("weekly");
   const [expandedAttendance, setExpandedAttendance] = useState(null);
+  // TKT-0027: the List view showed every schedule item ever generated,
+  // oldest first, with no date filter at all — past sessions dominated
+  // the default view. Hidden by default (today's own sessions still
+  // show, they still need logging); toggle to see history.
+  const [showPastSchedule, setShowPastSchedule] = useState(false);
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -64,7 +69,10 @@ function Body({ user }) {
     }
   }
 
-  const scheduleRows = (data?.scheduleItems || []).map((s) => ({ ...s, _dt: s.Date + s.Time }));
+  const todayStr = todayDateStr();
+  const scheduleRows = (data?.scheduleItems || [])
+    .filter((s) => showPastSchedule || s.Date >= todayStr)
+    .map((s) => ({ ...s, _dt: s.Date + s.Time }));
   const paycheckRows = (data?.paychecks || [])
     .filter((p) => p.Status !== "Draft")
     .map((p) => ({ ...p, _period: p.Year * 100 + p.Month }));
@@ -159,6 +167,12 @@ function Body({ user }) {
             </button>
           </div>
         </div>
+        {view === "list" && (
+          <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
+            <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
+            Show past
+          </label>
+        )}
         {view === "weekly" ? (
           <WeeklyOccurrences services={enrolledServices} />
         ) : view === "image" ? (
@@ -231,7 +245,9 @@ function Body({ user }) {
               {schedSort.sorted.length === 0 && (
                 <tr>
                   <td colSpan={7} style={{ color: "var(--muted)" }}>
-                    No sessions yet — ask Management to enroll you in a Service.
+                    {data.scheduleItems.length === 0
+                      ? "No sessions yet — ask Management to enroll you in a Service."
+                      : "No upcoming sessions — check \"Show past\" to see history."}
                   </td>
                 </tr>
               )}
