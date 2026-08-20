@@ -242,7 +242,7 @@ export async function POST(req) {
       );
       if (already) continue;
 
-      const { amount, currency } = computeHoursAndAmount(db, { userId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, year: y, month: m });
+      const { amount, currency } = computeHoursAndAmount(db, { userId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, year: y, month: m, assumePresentIfUnlogged: true });
       const fxRate = await getRateToINR(db, currency, y, m);
       const invoiceINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
       const invoice = {
@@ -284,12 +284,16 @@ export async function POST(req) {
     );
     if (oldFlatAlreadyExists) continue;
 
+    // TKT-0035: unlike paychecks, an invoice bills for a scheduled class
+    // even if nobody logged its attendance -- a Student can't withhold
+    // payment just because logging didn't happen.
     const { scheduledHours, attendedHours, amount, currency, billingType, hasUnresolvedAttendance } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       batchId: enr.BatchID,
       year: y,
       month: m,
+      assumePresentIfUnlogged: true,
     });
     // Same "flag, don't fail" as before this rewrite — a genuinely-zero
     // scheduleless month for an active Monthly/Hourly enrollment is the
@@ -407,6 +411,7 @@ export async function PATCH(req) {
         batchId: li.BatchID,
         year: invoice.Year,
         month: invoice.Month,
+        assumePresentIfUnlogged: true,
       });
       return hasUnresolvedAttendance;
     });

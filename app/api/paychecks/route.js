@@ -208,12 +208,17 @@ export async function POST(req) {
     );
     if (oldFlatAlreadyExists) continue;
 
+    // TKT-0035: unlike invoices, a paycheck only pays for hours someone
+    // actually logged -- Staff aren't paid for a class nobody confirmed
+    // happened (assumePresentIfUnlogged: false is also the function's own
+    // default; explicit here for clarity against invoices' opposite call).
     const { scheduledHours, attendedHours, amount, currency, billingType, hasUnresolvedAttendance } = computeHoursAndAmount(db, {
       userId: enr.UserID,
       serviceId: enr.ServiceID,
       batchId: enr.BatchID,
       year: y,
       month: m,
+      assumePresentIfUnlogged: false,
     });
     const zeroScheduleWarning = scheduledHours <= 0;
     // TKT-0037: same as invoices — an unresolved attendance conflict
