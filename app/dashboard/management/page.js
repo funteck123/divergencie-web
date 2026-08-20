@@ -5,7 +5,7 @@ import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient } from "@/lib/client";
-import { ratesOf, rateById, batchesOf, batchById, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
+import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
@@ -3426,7 +3426,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                   <select className="field" value={row.batchId} onChange={(e) => pickBatchAt(index, e.target.value)} required>
                     {availableBatches.map((b) => (
                       <option key={b.BatchID} value={b.BatchID}>
-                        {b.BatchName}
+                        {b.BatchName}{batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}
                       </option>
                     ))}
                   </select>
@@ -3637,7 +3637,7 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
           <select className="field" value={batchId} onChange={(e) => pickBatch(e.target.value)}>
             {availableBatches.map((b) => (
               <option key={b.BatchID} value={b.BatchID}>
-                {b.BatchName}
+                {b.BatchName}{batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}
               </option>
             ))}
           </select>
