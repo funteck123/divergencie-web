@@ -3,6 +3,9 @@
 .env.production
 node_modules/
 .next/
+
+# Local page screenshots (see scripts/snapshot.mjs) — not part of the repo
+snapshots/
 dev.db
 sandbox.db
 *.db-journal
