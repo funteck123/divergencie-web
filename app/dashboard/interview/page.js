@@ -93,7 +93,11 @@ function Body({ user }) {
             <div key={it.InterviewID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
                 {serviceName}
-                {slot ? ` — ${formatDate(slot.Date)} at ${slot.Time} with ${slot.Facilitator}` : ""}{" "}
+                {/* TKT-0018: candidate sees the assigned date/time, not who's
+                    interviewing them — same reasoning as the removed slot
+                    picker (TKT-0021): instructor identity isn't the
+                    candidate's decision to make or need to know in advance. */}
+                {slot ? ` — ${formatDate(slot.Date)} at ${slot.Time}` : ""}{" "}
                 <span className="badge badge-info">{it.Status}</span>
               </p>
 
