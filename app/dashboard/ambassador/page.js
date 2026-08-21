@@ -297,25 +297,31 @@ function AttendanceForm({ defaultHrs, onSubmit }) {
   const [hrs, setHrs] = useState(defaultHrs);
   return (
     <form
-      className="flex gap-1 items-center"
+      className="flex gap-1 items-end"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit(status, hrs);
       }}
     >
-      <select className="field" style={{ width: 100 }} value={status} onChange={(e) => setStatus(e.target.value)}>
-        <option>Present</option>
-        <option>Absent</option>
-        <option>Late</option>
-      </select>
-      <input
-        className="field"
-        style={{ width: 60 }}
-        type="number"
-        step="0.5"
-        value={hrs}
-        onChange={(e) => setHrs(e.target.value)}
-      />
+      <label className="text-xs" style={{ color: "var(--muted)" }}>
+        Status
+        <select className="field" style={{ width: 100, display: "block" }} value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option>Present</option>
+          <option>Absent</option>
+          <option>Late</option>
+        </select>
+      </label>
+      <label className="text-xs" style={{ color: "var(--muted)" }}>
+        Hours
+        <input
+          className="field"
+          style={{ width: 60, display: "block" }}
+          type="number"
+          step="0.5"
+          value={hrs}
+          onChange={(e) => setHrs(e.target.value)}
+        />
+      </label>
       <button className="btn-ghost" type="submit">
         Log
       </button>

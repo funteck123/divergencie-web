@@ -647,9 +647,15 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
   }
 
   return (
-    <div className="flex gap-2 items-center flex-wrap">
-      <input className="field" style={{ width: 130 }} type="date" min={todayStr} value={date} onChange={(e) => setDate(e.target.value)} />
-      <input className="field" style={{ width: 100 }} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+    <div className="flex gap-2 items-end flex-wrap">
+      <label className="text-xs" style={{ color: "var(--muted)" }}>
+        Date
+        <input className="field" style={{ width: 130, display: "block" }} type="date" min={todayStr} value={date} onChange={(e) => setDate(e.target.value)} />
+      </label>
+      <label className="text-xs" style={{ color: "var(--muted)" }}>
+        Time
+        <input className="field" style={{ width: 100, display: "block" }} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+      </label>
       <input
         className="field"
         style={{ width: 70 }}
@@ -1580,13 +1586,18 @@ function CreateAccount({ onCreated, users }) {
 
         <input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
 
-        <select className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
-          {CURRENCIES_FULL.map((c) => (
-            <option key={c.code} value={c.code}>
-              {c.code} — {c.name}
-            </option>
-          ))}
-        </select>
+        <div>
+          <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Currency
+          </label>
+          <select className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+            {CURRENCIES_FULL.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code} — {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {userType === "Parent" && (
           <div>
@@ -2182,13 +2193,18 @@ function Services() {
             <>
               <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
               {isStaffRole && (
-                <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
-                  {DEPARTMENTS.map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+                    Department
+                  </label>
+                  <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+                    {DEPARTMENTS.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
             </>
           )}
@@ -2279,14 +2295,17 @@ function Services() {
                 Rates
               </label>
               {flatRates.map((r, ri) => (
-                <div key={ri} className="flex gap-2 items-center">
-                  <select className="field" style={{ maxWidth: 130 }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
-                    {CURRENCIES_FULL.map((cur) => (
-                      <option key={cur.code} value={cur.code}>
-                        {cur.code}
-                      </option>
-                    ))}
-                  </select>
+                <div key={ri} className="flex gap-2 items-end">
+                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                    Currency
+                    <select className="field" style={{ maxWidth: 130, display: "block" }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
+                      {CURRENCIES_FULL.map((cur) => (
+                        <option key={cur.code} value={cur.code}>
+                          {cur.code}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                   <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateFlatRate(ri, "rate", e.target.value)} />
                   <input
                     className="field"
@@ -2296,13 +2315,16 @@ function Services() {
                     value={r.description}
                     onChange={(e) => updateFlatRate(ri, "description", e.target.value)}
                   />
-                  <select className="field" style={{ maxWidth: 110 }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
-                    {BILLING_TYPES.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
+                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                    Billing type
+                    <select className="field" style={{ maxWidth: 110, display: "block" }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
+                      {BILLING_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                   {flatRates.length > 1 && (
                     <button type="button" className="btn-ghost" onClick={() => removeFlatRate(ri)}>
                       ✕
@@ -2409,14 +2431,17 @@ function Services() {
                           Rates (whoever enrolls in this batch picks one — a rate can optionally be reserved for one Group)
                         </label>
                         {b.rates.map((r, ri) => (
-                          <div key={ri} className="flex gap-2 items-center">
-                            <select className="field" style={{ maxWidth: 130 }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
-                              {CURRENCIES_FULL.map((cur) => (
-                                <option key={cur.code} value={cur.code}>
-                                  {cur.code}
-                                </option>
-                              ))}
-                            </select>
+                          <div key={ri} className="flex gap-2 items-end">
+                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                              Currency
+                              <select className="field" style={{ maxWidth: 130, display: "block" }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
+                                {CURRENCIES_FULL.map((cur) => (
+                                  <option key={cur.code} value={cur.code}>
+                                    {cur.code}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
                             <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} />
                             <input
                               className="field"
@@ -2426,13 +2451,16 @@ function Services() {
                               value={r.description}
                               onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
                             />
-                            <select className="field" style={{ maxWidth: 110 }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
-                              {BILLING_TYPES.map((t) => (
-                                <option key={t} value={t}>
-                                  {t}
-                                </option>
-                              ))}
-                            </select>
+                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                              Billing type
+                              <select className="field" style={{ maxWidth: 110, display: "block" }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
+                                {BILLING_TYPES.map((t) => (
+                                  <option key={t} value={t}>
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
                             <select className="field" style={{ maxWidth: 130 }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
                               <option value="">Any of the above</option>
                               {group.map((g) => (
@@ -3096,20 +3124,25 @@ function SchedulePool() {
           auto-bills one month in advance for that Service.
         </p>
         <form onSubmit={submit} className="space-y-3">
-          <select
-            className="field"
-            value={serviceType}
-            onChange={(e) => {
-              setServiceType(e.target.value);
-              setServiceId("");
-            }}
-          >
-            {BOOKING_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {BOOKING_TYPE_LABEL[t]}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+              Slot type
+            </label>
+            <select
+              className="field"
+              value={serviceType}
+              onChange={(e) => {
+                setServiceType(e.target.value);
+                setServiceId("");
+              }}
+            >
+              {BOOKING_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {BOOKING_TYPE_LABEL[t]}
+                </option>
+              ))}
+            </select>
+          </div>
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
             <option value="">Select service…</option>
             {eligibleServices.map((s) => (
@@ -3334,9 +3367,15 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
 
   if (editing) {
     return (
-      <div className="flex gap-2 items-center flex-wrap">
-        <input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+      <div className="flex gap-2 items-end flex-wrap">
+        <label className="text-xs" style={{ color: "var(--muted)" }}>
+          New date
+          <input className="field" style={{ display: "block" }} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </label>
+        <label className="text-xs" style={{ color: "var(--muted)" }}>
+          New time
+          <input className="field" style={{ display: "block" }} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        </label>
         <button
           className="btn-ghost"
           onClick={() => {

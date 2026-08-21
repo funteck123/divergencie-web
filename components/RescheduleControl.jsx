@@ -35,9 +35,15 @@ export default function RescheduleControl({ slot, userId, pendingRequest, onSubm
 
   if (editing) {
     return (
-      <div className="flex gap-2 items-center flex-wrap">
-        <input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+      <div className="flex gap-2 items-end flex-wrap">
+        <label className="text-xs" style={{ color: "var(--muted)" }}>
+          New date
+          <input className="field" style={{ display: "block" }} type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </label>
+        <label className="text-xs" style={{ color: "var(--muted)" }}>
+          New time
+          <input className="field" style={{ display: "block" }} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+        </label>
         <button
           className="btn-ghost"
           onClick={async () => {

@@ -224,20 +224,26 @@ export function MiniAttendanceForm({ defaultHrs, onSubmit }) {
         onSubmit(status, hrs);
       }}
     >
-      <select className="field" style={{ fontSize: "0.75rem", padding: "0.2rem 0.4rem" }} value={status} onChange={(e) => setStatus(e.target.value)}>
-        <option>Present</option>
-        <option>Absent</option>
-        <option>Late</option>
-      </select>
-      <div className="flex gap-1">
-        <input
-          className="field"
-          style={{ fontSize: "0.75rem", padding: "0.2rem 0.4rem", width: 50 }}
-          type="number"
-          step="0.5"
-          value={hrs}
-          onChange={(e) => setHrs(e.target.value)}
-        />
+      <label style={{ fontSize: "0.7rem", color: "var(--muted)", display: "block" }}>
+        Status
+        <select className="field" style={{ fontSize: "0.75rem", padding: "0.2rem 0.4rem", display: "block", width: "100%" }} value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option>Present</option>
+          <option>Absent</option>
+          <option>Late</option>
+        </select>
+      </label>
+      <div className="flex gap-1 items-end">
+        <label style={{ fontSize: "0.7rem", color: "var(--muted)" }}>
+          Hours
+          <input
+            className="field"
+            style={{ fontSize: "0.75rem", padding: "0.2rem 0.4rem", width: 50, display: "block" }}
+            type="number"
+            step="0.5"
+            value={hrs}
+            onChange={(e) => setHrs(e.target.value)}
+          />
+        </label>
         <button className="btn-ghost" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }} type="submit">
           Log
         </button>
