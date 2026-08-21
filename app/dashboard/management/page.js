@@ -4672,6 +4672,58 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
   );
 }
 
+// Shown on an Invoice/Paycheck row once the student or staff member has
+// self-reported it paid or received, but INRDue hasn't caught up yet
+// (still shows the full or a stale amount). Approving in full sets the
+// due to 0 in one click; Partial lets Management record a smaller
+// remaining due instead of the whole amount, for a part payment.
+function ApprovePaymentControl({ onApprove }) {
+  const [customizing, setCustomizing] = useState(false);
+  const [customDue, setCustomDue] = useState("0");
+  const [saving, setSaving] = useState(false);
+
+  async function approve(dueValue) {
+    setSaving(true);
+    try {
+      await onApprove(dueValue);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (customizing) {
+    return (
+      <span className="flex items-center gap-1 flex-wrap">
+        <input
+          className="field"
+          style={{ width: 90 }}
+          type="number"
+          step="0.01"
+          value={customDue}
+          onChange={(e) => setCustomDue(e.target.value)}
+        />
+        <button className="btn" disabled={saving} onClick={() => approve(Number(customDue))}>
+          {saving ? "Approving…" : "Approve"}
+        </button>
+        <button className="btn-ghost" disabled={saving} onClick={() => setCustomizing(false)}>
+          Cancel
+        </button>
+      </span>
+    );
+  }
+
+  return (
+    <span className="flex items-center gap-1 flex-wrap">
+      <button className="btn" disabled={saving} onClick={() => approve(0)}>
+        {saving ? "Approving…" : "Approve (paid in full)"}
+      </button>
+      <button className="btn-ghost" disabled={saving} onClick={() => setCustomizing(true)}>
+        Partial…
+      </button>
+    </span>
+  );
+}
+
 function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete, isDuplicateMonth }) {
   const [expanded, setExpanded] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
@@ -4680,6 +4732,10 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
   const [removing, setRemoving] = useState(false);
   const isDraft = row.Status === "Draft";
   const isLineItemInvoice = Array.isArray(row.LineItems);
+  // Student claimed this paid, but the due amount hasn't been reconciled
+  // yet — Management needs to approve it (full or partial) before it's
+  // considered settled.
+  const needsApproval = row.StudentPaidFlag && Number(row.INRDue) > 0;
 
   function serviceNameOf(id, batchId) {
     const s = services.find((s) => s.ServiceID === id);
@@ -4792,10 +4848,17 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
               {formatDate(row.PaidAt)}
             </div>
           )}
+          {needsApproval && (
+            <div className="text-xs" style={{ color: "var(--warn)" }}>
+              Needs approval
+            </div>
+          )}
         </td>
         <td>
           <span className="flex items-center gap-1 flex-wrap">
-            {editingDue ? (
+            {needsApproval ? (
+              <ApprovePaymentControl onApprove={(dueValue) => onPatch(row.InvoiceID, { inrDue: dueValue })} />
+            ) : editingDue ? (
               <>
                 <button className="btn" disabled={saving} onClick={saveDue}>
                   {saving ? "Saving…" : "Save"}
@@ -5082,6 +5145,10 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
   const [removing, setRemoving] = useState(false);
   const isDraft = row.Status === "Draft";
   const isLineItemPaycheck = Array.isArray(row.LineItems);
+  // Staff claimed this received, but the due amount hasn't been
+  // reconciled yet — Management needs to approve it (full or partial)
+  // before it's considered settled.
+  const needsApproval = row.StaffReceivedFlag && Number(row.INRDue) > 0;
 
   function serviceNameOf(id, batchId) {
     const s = services.find((s) => s.ServiceID === id);
@@ -5187,10 +5254,17 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
               {formatDate(row.ReceivedAt)}
             </div>
           )}
+          {needsApproval && (
+            <div className="text-xs" style={{ color: "var(--warn)" }}>
+              Needs approval
+            </div>
+          )}
         </td>
         <td>
           <span className="flex items-center gap-1 flex-wrap">
-            {editingDue ? (
+            {needsApproval ? (
+              <ApprovePaymentControl onApprove={(dueValue) => onPatch(row.PaycheckID, { inrDue: dueValue })} />
+            ) : editingDue ? (
               <>
                 <button className="btn" disabled={saving} onClick={saveDue}>
                   {saving ? "Saving…" : "Save"}
