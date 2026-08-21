@@ -77,7 +77,7 @@ export async function POST(req) {
   }
 
   const { newType, prefix, extra } = mapping;
-  const newUserId = nextId(db, prefix);
+  const newUserId = await nextId(db, prefix);
 
   const newUser = {
     UserID: newUserId,

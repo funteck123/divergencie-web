@@ -28,7 +28,7 @@ export async function POST(req) {
   }
 
   const db = await readDB();
-  const guide = { GuideID: nextId(db, "GDE"), Name: name, Url: url, UserTypes: userTypes };
+  const guide = { GuideID: await nextId(db, "GDE"), Name: name, Url: url, UserTypes: userTypes };
   db.guides = db.guides || [];
   db.guides.push(guide);
   await writeDB(db, ["guides"]);

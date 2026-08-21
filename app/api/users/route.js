@@ -224,7 +224,7 @@ export async function POST(req) {
   }
 
   const db = await readDB();
-  const userId = nextId(db, ID_PREFIX[userType]);
+  const userId = await nextId(db, ID_PREFIX[userType]);
   const user = { UserID: userId, UserType: userType, Name: name, Status: "Active" };
   if (userType === "Parent") user.StudentIDs = studentIds;
   if (["Staff", "Teacher", "Ambassador"].includes(userType)) {

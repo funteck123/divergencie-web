@@ -47,7 +47,7 @@ export async function POST(req) {
   }
 
   const item = {
-    ScheduleID: nextId(db, "SCH"),
+    ScheduleID: await nextId(db, "SCH"),
     ServiceID: service.ServiceID,
     ServiceName: service.Name,
     ServiceType: serviceType, // distinguishes pool slots (Trial/*Interview) from real occurrences

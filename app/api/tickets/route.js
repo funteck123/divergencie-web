@@ -29,7 +29,7 @@ export async function POST(req) {
 
   const db = await readDB();
   const ticket = {
-    TicketID: nextId(db, "TKT"),
+    TicketID: await nextId(db, "TKT"),
     SenderUserID: session.userId,
     SenderUserType: session.userType,
     Message: message.trim(),

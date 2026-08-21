@@ -72,7 +72,7 @@ export async function POST(req) {
   }
 
   const request = {
-    RescheduleRequestID: nextId(db, "RSR"),
+    RescheduleRequestID: await nextId(db, "RSR"),
     ScheduleItemID: scheduleId,
     RequestedBy: userId,
     RequestedDate: requestedDate,

@@ -48,7 +48,7 @@ export async function POST(req) {
   if (!enrollment) {
     const defaultRate = ratesOf(service, defaultBatch?.BatchID)[0];
     enrollment = {
-      EnrolmentID: nextId(db, "ENR"),
+      EnrolmentID: await nextId(db, "ENR"),
       UserID: studentId,
       ServiceID: trial.ServiceID,
       BatchID: defaultBatch?.BatchID || "",
@@ -75,7 +75,7 @@ export async function POST(req) {
   );
   if (!invoice) {
     invoice = {
-      InvoiceID: nextId(db, "INV"),
+      InvoiceID: await nextId(db, "INV"),
       StudentID: studentId,
       ServiceID: trial.ServiceID,
       BatchID: enrollment.BatchID,

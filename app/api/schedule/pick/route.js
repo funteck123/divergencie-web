@@ -47,7 +47,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "You already requested this slot." }, { status: 409 });
     }
     const item = {
-      TrialID: nextId(db, "TRI"),
+      TrialID: await nextId(db, "TRI"),
       TrialAccID: userId,
       ScheduleItemID: scheduleId,
       ServiceID: slot.ServiceID,
@@ -79,7 +79,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "You already have a request in progress for this service." }, { status: 409 });
   }
   const item = {
-    InterviewID: nextId(db, "IVW"),
+    InterviewID: await nextId(db, "IVW"),
     InterviewAccID: userId,
     ScheduleItemID: "",
     ServiceID: serviceId,

@@ -151,7 +151,7 @@ export async function POST(req) {
   }
 
   const item = {
-    AttendanceID: nextId(db, "ATT"),
+    AttendanceID: await nextId(db, "ATT"),
     ScheduleItemID: scheduleItemId,
     UserID: userId,
     Date: slot.Date,

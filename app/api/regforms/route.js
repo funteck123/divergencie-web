@@ -67,7 +67,7 @@ export async function PATCH(req) {
       return NextResponse.json({ error: `Unknown RequestedType "${form.RequestedType}".` }, { status: 400 });
     }
     const { userType, prefix } = mapping;
-    const userId = nextId(db, prefix);
+    const userId = await nextId(db, prefix);
 
     const user = {
       UserID: userId,

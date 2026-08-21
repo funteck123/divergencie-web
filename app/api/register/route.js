@@ -19,7 +19,7 @@ export async function POST(req) {
 
   const db = await readDB();
   const regForm = {
-    RegFormID: nextId(db, "REG"),
+    RegFormID: await nextId(db, "REG"),
     Name: name,
     Email: email || "",
     RequestedType: requestedType,

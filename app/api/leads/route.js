@@ -14,7 +14,7 @@ export async function POST(req) {
 
   const db = await readDB();
   const lead = {
-    LeadID: nextId(db, "LEAD"),
+    LeadID: await nextId(db, "LEAD"),
     Name: name,
     Email: email,
     Phone: phone || "",

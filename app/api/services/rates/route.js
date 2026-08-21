@@ -41,7 +41,7 @@ export async function POST(req) {
   }
 
   const newRate = {
-    RateID: nextId(db, "RATE"),
+    RateID: await nextId(db, "RATE"),
     Currency: currency || "INR",
     Rate: Number(rate) || 0,
     Description: (description || "").trim(),
