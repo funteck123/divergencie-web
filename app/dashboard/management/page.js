@@ -490,7 +490,20 @@ function Pipeline() {
               <tr key={i.InterviewID}>
                 <td>{i._name}</td>
                 <td>{i._service}</td>
-                <td><span className="badge badge-info">{i.Status}</span></td>
+                <td>
+                  <span className="badge badge-info">{i.Status}</span>
+                  {/* TKT-0033 */}
+                  {i.OfferSentAt && (
+                    <div className="text-xs" style={{ color: "var(--muted)" }}>
+                      Sent {formatDate(i.OfferSentAt)}
+                    </div>
+                  )}
+                  {i.OfferAcceptedAt && (
+                    <div className="text-xs" style={{ color: "var(--muted)" }}>
+                      Accepted {formatDate(i.OfferAcceptedAt)}
+                    </div>
+                  )}
+                </td>
                 <td style={{ color: "var(--muted)" }}>
                   {i.TaskSubmissionLink ? (
                     <a href={i.TaskSubmissionLink} target="_blank" rel="noreferrer" className="underline">
@@ -4458,6 +4471,12 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
         </td>
         <td>
           <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
+          {/* TKT-0033 */}
+          {row.SentAt && (
+            <div className="text-xs" style={{ color: "var(--muted)" }}>
+              {formatDate(row.SentAt)}
+            </div>
+          )}
         </td>
         <td>
           <span className="flex items-center gap-2 flex-wrap">
@@ -4470,6 +4489,11 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
               </a>
             )}
           </span>
+          {row.PaidAt && (
+            <div className="text-xs" style={{ color: "var(--muted)" }}>
+              {formatDate(row.PaidAt)}
+            </div>
+          )}
         </td>
         <td>
           <span className="flex items-center gap-1 flex-wrap">
@@ -4820,11 +4844,22 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
         </td>
         <td>
           <span className={`badge ${row.Status === "Sent" ? "badge-good" : "badge-pending"}`}>{row.Status}</span>
+          {/* TKT-0033 */}
+          {row.SentAt && (
+            <div className="text-xs" style={{ color: "var(--muted)" }}>
+              {formatDate(row.SentAt)}
+            </div>
+          )}
         </td>
         <td>
           <span className={`badge ${row.StaffReceivedFlag ? "badge-good" : "badge-pending"}`}>
             {row.StaffReceivedFlag ? "Received" : "Not received"}
           </span>
+          {row.ReceivedAt && (
+            <div className="text-xs" style={{ color: "var(--muted)" }}>
+              {formatDate(row.ReceivedAt)}
+            </div>
+          )}
         </td>
         <td>
           <span className="flex items-center gap-1 flex-wrap">

@@ -446,9 +446,20 @@ export async function PATCH(req) {
     // on a monthly invoice — only Status, INRDue (partial-payment
     // tracking, same manual-adjustment mechanic as before), and the
     // self-report flag are.
-    if (status !== undefined) invoice.Status = status;
+    // TKT-0033: SentAt/PaidAt stamp the first time each transition
+    // actually happens — never overwritten by a later edit that leaves
+    // Status/StudentPaidFlag unchanged, and cleared back out if the flag
+    // is ever unset (mark-as-unpaid), so it always reflects the CURRENT
+    // paid state's own timestamp, not stale history.
+    if (status !== undefined) {
+      invoice.Status = status;
+      if (status === "Sent" && !invoice.SentAt) invoice.SentAt = new Date().toISOString();
+    }
     if (inrDue !== undefined) invoice.INRDue = Number(inrDue);
-    if (studentPaidFlag !== undefined) invoice.StudentPaidFlag = Boolean(studentPaidFlag);
+    if (studentPaidFlag !== undefined) {
+      invoice.StudentPaidFlag = Boolean(studentPaidFlag);
+      invoice.PaidAt = studentPaidFlag ? invoice.PaidAt || new Date().toISOString() : "";
+    }
     summary = managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`;
   } else {
     // Legacy flat-shape (OneOff) invoice — unchanged behavior.
@@ -457,8 +468,14 @@ export async function PATCH(req) {
     if (amount !== undefined) invoice.Amount = Number(amount);
     if (inrAmount !== undefined) invoice.INRAmount = Number(inrAmount);
     if (inrDue !== undefined) invoice.INRDue = Number(inrDue);
-    if (status !== undefined) invoice.Status = status;
-    if (studentPaidFlag !== undefined) invoice.StudentPaidFlag = Boolean(studentPaidFlag);
+    if (status !== undefined) {
+      invoice.Status = status;
+      if (status === "Sent" && !invoice.SentAt) invoice.SentAt = new Date().toISOString();
+    }
+    if (studentPaidFlag !== undefined) {
+      invoice.StudentPaidFlag = Boolean(studentPaidFlag);
+      invoice.PaidAt = studentPaidFlag ? invoice.PaidAt || new Date().toISOString() : "";
+    }
     summary = managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`;
   }
 

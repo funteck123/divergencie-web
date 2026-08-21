@@ -103,8 +103,14 @@ export async function PATCH(req) {
     return NextResponse.json({ error: `Request already ${request.Status}.` }, { status: 400 });
   }
 
+  // TKT-0033: ReviewedAt stamps the one and only time this request is ever
+  // decided — a single field covers both actions since Status itself
+  // already tells you which; unlike Invoices/Paychecks/Interview offers, a
+  // request can't be un-approved/un-rejected back to Pending (blocked
+  // above), so there's no "cleared on undo" case to handle here.
   if (action === "reject") {
     request.Status = "Rejected";
+    request.ReviewedAt = new Date().toISOString();
     await writeDB(db);
     await logAudit({ actorUserId: session.userId, action: "reject", entityType: "RescheduleRequest", entityId: request.RescheduleRequestID, summary: `Rejected reschedule request ${request.RescheduleRequestID}`, snapshot: request });
     return NextResponse.json({ rescheduleRequest: request });
@@ -116,6 +122,7 @@ export async function PATCH(req) {
   slot.RescheduledDate = request.RequestedDate;
   slot.RescheduledTime = request.RequestedTime;
   request.Status = "Approved";
+  request.ReviewedAt = new Date().toISOString();
   await writeDB(db);
   await logAudit({
     actorUserId: session.userId,

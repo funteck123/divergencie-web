@@ -340,9 +340,19 @@ export async function PATCH(req) {
     await refreshStaffTotal(db, paycheck);
     summary = `Edited line item ${lineItemIndex} on paycheck ${paycheck.PaycheckID}`;
   } else if (isLineItemPaycheck) {
-    if (status !== undefined) paycheck.Status = status;
+    // TKT-0033: SentAt/ReceivedAt stamp the first time each transition
+    // actually happens (never overwritten by a later edit that leaves
+    // Status/StaffReceivedFlag unchanged), and ReceivedAt clears if the
+    // flag is ever unset — same pattern as Invoices' SentAt/PaidAt.
+    if (status !== undefined) {
+      paycheck.Status = status;
+      if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
+    }
     if (inrDue !== undefined) paycheck.INRDue = Number(inrDue);
-    if (staffReceivedFlag !== undefined) paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
+    if (staffReceivedFlag !== undefined) {
+      paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
+      paycheck.ReceivedAt = staffReceivedFlag ? paycheck.ReceivedAt || new Date().toISOString() : "";
+    }
     summary = managementOnly ? `Edited paycheck ${paycheck.PaycheckID}` : `Staff self-reported paycheck ${paycheck.PaycheckID} as ${staffReceivedFlag ? "received" : "not received"}`;
   } else {
     if (scheduledHours !== undefined) paycheck.ScheduledHours = Number(scheduledHours);
@@ -350,8 +360,14 @@ export async function PATCH(req) {
     if (amount !== undefined) paycheck.Amount = Number(amount);
     if (inrAmount !== undefined) paycheck.INRAmount = Number(inrAmount);
     if (inrDue !== undefined) paycheck.INRDue = Number(inrDue);
-    if (status !== undefined) paycheck.Status = status;
-    if (staffReceivedFlag !== undefined) paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
+    if (status !== undefined) {
+      paycheck.Status = status;
+      if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
+    }
+    if (staffReceivedFlag !== undefined) {
+      paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
+      paycheck.ReceivedAt = staffReceivedFlag ? paycheck.ReceivedAt || new Date().toISOString() : "";
+    }
     summary = managementOnly ? `Edited paycheck ${paycheck.PaycheckID}` : `Staff self-reported paycheck ${paycheck.PaycheckID} as ${staffReceivedFlag ? "received" : "not received"}`;
   }
 

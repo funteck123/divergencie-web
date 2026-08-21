@@ -30,6 +30,9 @@ export async function POST(req) {
   const path = await uploadPaymentProof(invoiceId, file);
   invoice.StudentPaidFlag = true;
   invoice.PaymentProofPath = path;
+  // TKT-0033: when payment was actually confirmed received, not just the
+  // invoice's own creation/edit time.
+  invoice.PaidAt = new Date().toISOString();
   await writeDB(db);
   await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Invoice", entityId: invoiceId, summary: `Marked invoice ${invoiceId} as paid with proof attached` });
 

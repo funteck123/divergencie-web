@@ -21,12 +21,17 @@ export async function POST(req) {
     : requireManagement(req);
   if (error) return error;
 
+  // TKT-0033: OfferSentAt/OfferAcceptedAt stamp the first time each
+  // transition happens — "send" doubling as edit (re-sending while
+  // already OfferSent) never overwrites the original OfferSentAt.
   if (action === "send") {
     if (feedback !== undefined) item.TaskFeedback = feedback;
     if (offerLetterLink !== undefined) item.OfferLetterLink = offerLetterLink;
     item.Status = "OfferSent";
+    if (!item.OfferSentAt) item.OfferSentAt = new Date().toISOString();
   } else if (action === "accept") {
     item.Status = "OfferAccepted";
+    item.OfferAcceptedAt = new Date().toISOString();
   } else if (action === "waitlist") {
     if (feedback !== undefined) item.TaskFeedback = feedback;
     item.Status = "Waitlisted";
@@ -35,8 +40,12 @@ export async function POST(req) {
     item.Status = "Rejected";
   } else if (action === "unsend") {
     // Reverts an OfferSent back to TaskSubmitted; link/feedback stay stored
-    // so the outcome form can prefill them if Management re-sends.
+    // so the outcome form can prefill them if Management re-sends. Clears
+    // OfferSentAt too, symmetric with every other cleared-on-undo timestamp
+    // in this ticket (Invoices' PaidAt, Paychecks' ReceivedAt) — a genuine
+    // re-send after this should stamp a fresh time, not keep the old one.
     item.Status = "TaskSubmitted";
+    item.OfferSentAt = "";
   } else {
     return NextResponse.json({ error: "action must be send, accept, waitlist, reject, or unsend." }, { status: 400 });
   }
