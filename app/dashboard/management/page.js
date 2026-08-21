@@ -3039,6 +3039,54 @@ function SchedulePool() {
   const serviceSlotsSort = useSort(serviceSlotsForList, "Date");
 
   return (
+    <div className="space-y-6">
+      {/* TKT-0029: previously a pending reschedule request was only ever
+          visible on its own row, inside whichever view (Calendar or List)
+          you happened to have open for that specific slot — nothing showed
+          "everything currently awaiting your decision" in one place. This
+          reuses the exact same GET (Management-only, joined with requester
+          name + full slot) and PATCH (approve/reject) the per-slot cell
+          already calls — no new backend, just a new place to see and act
+          on all of them at once. */}
+      {rescheduleRequests.length > 0 && (
+        <div className="card">
+          <h2 className="font-semibold mb-4">Pending Reschedule Requests ({rescheduleRequests.length})</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Requested by</th>
+                <th>Current</th>
+                <th>Requested</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rescheduleRequests.map((r) => (
+                <tr key={r.RescheduleRequestID}>
+                  <td>{r.Slot?.ServiceName || "—"}</td>
+                  <td>{r.RequesterName}</td>
+                  <td>
+                    {r.Slot ? `${formatDate(r.Slot.RescheduledDate || r.Slot.Date)} ${r.Slot.RescheduledTime || r.Slot.Time}` : "—"}
+                  </td>
+                  <td>
+                    {formatDate(r.RequestedDate)} {r.RequestedTime}
+                  </td>
+                  <td className="flex gap-2">
+                    <button className="btn" onClick={() => reviewRescheduleRequest(r.RescheduleRequestID, "approve")}>
+                      Approve
+                    </button>
+                    <button className="btn-ghost" onClick={() => reviewRescheduleRequest(r.RescheduleRequestID, "reject")}>
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
     <div className="grid gap-6 md:grid-cols-2">
       <div className="card">
         <h2 className="font-semibold mb-4">Offer a Trial / Interview Slot</h2>
@@ -3248,6 +3296,7 @@ function SchedulePool() {
           </table>
         )}
       </div>
+    </div>
     </div>
   );
 }
