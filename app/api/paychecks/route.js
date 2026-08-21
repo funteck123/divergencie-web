@@ -348,6 +348,16 @@ export async function PATCH(req) {
       paycheck.Status = status;
       if (status === "Sent" && !paycheck.SentAt) paycheck.SentAt = new Date().toISOString();
     }
+    // inrAmount is a rare manual correction, not a normal edit path (the
+    // per-line-item PATCH above is what keeps INRAmount in sync day to
+    // day via deltas) — needed when that delta accounting is built on top
+    // of an already-wrong baseline (e.g. a stale $0 from an FX lookup
+    // that failed at generation time) and re-saving the same line item
+    // amount nets a zero delta, so it can't self-correct.
+    if (inrAmount !== undefined) {
+      paycheck.INRAmount = Number(inrAmount);
+      await refreshStaffTotal(db, paycheck);
+    }
     if (inrDue !== undefined) paycheck.INRDue = Number(inrDue);
     if (staffReceivedFlag !== undefined) {
       paycheck.StaffReceivedFlag = Boolean(staffReceivedFlag);
