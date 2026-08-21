@@ -265,6 +265,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
           <tr>
             <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <th>Service</th>
+            <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <th>Amount Due</th>
             <th>Total Due ({student?.Currency || "INR"})</th>
@@ -281,6 +282,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
                   ? i.LineItems.map((li) => serviceNameOf(li.ServiceID, li.BatchID)).join(", ")
                   : serviceNameOf(i.ServiceID, i.BatchID)}
               </td>
+              <td>{Array.isArray(i.LineItems) ? i.LineItems.reduce((sum, li) => sum + (Number(li.AttendedHours) || 0), 0) : i.AttendedHours}</td>
               <td>{i.Currency || "INR"} {i.Amount}</td>
               <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
               <td>{i.ConvertedDue != null ? `${student?.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
