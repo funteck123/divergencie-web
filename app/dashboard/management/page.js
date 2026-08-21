@@ -4753,7 +4753,7 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
         <td>{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td>{row.INRAmount}</td>
+        <td>INR {Number(row.INRAmount).toFixed(2)}</td>
         <td>
           {editingDue ? (
             <input
@@ -4764,7 +4764,7 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
               onChange={(e) => setInrDue(e.target.value)}
             />
           ) : (
-            row.INRDue
+            `INR ${Number(row.INRDue).toFixed(2)}`
           )}
         </td>
         <td>
@@ -5155,7 +5155,7 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
         <td>{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td>{row.INRAmount}</td>
+        <td>INR {Number(row.INRAmount).toFixed(2)}</td>
         <td>
           {editingDue ? (
             <input
@@ -5166,7 +5166,7 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
               onChange={(e) => setInrDue(e.target.value)}
             />
           ) : (
-            row.INRDue
+            `INR ${Number(row.INRDue).toFixed(2)}`
           )}
         </td>
         <td>
