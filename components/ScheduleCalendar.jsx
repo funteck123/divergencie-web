@@ -26,11 +26,20 @@ function fmtDate(y, m, d) {
 // resolution). Every OTHER caller (Staff/Ambassador/Parent dashboards)
 // doesn't pass it and keeps the exact original self-only behavior,
 // unaffected by this ticket's changes.
+// Cells past this many sessions show a "+N more" pill instead of growing —
+// paired with CELL_MAX_HEIGHT below so no cell can blow out the week row's
+// height regardless of how many sessions land on one day.
+const VISIBLE_SESSIONS_PER_CELL = 3;
+const CELL_MAX_HEIGHT = 144;
+
 export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor, renderExpanded }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [expandedId, setExpandedId] = useState(null);
+  // Date string of the day currently shown in the "full day" popover, or
+  // null — opened by clicking a cell with more sessions than fit in it.
+  const [dayModalDate, setDayModalDate] = useState(null);
 
   const itemsByDate = useMemo(() => {
     const map = {};
@@ -68,6 +77,68 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
   function attendanceFor(scheduleId) {
     const records = attendanceItems.filter((a) => a.ScheduleItemID === scheduleId);
     return records.find((a) => a.AcceptedForBilling !== false) || records[0];
+  }
+
+  // Shared chip renderer — used both for a cell's own (capped) list and for
+  // the full-day popover, so the click-to-expand-attendance behavior is
+  // identical in both places. `truncate` clips the label to one line (cell
+  // context, where a long ServiceName wrapping across several lines could
+  // by itself blow past the cell's own height and hide the "+N more" pill
+  // below it) — the popover passes false so the full label is readable.
+  function renderSessionChip(s, truncate = false) {
+    const att = attendanceFor(s.ScheduleID);
+    const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
+    // With renderExpanded, the chip is always reopenable (view roster/
+    // resolve conflicts even after attendance exists) — without it, the
+    // original self-only rule (only clickable until logged) is unchanged.
+    const clickable = renderExpanded ? true : !readOnly && !att;
+    const normalizedGroup = normalizeGroup(s.ServiceGroup);
+    const groupStyle = colorByGroup
+      ? { background: groupGradient(normalizedGroup), color: "#fff" }
+      : portalColor
+      ? { background: portalColor, color: "#fff" }
+      : {};
+    return (
+      <div key={s.ScheduleID}>
+        <button
+          type="button"
+          className={colorByGroup || portalColor ? "badge" : `badge badge-${kind}`}
+          style={{
+            display: "block",
+            width: "100%",
+            textAlign: "left",
+            cursor: clickable ? "pointer" : "default",
+            ...(truncate ? { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } : {}),
+            ...groupStyle,
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (clickable) setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID);
+          }}
+          title={`${s.ServiceName} — ${normalizedGroup.join(" + ")}`}
+        >
+          {s.Time} {s.ServiceName}
+          {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
+          {s.Facilitator ? ` · ${s.Facilitator}` : ""}
+          {att ? ` · ${att.Status}` : ""}
+        </button>
+        {expandedId === s.ScheduleID && clickable && (
+          <div className="mt-1" onClick={(e) => e.stopPropagation()}>
+            {renderExpanded ? (
+              renderExpanded(s.ScheduleID, s)
+            ) : (
+              <MiniAttendanceForm
+                defaultHrs={s.Duration}
+                onSubmit={(status, hrs) => {
+                  onLogAttendance(s.ScheduleID, status, hrs);
+                  setExpandedId(null);
+                }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    );
   }
 
   const firstOfMonth = new Date(year, month, 1);
@@ -131,7 +202,10 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      {/* Fixed-height scroll region for the week grid — keeps the nav/legend
+          above it always visible regardless of how many weeks the month
+          spans, instead of the whole card growing the page. */}
+      <div className="grid grid-cols-7 gap-1" style={{ maxHeight: 560, overflowY: "auto", paddingRight: 2 }}>
         {Array.from({ length: totalCells }).map((_, i) => {
           const dayNum = i - startOffset + 1;
           const inMonth = dayNum >= 1 && dayNum <= daysInMonth;
@@ -139,16 +213,23 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
           const sessions = inMonth ? itemsByDate[dateStr] || [] : [];
           const isToday = dateStr === todayStr;
 
+          const overflowCount = sessions.length - VISIBLE_SESSIONS_PER_CELL;
+          const hasOverflow = overflowCount > 0;
+          const visibleSessions = hasOverflow ? sessions.slice(0, VISIBLE_SESSIONS_PER_CELL) : sessions;
+
           return (
             <div
               key={i}
+              onClick={() => inMonth && sessions.length > 0 && setDayModalDate(dateStr)}
               style={{
-                minHeight: 84,
+                maxHeight: CELL_MAX_HEIGHT,
+                overflow: "hidden",
                 border: "1px solid var(--border)",
                 borderRadius: 8,
                 padding: "0.35rem",
                 background: inMonth ? "var(--panel-2)" : "transparent",
                 opacity: inMonth ? 1 : 0.35,
+                cursor: inMonth && sessions.length > 0 ? "pointer" : "default",
               }}
             >
               <div
@@ -158,57 +239,46 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
                 {inMonth ? dayNum : ""}
               </div>
               <div className="space-y-1">
-                {sessions.map((s) => {
-                  const att = attendanceFor(s.ScheduleID);
-                  const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
-                  // With renderExpanded, the chip is always reopenable (view
-                  // roster/resolve conflicts even after attendance exists) —
-                  // without it, the original self-only rule (only clickable
-                  // until logged) is unchanged.
-                  const clickable = renderExpanded ? true : !readOnly && !att;
-                  const normalizedGroup = normalizeGroup(s.ServiceGroup);
-                  const groupStyle = colorByGroup
-                    ? { background: groupGradient(normalizedGroup), color: "#fff" }
-                    : portalColor
-                    ? { background: portalColor, color: "#fff" }
-                    : {};
-                  return (
-                    <div key={s.ScheduleID}>
-                      <button
-                        type="button"
-                        className={colorByGroup || portalColor ? "badge" : `badge badge-${kind}`}
-                        style={{ display: "block", width: "100%", textAlign: "left", cursor: clickable ? "pointer" : "default", ...groupStyle }}
-                        onClick={() => clickable && setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID)}
-                        title={`${s.ServiceName} — ${normalizedGroup.join(" + ")}`}
-                      >
-                        {s.Time} {s.ServiceName}
-                        {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
-                        {s.Facilitator ? ` · ${s.Facilitator}` : ""}
-                        {att ? ` · ${att.Status}` : ""}
-                      </button>
-                      {expandedId === s.ScheduleID && clickable && (
-                        <div className="mt-1">
-                          {renderExpanded ? (
-                            renderExpanded(s.ScheduleID, s)
-                          ) : (
-                            <MiniAttendanceForm
-                              defaultHrs={s.Duration}
-                              onSubmit={(status, hrs) => {
-                                onLogAttendance(s.ScheduleID, status, hrs);
-                                setExpandedId(null);
-                              }}
-                            />
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                {visibleSessions.map((s) => renderSessionChip(s, true))}
+                {hasOverflow && (
+                  <button
+                    type="button"
+                    className="badge"
+                    style={{ display: "block", width: "100%", textAlign: "left" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDayModalDate(dateStr);
+                    }}
+                  >
+                    +{overflowCount} more
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {dayModalDate && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
+          onClick={() => setDayModalDate(null)}
+        >
+          <div
+            className="card"
+            style={{ width: "min(480px, 90vw)", maxHeight: "80vh", overflowY: "auto" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold">{dayModalDate}</h3>
+              <button className="btn-ghost" onClick={() => setDayModalDate(null)}>Close</button>
+            </div>
+            <div className="space-y-1">
+              {(itemsByDate[dayModalDate] || []).map((s) => renderSessionChip(s, false))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
