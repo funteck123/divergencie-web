@@ -26,6 +26,8 @@ function Body({ user }) {
   const [error, setError] = useState("");
   const [scheduleById, setScheduleById] = useState({});
   const [serviceId, setServiceId] = useState("");
+  const [requesting, setRequesting] = useState(false);
+  const [busyInterviewIds, setBusyInterviewIds] = useState(new Set());
 
   async function load() {
     const [bundle, { scheduleItems }] = await Promise.all([
@@ -46,6 +48,7 @@ function Body({ user }) {
   // Service. Management assigns the actual slot when approving it.
   async function requestInterview() {
     setError("");
+    setRequesting(true);
     try {
       await api("/api/schedule/pick", {
         method: "POST",
@@ -55,6 +58,8 @@ function Body({ user }) {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setRequesting(false);
     }
   }
 
@@ -64,8 +69,17 @@ function Body({ user }) {
   }
 
   async function acceptOffer(interviewId) {
-    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "accept" }) });
-    load();
+    setBusyInterviewIds((prev) => new Set(prev).add(interviewId));
+    try {
+      await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "accept" }) });
+      load();
+    } finally {
+      setBusyInterviewIds((prev) => {
+        const next = new Set(prev);
+        next.delete(interviewId);
+        return next;
+      });
+    }
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -136,8 +150,12 @@ function Body({ user }) {
                       Open offer letter
                     </a>
                   )}
-                  <button className="btn" onClick={() => acceptOffer(it.InterviewID)}>
-                    Accept offer
+                  <button
+                    className="btn"
+                    disabled={busyInterviewIds.has(it.InterviewID)}
+                    onClick={() => acceptOffer(it.InterviewID)}
+                  >
+                    {busyInterviewIds.has(it.InterviewID) ? "Accepting…" : "Accept offer"}
                   </button>
                 </div>
               )}
@@ -175,8 +193,8 @@ function Body({ user }) {
               </option>
             ))}
           </select>
-          <button className="btn" disabled={!serviceId} onClick={requestInterview}>
-            Request Interview
+          <button className="btn" disabled={!serviceId || requesting} onClick={requestInterview}>
+            {requesting ? "Requesting…" : "Request Interview"}
           </button>
         </div>
       </div>
@@ -186,17 +204,24 @@ function Body({ user }) {
 
 function TaskForm({ onSubmit }) {
   const [link, setLink] = useState("");
+  const [saving, setSaving] = useState(false);
   return (
     <form
       className="flex gap-2 mt-2"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        if (link.trim()) onSubmit(link);
+        if (!link.trim()) return;
+        setSaving(true);
+        try {
+          await onSubmit(link);
+        } finally {
+          setSaving(false);
+        }
       }}
     >
       <input className="field" placeholder="Link to your task submission…" value={link} onChange={(e) => setLink(e.target.value)} />
-      <button className="btn" type="submit">
-        Submit
+      <button className="btn" type="submit" disabled={saving}>
+        {saving ? "Submitting…" : "Submit"}
       </button>
     </form>
   );

@@ -159,6 +159,7 @@ function Applications() {
   const [regForms, setRegForms] = useState([]);
   const [issued, setIssued] = useState({}); // regFormId -> {username,password}
   const [error, setError] = useState("");
+  const [busyIds, setBusyIds] = useState(new Set());
   const { sorted, sortKey, sortDir, toggleSort } = useSort(regForms, "RegFormID");
 
   async function load() {
@@ -171,6 +172,7 @@ function Applications() {
 
   async function act(regFormId, action) {
     setError("");
+    setBusyIds((prev) => new Set(prev).add(regFormId));
     try {
       const res = await api("/api/regforms", {
         method: "PATCH",
@@ -180,6 +182,12 @@ function Applications() {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyIds((prev) => {
+        const next = new Set(prev);
+        next.delete(regFormId);
+        return next;
+      });
     }
   }
 
@@ -224,11 +232,11 @@ function Applications() {
               <td className="space-x-2">
                 {r.Status === "Pending" && (
                   <>
-                    <button className="btn" onClick={() => act(r.RegFormID, "approve")}>
-                      Approve
+                    <button className="btn" disabled={busyIds.has(r.RegFormID)} onClick={() => act(r.RegFormID, "approve")}>
+                      {busyIds.has(r.RegFormID) ? "Working…" : "Approve"}
                     </button>
-                    <button className="btn-ghost" onClick={() => act(r.RegFormID, "reject")}>
-                      Reject
+                    <button className="btn-ghost" disabled={busyIds.has(r.RegFormID)} onClick={() => act(r.RegFormID, "reject")}>
+                      {busyIds.has(r.RegFormID) ? "Working…" : "Reject"}
                     </button>
                   </>
                 )}
@@ -260,6 +268,9 @@ function Pipeline() {
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
   const [error, setError] = useState("");
+  const [busyTrialIds, setBusyTrialIds] = useState(new Set());
+  const [busyAccountIds, setBusyAccountIds] = useState(new Set());
+  const [busyRequestIds, setBusyRequestIds] = useState(new Set());
 
   async function load() {
     const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlots }] = await Promise.all([
@@ -312,11 +323,18 @@ function Pipeline() {
 
   async function addService(trialId) {
     setError("");
+    setBusyTrialIds((prev) => new Set(prev).add(trialId));
     try {
       await api("/api/trial-enroll", { method: "POST", body: JSON.stringify({ trialId }) });
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyTrialIds((prev) => {
+        const next = new Set(prev);
+        next.delete(trialId);
+        return next;
+      });
     }
   }
 
@@ -332,22 +350,36 @@ function Pipeline() {
 
   async function convert(accountId) {
     setError("");
+    setBusyAccountIds((prev) => new Set(prev).add(accountId));
     try {
       const res = await api("/api/convert", { method: "POST", body: JSON.stringify({ accountId }) });
       setIssued((prev) => ({ ...prev, [accountId]: res.credentials }));
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyAccountIds((prev) => {
+        const next = new Set(prev);
+        next.delete(accountId);
+        return next;
+      });
     }
   }
 
   async function actOnRequest(type, id, action, scheduleId) {
     setError("");
+    setBusyRequestIds((prev) => new Set(prev).add(id));
     try {
       await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action, scheduleId }) });
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyRequestIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   }
 
@@ -356,6 +388,7 @@ function Pipeline() {
   // endpoint Management's Schedule tab already uses, then approve with it.
   async function createSlotAndApprove(bookingType, interviewId, serviceId, date, time, duration, facilitator) {
     setError("");
+    setBusyRequestIds((prev) => new Set(prev).add(interviewId));
     try {
       const { scheduleItem } = await api("/api/schedule", {
         method: "POST",
@@ -364,6 +397,12 @@ function Pipeline() {
       await actOnRequest(bookingType, interviewId, "approve", scheduleItem.ScheduleID);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyRequestIds((prev) => {
+        const next = new Set(prev);
+        next.delete(interviewId);
+        return next;
+      });
     }
   }
 
@@ -381,8 +420,8 @@ function Pipeline() {
       return <span style={{ color: "var(--muted)" }}>→ {account.ConvertedToUserID}</span>;
     }
     return (
-      <button className="btn-ghost" onClick={() => convert(accountId)}>
-        Convert
+      <button className="btn-ghost" disabled={busyAccountIds.has(accountId)} onClick={() => convert(accountId)}>
+        {busyAccountIds.has(accountId) ? "Converting…" : "Convert"}
       </button>
     );
   }
@@ -445,8 +484,8 @@ function Pipeline() {
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
                   <td>
                     {t.Status === "FeedbackSubmitted" && !t.ServiceAdded && (
-                      <button className="btn" onClick={() => addService(t.TrialID)}>
-                        Add Service
+                      <button className="btn" disabled={busyTrialIds.has(t.TrialID)} onClick={() => addService(t.TrialID)}>
+                        {busyTrialIds.has(t.TrialID) ? "Adding…" : "Add Service"}
                       </button>
                     )}
                     {t.ServiceAdded && <span style={{ color: "var(--good)" }}>Added ✓</span>}
@@ -573,11 +612,19 @@ function Pipeline() {
                   <td>{formatDate(row._date)}</td>
                   <td>{row._time}</td>
                   <td className="space-x-2">
-                    <button className="btn" onClick={() => actOnRequest("Trial", row.TrialID, "approve")}>
-                      Approve
+                    <button
+                      className="btn"
+                      disabled={busyRequestIds.has(row.TrialID)}
+                      onClick={() => actOnRequest("Trial", row.TrialID, "approve")}
+                    >
+                      {busyRequestIds.has(row.TrialID) ? "Working…" : "Approve"}
                     </button>
-                    <button className="btn-ghost" onClick={() => actOnRequest("Trial", row.TrialID, "reject")}>
-                      Reject
+                    <button
+                      className="btn-ghost"
+                      disabled={busyRequestIds.has(row.TrialID)}
+                      onClick={() => actOnRequest("Trial", row.TrialID, "reject")}
+                    >
+                      {busyRequestIds.has(row.TrialID) ? "Working…" : "Reject"}
                     </button>
                   </td>
                 </tr>
@@ -597,8 +644,12 @@ function Pipeline() {
                     />
                   </td>
                   <td>
-                    <button className="btn-ghost" onClick={() => actOnRequest(row._bookingType, row.InterviewID, "reject")}>
-                      Reject
+                    <button
+                      className="btn-ghost"
+                      disabled={busyRequestIds.has(row.InterviewID)}
+                      onClick={() => actOnRequest(row._bookingType, row.InterviewID, "reject")}
+                    >
+                      {busyRequestIds.has(row.InterviewID) ? "Working…" : "Reject"}
                     </button>
                   </td>
                 </tr>
@@ -629,6 +680,16 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(1);
   const [facilitator, setFacilitator] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function runApprove(fn, ...args) {
+    setSaving(true);
+    try {
+      await fn(...args);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const candidateSlots = openPoolSlots.filter((s) => s.ServiceID === row.ServiceID && s.Date >= todayStr);
@@ -644,8 +705,13 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
             </option>
           ))}
         </select>
-        <button className="btn" type="button" disabled={!scheduleId} onClick={() => onApproveWithSlot(scheduleId)}>
-          Approve
+        <button
+          className="btn"
+          type="button"
+          disabled={!scheduleId || saving}
+          onClick={() => runApprove(onApproveWithSlot, scheduleId)}
+        >
+          {saving ? "Approving…" : "Approve"}
         </button>
         <button className="btn-ghost" type="button" onClick={() => setMode("new")}>
           + New slot instead
@@ -689,10 +755,10 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
       <button
         className="btn"
         type="button"
-        disabled={!date || !time}
-        onClick={() => onCreateAndApprove(date, time, duration, facilitator)}
+        disabled={!date || !time || saving}
+        onClick={() => runApprove(onCreateAndApprove, date, time, duration, facilitator)}
       >
-        Create &amp; Approve
+        {saving ? "Creating…" : "Create & Approve"}
       </button>
       {candidateSlots.length > 0 && (
         <button className="btn-ghost" type="button" onClick={() => setMode("existing")}>
@@ -706,6 +772,16 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
 function InterviewOutcomeForm({ initialFeedback, initialLink, onSendOffer, onWaitlist, onReject }) {
   const [feedback, setFeedback] = useState(initialFeedback || "");
   const [offerLetterLink, setOfferLetterLink] = useState(initialLink || "");
+  const [saving, setSaving] = useState(false);
+
+  async function run(fn, ...args) {
+    setSaving(true);
+    try {
+      await fn(...args);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="space-y-2">
@@ -727,15 +803,15 @@ function InterviewOutcomeForm({ initialFeedback, initialLink, onSendOffer, onWai
         <button
           className="btn"
           type="button"
-          disabled={!offerLetterLink.trim()}
-          onClick={() => onSendOffer(feedback, offerLetterLink)}
+          disabled={!offerLetterLink.trim() || saving}
+          onClick={() => run(onSendOffer, feedback, offerLetterLink)}
         >
-          Send offer
+          {saving ? "Sending…" : "Send offer"}
         </button>
-        <button className="btn-ghost" type="button" onClick={() => onWaitlist(feedback)}>
+        <button className="btn-ghost" type="button" disabled={saving} onClick={() => run(onWaitlist, feedback)}>
           Waitlist
         </button>
-        <button className="btn-ghost" style={{ color: "var(--bad)" }} type="button" onClick={() => onReject(feedback)}>
+        <button className="btn-ghost" style={{ color: "var(--bad)" }} type="button" disabled={saving} onClick={() => run(onReject, feedback)}>
           Reject
         </button>
       </div>
@@ -747,6 +823,16 @@ function OfferSentControls({ item, onSave, onUnsend }) {
   const [editing, setEditing] = useState(false);
   const [feedback, setFeedback] = useState(item.TaskFeedback || "");
   const [offerLetterLink, setOfferLetterLink] = useState(item.OfferLetterLink || "");
+  const [saving, setSaving] = useState(false);
+
+  async function run(fn, ...args) {
+    setSaving(true);
+    try {
+      await fn(...args);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (editing) {
     return (
@@ -769,17 +855,18 @@ function OfferSentControls({ item, onSave, onUnsend }) {
           <button
             className="btn"
             type="button"
-            disabled={!offerLetterLink.trim()}
-            onClick={() => {
-              onSave(feedback, offerLetterLink);
+            disabled={!offerLetterLink.trim() || saving}
+            onClick={async () => {
+              await run(onSave, feedback, offerLetterLink);
               setEditing(false);
             }}
           >
-            Save
+            {saving ? "Saving…" : "Save"}
           </button>
           <button
             className="btn-ghost"
             type="button"
+            disabled={saving}
             onClick={() => {
               setFeedback(item.TaskFeedback || "");
               setOfferLetterLink(item.OfferLetterLink || "");
@@ -798,8 +885,8 @@ function OfferSentControls({ item, onSave, onUnsend }) {
       <button className="btn-ghost" type="button" onClick={() => setEditing(true)}>
         Edit
       </button>
-      <button className="btn-ghost" type="button" onClick={onUnsend}>
-        Unsend
+      <button className="btn-ghost" type="button" disabled={saving} onClick={() => run(onUnsend)}>
+        {saving ? "Unsending…" : "Unsend"}
       </button>
     </div>
   );
@@ -811,6 +898,8 @@ function Accounts() {
   const [issued, setIssued] = useState({});
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [busyAccountIds, setBusyAccountIds] = useState(new Set());
+  const [busySaveIds, setBusySaveIds] = useState(new Set());
 
   async function load() {
     const { users } = await api("/api/users");
@@ -822,6 +911,7 @@ function Accounts() {
 
   async function convert(accountId) {
     setError("");
+    setBusyAccountIds((prev) => new Set(prev).add(accountId));
     try {
       const res = await api("/api/convert", {
         method: "POST",
@@ -831,17 +921,30 @@ function Accounts() {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyAccountIds((prev) => {
+        const next = new Set(prev);
+        next.delete(accountId);
+        return next;
+      });
     }
   }
 
   async function saveEdit(userId, fields) {
     setError("");
+    setBusySaveIds((prev) => new Set(prev).add(userId));
     try {
       await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, ...fields }) });
       setEditingId(null);
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusySaveIds((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
     }
   }
 
@@ -858,7 +961,7 @@ function Accounts() {
     return studentIds.map((id) => users.find((u) => u.UserID === id)?.Name || id).join(", ");
   }
 
-  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit };
+  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, busyAccountIds, busySaveIds };
 
   return (
     <div className="space-y-6">
@@ -1020,7 +1123,7 @@ function Accounts() {
 // attributes (Course+Batch vs Batch vs Role+Department vs just Type), so
 // each passes its own `columns` def instead of one table trying to show
 // every possible field for every account type.
-function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert }) {
+function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds }) {
   const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
 
   // Columns that render plain text/values can be sorted directly off their
@@ -1101,16 +1204,17 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                   )}
                   <td className="flex gap-2">
                     {showConvert && CONVERT_LABEL[u.UserType] && u.Status !== "Converted" && (
-                      <button className="btn" onClick={() => convert(u.UserID)}>
-                        Convert to {CONVERT_LABEL[u.UserType]}
+                      <button className="btn" disabled={busyAccountIds?.has(u.UserID)} onClick={() => convert(u.UserID)}>
+                        {busyAccountIds?.has(u.UserID) ? "Converting…" : `Convert to ${CONVERT_LABEL[u.UserType]}`}
                       </button>
                     )}
                     {(u.Status === "Active" || u.Status === "Inactive") && (
                       <button
                         className="btn-ghost"
+                        disabled={busySaveIds?.has(u.UserID)}
                         onClick={() => saveEdit(u.UserID, { status: u.Status === "Active" ? "Inactive" : "Active" })}
                       >
-                        {u.Status === "Active" ? "Deactivate" : "Activate"}
+                        {busySaveIds?.has(u.UserID) ? "Working…" : u.Status === "Active" ? "Deactivate" : "Activate"}
                       </button>
                     )}
                     <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
@@ -1176,6 +1280,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [groupSent, setGroupSent] = useState(Boolean(user.GroupSent));
   const [gcrSent, setGcrSent] = useState(Boolean(user.GCRSent));
   const [scheduleSent, setScheduleSent] = useState(Boolean(user.ScheduleSent));
+  const [saving, setSaving] = useState(false);
 
   const students = users.filter((u) => u.UserType === "Student");
 
@@ -1183,7 +1288,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     setStudentIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
     const fields = { name, username, currency };
     if (user.Status !== "Converted") fields.status = status;
@@ -1218,7 +1323,12 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     if (["Student", "Teacher", "Staff", "Ambassador"].includes(user.UserType)) fields.timezone = timezone;
     if (user.UserType === "Parent") fields.studentIds = studentIds;
     if (password.trim()) fields.password = password;
-    onSave(fields);
+    setSaving(true);
+    try {
+      await onSave(fields);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -1479,10 +1589,10 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       )}
 
       <div className="flex gap-2">
-        <button className="btn" type="submit">
-          Save
+        <button className="btn" type="submit" disabled={saving}>
+          {saving ? "Saving…" : "Save"}
         </button>
-        <button className="btn-ghost" type="button" onClick={onCancel}>
+        <button className="btn-ghost" type="button" disabled={saving} onClick={onCancel}>
           Cancel
         </button>
       </div>
@@ -1520,6 +1630,7 @@ function CreateAccount({ onCreated, users }) {
   const [timezone, setTimezone] = useState("Asia/Kolkata");
   const [issued, setIssued] = useState(null);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const students = users.filter((u) => u.UserType === "Student");
 
@@ -1546,6 +1657,7 @@ function CreateAccount({ onCreated, users }) {
   async function submit(e) {
     e.preventDefault();
     setError("");
+    setSaving(true);
     try {
       const body = { userType, name, currency };
       if (userType === "Parent") body.studentIds = studentIds;
@@ -1577,6 +1689,8 @@ function CreateAccount({ onCreated, users }) {
       onCreated();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -1700,8 +1814,8 @@ function CreateAccount({ onCreated, users }) {
         )}
 
         {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-        <button className="btn" type="submit">
-          Create account
+        <button className="btn" type="submit" disabled={saving}>
+          {saving ? "Creating…" : "Create account"}
         </button>
       </form>
       {issued && (
@@ -1832,6 +1946,8 @@ function Services() {
   const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [busyServiceIds, setBusyServiceIds] = useState(new Set());
 
   const cohortEligible = group.includes("Student") || group.includes("Teacher");
   // A role-based Service (an internal role like "Associate Project Manager",
@@ -2139,6 +2255,7 @@ function Services() {
         components,
         links,
       };
+    setSaving(true);
     try {
       if (editingId) {
         await api("/api/services", { method: "PATCH", body: JSON.stringify({ serviceId: editingId, ...body }) });
@@ -2149,17 +2266,26 @@ function Services() {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setSaving(false);
     }
   }
 
   async function deleteService(serviceId) {
     if (!window.confirm("Delete this Service? Only possible if no enrollment has ever referenced it.")) return;
     setError("");
+    setBusyServiceIds((prev) => new Set(prev).add(serviceId));
     try {
       await api("/api/services", { method: "DELETE", body: JSON.stringify({ serviceId }) });
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyServiceIds((prev) => {
+        const next = new Set(prev);
+        next.delete(serviceId);
+        return next;
+      });
     }
   }
 
@@ -2550,11 +2676,11 @@ function Services() {
 
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
           <div className="space-x-2">
-            <button className="btn" type="submit">
-              {editingId ? "Save changes" : "Create service"}
+            <button className="btn" type="submit" disabled={saving}>
+              {saving ? "Saving…" : editingId ? "Save changes" : "Create service"}
             </button>
             {editingId && (
-              <button type="button" className="btn-ghost" onClick={resetForm}>
+              <button type="button" className="btn-ghost" disabled={saving} onClick={resetForm}>
                 Cancel
               </button>
             )}
@@ -2583,6 +2709,7 @@ function Services() {
             .filter((s) => (s.Name || "").toLowerCase().includes(searchQuery.trim().toLowerCase()))}
           onEdit={startEdit}
           onDelete={deleteService}
+          busyServiceIds={busyServiceIds}
         />
       ))}
     </div>
@@ -2670,7 +2797,7 @@ function GroupRow({ label, isOpen, onToggle, atCol, totalCols }) {
 // lib/billing.js's lineItemName). A Staff-role Service (Role/Department, no
 // Batches) has nothing to drill into below its own row, so it's shown flat
 // with no expand at all.
-function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
+function ServiceGroupTable({ groupName, services, onEdit, onDelete, busyServiceIds }) {
   const isCohort = groupName === "Student" || groupName === "Teacher";
   // Role/Department show for any group whose services can be the flat
   // "no Batch, just Role" shape (see isRoleBasedService in
@@ -2783,8 +2910,13 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete }) {
             <button className="btn-ghost" onClick={() => onEdit(row.service)}>
               Edit
             </button>
-            <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(row.ServiceID)}>
-              Delete
+            <button
+              className="btn-ghost"
+              style={{ color: "var(--bad)" }}
+              disabled={busyServiceIds?.has(row.ServiceID)}
+              onClick={() => onDelete(row.ServiceID)}
+            >
+              {busyServiceIds?.has(row.ServiceID) ? "Deleting…" : "Delete"}
             </button>
           </td>
         </tr>
@@ -3005,6 +3137,9 @@ function SchedulePool() {
   // TKT-0027: hide past sessions by default in the Service Schedule list
   // view (today's own sessions still show).
   const [showPastSchedule, setShowPastSchedule] = useState(false);
+  const [busyRequestIds, setBusyRequestIds] = useState(new Set());
+  const [busyRescheduleIds, setBusyRescheduleIds] = useState(new Set());
+  const [creatingSlot, setCreatingSlot] = useState(false);
 
   async function load() {
     const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }, { enrollments }, { attendanceItems }] = await Promise.all([
@@ -3027,27 +3162,42 @@ function SchedulePool() {
 
   async function directReschedule(scheduleId, rescheduledDate, rescheduledTime) {
     setError("");
+    setBusyRescheduleIds((prev) => new Set(prev).add(scheduleId));
     try {
       await api("/api/schedule", { method: "PATCH", body: JSON.stringify({ scheduleId, rescheduledDate, rescheduledTime }) });
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyRescheduleIds((prev) => {
+        const next = new Set(prev);
+        next.delete(scheduleId);
+        return next;
+      });
     }
   }
 
   async function reviewRescheduleRequest(requestId, action) {
     setError("");
+    setBusyRequestIds((prev) => new Set(prev).add(requestId));
     try {
       await api("/api/schedule/reschedule-requests", { method: "PATCH", body: JSON.stringify({ requestId, action }) });
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyRequestIds((prev) => {
+        const next = new Set(prev);
+        next.delete(requestId);
+        return next;
+      });
     }
   }
 
   async function submit(e) {
     e.preventDefault();
     setError("");
+    setCreatingSlot(true);
     try {
       await api("/api/schedule", {
         method: "POST",
@@ -3059,6 +3209,8 @@ function SchedulePool() {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setCreatingSlot(false);
     }
   }
 
@@ -3114,11 +3266,19 @@ function SchedulePool() {
                     {formatDate(r.RequestedDate)} {r.RequestedTime}
                   </td>
                   <td className="flex gap-2">
-                    <button className="btn" onClick={() => reviewRescheduleRequest(r.RescheduleRequestID, "approve")}>
-                      Approve
+                    <button
+                      className="btn"
+                      disabled={busyRequestIds.has(r.RescheduleRequestID)}
+                      onClick={() => reviewRescheduleRequest(r.RescheduleRequestID, "approve")}
+                    >
+                      {busyRequestIds.has(r.RescheduleRequestID) ? "Working…" : "Approve"}
                     </button>
-                    <button className="btn-ghost" onClick={() => reviewRescheduleRequest(r.RescheduleRequestID, "reject")}>
-                      Reject
+                    <button
+                      className="btn-ghost"
+                      disabled={busyRequestIds.has(r.RescheduleRequestID)}
+                      onClick={() => reviewRescheduleRequest(r.RescheduleRequestID, "reject")}
+                    >
+                      {busyRequestIds.has(r.RescheduleRequestID) ? "Working…" : "Reject"}
                     </button>
                   </td>
                 </tr>
@@ -3181,8 +3341,8 @@ function SchedulePool() {
             onChange={(e) => setFacilitator(e.target.value)}
           />
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-          <button className="btn" type="submit">
-            Offer slot
+          <button className="btn" type="submit" disabled={creatingSlot}>
+            {creatingSlot ? "Offering…" : "Offer slot"}
           </button>
         </form>
 
@@ -3356,6 +3516,16 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
   const [editing, setEditing] = useState(false);
   const [date, setDate] = useState(slot.RescheduledDate || "");
   const [time, setTime] = useState(slot.RescheduledTime || "");
+  const [saving, setSaving] = useState(false);
+
+  async function run(fn, ...args) {
+    setSaving(true);
+    try {
+      await fn(...args);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (pendingRequest) {
     return (
@@ -3367,11 +3537,20 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
           by {pendingRequest.RequesterName}
         </div>
         <div className="flex gap-2">
-          <button className="btn-ghost" onClick={() => onReviewRequest(pendingRequest.RescheduleRequestID, "approve")}>
-            Approve
+          <button
+            className="btn-ghost"
+            disabled={saving}
+            onClick={() => run(onReviewRequest, pendingRequest.RescheduleRequestID, "approve")}
+          >
+            {saving ? "Working…" : "Approve"}
           </button>
-          <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onReviewRequest(pendingRequest.RescheduleRequestID, "reject")}>
-            Reject
+          <button
+            className="btn-ghost"
+            style={{ color: "var(--bad)" }}
+            disabled={saving}
+            onClick={() => run(onReviewRequest, pendingRequest.RescheduleRequestID, "reject")}
+          >
+            {saving ? "Working…" : "Reject"}
           </button>
         </div>
       </div>
@@ -3391,14 +3570,15 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
         </label>
         <button
           className="btn-ghost"
-          onClick={() => {
-            onDirectReschedule(slot.ScheduleID, date, time);
+          disabled={saving}
+          onClick={async () => {
+            await run(onDirectReschedule, slot.ScheduleID, date, time);
             setEditing(false);
           }}
         >
-          Save
+          {saving ? "Saving…" : "Save"}
         </button>
-        <button className="btn-ghost" onClick={() => setEditing(false)}>
+        <button className="btn-ghost" disabled={saving} onClick={() => setEditing(false)}>
           Cancel
         </button>
       </div>
@@ -3415,8 +3595,13 @@ function RescheduleCell({ slot, pendingRequest, onDirectReschedule, onReviewRequ
           <button className="btn-ghost" onClick={() => setEditing(true)}>
             Edit
           </button>
-          <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDirectReschedule(slot.ScheduleID, "", "")}>
-            Clear
+          <button
+            className="btn-ghost"
+            style={{ color: "var(--bad)" }}
+            disabled={saving}
+            onClick={() => run(onDirectReschedule, slot.ScheduleID, "", "")}
+          >
+            {saving ? "Clearing…" : "Clear"}
           </button>
         </div>
       </div>
@@ -3544,6 +3729,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   const [customRateDraft, setCustomRateDraft] = useState({ currency: "INR", rate: "", description: "", billingType: "Monthly" });
   const [customRateError, setCustomRateError] = useState("");
   const [addingRate, setAddingRate] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   function openCustomRate(index) {
     setCustomRateRow(index);
@@ -3619,14 +3805,19 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
     setRows((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
     const validRows = rows.filter((r) => r.serviceId);
-    onEnroll(userId, validRows, startDate, endDate);
-    setUserId("");
-    setRows([{ serviceId: "", batchId: "", rateId: "" }]);
-    setStartDate("");
-    setEndDate("");
+    setEnrolling(true);
+    try {
+      await onEnroll(userId, validRows, startDate, endDate);
+      setUserId("");
+      setRows([{ serviceId: "", batchId: "", rateId: "" }]);
+      setStartDate("");
+      setEndDate("");
+    } finally {
+      setEnrolling(false);
+    }
   }
 
   return (
@@ -3764,8 +3955,10 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             </label>
             <input className="field" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </div>
-          <button className="btn" type="submit">
-            Enroll into {rows.filter((r) => r.serviceId).length || rows.length} service{(rows.filter((r) => r.serviceId).length || rows.length) === 1 ? "" : "s"}
+          <button className="btn" type="submit" disabled={enrolling}>
+            {enrolling
+              ? "Enrolling…"
+              : `Enroll into ${rows.filter((r) => r.serviceId).length || rows.length} service${(rows.filter((r) => r.serviceId).length || rows.length) === 1 ? "" : "s"}`}
           </button>
         </form>
       </div>
@@ -3821,6 +4014,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
   const [startDate, setStartDate] = useState(enrollment.StartDate || "");
   const [endDate, setEndDate] = useState(enrollment.EndDate || "");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   const editingUser = users.find((u) => u.UserID === userId);
   const editingService = services.find((s) => s.ServiceID === serviceId);
@@ -3855,17 +4050,25 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
 
   async function save() {
     setError("");
+    setSaving(true);
     try {
       await onUpdate(enrollment.EnrolmentID, { userId, serviceId, batchId, rateId, startDate, endDate });
       setEditing(false);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setSaving(false);
     }
   }
 
-  function remove() {
+  async function remove() {
     if (window.confirm(`Remove ${nameOf(enrollment.UserID)}'s enrollment in ${serviceNameOf(enrollment.ServiceID)}?`)) {
-      onDelete(enrollment.EnrolmentID);
+      setRemoving(true);
+      try {
+        await onDelete(enrollment.EnrolmentID);
+      } finally {
+        setRemoving(false);
+      }
     }
   }
 
@@ -3916,10 +4119,10 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
           <input className="field" style={{ width: 145 }} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </td>
         <td className="space-x-2">
-          <button className="btn" onClick={save}>
-            Save
+          <button className="btn" disabled={saving} onClick={save}>
+            {saving ? "Saving…" : "Save"}
           </button>
-          <button className="btn-ghost" onClick={cancel}>
+          <button className="btn-ghost" disabled={saving} onClick={cancel}>
             Cancel
           </button>
         </td>
@@ -3939,8 +4142,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
         </button>
-        <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
-          Delete
+        <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
+          {removing ? "Removing…" : "Delete"}
         </button>
       </td>
     </tr>
@@ -3959,6 +4162,7 @@ function Billing() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [error, setError] = useState("");
   const [summary, setSummary] = useState("");
+  const [generating, setGenerating] = useState(false);
 
   async function load() {
     const [{ invoices }, { paychecks }, { users }, { services }, { enrollments }] = await Promise.all([
@@ -3988,6 +4192,7 @@ function Billing() {
   async function generate() {
     setError("");
     setSummary("");
+    setGenerating(true);
     try {
       const [{ created: createdInvoices }, { created: createdPaychecks }] = await Promise.all([
         api("/api/invoices", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
@@ -4003,6 +4208,8 @@ function Billing() {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setGenerating(false);
     }
   }
 
@@ -4049,8 +4256,8 @@ function Billing() {
             <label className="text-sm block" style={{ color: "var(--muted)" }}>Month</label>
             <input className="field" type="number" min="1" max="12" value={month} onChange={(e) => setMonth(e.target.value)} />
           </div>
-          <button className="btn" onClick={generate}>
-            Generate drafts for this month
+          <button className="btn" disabled={generating} onClick={generate}>
+            {generating ? "Generating…" : "Generate drafts for this month"}
           </button>
         </div>
         {error && <p style={{ color: "var(--bad)" }} className="mt-2">{error}</p>}
@@ -4238,10 +4445,12 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
     setError("");
+    setSaving(true);
     try {
       await onSubmit({ personId, serviceId, year: Number(year), month: Number(month), amount: Number(amount) });
       setPersonId("");
@@ -4249,6 +4458,8 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
       setAmount("");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -4278,8 +4489,8 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
         </div>
         <input className="field" type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} required />
         {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
-        <button className="btn" type="submit">
-          Create draft
+        <button className="btn" type="submit" disabled={saving}>
+          {saving ? "Creating…" : "Create draft"}
         </button>
       </form>
     </div>
@@ -4401,6 +4612,8 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
   const [expanded, setExpanded] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
   const [inrDue, setInrDue] = useState(row.INRDue);
+  const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const isDraft = row.Status === "Draft";
   const isLineItemInvoice = Array.isArray(row.LineItems);
 
@@ -4409,17 +4622,38 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
     return s ? lineItemName(s, batchId) : id;
   }
 
-  function remove() {
-    if (window.confirm("Delete this invoice? This cannot be undone.")) onDelete(row.InvoiceID);
+  async function remove() {
+    if (window.confirm("Delete this invoice? This cannot be undone.")) {
+      setRemoving(true);
+      try {
+        await onDelete(row.InvoiceID);
+      } finally {
+        setRemoving(false);
+      }
+    }
   }
 
-  function saveDue() {
-    onPatch(row.InvoiceID, { inrDue });
-    setEditingDue(false);
+  async function saveDue() {
+    setSaving(true);
+    try {
+      await onPatch(row.InvoiceID, { inrDue });
+      setEditingDue(false);
+    } finally {
+      setSaving(false);
+    }
   }
   function cancelDue() {
     setInrDue(row.INRDue);
     setEditingDue(false);
+  }
+
+  async function toggleStatus(status) {
+    setSaving(true);
+    try {
+      await onPatch(row.InvoiceID, { status });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -4499,10 +4733,10 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
           <span className="flex items-center gap-1 flex-wrap">
             {editingDue ? (
               <>
-                <button className="btn" onClick={saveDue}>
-                  Save
+                <button className="btn" disabled={saving} onClick={saveDue}>
+                  {saving ? "Saving…" : "Save"}
                 </button>
-                <button className="btn-ghost" onClick={cancelDue}>
+                <button className="btn-ghost" disabled={saving} onClick={cancelDue}>
                   Cancel
                 </button>
               </>
@@ -4512,19 +4746,19 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
                   Edit Due
                 </button>
                 {isDraft ? (
-                  <button className="btn" onClick={() => onPatch(row.InvoiceID, { status: "Sent" })}>
-                    Send
+                  <button className="btn" disabled={saving} onClick={() => toggleStatus("Sent")}>
+                    {saving ? "Working…" : "Send"}
                   </button>
                 ) : (
-                  <button className="btn-ghost" onClick={() => onPatch(row.InvoiceID, { status: "Draft" })}>
-                    Unsend
+                  <button className="btn-ghost" disabled={saving} onClick={() => toggleStatus("Draft")}>
+                    {saving ? "Working…" : "Unsend"}
                   </button>
                 )}
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${row.InvoiceID}`} download>
                   PDF
                 </a>
-                <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
-                  Delete
+                <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
+                  {removing ? "Deleting…" : "Delete"}
                 </button>
               </>
             )}
@@ -4569,10 +4803,16 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
   const [scheduledHours, setScheduledHours] = useState(lineItem.ScheduledHours);
   const [attendedHours, setAttendedHours] = useState(lineItem.AttendedHours);
   const [amount, setAmount] = useState(lineItem.Amount);
+  const [saving, setSaving] = useState(false);
 
-  function save() {
-    onPatchLineItem(invoiceId, index, { scheduledHours, attendedHours, amount });
-    setEditing(false);
+  async function save() {
+    setSaving(true);
+    try {
+      await onPatchLineItem(invoiceId, index, { scheduledHours, attendedHours, amount });
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
   }
   function cancel() {
     setScheduledHours(lineItem.ScheduledHours);
@@ -4631,10 +4871,10 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
       <td>
         {editing ? (
           <span className="flex gap-1">
-            <button className="btn" onClick={save}>
-              Save
+            <button className="btn" disabled={saving} onClick={save}>
+              {saving ? "Saving…" : "Save"}
             </button>
-            <button className="btn-ghost" onClick={cancel}>
+            <button className="btn-ghost" disabled={saving} onClick={cancel}>
               Cancel
             </button>
           </span>
@@ -4774,6 +5014,8 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
   const [expanded, setExpanded] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
   const [inrDue, setInrDue] = useState(row.INRDue);
+  const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
   const isDraft = row.Status === "Draft";
   const isLineItemPaycheck = Array.isArray(row.LineItems);
 
@@ -4782,17 +5024,38 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
     return s ? lineItemName(s, batchId) : id;
   }
 
-  function remove() {
-    if (window.confirm("Delete this paycheck? This cannot be undone.")) onDelete(row.PaycheckID);
+  async function remove() {
+    if (window.confirm("Delete this paycheck? This cannot be undone.")) {
+      setRemoving(true);
+      try {
+        await onDelete(row.PaycheckID);
+      } finally {
+        setRemoving(false);
+      }
+    }
   }
 
-  function saveDue() {
-    onPatch(row.PaycheckID, { inrDue });
-    setEditingDue(false);
+  async function saveDue() {
+    setSaving(true);
+    try {
+      await onPatch(row.PaycheckID, { inrDue });
+      setEditingDue(false);
+    } finally {
+      setSaving(false);
+    }
   }
   function cancelDue() {
     setInrDue(row.INRDue);
     setEditingDue(false);
+  }
+
+  async function toggleStatus(status) {
+    setSaving(true);
+    try {
+      await onPatch(row.PaycheckID, { status });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -4865,10 +5128,10 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
           <span className="flex items-center gap-1 flex-wrap">
             {editingDue ? (
               <>
-                <button className="btn" onClick={saveDue}>
-                  Save
+                <button className="btn" disabled={saving} onClick={saveDue}>
+                  {saving ? "Saving…" : "Save"}
                 </button>
-                <button className="btn-ghost" onClick={cancelDue}>
+                <button className="btn-ghost" disabled={saving} onClick={cancelDue}>
                   Cancel
                 </button>
               </>
@@ -4878,19 +5141,19 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
                   Edit Due
                 </button>
                 {isDraft ? (
-                  <button className="btn" onClick={() => onPatch(row.PaycheckID, { status: "Sent" })}>
-                    Send
+                  <button className="btn" disabled={saving} onClick={() => toggleStatus("Sent")}>
+                    {saving ? "Working…" : "Send"}
                   </button>
                 ) : (
-                  <button className="btn-ghost" onClick={() => onPatch(row.PaycheckID, { status: "Draft" })}>
-                    Unsend
+                  <button className="btn-ghost" disabled={saving} onClick={() => toggleStatus("Draft")}>
+                    {saving ? "Working…" : "Unsend"}
                   </button>
                 )}
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/paychecks/pdf?paycheckId=${row.PaycheckID}`} download>
                   PDF
                 </a>
-                <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={remove}>
-                  Delete
+                <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
+                  {removing ? "Deleting…" : "Delete"}
                 </button>
               </>
             )}
@@ -4935,10 +5198,16 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
   const [scheduledHours, setScheduledHours] = useState(lineItem.ScheduledHours);
   const [attendedHours, setAttendedHours] = useState(lineItem.AttendedHours);
   const [amount, setAmount] = useState(lineItem.Amount);
+  const [saving, setSaving] = useState(false);
 
-  function save() {
-    onPatchLineItem(paycheckId, index, { scheduledHours, attendedHours, amount });
-    setEditing(false);
+  async function save() {
+    setSaving(true);
+    try {
+      await onPatchLineItem(paycheckId, index, { scheduledHours, attendedHours, amount });
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
   }
   function cancel() {
     setScheduledHours(lineItem.ScheduledHours);
@@ -4997,10 +5266,10 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
       <td>
         {editing ? (
           <span className="flex gap-1">
-            <button className="btn" onClick={save}>
-              Save
+            <button className="btn" disabled={saving} onClick={save}>
+              {saving ? "Saving…" : "Save"}
             </button>
-            <button className="btn-ghost" onClick={cancel}>
+            <button className="btn-ghost" disabled={saving} onClick={cancel}>
               Cancel
             </button>
           </span>
@@ -5119,6 +5388,16 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
   const [closing, setClosing] = useState(false);
   const [closeDraft, setCloseDraft] = useState(t.CloseMessage || "");
   const [closeSaving, setCloseSaving] = useState(false);
+  const [reopening, setReopening] = useState(false);
+
+  async function reopen() {
+    setReopening(true);
+    try {
+      await onSetState(t.TicketID, "reopen");
+    } finally {
+      setReopening(false);
+    }
+  }
 
   function startEdit() {
     setDraft(t.Message);
@@ -5236,7 +5515,7 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
             ) : (
               <>
                 <button className="btn-ghost" onClick={startClose}>{t.CloseMessage ? "Edit note" : "Add note"}</button>
-                <button className="btn-ghost" onClick={() => onSetState(t.TicketID, "reopen")}>Reopen</button>
+                <button className="btn-ghost" disabled={reopening} onClick={reopen}>{reopening ? "Reopening…" : "Reopen"}</button>
               </>
             )}
           </>
@@ -5432,19 +5711,25 @@ function GuideForm({ initial, onSubmit, submitLabel = "Add Guide" }) {
   const [audienceKeys, setAudienceKeys] = useState(
     GUIDE_AUDIENCES.filter((a) => a.userTypes.every((t) => initial?.UserTypes?.includes(t))).map((a) => a.key)
   );
+  const [saving, setSaving] = useState(false);
 
   function toggleAudience(key) {
     setAudienceKeys((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
   }
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault();
     const userTypes = GUIDE_AUDIENCES.filter((a) => audienceKeys.includes(a.key)).flatMap((a) => a.userTypes);
-    onSubmit(name, url, userTypes);
-    if (!initial) {
-      setName("");
-      setUrl("");
-      setAudienceKeys([]);
+    setSaving(true);
+    try {
+      await onSubmit(name, url, userTypes);
+      if (!initial) {
+        setName("");
+        setUrl("");
+        setAudienceKeys([]);
+      }
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -5465,8 +5750,8 @@ function GuideForm({ initial, onSubmit, submitLabel = "Add Guide" }) {
           ))}
         </div>
       </div>
-      <button className="btn" type="submit">
-        {submitLabel}
+      <button className="btn" type="submit" disabled={saving}>
+        {saving ? "Saving…" : submitLabel}
       </button>
     </form>
   );
@@ -5474,6 +5759,16 @@ function GuideForm({ initial, onSubmit, submitLabel = "Add Guide" }) {
 
 function GuideRow({ guide, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
+  const [removing, setRemoving] = useState(false);
+
+  async function remove() {
+    setRemoving(true);
+    try {
+      await onDelete(guide.GuideID);
+    } finally {
+      setRemoving(false);
+    }
+  }
 
   if (editing) {
     return (
@@ -5481,8 +5776,8 @@ function GuideRow({ guide, onUpdate, onDelete }) {
         <GuideForm
           initial={guide}
           submitLabel="Save"
-          onSubmit={(name, url, userTypes) => {
-            onUpdate(guide.GuideID, { name, url, userTypes });
+          onSubmit={async (name, url, userTypes) => {
+            await onUpdate(guide.GuideID, { name, url, userTypes });
             setEditing(false);
           }}
         />
@@ -5510,8 +5805,8 @@ function GuideRow({ guide, onUpdate, onDelete }) {
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
         </button>
-        <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => onDelete(guide.GuideID)}>
-          Delete
+        <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
+          {removing ? "Deleting…" : "Delete"}
         </button>
       </div>
     </div>

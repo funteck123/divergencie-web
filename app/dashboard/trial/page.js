@@ -16,6 +16,8 @@ function Body({ user }) {
   const [error, setError] = useState("");
   const [scheduleById, setScheduleById] = useState({});
   const [serviceId, setServiceId] = useState("");
+  const [busyScheduleIds, setBusyScheduleIds] = useState(new Set());
+  const [busyInvoiceIds, setBusyInvoiceIds] = useState(new Set());
 
   async function load() {
     const [bundle, { scheduleItems }] = await Promise.all([
@@ -34,6 +36,7 @@ function Body({ user }) {
 
   async function book(scheduleId) {
     setError("");
+    setBusyScheduleIds((prev) => new Set(prev).add(scheduleId));
     try {
       await api("/api/schedule/pick", {
         method: "POST",
@@ -42,6 +45,12 @@ function Body({ user }) {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyScheduleIds((prev) => {
+        const next = new Set(prev);
+        next.delete(scheduleId);
+        return next;
+      });
     }
   }
 
@@ -51,8 +60,17 @@ function Body({ user }) {
   }
 
   async function payInvoice(invoiceId) {
-    await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId, status: "Paid" }) });
-    load();
+    setBusyInvoiceIds((prev) => new Set(prev).add(invoiceId));
+    try {
+      await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId, status: "Paid" }) });
+      load();
+    } finally {
+      setBusyInvoiceIds((prev) => {
+        const next = new Set(prev);
+        next.delete(invoiceId);
+        return next;
+      });
+    }
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -126,8 +144,12 @@ function Body({ user }) {
                   <td>{s.Time}</td>
                   <td>{s.Facilitator}</td>
                   <td>
-                    <button className="btn" onClick={() => book(s.ScheduleID)}>
-                      Book
+                    <button
+                      className="btn"
+                      disabled={busyScheduleIds.has(s.ScheduleID)}
+                      onClick={() => book(s.ScheduleID)}
+                    >
+                      {busyScheduleIds.has(s.ScheduleID) ? "Booking…" : "Book"}
                     </button>
                   </td>
                 </tr>
@@ -169,8 +191,12 @@ function Body({ user }) {
                 </td>
                 <td>
                   {i.Status === "Sent" && (
-                    <button className="btn" onClick={() => payInvoice(i.InvoiceID)}>
-                      Mark as paid
+                    <button
+                      className="btn"
+                      disabled={busyInvoiceIds.has(i.InvoiceID)}
+                      onClick={() => payInvoice(i.InvoiceID)}
+                    >
+                      {busyInvoiceIds.has(i.InvoiceID) ? "Marking…" : "Mark as paid"}
                     </button>
                   )}
                 </td>
@@ -192,17 +218,24 @@ function Body({ user }) {
 
 function FeedbackForm({ onSubmit }) {
   const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
   return (
     <form
       className="flex gap-2 mt-2"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        if (text.trim()) onSubmit(text);
+        if (!text.trim()) return;
+        setSaving(true);
+        try {
+          await onSubmit(text);
+        } finally {
+          setSaving(false);
+        }
       }}
     >
       <input className="field" placeholder="Leave feedback about your trial…" value={text} onChange={(e) => setText(e.target.value)} />
-      <button className="btn" type="submit">
-        Submit
+      <button className="btn" type="submit" disabled={saving}>
+        {saving ? "Submitting…" : "Submit"}
       </button>
     </form>
   );

@@ -27,6 +27,7 @@ function Body({ user }) {
   // TKT-0027: hide past schedule/attendance entries by default in the List
   // view (today's own sessions still show — they still need logging).
   const [showPastSchedule, setShowPastSchedule] = useState(false);
+  const [busyPaycheckIds, setBusyPaycheckIds] = useState(new Set());
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -56,6 +57,7 @@ function Body({ user }) {
 
   async function markPaycheckReceived(paycheckId) {
     setError("");
+    setBusyPaycheckIds((prev) => new Set(prev).add(paycheckId));
     try {
       await api("/api/paychecks", {
         method: "PATCH",
@@ -64,6 +66,12 @@ function Body({ user }) {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyPaycheckIds((prev) => {
+        const next = new Set(prev);
+        next.delete(paycheckId);
+        return next;
+      });
     }
   }
 
@@ -266,8 +274,12 @@ function Body({ user }) {
                   {p.StaffReceivedFlag ? (
                     <span className="badge badge-good">Received ✓</span>
                   ) : (
-                    <button className="btn-ghost" onClick={() => markPaycheckReceived(p.PaycheckID)}>
-                      Mark as received
+                    <button
+                      className="btn-ghost"
+                      disabled={busyPaycheckIds.has(p.PaycheckID)}
+                      onClick={() => markPaycheckReceived(p.PaycheckID)}
+                    >
+                      {busyPaycheckIds.has(p.PaycheckID) ? "Marking…" : "Mark as received"}
                     </button>
                   )}
                 </td>
@@ -295,12 +307,18 @@ function Body({ user }) {
 function AttendanceForm({ defaultHrs, onSubmit }) {
   const [status, setStatus] = useState("Present");
   const [hrs, setHrs] = useState(defaultHrs);
+  const [saving, setSaving] = useState(false);
   return (
     <form
       className="flex gap-1 items-end"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        onSubmit(status, hrs);
+        setSaving(true);
+        try {
+          await onSubmit(status, hrs);
+        } finally {
+          setSaving(false);
+        }
       }}
     >
       <label className="text-xs" style={{ color: "var(--muted)" }}>
@@ -322,8 +340,8 @@ function AttendanceForm({ defaultHrs, onSubmit }) {
           onChange={(e) => setHrs(e.target.value)}
         />
       </label>
-      <button className="btn-ghost" type="submit">
-        Log
+      <button className="btn-ghost" type="submit" disabled={saving}>
+        {saving ? "Logging…" : "Log"}
       </button>
     </form>
   );

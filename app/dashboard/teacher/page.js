@@ -29,6 +29,7 @@ function Body({ user }) {
   // the default view. Hidden by default (today's own sessions still
   // show, they still need logging); toggle to see history.
   const [showPastSchedule, setShowPastSchedule] = useState(false);
+  const [busyPaycheckIds, setBusyPaycheckIds] = useState(new Set());
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -58,6 +59,7 @@ function Body({ user }) {
 
   async function markPaycheckReceived(paycheckId) {
     setError("");
+    setBusyPaycheckIds((prev) => new Set(prev).add(paycheckId));
     try {
       await api("/api/paychecks", {
         method: "PATCH",
@@ -66,6 +68,12 @@ function Body({ user }) {
       load();
     } catch (e) {
       setError(e.message);
+    } finally {
+      setBusyPaycheckIds((prev) => {
+        const next = new Set(prev);
+        next.delete(paycheckId);
+        return next;
+      });
     }
   }
 
@@ -288,8 +296,12 @@ function Body({ user }) {
                   {p.StaffReceivedFlag ? (
                     <span className="badge badge-good">Received ✓</span>
                   ) : (
-                    <button className="btn-ghost" onClick={() => markPaycheckReceived(p.PaycheckID)}>
-                      Mark as received
+                    <button
+                      className="btn-ghost"
+                      disabled={busyPaycheckIds.has(p.PaycheckID)}
+                      onClick={() => markPaycheckReceived(p.PaycheckID)}
+                    >
+                      {busyPaycheckIds.has(p.PaycheckID) ? "Marking…" : "Mark as received"}
                     </button>
                   )}
                 </td>
