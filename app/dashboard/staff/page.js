@@ -43,11 +43,11 @@ function Body({ user }) {
   async function logAttendance(scheduleItemId, status, loggedDuration) {
     setError("");
     try {
-      await api("/api/attendance", {
+      const res = await api("/api/attendance", {
         method: "POST",
         body: JSON.stringify({ scheduleItemId, userId: user.UserID, status, loggedDuration }),
       });
-      load();
+      setData((prev) => ({ ...prev, attendanceItems: [...prev.attendanceItems, res.attendanceItem] }));
     } catch (e) {
       setError(e.message);
     }
@@ -57,11 +57,14 @@ function Body({ user }) {
     setError("");
     setBusyPaycheckIds((prev) => new Set(prev).add(paycheckId));
     try {
-      await api("/api/paychecks", {
+      const res = await api("/api/paychecks", {
         method: "PATCH",
         body: JSON.stringify({ paycheckId, staffReceivedFlag: true }),
       });
-      load();
+      setData((prev) => ({
+        ...prev,
+        paychecks: prev.paychecks.map((p) => (p.PaycheckID === paycheckId ? res.paycheck : p)),
+      }));
     } catch (e) {
       setError(e.message);
     } finally {

@@ -31,14 +31,27 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Replaces one invoice in-place across every child's invoices array —
+  // both /api/invoices PATCH and /api/invoices/mark-paid POST return the
+  // full updated { invoice }, so no refetch is needed to re-render it.
+  function applyUpdatedInvoice(invoice) {
+    setData((prev) => ({
+      ...prev,
+      children: prev.children.map((child) => ({
+        ...child,
+        invoices: child.invoices.map((i) => (i.InvoiceID === invoice.InvoiceID ? invoice : i)),
+      })),
+    }));
+  }
+
   async function setInvoicePaid(invoiceId, paid) {
     setError("");
     try {
-      await api("/api/invoices", {
+      const res = await api("/api/invoices", {
         method: "PATCH",
         body: JSON.stringify({ invoiceId, studentPaidFlag: paid }),
       });
-      load();
+      applyUpdatedInvoice(res.invoice);
     } catch (e) {
       setError(e.message);
     }
@@ -51,7 +64,7 @@ function Body({ user }) {
     const res = await fetch("/api/invoices/mark-paid", { method: "POST", body: form });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(body.error || "Could not confirm payment.");
-    load();
+    applyUpdatedInvoice(body.invoice);
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;

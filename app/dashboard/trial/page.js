@@ -38,11 +38,11 @@ function Body({ user }) {
     setError("");
     setBusyScheduleIds((prev) => new Set(prev).add(scheduleId));
     try {
-      await api("/api/schedule/pick", {
+      const res = await api("/api/schedule/pick", {
         method: "POST",
         body: JSON.stringify({ scheduleId, userId: user.UserID, type: "Trial" }),
       });
-      load();
+      setData((prev) => ({ ...prev, trialItems: [...prev.trialItems, res.trialItem] }));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -55,15 +55,21 @@ function Body({ user }) {
   }
 
   async function submitFeedback(trialId, feedback) {
-    await api("/api/trial-feedback", { method: "POST", body: JSON.stringify({ trialId, feedback }) });
-    load();
+    const res = await api("/api/trial-feedback", { method: "POST", body: JSON.stringify({ trialId, feedback }) });
+    setData((prev) => ({
+      ...prev,
+      trialItems: prev.trialItems.map((t) => (t.TrialID === trialId ? res.trialItem : t)),
+    }));
   }
 
   async function payInvoice(invoiceId) {
     setBusyInvoiceIds((prev) => new Set(prev).add(invoiceId));
     try {
-      await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId, status: "Paid" }) });
-      load();
+      const res = await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId, status: "Paid" }) });
+      setData((prev) => ({
+        ...prev,
+        invoices: prev.invoices.map((i) => (i.InvoiceID === invoiceId ? res.invoice : i)),
+      }));
     } finally {
       setBusyInvoiceIds((prev) => {
         const next = new Set(prev);

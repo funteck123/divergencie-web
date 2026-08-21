@@ -50,12 +50,12 @@ function Body({ user }) {
     setError("");
     setRequesting(true);
     try {
-      await api("/api/schedule/pick", {
+      const { interviewItem } = await api("/api/schedule/pick", {
         method: "POST",
         body: JSON.stringify({ serviceId, userId: user.UserID, type: bookingTypeFor(user.UserType) }),
       });
       setServiceId("");
-      load();
+      setData((prev) => ({ ...prev, interviewItems: [...prev.interviewItems, interviewItem] }));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -64,15 +64,21 @@ function Body({ user }) {
   }
 
   async function submitTask(interviewId, link) {
-    await api("/api/interview-task", { method: "POST", body: JSON.stringify({ interviewId, link }) });
-    load();
+    const { interviewItem } = await api("/api/interview-task", { method: "POST", body: JSON.stringify({ interviewId, link }) });
+    setData((prev) => ({
+      ...prev,
+      interviewItems: prev.interviewItems.map((it) => (it.InterviewID === interviewId ? interviewItem : it)),
+    }));
   }
 
   async function acceptOffer(interviewId) {
     setBusyInterviewIds((prev) => new Set(prev).add(interviewId));
     try {
-      await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "accept" }) });
-      load();
+      const { interviewItem } = await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "accept" }) });
+      setData((prev) => ({
+        ...prev,
+        interviewItems: prev.interviewItems.map((it) => (it.InterviewID === interviewId ? interviewItem : it)),
+      }));
     } finally {
       setBusyInterviewIds((prev) => {
         const next = new Set(prev);

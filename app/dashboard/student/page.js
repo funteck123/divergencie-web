@@ -45,11 +45,11 @@ function Body({ user }) {
   async function logAttendance(scheduleItemId, status, loggedDuration) {
     setError("");
     try {
-      await api("/api/attendance", {
+      const res = await api("/api/attendance", {
         method: "POST",
         body: JSON.stringify({ scheduleItemId, userId: user.UserID, status, loggedDuration }),
       });
-      load();
+      setData((prev) => ({ ...prev, attendanceItems: [...prev.attendanceItems, res.attendanceItem] }));
     } catch (e) {
       setError(e.message);
     }
@@ -58,11 +58,14 @@ function Body({ user }) {
   async function setInvoicePaid(invoiceId, paid) {
     setError("");
     try {
-      await api("/api/invoices", {
+      const res = await api("/api/invoices", {
         method: "PATCH",
         body: JSON.stringify({ invoiceId, studentPaidFlag: paid }),
       });
-      load();
+      setData((prev) => ({
+        ...prev,
+        invoices: prev.invoices.map((i) => (i.InvoiceID === res.invoice.InvoiceID ? res.invoice : i)),
+      }));
     } catch (e) {
       setError(e.message);
     }
@@ -75,7 +78,10 @@ function Body({ user }) {
     const res = await fetch("/api/invoices/mark-paid", { method: "POST", body: form });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(body.error || "Could not confirm payment.");
-    load();
+    setData((prev) => ({
+      ...prev,
+      invoices: prev.invoices.map((i) => (i.InvoiceID === body.invoice.InvoiceID ? body.invoice : i)),
+    }));
   }
 
   const todayStr = todayDateStr();

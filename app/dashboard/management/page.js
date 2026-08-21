@@ -179,7 +179,10 @@ function Applications() {
         body: JSON.stringify({ regFormId, action }),
       });
       if (res.credentials) setIssued((prev) => ({ ...prev, [regFormId]: res.credentials }));
-      load();
+      // PATCH /api/regforms returns the full updated regForm (both
+      // approve/reject branches) — Applications only tracks `regForms`, so a
+      // local merge is enough; no need to refetch the whole list.
+      setRegForms((prev) => prev.map((r) => (r.RegFormID === regFormId ? res.regForm : r)));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -325,6 +328,11 @@ function Pipeline() {
     setError("");
     setBusyTrialIds((prev) => new Set(prev).add(trialId));
     try {
+      // POST /api/trial-enroll returns only { enrollment, invoice } — it does
+      // NOT return the updated trialItem (whose ServiceAdded flag flips to
+      // true server-side), and Pipeline has no enrollments state to merge
+      // into either. Left on load(): can't prove the response covers what
+      // this component renders (the trial row's ServiceAdded ✓ badge).
       await api("/api/trial-enroll", { method: "POST", body: JSON.stringify({ trialId }) });
       load();
     } catch (e) {
@@ -339,19 +347,30 @@ function Pipeline() {
   }
 
   async function sendOffer(interviewId, feedback, offerLetterLink) {
-    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send", feedback, offerLetterLink }) });
-    load();
+    // POST /api/interview-offer returns { interviewItem } — the full record,
+    // same shape as what's in interviewItems (both come straight off
+    // db.interviewItems) — safe to merge locally instead of a full reload.
+    const { interviewItem } = await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send", feedback, offerLetterLink }) });
+    setInterviewItems((prev) => prev.map((i) => (i.InterviewID === interviewId ? interviewItem : i)));
   }
 
   async function setInterviewOutcome(interviewId, action, feedback) {
-    await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action, feedback }) });
-    load();
+    const { interviewItem } = await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action, feedback }) });
+    setInterviewItems((prev) => prev.map((i) => (i.InterviewID === interviewId ? interviewItem : i)));
   }
 
   async function convert(accountId) {
     setError("");
     setBusyAccountIds((prev) => new Set(prev).add(accountId));
     try {
+      // POST /api/convert returns { oldUser, newUser, credentials } — enough
+      // to merge `users`, but when newUser.UserType === "Student" the route
+      // also reassigns every existing invoice's StudentID from the old
+      // TrialAcc id to the new Student id (see app/api/convert/route.js),
+      // and that updated invoices array isn't in the response. invoiceFor()
+      // here keys off StudentID, so a users-only merge would make paid/sent
+      // invoices vanish from the Trial Pipeline table until the next reload.
+      // Left on load() rather than risk a wrong billing-status display.
       const res = await api("/api/convert", { method: "POST", body: JSON.stringify({ accountId }) });
       setIssued((prev) => ({ ...prev, [accountId]: res.credentials }));
       load();
@@ -370,8 +389,21 @@ function Pipeline() {
     setError("");
     setBusyRequestIds((prev) => new Set(prev).add(id));
     try {
-      await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action, scheduleId }) });
-      load();
+      // PATCH /api/schedule/requests returns { trialItem } for type==="Trial"
+      // and { interviewItem } otherwise — the full record in both cases
+      // (same shape trialItems/interviewItems already hold). GET's own
+      // pendingTrials/pendingInterviews are filtered server-side to
+      // Status==="Pending", so once approved/rejected the item stops
+      // qualifying — dropping it from the pending list locally matches what
+      // a refetch would return.
+      const res = await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action, scheduleId }) });
+      if (type === "Trial") {
+        setPendingTrials((prev) => prev.filter((t) => t.TrialID !== id));
+        setTrialItems((prev) => prev.map((t) => (t.TrialID === id ? res.trialItem : t)));
+      } else {
+        setPendingInterviews((prev) => prev.filter((i) => i.InterviewID !== id));
+        setInterviewItems((prev) => prev.map((i) => (i.InterviewID === id ? res.interviewItem : i)));
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -918,7 +950,12 @@ function Accounts() {
         body: JSON.stringify({ accountId }),
       });
       setIssued((prev) => ({ ...prev, [accountId]: res.credentials }));
-      load();
+      // /api/convert returns the raw oldUser/newUser records (no Username/
+      // Password join like GET /api/users does) — reconstruct the same
+      // join GET performs so newUser's credentials render inline instead of
+      // falling back to "—" until the next full refetch.
+      const newUserWithCreds = { ...res.newUser, Username: res.credentials.username, Password: res.credentials.password };
+      setUsers((prev) => [...prev.map((u) => (u.UserID === accountId ? res.oldUser : u)), newUserWithCreds]);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -934,9 +971,23 @@ function Accounts() {
     setError("");
     setBusySaveIds((prev) => new Set(prev).add(userId));
     try {
-      await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, ...fields }) });
+      const res = await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, ...fields }) });
       setEditingId(null);
-      load();
+      // PATCH returns only the raw user record (no Username/Password join
+      // like GET /api/users performs) — carry over the existing credential
+      // fields unless this save actually touched them (matches the route's
+      // own `if (username !== undefined) cred.Username = username` logic).
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.UserID === userId
+            ? {
+                ...res.user,
+                Username: fields.username !== undefined ? fields.username : u.Username,
+                Password: fields.password !== undefined ? fields.password : u.Password,
+              }
+            : u
+        )
+      );
     } catch (e) {
       setError(e.message);
     } finally {
@@ -965,7 +1016,7 @@ function Accounts() {
 
   return (
     <div className="space-y-6">
-      <CreateAccount onCreated={load} users={users} />
+      <CreateAccount onCreated={(newUser) => setUsers((prev) => [...prev, newUser])} users={users} />
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
 
       <AccountGroupTable
@@ -1686,7 +1737,10 @@ function CreateAccount({ onCreated, users }) {
       const res = await api("/api/users", { method: "POST", body: JSON.stringify(body) });
       setIssued(res.credentials);
       reset();
-      onCreated();
+      // POST returns the raw user record plus separate credentials — join
+      // them the same way GET /api/users does (Username/Password merged in)
+      // so the parent's local list matches what a refetch would produce.
+      onCreated({ ...res.user, Username: res.credentials.username, Password: res.credentials.password });
     } catch (e) {
       setError(e.message);
     } finally {
@@ -2258,12 +2312,13 @@ function Services() {
     setSaving(true);
     try {
       if (editingId) {
-        await api("/api/services", { method: "PATCH", body: JSON.stringify({ serviceId: editingId, ...body }) });
+        const { service } = await api("/api/services", { method: "PATCH", body: JSON.stringify({ serviceId: editingId, ...body }) });
+        setServices((prev) => prev.map((s) => (s.ServiceID === service.ServiceID ? service : s)));
       } else {
-        await api("/api/services", { method: "POST", body: JSON.stringify(body) });
+        const { service } = await api("/api/services", { method: "POST", body: JSON.stringify(body) });
+        setServices((prev) => [...prev, service]);
       }
       resetForm();
-      load();
     } catch (e) {
       setError(e.message);
     } finally {
@@ -2277,7 +2332,7 @@ function Services() {
     setBusyServiceIds((prev) => new Set(prev).add(serviceId));
     try {
       await api("/api/services", { method: "DELETE", body: JSON.stringify({ serviceId }) });
-      load();
+      setServices((prev) => prev.filter((s) => s.ServiceID !== serviceId));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -3164,8 +3219,8 @@ function SchedulePool() {
     setError("");
     setBusyRescheduleIds((prev) => new Set(prev).add(scheduleId));
     try {
-      await api("/api/schedule", { method: "PATCH", body: JSON.stringify({ scheduleId, rescheduledDate, rescheduledTime }) });
-      load();
+      const { scheduleItem } = await api("/api/schedule", { method: "PATCH", body: JSON.stringify({ scheduleId, rescheduledDate, rescheduledTime }) });
+      setItems((prev) => prev.map((i) => (i.ScheduleID === scheduleItem.ScheduleID ? scheduleItem : i)));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -3181,8 +3236,11 @@ function SchedulePool() {
     setError("");
     setBusyRequestIds((prev) => new Set(prev).add(requestId));
     try {
-      await api("/api/schedule/reschedule-requests", { method: "PATCH", body: JSON.stringify({ requestId, action }) });
-      load();
+      const res = await api("/api/schedule/reschedule-requests", { method: "PATCH", body: JSON.stringify({ requestId, action }) });
+      setRescheduleRequests((prev) => prev.filter((r) => r.RescheduleRequestID !== res.rescheduleRequest.RescheduleRequestID));
+      if (res.scheduleItem) {
+        setItems((prev) => prev.map((i) => (i.ScheduleID === res.scheduleItem.ScheduleID ? res.scheduleItem : i)));
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -3199,14 +3257,15 @@ function SchedulePool() {
     setError("");
     setCreatingSlot(true);
     try {
-      await api("/api/schedule", {
+      const { scheduleItem } = await api("/api/schedule", {
         method: "POST",
         body: JSON.stringify({ serviceType, serviceId, date, time, duration, facilitator }),
       });
+      setItems((prev) => [...prev, scheduleItem]);
+      setOpenPoolSlots((prev) => [...prev, scheduleItem]);
       setDate("");
       setTime("");
       setFacilitator("");
-      load();
     } catch (e) {
       setError(e.message);
     } finally {
@@ -3644,15 +3703,17 @@ function Enrollments() {
   async function enrollMany(userId, rows, startDate, endDate) {
     setError("");
     const failures = [];
+    const created = [];
     for (const row of rows) {
       try {
-        await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId: row.serviceId, batchId: row.batchId, rateId: row.rateId, startDate, endDate }) });
+        const { enrollment } = await api("/api/enrollments", { method: "POST", body: JSON.stringify({ userId, serviceId: row.serviceId, batchId: row.batchId, rateId: row.rateId, startDate, endDate }) });
+        created.push(enrollment);
       } catch (e) {
         failures.push(`${serviceNameOf(row.serviceId)}: ${e.message}`);
       }
     }
     if (failures.length) setError(`${failures.length} of ${rows.length} enrollment(s) failed — ${failures.join("; ")}`);
-    load();
+    if (created.length) setEnrollments((prev) => [...prev, ...created]);
   }
 
   // TKT-0015: mint a one-off custom Rate inline from the enroll form,
@@ -3661,19 +3722,19 @@ function Enrollments() {
   // Rate is a first-class RateID billing already understands — just
   // created from the enroll form instead of the Service editor.
   async function addCustomRate(serviceId, batchId, rate) {
-    const { rate: newRate } = await api("/api/services/rates", { method: "POST", body: JSON.stringify({ serviceId, batchId, ...rate }) });
-    await load();
+    const { rate: newRate, service } = await api("/api/services/rates", { method: "POST", body: JSON.stringify({ serviceId, batchId, ...rate }) });
+    setServices((prev) => prev.map((s) => (s.ServiceID === service.ServiceID ? service : s)));
     return newRate;
   }
 
   async function updateEnrollment(enrolmentId, patch) {
-    await api("/api/enrollments", { method: "PATCH", body: JSON.stringify({ enrolmentId, ...patch }) });
-    load();
+    const { enrollment } = await api("/api/enrollments", { method: "PATCH", body: JSON.stringify({ enrolmentId, ...patch }) });
+    setEnrollments((prev) => prev.map((e) => (e.EnrolmentID === enrollment.EnrolmentID ? enrollment : e)));
   }
 
   async function deleteEnrollment(enrolmentId) {
     await api("/api/enrollments", { method: "DELETE", body: JSON.stringify({ enrolmentId }) });
-    load();
+    setEnrollments((prev) => prev.filter((e) => e.EnrolmentID !== enrolmentId));
   }
 
   function nameOf(id) {
@@ -4214,28 +4275,28 @@ function Billing() {
   }
 
   async function patchInvoice(id, patch) {
-    await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId: id, ...patch }) });
-    load();
+    const res = await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId: id, ...patch }) });
+    setInvoices((prev) => prev.map((i) => (i.InvoiceID === id ? res.invoice : i)));
   }
   async function patchInvoiceLineItem(id, lineItemIndex, patch) {
-    await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId: id, lineItemIndex, ...patch }) });
-    load();
+    const res = await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId: id, lineItemIndex, ...patch }) });
+    setInvoices((prev) => prev.map((i) => (i.InvoiceID === id ? res.invoice : i)));
   }
   async function patchPaycheck(id, patch) {
-    await api("/api/paychecks", { method: "PATCH", body: JSON.stringify({ paycheckId: id, ...patch }) });
-    load();
+    const res = await api("/api/paychecks", { method: "PATCH", body: JSON.stringify({ paycheckId: id, ...patch }) });
+    setPaychecks((prev) => prev.map((p) => (p.PaycheckID === id ? res.paycheck : p)));
   }
   async function patchPaycheckLineItem(id, lineItemIndex, patch) {
-    await api("/api/paychecks", { method: "PATCH", body: JSON.stringify({ paycheckId: id, lineItemIndex, ...patch }) });
-    load();
+    const res = await api("/api/paychecks", { method: "PATCH", body: JSON.stringify({ paycheckId: id, lineItemIndex, ...patch }) });
+    setPaychecks((prev) => prev.map((p) => (p.PaycheckID === id ? res.paycheck : p)));
   }
   async function deleteInvoice(id) {
     await api("/api/invoices", { method: "DELETE", body: JSON.stringify({ invoiceId: id }) });
-    load();
+    setInvoices((prev) => prev.filter((i) => i.InvoiceID !== id));
   }
   async function deletePaycheck(id) {
     await api("/api/paychecks", { method: "DELETE", body: JSON.stringify({ paycheckId: id }) });
-    load();
+    setPaychecks((prev) => prev.filter((p) => p.PaycheckID !== id));
   }
 
   return (
@@ -4270,12 +4331,13 @@ function Billing() {
           services={services}
           enrollments={enrollments}
           onSubmitRows={async ({ personId, year, month, rows }) => {
-            await api("/api/invoices", {
+            const res = await api("/api/invoices", {
               method: "POST",
               body: JSON.stringify({ action: "manual", studentId: personId, year, month, lineItems: rows }),
             });
+            setInvoices((prev) => [...prev, ...res.invoices]);
           }}
-          onDone={load}
+          onDone={() => {}}
         />
         <ManualBillingForm
           title="Create Paycheck (manual)"
@@ -4283,11 +4345,11 @@ function Billing() {
           people={users.filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType))}
           services={services}
           onSubmit={async ({ personId, serviceId, year, month, amount }) => {
-            await api("/api/paychecks", {
+            const res = await api("/api/paychecks", {
               method: "POST",
               body: JSON.stringify({ action: "manual", staffId: personId, serviceId, year, month, amount }),
             });
-            load();
+            setPaychecks((prev) => [...prev, res.paycheck]);
           }}
         />
       </div>
@@ -5314,8 +5376,8 @@ function Tickets() {
 
   async function setTicketState(ticketId, action, closeMessage) {
     try {
-      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action, closeMessage }) });
-      load();
+      const { ticket } = await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action, closeMessage }) });
+      setTickets((prev) => prev.map((t) => (t.TicketID === ticket.TicketID ? ticket : t)));
     } catch (e) {
       setError(e.message);
     }
@@ -5323,8 +5385,8 @@ function Tickets() {
 
   async function editTicket(ticketId, message) {
     try {
-      await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action: "edit", message }) });
-      load();
+      const { ticket } = await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action: "edit", message }) });
+      setTickets((prev) => prev.map((t) => (t.TicketID === ticket.TicketID ? ticket : t)));
     } catch (e) {
       setError(e.message);
       throw e; // let TicketRow know the save failed, so it keeps the editor open
@@ -5653,8 +5715,8 @@ function Guides() {
   async function create(name, url, userTypes) {
     setError("");
     try {
-      await api("/api/guides", { method: "POST", body: JSON.stringify({ name, url, userTypes }) });
-      load();
+      const { guide } = await api("/api/guides", { method: "POST", body: JSON.stringify({ name, url, userTypes }) });
+      setGuides((prev) => [...prev, guide]);
     } catch (e) {
       setError(e.message);
     }
@@ -5663,8 +5725,8 @@ function Guides() {
   async function update(guideId, patch) {
     setError("");
     try {
-      await api("/api/guides", { method: "PATCH", body: JSON.stringify({ guideId, ...patch }) });
-      load();
+      const { guide } = await api("/api/guides", { method: "PATCH", body: JSON.stringify({ guideId, ...patch }) });
+      setGuides((prev) => prev.map((g) => (g.GuideID === guide.GuideID ? guide : g)));
     } catch (e) {
       setError(e.message);
     }
@@ -5674,7 +5736,7 @@ function Guides() {
     setError("");
     try {
       await api("/api/guides", { method: "DELETE", body: JSON.stringify({ guideId }) });
-      load();
+      setGuides((prev) => prev.filter((g) => g.GuideID !== guideId));
     } catch (e) {
       setError(e.message);
     }
