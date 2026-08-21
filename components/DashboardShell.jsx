@@ -58,7 +58,7 @@ function ReportIssueButton() {
             <h3 className="font-semibold mb-3">Report an Issue</h3>
             {status === "sent" ? (
               <div className="space-y-3">
-                <p style={{ color: "var(--muted)" }}>Sent — thanks, we&apos;ll take a look.</p>
+                <p style={{ color: "var(--muted)" }}>Sent. Thanks, we&apos;ll take a look.</p>
                 <button className="btn" onClick={close}>Close</button>
               </div>
             ) : (

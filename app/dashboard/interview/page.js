@@ -123,7 +123,7 @@ function Body({ user }) {
 
               {it.Status === "Pending" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Your request is being reviewed — a slot will be assigned once approved.
+                  Your request is being reviewed. A slot will be assigned once approved.
                 </p>
               )}
               {it.Status === "Rejected" && (
@@ -133,7 +133,7 @@ function Body({ user }) {
               )}
               {it.Status === "Waitlisted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--warn)" }}>
-                  You&apos;ve been added to the waitlist — we&apos;ll follow up soon.
+                  You&apos;ve been added to the waitlist. We&apos;ll follow up soon.
                 </p>
               )}
               {it.Status === "Scheduled" && (
@@ -141,7 +141,7 @@ function Body({ user }) {
               )}
               {it.Status === "TaskSubmitted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Task submitted — we&apos;ll be in touch soon with next steps.
+                  Task submitted. We&apos;ll be in touch soon with next steps.
                 </p>
               )}
               {it.TaskFeedback && ["OfferSent", "OfferAccepted", "Waitlisted", "Rejected"].includes(it.Status) && (
@@ -173,7 +173,7 @@ function Body({ user }) {
                     </a>
                   )}
                   <p className="text-sm mt-1" style={{ color: "var(--good)" }}>
-                    Offer accepted — you&apos;ll be set up with a{" "}
+                    Offer accepted. You&apos;ll be set up with a{" "}
                     {user.UserType === "AmbassadorInterviewAcc" ? "n Ambassador" : " Staff"} account shortly.
                   </p>
                 </div>
@@ -186,7 +186,7 @@ function Body({ user }) {
       <div className="card">
         <h2 className="font-semibold mb-4">Request an Interview</h2>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-          Pick the service you&apos;re interviewing for. No need to choose a time — a slot will be assigned once
+          Pick the service you&apos;re interviewing for. No need to choose a time. A slot will be assigned once
           your request is approved.
         </p>
         <div className="flex gap-2">

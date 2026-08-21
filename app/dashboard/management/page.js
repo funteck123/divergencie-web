@@ -179,9 +179,9 @@ function Applications() {
         body: JSON.stringify({ regFormId, action }),
       });
       if (res.credentials) setIssued((prev) => ({ ...prev, [regFormId]: res.credentials }));
-      // PATCH /api/regforms returns the full updated regForm (both
-      // approve/reject branches) — Applications only tracks `regForms`, so a
-      // local merge is enough; no need to refetch the whole list.
+      // PATCH /api/regforms returns the full updated regForm on both
+      // approve and reject branches. Applications only tracks `regForms`,
+      // so a local merge is enough; no need to refetch the whole list.
       setRegForms((prev) => prev.map((r) => (r.RegFormID === regFormId ? res.regForm : r)));
     } catch (e) {
       setError(e.message);
@@ -328,11 +328,12 @@ function Pipeline() {
     setError("");
     setBusyTrialIds((prev) => new Set(prev).add(trialId));
     try {
-      // POST /api/trial-enroll returns only { enrollment, invoice } — it does
-      // NOT return the updated trialItem (whose ServiceAdded flag flips to
-      // true server-side), and Pipeline has no enrollments state to merge
-      // into either. Left on load(): can't prove the response covers what
-      // this component renders (the trial row's ServiceAdded ✓ badge).
+      // POST /api/trial-enroll returns only { enrollment, invoice }. It
+      // does NOT return the updated trialItem, whose ServiceAdded flag
+      // flips to true server-side, and Pipeline has no enrollments state
+      // to merge into either. Left on load() because the response doesn't
+      // cover what this component renders: the trial row's ServiceAdded
+      // check mark badge.
       await api("/api/trial-enroll", { method: "POST", body: JSON.stringify({ trialId }) });
       load();
     } catch (e) {
@@ -347,9 +348,9 @@ function Pipeline() {
   }
 
   async function sendOffer(interviewId, feedback, offerLetterLink) {
-    // POST /api/interview-offer returns { interviewItem } — the full record,
-    // same shape as what's in interviewItems (both come straight off
-    // db.interviewItems) — safe to merge locally instead of a full reload.
+    // POST /api/interview-offer returns { interviewItem }, the full record
+    // in the same shape as what's in interviewItems (both come straight
+    // off db.interviewItems). Safe to merge locally instead of a full reload.
     const { interviewItem } = await api("/api/interview-offer", { method: "POST", body: JSON.stringify({ interviewId, action: "send", feedback, offerLetterLink }) });
     setInterviewItems((prev) => prev.map((i) => (i.InterviewID === interviewId ? interviewItem : i)));
   }
@@ -363,8 +364,8 @@ function Pipeline() {
     setError("");
     setBusyAccountIds((prev) => new Set(prev).add(accountId));
     try {
-      // POST /api/convert returns { oldUser, newUser, credentials } — enough
-      // to merge `users`, but when newUser.UserType === "Student" the route
+      // POST /api/convert returns { oldUser, newUser, credentials }, enough
+      // to merge `users`. But when newUser.UserType === "Student" the route
       // also reassigns every existing invoice's StudentID from the old
       // TrialAcc id to the new Student id (see app/api/convert/route.js),
       // and that updated invoices array isn't in the response. invoiceFor()
@@ -390,12 +391,12 @@ function Pipeline() {
     setBusyRequestIds((prev) => new Set(prev).add(id));
     try {
       // PATCH /api/schedule/requests returns { trialItem } for type==="Trial"
-      // and { interviewItem } otherwise — the full record in both cases
-      // (same shape trialItems/interviewItems already hold). GET's own
-      // pendingTrials/pendingInterviews are filtered server-side to
-      // Status==="Pending", so once approved/rejected the item stops
-      // qualifying — dropping it from the pending list locally matches what
-      // a refetch would return.
+      // and { interviewItem } otherwise, the full record in both cases,
+      // matching the shape trialItems/interviewItems already hold. GET's
+      // own pendingTrials/pendingInterviews are filtered server-side to
+      // Status==="Pending", so once approved or rejected the item stops
+      // qualifying. Dropping it from the pending list locally matches
+      // what a refetch would return.
       const res = await api("/api/schedule/requests", { method: "PATCH", body: JSON.stringify({ type, id, action, scheduleId }) });
       if (type === "Trial") {
         setPendingTrials((prev) => prev.filter((t) => t.TrialID !== id));
@@ -950,10 +951,10 @@ function Accounts() {
         body: JSON.stringify({ accountId }),
       });
       setIssued((prev) => ({ ...prev, [accountId]: res.credentials }));
-      // /api/convert returns the raw oldUser/newUser records (no Username/
-      // Password join like GET /api/users does) — reconstruct the same
-      // join GET performs so newUser's credentials render inline instead of
-      // falling back to "—" until the next full refetch.
+      // /api/convert returns the raw oldUser/newUser records, with no
+      // Username/Password join like GET /api/users does. Reconstruct the
+      // same join GET performs so newUser's credentials render inline
+      // instead of falling back to "—" until the next full refetch.
       const newUserWithCreds = { ...res.newUser, Username: res.credentials.username, Password: res.credentials.password };
       setUsers((prev) => [...prev.map((u) => (u.UserID === accountId ? res.oldUser : u)), newUserWithCreds]);
     } catch (e) {
@@ -973,10 +974,11 @@ function Accounts() {
     try {
       const res = await api("/api/users", { method: "PATCH", body: JSON.stringify({ userId, ...fields }) });
       setEditingId(null);
-      // PATCH returns only the raw user record (no Username/Password join
-      // like GET /api/users performs) — carry over the existing credential
-      // fields unless this save actually touched them (matches the route's
-      // own `if (username !== undefined) cred.Username = username` logic).
+      // PATCH returns only the raw user record, with no Username/Password
+      // join like GET /api/users performs. Carry over the existing
+      // credential fields unless this save actually touched them (matches
+      // the route's own `if (username !== undefined) cred.Username =
+      // username` logic).
       setUsers((prev) =>
         prev.map((u) =>
           u.UserID === userId
@@ -1737,9 +1739,9 @@ function CreateAccount({ onCreated, users }) {
       const res = await api("/api/users", { method: "POST", body: JSON.stringify(body) });
       setIssued(res.credentials);
       reset();
-      // POST returns the raw user record plus separate credentials — join
-      // them the same way GET /api/users does (Username/Password merged in)
-      // so the parent's local list matches what a refetch would produce.
+      // POST returns the raw user record plus separate credentials. Join
+      // them the same way GET /api/users does, Username/Password merged
+      // in, so the parent's local list matches what a refetch would produce.
       onCreated({ ...res.user, Username: res.credentials.username, Password: res.credentials.password });
     } catch (e) {
       setError(e.message);

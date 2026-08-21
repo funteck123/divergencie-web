@@ -26,8 +26,8 @@ function fmtDate(y, m, d) {
 // resolution). Every OTHER caller (Staff/Ambassador/Parent dashboards)
 // doesn't pass it and keeps the exact original self-only behavior,
 // unaffected by this ticket's changes.
-// Cells past this many sessions show a "+N more" pill instead of growing —
-// paired with CELL_MAX_HEIGHT below so no cell can blow out the week row's
+// Cells past this many sessions show a "+N more" pill instead of growing.
+// Paired with CELL_MAX_HEIGHT below so no cell can blow out the week row's
 // height regardless of how many sessions land on one day.
 const VISIBLE_SESSIONS_PER_CELL = 3;
 const CELL_MAX_HEIGHT = 144;
@@ -38,7 +38,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
   const [month, setMonth] = useState(today.getMonth());
   const [expandedId, setExpandedId] = useState(null);
   // Date string of the day currently shown in the "full day" popover, or
-  // null — opened by clicking a cell with more sessions than fit in it.
+  // null. Opened by clicking a cell with more sessions than fit in it.
   const [dayModalDate, setDayModalDate] = useState(null);
 
   const itemsByDate = useMemo(() => {
@@ -79,12 +79,13 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
     return records.find((a) => a.AcceptedForBilling !== false) || records[0];
   }
 
-  // Shared chip renderer — used both for a cell's own (capped) list and for
+  // Shared chip renderer, used both for a cell's own (capped) list and for
   // the full-day popover, so the click-to-expand-attendance behavior is
-  // identical in both places. `truncate` clips the label to one line (cell
-  // context, where a long ServiceName wrapping across several lines could
-  // by itself blow past the cell's own height and hide the "+N more" pill
-  // below it) — the popover passes false so the full label is readable.
+  // identical in both places. `truncate` clips the label to one line in
+  // the cell context, where a long ServiceName wrapping across several
+  // lines could by itself blow past the cell's own height and hide the
+  // "+N more" pill below it. The popover passes false so the full label
+  // is readable.
   function renderSessionChip(s, truncate = false) {
     const att = attendanceFor(s.ScheduleID);
     const kind = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "pending" : "bad";
@@ -202,7 +203,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
         ))}
       </div>
 
-      {/* Fixed-height scroll region for the week grid — keeps the nav/legend
+      {/* Fixed-height scroll region for the week grid. Keeps the nav/legend
           above it always visible regardless of how many weeks the month
           spans, instead of the whole card growing the page. */}
       <div className="grid grid-cols-7 gap-1" style={{ maxHeight: 560, overflowY: "auto", paddingRight: 2 }}>

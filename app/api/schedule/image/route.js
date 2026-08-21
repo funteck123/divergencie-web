@@ -65,14 +65,14 @@ export async function GET(req) {
     // TKT-0008: this slot was blank for Student (dcp1-app students can be
     // enrolled across multiple unrelated Services, unlike p26's
     // one-class-per-student model, so there's no single ENROLLMENT to name
-    // here) — now shows the student's own profile Course field instead
+    // here). It now shows the student's own profile Course field instead
     // (e.g. "IGCSE"), the same general-course label Management already
     // sets on the account. Staff keep showing their Department in the same
-    // template slot. Teacher shows nothing here (see below) — TKT-0041
+    // template slot. Teacher shows nothing here (see below). TKT-0041
     // originally derived this from the teacher's enrolled Batch, but a
     // teacher can be enrolled across several batches at once, so any
-    // single value shown here would misrepresent the rest; left blank
-    // rather than showing a partial/misleading list.
+    // single value shown here would misrepresent the rest. Left blank
+    // rather than showing a partial or misleading list.
     className: user.UserType === "Staff" ? user.Department || "" : user.UserType === "Student" ? user.Course || "" : "",
   };
   const entries = buildEntries(db, userId, viewerTimezone);

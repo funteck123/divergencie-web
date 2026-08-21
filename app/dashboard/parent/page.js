@@ -31,8 +31,8 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Replaces one invoice in-place across every child's invoices array —
-  // both /api/invoices PATCH and /api/invoices/mark-paid POST return the
+  // Replaces one invoice in place across every child's invoices array.
+  // Both /api/invoices PATCH and /api/invoices/mark-paid POST return the
   // full updated { invoice }, so no refetch is needed to re-render it.
   function applyUpdatedInvoice(invoice) {
     setData((prev) => ({
