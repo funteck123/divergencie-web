@@ -163,7 +163,7 @@ export async function POST(req) {
     AcceptedForBilling: accepted,
   };
   db.attendanceItems.push(item);
-  await writeDB(db);
+  await writeDB(db, ["attendanceItems"]);
   return NextResponse.json({ attendanceItem: item });
 }
 
@@ -200,6 +200,6 @@ export async function PATCH(req) {
   }
   record.ResolvedBy = session.userId;
   record.ResolvedAt = new Date().toISOString();
-  await writeDB(db);
+  await writeDB(db, ["attendanceItems"]);
   return NextResponse.json({ attendanceItem: record });
 }

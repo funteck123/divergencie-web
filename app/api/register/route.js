@@ -27,7 +27,7 @@ export async function POST(req) {
     SubmittedAt: new Date().toISOString(),
   };
   db.regForms.push(regForm);
-  await writeDB(db);
+  await writeDB(db, ["regForms"]);
 
   return NextResponse.json({ regForm });
 }

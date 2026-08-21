@@ -12,7 +12,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  if (ensureScheduleGenerated(db) > 0) await writeDB(db);
+  if (ensureScheduleGenerated(db) > 0) await writeDB(db, ["scheduleItems"]);
 
   const user = db.users.find((u) => u.UserID === userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
@@ -124,7 +124,7 @@ export async function GET(req) {
   }
 
   if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) {
-    await writeDB(db);
+    await writeDB(db, []);
   }
 
   // Notes is a private Management admin field (see the Student Accounts

@@ -120,7 +120,7 @@ export async function GET(req) {
       terms: TERMS,
     });
   }
-  if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) await writeDB(db);
+  if (Object.keys(db.fxRates || {}).length !== fxRatesBefore) await writeDB(db, []);
 
   return new NextResponse(buffer, {
     headers: {

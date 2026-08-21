@@ -14,6 +14,6 @@ export async function POST(req) {
 
   item.TaskSubmissionLink = link;
   item.Status = "TaskSubmitted";
-  await writeDB(db);
+  await writeDB(db, ["interviewItems"]);
   return NextResponse.json({ interviewItem: item });
 }

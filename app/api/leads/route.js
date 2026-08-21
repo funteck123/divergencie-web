@@ -24,7 +24,7 @@ export async function POST(req) {
     CreatedAt: new Date().toISOString(),
   };
   db.leads.push(lead);
-  await writeDB(db);
+  await writeDB(db, ["leads"]);
   return NextResponse.json({ lead });
 }
 

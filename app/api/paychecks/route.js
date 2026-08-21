@@ -102,7 +102,7 @@ export async function POST(req) {
         Status: "Draft",
       };
       db.paychecks.push(paycheck);
-      await writeDB(db);
+      await writeDB(db, ["paychecks"]);
       await logAudit({ actorUserId: session.userId, action: "create", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Manual OneOff paycheck for ${staffId} — ${paycheck.Currency} ${paycheck.Amount}`, snapshot: paycheck });
       return NextResponse.json({ paycheck });
     }
@@ -139,7 +139,7 @@ export async function POST(req) {
     paycheck.INRDue = paycheck.INRAmount;
     db.paychecks.push(paycheck);
     await refreshStaffTotal(db, paycheck);
-    await writeDB(db);
+    await writeDB(db, ["paychecks"]);
     await logAudit({ actorUserId: session.userId, action: "create", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Manual paycheck for ${staffId}, ${m}/${y} — ${currency} ${paycheckAmount}`, snapshot: paycheck });
     return NextResponse.json({ paycheck });
   }
@@ -266,7 +266,7 @@ export async function POST(req) {
     await refreshStaffTotal(db, paycheck);
   }
 
-  await writeDB(db);
+  await writeDB(db, ["paychecks"]);
   await logAudit({
     actorUserId: session.userId,
     action: "generate",
@@ -371,7 +371,7 @@ export async function PATCH(req) {
     summary = managementOnly ? `Edited paycheck ${paycheck.PaycheckID}` : `Staff self-reported paycheck ${paycheck.PaycheckID} as ${staffReceivedFlag ? "received" : "not received"}`;
   }
 
-  await writeDB(db);
+  await writeDB(db, ["paychecks"]);
   await logAudit({
     actorUserId: session.userId,
     action: "edit",
@@ -395,7 +395,7 @@ export async function DELETE(req) {
   if (index === -1) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
   const [deleted] = db.paychecks.splice(index, 1);
-  await writeDB(db);
+  await writeDB(db, ["paychecks"]);
   await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Paycheck", entityId: paycheckId, summary: `Deleted paycheck ${paycheckId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

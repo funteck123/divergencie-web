@@ -107,7 +107,7 @@ export async function POST(req) {
     EndDate: endDate || "",
   };
   db.enrollments.push(enrollment);
-  await writeDB(db);
+  await writeDB(db, ["enrollments"]);
   await logAudit({ actorUserId: session.userId, action: "create", entityType: "Enrollment", entityId: enrollment.EnrolmentID, summary: `Enrolled ${userId} in ${serviceId}`, snapshot: enrollment });
   return NextResponse.json({ enrollment });
 }
@@ -166,7 +166,7 @@ export async function PATCH(req) {
   enrollment.Currency = resolved.Currency;
   enrollment.StartDate = nextStartDate || "";
   enrollment.EndDate = nextEndDate || "";
-  await writeDB(db);
+  await writeDB(db, ["enrollments"]);
   await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Enrollment", entityId: enrollment.EnrolmentID, summary: `Edited enrollment ${enrollment.EnrolmentID}`, snapshot: { before, after: enrollment } });
   return NextResponse.json({ enrollment });
 }
@@ -182,7 +182,7 @@ export async function DELETE(req) {
   if (index === -1) return NextResponse.json({ error: "Enrollment not found." }, { status: 404 });
 
   const [deleted] = db.enrollments.splice(index, 1);
-  await writeDB(db);
+  await writeDB(db, ["enrollments"]);
   await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Enrollment", entityId: enrolmentId, summary: `Deleted enrollment ${enrolmentId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

@@ -43,7 +43,7 @@ export async function POST(req) {
   };
   db.apiKeys = db.apiKeys || [];
   db.apiKeys.push(record);
-  await writeDB(db);
+  await writeDB(db, ["apiKeys"]);
   // The token itself is never logged (or stored anywhere) — only the
   // bookkeeping record, same as what's already shown in Management's
   // "issued keys" list.
@@ -88,7 +88,7 @@ export async function DELETE(req) {
   if (error) return error;
 
   db.apiKeys = db.apiKeys.filter((k) => k.ApiKeyID !== apiKeyId);
-  await writeDB(db);
+  await writeDB(db, ["apiKeys"]);
   await logAudit({ actorUserId: session.userId, action: "revoke", entityType: "ApiKey", entityId: apiKeyId, summary: `Revoked API key for ${record.UserID}`, snapshot: record });
   return NextResponse.json({ ok: true });
 }

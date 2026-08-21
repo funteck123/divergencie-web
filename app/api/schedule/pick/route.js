@@ -56,7 +56,7 @@ export async function POST(req) {
       ServiceAdded: false,
     };
     db.trialItems.push(item);
-    await writeDB(db);
+    await writeDB(db, ["trialItems"]);
     return NextResponse.json({ trialItem: item });
   }
 
@@ -88,6 +88,6 @@ export async function POST(req) {
     Status: "Pending",
   };
   db.interviewItems.push(item);
-  await writeDB(db);
+  await writeDB(db, ["interviewItems"]);
   return NextResponse.json({ interviewItem: item });
 }

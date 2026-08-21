@@ -143,7 +143,7 @@ export async function POST(req) {
   const mergedOldIds = new Set([...groups.values()].flat().map((inv) => inv.InvoiceID));
   db.invoices = db.invoices.filter((i) => !mergedOldIds.has(i.InvoiceID));
   db.invoices.push(...combinedInvoices);
-  await writeDB(db);
+  await writeDB(db, ["invoices"]);
 
   await logAudit({
     actorUserId: session.userId,

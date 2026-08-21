@@ -103,6 +103,6 @@ export async function POST(req) {
   oldUser.Status = "Converted";
   oldUser.ConvertedToUserID = newUserId;
 
-  await writeDB(db);
+  await writeDB(db, ["users", "credentials", "invoices"]);
   return NextResponse.json({ oldUser, newUser, credentials: { username, password } });
 }

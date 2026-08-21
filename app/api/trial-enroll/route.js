@@ -94,7 +94,7 @@ export async function POST(req) {
   }
 
   trial.ServiceAdded = true;
-  await writeDB(db);
+  await writeDB(db, ["enrollments", "invoices", "trialItems"]);
 
   return NextResponse.json({ enrollment, invoice });
 }

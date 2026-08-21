@@ -31,7 +31,7 @@ export async function POST(req) {
   const guide = { GuideID: nextId(db, "GDE"), Name: name, Url: url, UserTypes: userTypes };
   db.guides = db.guides || [];
   db.guides.push(guide);
-  await writeDB(db);
+  await writeDB(db, ["guides"]);
   return NextResponse.json({ guide });
 }
 
@@ -50,7 +50,7 @@ export async function PATCH(req) {
   if (name !== undefined) guide.Name = name;
   if (url !== undefined) guide.Url = url;
   if (userTypes !== undefined) guide.UserTypes = userTypes;
-  await writeDB(db);
+  await writeDB(db, ["guides"]);
   return NextResponse.json({ guide });
 }
 
@@ -64,6 +64,6 @@ export async function DELETE(req) {
 
   const db = await readDB();
   db.guides = (db.guides || []).filter((g) => g.GuideID !== guideId);
-  await writeDB(db);
+  await writeDB(db, ["guides"]);
   return NextResponse.json({ ok: true });
 }

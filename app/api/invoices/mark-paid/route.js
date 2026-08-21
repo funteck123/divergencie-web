@@ -33,7 +33,7 @@ export async function POST(req) {
   // TKT-0033: when payment was actually confirmed received, not just the
   // invoice's own creation/edit time.
   invoice.PaidAt = new Date().toISOString();
-  await writeDB(db);
+  await writeDB(db, ["invoices"]);
   await logAudit({ actorUserId: session.userId, action: "edit", entityType: "Invoice", entityId: invoiceId, summary: `Marked invoice ${invoiceId} as paid with proof attached` });
 
   return NextResponse.json({ invoice });

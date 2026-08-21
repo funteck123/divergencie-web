@@ -119,7 +119,7 @@ export async function POST(req) {
   const mergedOldIds = new Set([...groups.values()].flat().map((pay) => pay.PaycheckID));
   db.paychecks = db.paychecks.filter((p) => !mergedOldIds.has(p.PaycheckID));
   db.paychecks.push(...combinedPaychecks);
-  await writeDB(db);
+  await writeDB(db, ["paychecks"]);
 
   await logAudit({
     actorUserId: session.userId,

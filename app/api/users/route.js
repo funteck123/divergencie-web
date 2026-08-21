@@ -248,7 +248,7 @@ export async function POST(req) {
   const password = randomPassword();
   db.users.push(user);
   db.credentials.push({ UserID: userId, Username: username, Password: password });
-  await writeDB(db);
+  await writeDB(db, ["users", "credentials"]);
   // Never log credentials (username/password) — the snapshot here is the
   // user record only, which carries no secrets.
   await logAudit({ actorUserId: session.userId, action: "create", entityType: "User", entityId: userId, summary: `Created ${userType} "${name}"`, snapshot: user });
@@ -390,7 +390,7 @@ export async function PATCH(req) {
   applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
-  await writeDB(db);
+  await writeDB(db, ["users", "credentials"]);
   // snapshot is the user record only (before/after) — credentials
   // (username/password) are never logged, only whether they were touched.
   const credentialsChanged = username !== undefined || password !== undefined;

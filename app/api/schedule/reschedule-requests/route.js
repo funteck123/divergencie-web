@@ -81,7 +81,7 @@ export async function POST(req) {
   };
   db.rescheduleRequests = db.rescheduleRequests || [];
   db.rescheduleRequests.push(request);
-  await writeDB(db);
+  await writeDB(db, ["rescheduleRequests"]);
 
   return NextResponse.json({ rescheduleRequest: request });
 }
@@ -111,7 +111,7 @@ export async function PATCH(req) {
   if (action === "reject") {
     request.Status = "Rejected";
     request.ReviewedAt = new Date().toISOString();
-    await writeDB(db);
+    await writeDB(db, ["rescheduleRequests"]);
     await logAudit({ actorUserId: session.userId, action: "reject", entityType: "RescheduleRequest", entityId: request.RescheduleRequestID, summary: `Rejected reschedule request ${request.RescheduleRequestID}`, snapshot: request });
     return NextResponse.json({ rescheduleRequest: request });
   }
@@ -123,7 +123,7 @@ export async function PATCH(req) {
   slot.RescheduledTime = request.RequestedTime;
   request.Status = "Approved";
   request.ReviewedAt = new Date().toISOString();
-  await writeDB(db);
+  await writeDB(db, ["rescheduleRequests", "scheduleItems"]);
   await logAudit({
     actorUserId: session.userId,
     action: "approve",

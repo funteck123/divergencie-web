@@ -49,6 +49,6 @@ export async function POST(req) {
   } else {
     return NextResponse.json({ error: "action must be send, accept, waitlist, reject, or unsend." }, { status: 400 });
   }
-  await writeDB(db);
+  await writeDB(db, ["interviewItems"]);
   return NextResponse.json({ interviewItem: item });
 }

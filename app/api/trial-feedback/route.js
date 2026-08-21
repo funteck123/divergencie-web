@@ -14,6 +14,6 @@ export async function POST(req) {
 
   item.Feedback = feedback;
   item.Status = "FeedbackSubmitted";
-  await writeDB(db);
+  await writeDB(db, ["trialItems"]);
   return NextResponse.json({ trialItem: item });
 }

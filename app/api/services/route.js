@@ -12,7 +12,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  if (ensureScheduleGenerated(db) > 0) await writeDB(db);
+  if (ensureScheduleGenerated(db) > 0) await writeDB(db, ["scheduleItems"]);
   return NextResponse.json({ services: db.services });
 }
 
@@ -277,7 +277,7 @@ export async function POST(req) {
   stampFullNames(service);
   db.services.push(service);
   ensureScheduleGenerated(db);
-  await writeDB(db);
+  await writeDB(db, ["services", "scheduleItems"]);
   await logAudit({ actorUserId: session.userId, action: "create", entityType: "Service", entityId: service.ServiceID, summary: `Created "${service.Name}"` });
 
   return NextResponse.json({ service });
@@ -343,7 +343,7 @@ export async function PATCH(req) {
   stampFullNames(service);
 
   ensureScheduleGenerated(db);
-  await writeDB(db);
+  await writeDB(db, ["services", "scheduleItems"]);
   await logAudit({
     actorUserId: session.userId,
     action: "edit",
@@ -383,7 +383,7 @@ export async function DELETE(req) {
 
   db.services = db.services.filter((s) => s.ServiceID !== serviceId);
   db.scheduleItems = db.scheduleItems.filter((s) => s.ServiceID !== serviceId);
-  await writeDB(db);
+  await writeDB(db, ["services", "scheduleItems"]);
   await logAudit({
     actorUserId: session.userId,
     action: "delete",

@@ -41,7 +41,7 @@ export async function POST(req) {
   };
   db.tickets = db.tickets || [];
   db.tickets.push(ticket);
-  await writeDB(db);
+  await writeDB(db, ["tickets"]);
 
   return NextResponse.json({ ticket });
 }
@@ -80,7 +80,7 @@ export async function PATCH(req) {
     const before = { Message: ticket.Message, AttachmentURL: ticket.AttachmentURL };
     ticket.Message = message.trim();
     if (attachmentUrl !== undefined) ticket.AttachmentURL = attachmentUrl.trim();
-    await writeDB(db);
+    await writeDB(db, ["tickets"]);
     await logAudit({
       actorUserId: session.userId,
       action: "edit",
@@ -97,14 +97,14 @@ export async function PATCH(req) {
     }
     if (closeMessage !== undefined) ticket.CloseMessage = closeMessage.trim();
     if (!wasAlreadyClosed || closeMessage !== undefined) {
-      await writeDB(db);
+      await writeDB(db, ["tickets"]);
       await logAudit({ actorUserId: session.userId, action: "close", entityType: "Ticket", entityId: ticket.TicketID, summary: `Closed ticket ${ticket.TicketID}` });
     }
   } else if (action === "reopen" && ticket.ClosedAt) {
     ticket.ClosedAt = "";
     ticket.ClosedBy = "";
     ticket.CloseMessage = "";
-    await writeDB(db);
+    await writeDB(db, ["tickets"]);
     await logAudit({ actorUserId: session.userId, action: "reopen", entityType: "Ticket", entityId: ticket.TicketID, summary: `Reopened ticket ${ticket.TicketID}` });
   }
 

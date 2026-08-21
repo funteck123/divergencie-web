@@ -51,7 +51,7 @@ export async function POST(req) {
   target.Rates = Array.isArray(target.Rates) ? target.Rates : [];
   target.Rates.push(newRate);
 
-  await writeDB(db);
+  await writeDB(db, ["services"]);
   await logAudit({
     actorUserId: session.userId,
     action: "edit",

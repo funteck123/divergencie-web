@@ -200,7 +200,7 @@ export async function POST(req) {
     }
 
     if (monthlyInvoice) await refreshStudentTotal(db, monthlyInvoice);
-    await writeDB(db);
+    await writeDB(db, ["invoices"]);
     for (const invoice of oneOffCreated) {
       await logAudit({ actorUserId: session.userId, action: "create", entityType: "Invoice", entityId: invoice.InvoiceID, summary: `Manual OneOff invoice for ${studentId} — ${invoice.Currency} ${invoice.Amount}`, snapshot: invoice });
     }
@@ -346,7 +346,7 @@ export async function POST(req) {
     await refreshStudentTotal(db, invoice);
   }
 
-  await writeDB(db);
+  await writeDB(db, ["invoices"]);
   // One summary entry for the whole batch, not one per invoice/line item —
   // a monthly "Generate Drafts" run can touch dozens at once, and a
   // per-item audit entry for each would bury the log; ids are listed in
@@ -479,7 +479,7 @@ export async function PATCH(req) {
     summary = managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`;
   }
 
-  await writeDB(db);
+  await writeDB(db, ["invoices"]);
   await logAudit({
     actorUserId: session.userId,
     action: "edit",
@@ -505,7 +505,7 @@ export async function DELETE(req) {
   if (index === -1) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
   const [deleted] = db.invoices.splice(index, 1);
-  await writeDB(db);
+  await writeDB(db, ["invoices"]);
   await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Invoice", entityId: invoiceId, summary: `Deleted invoice ${invoiceId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

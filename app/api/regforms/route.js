@@ -57,7 +57,7 @@ export async function PATCH(req) {
 
   if (action === "reject") {
     form.Status = "Rejected";
-    await writeDB(db);
+    await writeDB(db, ["regForms"]);
     return NextResponse.json({ regForm: form });
   }
 
@@ -83,7 +83,7 @@ export async function PATCH(req) {
 
     form.Status = "Approved";
     form.CreatedUserID = userId;
-    await writeDB(db);
+    await writeDB(db, ["regForms", "users", "credentials"]);
 
     return NextResponse.json({ regForm: form, user, credentials: { username, password } });
   }

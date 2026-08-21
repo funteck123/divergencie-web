@@ -8,7 +8,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  if (ensureScheduleGenerated(db) > 0) await writeDB(db);
+  if (ensureScheduleGenerated(db) > 0) await writeDB(db, ["scheduleItems"]);
   // Every unbooked slot is open pool — manually-offered Trial/Interview slots
   // and auto-generated Service occurrences alike.
   const openPoolSlots = sortByDateTime(db.scheduleItems.filter((s) => !isSlotBooked(db, s.ScheduleID)));
@@ -59,7 +59,7 @@ export async function POST(req) {
     Facilitator: facilitator || "",
   };
   db.scheduleItems.push(item);
-  await writeDB(db);
+  await writeDB(db, ["scheduleItems"]);
 
   return NextResponse.json({ scheduleItem: item });
 }
@@ -85,7 +85,7 @@ export async function PATCH(req) {
 
   if (rescheduledDate !== undefined) item.RescheduledDate = rescheduledDate;
   if (rescheduledTime !== undefined) item.RescheduledTime = rescheduledTime;
-  await writeDB(db);
+  await writeDB(db, ["scheduleItems"]);
 
   return NextResponse.json({ scheduleItem: item });
 }

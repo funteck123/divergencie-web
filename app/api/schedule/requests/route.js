@@ -69,7 +69,7 @@ export async function PATCH(req) {
 
     if (action === "reject") {
       item.Status = "Rejected";
-      await writeDB(db);
+      await writeDB(db, ["trialItems"]);
       return NextResponse.json({ trialItem: item });
     }
 
@@ -78,7 +78,7 @@ export async function PATCH(req) {
     // Student account; billing only starts if/when Management does that via
     // POST /api/trial-enroll, after feedback comes in.
     item.Status = "Scheduled";
-    await writeDB(db);
+    await writeDB(db, ["trialItems"]);
     return NextResponse.json({ trialItem: item });
   }
 
@@ -90,7 +90,7 @@ export async function PATCH(req) {
 
   if (action === "reject") {
     item.Status = "Rejected";
-    await writeDB(db);
+    await writeDB(db, ["interviewItems"]);
     return NextResponse.json({ interviewItem: item });
   }
 
@@ -108,6 +108,6 @@ export async function PATCH(req) {
 
   item.ScheduleItemID = scheduleId;
   item.Status = "Scheduled";
-  await writeDB(db);
+  await writeDB(db, ["interviewItems"]);
   return NextResponse.json({ interviewItem: item });
 }
