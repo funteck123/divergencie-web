@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR, convertINRAmount } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
@@ -142,7 +142,7 @@ export async function POST(req) {
         const fxRate = await getRateToINR(db, currency, y, m);
         const invoiceINRAmount = fxRate != null ? Math.round(invoiceAmount * fxRate * 100) / 100 : 0;
         const invoice = {
-          InvoiceID: nextId(db, "INV"),
+          InvoiceID: await nextId(db, "INV"),
           StudentID: studentId,
           ServiceID: li.serviceId,
           BatchID: batchId || "",
@@ -179,7 +179,7 @@ export async function POST(req) {
       }
       if (!monthlyInvoice) {
         monthlyInvoice = {
-          InvoiceID: nextId(db, "INV"),
+          InvoiceID: await nextId(db, "INV"),
           StudentID: studentId,
           Year: y,
           Month: m,
@@ -246,7 +246,7 @@ export async function POST(req) {
       const fxRate = await getRateToINR(db, currency, y, m);
       const invoiceINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
       const invoice = {
-        InvoiceID: nextId(db, "INV"),
+        InvoiceID: await nextId(db, "INV"),
         StudentID: enr.UserID,
         ServiceID: enr.ServiceID,
         BatchID: enr.BatchID || "",
@@ -320,7 +320,7 @@ export async function POST(req) {
 
     if (!invoice) {
       invoice = {
-        InvoiceID: nextId(db, "INV"),
+        InvoiceID: await nextId(db, "INV"),
         StudentID: enr.UserID,
         Year: y,
         Month: m,
@@ -505,7 +505,7 @@ export async function DELETE(req) {
   if (index === -1) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
   const [deleted] = db.invoices.splice(index, 1);
-  await writeDB(db, ["invoices"]);
+  await deleteRecords(db, [{ collection: "invoices", ids: [invoiceId] }]);
   await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Invoice", entityId: invoiceId, summary: `Deleted invoice ${invoiceId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { rateById } from "@/lib/billing";
 import { getRateToINR, convertINRAmount } from "@/lib/fxRates";
 import { requireManagement } from "@/lib/authz";
@@ -76,7 +76,7 @@ export async function POST(req) {
     const convertedAmount = await convertINRAmount(db, inrAmount, staffCurrency, year, month);
 
     const combined = {
-      PaycheckID: nextId(db, "PAY"),
+      PaycheckID: await nextId(db, "PAY"),
       StaffID: staffId,
       Year: year,
       Month: month,
@@ -120,6 +120,7 @@ export async function POST(req) {
   db.paychecks = db.paychecks.filter((p) => !mergedOldIds.has(p.PaycheckID));
   db.paychecks.push(...combinedPaychecks);
   await writeDB(db, ["paychecks"]);
+  await deleteRecords(db, [{ collection: "paychecks", ids: [...mergedOldIds] }]);
 
   await logAudit({
     actorUserId: session.userId,

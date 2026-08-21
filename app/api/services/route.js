@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { ensureScheduleGenerated } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
 import { DEPARTMENTS } from "@/lib/accountTypes";
@@ -40,15 +40,15 @@ function validateBatches(batches) {
 // one that already has an id (existing, being edited/kept) keeps it, so
 // Enrollments/ScheduleItems already pointing at it stay valid; a new one
 // gets a fresh id. Batches themselves follow the same rule via batchId.
-function toStoredRates(db, rates) {
-  return rates.map((r) => ({
-    RateID: r.rateId || nextId(db, "RATE"),
+async function toStoredRates(db, rates) {
+  return Promise.all(rates.map(async (r) => ({
+    RateID: r.rateId || (await nextId(db, "RATE")),
     Currency: r.currency || "INR",
     Rate: Number(r.rate) || 0,
     Description: (r.description || "").trim(),
     BillingType: r.billingType || "Monthly",
     Group: r.group || "",
-  }));
+  })));
 }
 
 // TKT-0028: Facilitator is shown across ~12 read sites (schedule tables,
@@ -74,11 +74,11 @@ function resolveFacilitator(db, o) {
   return { facilitator: o.facilitator || "", facilitatorUserId: "" };
 }
 
-function toStoredOccurrences(db, occurrences) {
-  return occurrences.map((o) => {
+async function toStoredOccurrences(db, occurrences) {
+  return Promise.all(occurrences.map(async (o) => {
     const { facilitator, facilitatorUserId } = resolveFacilitator(db, o);
     return {
-      OccuranceID: o.occuranceId || nextId(db, "OCC"),
+      OccuranceID: o.occuranceId || (await nextId(db, "OCC")),
       Day: o.day,
       Time: o.time,
       Duration: Number(o.duration),
@@ -89,24 +89,24 @@ function toStoredOccurrences(db, occurrences) {
       // fallback for a User's own Timezone.
       Timezone: normalizeTimezone(o.timezone),
     };
-  });
+  }));
 }
 
-function toStoredBatches(db, batches) {
-  return batches.map((b) => ({
-    BatchID: b.batchId || nextId(db, "BATCH"),
+async function toStoredBatches(db, batches) {
+  return Promise.all(batches.map(async (b) => ({
+    BatchID: b.batchId || (await nextId(db, "BATCH")),
     BatchName: b.batchName,
-    OccuranceList: toStoredOccurrences(db, b.occurrences),
-    Rates: toStoredRates(db, b.rates),
-  }));
+    OccuranceList: await toStoredOccurrences(db, b.occurrences),
+    Rates: await toStoredRates(db, b.rates),
+  })));
 }
 
-function toStoredComponents(db, components) {
-  return components.map((c) => ({
-    ComponentID: c.componentId || nextId(db, "COMP"),
+async function toStoredComponents(db, components) {
+  return Promise.all(components.map(async (c) => ({
+    ComponentID: c.componentId || (await nextId(db, "COMP")),
     ComponentName: (c.componentName || "").trim(),
-    Batches: toStoredBatches(db, c.batches),
-  }));
+    Batches: await toStoredBatches(db, c.batches),
+  })));
 }
 
 // A role-based Service (an internal role like "Associate Project Manager",
@@ -120,15 +120,15 @@ function isRoleBasedService(group) {
   return group.length === 1 && ROLE_BASED_GROUPS.includes(group[0]);
 }
 
-function applyRoleBasedFields(db, service, body, group) {
+async function applyRoleBasedFields(db, service, body, group) {
   service.Role = (body.role || "").trim();
   if (group[0] === "Staff") {
     service.Department = DEPARTMENTS.includes(body.department) ? body.department : "";
   } else {
     delete service.Department;
   }
-  service.Rates = toStoredRates(db, body.rates || []);
-  service.OccuranceList = toStoredOccurrences(db, body.occurrences || []);
+  service.Rates = await toStoredRates(db, body.rates || []);
+  service.OccuranceList = await toStoredOccurrences(db, body.occurrences || []);
 }
 
 // Course/Curriculum fields are still Student/Teacher-only (a service's
@@ -197,14 +197,16 @@ function applyStudentLinkFields(service, body, group) {
 // (one Service, not a separate Service per link, per the Questions/Answers
 // merge). Entries missing a name or url are dropped rather than stored
 // half-filled. Existing ids are preserved on edit like Rates/Occurrences.
-function toStoredLinks(db, links) {
-  return (Array.isArray(links) ? links : [])
-    .filter((l) => l.name && l.url)
-    .map((l) => ({
-      LinkID: l.linkId || nextId(db, "LINK"),
-      Name: l.name.trim(),
-      Url: l.url.trim(),
-    }));
+async function toStoredLinks(db, links) {
+  return Promise.all(
+    (Array.isArray(links) ? links : [])
+      .filter((l) => l.name && l.url)
+      .map(async (l) => ({
+        LinkID: l.linkId || (await nextId(db, "LINK")),
+        Name: l.name.trim(),
+        Url: l.url.trim(),
+      }))
+  );
 }
 
 // University/Country are specific to Admissions-typed services (offer-
@@ -260,20 +262,20 @@ export async function POST(req) {
   const db = await readDB();
 
   const service = {
-    ServiceID: nextId(db, "SVC"),
+    ServiceID: await nextId(db, "SVC"),
     Type: type,
     Group: group,
     Name: name,
   };
   if (roleBased) {
-    applyRoleBasedFields(db, service, body, group);
+    await applyRoleBasedFields(db, service, body, group);
   } else {
-    service.OptionalComponents = toStoredComponents(db, components);
+    service.OptionalComponents = await toStoredComponents(db, components);
   }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
   applyAdmissionsFields(service, body, type);
-  service.Links = toStoredLinks(db, body.links);
+  service.Links = await toStoredLinks(db, body.links);
   stampFullNames(service);
   db.services.push(service);
   ensureScheduleGenerated(db);
@@ -330,16 +332,16 @@ export async function PATCH(req) {
   service.Type = type;
   service.Group = group;
   if (roleBased) {
-    applyRoleBasedFields(db, service, body, group);
+    await applyRoleBasedFields(db, service, body, group);
     delete service.OptionalComponents;
   } else {
-    service.OptionalComponents = toStoredComponents(db, components);
+    service.OptionalComponents = await toStoredComponents(db, components);
     for (const key of ["Role", "Department", "Rates", "OccuranceList"]) delete service[key];
   }
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
   applyAdmissionsFields(service, body, type);
-  service.Links = toStoredLinks(db, body.links);
+  service.Links = await toStoredLinks(db, body.links);
   stampFullNames(service);
 
   ensureScheduleGenerated(db);
@@ -381,9 +383,13 @@ export async function DELETE(req) {
     );
   }
 
+  const removedScheduleIds = db.scheduleItems.filter((s) => s.ServiceID === serviceId).map((s) => s.ScheduleID);
   db.services = db.services.filter((s) => s.ServiceID !== serviceId);
   db.scheduleItems = db.scheduleItems.filter((s) => s.ServiceID !== serviceId);
-  await writeDB(db, ["services", "scheduleItems"]);
+  await deleteRecords(db, [
+    { collection: "services", ids: [serviceId] },
+    { collection: "scheduleItems", ids: removedScheduleIds },
+  ]);
   await logAudit({
     actorUserId: session.userId,
     action: "delete",

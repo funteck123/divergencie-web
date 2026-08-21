@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB } from "@/lib/db";
+import { readDB, writeDB, deleteRecords } from "@/lib/db";
 import { signApiKey } from "@/lib/session";
 import { requireSelfOrManagement, requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -88,7 +88,7 @@ export async function DELETE(req) {
   if (error) return error;
 
   db.apiKeys = db.apiKeys.filter((k) => k.ApiKeyID !== apiKeyId);
-  await writeDB(db, ["apiKeys"]);
+  await deleteRecords(db, [{ collection: "apiKeys", ids: [apiKeyId] }]);
   await logAudit({ actorUserId: session.userId, action: "revoke", entityType: "ApiKey", entityId: apiKeyId, summary: `Revoked API key for ${record.UserID}`, snapshot: record });
   return NextResponse.json({ ok: true });
 }

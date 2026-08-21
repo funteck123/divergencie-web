@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
 import { batchesOf, ratesOf } from "@/lib/billing";
 import { logAudit } from "@/lib/logging";
@@ -97,7 +97,7 @@ export async function POST(req) {
   if (dateError) return NextResponse.json({ error: dateError }, { status: 400 });
 
   const enrollment = {
-    EnrolmentID: nextId(db, "ENR"),
+    EnrolmentID: await nextId(db, "ENR"),
     UserID: userId,
     ServiceID: serviceId,
     BatchID: resolvedBatch.BatchID,
@@ -182,7 +182,7 @@ export async function DELETE(req) {
   if (index === -1) return NextResponse.json({ error: "Enrollment not found." }, { status: 404 });
 
   const [deleted] = db.enrollments.splice(index, 1);
-  await writeDB(db, ["enrollments"]);
+  await deleteRecords(db, [{ collection: "enrollments", ids: [enrolmentId] }]);
   await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Enrollment", entityId: enrolmentId, summary: `Deleted enrollment ${enrolmentId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }

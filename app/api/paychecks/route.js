@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
 import { getRateToINR, convertINRAmount } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrManagement } from "@/lib/authz";
@@ -87,7 +87,7 @@ export async function POST(req) {
       const fxRate = await getRateToINR(db, currency, y, m);
       const paycheckINRAmount = fxRate != null ? Math.round(paycheckAmount * fxRate * 100) / 100 : 0;
       const paycheck = {
-        PaycheckID: nextId(db, "PAY"),
+        PaycheckID: await nextId(db, "PAY"),
         StaffID: staffId,
         ServiceID: serviceId,
         BatchID: batchId || "",
@@ -121,7 +121,7 @@ export async function POST(req) {
       );
     }
     const paycheck = {
-      PaycheckID: nextId(db, "PAY"),
+      PaycheckID: await nextId(db, "PAY"),
       StaffID: staffId,
       Year: y,
       Month: m,
@@ -178,7 +178,7 @@ export async function POST(req) {
       const fxRate = await getRateToINR(db, currency, y, m);
       const paycheckINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
       const paycheck = {
-        PaycheckID: nextId(db, "PAY"),
+        PaycheckID: await nextId(db, "PAY"),
         StaffID: enr.UserID,
         ServiceID: enr.ServiceID,
         BatchID: enr.BatchID || "",
@@ -240,7 +240,7 @@ export async function POST(req) {
 
     if (!paycheck) {
       paycheck = {
-        PaycheckID: nextId(db, "PAY"),
+        PaycheckID: await nextId(db, "PAY"),
         StaffID: enr.UserID,
         Year: y,
         Month: m,
@@ -395,7 +395,7 @@ export async function DELETE(req) {
   if (index === -1) return NextResponse.json({ error: "Paycheck not found." }, { status: 404 });
 
   const [deleted] = db.paychecks.splice(index, 1);
-  await writeDB(db, ["paychecks"]);
+  await deleteRecords(db, [{ collection: "paychecks", ids: [paycheckId] }]);
   await logAudit({ actorUserId: session.userId, action: "delete", entityType: "Paycheck", entityId: paycheckId, summary: `Deleted paycheck ${paycheckId}`, snapshot: deleted });
   return NextResponse.json({ ok: true });
 }
