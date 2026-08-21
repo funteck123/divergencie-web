@@ -4257,15 +4257,14 @@ function Billing() {
     setSummary("");
     setGenerating(true);
     try {
-      const [{ created: createdInvoices }, { created: createdPaychecks }] = await Promise.all([
+      const [{ created: createdInvoices, skipped: skippedInvoices }, { created: createdPaychecks, skipped: skippedPaychecks }] = await Promise.all([
         api("/api/invoices", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
         api("/api/paychecks", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
       ]);
-      const flaggedInvoices = (createdInvoices || []).filter((i) => i.Note).length;
-      const flaggedPaychecks = (createdPaychecks || []).filter((p) => p.Note).length;
       const parts = [`Generated ${createdInvoices?.length || 0} invoice${createdInvoices?.length === 1 ? "" : "s"}, ${createdPaychecks?.length || 0} paycheck${createdPaychecks?.length === 1 ? "" : "s"}.`];
-      if (flaggedInvoices || flaggedPaychecks) {
-        parts.push(`⚠ ${flaggedInvoices} invoice(s) and ${flaggedPaychecks} paycheck(s) came out at $0 with no scheduled hours — check their schedule/billing type before sending.`);
+      const skippedCount = (skippedInvoices?.length || 0) + (skippedPaychecks?.length || 0);
+      if (skippedCount) {
+        parts.push(`⚠ Skipped ${skippedInvoices?.length || 0} invoice(s) and ${skippedPaychecks?.length || 0} paycheck(s) that would have billed $0 (no scheduled hours) — no $0 record was created for these. Check the Batch's schedule or its billing type: ${[...(skippedInvoices || []), ...(skippedPaychecks || [])].map((s) => `${s.studentId || s.staffId}/${s.serviceId}`).join(", ")}.`);
       }
       setSummary(parts.join(" "));
       load();

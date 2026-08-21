@@ -64,6 +64,9 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    if (Number(amount) <= 0) {
+      return NextResponse.json({ error: "Amount must be greater than 0. A $0 paycheck can't be created." }, { status: 400 });
+    }
     const db = await readDB();
     const y = Number(year);
     const m = Number(month);
@@ -160,6 +163,14 @@ export async function POST(req) {
   const createdOneOffs = [];
   const createdLineItems = [];
   const touchedPaycheckIds = new Set();
+  // Neither branch below creates a $0 paycheck/line item anymore — see the
+  // matching fix/comment in app/api/invoices/route.js. Note this is
+  // narrower than "computed Amount is 0": a scheduled class whose
+  // attendance just hasn't been logged yet also computes to $0 here
+  // (assumePresentIfUnlogged: false), and that's a normal, temporary
+  // state, not a config gap, so it's deliberately NOT skipped, only
+  // scheduledHours<=0 is.
+  const skipped = [];
 
   for (const enr of staffEnrollments) {
     if (!isEnrollmentActiveForMonth(enr, y, m)) continue;
@@ -175,6 +186,10 @@ export async function POST(req) {
       if (already) continue;
 
       const { amount, currency } = computeHoursAndAmount(db, { userId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, year: y, month: m });
+      if (amount <= 0) {
+        skipped.push({ staffId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, reason: "OneOff rate computed to $0 — check the Service's Rate." });
+        continue;
+      }
       const fxRate = await getRateToINR(db, currency, y, m);
       const paycheckINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
       const paycheck = {
@@ -220,7 +235,16 @@ export async function POST(req) {
       month: m,
       assumePresentIfUnlogged: false,
     });
-    const zeroScheduleWarning = scheduledHours <= 0;
+    // A genuinely-zero scheduleless month for an active enrollment is the
+    // config gap Management needs to catch (missing Occurrences, or a
+    // billing type left on the wrong default) — reported via `skipped`
+    // instead of creating a $0 line item. Checked before touching or
+    // creating any paycheck, so a staff member whose only enrollment this
+    // month is zero-schedule never gets an empty paycheck shell created.
+    if (scheduledHours <= 0) {
+      skipped.push({ staffId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, reason: "No scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." });
+      continue;
+    }
     // TKT-0037: same as invoices — an unresolved attendance conflict
     // doesn't block drafting, only Sending (see PATCH below).
     const lineItem = {
@@ -231,10 +255,8 @@ export async function POST(req) {
       Amount: amount,
       Currency: currency,
       HasAttendanceConflict: hasUnresolvedAttendance,
-      ...(zeroScheduleWarning
-        ? { Note: "$0 — no scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." }
-        : hasUnresolvedAttendance
-        ? { Note: "⚠ Attendance for this subject has an unresolved conflict — resolve it in the Schedule tab before sending this paycheck." }
+      ...(hasUnresolvedAttendance
+        ? { Note: "Attendance for this subject has an unresolved conflict. Resolve it in the Schedule tab before sending this paycheck." }
         : {}),
     };
 
@@ -272,11 +294,11 @@ export async function POST(req) {
     action: "generate",
     entityType: "Paycheck",
     entityId: `${m}/${y}`,
-    summary: `Generated ${createdOneOffs.length} OneOff paycheck(s) and ${createdLineItems.length} line item(s) across ${touchedPaycheckIds.size} paycheck(s) for ${m}/${y}`,
-    snapshot: { oneOffPaycheckIds: createdOneOffs.map((p) => p.PaycheckID), touchedPaycheckIds: [...touchedPaycheckIds] },
+    summary: `Generated ${createdOneOffs.length} OneOff paycheck(s) and ${createdLineItems.length} line item(s) across ${touchedPaycheckIds.size} paycheck(s) for ${m}/${y}, skipped ${skipped.length} that would have paid $0`,
+    snapshot: { oneOffPaycheckIds: createdOneOffs.map((p) => p.PaycheckID), touchedPaycheckIds: [...touchedPaycheckIds], skipped },
   });
   const created = [...createdOneOffs, ...createdLineItems.map((c) => c.lineItem)];
-  return NextResponse.json({ created });
+  return NextResponse.json({ created, skipped });
 }
 
 // Monthly (LineItems) paycheck body variants:

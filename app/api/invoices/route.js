@@ -104,6 +104,10 @@ export async function POST(req) {
         { status: 400 }
       );
     }
+    const zeroItem = items.find((li) => Number(li.amount) <= 0);
+    if (zeroItem) {
+      return NextResponse.json({ error: `Amount for ${zeroItem.serviceId} must be greater than 0. A $0 invoice can't be created.` }, { status: 400 });
+    }
 
     const db = await readDB();
     const y = Number(year);
@@ -228,6 +232,12 @@ export async function POST(req) {
   const createdOneOffs = [];
   const createdLineItems = [];
   const touchedInvoiceIds = new Set();
+  // Neither branch below creates a $0 invoice/line item anymore — an
+  // enrollment that would bill nothing (no scheduled hours, or a OneOff
+  // rate that computes to 0) is skipped and reported here instead, so
+  // Management still sees exactly what didn't get billed and why, without
+  // a real $0 record sitting in Billing needing manual cleanup.
+  const skipped = [];
 
   for (const enr of studentEnrollments) {
     if (!isEnrollmentActiveForMonth(enr, y, m)) continue;
@@ -243,6 +253,10 @@ export async function POST(req) {
       if (already) continue;
 
       const { amount, currency } = computeHoursAndAmount(db, { userId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, year: y, month: m, assumePresentIfUnlogged: true });
+      if (amount <= 0) {
+        skipped.push({ studentId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, reason: "OneOff rate computed to $0 — check the Service's Rate." });
+        continue;
+      }
       const fxRate = await getRateToINR(db, currency, y, m);
       const invoiceINRAmount = fxRate != null ? Math.round(amount * fxRate * 100) / 100 : 0;
       const invoice = {
@@ -295,14 +309,22 @@ export async function POST(req) {
       month: m,
       assumePresentIfUnlogged: true,
     });
-    // Same "flag, don't fail" as before this rewrite — a genuinely-zero
-    // scheduleless month for an active Monthly/Hourly enrollment is the
-    // case Management needs to catch (missing Occurrences, or a billing
-    // type left on the wrong default).
-    const zeroScheduleWarning = scheduledHours <= 0;
+    // A genuinely-zero scheduleless month for an active Monthly/Hourly
+    // enrollment is the case Management needs to catch: missing
+    // Occurrences, or a billing type left on the wrong default. Reported
+    // via `skipped` (see above) instead of creating a $0 line item, so
+    // there's no $0 invoice/line item left sitting in Billing to clean up
+    // by hand. Checked before touching or creating any invoice, so a
+    // student whose only enrollment this month is zero-schedule never
+    // gets an empty invoice shell created for them either.
+    if (scheduledHours <= 0) {
+      skipped.push({ studentId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, reason: "No scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." });
+      continue;
+    }
     // TKT-0037: an unresolved attendance conflict (the accepted record
-    // disagrees with a still-present other one) doesn't block drafting —
-    // only Sending (see PATCH below), where it's actually money going out.
+    // disagrees with a still-present other one) doesn't block drafting.
+    // Only Sending (see PATCH below) does, where it's actually money
+    // going out.
     const lineItem = {
       ServiceID: enr.ServiceID,
       BatchID: enr.BatchID || "",
@@ -311,10 +333,8 @@ export async function POST(req) {
       Amount: amount,
       Currency: currency,
       HasAttendanceConflict: hasUnresolvedAttendance,
-      ...(zeroScheduleWarning
-        ? { Note: "$0 — no scheduled hours found for this Service/month. Check the Batch's schedule or its billing type." }
-        : hasUnresolvedAttendance
-        ? { Note: "⚠ Attendance for this subject has an unresolved conflict — resolve it in the Schedule tab before sending this invoice." }
+      ...(hasUnresolvedAttendance
+        ? { Note: "Attendance for this subject has an unresolved conflict. Resolve it in the Schedule tab before sending this invoice." }
         : {}),
     };
 
@@ -356,16 +376,16 @@ export async function POST(req) {
     action: "generate",
     entityType: "Invoice",
     entityId: `${m}/${y}`,
-    summary: `Generated ${createdOneOffs.length} OneOff invoice(s) and ${createdLineItems.length} line item(s) across ${touchedInvoiceIds.size} invoice(s) for ${m}/${y}`,
-    snapshot: { oneOffInvoiceIds: createdOneOffs.map((i) => i.InvoiceID), touchedInvoiceIds: [...touchedInvoiceIds] },
+    summary: `Generated ${createdOneOffs.length} OneOff invoice(s) and ${createdLineItems.length} line item(s) across ${touchedInvoiceIds.size} invoice(s) for ${m}/${y}, skipped ${skipped.length} that would have billed $0`,
+    snapshot: { oneOffInvoiceIds: createdOneOffs.map((i) => i.InvoiceID), touchedInvoiceIds: [...touchedInvoiceIds], skipped },
   });
-  // `created` kept as the combined list the Billing UI's $0-warning count
-  // already reads (`created.filter(i => i.Note)`) — OneOff invoices carry
-  // Note the same way they always did; line items carry it per-item, so
-  // callers checking a whole invoice's Note won't see it — the UI reads
-  // this raw list, not db.invoices, specifically to still catch those.
+  // `created` kept as the combined list the Billing UI previously read for
+  // its $0-warning count. Nothing in it carries a $0 Note anymore (those
+  // are skipped, not created), so it's just the OneOff invoices plus every
+  // new line item now. `skipped` is the new list the UI reads instead, to
+  // show what didn't get billed and why.
   const created = [...createdOneOffs, ...createdLineItems.map((c) => c.lineItem)];
-  return NextResponse.json({ created });
+  return NextResponse.json({ created, skipped });
 }
 
 // Monthly (LineItems) invoice body variants:
