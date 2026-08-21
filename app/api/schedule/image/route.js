@@ -5,27 +5,6 @@ import { normalizeTimezone, convertWeeklyTime } from "@/lib/timezones";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { batchesOf } from "@/lib/billing";
 
-// TKT-0041: the header's "Batch:" field used to read a free-text user.Batch
-// profile field Management had to type by hand — completely disconnected
-// from the teacher's actual enrollment data, so it silently stayed blank
-// for any teacher enrolled without someone also manually duplicating the
-// batch name onto their account. Deriving it straight from the same
-// enrollments/BatchID the schedule grid itself uses makes it self-updating
-// and removes that manual step entirely. A Staff-role Service has no
-// Batches (see buildEntries below), so this only ever finds something for
-// Teacher enrollments — Staff still fall back to entity.className===Department.
-function teacherBatchLabel(db, userId) {
-  const names = [];
-  for (const e of db.enrollments.filter((e) => e.UserID === userId)) {
-    const service = db.services.find((s) => s.ServiceID === e.ServiceID);
-    const batches = batchesOf(service);
-    if (!batches.length) continue;
-    const batch = e.BatchID ? batches.find((b) => b.BatchID === e.BatchID) : batches[0];
-    if (batch?.BatchName && !names.includes(batch.BatchName)) names.push(batch.BatchName);
-  }
-  return names.join(", ");
-}
-
 // Only the specific Batch each enrollment points to — a Service can now have
 // several Batches, and an enrollment only grants a seat in one of them.
 //
@@ -88,9 +67,13 @@ export async function GET(req) {
     // one-class-per-student model, so there's no single ENROLLMENT to name
     // here) — now shows the student's own profile Course field instead
     // (e.g. "IGCSE"), the same general-course label Management already
-    // sets on the account. Teacher/Staff keep showing their Batch/
-    // Department in the same template slot, unchanged.
-    className: user.UserType === "Teacher" ? teacherBatchLabel(db, userId) || user.Batch || "" : user.UserType === "Staff" ? user.Department || "" : user.Course || "",
+    // sets on the account. Staff keep showing their Department in the same
+    // template slot. Teacher shows nothing here (see below) — TKT-0041
+    // originally derived this from the teacher's enrolled Batch, but a
+    // teacher can be enrolled across several batches at once, so any
+    // single value shown here would misrepresent the rest; left blank
+    // rather than showing a partial/misleading list.
+    className: user.UserType === "Staff" ? user.Department || "" : user.UserType === "Student" ? user.Course || "" : "",
   };
   const entries = buildEntries(db, userId, viewerTimezone);
 
