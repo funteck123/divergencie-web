@@ -123,7 +123,7 @@ function Body({ user }) {
 
               {it.Status === "Pending" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Awaiting Management approval — a slot will be assigned when approved.
+                  Your request is being reviewed — a slot will be assigned once approved.
                 </p>
               )}
               {it.Status === "Rejected" && (
@@ -133,7 +133,7 @@ function Body({ user }) {
               )}
               {it.Status === "Waitlisted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--warn)" }}>
-                  You&apos;ve been added to the waitlist — Management will follow up.
+                  You&apos;ve been added to the waitlist — we&apos;ll follow up soon.
                 </p>
               )}
               {it.Status === "Scheduled" && (
@@ -141,12 +141,12 @@ function Body({ user }) {
               )}
               {it.Status === "TaskSubmitted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Task submitted — waiting on Management to send an offer.
+                  Task submitted — we&apos;ll be in touch soon with next steps.
                 </p>
               )}
               {it.TaskFeedback && ["OfferSent", "OfferAccepted", "Waitlisted", "Rejected"].includes(it.Status) && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Management feedback on your task: {it.TaskFeedback}
+                  Feedback on your task: {it.TaskFeedback}
                 </p>
               )}
               {it.Status === "OfferSent" && (
@@ -173,7 +173,7 @@ function Body({ user }) {
                     </a>
                   )}
                   <p className="text-sm mt-1" style={{ color: "var(--good)" }}>
-                    Offer accepted — Management will convert you to a{" "}
+                    Offer accepted — you&apos;ll be set up with a{" "}
                     {user.UserType === "AmbassadorInterviewAcc" ? "n Ambassador" : " Staff"} account shortly.
                   </p>
                 </div>
@@ -186,8 +186,8 @@ function Body({ user }) {
       <div className="card">
         <h2 className="font-semibold mb-4">Request an Interview</h2>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-          Pick the service you&apos;re interviewing for. No need to choose a time — Management will assign you a
-          slot once your request is approved.
+          Pick the service you&apos;re interviewing for. No need to choose a time — a slot will be assigned once
+          your request is approved.
         </p>
         <div className="flex gap-2">
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>

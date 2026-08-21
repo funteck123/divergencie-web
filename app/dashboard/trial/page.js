@@ -104,7 +104,7 @@ function Body({ user }) {
               </p>
               {t.Status === "Pending" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
-                  Awaiting Management approval.
+                  Your booking is being reviewed.
                 </p>
               )}
               {t.Status === "Rejected" && (
