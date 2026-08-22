@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords, insertAttendanceIfNew } from "@/lib/db";
 import { requireManagement, requireSession } from "@/lib/authz";
 import { isEnrollmentActiveForMonth } from "@/lib/billing";
 import { logAudit } from "@/lib/logging";
@@ -152,16 +152,15 @@ export async function POST(req) {
   const existingForSubject = db.attendanceItems.filter(
     (a) => a.ScheduleItemID === scheduleItemId && a.UserID === userId
   );
-  const alreadyByThisAuthor = existingForSubject.find((a) => a.LoggedBy === session.userId);
-  if (alreadyByThisAuthor) {
-    return NextResponse.json({ error: "You've already logged attendance for this person for this session." }, { status: 400 });
-  }
+  // TKT-0097: the "already logged" check used to read this same
+  // existingForSubject snapshot, a real race under concurrency (two
+  // near-simultaneous requests both read before either wrote, so both
+  // passed and both inserted, reproduced live via a fast double-click).
+  // insertAttendanceIfNew() below is now the authoritative check, done
+  // as one atomic Postgres statement instead.
 
   const isSelf = session.userId === userId;
   const { accepted, demoteOthers } = resolveAcceptance(existingForSubject, isSelf);
-  if (demoteOthers) {
-    for (const other of existingForSubject) other.AcceptedForBilling = false;
-  }
 
   const item = {
     AttendanceID: await nextId(db, "ATT"),
@@ -175,8 +174,16 @@ export async function POST(req) {
     LoggedAt: new Date().toISOString(),
     AcceptedForBilling: accepted,
   };
+
+  const insertedId = await insertAttendanceIfNew(db, item);
+  if (!insertedId) {
+    return NextResponse.json({ error: "You've already logged attendance for this person for this session." }, { status: 400 });
+  }
   db.attendanceItems.push(item);
-  await writeDB(db, ["attendanceItems"]);
+  if (demoteOthers) {
+    for (const other of existingForSubject) other.AcceptedForBilling = false;
+    await writeDB(db, ["attendanceItems"]);
+  }
   // TKT-0094: attendance create/edit never showed up in the audit log
   // before this, only delete did.
   await logAudit({
