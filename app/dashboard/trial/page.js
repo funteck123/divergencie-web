@@ -34,7 +34,7 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // TKT-0080: no slot picker — this just records the request against a
+  // TKT-0080: no slot picker, this just records the request against a
   // Service, same pattern as Interview (TKT-0021). Management assigns the
   // actual slot when approving it.
   async function requestTrial() {
@@ -97,7 +97,7 @@ function Body({ user }) {
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const myTrials = data.trialItems;
-  // TKT-0071: Book services shouldn't be trialable — a Trial is for
+  // TKT-0071: Book services shouldn't be trialable, a Trial is for
   // sampling a live class (Course), not a one-off resource purchase.
   const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Student") && s.Type !== "Book");
   const requestedServiceIds = new Set(
@@ -112,14 +112,14 @@ function Body({ user }) {
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Trial Sessions</h2>
-        {myTrials.length === 0 && <p style={{ color: "var(--muted)" }}>No trial requested yet — request one below.</p>}
+        {myTrials.length === 0 && <p style={{ color: "var(--muted)" }}>No trial requested yet. Request one below.</p>}
         {myTrials.map((t) => {
           const slot = scheduleById[t.ScheduleItemID];
           return (
             <div key={t.TrialID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
                 {/* TKT-0078: instructor identity isn't shown to the candidate
-                    before their session (same reasoning as TKT-0018) —
+                    before their session (same reasoning as TKT-0018),
                     batch name and timezone matter to them, who's teaching
                     doesn't. BatchName is only set on slots auto-generated
                     from a real Service occurrence; a manually-offered pool

@@ -5,7 +5,7 @@ import { requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
 
-// Re-exported for existing importers (e.g. api/paychecks/pdf/route.js) —
+// Re-exported for existing importers (e.g. api/paychecks/pdf/route.js),
 // lib/accountTypes.js is the single source of truth now, shared with the
 // client-side dashboard, but this route re-exports so nothing else has to
 // change its import path.
@@ -17,7 +17,7 @@ export async function GET(req) {
 
   const db = await readDB();
   // Management needs to see issued credentials persistently (not just at the
-  // moment an account is created/converted) — join from db.credentials by UserID.
+  // moment an account is created/converted), join from db.credentials by UserID.
   const users = db.users.map((u) => {
     const cred = db.credentials.find((c) => c.UserID === u.UserID);
     return cred ? { ...u, Username: cred.Username, Password: cred.Password } : { ...u };
@@ -53,7 +53,7 @@ const ID_PREFIX = {
 };
 
 // Batch is the cohort attribute for Student and Teacher accounts (which
-// cohort/intake they belong to) — independent of Department now that
+// cohort/intake they belong to), independent of Department now that
 // Teacher/Ambassador also carry a Department value.
 function applyBatch(user, userType, batch) {
   if (userType === "Student" || userType === "Teacher") {
@@ -81,7 +81,7 @@ function applyRole(user, userType, role) {
   }
 }
 
-// Passport/IC number — shown on the Teacher/Staff/Ambassador payslip PDF,
+// Passport/IC number, shown on the Teacher/Staff/Ambassador payslip PDF,
 // same eligibility as Role.
 function applyPassportNumber(user, userType, passportNumber) {
   if (ROLE_ELIGIBLE.includes(userType)) {
@@ -91,10 +91,10 @@ function applyPassportNumber(user, userType, passportNumber) {
   }
 }
 
-// Teacher/Staff/Ambassador's own WhatsApp contact number — same
+// Teacher/Staff/Ambassador's own WhatsApp contact number, same
 // ROLE_ELIGIBLE eligibility as Role/PassportNumber, reusing the same
 // WhatsAppNumber field Student already has (applyStudentExtras below) since
-// the two UserType buckets never overlap — keeps display code (e.g. MyInfo)
+// the two UserType buckets never overlap, keeps display code (e.g. MyInfo)
 // simple. Student is explicitly left untouched here: applyStudentExtras is
 // the sole owner of Student's own WhatsAppNumber, called separately.
 function applyWhatsAppNumber(user, userType, whatsappNumber) {
@@ -105,7 +105,7 @@ function applyWhatsAppNumber(user, userType, whatsappNumber) {
   }
 }
 
-// Teacher/Staff/Ambassador's own contact email — same pattern as
+// Teacher/Staff/Ambassador's own contact email, same pattern as
 // applyWhatsAppNumber above (ROLE_ELIGIBLE eligibility, reuses Student's
 // Email field name since the two buckets never overlap, Student left
 // untouched here since applyStudentExtras owns that case).
@@ -117,14 +117,14 @@ function applyEmail(user, userType, email) {
   }
 }
 
-// Every account type carries a Currency — Services have their own Currency
+// Every account type carries a Currency, Services have their own Currency
 // too (the rate's denomination), but the invoice/paycheck's final total is
 // always shown in the billed user's Currency, not the Service's.
 function applyCurrency(user, currency) {
   user.Currency = currency || "INR";
 }
 
-// Staff's own Work Folder (Google Drive) and Timesheet links — properties of
+// Staff's own Work Folder (Google Drive) and Timesheet links, properties of
 // the Staff account itself, not tied to any Service/enrollment, which is why
 // they're set here instead of through the per-Service Resources section.
 // TimesheetURL is the same field name Student uses for its own Timesheet
@@ -141,12 +141,12 @@ function applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl } = {}) 
 }
 
 // Student-only contact/admin fields. ProgressTrackerURL is a link
-// Management sets manually per student (no generation logic here — just a
+// Management sets manually per student (no generation logic here, just a
 // stored string). GroupSent/GCRSent/ScheduleSent are a private onboarding
 // checklist for Management (has the student's Group/Google Classroom Room/
-// Schedule actually been communicated to them yet) — not derived from
+// Schedule actually been communicated to them yet), not derived from
 // anything, just flags Management toggles by hand. TimesheetURL is NOT
-// deleted here for non-Student — applyStaffExtras above owns that field's
+// deleted here for non-Student, applyStaffExtras above owns that field's
 // deletion for every UserType except Student/Staff.
 function applyStudentExtras(user, userType, fields) {
   if (userType !== "Student") {
@@ -172,7 +172,7 @@ function applyStudentExtras(user, userType, fields) {
   if (whatsappNumber !== undefined) user.WhatsAppNumber = whatsappNumber || "";
   if (parentWhatsappNumber !== undefined) user.ParentWhatsAppNumber = parentWhatsappNumber || "";
   // Optional, Management-only (edited via EditAccountForm same as
-  // ParentWhatsAppNumber) — format validated client-side only (type="email"
+  // ParentWhatsAppNumber), format validated client-side only (type="email"
   // input), matching how the Student's own Email field is validated below.
   if (parentEmail !== undefined) user.ParentEmail = parentEmail || "";
   if (email !== undefined) user.Email = email || "";
@@ -188,14 +188,14 @@ function applyStudentExtras(user, userType, fields) {
 
 // Management creates any account type directly from the Accounts tab.
 // Student/Teacher/Staff created here start fresh (no linked Trial/Interview
-// record, no invoice carry-over) — that history only exists via /api/convert.
+// record, no invoice carry-over), that history only exists via /api/convert.
 // body: { userType, name, studentIds?: [] (Parent), role? (Teacher/Staff/
 //         Ambassador job title, free text), passportNumber? (Teacher/Staff/
-//         Ambassador), whatsappNumber?, email? (Teacher/Staff/Ambassador —
+//         Ambassador), whatsappNumber?, email? (Teacher/Staff/Ambassador,
 //         Student's own WhatsApp/Email are separate fields, set via the
 //         Student-only extras below), workFolderUrl?, timesheetUrl? (Staff
-//         only — Work Folder/Timesheet are Staff account attributes, not
-//         tied to a Service), course?, batch?, department? (Staff only — Teacher/
+//         only, Work Folder/Timesheet are Staff account attributes, not
+//         tied to a Service), course?, batch?, department? (Staff only, Teacher/
 //         Ambassador get a fixed value), timezone?, currency? (every type,
 //         defaults to "INR") }
 export async function POST(req) {
@@ -249,22 +249,22 @@ export async function POST(req) {
   db.users.push(user);
   db.credentials.push({ UserID: userId, Username: username, Password: password });
   await writeDB(db, ["users", "credentials"]);
-  // Never log credentials (username/password) — the snapshot here is the
+  // Never log credentials (username/password), the snapshot here is the
   // user record only, which carries no secrets.
   await logAudit({ actorUserId: session.userId, action: "create", entityType: "User", entityId: userId, summary: `Created ${userType} "${name}"`, snapshot: user });
   return NextResponse.json({ user, credentials: { username, password } });
 }
 
-// Management edits an account. Every field is optional — only the ones
+// Management edits an account. Every field is optional, only the ones
 // present in the body are changed. UserType isn't editable here: conversion
 // between types only happens through /api/convert, which handles ID
 // reassignment and invoice carry-over that a raw type swap would skip.
-// Status here is limited to Active/Inactive — "Converted" is a terminal
+// Status here is limited to Active/Inactive, "Converted" is a terminal
 // state stamped by /api/convert alongside ConvertedToUserID, and can't be
 // set or cleared from this endpoint.
 // body: { userId, name?, status?: "Active"|"Inactive", timezone?, course?,
 //         role?, passportNumber?, whatsappNumber?, email? (Teacher/Staff/
-//         Ambassador — same field names double as Student's own WhatsApp/
+//         Ambassador, same field names double as Student's own WhatsApp/
 //         Email below, routed by UserType), workFolderUrl?, timesheetUrl?
 //         (Staff only), batch?, department? (Staff only),
 //         currency?, studentIds?: [], username?, password? }
@@ -352,7 +352,7 @@ export async function PATCH(req) {
   }
 
   // TKT-0084: targeted fetch of just this one user (+ credentials, if
-  // needed) instead of the full readDB() every other route uses — see
+  // needed) instead of the full readDB() every other route uses, see
   // getUserAndCredentials/saveUserAndCredentials in lib/db.js for why.
   const { user, cred: existingCred } = await getUserAndCredentials(userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
@@ -393,7 +393,7 @@ export async function PATCH(req) {
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
   await saveUserAndCredentials(user, cred);
-  // snapshot is the user record only (before/after) — credentials
+  // snapshot is the user record only (before/after), credentials
   // (username/password) are never logged, only whether they were touched.
   const credentialsChanged = username !== undefined || password !== undefined;
   await logAudit({
@@ -407,12 +407,12 @@ export async function PATCH(req) {
   return NextResponse.json({ user });
 }
 
-// No delete path existed for a User before this — accounts are normally
+// No delete path existed for a User before this, accounts are normally
 // meant to stay forever as billing/attendance history, so this is
 // deliberately narrow: it only removes an account that has NO real history
 // anywhere (enrollments, invoices, paychecks, attendance, trial/interview
 // records, or a Parent still pointing at it as a StudentID). Built for
-// cleaning up disposable test accounts created during UI verification —
+// cleaning up disposable test accounts created during UI verification,
 // anything with real history is refused outright rather than force-deleted.
 // body: { userId }
 function userHasHistory(db, userId) {

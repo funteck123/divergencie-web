@@ -4,7 +4,7 @@ import { requiredGroupForBookingType, groupMatches, BOOKING_TYPES } from "@/lib/
 import { requireSelfOrManagement } from "@/lib/authz";
 
 // body:
-//   Trial:    { userId, type: "Trial", serviceId } — TKT-0080: no slot
+//   Trial:    { userId, type: "Trial", serviceId }, TKT-0080: no slot
 //             picker for Trial accounts anymore either (matches Interview's
 //             existing pattern below, TKT-0021). This only records the
 //             request against a Service; Management assigns the actual
@@ -12,13 +12,13 @@ import { requireSelfOrManagement } from "@/lib/authz";
 //             /api/schedule) when approving it via PATCH
 //             /api/schedule/requests.
 //   Interview: { userId, type: "TeacherInterview"|"StaffInterview"|
-//             "AmbassadorInterview", serviceId } — TKT-0021: no slot picker
+//             "AmbassadorInterview", serviceId }, TKT-0021: no slot picker
 //             for Interview accounts anymore. This only records the request
 //             against a Service; Management assigns the actual slot (an
 //             existing open one, or a newly created one via POST
 //             /api/schedule) when approving it via PATCH
 //             /api/schedule/requests.
-// Multiple accounts may request the same slot/service ("double booking") —
+// Multiple accounts may request the same slot/service ("double booking"),
 // Management approves one via PATCH /api/schedule/requests, which is what
 // actually locks a slot (see isSlotBooked). This route only records a
 // Pending request.
@@ -65,7 +65,7 @@ export async function POST(req) {
     return NextResponse.json({ trialItem: item });
   }
 
-  // Interview (any of the three tracks): no scheduleId — just a Service.
+  // Interview (any of the three tracks): no scheduleId, just a Service.
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 

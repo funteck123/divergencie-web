@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 // Marking an invoice paid requires a payment-proof attachment (receipt,
-// bank transfer screenshot, etc.) — enforced here by disabling the confirm
-// button until a file is chosen; "mark as unpaid" needs no attachment.
+// bank transfer screenshot, etc.), enforced here by disabling the confirm
+// button until a file is chosen. "Mark as unpaid" needs no attachment.
 export default function InvoicePaidControl({ invoice, onMarkUnpaid, onConfirmPaid }) {
   const [confirming, setConfirming] = useState(false);
   const [file, setFile] = useState(null);
@@ -35,14 +35,15 @@ export default function InvoicePaidControl({ invoice, onMarkUnpaid, onConfirmPai
     );
   }
 
-  // TKT-0090: a bare native file input ("Choose File" / "No file chosen" —
-  // raw browser-default text with no styling and no context) next to a
-  // disabled "Confirm payment" button gave no real indication of what was
-  // expected. The native input itself is still here for its real file-
-  // picker behavior, just visually hidden and triggered by an actual
-  // labeled button instead of shown as-is; the chosen filename (or an
-  // explicit "no file chosen yet" prompt, styled like the rest of the app
-  // rather than the browser's own default wording) shows next to it.
+  // TKT-0090: a bare native file input ("Choose File" / "No file chosen",
+  // raw browser-default text with no styling and no context) sat next to
+  // a disabled "Confirm payment" button. It gave no real indication of
+  // what was expected. The native input itself is still here for its real
+  // file-picker behavior. It's just visually hidden now and triggered by
+  // an actual labeled button instead of shown as-is. The chosen filename
+  // (or an explicit "no file chosen yet" prompt, styled like the rest of
+  // the app rather than the browser's own default wording) shows next to
+  // it.
   const fileInputId = `payment-proof-${invoice.InvoiceID}`;
   return (
     <span className="flex items-center gap-2 flex-wrap">
@@ -58,7 +59,7 @@ export default function InvoicePaidControl({ invoice, onMarkUnpaid, onConfirmPai
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
         <span className="text-xs" style={{ color: file ? "var(--text-primary)" : "var(--muted)" }}>
-          {file ? file.name : "Receipt or screenshot — none selected yet"}
+          {file ? file.name : "Receipt or screenshot, none selected yet"}
         </span>
       </span>
       <button

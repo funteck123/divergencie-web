@@ -7,7 +7,7 @@ import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
-  "All sales are final, and no refunds or exchanges are offered—please review your order carefully " +
+  "All sales are final, and no refunds or exchanges are offered. Please review your order carefully " +
   "before confirming. Payments must be made by the due date, with penalties incurred for late payments. " +
   "DivergenCIE Coaching is not liable for incorrect payments. By making payment, you agree to these terms.\n\n" +
   "For any delays or issues, please notify us at finance@divergencie.co.uk. Let us help you get A*. We care!";
@@ -32,7 +32,7 @@ export async function GET(req) {
   if (Array.isArray(invoice.LineItems)) {
     // Monthly combined invoice: Amount/Currency are ALREADY the total
     // converted into the student's own currency (computed at generate/
-    // edit time — see app/api/invoices/route.js) — no re-conversion
+    // edit time, see app/api/invoices/route.js), no re-conversion
     // needed for the Total line. The item table below stays itemized in
     // each subject's own native billed currency, same "nothing about the
     // original charge is lost" principle as the OneOff path.
@@ -54,7 +54,7 @@ export async function GET(req) {
       balanceLabel: "Balance Due:",
       currency: displayDueCurrency,
       balance: displayDue,
-      // One row per subject, each in its own native billed currency —
+      // One row per subject, each in its own native billed currency,
       // Quantity is always 1 (one billing line per subject this month),
       // Rate equals the actual Amount charged for that subject.
       lineItems: invoice.LineItems.map((li) => {
@@ -75,7 +75,7 @@ export async function GET(req) {
   } else {
     const service = db.services.find((s) => s.ServiceID === invoice.ServiceID);
     // Legacy invoices predate the Currency field entirely (created when INR
-    // was the only currency in the system) — fall back to the Service's own
+    // was the only currency in the system), fall back to the Service's own
     // Currency (a stable historical fact), never to the Student's CURRENT
     // profile Currency, which may have changed since this invoice was billed
     // and would mislabel an old INR invoice as whatever currency the student

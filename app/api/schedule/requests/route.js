@@ -15,7 +15,7 @@ export async function GET(req) {
     return db.users.find((u) => u.UserID === userId)?.Name || userId;
   }
   // The interviewItem itself doesn't record which of the three Interview
-  // tracks it's for — that lives on the requester's own UserType
+  // tracks it's for, that lives on the requester's own UserType
   // (TeacherInterviewAcc/StaffInterviewAcc/AmbassadorInterviewAcc). Expose it
   // as RequesterType so Management's approve/reject buttons can send the
   // right booking type back to PATCH.
@@ -44,7 +44,7 @@ export async function GET(req) {
 
 // body: { type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", id, action: "approve" | "reject", scheduleId? }
 // scheduleId is required when approving a Trial or Interview request
-// (TKT-0080/TKT-0021: the requester never picked a slot themselves — this
+// (TKT-0080/TKT-0021: the requester never picked a slot themselves, this
 // is where Management assigns one, either an existing open-pool slot or
 // one freshly created via POST /api/schedule just before this call).
 // Ignored for reject (no slot needed).
@@ -72,9 +72,9 @@ export async function PATCH(req) {
       return NextResponse.json({ trialItem: item });
     }
 
-    // TKT-0080: the requester never picked a slot themselves anymore —
+    // TKT-0080: the requester never picked a slot themselves anymore,
     // Management assigns one here, same as Interview below. Approving only
-    // schedules the session — no billing happens here. A Trial exists to
+    // schedules the session, no billing happens here. A Trial exists to
     // decide whether to add the Service to the Student account; billing
     // only starts if/when Management does that via POST /api/trial-enroll,
     // after feedback comes in.

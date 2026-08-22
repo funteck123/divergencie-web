@@ -7,7 +7,7 @@ import { logAudit } from "@/lib/logging";
 // A meaningful chunk of ScheduleItems (generated before per-Batch schedules
 // existed) have no BatchID recorded at all, even though the Service they
 // belong to now has real Batches and the Enrollment against it DOES carry a
-// BatchID — under strict equality this silently broke roster/authorization
+// BatchID, under strict equality this silently broke roster/authorization
 // lookups for exactly those legacy sessions (a Teacher/Student got "You're
 // not enrolled" on their own real session). A slot with no BatchID matches
 // any enrollment for that Service regardless of the enrollment's own Batch;
@@ -17,12 +17,12 @@ function batchMatches(slotBatchId, enrollmentBatchId) {
   return slotBatchId === enrollmentBatchId;
 }
 
-// GET /api/attendance                            — Management only, every record (admin Schedule tab)
-// GET /api/attendance?scheduleItemId=SCH-xxxx     — that one session's roster + attendance, for
+// GET /api/attendance                           , Management only, every record (admin Schedule tab)
+// GET /api/attendance?scheduleItemId=SCH-xxxx    , that one session's roster + attendance, for
 //   Management OR any Teacher/Student actively enrolled in that session's own Service+Batch (so the
 //   Teacher/Student dashboards can show "who else is in this session, what's been logged so far"
 //   without needing Management access). Roster is every actively-enrolled Teacher/Student for that
-//   Service+Batch — not just people who already have an attendance record — so a not-yet-logged
+//   Service+Batch, not just people who already have an attendance record, so a not-yet-logged
 //   person still shows up with a way to log them.
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -71,11 +71,11 @@ export async function GET(req) {
   return NextResponse.json({ roster, attendanceItems });
 }
 
-// TKT-0037: attendance used to be one record per (session, subject) — a
+// TKT-0037: attendance used to be one record per (session, subject), a
 // session's own participant logs their own row, full stop. Now more than
 // one person's *perspective* on the same subject's attendance can coexist
 // (a Student logs their own; the co-enrolled Teacher can also log a record
-// about that same Student — and vice versa, a Student can log a record
+// about that same Student, and vice versa, a Student can log a record
 // about the Teacher). Both stay forever as history; AcceptedForBilling
 // marks which single one billing actually uses. See markAccepted below for
 // how a new record affects existing ones for the same (session, subject).
@@ -92,7 +92,7 @@ function activeEnrollmentFor(db, userId, serviceId, batchId, dateStr) {
 
 // Who may log a record about `subjectUserId` for this specific session,
 // beyond logging their own (always allowed). Deliberately narrow, not the
-// fully symmetric "anyone enrolled can mark anyone" — only a Teacher<->
+// fully symmetric "anyone enrolled can mark anyone", only a Teacher<->
 // Student pair, both actively enrolled in the exact same Service+Batch as
 // the session itself. Staff/Ambassador attendance stays self-only.
 function canLogOnBehalfOf(db, callerId, subjectUserId, slot) {
@@ -178,7 +178,7 @@ export async function POST(req) {
   db.attendanceItems.push(item);
   await writeDB(db, ["attendanceItems"]);
   // TKT-0094: attendance create/edit never showed up in the audit log
-  // before this — only delete did.
+  // before this, only delete did.
   await logAudit({
     actorUserId: session.userId,
     action: "create",
@@ -241,7 +241,7 @@ export async function PATCH(req) {
   record.ResolvedAt = new Date().toISOString();
   await writeDB(db, ["attendanceItems"]);
   // TKT-0094: attendance create/edit never showed up in the audit log
-  // before this — only delete did.
+  // before this, only delete did.
   await logAudit({
     actorUserId: session.userId,
     action: "edit",
@@ -258,7 +258,7 @@ export async function PATCH(req) {
 // TKT-0048: no delete path existed for a single AttendanceItem before
 // this. A different situation from PATCH above's "both records stay as
 // permanent history" (that's about resolving a genuine billing
-// disagreement between two real logs) — this is for a record left
+// disagreement between two real logs), this is for a record left
 // dangling after its own ScheduleItem was removed (e.g. legacy/orphan
 // cleanup), where there's no session left for it to be history of.
 // body: { attendanceId }
