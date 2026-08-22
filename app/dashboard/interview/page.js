@@ -146,8 +146,13 @@ function Body({ user }) {
                   You&apos;ve been added to the waitlist. We&apos;ll follow up soon.
                 </p>
               )}
-              {it.Status === "Scheduled" && (
+              {it.Status === "Scheduled" && it.TaskSentAt && (
                 <TaskForm onSubmit={(link) => submitTask(it.InterviewID, link)} />
+              )}
+              {it.Status === "Scheduled" && !it.TaskSentAt && (
+                <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                  Your interview is scheduled. We&apos;ll send your task soon.
+                </p>
               )}
               {it.Status === "TaskSubmitted" && (
                 <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>

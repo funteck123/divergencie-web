@@ -360,6 +360,11 @@ function Pipeline() {
     setInterviewItems((prev) => prev.map((i) => (i.InterviewID === interviewId ? interviewItem : i)));
   }
 
+  async function sendTask(interviewId) {
+    const { interviewItem } = await api("/api/interview-task", { method: "PATCH", body: JSON.stringify({ interviewId }) });
+    setInterviewItems((prev) => prev.map((i) => (i.InterviewID === interviewId ? interviewItem : i)));
+  }
+
   async function convert(accountId) {
     setError("");
     setBusyAccountIds((prev) => new Set(prev).add(accountId));
@@ -605,6 +610,11 @@ function Pipeline() {
                   )}
                 </td>
                 <td>
+                  {i.Status === "Scheduled" && !i.TaskSentAt && (
+                    <button className="btn" onClick={() => sendTask(i.InterviewID)}>
+                      Send Task
+                    </button>
+                  )}
                   {i.Status === "TaskSubmitted" && (
                     <InterviewOutcomeForm
                       initialFeedback={i.TaskFeedback}
