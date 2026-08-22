@@ -4170,41 +4170,51 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
       </div>
       <div className="card">
         <h2 className="font-semibold mb-4">Current {title} Enrollments</h2>
-        <table>
-          <thead>
-            <tr>
-              <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Service" sortKeyName="_service" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="Start" sortKeyName="StartDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <SortableTh label="End" sortKeyName="EndDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((e) => (
-              <EnrollmentRow
-                key={e.EnrolmentID}
-                enrollment={e}
-                users={users}
-                services={services}
-                nameOf={nameOf}
-                serviceNameOf={serviceNameOf}
-                batchNameOf={batchNameOf}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-              />
-            ))}
-            {enrollments.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ color: "var(--muted)" }}>
-                  No {title.toLowerCase()} enrollments yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        {/* TKT-0114: this table has no natural row cap, and used to have no
+            overflow handling at all, so a long list pushed the whole 50/50
+            layout wide instead of staying inside its own card. Vertical
+            scroll within a fixed max-height keeps the split intact; the
+            inner overflow-x-auto still catches genuinely wide content
+            (many columns on a narrow card) without that scrolling the page. */}
+        <div style={{ maxHeight: 480, overflowY: "auto" }}>
+          <div className="overflow-x-auto">
+            <table>
+              <thead>
+                <tr>
+                  <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Service" sortKeyName="_service" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="Start" sortKeyName="StartDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh label="End" sortKeyName="EndDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map((e) => (
+                  <EnrollmentRow
+                    key={e.EnrolmentID}
+                    enrollment={e}
+                    users={users}
+                    services={services}
+                    nameOf={nameOf}
+                    serviceNameOf={serviceNameOf}
+                    batchNameOf={batchNameOf}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
+                  />
+                ))}
+                {enrollments.length === 0 && (
+                  <tr>
+                    <td colSpan={7} style={{ color: "var(--muted)" }}>
+                      No {title.toLowerCase()} enrollments yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
