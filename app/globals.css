@@ -262,6 +262,19 @@ th:last-child, td:last-child {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+/* Visual-refinement pass, Billing pass: the two top-level billing tables
+   (invoices, paychecks) carry the most financial weight in this app, so
+   they get a little more room to breathe than the base `table` rule gives
+   everything else, bigger text, taller rows. Scoped to this one class
+   rather than the shared `table` rule so every other (denser, more list-
+   like) table in the app is untouched. */
+.billing-table {
+  font-size: 0.95rem;
+}
+.billing-table > thead > tr > th,
+.billing-table > tbody > tr > td {
+  padding: 0.75rem 0.6rem;
+}
 /* A row of 4 action buttons (Edit Due/Send/PDF/Delete) in a table cell
    wraps to two uneven lines at typical widths using the app's normal
    button padding. Same buttons, same behavior, just denser so more of

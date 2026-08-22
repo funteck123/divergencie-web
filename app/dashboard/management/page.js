@@ -4578,21 +4578,24 @@ function Billing() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="card">
-        <h2 className="font-semibold">Generate Drafts</h2>
+    <div className="space-y-8">
+      <div className="card" style={{ borderLeft: "3px solid var(--accent)" }}>
+        <h2 className="font-semibold text-xl">Generate Drafts</h2>
         {/* Visual-refinement pass: four adjacent billing-action cards (this
             one, Rebuild Drafts, and the two manual forms below) had no
             guidance on which one applies to which situation -- a new
             Management user has to infer the difference from the button
-            label alone. */}
-        <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
-          Use for: the normal monthly run, covers everyone with an active enrollment.
-        </p>
-        <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-          Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount
-          is auto-converted using the exchange rate as of the 1st of the invoice/paycheck&apos;s own month,
-          only INR Due is manually adjustable, for tracking partial payments.
+            label alone. Each now carries its own accent color as a quick
+            visual anchor, and the long calculation explainer moved behind
+            an on-demand hover-title instead of always sitting on the page. */}
+        <p className="text-sm mb-3" style={{ color: "var(--accent)" }}>
+          Use for: the normal monthly run.{" "}
+          <span
+            style={{ color: "var(--muted)", cursor: "help", textDecoration: "underline", textDecorationStyle: "dotted" }}
+            title="Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount is auto-converted using the exchange rate as of the 1st of the invoice/paycheck's own month, only INR Due is manually adjustable, for tracking partial payments."
+          >
+            How amounts are calculated
+          </span>
         </p>
         <div className="flex gap-3 items-end flex-wrap">
           <div>
@@ -4634,8 +4637,8 @@ function Billing() {
           onDone={() => {}}
         />
         <ManualBillingForm
-          title="Create Paycheck (manual)"
-          hint="Use for: one-off exceptions Generate Drafts won't create, a custom amount for a specific subject this month."
+          title="Create Paycheck"
+          hint="Use for: one-off exceptions Generate Drafts won't create."
           personLabel="Staff"
           people={users.filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType))}
           services={services}
@@ -4650,7 +4653,7 @@ function Billing() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Invoices (Students)</h2>
+        <h2 className="font-semibold text-xl mb-4">Invoices · Students</h2>
         <InvoiceBillingTable
           rows={invoices}
           nameOf={nameOf}
@@ -4662,7 +4665,7 @@ function Billing() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Paychecks</h2>
+        <h2 className="font-semibold text-xl mb-4">Paychecks</h2>
         <PaycheckBillingTable
           rows={paychecks}
           nameOf={nameOf}
@@ -4749,14 +4752,16 @@ function RebuildDrafts({ users, onDone }) {
   }
 
   return (
-    <div className="card">
-      <h2 className="font-semibold">Rebuild Drafts</h2>
-      <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
-        Use for: fixing stale drafts after an attendance or rate correction. Won&apos;t catch anyone new, Generate Drafts already covers them.
-      </p>
-      <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-        For the selected people, deletes their existing DRAFT invoices/paychecks for this month and
-        regenerates them fresh with current attendance/rate data. Never touches a Sent record.
+    <div className="card" style={{ borderLeft: "3px solid var(--good)" }}>
+      <h2 className="font-semibold text-xl">Rebuild Drafts</h2>
+      <p className="text-sm mb-3" style={{ color: "var(--accent)" }}>
+        Use for: fixing stale drafts after a correction, never touches a Sent record.{" "}
+        <span
+          style={{ color: "var(--muted)", cursor: "help", textDecoration: "underline", textDecorationStyle: "dotted" }}
+          title="Deletes the selected people's existing DRAFT invoices/paychecks for this month and regenerates them fresh with current attendance/rate data. Won't catch anyone new, Generate Drafts already covers them."
+        >
+          Details
+        </span>
       </p>
       <div className="flex gap-3 items-end flex-wrap mb-3">
         <div>
@@ -4854,10 +4859,10 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
   }
 
   return (
-    <div className="card">
-      <h2 className="font-semibold">Create Invoice (manual)</h2>
-      <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
-        Use for: one-off exceptions Generate Drafts won&apos;t create, a custom amount for a specific subject this month.
+    <div className="card" style={{ borderLeft: "3px solid var(--warn)" }}>
+      <h2 className="font-semibold text-xl">Create Invoice</h2>
+      <p className="text-sm mb-3" style={{ color: "var(--accent)" }}>
+        Use for: one-off exceptions Generate Drafts won&apos;t create.
       </p>
       <form onSubmit={submit} className="space-y-3">
         <select className="field" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
@@ -4932,10 +4937,10 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
   }
 
   return (
-    <div className="card">
-      <h2 className="font-semibold">{title}</h2>
+    <div className="card" style={{ borderLeft: "3px solid var(--warn)" }}>
+      <h2 className="font-semibold text-xl">{title}</h2>
       {hint && (
-        <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
+        <p className="text-sm mb-3" style={{ color: "var(--accent)" }}>
           {hint}
         </p>
       )}
@@ -5067,7 +5072,7 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
         </p>
       )}
       {people.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
-      <table>
+      <table className="billing-table">
         <thead>
           <tr>
             <th>Student</th>
@@ -5543,7 +5548,7 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
           <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--muted)" }}>
             {STAFF_ROLE_LABEL[role]}
           </h3>
-          <table>
+          <table className="billing-table">
             <thead>
               <tr>
                 <th>Person</th>
