@@ -12,7 +12,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  if (ensureScheduleGenerated(db) > 0) await writeDB(db, ["scheduleItems"]);
+  if ((await ensureScheduleGenerated(db)) > 0) await writeDB(db, ["scheduleItems"]);
   return NextResponse.json({ services: db.services });
 }
 
@@ -278,7 +278,7 @@ export async function POST(req) {
   service.Links = await toStoredLinks(db, body.links);
   stampFullNames(service);
   db.services.push(service);
-  ensureScheduleGenerated(db);
+  await ensureScheduleGenerated(db);
   await writeDB(db, ["services", "scheduleItems"]);
   await logAudit({ actorUserId: session.userId, action: "create", entityType: "Service", entityId: service.ServiceID, summary: `Created "${service.Name}"` });
 
@@ -344,7 +344,7 @@ export async function PATCH(req) {
   service.Links = await toStoredLinks(db, body.links);
   stampFullNames(service);
 
-  ensureScheduleGenerated(db);
+  await ensureScheduleGenerated(db);
   await writeDB(db, ["services", "scheduleItems"]);
   await logAudit({
     actorUserId: session.userId,

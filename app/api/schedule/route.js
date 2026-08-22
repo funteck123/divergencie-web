@@ -9,7 +9,7 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  if (ensureScheduleGenerated(db) > 0) await writeDB(db, ["scheduleItems"]);
+  if ((await ensureScheduleGenerated(db)) > 0) await writeDB(db, ["scheduleItems"]);
   // Every unbooked slot is open pool — manually-offered Trial/Interview slots
   // and auto-generated Service occurrences alike.
   const openPoolSlots = sortByDateTime(db.scheduleItems.filter((s) => !isSlotBooked(db, s.ScheduleID)));
