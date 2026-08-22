@@ -80,6 +80,25 @@ export async function POST(req) {
     return NextResponse.json({ error: "Already converted." }, { status: 400 });
   }
 
+  // TKT-0113: this used to have no readiness check at all -- only the
+  // Management UI hid the Convert button before the offer/trial was
+  // actually accepted, so the real conversion was reachable directly
+  // against this endpoint regardless. Interview's readiness signal is its
+  // own item reaching OfferAccepted; Trial has no literal "offer" but
+  // ServiceAdded (Management billed the real service after Feedback) is
+  // the equivalent commitment point.
+  if (oldUser.UserType === "TrialAcc") {
+    const trialItem = db.trialItems.find((t) => t.TrialAccID === accountId);
+    if (!trialItem?.ServiceAdded) {
+      return NextResponse.json({ error: "This Trial can't be converted until a Service has been added." }, { status: 400 });
+    }
+  } else {
+    const interviewItem = db.interviewItems.find((i) => i.InterviewAccID === accountId);
+    if (interviewItem?.Status !== "OfferAccepted") {
+      return NextResponse.json({ error: "This account can't be converted until the offer has been accepted." }, { status: 400 });
+    }
+  }
+
   const { newType, prefix, extra } = mapping;
   const newUserId = await nextId(db, prefix);
 

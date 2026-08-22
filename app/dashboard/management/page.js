@@ -457,6 +457,19 @@ function Pipeline() {
     }
   }
 
+  // TKT-0113: Convert used to be clickable the moment a Trial/Interview
+  // account existed, before the candidate had actually accepted anything.
+  // Interview's readiness signal is its own item reaching OfferAccepted;
+  // Trial has no literal "offer" but ServiceAdded (Management billed the
+  // real service after Feedback) is the equivalent commitment point.
+  function conversionEligible(accountId) {
+    const interviewItem = interviewItems.find((i) => i.InterviewAccID === accountId);
+    if (interviewItem) return interviewItem.Status === "OfferAccepted";
+    const trialItem = trialItems.find((t) => t.TrialAccID === accountId);
+    if (trialItem) return !!trialItem.ServiceAdded;
+    return true;
+  }
+
   function AccountCell({ accountId }) {
     const account = accountOf(accountId);
     if (!account) return "—";
@@ -473,6 +486,9 @@ function Pipeline() {
     // way to fix it. Treat that combination as not really converted.
     if (account.Status === "Converted" && account.ConvertedToUserID) {
       return <span style={{ color: "var(--muted)" }}>→ {account.ConvertedToUserID}</span>;
+    }
+    if (!conversionEligible(accountId)) {
+      return <span style={{ color: "var(--muted)" }}>Not yet accepted</span>;
     }
     return (
       <button className="btn-ghost" disabled={busyAccountIds.has(accountId)} onClick={() => convert(accountId)}>
@@ -969,10 +985,25 @@ function Accounts() {
   const [editingId, setEditingId] = useState(null);
   const [busyAccountIds, setBusyAccountIds] = useState(new Set());
   const [busySaveIds, setBusySaveIds] = useState(new Set());
+  // TKT-0113: Convert needs to know whether the account has actually
+  // reached the accepted/committed point (Interview: OfferAccepted;
+  // Trial: ServiceAdded), mirroring the same check now applied in
+  // Pipeline's own Convert control.
+  const [convertEligible, setConvertEligible] = useState({});
 
   async function load() {
     const { users } = await api("/api/users");
     setUsers(users);
+    const pendingAccs = users.filter((u) => u.UserType === "TrialAcc" || INTERVIEW_ACC_TYPES.includes(u.UserType));
+    const bundles = await Promise.all(pendingAccs.map((acc) => api(`/api/me?userId=${acc.UserID}`)));
+    const eligible = {};
+    bundles.forEach((b, i) => {
+      const acc = pendingAccs[i];
+      const interviewItem = b.interviewItems?.find((it) => it.InterviewAccID === acc.UserID);
+      const trialItem = b.trialItems?.find((t) => t.TrialAccID === acc.UserID);
+      eligible[acc.UserID] = interviewItem ? interviewItem.Status === "OfferAccepted" : trialItem ? !!trialItem.ServiceAdded : true;
+    });
+    setConvertEligible(eligible);
   }
   useEffect(() => {
     load();
@@ -1050,7 +1081,7 @@ function Accounts() {
     return studentIds.map((id) => users.find((u) => u.UserID === id)?.Name || id).join(", ");
   }
 
-  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, busyAccountIds, busySaveIds };
+  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, busyAccountIds, busySaveIds, convertEligible };
 
   return (
     <div className="space-y-6">
@@ -1212,7 +1243,7 @@ function Accounts() {
 // attributes (Course+Batch vs Batch vs Role+Department vs just Type), so
 // each passes its own `columns` def instead of one table trying to show
 // every possible field for every account type.
-function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds }) {
+function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds, convertEligible }) {
   const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
 
   // Columns that render plain text/values can be sorted directly off their
@@ -1293,9 +1324,13 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                   )}
                   <td className="flex gap-2">
                     {showConvert && CONVERT_LABEL[u.UserType] && (u.Status !== "Converted" || !u.ConvertedToUserID) && (
-                      <button className="btn" disabled={busyAccountIds?.has(u.UserID)} onClick={() => convert(u.UserID)}>
-                        {busyAccountIds?.has(u.UserID) ? "Converting…" : `Convert to ${CONVERT_LABEL[u.UserType]}`}
-                      </button>
+                      convertEligible?.[u.UserID] === false ? (
+                        <span style={{ color: "var(--muted)" }}>Not yet accepted</span>
+                      ) : (
+                        <button className="btn" disabled={busyAccountIds?.has(u.UserID)} onClick={() => convert(u.UserID)}>
+                          {busyAccountIds?.has(u.UserID) ? "Converting…" : `Convert to ${CONVERT_LABEL[u.UserType]}`}
+                        </button>
+                      )
                     )}
                     {(u.Status === "Active" || u.Status === "Inactive") && (
                       <button
