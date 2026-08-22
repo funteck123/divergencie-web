@@ -67,7 +67,16 @@ export async function GET(req) {
   }
   roster.sort((a, b) => (a.userId === session.userId ? -1 : b.userId === session.userId ? 1 : 0));
 
-  const attendanceItems = db.attendanceItems.filter((a) => a.ScheduleItemID === scheduleItemId);
+  // TKT-0109: `attendanceItems` used to be every record for the session,
+  // unfiltered, even though `roster` above was already trimmed to hide a
+  // Teacher/Student's same-type peers (TKT-0073). SessionAttendance.jsx
+  // only ever renders a record for someone still in `roster`, so nothing
+  // visibly showed, but the raw API response still carried every peer's
+  // Status/LoggedDuration/LoggedBy over the wire -- inspectable via
+  // devtools regardless of what the UI chose to render. Scoped to match
+  // the same roster the caller actually gets to see.
+  const visibleUserIds = new Set(roster.map((r) => r.userId));
+  const attendanceItems = db.attendanceItems.filter((a) => a.ScheduleItemID === scheduleItemId && visibleUserIds.has(a.UserID));
   return NextResponse.json({ roster, attendanceItems });
 }
 
