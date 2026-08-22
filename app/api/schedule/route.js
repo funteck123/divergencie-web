@@ -56,6 +56,11 @@ export async function POST(req) {
     OccuranceID: null,
     Date: date,
     Time: time,
+    // TKT-0079: manually-offered Trial/Interview slots previously carried no
+    // Timezone at all (unlike regular occurrences), so a candidate seeing
+    // "16:00" had no way to know what timezone that was in. Standardized on
+    // IST -- Management offers every Trial/Interview slot from India.
+    Timezone: "Asia/Kolkata",
     Duration: Number(duration) || 1,
     Facilitator: facilitator || "",
   };

@@ -101,7 +101,7 @@ function Body({ user }) {
           return (
             <div key={t.TrialID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
-                {slot ? `${formatDate(slot.Date)} at ${slot.Time} with ${slot.Facilitator}` : t.ScheduleItemID}{" "}
+                {slot ? `${formatDate(slot.Date)} at ${slot.Time} IST with ${slot.Facilitator}` : t.ScheduleItemID}{" "}
                 <span className="badge badge-info">{t.Status}</span>
               </p>
               {t.Status === "Pending" && (

@@ -3396,7 +3396,13 @@ function SchedulePool() {
             ))}
           </select>
           <input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-          <input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+          <div>
+            <input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+            {/* TKT-0079: every Trial/Interview slot is stored as IST — this
+                input has no timezone of its own, so make that explicit
+                rather than leaving it ambiguous. */}
+            <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>IST (India)</p>
+          </div>
           <input
             className="field"
             type="number"
