@@ -43,7 +43,7 @@ export async function GET(req) {
   if (!slot) return NextResponse.json({ error: "Schedule item not found." }, { status: 404 });
 
   const [y, m] = slot.Date.split("-").map(Number);
-  const roster = db.enrollments
+  let roster = db.enrollments
     .filter((e) => e.ServiceID === slot.ServiceID && batchMatches(slot.BatchID, e.BatchID) && isEnrollmentActiveForMonth(e, y, m))
     .map((e) => {
       const u = db.users.find((u) => u.UserID === e.UserID);
@@ -54,6 +54,18 @@ export async function GET(req) {
   if (session.userType !== "Management" && !roster.some((r) => r.userId === session.userId)) {
     return NextResponse.json({ error: "You're not enrolled in this session." }, { status: 403 });
   }
+
+  // TKT-0073: Management still sees the full roster (oversight), but a
+  // Teacher/Student's own view of their own session shouldn't expose their
+  // co-enrolled peers of the same type -- a Teacher only needs to see
+  // themselves and the Students, a Student only themselves and the
+  // Teacher(s). Self always sorts first.
+  if (session.userType === "Teacher") {
+    roster = roster.filter((r) => r.userType !== "Teacher" || r.userId === session.userId);
+  } else if (session.userType === "Student") {
+    roster = roster.filter((r) => r.userType !== "Student" || r.userId === session.userId);
+  }
+  roster.sort((a, b) => (a.userId === session.userId ? -1 : b.userId === session.userId ? 1 : 0));
 
   const attendanceItems = db.attendanceItems.filter((a) => a.ScheduleItemID === scheduleItemId);
   return NextResponse.json({ roster, attendanceItems });
