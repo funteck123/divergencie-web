@@ -244,7 +244,7 @@ export async function POST(req) {
       );
       if (already) continue;
 
-      const { amount, currency } = computeHoursAndAmount(db, { userId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, year: y, month: m, assumePresentIfUnlogged: true });
+      const { amount, currency } = computeHoursAndAmount(db, { userId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, year: y, month: m, assumePresentIfUnlogged: true, fullFeeMode: true });
       if (amount <= 0) {
         skipped.push({ studentId: enr.UserID, serviceId: enr.ServiceID, batchId: enr.BatchID, reason: "OneOff rate computed to $0 — check the Service's Rate." });
         continue;
@@ -300,6 +300,7 @@ export async function POST(req) {
       year: y,
       month: m,
       assumePresentIfUnlogged: true,
+      fullFeeMode: true,
     });
     // A genuinely-zero scheduleless month for an active Monthly/Hourly
     // enrollment is the case Management needs to catch: missing
