@@ -3253,6 +3253,12 @@ function SchedulePool() {
   // TKT-0027: hide past sessions by default in the Service Schedule list
   // view (today's own sessions still show).
   const [showPastSchedule, setShowPastSchedule] = useState(false);
+  // TKT-0108: the "Mark correct" control already worked once a conflicting
+  // session's row was expanded -- the real gap was finding which of
+  // potentially hundreds of rows had one at all, with no indicator on the
+  // collapsed row and no session/person named in Billing's "Can't send"
+  // error. This flag drives both a per-row badge and a list filter.
+  const [conflictsOnly, setConflictsOnly] = useState(false);
   const [busyRequestIds, setBusyRequestIds] = useState(new Set());
   const [busyRescheduleIds, setBusyRescheduleIds] = useState(new Set());
   const [creatingSlot, setCreatingSlot] = useState(false);
@@ -3346,7 +3352,29 @@ function SchedulePool() {
   // one month at a time via its own navigation, a different (and already
   // reasonable) way of bounding what's shown.
   const todayStr = todayDateStr();
-  const serviceSlotsForList = showPastSchedule ? serviceSlots : serviceSlots.filter((s) => s.Date >= todayStr);
+  const pastFiltered = showPastSchedule ? serviceSlots : serviceSlots.filter((s) => s.Date >= todayStr);
+
+  // TKT-0108: a session "has a conflict" the same way SessionAttendance's
+  // own per-person badge computes it -- 2+ records for the same
+  // (session, subject) that disagree on Status or LoggedDuration. Grouped
+  // here by ScheduleItemID+UserID once, up front, so every row's badge is
+  // a cheap Set lookup instead of re-scanning attendanceItems per row.
+  const conflictingScheduleIds = (() => {
+    const bySessionSubject = new Map();
+    for (const a of attendanceItems) {
+      const key = `${a.ScheduleItemID}::${a.UserID}`;
+      (bySessionSubject.get(key) || bySessionSubject.set(key, []).get(key)).push(a);
+    }
+    const ids = new Set();
+    for (const records of bySessionSubject.values()) {
+      if (records.length < 2) continue;
+      if (records.some((a, i) => records.some((b, j) => i !== j && (a.Status !== b.Status || Number(a.LoggedDuration) !== Number(b.LoggedDuration))))) {
+        ids.add(records[0].ScheduleItemID);
+      }
+    }
+    return ids;
+  })();
+  const serviceSlotsForList = (conflictsOnly ? pastFiltered.filter((s) => conflictingScheduleIds.has(s.ScheduleID)) : pastFiltered);
 
   const openPoolSort = useSort(openPoolSlots, "Date");
   const serviceSlotsSort = useSort(serviceSlotsForList, "Date");
@@ -3534,10 +3562,16 @@ function SchedulePool() {
           </div>
         </div>
         {serviceView === "list" && (
-          <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
-            <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
-            Show past
-          </label>
+          <div className="flex gap-4 mb-3">
+            <label className="text-sm flex items-center gap-2" style={{ color: "var(--muted)" }}>
+              <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
+              Show past
+            </label>
+            <label className="text-sm flex items-center gap-2" style={{ color: "var(--muted)" }}>
+              <input type="checkbox" checked={conflictsOnly} onChange={(e) => setConflictsOnly(e.target.checked)} />
+              Conflicts only {conflictingScheduleIds.size > 0 ? `(${conflictingScheduleIds.size})` : ""}
+            </label>
+          </div>
         )}
         {serviceView === "image" ? (
           <div className="space-y-3">
@@ -3596,6 +3630,7 @@ function SchedulePool() {
                   <td>
                     <button className="btn-ghost" onClick={() => setExpandedAttendance(expanded ? null : s.ScheduleID)}>
                       {recordCount > 0 ? `${recordCount} logged` : "None"}
+                      {conflictingScheduleIds.has(s.ScheduleID) ? " ⚠" : ""}
                     </button>
                   </td>
                   <td>
