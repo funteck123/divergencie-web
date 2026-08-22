@@ -4812,6 +4812,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
   const [amounts, setAmounts] = useState({}); // serviceId -> amount string
   const [checked, setChecked] = useState({}); // serviceId -> boolean
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [busy, setBusy] = useState(false);
 
   const enrolledServices = enrollments
@@ -4821,6 +4822,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
 
   function selectPerson(id) {
     setPersonId(id);
+    setSuccess("");
     // Default: every currently-enrolled subject pre-checked, matching the
     // ticket's "by default all the subject are selected".
     const nextChecked = {};
@@ -4834,12 +4836,14 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
   async function submit(e) {
     e.preventDefault();
     setError("");
+    setSuccess("");
     const rows = enrolledServices.filter((s) => checked[s.ServiceID] && amounts[s.ServiceID]);
     if (rows.length === 0) {
       setError("Check at least one subject and enter an amount for it.");
       return;
     }
     setBusy(true);
+    const personName = people.find((p) => p.UserID === personId)?.Name || personId;
     try {
       await onSubmitRows({
         personId,
@@ -4850,6 +4854,9 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
       setPersonId("");
       setChecked({});
       setAmounts({});
+      // Seckler et al. 2014 guideline 19: confirm after submit -- this form
+      // used to clear silently with no on-screen sign anything happened.
+      setSuccess(`Created ${rows.length} draft invoice line item${rows.length === 1 ? "" : "s"} for ${personName}.`);
       onDone();
     } catch (err) {
       setError(err.message);
@@ -4905,6 +4912,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
         <button className="btn" type="submit" disabled={busy}>
           {busy ? "Creating…" : "Create draft(s)"}
         </button>
+        {success && <p style={{ color: "var(--good)" }}>✓ {success}</p>}
       </form>
     </div>
   );
@@ -4918,17 +4926,23 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setSaving(true);
+    const personName = people.find((p) => p.UserID === personId)?.Name || personId;
     try {
       await onSubmit({ personId, serviceId, year: Number(year), month: Number(month), amount: Number(amount) });
       setPersonId("");
       setServiceId("");
       setAmount("");
+      // Seckler et al. 2014 guideline 19: confirm after submit -- this form
+      // used to clear silently with no on-screen sign anything happened.
+      setSuccess(`Created draft for ${personName}.`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -4970,6 +4984,7 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
         <button className="btn" type="submit" disabled={saving}>
           {saving ? "Creating…" : "Create draft"}
         </button>
+        {success && <p style={{ color: "var(--good)" }}>✓ {success}</p>}
       </form>
     </div>
   );
@@ -4988,6 +5003,19 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
 // the Type level — every invoice holder is a Student, so Person is already
 // the top grouping level. See groupPaychecksByRoleAndPerson's comment for
 // why Year/Month don't get their own header rows.
+// Springer & Whittaker 2018: full detail (the exact FX rate) doesn't need
+// to sit on the page by default, but should be one hover away when
+// someone asks "why is INR Amount this number" -- rate is derived from
+// the two numbers already on the row (Amount, INRAmount), not fetched.
+// Rows already in INR have nothing to convert, so no reveal for those.
+function fxRateTitle(row) {
+  const currency = row.Currency || "INR";
+  const amount = Number(row.Amount);
+  if (currency === "INR" || !amount) return null;
+  const rate = Number(row.INRAmount) / amount;
+  return `1 ${currency} ≈ ${rate.toFixed(4)} INR, rate used for ${row.Month}/${row.Year}`;
+}
+
 function groupInvoicesByPerson(rows, nameOf) {
   const byPerson = new Map();
   for (const r of rows) {
@@ -5012,6 +5040,76 @@ function personStatusSummary(personRows, paidFlagKey) {
   const needsApproval = personRows.filter((r) => r[paidFlagKey] && Number(r.INRDue) > 0).length;
   const unpaid = personRows.filter((r) => r.Status === "Sent" && !r[paidFlagKey]).length;
   return { draft, needsApproval, unpaid };
+}
+
+// Gorgilli 2025 names interactive filtering as one of five techniques for
+// cutting cognitive load in dashboards -- these two tables could only be
+// scanned by expanding every single person, no way to jump straight to
+// "who's unpaid" or find one name in a long roster.
+function rowMatchesStatusFilter(row, statusFilter, paidFlagKey) {
+  const needsApproval = row[paidFlagKey] && Number(row.INRDue) > 0;
+  switch (statusFilter) {
+    case "draft":
+      return row.Status === "Draft";
+    case "sent-unpaid":
+      return row.Status === "Sent" && !row[paidFlagKey];
+    case "needs-approval":
+      return needsApproval;
+    case "settled":
+      return !!row[paidFlagKey] && !needsApproval;
+    default:
+      return true;
+  }
+}
+
+function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, searchPlaceholder }) {
+  return (
+    <div className="flex gap-2 items-center flex-wrap mb-3">
+      <input
+        className="field"
+        style={{ maxWidth: 220 }}
+        type="text"
+        placeholder={searchPlaceholder}
+        value={search}
+        onChange={(e) => onSearch(e.target.value)}
+      />
+      <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
+        <option value="all">All statuses</option>
+        <option value="draft">Draft</option>
+        <option value="sent-unpaid">Sent, unpaid</option>
+        <option value="needs-approval">Needs approval</option>
+        <option value="settled">Settled</option>
+      </select>
+    </div>
+  );
+}
+
+// Gorgilli 2025's "bulk/batch action" reduction of repetitive interaction
+// cost -- sending N drafts one at a time used to mean expanding a person,
+// clicking Send on every single row. One click from the (already-visible)
+// collapsed header instead.
+function BulkSendButton({ draftRows, onPatch, idKey }) {
+  const [busy, setBusy] = useState(false);
+  if (draftRows.length === 0) return null;
+  async function send(e) {
+    e.stopPropagation();
+    setBusy(true);
+    try {
+      await Promise.all(draftRows.map((r) => onPatch(r[idKey], { status: "Sent" })));
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <button
+      className="btn-ghost ml-2"
+      style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem" }}
+      disabled={busy}
+      onClick={send}
+    >
+      {busy ? "Sending…" : `Send ${draftRows.length} draft${draftRows.length === 1 ? "" : "s"}`}
+    </button>
+  );
 }
 
 function PersonStatusBadges({ personRows, paidFlagKey }) {
@@ -5039,6 +5137,8 @@ function PersonStatusBadges({ personRows, paidFlagKey }) {
 
 function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
   const [expandedPeople, setExpandedPeople] = useState(new Set());
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   function togglePerson(studentId) {
     setExpandedPeople((prev) => {
       const next = new Set(prev);
@@ -5053,14 +5153,21 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
   // WARNS, never blocks. Mainly catches the pre-migrate-monthly window
   // where an old flat-shape invoice and a freshly generated combined one
   // could both exist for the same student/month — flag it, let Management
-  // look and decide whether it's a real duplicate to delete.
+  // look and decide whether it's a real duplicate to delete. Computed off
+  // every invoice, not just the filtered/visible ones, so filtering never
+  // hides a real duplicate warning.
   const monthCounts = new Map();
   for (const r of rows) {
     const key = `${r.StudentID}|${r.Year}|${r.Month}`;
     monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
   }
   const duplicateCount = [...monthCounts.values()].filter((n) => n > 1).length;
-  const people = groupInvoicesByPerson(rows, nameOf);
+
+  const filteredRows = rows.filter((r) => rowMatchesStatusFilter(r, statusFilter, "StudentPaidFlag"));
+  const searchLower = search.trim().toLowerCase();
+  const people = groupInvoicesByPerson(filteredRows, nameOf).filter(
+    (p) => !searchLower || p.name.toLowerCase().includes(searchLower)
+  );
 
   return (
     <>
@@ -5071,7 +5178,17 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
           genuinely a duplicate bill, delete the extra one.
         </p>
       )}
-      {people.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
+      <BillingFilterBar
+        search={search}
+        onSearch={setSearch}
+        statusFilter={statusFilter}
+        onStatusFilter={setStatusFilter}
+        searchPlaceholder="Search student…"
+      />
+      {rows.length > 0 && people.length === 0 && (
+        <p style={{ color: "var(--muted)" }}>No invoices match this filter.</p>
+      )}
+      {rows.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
       <table className="billing-table">
         <thead>
           <tr>
@@ -5100,6 +5217,11 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
                 >
                   {expanded ? "▾" : "▸"} {name} — {personRows.length} invoice{personRows.length === 1 ? "" : "s"}
                   <PersonStatusBadges personRows={personRows} paidFlagKey="StudentPaidFlag" />
+                  <BulkSendButton
+                    draftRows={personRows.filter((r) => r.Status === "Draft")}
+                    onPatch={onPatch}
+                    idKey="InvoiceID"
+                  />
                 </td>
               </tr>
               {expanded &&
@@ -5258,7 +5380,18 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
         <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td className="num">{Number(row.INRAmount).toFixed(2)}</td>
+        <td className="num">
+          {(() => {
+            const title = fxRateTitle(row);
+            return title ? (
+              <span style={{ textDecoration: "underline", textDecorationStyle: "dotted", cursor: "help" }} title={title}>
+                {Number(row.INRAmount).toFixed(2)}
+              </span>
+            ) : (
+              Number(row.INRAmount).toFixed(2)
+            );
+          })()}
+        </td>
         <td className="num">
           {editingDue ? (
             // Visual-refinement pass: Save/Cancel used to render in the far
@@ -5517,6 +5650,8 @@ function groupPaychecksByRoleAndPerson(rows, nameOf, roleOf) {
 
 function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatchLineItem, onDelete }) {
   const [expandedPeople, setExpandedPeople] = useState(new Set());
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   function togglePerson(staffId) {
     setExpandedPeople((prev) => {
       const next = new Set(prev);
@@ -5531,7 +5666,12 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
     monthCounts.set(key, (monthCounts.get(key) || 0) + 1);
   }
   const duplicateCount = [...monthCounts.values()].filter((n) => n > 1).length;
-  const groups = groupPaychecksByRoleAndPerson(rows, nameOf, roleOf);
+
+  const filteredRows = rows.filter((r) => rowMatchesStatusFilter(r, statusFilter, "StaffReceivedFlag"));
+  const searchLower = search.trim().toLowerCase();
+  const groups = groupPaychecksByRoleAndPerson(filteredRows, nameOf, roleOf)
+    .map((g) => ({ ...g, people: g.people.filter((p) => !searchLower || p.name.toLowerCase().includes(searchLower)) }))
+    .filter((g) => g.people.length > 0);
 
   return (
     <>
@@ -5542,7 +5682,17 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
           genuinely a duplicate, delete the extra one.
         </p>
       )}
-      {groups.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
+      <BillingFilterBar
+        search={search}
+        onSearch={setSearch}
+        statusFilter={statusFilter}
+        onStatusFilter={setStatusFilter}
+        searchPlaceholder="Search staff…"
+      />
+      {rows.length > 0 && groups.length === 0 && (
+        <p style={{ color: "var(--muted)" }}>No paychecks match this filter.</p>
+      )}
+      {rows.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
       {groups.map(({ role, people }) => (
         <div key={role} className="mb-4">
           <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--muted)" }}>
@@ -5576,6 +5726,11 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
                     >
                       {expanded ? "▾" : "▸"} {name} — {personRows.length} paycheck{personRows.length === 1 ? "" : "s"}
                       <PersonStatusBadges personRows={personRows} paidFlagKey="StaffReceivedFlag" />
+                      <BulkSendButton
+                        draftRows={personRows.filter((r) => r.Status === "Draft")}
+                        onPatch={onPatch}
+                        idKey="PaycheckID"
+                      />
                     </td>
                   </tr>
                   {expanded &&
@@ -5684,7 +5839,18 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
         <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td className="num">{Number(row.INRAmount).toFixed(2)}</td>
+        <td className="num">
+          {(() => {
+            const title = fxRateTitle(row);
+            return title ? (
+              <span style={{ textDecoration: "underline", textDecorationStyle: "dotted", cursor: "help" }} title={title}>
+                {Number(row.INRAmount).toFixed(2)}
+              </span>
+            ) : (
+              Number(row.INRAmount).toFixed(2)
+            );
+          })()}
+        </td>
         <td className="num">
           {editingDue ? (
             // Visual-refinement pass: Save/Cancel used to render in the far
