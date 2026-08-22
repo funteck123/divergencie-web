@@ -2127,8 +2127,18 @@ function Services() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [suggestedName, nameManuallyEdited]);
 
+  // TKT-0116: switching Group never reset Type, so e.g. toggling from
+  // Student to Staff left the Type combobox showing "Course" (typeOptions
+  // for Staff is just ["Staff"], nothing else valid for it). Reset Type to
+  // the new group's own first option whenever the current value falls
+  // outside it, right here where the group change actually originates.
   function toggleGroup(g) {
-    setGroup((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
+    setGroup((prev) => {
+      const next = prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g];
+      const nextTypeOptions = typeOptionsFor(next);
+      if (nextTypeOptions.length > 0 && !nextTypeOptions.includes(type)) setType(nextTypeOptions[0]);
+      return next;
+    });
   }
 
   const [teacherUsers, setTeacherUsers] = useState([]);
