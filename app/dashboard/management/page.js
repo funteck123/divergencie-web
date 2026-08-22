@@ -730,10 +730,17 @@ function Pipeline() {
   );
 }
 
-// TKT-0021/TKT-0016: the requester never picked a slot — Management assigns
+// TKT-0021/TKT-0016: the requester never picked a slot -- Management assigns
 // one right here when approving. Either pick an existing open-pool slot for
 // this same Service (future dates only), or create a brand-new one on the
 // spot via the same fields Schedule Pool's own "Offer a Slot" form uses.
+// TKT-0112: "existing open slot" includes every unbooked ScheduleItem for
+// the Service, not just manually-offered Trial/Interview slots -- a
+// regular recurring class occurrence counts too (assigning a Trial
+// student into a real ongoing class is a legitimate choice). Two
+// different Batches can genuinely meet at the same day/time, which used
+// to render as two identical-looking options with no way to tell them
+// apart -- BatchName is now shown so they're distinguishable.
 function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAndApprove }) {
   const [mode, setMode] = useState("existing");
   const [scheduleId, setScheduleId] = useState("");
@@ -762,7 +769,8 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
           <option value="">Select an open slot…</option>
           {candidateSlots.map((s) => (
             <option key={s.ScheduleID} value={s.ScheduleID}>
-              {formatDate(s.Date)} at {s.Time} ({s.Facilitator || "no instructor set"})
+              {formatDate(s.Date)} at {s.Time}
+              {s.BatchName ? ` · ${s.BatchName}` : ""} ({s.Facilitator || "no instructor set"})
             </option>
           ))}
         </select>
