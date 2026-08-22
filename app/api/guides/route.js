@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { requireSession, requireManagement } from "@/lib/authz";
 
 // Guides are static named-link buttons ("Student Handbook", "How to book a
@@ -63,7 +63,12 @@ export async function DELETE(req) {
   if (!guideId) return NextResponse.json({ error: "guideId is required." }, { status: 400 });
 
   const db = await readDB();
+  // writeDB() only upserts the rows still present in the array -- it can't
+  // remove a row missing from it. A filtered-then-writeDB delete here
+  // returned 200 and looked correct in the UI, but never actually removed
+  // the row from the underlying table. deleteRecords() is this app's real
+  // delete path, used everywhere else a record is actually removed.
   db.guides = (db.guides || []).filter((g) => g.GuideID !== guideId);
-  await writeDB(db, ["guides"]);
+  await deleteRecords(db, [{ collection: "guides", ids: [guideId] }]);
   return NextResponse.json({ ok: true });
 }
