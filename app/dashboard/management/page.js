@@ -449,7 +449,11 @@ function Pipeline() {
         </span>
       );
     }
-    if (account.Status === "Converted") {
+    // A record can have Status "Converted" with no ConvertedToUserID (seen
+    // live on TIN-0001) -- stale seed data, not a real conversion, and the
+    // account is otherwise permanently stuck with no linked record and no
+    // way to fix it. Treat that combination as not really converted.
+    if (account.Status === "Converted" && account.ConvertedToUserID) {
       return <span style={{ color: "var(--muted)" }}>→ {account.ConvertedToUserID}</span>;
     }
     return (
@@ -1262,7 +1266,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                     </td>
                   )}
                   <td className="flex gap-2">
-                    {showConvert && CONVERT_LABEL[u.UserType] && u.Status !== "Converted" && (
+                    {showConvert && CONVERT_LABEL[u.UserType] && (u.Status !== "Converted" || !u.ConvertedToUserID) && (
                       <button className="btn" disabled={busyAccountIds?.has(u.UserID)} onClick={() => convert(u.UserID)}>
                         {busyAccountIds?.has(u.UserID) ? "Converting…" : `Convert to ${CONVERT_LABEL[u.UserType]}`}
                       </button>

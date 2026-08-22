@@ -72,7 +72,11 @@ export async function POST(req) {
       { status: 400 }
     );
   }
-  if (oldUser.Status === "Converted") {
+  // A record can carry Status "Converted" with no ConvertedToUserID (seen
+  // live on TIN-0001 -- stale seed data, not a real conversion) -- that
+  // combination means no real account actually exists yet, so it's allowed
+  // through rather than permanently blocked with no way to fix it.
+  if (oldUser.Status === "Converted" && oldUser.ConvertedToUserID) {
     return NextResponse.json({ error: "Already converted." }, { status: 400 });
   }
 
