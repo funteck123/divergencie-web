@@ -67,7 +67,6 @@ export async function GET(req) {
           currency: li.Currency,
         };
       }),
-      taxPercent: 0,
       discountPercent: 0,
       total: invoice.Amount,
       totalCurrency: invoice.Currency,
@@ -113,7 +112,6 @@ export async function GET(req) {
           currency: invoiceCurrency,
         },
       ],
-      taxPercent: 0,
       discountPercent: 0,
       total: displayTotal,
       totalCurrency: displayCurrency,
