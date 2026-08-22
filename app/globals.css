@@ -239,4 +239,31 @@ th {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  /* A header like "Amount Due" or "INR Amount" would otherwise ragged-wrap
+     onto two lines while its neighbors stay on one, leaving the header
+     row an uneven, jagged height. Every header now stays on one line. */
+  white-space: nowrap;
+}
+tbody tr:hover td {
+  background: var(--panel-2);
+}
+/* Right-aligned, fixed-width digits for a column of numbers meant to be
+   compared at a glance (currency, hours) — the convention any financial
+   table uses, and this app's numeric columns had none of it: left-aligned
+   under a header that didn't line up with the values below it either. */
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+/* A row of 4 action buttons (Edit Due/Send/PDF/Delete) in a table cell
+   wraps to two uneven lines at typical widths using the app's normal
+   button padding. Same buttons, same behavior, just denser so more of
+   them fit per line before wrapping. */
+.table-actions {
+  gap: 0.3rem;
+}
+.table-actions .btn,
+.table-actions .btn-ghost {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.82rem;
 }

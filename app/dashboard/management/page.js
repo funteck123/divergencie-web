@@ -4616,8 +4616,9 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
     <>
       {duplicateCount > 0 && (
         <p className="mb-2" style={{ color: "var(--warn, #b45309)" }}>
-          ⚠ {duplicateCount} student/month{duplicateCount === 1 ? "" : "s"} with more than one invoice — check the
-          rows flagged below; if it&apos;s genuinely a duplicate bill, delete the extra one.
+          ⚠ {duplicateCount} student/month{duplicateCount === 1 ? "" : "s"}{" "}
+          with more than one invoice. Check the rows flagged below; if it&apos;s
+          genuinely a duplicate bill, delete the extra one.
         </p>
       )}
       {people.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
@@ -4627,10 +4628,10 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
             <th>Student</th>
             <th>Subjects</th>
             <th>Period</th>
-            <th>Amount</th>
-            <th>Amount Due</th>
-            <th>INR Amount</th>
-            <th>INR Due</th>
+            <th className="num">Amount</th>
+            <th className="num">Amount Due</th>
+            <th className="num">INR Amount</th>
+            <th className="num">INR Due</th>
             <th>Status</th>
             <th>Paid</th>
             <th></th>
@@ -4804,12 +4805,12 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
         <td>
           {row.Month}/{row.Year}
         </td>
-        <td>
+        <td className="num">
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
-        <td>{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td>INR {Number(row.INRAmount).toFixed(2)}</td>
-        <td>
+        <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
+        <td className="num">INR {Number(row.INRAmount).toFixed(2)}</td>
+        <td className="num">
           {editingDue ? (
             <input
               className="field"
@@ -4854,7 +4855,7 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
           )}
         </td>
         <td>
-          <span className="flex items-center gap-1 flex-wrap">
+          <span className="flex items-center gap-1 flex-wrap table-actions">
             {needsApproval ? (
               <ApprovePaymentControl onApprove={(dueValue) => onPatch(row.InvoiceID, { inrDue: dueValue })} />
             ) : editingDue ? (
@@ -4898,9 +4899,9 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
               <thead>
                 <tr>
                   <th>Subject</th>
-                  <th>Scheduled hrs</th>
-                  <th>Attended hrs</th>
-                  <th>Amount</th>
+                  <th className="num">Scheduled hrs</th>
+                  <th className="num">Attended hrs</th>
+                  <th className="num">Amount</th>
                   <th></th>
                 </tr>
               </thead>
@@ -4959,7 +4960,7 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
           )}
         </span>
       </td>
-      <td>
+      <td className="num">
         {editing ? (
           <input
             className="field"
@@ -4973,7 +4974,7 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
           lineItem.ScheduledHours ?? "—"
         )}
       </td>
-      <td>
+      <td className="num">
         {editing ? (
           <input
             className="field"
@@ -4987,7 +4988,7 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
           lineItem.AttendedHours ?? "—"
         )}
       </td>
-      <td>
+      <td className="num">
         {editing ? (
           <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
         ) : (
@@ -5074,8 +5075,9 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
     <>
       {duplicateCount > 0 && (
         <p className="mb-2" style={{ color: "var(--warn, #b45309)" }}>
-          ⚠ {duplicateCount} staff/month{duplicateCount === 1 ? "" : "s"} with more than one paycheck — check the
-          rows flagged below; if it&apos;s genuinely a duplicate, delete the extra one.
+          ⚠ {duplicateCount} staff/month{duplicateCount === 1 ? "" : "s"}{" "}
+          with more than one paycheck. Check the rows flagged below; if it&apos;s
+          genuinely a duplicate, delete the extra one.
         </p>
       )}
       {groups.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
@@ -5090,10 +5092,10 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
                 <th>Person</th>
                 <th>Subjects</th>
                 <th>Period</th>
-                <th>Amount</th>
-                <th>Amount Due</th>
-                <th>INR Amount</th>
-                <th>INR Due</th>
+                <th className="num">Amount</th>
+                <th className="num">Amount Due</th>
+                <th className="num">INR Amount</th>
+                <th className="num">INR Due</th>
                 <th>Status</th>
                 <th>Received</th>
                 <th></th>
@@ -5217,12 +5219,12 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
         <td>
           {row.Month}/{row.Year}
         </td>
-        <td>
+        <td className="num">
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
-        <td>{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td>INR {Number(row.INRAmount).toFixed(2)}</td>
-        <td>
+        <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
+        <td className="num">INR {Number(row.INRAmount).toFixed(2)}</td>
+        <td className="num">
           {editingDue ? (
             <input
               className="field"
@@ -5260,7 +5262,7 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
           )}
         </td>
         <td>
-          <span className="flex items-center gap-1 flex-wrap">
+          <span className="flex items-center gap-1 flex-wrap table-actions">
             {needsApproval ? (
               <ApprovePaymentControl onApprove={(dueValue) => onPatch(row.PaycheckID, { inrDue: dueValue })} />
             ) : editingDue ? (
@@ -5304,9 +5306,9 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
               <thead>
                 <tr>
                   <th>Subject</th>
-                  <th>Scheduled hrs</th>
-                  <th>Attended hrs</th>
-                  <th>Amount</th>
+                  <th className="num">Scheduled hrs</th>
+                  <th className="num">Attended hrs</th>
+                  <th className="num">Amount</th>
                   <th></th>
                 </tr>
               </thead>
@@ -5365,7 +5367,7 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
           )}
         </span>
       </td>
-      <td>
+      <td className="num">
         {editing ? (
           <input
             className="field"
@@ -5379,7 +5381,7 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
           lineItem.ScheduledHours ?? "—"
         )}
       </td>
-      <td>
+      <td className="num">
         {editing ? (
           <input
             className="field"
@@ -5393,7 +5395,7 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
           lineItem.AttendedHours ?? "—"
         )}
       </td>
-      <td>
+      <td className="num">
         {editing ? (
           <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
         ) : (
