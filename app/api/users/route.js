@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords, getUserAndCredentials, usernameTaken, saveUserAndCredentials } from "@/lib/db";
 import { isValidTimezone, normalizeTimezone } from "@/lib/timezones";
 import { requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -351,8 +351,10 @@ export async function PATCH(req) {
     return NextResponse.json({ error: "password cannot be blank." }, { status: 400 });
   }
 
-  const db = await readDB();
-  const user = db.users.find((u) => u.UserID === userId);
+  // TKT-0084: targeted fetch of just this one user (+ credentials, if
+  // needed) instead of the full readDB() every other route uses — see
+  // getUserAndCredentials/saveUserAndCredentials in lib/db.js for why.
+  const { user, cred: existingCred } = await getUserAndCredentials(userId);
   if (!user) return NextResponse.json({ error: "User not found." }, { status: 404 });
   const before = JSON.parse(JSON.stringify(user));
   if (status !== undefined && user.Status === "Converted") {
@@ -367,9 +369,9 @@ export async function PATCH(req) {
 
   let cred;
   if (username !== undefined || password !== undefined) {
-    cred = db.credentials.find((c) => c.UserID === userId);
+    cred = existingCred;
     if (!cred) return NextResponse.json({ error: "No credentials found for this account." }, { status: 404 });
-    if (username !== undefined && db.credentials.some((c) => c.Username === username && c.UserID !== userId)) {
+    if (username !== undefined && (await usernameTaken(username, userId))) {
       return NextResponse.json({ error: "username already taken." }, { status: 400 });
     }
   }
@@ -390,7 +392,7 @@ export async function PATCH(req) {
   applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
   if (password !== undefined) cred.Password = password;
-  await writeDB(db, ["users", "credentials"]);
+  await saveUserAndCredentials(user, cred);
   // snapshot is the user record only (before/after) — credentials
   // (username/password) are never logged, only whether they were touched.
   const credentialsChanged = username !== undefined || password !== undefined;
