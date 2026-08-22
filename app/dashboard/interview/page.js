@@ -207,20 +207,26 @@ function Body({ user }) {
           Pick the service you&apos;re interviewing for. No need to choose a time. A slot will be assigned once
           your request is approved.
         </p>
-        <div className="flex gap-3">
-          <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
-            <option value="">Select a service…</option>
-            {eligibleServices.map((s) => (
-              <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
-                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
-                {requestedServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
-              </option>
-            ))}
-          </select>
-          <button className="btn" disabled={!serviceId || requesting} onClick={requestInterview}>
-            {requesting ? "Requesting…" : "Request Interview"}
-          </button>
-        </div>
+        {!data.user.ResumeURL ? (
+          <p className="text-sm" style={{ color: "var(--bad)" }}>
+            Upload a Resume in Documents above before requesting an interview.
+          </p>
+        ) : (
+          <div className="flex gap-3">
+            <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+              <option value="">Select a service…</option>
+              {eligibleServices.map((s) => (
+                <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
+                  {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                  {requestedServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
+                </option>
+              ))}
+            </select>
+            <button className="btn" disabled={!serviceId || requesting} onClick={requestInterview}>
+              {requesting ? "Requesting…" : "Request Interview"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

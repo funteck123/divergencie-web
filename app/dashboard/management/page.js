@@ -270,13 +270,14 @@ function Pipeline() {
   const [pendingTrials, setPendingTrials] = useState([]);
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
+  const [scheduleItems, setScheduleItems] = useState([]);
   const [error, setError] = useState("");
   const [busyTrialIds, setBusyTrialIds] = useState(new Set());
   const [busyAccountIds, setBusyAccountIds] = useState(new Set());
   const [busyRequestIds, setBusyRequestIds] = useState(new Set());
 
   async function load() {
-    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlots }] = await Promise.all([
+    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlots, scheduleItems }] = await Promise.all([
       api("/api/users"),
       api("/api/services"),
       api("/api/invoices"),
@@ -289,6 +290,7 @@ function Pipeline() {
     setPendingTrials(pendingTrials);
     setPendingInterviews(pendingInterviews);
     setOpenPoolSlots(openPoolSlots);
+    setScheduleItems(scheduleItems);
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead — run
     // every account's fetch concurrently rather than one at a time (this was
@@ -315,6 +317,14 @@ function Pipeline() {
   }
   function accountOf(id) {
     return users.find((u) => u.UserID === id);
+  }
+  // TKT-0111: the Pipeline table only ever showed Name/Service/Status --
+  // once a Trial/Interview is approved and assigned a slot, there was no
+  // way to see the scheduled date/time or instructor from this table at
+  // all (not even a blank cell, the columns just didn't exist), which is
+  // why "no instructor" kept showing even for slots that had one set.
+  function slotOf(scheduleId) {
+    return scheduleItems.find((s) => s.ScheduleID === scheduleId) || null;
   }
   function invoiceFor(trial) {
     // Invoices are billed to the converted Student's own ID, not the TrialAcc
@@ -513,6 +523,8 @@ function Pipeline() {
               <SortableTh label="Name" sortKeyName="_name" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <SortableTh label="Status" sortKeyName="Status" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
+              <th>Scheduled</th>
+              <th>Instructor</th>
               <th>Feedback</th>
               <th></th>
               <th>Invoice</th>
@@ -522,11 +534,14 @@ function Pipeline() {
           <tbody>
             {trialSort.sorted.map((t) => {
               const invoice = invoiceFor(t);
+              const slot = t.ScheduleItemID ? slotOf(t.ScheduleItemID) : null;
               return (
                 <tr key={t.TrialID}>
                   <td>{t._name}</td>
                   <td>{t._service}</td>
                   <td><span className="badge badge-info">{t.Status}</span></td>
+                  <td style={{ color: "var(--muted)" }}>{slot ? `${formatDate(slot.Date)} at ${slot.Time}` : "—"}</td>
+                  <td style={{ color: "var(--muted)" }}>{slot ? slot.Facilitator || "no instructor set" : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
                   <td>
                     {t.Status === "FeedbackSubmitted" && !t.ServiceAdded && (
@@ -550,7 +565,7 @@ function Pipeline() {
               );
             })}
             {trialItems.length === 0 && (
-              <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
+              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -566,6 +581,8 @@ function Pipeline() {
               <SortableTh label="Name" sortKeyName="_name" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <SortableTh label="Status" sortKeyName="Status" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
+              <th>Scheduled</th>
+              <th>Instructor</th>
               <th>Task</th>
               <th>Offer</th>
               <th></th>
@@ -573,7 +590,9 @@ function Pipeline() {
             </tr>
           </thead>
           <tbody>
-            {interviewSort.sorted.map((i) => (
+            {interviewSort.sorted.map((i) => {
+              const slot = i.ScheduleItemID ? slotOf(i.ScheduleItemID) : null;
+              return (
               <tr key={i.InterviewID}>
                 <td>{i._name}</td>
                 <td>{i._service}</td>
@@ -591,6 +610,8 @@ function Pipeline() {
                     </div>
                   )}
                 </td>
+                <td style={{ color: "var(--muted)" }}>{slot ? `${formatDate(slot.Date)} at ${slot.Time}` : "—"}</td>
+                <td style={{ color: "var(--muted)" }}>{slot ? slot.Facilitator || "no instructor set" : "—"}</td>
                 <td style={{ color: "var(--muted)" }}>
                   {i.TaskSubmissionLink ? (
                     <a href={i.TaskSubmissionLink} target="_blank" rel="noreferrer" className="underline">
@@ -634,9 +655,10 @@ function Pipeline() {
                 </td>
                 <td><AccountCell accountId={i.InterviewAccID} /></td>
               </tr>
-            ))}
+              );
+            })}
             {interviewItems.length === 0 && (
-              <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
+              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
             )}
           </tbody>
         </table>

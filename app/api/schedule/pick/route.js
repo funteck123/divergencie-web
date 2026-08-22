@@ -69,6 +69,14 @@ export async function POST(req) {
   const service = db.services.find((s) => s.ServiceID === serviceId);
   if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
+  // TKT-0111: a candidate needs a Resume on file before they can request
+  // an interview -- Management reviews it as part of deciding whether to
+  // even schedule one.
+  const candidate = db.users.find((u) => u.UserID === userId);
+  if (!candidate?.ResumeURL) {
+    return NextResponse.json({ error: "Upload a Resume in Documents before requesting an interview." }, { status: 400 });
+  }
+
   const requiredGroup = requiredGroupForBookingType(type);
   if (!groupMatches(service.Group, requiredGroup)) {
     return NextResponse.json(
