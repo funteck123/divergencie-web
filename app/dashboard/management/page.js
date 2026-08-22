@@ -3977,13 +3977,20 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
 
   const selectedUser = people.find((u) => u.UserID === userId);
 
+  // TKT-0122: this used to gate availableRates on a selectedBatch actually
+  // existing, but a role-based Service (Staff, Ambassador, etc.) has no
+  // Batch at all -- its Rates live directly on the Service. ratesOf()
+  // itself already falls back to service.Rates correctly (same helper the
+  // server's resolveRate() uses); the bug was this client code refusing
+  // to call it without a Batch, leaving Staff enrollment with an always-
+  // empty rate dropdown (and any newly-added custom rate, though it did
+  // save, could never show up in that empty list either).
   function rowOptions(row) {
     const selectedService = eligibleServices.find((s) => s.ServiceID === row.serviceId);
     const availableBatches = selectedService ? batchesOf(selectedService) : [];
-    const selectedBatch = availableBatches.find((b) => b.BatchID === row.batchId);
     // Only rates this user's own account type is allowed to enroll at — an
     // unset Rate.Group is open to anyone the Service itself is open to.
-    const availableRates = (selectedBatch ? ratesOf(selectedService, row.batchId) : []).filter(
+    const availableRates = (selectedService ? ratesOf(selectedService, row.batchId) : []).filter(
       (r) => !r.Group || r.Group === selectedUser?.UserType
     );
     return { selectedService, availableBatches, availableRates };
@@ -4002,19 +4009,24 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
     setRows((prev) => prev.map((r, i) => (i === index ? { ...r, ...patch } : r)));
   }
 
+  // TKT-0122: rateId used to default to whichever rate happened to sort
+  // first, a real amount silently applied with no on-screen indicator
+  // Management ever chose it -- same bug class TKT-0047 fixed elsewhere
+  // for other silently-auto-selected fields. Rate always starts blank now;
+  // the field's own `required` attribute (below) enforces an explicit
+  // pick before the form can submit.
   function pickServiceAt(index, id) {
     const svc = eligibleServices.find((s) => s.ServiceID === id);
     const firstBatch = svc ? batchesOf(svc)[0] : null;
     updateRow(index, {
       serviceId: id,
       batchId: firstBatch?.BatchID || "",
-      rateId: firstBatch ? ratesOf(svc, firstBatch.BatchID)[0]?.RateID || "" : "",
+      rateId: "",
     });
   }
 
   function pickBatchAt(index, batchId) {
-    const svc = eligibleServices.find((s) => s.ServiceID === rows[index].serviceId);
-    updateRow(index, { batchId, rateId: ratesOf(svc, batchId)[0]?.RateID || "" });
+    updateRow(index, { batchId, rateId: "" });
   }
 
   function addRow() {
@@ -4101,6 +4113,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                       Rate
                     </label>
                     <select className="field" value={row.rateId} onChange={(e) => updateRow(index, { rateId: e.target.value })} required>
+                      <option value="">Select a rate…</option>
                       {availableRates.map((r) => (
                         <option key={r.RateID} value={r.RateID}>
                           {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
@@ -4250,21 +4263,27 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
   const editingUser = users.find((u) => u.UserID === userId);
   const editingService = services.find((s) => s.ServiceID === serviceId);
   const availableBatches = editingService ? batchesOf(editingService) : [];
-  const availableRates = (editingService && batchId ? ratesOf(editingService, batchId) : []).filter(
+  // TKT-0122: same fix as the enroll form above -- ratesOf() already
+  // falls back to service.Rates for role-based Services with no Batch,
+  // gating on batchId here just left Staff enrollment edits with an
+  // empty rate list.
+  const availableRates = (editingService ? ratesOf(editingService, batchId) : []).filter(
     (r) => !r.Group || r.Group === editingUser?.UserType
   );
 
+  // TKT-0122: rateId no longer auto-defaults to whichever rate sorts
+  // first -- same reasoning as the enroll form above.
   function pickService(id) {
     setServiceId(id);
     const svc = services.find((s) => s.ServiceID === id);
     const firstBatch = svc ? batchesOf(svc)[0] : null;
     setBatchId(firstBatch?.BatchID || "");
-    setRateId(firstBatch ? ratesOf(svc, firstBatch.BatchID)[0]?.RateID || "" : "");
+    setRateId("");
   }
 
   function pickBatch(id) {
     setBatchId(id);
-    setRateId(ratesOf(editingService, id)[0]?.RateID || "");
+    setRateId("");
   }
 
   function cancel() {
@@ -4334,7 +4353,8 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
           </select>
         </td>
         <td>
-          <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)}>
+          <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
+            <option value="">Select a rate…</option>
             {availableRates.map((r) => (
               <option key={r.RateID} value={r.RateID}>
                 {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}

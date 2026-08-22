@@ -32,9 +32,17 @@ function resolveBatch(service, batchId) {
   return match;
 }
 
+// TKT-0122: this used to default to rates[0] when rateId was empty, a
+// real billing amount silently applied with no explicit choice behind
+// it. The client-side form change (management/page.js) stops sending an
+// empty rateId now, but this is the actual point of enforcement -- a
+// direct API call with no rateId should be rejected the same way one
+// with an invalid rateId already is, not quietly picked for it.
 function resolveRate(service, batchId, rateId) {
   const rates = ratesOf(service, batchId);
-  if (!rateId) return rates[0];
+  if (!rateId) {
+    return { error: `rateId is required. Must be one of: ${rates.map((r) => `${r.RateID} (${r.Currency} ${r.Rate})`).join(", ")}.` };
+  }
   const match = rates.find((r) => r.RateID === rateId);
   if (!match) {
     return { error: `rateId must be one of: ${rates.map((r) => `${r.RateID} (${r.Currency} ${r.Rate})`).join(", ")}.` };
