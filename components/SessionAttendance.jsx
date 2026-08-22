@@ -58,7 +58,6 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
     }
   }
 
-  if (error) return <p className="text-sm" style={{ color: "var(--bad)" }}>{error}</p>;
   if (!data) return <p className="text-sm" style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const { roster, attendanceItems } = data;
@@ -77,6 +76,19 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
 
   return (
     <div className="space-y-2" style={{ fontSize: "0.8rem" }}>
+      {/* TKT-0074: this used to be an early return that replaced the whole
+          roster with just the error — one failed log() (e.g. re-marking
+          someone already logged) blanked out every other person's form
+          too, in a session with several people to mark. Now it's an inline
+          banner, so the rest of the roster stays usable. */}
+      {error && (
+        <p style={{ color: "var(--bad)" }}>
+          {error}{" "}
+          <button className="btn-ghost" style={{ padding: "0 0.4rem" }} onClick={() => setError("")}>
+            Dismiss
+          </button>
+        </p>
+      )}
       {roster.length === 0 && <p style={{ color: "var(--muted)" }}>No one enrolled in this session.</p>}
       {roster.map((person) => {
         const records = attendanceItems.filter((a) => a.UserID === person.userId);
