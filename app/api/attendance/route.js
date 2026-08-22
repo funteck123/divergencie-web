@@ -183,16 +183,30 @@ export async function POST(req) {
 // the disagreement is a reviewed, deliberate choice, not an open question
 // -- both records keep differing forever as history, but Sending unblocks
 // immediately without requiring the values to actually match.
+// TKT-0095: no attendance record could ever be edited after submission --
+// not even by Management, and not even to fix an honest typo (wrong status,
+// wrong hours). The original author still can't touch their own record
+// (both perspectives staying as permanent, unedited history is the whole
+// point of the two-record design, see resolveAcceptance above) -- but
+// Management now can, directly correcting status/loggedDuration on any
+// record. Editing a record also accepts it for billing (same effect as the
+// plain "Mark correct" call this endpoint already made, just with real
+// value changes this time), since Management editing a record is by
+// definition the trusted, reviewed value now.
+// body: { attendanceId, status?, loggedDuration? }
 export async function PATCH(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { attendanceId } = await req.json();
+  const { attendanceId, status, loggedDuration } = await req.json();
   if (!attendanceId) return NextResponse.json({ error: "attendanceId is required." }, { status: 400 });
 
   const db = await readDB();
   const record = db.attendanceItems.find((a) => a.AttendanceID === attendanceId);
   if (!record) return NextResponse.json({ error: "Attendance record not found." }, { status: 404 });
+
+  if (status !== undefined) record.Status = status;
+  if (loggedDuration !== undefined) record.LoggedDuration = Number(loggedDuration) || 0;
 
   for (const a of db.attendanceItems) {
     if (a.ScheduleItemID === record.ScheduleItemID && a.UserID === record.UserID) {

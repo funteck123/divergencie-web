@@ -21,6 +21,7 @@ import { MiniAttendanceForm } from "@/components/ScheduleCalendar";
 export default function SessionAttendance({ scheduleId, duration, viewerUserId, viewerType, isManagement = false }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   async function load() {
     try {
@@ -52,6 +53,21 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
     setError("");
     try {
       await api("/api/attendance", { method: "PATCH", body: JSON.stringify({ attendanceId }) });
+      load();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+
+  // TKT-0095: no record could be edited after submission at all, not even
+  // by Management -- only who's accepted for billing could change. This
+  // reuses the same PATCH, now with real status/loggedDuration changes;
+  // editing also accepts the record for billing, same as markCorrect.
+  async function saveEdit(attendanceId, status, loggedDuration) {
+    setError("");
+    try {
+      await api("/api/attendance", { method: "PATCH", body: JSON.stringify({ attendanceId, status, loggedDuration }) });
+      setEditingId(null);
       load();
     } catch (e) {
       setError(e.message);
@@ -103,17 +119,30 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
             </div>
             {records.length === 0 && <p style={{ color: "var(--muted)" }}>Not logged yet.</p>}
             {records.map((r) => (
-              <div key={r.AttendanceID} className="flex items-center gap-2 mb-1">
-                <span className={`badge badge-${r.Status === "Present" ? "good" : r.Status === "Late" ? "pending" : "bad"}`}>{r.Status}</span>
-                <span>{r.LoggedDuration}h</span>
-                <span style={{ color: "var(--muted)" }}>
-                  by {r.LoggedBy === person.userId ? "self" : nameOf(r.LoggedBy)}
-                  {r.AcceptedForBilling === false ? " — not used for billing" : ""}
-                </span>
-                {isManagement && r.AcceptedForBilling === false && (
-                  <button className="btn-ghost" onClick={() => markCorrect(r.AttendanceID)}>
-                    Mark correct
-                  </button>
+              <div key={r.AttendanceID} className="mb-1">
+                <div className="flex items-center gap-2">
+                  <span className={`badge badge-${r.Status === "Present" ? "good" : r.Status === "Late" ? "pending" : "bad"}`}>{r.Status}</span>
+                  <span>{r.LoggedDuration}h</span>
+                  <span style={{ color: "var(--muted)" }}>
+                    by {r.LoggedBy === person.userId ? "self" : nameOf(r.LoggedBy)}
+                    {r.AcceptedForBilling === false ? " — not used for billing" : ""}
+                  </span>
+                  {isManagement && r.AcceptedForBilling === false && (
+                    <button className="btn-ghost" onClick={() => markCorrect(r.AttendanceID)}>
+                      Mark correct
+                    </button>
+                  )}
+                  {isManagement && editingId !== r.AttendanceID && (
+                    <button className="btn-ghost" onClick={() => setEditingId(r.AttendanceID)}>
+                      Edit
+                    </button>
+                  )}
+                </div>
+                {isManagement && editingId === r.AttendanceID && (
+                  <MiniAttendanceForm
+                    defaultHrs={r.LoggedDuration}
+                    onSubmit={(status, hrs) => saveEdit(r.AttendanceID, status, hrs)}
+                  />
                 )}
               </div>
             ))}
