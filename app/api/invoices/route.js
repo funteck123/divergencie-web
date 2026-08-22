@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth } from "@/lib/billing";
-import { getRateToINR, convertINRAmount } from "@/lib/fxRates";
+import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal } from "@/lib/billing";
+import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
 
@@ -26,40 +26,6 @@ import { logAudit } from "@/lib/logging";
 //   mechanic as before). Status/StudentPaidFlag/PaymentProofPath are a
 //   single field for the whole month — paying means paying the full
 //   month, no per-subject payment state.
-
-function studentCurrencyOf(db, studentId) {
-  return db.users.find((u) => u.UserID === studentId)?.Currency || "INR";
-}
-
-// INR-equivalent of one line item's native Amount, using the invoice's own
-// (Year, Month) rate — same "rate as of the 1st of the invoice's own
-// month" convention as getRateToINR itself. Returns 0 (not null) so a
-// single unresolvable line item degrades gracefully rather than corrupting
-// the whole invoice's running total; Management can always correct INRDue
-// by hand same as before this existed.
-async function lineItemINR(db, lineItem, year, month) {
-  const rate = await getRateToINR(db, lineItem.Currency, year, month);
-  if (rate == null) return 0;
-  return Math.round((Number(lineItem.Amount) || 0) * rate * 100) / 100;
-}
-
-// Recomputes Amount (student's own currency, student/parent-facing) from
-// the invoice's current INRAmount. Called once per touched invoice after
-// INRAmount/INRDue have already been adjusted by the caller (via
-// lineItemINR deltas) — never re-derives INRAmount itself here, so it
-// can't clobber a manually-adjusted INRDue.
-//
-// invoice.Currency is deliberately NOT reassigned here — it's frozen once,
-// at invoice creation, to whatever the student's profile Currency was at
-// that time (same "locked at generation, not live" convention as every
-// other FX figure on this record). Re-deriving it on every edit would mean
-// an unrelated line-item correction on an old, already-Sent invoice could
-// silently flip its displayed currency if the student's profile Currency
-// changed sometime after it was billed.
-async function refreshStudentTotal(db, invoice) {
-  const converted = await convertINRAmount(db, invoice.INRAmount, invoice.Currency, invoice.Year, invoice.Month);
-  if (converted != null) invoice.Amount = converted;
-}
 
 export async function GET(req) {
   const { error } = requireManagement(req);

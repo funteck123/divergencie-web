@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
-import { batchesOf, ratesOf, rateById } from "@/lib/billing";
+import { batchesOf, ratesOf, rateById, studentCurrencyOf, lineItemINR, refreshStudentTotal } from "@/lib/billing";
 
 // Management's action after reading a Trial's Feedback and deciding it went
 // well: add the trialed Service to the Student account and bill one month
@@ -61,36 +61,81 @@ export async function POST(req) {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
+  const rate = rateById(service, enrollment.BatchID, enrollment.RateID);
 
-  // Don't double-bill if an invoice for this Student/Service/Batch/month
-  // already exists (e.g. bulk "Generate Drafts" already ran for the current
-  // month).
-  let invoice = db.invoices.find(
-    (i) =>
-      i.StudentID === studentId &&
-      i.ServiceID === trial.ServiceID &&
-      i.BatchID === enrollment.BatchID &&
-      i.Year === year &&
-      i.Month === month
-  );
-  if (!invoice) {
-    invoice = {
-      InvoiceID: await nextId(db, "INV"),
-      StudentID: studentId,
-      ServiceID: trial.ServiceID,
-      BatchID: enrollment.BatchID,
-      Year: year,
-      Month: month,
-      ScheduledHours: null,
-      AttendedHours: null,
-      Amount: rateById(service, enrollment.BatchID, enrollment.RateID).Rate,
-      Currency: enrollment.Currency,
-      INRAmount: 0,
-      INRDue: 0,
-      Status: "Draft",
-      Note: "One-month advance — new enrollment from Trial",
-    };
-    db.invoices.push(invoice);
+  // TKT-0105: this used to always create the old flat OneOff-shaped
+  // invoice, even for a Monthly/Hourly service (the common case for a
+  // Trial-eligible course), which is why it "looked different" from a
+  // regular Generate/Manual invoice. Mirrors the same branching
+  // app/api/invoices/route.js's manual action already does: OneOff stays
+  // its own standalone flat invoice, Monthly/Hourly joins (or starts) the
+  // student's one combined invoice for the month as a LineItem.
+  let invoice;
+  if (rate?.BillingType === "OneOff") {
+    invoice = db.invoices.find(
+      (i) =>
+        !i.LineItems &&
+        i.StudentID === studentId &&
+        i.ServiceID === trial.ServiceID &&
+        i.BatchID === enrollment.BatchID &&
+        i.Year === year &&
+        i.Month === month
+    );
+    if (!invoice) {
+      const amount = rate.Rate;
+      const invoiceINRAmount = await lineItemINR(db, { Currency: enrollment.Currency, Amount: amount }, year, month);
+      invoice = {
+        InvoiceID: await nextId(db, "INV"),
+        StudentID: studentId,
+        ServiceID: trial.ServiceID,
+        BatchID: enrollment.BatchID,
+        Year: year,
+        Month: month,
+        ScheduledHours: null,
+        AttendedHours: null,
+        Amount: amount,
+        Currency: enrollment.Currency,
+        INRAmount: invoiceINRAmount,
+        INRDue: invoiceINRAmount,
+        Status: "Draft",
+        Note: "One-month advance, new enrollment from Trial",
+      };
+      db.invoices.push(invoice);
+    }
+  } else {
+    invoice = db.invoices.find((i) => i.LineItems && i.StudentID === studentId && i.Year === year && i.Month === month);
+    const alreadyLineItem = invoice?.LineItems.some((li) => li.ServiceID === trial.ServiceID && li.BatchID === enrollment.BatchID);
+    if (!alreadyLineItem) {
+      if (!invoice) {
+        invoice = {
+          InvoiceID: await nextId(db, "INV"),
+          StudentID: studentId,
+          Year: year,
+          Month: month,
+          LineItems: [],
+          Amount: 0,
+          Currency: studentCurrencyOf(db, studentId),
+          INRAmount: 0,
+          INRDue: 0,
+          Status: "Draft",
+        };
+        db.invoices.push(invoice);
+      }
+      const lineItem = {
+        ServiceID: trial.ServiceID,
+        BatchID: enrollment.BatchID,
+        ScheduledHours: null,
+        AttendedHours: null,
+        Amount: rate?.Rate ?? 0,
+        Currency: enrollment.Currency,
+        Note: "One-month advance, new enrollment from Trial",
+      };
+      invoice.LineItems.push(lineItem);
+      const liINR = await lineItemINR(db, lineItem, year, month);
+      invoice.INRAmount = Math.round((invoice.INRAmount + liINR) * 100) / 100;
+      invoice.INRDue = invoice.INRAmount;
+      await refreshStudentTotal(db, invoice);
+    }
   }
 
   trial.ServiceAdded = true;

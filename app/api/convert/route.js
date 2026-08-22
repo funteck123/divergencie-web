@@ -84,13 +84,17 @@ export async function POST(req) {
   // Management UI hid the Convert button before the offer/trial was
   // actually accepted, so the real conversion was reachable directly
   // against this endpoint regardless. Interview's readiness signal is its
-  // own item reaching OfferAccepted; Trial has no literal "offer" but
-  // ServiceAdded (Management billed the real service after Feedback) is
-  // the equivalent commitment point.
+  // own item reaching OfferAccepted. Trial has no literal "offer", and
+  // its equivalent commitment point is Feedback being submitted (the
+  // trial actually happened and Management judged it worth enrolling) --
+  // NOT ServiceAdded, which is the trial-enroll route's own flag that
+  // only gets set AFTER this conversion, via app/api/trial-enroll/
+  // route.js's own requirement that Convert happen first. Gating on
+  // ServiceAdded here would make the two routes deadlock each other.
   if (oldUser.UserType === "TrialAcc") {
     const trialItem = db.trialItems.find((t) => t.TrialAccID === accountId);
-    if (!trialItem?.ServiceAdded) {
-      return NextResponse.json({ error: "This Trial can't be converted until a Service has been added." }, { status: 400 });
+    if (trialItem?.Status !== "FeedbackSubmitted") {
+      return NextResponse.json({ error: "This Trial can't be converted until Feedback has been submitted." }, { status: 400 });
     }
   } else {
     const interviewItem = db.interviewItems.find((i) => i.InterviewAccID === accountId);

@@ -459,14 +459,17 @@ function Pipeline() {
 
   // TKT-0113: Convert used to be clickable the moment a Trial/Interview
   // account existed, before the candidate had actually accepted anything.
-  // Interview's readiness signal is its own item reaching OfferAccepted;
-  // Trial has no literal "offer" but ServiceAdded (Management billed the
-  // real service after Feedback) is the equivalent commitment point.
+  // Interview's readiness signal is its own item reaching OfferAccepted.
+  // Trial has no literal "offer" -- its equivalent commitment point is
+  // Feedback being submitted, NOT ServiceAdded (that flag only gets set
+  // AFTER conversion, by app/api/trial-enroll/route.js, which itself
+  // requires the account already be Converted -- gating on it here would
+  // make Convert and Add Service deadlock each other).
   function conversionEligible(accountId) {
     const interviewItem = interviewItems.find((i) => i.InterviewAccID === accountId);
     if (interviewItem) return interviewItem.Status === "OfferAccepted";
     const trialItem = trialItems.find((t) => t.TrialAccID === accountId);
-    if (trialItem) return !!trialItem.ServiceAdded;
+    if (trialItem) return trialItem.Status === "FeedbackSubmitted";
     return true;
   }
 
@@ -987,7 +990,8 @@ function Accounts() {
   const [busySaveIds, setBusySaveIds] = useState(new Set());
   // TKT-0113: Convert needs to know whether the account has actually
   // reached the accepted/committed point (Interview: OfferAccepted;
-  // Trial: ServiceAdded), mirroring the same check now applied in
+  // Trial: Feedback submitted -- not ServiceAdded, which only gets set
+  // AFTER conversion), mirroring the same check now applied in
   // Pipeline's own Convert control.
   const [convertEligible, setConvertEligible] = useState({});
 
@@ -1001,7 +1005,7 @@ function Accounts() {
       const acc = pendingAccs[i];
       const interviewItem = b.interviewItems?.find((it) => it.InterviewAccID === acc.UserID);
       const trialItem = b.trialItems?.find((t) => t.TrialAccID === acc.UserID);
-      eligible[acc.UserID] = interviewItem ? interviewItem.Status === "OfferAccepted" : trialItem ? !!trialItem.ServiceAdded : true;
+      eligible[acc.UserID] = interviewItem ? interviewItem.Status === "OfferAccepted" : trialItem ? trialItem.Status === "FeedbackSubmitted" : true;
     });
     setConvertEligible(eligible);
   }
