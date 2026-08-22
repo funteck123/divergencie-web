@@ -285,7 +285,15 @@ function Body({ user }) {
           <tbody>
             {paySort.sorted.map((p) => (
               <tr key={p.PaycheckID}>
-                <td>{p.Month}/{p.Year}</td>
+                <td>
+                  {p.Month}/{p.Year}
+                  {/* TKT-0107: SentAt existed on the record already, never shown here. */}
+                  {p.SentAt && (
+                    <div className="text-xs" style={{ color: "var(--muted)" }}>
+                      Sent {formatDate(p.SentAt)}
+                    </div>
+                  )}
+                </td>
                 <td>
                   {Array.isArray(p.LineItems) ? (
                     <div className="space-y-1">
@@ -303,7 +311,14 @@ function Body({ user }) {
                 <td>{p.ConvertedDue != null ? `${data.user.Currency || "INR"} ${p.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
                   {p.StaffReceivedFlag ? (
-                    <span className="badge badge-good">Received ✓</span>
+                    <span className="flex flex-col gap-1">
+                      <span className="badge badge-good">Received ✓</span>
+                      {p.ReceivedAt && (
+                        <span className="text-xs" style={{ color: "var(--muted)" }}>
+                          {formatDate(p.ReceivedAt)}
+                        </span>
+                      )}
+                    </span>
                   ) : (
                     <button
                       className="btn-ghost"

@@ -188,7 +188,15 @@ function Body({ user }) {
           <tbody>
             {data.invoices.map((i) => (
               <tr key={i.InvoiceID}>
-                <td>{i.Month}/{i.Year}</td>
+                <td>
+                  {i.Month}/{i.Year}
+                  {/* TKT-0107: SentAt existed on the record already, never shown here. */}
+                  {i.SentAt && (
+                    <div className="text-xs" style={{ color: "var(--muted)" }}>
+                      Sent {formatDate(i.SentAt)}
+                    </div>
+                  )}
+                </td>
                 <td>{i.Currency || "INR"} {i.Amount}</td>
                 <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
                 <td>{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>

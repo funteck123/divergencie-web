@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatDate } from "@/lib/formatDate";
 
 // Marking an invoice paid requires a payment-proof attachment (receipt,
 // bank transfer screenshot, etc.), enforced here by disabling the confirm
@@ -13,16 +14,26 @@ export default function InvoicePaidControl({ invoice, onMarkUnpaid, onConfirmPai
 
   if (invoice.StudentPaidFlag) {
     return (
-      <span className="flex items-center gap-2">
-        <span className="badge badge-good">Paid ✓</span>
-        {invoice.PaymentProofPath && (
-          <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/proof?invoiceId=${invoice.InvoiceID}`} target="_blank" rel="noreferrer">
-            View proof
-          </a>
+      <span className="flex flex-col gap-1">
+        <span className="flex items-center gap-2">
+          <span className="badge badge-good">Paid ✓</span>
+          {invoice.PaymentProofPath && (
+            <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/proof?invoiceId=${invoice.InvoiceID}`} target="_blank" rel="noreferrer">
+              View proof
+            </a>
+          )}
+          <button className="btn-ghost" onClick={() => onMarkUnpaid(invoice.InvoiceID)}>
+            Mark as unpaid
+          </button>
+        </span>
+        {/* TKT-0107: PaidAt existed on the record already (added for
+            Management's own Billing table in TKT-0033) but was never
+            surfaced to the person who actually paid it. */}
+        {invoice.PaidAt && (
+          <span className="text-xs" style={{ color: "var(--muted)" }}>
+            Paid {formatDate(invoice.PaidAt)}
+          </span>
         )}
-        <button className="btn-ghost" onClick={() => onMarkUnpaid(invoice.InvoiceID)}>
-          Mark as unpaid
-        </button>
       </span>
     );
   }

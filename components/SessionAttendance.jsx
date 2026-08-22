@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/client";
 import { MiniAttendanceForm } from "@/components/ScheduleCalendar";
+import { formatDateTime } from "@/lib/formatDate";
 
 // TKT-0037: shown when a session's chip is expanded (via ScheduleCalendar's
 // `renderExpanded` prop). Fetches GET /api/attendance?scheduleItemId=X on
@@ -125,8 +126,14 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
                   <span>{r.LoggedDuration}h</span>
                   <span style={{ color: "var(--muted)" }}>
                     by {r.LoggedBy === person.userId ? "self" : nameOf(r.LoggedBy)}
-                    {r.AcceptedForBilling === false ? " — not used for billing" : ""}
+                    {r.AcceptedForBilling === false ? ", not used for billing" : ""}
                   </span>
+                  {/* TKT-0107: LoggedAt existed on the record already, never shown here. */}
+                  {r.LoggedAt && (
+                    <span className="text-xs" style={{ color: "var(--muted)" }}>
+                      {formatDateTime(r.LoggedAt)}
+                    </span>
+                  )}
                   {isManagement && r.AcceptedForBilling === false && (
                     <button className="btn-ghost" onClick={() => markCorrect(r.AttendanceID)}>
                       Mark correct

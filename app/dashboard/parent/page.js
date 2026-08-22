@@ -281,7 +281,15 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
         <tbody>
           {invSort.sorted.map((i) => (
             <tr key={i.InvoiceID}>
-              <td>{i.Month}/{i.Year}</td>
+              <td>
+                {i.Month}/{i.Year}
+                {/* TKT-0107: SentAt existed on the record already, never shown here. */}
+                {i.SentAt && (
+                  <div className="text-xs" style={{ color: "var(--muted)" }}>
+                    Sent {formatDate(i.SentAt)}
+                  </div>
+                )}
+              </td>
               <td>
                 {Array.isArray(i.LineItems) ? (
                   <div className="space-y-1">
