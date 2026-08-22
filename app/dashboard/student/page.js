@@ -20,6 +20,20 @@ export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
 }
 
+// TKT-0039: the payment link (a fixed-price Stripe Payment Link, not a
+// per-amount Checkout Session — this app has no live Stripe API key, only
+// this static checkout URL) can't actually charge the right amount for a
+// given invoice. Tagging it with client_reference_id (the invoice this
+// click was for) and prefilled_email at least lets a payment be matched
+// back to the right invoice afterward, and saves retyping the email on
+// Stripe's own page. Both are real Stripe Payment Link query parameters.
+function stripePaymentLink(invoiceId, email) {
+  const url = new URL(process.env.NEXT_PUBLIC_STRIPE_GATEWAY);
+  url.searchParams.set("client_reference_id", invoiceId);
+  if (email) url.searchParams.set("prefilled_email", email);
+  return url.toString();
+}
+
 function Body({ user }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
@@ -272,14 +286,7 @@ function Body({ user }) {
       </div>
 
       <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">My Invoices</h2>
-          {process.env.NEXT_PUBLIC_STRIPE_GATEWAY && (
-            <a className="btn" href={process.env.NEXT_PUBLIC_STRIPE_GATEWAY} target="_blank" rel="noreferrer">
-              Pay by card online
-            </a>
-          )}
-        </div>
+        <h2 className="font-semibold mb-4">My Invoices</h2>
         <table>
           <thead>
             <tr>
@@ -314,9 +321,22 @@ function Body({ user }) {
                   />
                 </td>
                 <td>
-                  <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${i.InvoiceID}`} download>
-                    PDF
-                  </a>
+                  <span className="flex items-center gap-1 flex-wrap">
+                    {process.env.NEXT_PUBLIC_STRIPE_GATEWAY && !i.StudentPaidFlag && (
+                      <a
+                        className="btn-ghost"
+                        style={{ whiteSpace: "nowrap" }}
+                        href={stripePaymentLink(i.InvoiceID, data.user.Email)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Pay online
+                      </a>
+                    )}
+                    <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${i.InvoiceID}`} download>
+                      PDF
+                    </a>
+                  </span>
                 </td>
               </tr>
             ))}
