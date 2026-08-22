@@ -5062,37 +5062,81 @@ function rowMatchesStatusFilter(row, statusFilter, paidFlagKey) {
   }
 }
 
+const STATUS_FILTER_LABEL = {
+  all: "All statuses",
+  draft: "Draft",
+  "sent-unpaid": "Sent, unpaid",
+  "needs-approval": "Needs approval",
+  settled: "Settled",
+};
+
+// Progressive disclosure (Springer & Whittaker 2018): a search box and a
+// status dropdown sitting on the page at all times, even when nobody is
+// filtering, is exactly the "full detail upfront" the paper found doesn't
+// help -- collapsed behind one small toggle by default, active state still
+// visible on the toggle itself so a forgotten filter is never silent.
 function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, searchPlaceholder }) {
+  const [open, setOpen] = useState(false);
+  const active = !!search.trim() || statusFilter !== "all";
+
+  if (!open && !active) {
+    return (
+      <button type="button" className="btn-ghost text-sm mb-3" onClick={() => setOpen(true)}>
+        ⌕ Filter
+      </button>
+    );
+  }
+
   return (
-    <div className="flex gap-2 items-center flex-wrap mb-3">
-      <input
-        className="field"
-        style={{ maxWidth: 220 }}
-        type="text"
-        placeholder={searchPlaceholder}
-        value={search}
-        onChange={(e) => onSearch(e.target.value)}
-      />
-      <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
-        <option value="all">All statuses</option>
-        <option value="draft">Draft</option>
-        <option value="sent-unpaid">Sent, unpaid</option>
-        <option value="needs-approval">Needs approval</option>
-        <option value="settled">Settled</option>
-      </select>
+    <div className="mb-3">
+      <div className="flex gap-2 items-center flex-wrap">
+        <input
+          className="field"
+          style={{ maxWidth: 220 }}
+          type="text"
+          placeholder={searchPlaceholder}
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+        />
+        <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
+          {Object.entries(STATUS_FILTER_LABEL).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        {active && (
+          <button
+            type="button"
+            className="btn-ghost text-sm"
+            onClick={() => {
+              onSearch("");
+              onStatusFilter("all");
+              setOpen(false);
+            }}
+          >
+            Clear
+          </button>
+        )}
+        {!active && (
+          <button type="button" className="btn-ghost text-sm" onClick={() => setOpen(false)}>
+            Hide
+          </button>
+        )}
+      </div>
     </div>
   );
 }
 
 // Gorgilli 2025's "bulk/batch action" reduction of repetitive interaction
 // cost -- sending N drafts one at a time used to mean expanding a person,
-// clicking Send on every single row. One click from the (already-visible)
-// collapsed header instead.
+// clicking Send on every single row. Sits only in the expanded view, one
+// row above that person's own invoices/paychecks, so the collapsed header
+// stays just name/count/badges instead of also carrying an action button.
 function BulkSendButton({ draftRows, onPatch, idKey }) {
   const [busy, setBusy] = useState(false);
   if (draftRows.length === 0) return null;
-  async function send(e) {
-    e.stopPropagation();
+  async function send() {
     setBusy(true);
     try {
       await Promise.all(draftRows.map((r) => onPatch(r[idKey], { status: "Sent" })));
@@ -5101,12 +5145,7 @@ function BulkSendButton({ draftRows, onPatch, idKey }) {
     }
   }
   return (
-    <button
-      className="btn-ghost ml-2"
-      style={{ padding: "0.15rem 0.5rem", fontSize: "0.78rem" }}
-      disabled={busy}
-      onClick={send}
-    >
+    <button className="btn-ghost text-sm" disabled={busy} onClick={send}>
       {busy ? "Sending…" : `Send ${draftRows.length} draft${draftRows.length === 1 ? "" : "s"}`}
     </button>
   );
@@ -5217,13 +5256,19 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
                 >
                   {expanded ? "▾" : "▸"} {name} — {personRows.length} invoice{personRows.length === 1 ? "" : "s"}
                   <PersonStatusBadges personRows={personRows} paidFlagKey="StudentPaidFlag" />
-                  <BulkSendButton
-                    draftRows={personRows.filter((r) => r.Status === "Draft")}
-                    onPatch={onPatch}
-                    idKey="InvoiceID"
-                  />
                 </td>
               </tr>
+              {expanded && personRows.some((r) => r.Status === "Draft") && (
+                <tr>
+                  <td colSpan={10} style={{ padding: "0.4rem 0.6rem 0" }}>
+                    <BulkSendButton
+                      draftRows={personRows.filter((r) => r.Status === "Draft")}
+                      onPatch={onPatch}
+                      idKey="InvoiceID"
+                    />
+                  </td>
+                </tr>
+              )}
               {expanded &&
                 personRows.map((r) => (
                   <InvoiceRow
@@ -5726,13 +5771,19 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
                     >
                       {expanded ? "▾" : "▸"} {name} — {personRows.length} paycheck{personRows.length === 1 ? "" : "s"}
                       <PersonStatusBadges personRows={personRows} paidFlagKey="StaffReceivedFlag" />
-                      <BulkSendButton
-                        draftRows={personRows.filter((r) => r.Status === "Draft")}
-                        onPatch={onPatch}
-                        idKey="PaycheckID"
-                      />
                     </td>
                   </tr>
+                  {expanded && personRows.some((r) => r.Status === "Draft") && (
+                    <tr>
+                      <td colSpan={10} style={{ padding: "0.4rem 0.6rem 0" }}>
+                        <BulkSendButton
+                          draftRows={personRows.filter((r) => r.Status === "Draft")}
+                          onPatch={onPatch}
+                          idKey="PaycheckID"
+                        />
+                      </td>
+                    </tr>
+                  )}
                   {expanded &&
                     personRows.map((r) => (
                       <PaycheckRow
