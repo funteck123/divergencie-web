@@ -5,10 +5,11 @@ import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
 import { api, groupMatches } from "@/lib/client";
 import { formatDate } from "@/lib/formatDate";
+import { TIMEZONE_GROUPS } from "@/lib/timezones";
 
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
 
-// Each interview track only sees/books services open to its own Group —
+// Each interview track only sees/books services open to its own Group,
 // mirrors REQUIRED_GROUP in lib/scheduleGen.js (duplicated here rather than
 // imported since that module pulls in lib/db.js's fs usage, which can't be
 // bundled into a "use client" page).
@@ -44,7 +45,7 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // TKT-0021: no slot picker — this just records the request against a
+  // TKT-0021: no slot picker, this just records the request against a
   // Service. Management assigns the actual slot when approving it.
   async function requestInterview() {
     setError("");
@@ -88,6 +89,15 @@ function Body({ user }) {
     }
   }
 
+  // TKT-0120: candidate's own Personal Info / Documents, self-editable.
+  async function saveProfile(fields) {
+    const { user: updated } = await api("/api/interview-profile", {
+      method: "PATCH",
+      body: JSON.stringify({ userId: user.UserID, ...fields }),
+    });
+    setData((prev) => ({ ...prev, user: updated }));
+  }
+
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const eligibleServices = data.services.filter((s) => groupMatches(s.Group, INTERVIEW_GROUP[user.UserType] || "Staff"));
@@ -104,7 +114,7 @@ function Body({ user }) {
       <div className="card">
         <h2 className="font-semibold mb-4">My Interview</h2>
         {data.interviewItems.length === 0 && (
-          <p style={{ color: "var(--muted)" }}>No interview requested yet — request one below.</p>
+          <p style={{ color: "var(--muted)" }}>No interview requested yet, request one below.</p>
         )}
         {data.interviewItems.map((it) => {
           const slot = scheduleById[it.ScheduleItemID];
@@ -114,10 +124,10 @@ function Body({ user }) {
               <p>
                 {serviceName}
                 {/* TKT-0018: candidate sees the assigned date/time, not who's
-                    interviewing them — same reasoning as the removed slot
+                    interviewing them, same reasoning as the removed slot
                     picker (TKT-0021): instructor identity isn't the
                     candidate's decision to make or need to know in advance. */}
-                {slot ? ` — ${formatDate(slot.Date)} at ${slot.Time}` : ""}{" "}
+                {slot ? `, ${formatDate(slot.Date)} at ${slot.Time}` : ""}{" "}
                 <span className="badge badge-info">{it.Status}</span>
               </p>
 
@@ -183,6 +193,9 @@ function Body({ user }) {
         })}
       </div>
 
+      <PersonalInfoCard user={data.user} onSave={saveProfile} />
+      <DocumentsCard user={data.user} onSave={saveProfile} />
+
       <div className="card">
         <h2 className="font-semibold mb-4">Request an Interview</h2>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
@@ -230,5 +243,157 @@ function TaskForm({ onSubmit }) {
         {saving ? "Submitting…" : "Submit"}
       </button>
     </form>
+  );
+}
+
+// TKT-0120/TKT-0123: candidate's own Personal Info, self-editable via
+// PATCH /api/interview-profile. Email is pre-filled from the original
+// RegForm application where available (see app/api/regforms/route.js),
+// the candidate can still change it here.
+function PersonalInfoCard({ user, onSave }) {
+  const [email, setEmail] = useState(user.Email || "");
+  const [whatsappNumber, setWhatsappNumber] = useState(user.WhatsAppNumber || "");
+  const [timezone, setTimezone] = useState(user.Timezone || "Asia/Kolkata");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  async function save(e) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      await onSave({ email, whatsappNumber, timezone });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">Personal Info</h2>
+      <form onSubmit={save} className="space-y-3">
+        <div>
+          <label htmlFor="pi-name" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Name
+          </label>
+          <input id="pi-name" className="field" value={user.Name} disabled />
+        </div>
+        <div>
+          <label htmlFor="pi-email" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Email
+          </label>
+          <input id="pi-email" className="field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div>
+          <label htmlFor="pi-whatsapp" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            WhatsApp Number
+          </label>
+          <input id="pi-whatsapp" className="field" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} />
+        </div>
+        <div>
+          <label htmlFor="pi-country" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Country (Timezone)
+          </label>
+          <select id="pi-country" className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+            {TIMEZONE_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+        <button className="btn" type="submit" disabled={saving}>
+          {saving ? "Saving…" : "Save"}
+        </button>
+        {error && <p className="text-sm" style={{ color: "var(--bad)" }}>{error}</p>}
+      </form>
+    </div>
+  );
+}
+
+// TKT-0120: Resume is required, Cover Letter and Portfolio (up to 5 links)
+// are optional. All three are just Google Drive link fields, same
+// lightweight pattern as OfferLetterLink/TaskSubmissionLink elsewhere in
+// this app, no upload/storage of the actual files.
+function DocumentsCard({ user, onSave }) {
+  const [resumeUrl, setResumeUrl] = useState(user.ResumeURL || "");
+  const [coverLetterUrl, setCoverLetterUrl] = useState(user.CoverLetterURL || "");
+  const [portfolioLinks, setPortfolioLinks] = useState(
+    user.PortfolioLinks && user.PortfolioLinks.length > 0 ? user.PortfolioLinks : [""]
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  function setPortfolioLink(i, value) {
+    setPortfolioLinks((prev) => prev.map((l, idx) => (idx === i ? value : l)));
+  }
+
+  async function save(e) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      await onSave({ resumeUrl, coverLetterUrl, portfolioLinks });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">Documents</h2>
+      <form onSubmit={save} className="space-y-3">
+        <div>
+          <label htmlFor="doc-resume" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Resume (required, Google Drive link)
+          </label>
+          <input id="doc-resume" className="field" placeholder="https://drive.google.com/…" value={resumeUrl} onChange={(e) => setResumeUrl(e.target.value)} required />
+        </div>
+        <div>
+          <label htmlFor="doc-cover" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Cover Letter (optional, Google Drive link)
+          </label>
+          <input id="doc-cover" className="field" placeholder="https://drive.google.com/…" value={coverLetterUrl} onChange={(e) => setCoverLetterUrl(e.target.value)} />
+        </div>
+        <div>
+          <span className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
+            Portfolio (optional, up to 5 Google Drive links)
+          </span>
+          <div className="space-y-1">
+            {portfolioLinks.map((link, i) => (
+              <input
+                key={i}
+                className="field"
+                placeholder="https://drive.google.com/…"
+                value={link}
+                onChange={(e) => setPortfolioLink(i, e.target.value)}
+                aria-label={`Portfolio link ${i + 1}`}
+              />
+            ))}
+          </div>
+          {portfolioLinks.length < 5 && (
+            <button
+              type="button"
+              className="btn-ghost mt-1"
+              onClick={() => setPortfolioLinks((prev) => [...prev, ""])}
+            >
+              + Add another link
+            </button>
+          )}
+        </div>
+        <button className="btn" type="submit" disabled={saving}>
+          {saving ? "Saving…" : "Save"}
+        </button>
+        {error && <p className="text-sm" style={{ color: "var(--bad)" }}>{error}</p>}
+      </form>
+    </div>
   );
 }

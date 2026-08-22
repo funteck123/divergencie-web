@@ -69,12 +69,18 @@ export async function PATCH(req) {
     const { userType, prefix } = mapping;
     const userId = await nextId(db, prefix);
 
+    // TKT-0123: the applicant's Email was captured on the original
+    // registration form but never carried over to the real account,
+    // silently dropped at approval time. Auto-extracted as a starting
+    // default here; the candidate can still edit it via their own
+    // Personal Info section (see app/api/interview-profile/route.js).
     const user = {
       UserID: userId,
       UserType: userType,
       Name: form.Name,
       Status: "Active",
       Currency: "INR",
+      ...(form.Email ? { Email: form.Email } : {}),
     };
     const username = makeUsername(form.Name, db);
     const password = randomPassword();
