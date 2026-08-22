@@ -101,7 +101,15 @@ function Body({ user }) {
           return (
             <div key={t.TrialID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
               <p>
-                {slot ? `${formatDate(slot.Date)} at ${slot.Time} IST with ${slot.Facilitator}` : t.ScheduleItemID}{" "}
+                {/* TKT-0078: instructor identity isn't shown to the candidate
+                    before their session (same reasoning as TKT-0018) —
+                    batch name and timezone matter to them, who's teaching
+                    doesn't. BatchName is only set on slots auto-generated
+                    from a real Service occurrence; a manually-offered pool
+                    slot has none, so it's simply omitted for those. */}
+                {slot
+                  ? `${formatDate(slot.Date)} at ${slot.Time} IST${slot.BatchName ? ` · Batch ${slot.BatchName}` : ""}`
+                  : t.ScheduleItemID}{" "}
                 <span className="badge badge-info">{t.Status}</span>
               </p>
               {t.Status === "Pending" && (
