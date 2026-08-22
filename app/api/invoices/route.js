@@ -221,12 +221,38 @@ export async function POST(req) {
   if (action !== "generate") {
     return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
   }
-  const { year, month } = body;
+  // TKT-0110: "Rebuild Drafts" -- onlyStudentIds scopes generate to just
+  // the selected people (an empty/omitted array means everyone, the
+  // existing "Generate Drafts" behavior, unchanged); rebuild deletes their
+  // existing DRAFT records for this exact month first, so stale
+  // attendance/rate data doesn't linger in an already-generated line item
+  // that generate's own dedup logic would otherwise just skip over.
+  // Never touches a Sent invoice -- rebuilding only makes sense for drafts
+  // nobody has acted on yet.
+  const { year, month, onlyStudentIds, rebuild } = body;
   const y = Number(year);
   const m = Number(month);
   const db = await readDB();
 
-  const studentIds = new Set(db.users.filter((u) => u.UserType === "Student").map((u) => u.UserID));
+  if (rebuild) {
+    if (!Array.isArray(onlyStudentIds) || onlyStudentIds.length === 0) {
+      return NextResponse.json({ error: "onlyStudentIds is required to rebuild." }, { status: 400 });
+    }
+    const onlySet = new Set(onlyStudentIds);
+    const toDelete = db.invoices.filter(
+      (i) => i.Status === "Draft" && i.Year === y && i.Month === m && onlySet.has(i.StudentID)
+    );
+    if (toDelete.length > 0) {
+      db.invoices = db.invoices.filter((i) => !toDelete.includes(i));
+      await deleteRecords(db, [{ collection: "invoices", ids: toDelete.map((i) => i.InvoiceID) }]);
+    }
+  }
+
+  const studentIds = new Set(
+    db.users
+      .filter((u) => u.UserType === "Student" && (!onlyStudentIds || onlyStudentIds.includes(u.UserID)))
+      .map((u) => u.UserID)
+  );
   const studentEnrollments = db.enrollments.filter((e) => studentIds.has(e.UserID));
 
   const createdOneOffs = [];
@@ -367,16 +393,16 @@ export async function POST(req) {
   }
 
   await writeDB(db, ["invoices"]);
-  // One summary entry for the whole batch, not one per invoice/line item —
+  // One summary entry for the whole batch, not one per invoice/line item,
   // a monthly "Generate Drafts" run can touch dozens at once, and a
   // per-item audit entry for each would bury the log; ids are listed in
   // the snapshot for anyone who does need them.
   await logAudit({
     actorUserId: session.userId,
-    action: "generate",
+    action: rebuild ? "rebuild" : "generate",
     entityType: "Invoice",
     entityId: `${m}/${y}`,
-    summary: `Generated ${createdOneOffs.length} OneOff invoice(s) and ${createdLineItems.length} line item(s) across ${touchedInvoiceIds.size} invoice(s) for ${m}/${y}, skipped ${skipped.length} that would have billed $0`,
+    summary: `${rebuild ? "Rebuilt" : "Generated"} ${createdOneOffs.length} OneOff invoice(s) and ${createdLineItems.length} line item(s) across ${touchedInvoiceIds.size} invoice(s) for ${m}/${y}${rebuild ? ` (${onlyStudentIds.length} selected student(s), existing drafts deleted first)` : ""}, skipped ${skipped.length} that would have billed $0`,
     snapshot: { oneOffInvoiceIds: createdOneOffs.map((i) => i.InvoiceID), touchedInvoiceIds: [...touchedInvoiceIds], skipped },
   });
   // `created` kept as the combined list the Billing UI previously read for

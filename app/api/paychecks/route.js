@@ -143,20 +143,40 @@ export async function POST(req) {
     db.paychecks.push(paycheck);
     await refreshStaffTotal(db, paycheck);
     await writeDB(db, ["paychecks"]);
-    await logAudit({ actorUserId: session.userId, action: "create", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Manual paycheck for ${staffId}, ${m}/${y} — ${currency} ${paycheckAmount}`, snapshot: paycheck });
+    await logAudit({ actorUserId: session.userId, action: "create", entityType: "Paycheck", entityId: paycheck.PaycheckID, summary: `Manual paycheck for ${staffId}, ${m}/${y}, ${currency} ${paycheckAmount}`, snapshot: paycheck });
     return NextResponse.json({ paycheck });
   }
 
   if (action !== "generate") {
     return NextResponse.json({ error: "action must be generate or manual." }, { status: 400 });
   }
-  const { year, month } = body;
+  // TKT-0110: "Rebuild Drafts", mirrors the same addition in
+  // app/api/invoices/route.js. See that file's comment for the full
+  // reasoning: onlyStaffIds scopes generate, rebuild deletes existing
+  // DRAFT paychecks for those people/month first. Never touches Sent.
+  const { year, month, onlyStaffIds, rebuild } = body;
   const y = Number(year);
   const m = Number(month);
   const db = await readDB();
 
+  if (rebuild) {
+    if (!Array.isArray(onlyStaffIds) || onlyStaffIds.length === 0) {
+      return NextResponse.json({ error: "onlyStaffIds is required to rebuild." }, { status: 400 });
+    }
+    const onlySet = new Set(onlyStaffIds);
+    const toDelete = db.paychecks.filter(
+      (p) => p.Status === "Draft" && p.Year === y && p.Month === m && onlySet.has(p.StaffID)
+    );
+    if (toDelete.length > 0) {
+      db.paychecks = db.paychecks.filter((p) => !toDelete.includes(p));
+      await deleteRecords(db, [{ collection: "paychecks", ids: toDelete.map((p) => p.PaycheckID) }]);
+    }
+  }
+
   const staffIds = new Set(
-    db.users.filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType)).map((u) => u.UserID)
+    db.users
+      .filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType) && (!onlyStaffIds || onlyStaffIds.includes(u.UserID)))
+      .map((u) => u.UserID)
   );
   const staffEnrollments = db.enrollments.filter((e) => staffIds.has(e.UserID));
 
@@ -291,10 +311,10 @@ export async function POST(req) {
   await writeDB(db, ["paychecks"]);
   await logAudit({
     actorUserId: session.userId,
-    action: "generate",
+    action: rebuild ? "rebuild" : "generate",
     entityType: "Paycheck",
     entityId: `${m}/${y}`,
-    summary: `Generated ${createdOneOffs.length} OneOff paycheck(s) and ${createdLineItems.length} line item(s) across ${touchedPaycheckIds.size} paycheck(s) for ${m}/${y}, skipped ${skipped.length} that would have paid $0`,
+    summary: `${rebuild ? "Rebuilt" : "Generated"} ${createdOneOffs.length} OneOff paycheck(s) and ${createdLineItems.length} line item(s) across ${touchedPaycheckIds.size} paycheck(s) for ${m}/${y}${rebuild ? ` (${onlyStaffIds.length} selected staff, existing drafts deleted first)` : ""}, skipped ${skipped.length} that would have paid $0`,
     snapshot: { oneOffPaycheckIds: createdOneOffs.map((p) => p.PaycheckID), touchedPaycheckIds: [...touchedPaycheckIds], skipped },
   });
   const created = [...createdOneOffs, ...createdLineItems.map((c) => c.lineItem)];

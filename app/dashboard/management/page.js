@@ -4305,7 +4305,7 @@ function Billing() {
         <h2 className="font-semibold mb-4">Generate Drafts</h2>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
           Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount
-          is auto-converted using the exchange rate as of the 1st of the invoice/paycheck&apos;s own month —
+          is auto-converted using the exchange rate as of the 1st of the invoice/paycheck&apos;s own month,
           only INR Due is manually adjustable, for tracking partial payments.
         </p>
         <div className="flex gap-3 items-end flex-wrap">
@@ -4324,6 +4324,14 @@ function Billing() {
         {error && <p style={{ color: "var(--bad)" }} className="mt-2">{error}</p>}
         {summary && <p style={{ color: "var(--muted)" }} className="mt-2">{summary}</p>}
       </div>
+
+      <RebuildDrafts
+        users={users}
+        onDone={(msg) => {
+          setSummary(msg);
+          load();
+        }}
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         <ManualInvoiceForm
@@ -4396,6 +4404,111 @@ function Billing() {
 // on the backend (which fires against whatever already existed BEFORE
 // this request) can't mistake this form's own second/third checked
 // subject for a real duplicate.
+// TKT-0110: "Generate Drafts" never re-touches an existing line item once
+// created, so a Draft generated early in the month doesn't pick up
+// attendance/rate changes that happen later, it just gets silently
+// skipped by generate's own dedup check every time it's re-run. This is
+// the fix, an explicit person-by-person rebuild: delete the selected
+// people's existing DRAFT invoices/paychecks for the chosen month, then
+// regenerate them fresh with current data. Never touches a Sent record.
+function RebuildDrafts({ users, onDone }) {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [selected, setSelected] = useState(new Set());
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const people = users
+    .filter((u) => ["Student", "Teacher", "Staff", "Ambassador"].includes(u.UserType))
+    .sort((a, b) => a.Name.localeCompare(b.Name));
+
+  function toggle(userId) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(userId)) next.delete(userId);
+      else next.add(userId);
+      return next;
+    });
+    setConfirming(false);
+  }
+
+  async function rebuild() {
+    setBusy(true);
+    setError("");
+    try {
+      const studentIds = people.filter((p) => p.UserType === "Student" && selected.has(p.UserID)).map((p) => p.UserID);
+      const staffIds = people.filter((p) => p.UserType !== "Student" && selected.has(p.UserID)).map((p) => p.UserID);
+      const [invoiceRes, paycheckRes] = await Promise.all([
+        studentIds.length > 0
+          ? api("/api/invoices", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month), onlyStudentIds: studentIds, rebuild: true }) })
+          : null,
+        staffIds.length > 0
+          ? api("/api/paychecks", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month), onlyStaffIds: staffIds, rebuild: true }) })
+          : null,
+      ]);
+      const parts = [];
+      if (invoiceRes) parts.push(`${invoiceRes.created?.length || 0} invoice line item(s) rebuilt for ${studentIds.length} student(s)`);
+      if (paycheckRes) parts.push(`${paycheckRes.created?.length || 0} paycheck line item(s) rebuilt for ${staffIds.length} staff`);
+      onDone(parts.length > 0 ? `Rebuilt: ${parts.join(", ")}.` : "Nothing selected to rebuild.");
+      setSelected(new Set());
+      setConfirming(false);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-4">Rebuild Drafts</h2>
+      <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
+        For the selected people, deletes their existing DRAFT invoices/paychecks for this month and
+        regenerates them fresh with current attendance/rate data. Never touches a Sent record.
+      </p>
+      <div className="flex gap-3 items-end flex-wrap mb-3">
+        <div>
+          <label className="text-sm block" style={{ color: "var(--muted)" }}>Year</label>
+          <input className="field" type="number" value={year} onChange={(e) => setYear(e.target.value)} />
+        </div>
+        <div>
+          <label className="text-sm block" style={{ color: "var(--muted)" }}>Month</label>
+          <input className="field" type="number" min="1" max="12" value={month} onChange={(e) => setMonth(e.target.value)} />
+        </div>
+      </div>
+      <div style={{ maxHeight: 220, overflowY: "auto" }} className="mb-3">
+        {people.map((p) => (
+          <label key={p.UserID} className="flex items-center gap-2 text-sm" style={{ padding: "0.15rem 0" }}>
+            <input type="checkbox" checked={selected.has(p.UserID)} onChange={() => toggle(p.UserID)} />
+            {p.Name} <span style={{ color: "var(--muted)" }}>({p.UserType})</span>
+          </label>
+        ))}
+        {people.length === 0 && <p style={{ color: "var(--muted)" }}>No people found.</p>}
+      </div>
+      {!confirming ? (
+        <button className="btn" disabled={selected.size === 0} onClick={() => setConfirming(true)}>
+          Rebuild {selected.size > 0 ? `${selected.size} selected` : ""}
+        </button>
+      ) : (
+        <span className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm" style={{ color: "var(--bad)" }}>
+            This deletes {selected.size} person&apos;s existing draft(s) for {month}/{year} and regenerates them. Confirm?
+          </span>
+          <button className="btn" disabled={busy} onClick={rebuild}>
+            {busy ? "Rebuilding…" : "Yes, rebuild"}
+          </button>
+          <button className="btn-ghost" disabled={busy} onClick={() => setConfirming(false)}>
+            Cancel
+          </button>
+        </span>
+      )}
+      {error && <p style={{ color: "var(--bad)" }} className="mt-2">{error}</p>}
+    </div>
+  );
+}
+
 function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone }) {
   const now = new Date();
   const [personId, setPersonId] = useState("");
