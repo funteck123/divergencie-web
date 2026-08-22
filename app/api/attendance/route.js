@@ -177,6 +177,16 @@ export async function POST(req) {
   };
   db.attendanceItems.push(item);
   await writeDB(db, ["attendanceItems"]);
+  // TKT-0094: attendance create/edit never showed up in the audit log
+  // before this — only delete did.
+  await logAudit({
+    actorUserId: session.userId,
+    action: "create",
+    entityType: "AttendanceItem",
+    entityId: item.AttendanceID,
+    summary: `Logged ${item.Status} for ${userId} on ${scheduleItemId}${isSelf ? " (self)" : ""}`,
+    snapshot: item,
+  });
   return NextResponse.json({ attendanceItem: item });
 }
 
@@ -216,6 +226,8 @@ export async function PATCH(req) {
   const db = await readDB();
   const record = db.attendanceItems.find((a) => a.AttendanceID === attendanceId);
   if (!record) return NextResponse.json({ error: "Attendance record not found." }, { status: 404 });
+  const before = JSON.parse(JSON.stringify(record));
+  const edited = status !== undefined || loggedDuration !== undefined;
 
   if (status !== undefined) record.Status = status;
   if (loggedDuration !== undefined) record.LoggedDuration = Number(loggedDuration) || 0;
@@ -228,6 +240,18 @@ export async function PATCH(req) {
   record.ResolvedBy = session.userId;
   record.ResolvedAt = new Date().toISOString();
   await writeDB(db, ["attendanceItems"]);
+  // TKT-0094: attendance create/edit never showed up in the audit log
+  // before this — only delete did.
+  await logAudit({
+    actorUserId: session.userId,
+    action: "edit",
+    entityType: "AttendanceItem",
+    entityId: record.AttendanceID,
+    summary: edited
+      ? `Edited attendance record ${record.AttendanceID} (${before.Status}/${before.LoggedDuration}h → ${record.Status}/${record.LoggedDuration}h)`
+      : `Marked attendance record ${record.AttendanceID} correct for billing`,
+    snapshot: { before, after: record },
+  });
   return NextResponse.json({ attendanceItem: record });
 }
 
