@@ -5128,29 +5128,6 @@ function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, sear
   );
 }
 
-// Gorgilli 2025's "bulk/batch action" reduction of repetitive interaction
-// cost -- sending N drafts one at a time used to mean expanding a person,
-// clicking Send on every single row. Sits only in the expanded view, one
-// row above that person's own invoices/paychecks, so the collapsed header
-// stays just name/count/badges instead of also carrying an action button.
-function BulkSendButton({ draftRows, onPatch, idKey }) {
-  const [busy, setBusy] = useState(false);
-  if (draftRows.length === 0) return null;
-  async function send() {
-    setBusy(true);
-    try {
-      await Promise.all(draftRows.map((r) => onPatch(r[idKey], { status: "Sent" })));
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <button className="btn-ghost text-sm" disabled={busy} onClick={send}>
-      {busy ? "Sending…" : `Send ${draftRows.length} draft${draftRows.length === 1 ? "" : "s"}`}
-    </button>
-  );
-}
-
 function PersonStatusBadges({ personRows, paidFlagKey }) {
   const { draft, needsApproval, unpaid } = personStatusSummary(personRows, paidFlagKey);
   return (
@@ -5258,17 +5235,6 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
                   <PersonStatusBadges personRows={personRows} paidFlagKey="StudentPaidFlag" />
                 </td>
               </tr>
-              {expanded && personRows.some((r) => r.Status === "Draft") && (
-                <tr>
-                  <td colSpan={10} style={{ padding: "0.4rem 0.6rem 0" }}>
-                    <BulkSendButton
-                      draftRows={personRows.filter((r) => r.Status === "Draft")}
-                      onPatch={onPatch}
-                      idKey="InvoiceID"
-                    />
-                  </td>
-                </tr>
-              )}
               {expanded &&
                 personRows.map((r) => (
                   <InvoiceRow
@@ -5773,17 +5739,6 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
                       <PersonStatusBadges personRows={personRows} paidFlagKey="StaffReceivedFlag" />
                     </td>
                   </tr>
-                  {expanded && personRows.some((r) => r.Status === "Draft") && (
-                    <tr>
-                      <td colSpan={10} style={{ padding: "0.4rem 0.6rem 0" }}>
-                        <BulkSendButton
-                          draftRows={personRows.filter((r) => r.Status === "Draft")}
-                          onPatch={onPatch}
-                          idKey="PaycheckID"
-                        />
-                      </td>
-                    </tr>
-                  )}
                   {expanded &&
                     personRows.map((r) => (
                       <PaycheckRow
