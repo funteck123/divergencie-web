@@ -35,24 +35,31 @@ export default function InvoicePaidControl({ invoice, onMarkUnpaid, onConfirmPai
     );
   }
 
-  // TKT-0090: a bare native file input with no label or context next to a
-  // disabled "Confirm payment" button gave no indication of what file was
-  // expected. A visible label plus a real placeholder-style hint fixes
-  // that, same pattern as every other labeled form control in the app.
+  // TKT-0090: a bare native file input ("Choose File" / "No file chosen" —
+  // raw browser-default text with no styling and no context) next to a
+  // disabled "Confirm payment" button gave no real indication of what was
+  // expected. The native input itself is still here for its real file-
+  // picker behavior, just visually hidden and triggered by an actual
+  // labeled button instead of shown as-is; the chosen filename (or an
+  // explicit "no file chosen yet" prompt, styled like the rest of the app
+  // rather than the browser's own default wording) shows next to it.
   const fileInputId = `payment-proof-${invoice.InvoiceID}`;
   return (
     <span className="flex items-center gap-2 flex-wrap">
-      <span className="flex flex-col">
-        <label htmlFor={fileInputId} className="text-xs" style={{ color: "var(--muted)" }}>
-          Payment proof (receipt or screenshot)
+      <span className="flex items-center gap-2">
+        <label htmlFor={fileInputId} className="btn-ghost" style={{ whiteSpace: "nowrap", cursor: "pointer" }}>
+          Upload payment proof
         </label>
         <input
           id={fileInputId}
           type="file"
           accept="image/*,application/pdf"
-          style={{ maxWidth: 220, fontSize: "0.8em" }}
+          style={{ width: 1, height: 1, opacity: 0, overflow: "hidden", position: "fixed", left: -9999 }}
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
+        <span className="text-xs" style={{ color: file ? "var(--text-primary)" : "var(--muted)" }}>
+          {file ? file.name : "Receipt or screenshot — none selected yet"}
+        </span>
       </span>
       <button
         className="btn"
