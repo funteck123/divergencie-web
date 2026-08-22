@@ -2762,14 +2762,17 @@ function Services() {
                                 ))}
                               </select>
                             </label>
-                            <select className="field" style={{ maxWidth: 130 }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
-                              <option value="">Any of the above</option>
-                              {group.map((g) => (
-                                <option key={g} value={g}>
-                                  {g} only
-                                </option>
-                              ))}
-                            </select>
+                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                              Restrict to
+                              <select className="field" style={{ width: 160, display: "block" }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
+                                <option value="">Any of the above</option>
+                                {group.map((g) => (
+                                  <option key={g} value={g}>
+                                    {g} only
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
                             {b.rates.length > 1 && (
                               <button type="button" className="btn-ghost" onClick={() => removeRate(ci, bi, ri)}>
                                 ✕
