@@ -92,13 +92,16 @@ function TimezoneSelect({ value, onChange }) {
   );
 }
 
-// TKT-0028: an Occurrence's Facilitator either links to a real Teacher
-// account (dropdown — display name auto-syncs on save, can never drift
-// stale again) or stays plain free text (guest/placeholder instructor with
-// no account — the field's original, still fully-supported behavior).
+// TKT-0028: an Occurrence's Facilitator either links to a real account
+// (dropdown, display name auto-syncs on save, can never drift stale
+// again) or stays plain free text (guest/placeholder instructor with no
+// account, the field's original, still fully-supported behavior).
 // Selecting "Type a name instead…" clears the link and falls back to a
 // plain text input pre-filled with whatever name was last shown.
-function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers, onChange }) {
+// TKT-0117: candidateUsers is scoped by the caller to whichever account
+// type actually fits the context (Teacher for a cohort class, or the
+// Service's own role group -- e.g. Staff -- for a role-based service).
+function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candidateUsers, onChange }) {
   const isLinked = !!facilitatorUserId;
   if (isLinked) {
     return (
@@ -106,11 +109,11 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers, onChan
         className="field"
         value={facilitatorUserId}
         onChange={(e) => {
-          const teacher = teacherUsers.find((u) => u.UserID === e.target.value);
-          onChange({ facilitator: teacher?.Name || "", facilitatorUserId: teacher?.UserID || "" });
+          const picked = candidateUsers.find((u) => u.UserID === e.target.value);
+          onChange({ facilitator: picked?.Name || "", facilitatorUserId: picked?.UserID || "" });
         }}
       >
-        {teacherUsers.map((u) => (
+        {candidateUsers.map((u) => (
           <option key={u.UserID} value={u.UserID}>
             {u.Name}
           </option>
@@ -127,19 +130,19 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers, onChan
         value={facilitator}
         onChange={(e) => onChange({ facilitator: e.target.value, facilitatorUserId: "" })}
       />
-      {teacherUsers.length > 0 && (
+      {candidateUsers.length > 0 && (
         <select
           className="field"
           style={{ maxWidth: 40 }}
           value=""
-          title="Link to a Teacher account instead"
+          title="Link to an account instead"
           onChange={(e) => {
-            const teacher = teacherUsers.find((u) => u.UserID === e.target.value);
-            if (teacher) onChange({ facilitator: teacher.Name, facilitatorUserId: teacher.UserID });
+            const picked = candidateUsers.find((u) => u.UserID === e.target.value);
+            if (picked) onChange({ facilitator: picked.Name, facilitatorUserId: picked.UserID });
           }}
         >
           <option value="">🔗</option>
-          {teacherUsers.map((u) => (
+          {candidateUsers.map((u) => (
             <option key={u.UserID} value={u.UserID}>
               {u.Name}
             </option>
@@ -2082,17 +2085,26 @@ function Services() {
   }
 
   const [teacherUsers, setTeacherUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   async function load() {
     const [{ services }, { users }] = await Promise.all([api("/api/services"), api("/api/users")]);
     setServices(services);
     // TKT-0028: Occurrence's optional Facilitator-account link picks from
-    // real Teacher accounts only — Staff/Ambassador etc. can still be typed
-    // as free text (the field's original, still-supported behavior).
+    // real Teacher accounts only, for the cohort (Student/Teacher) editor
+    // below -- the class instructor is always a Teacher there. Staff/
+    // Ambassador etc. can still be typed as free text (the field's
+    // original, still-supported behavior).
     setTeacherUsers(users.filter((u) => u.UserType === "Teacher"));
+    setAllUsers(users);
   }
   useEffect(() => {
     load();
   }, []);
+  // TKT-0117: the role-based flat editor's Instructor field should offer
+  // accounts of the Service's own role group (a Staff service picks a
+  // Staff member, not a Teacher) -- unlike the cohort editor above, which
+  // always means a Teacher.
+  const roleUsers = allUsers.filter((u) => u.UserType === group[0]);
 
   function resetForm() {
     setEditingId(null);
@@ -2561,13 +2573,19 @@ function Services() {
                 Recurring occurrences
               </label>
               {flatOccurrences.map((o, oi) => (
-                <div key={oi} className="flex gap-2 items-center">
-                  <select className="field" value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-                      <option key={d}>{d}</option>
-                    ))}
-                  </select>
-                  <input className="field" type="time" value={o.time} onChange={(e) => updateFlatOcc(oi, "time", e.target.value)} />
+                <div key={oi} className="flex gap-2 items-end">
+                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                    Day
+                    <select className="field" style={{ display: "block" }} value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
+                      {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
+                        <option key={d}>{d}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                    Time
+                    <input className="field" style={{ display: "block" }} type="time" value={o.time} onChange={(e) => updateFlatOcc(oi, "time", e.target.value)} />
+                  </label>
                   <input
                     className="field"
                     type="number"
@@ -2579,13 +2597,18 @@ function Services() {
                   <FacilitatorInput
                     facilitator={o.facilitator}
                     facilitatorUserId={o.facilitatorUserId}
-                    teacherUsers={teacherUsers}
+                    teacherUsers={roleUsers}
                     onChange={({ facilitator, facilitatorUserId }) => {
                       updateFlatOcc(oi, "facilitator", facilitator);
                       updateFlatOcc(oi, "facilitatorUserId", facilitatorUserId);
                     }}
                   />
-                  <TimezoneSelect value={o.timezone} onChange={(v) => updateFlatOcc(oi, "timezone", v)} />
+                  <div>
+                    <label className="text-xs block" style={{ color: "var(--muted)" }}>
+                      Timezone
+                    </label>
+                    <TimezoneSelect value={o.timezone} onChange={(v) => updateFlatOcc(oi, "timezone", v)} />
+                  </div>
                   {flatOccurrences.length > 1 && (
                     <button type="button" className="btn-ghost" onClick={() => removeFlatOcc(oi)}>
                       ✕
@@ -2707,13 +2730,19 @@ function Services() {
                           Recurring occurrences
                         </label>
                         {b.occurrences.map((o, oi) => (
-                          <div key={oi} className="flex gap-2 items-center">
-                            <select className="field" value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
-                              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
-                                <option key={d}>{d}</option>
-                              ))}
-                            </select>
-                            <input className="field" type="time" value={o.time} onChange={(e) => updateOcc(ci, bi, oi, "time", e.target.value)} />
+                          <div key={oi} className="flex gap-2 items-end">
+                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                              Day
+                              <select className="field" style={{ display: "block" }} value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
+                                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
+                                  <option key={d}>{d}</option>
+                                ))}
+                              </select>
+                            </label>
+                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                              Time
+                              <input className="field" style={{ display: "block" }} type="time" value={o.time} onChange={(e) => updateOcc(ci, bi, oi, "time", e.target.value)} />
+                            </label>
                             <input
                               className="field"
                               type="number"
@@ -2731,7 +2760,12 @@ function Services() {
                                 updateOcc(ci, bi, oi, "facilitatorUserId", facilitatorUserId);
                               }}
                             />
-                            <TimezoneSelect value={o.timezone} onChange={(v) => updateOcc(ci, bi, oi, "timezone", v)} />
+                            <div>
+                              <label className="text-xs block" style={{ color: "var(--muted)" }}>
+                                Timezone
+                              </label>
+                              <TimezoneSelect value={o.timezone} onChange={(v) => updateOcc(ci, bi, oi, "timezone", v)} />
+                            </div>
                             {b.occurrences.length > 1 && (
                               <button type="button" className="btn-ghost" onClick={() => removeOcc(ci, bi, oi)}>
                                 ✕
