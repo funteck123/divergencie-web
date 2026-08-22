@@ -35,14 +35,25 @@ export default function InvoicePaidControl({ invoice, onMarkUnpaid, onConfirmPai
     );
   }
 
+  // TKT-0090: a bare native file input with no label or context next to a
+  // disabled "Confirm payment" button gave no indication of what file was
+  // expected. A visible label plus a real placeholder-style hint fixes
+  // that, same pattern as every other labeled form control in the app.
+  const fileInputId = `payment-proof-${invoice.InvoiceID}`;
   return (
     <span className="flex items-center gap-2 flex-wrap">
-      <input
-        type="file"
-        accept="image/*,application/pdf"
-        style={{ maxWidth: 150, fontSize: "0.8em" }}
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-      />
+      <span className="flex flex-col">
+        <label htmlFor={fileInputId} className="text-xs" style={{ color: "var(--muted)" }}>
+          Payment proof (receipt or screenshot)
+        </label>
+        <input
+          id={fileInputId}
+          type="file"
+          accept="image/*,application/pdf"
+          style={{ maxWidth: 220, fontSize: "0.8em" }}
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+      </span>
       <button
         className="btn"
         disabled={!file || busy}
