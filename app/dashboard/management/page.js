@@ -490,10 +490,11 @@ function Pipeline() {
   const pendingSort = useSort(pendingRows, "_date");
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {error && <p style={{ color: "var(--bad)" }} className="md:col-span-2">{error}</p>}
+    <div className="grid gap-6">
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       <div className="card">
         <h2 className="font-semibold mb-4">Trial Pipeline</h2>
+        <div className="overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -541,10 +542,12 @@ function Pipeline() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div className="card">
         <h2 className="font-semibold mb-4">Interview Pipeline</h2>
+        <div className="overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -620,10 +623,12 @@ function Pipeline() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
-      <div className="card md:col-span-2">
+      <div className="card">
         <h2 className="font-semibold mb-4">Pending Requests</h2>
+        <div className="overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -697,6 +702,7 @@ function Pipeline() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
