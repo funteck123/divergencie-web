@@ -247,6 +247,13 @@ th {
 tbody tr:hover td {
   background: var(--panel-2);
 }
+/* The last column (usually row actions) otherwise sits at the exact same
+   0.6rem padding as every other cell, but action buttons fill more of
+   their cell's width than typical text content, making that padding read
+   as noticeably tighter against the panel edge than the rest of the row. */
+th:last-child, td:last-child {
+  padding-right: 1rem;
+}
 /* Right-aligned, fixed-width digits for a column of numbers meant to be
    compared at a glance (currency, hours) — the convention any financial
    table uses, and this app's numeric columns had none of it: left-aligned

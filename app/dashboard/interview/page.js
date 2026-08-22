@@ -189,7 +189,7 @@ function Body({ user }) {
           Pick the service you&apos;re interviewing for. No need to choose a time. A slot will be assigned once
           your request is approved.
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
             <option value="">Select a service…</option>
             {eligibleServices.map((s) => (
