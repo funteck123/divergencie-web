@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { requireManagement, requireSession } from "@/lib/authz";
 import { isEnrollmentActiveForMonth } from "@/lib/billing";
+import { logAudit } from "@/lib/logging";
 
 // A meaningful chunk of ScheduleItems (generated before per-Batch schedules
 // existed) have no BatchID recorded at all, even though the Service they
@@ -202,4 +203,29 @@ export async function PATCH(req) {
   record.ResolvedAt = new Date().toISOString();
   await writeDB(db, ["attendanceItems"]);
   return NextResponse.json({ attendanceItem: record });
+}
+
+// TKT-0048: no delete path existed for a single AttendanceItem before
+// this. A different situation from PATCH above's "both records stay as
+// permanent history" (that's about resolving a genuine billing
+// disagreement between two real logs) — this is for a record left
+// dangling after its own ScheduleItem was removed (e.g. legacy/orphan
+// cleanup), where there's no session left for it to be history of.
+// body: { attendanceId }
+export async function DELETE(req) {
+  const { session, error: authError } = requireManagement(req);
+  if (authError) return authError;
+
+  const { attendanceId } = await req.json();
+  if (!attendanceId) return NextResponse.json({ error: "attendanceId is required." }, { status: 400 });
+
+  const db = await readDB();
+  const index = db.attendanceItems.findIndex((a) => a.AttendanceID === attendanceId);
+  if (index === -1) return NextResponse.json({ error: "Attendance record not found." }, { status: 404 });
+
+  const [deleted] = db.attendanceItems.splice(index, 1);
+  await deleteRecords(db, [{ collection: "attendanceItems", ids: [attendanceId] }]);
+  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "AttendanceItem", entityId: attendanceId, summary: `Deleted attendance record ${attendanceId}`, snapshot: deleted });
+
+  return NextResponse.json({ ok: true });
 }

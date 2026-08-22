@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { ensureScheduleGenerated, isSlotBooked, requiredGroupForBookingType, groupMatches, normalizeGroup, sortByDateTime, BOOKING_TYPES } from "@/lib/scheduleGen";
 import { requireSession, requireManagement } from "@/lib/authz";
+import { logAudit } from "@/lib/logging";
 
 export async function GET(req) {
   const { error } = requireSession(req);
@@ -88,4 +89,30 @@ export async function PATCH(req) {
   await writeDB(db, ["scheduleItems"]);
 
   return NextResponse.json({ scheduleItem: item });
+}
+
+// TKT-0048: no delete path existed for a single ScheduleItem before this,
+// only GET/POST/PATCH. Added for cleaning up legacy/orphan slots (no
+// BatchID, generated before per-Batch schedules existed) — same
+// leaf-record deletion pattern as every other single-item DELETE in this
+// app (invoices, paychecks, apikeys): Management-only, no extra guard,
+// since deleting one calendar slot is low blast radius compared to
+// deleting a whole Service or Enrollment.
+// body: { scheduleId }
+export async function DELETE(req) {
+  const { session, error: authError } = requireManagement(req);
+  if (authError) return authError;
+
+  const { scheduleId } = await req.json();
+  if (!scheduleId) return NextResponse.json({ error: "scheduleId is required." }, { status: 400 });
+
+  const db = await readDB();
+  const index = db.scheduleItems.findIndex((s) => s.ScheduleID === scheduleId);
+  if (index === -1) return NextResponse.json({ error: "Schedule item not found." }, { status: 404 });
+
+  const [deleted] = db.scheduleItems.splice(index, 1);
+  await deleteRecords(db, [{ collection: "scheduleItems", ids: [scheduleId] }]);
+  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "ScheduleItem", entityId: scheduleId, summary: `Deleted schedule item ${scheduleId}`, snapshot: deleted });
+
+  return NextResponse.json({ ok: true });
 }
