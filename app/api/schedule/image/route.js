@@ -58,6 +58,23 @@ export async function GET(req) {
   if (user.UserType === "Teacher") role = "teacherRole";
   if (user.UserType === "Staff") role = "staff";
   const viewerTimezone = normalizeTimezone(user.Timezone);
+  // TKT-0106: the template's "Batch:" label is baked into the base PNG for
+  // Teacher, so leaving the value blank (TKT-0041's original call, since a
+  // teacher can be enrolled across several batches at once and any single
+  // one would misrepresent the rest) left a visibly empty field on every
+  // Teacher's schedule image. "Multiple" is honest without picking a
+  // misleading single winner.
+  function teacherBatchLabel() {
+    const names = new Set();
+    for (const e of db.enrollments.filter((en) => en.UserID === userId)) {
+      const service = db.services.find((s) => s.ServiceID === e.ServiceID);
+      const batch = service ? batchesOf(service).find((b) => b.BatchID === e.BatchID) : null;
+      if (batch?.BatchName) names.add(batch.BatchName);
+    }
+    if (names.size === 0) return "None";
+    if (names.size === 1) return [...names][0];
+    return "Multiple";
+  }
   const entity = {
     name: user.Name,
     role,
@@ -68,12 +85,9 @@ export async function GET(req) {
     // here). It now shows the student's own profile Course field instead
     // (e.g. "IGCSE"), the same general-course label Management already
     // sets on the account. Staff keep showing their Department in the same
-    // template slot. Teacher shows nothing here (see below). TKT-0041
-    // originally derived this from the teacher's enrolled Batch, but a
-    // teacher can be enrolled across several batches at once, so any
-    // single value shown here would misrepresent the rest. Left blank
-    // rather than showing a partial or misleading list.
-    className: user.UserType === "Staff" ? user.Department || "" : user.UserType === "Student" ? user.Course || "" : "",
+    // template slot. Teacher shows its enrolled batch name(s), or
+    // "Multiple" (see teacherBatchLabel above).
+    className: user.UserType === "Staff" ? user.Department || "" : user.UserType === "Student" ? user.Course || "" : teacherBatchLabel(),
   };
   const entries = buildEntries(db, userId, viewerTimezone);
 
