@@ -47,6 +47,55 @@ export default function ManagementDashboard() {
   return <DashboardShell allowedType="Management">{(user) => <Body user={user} />}</DashboardShell>;
 }
 
+// Visual-refinement pass: replaces window.confirm() at every delete call
+// site (Service, Enrollment, Invoice, Paycheck) with an inline two-step
+// confirm matching this app's own existing pattern (RebuildDrafts,
+// ApprovePaymentControl) instead of an unstyled native dialog that blocks
+// the JS thread and breaks visual continuity with the rest of the page.
+// Also used to add a confirm step to Guide deletion, which previously had
+// none at all.
+function ConfirmButton({ label, confirmText, confirmLabel = "Yes, delete", busyLabel = "Deleting…", onConfirm, className = "btn-ghost", style, disabled }) {
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  if (confirming) {
+    return (
+      <span className="flex items-center gap-1 flex-wrap">
+        {confirmText && (
+          <span className="text-xs" style={{ color: "var(--bad)" }}>
+            {confirmText}
+          </span>
+        )}
+        <button
+          className="btn"
+          style={{ background: "var(--bad)" }}
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              await onConfirm();
+            } finally {
+              setBusy(false);
+              setConfirming(false);
+            }
+          }}
+        >
+          {busy ? busyLabel : confirmLabel}
+        </button>
+        <button className="btn-ghost" disabled={busy} onClick={() => setConfirming(false)}>
+          Cancel
+        </button>
+      </span>
+    );
+  }
+
+  return (
+    <button className={className} style={style} disabled={disabled} onClick={() => setConfirming(true)}>
+      {label}
+    </button>
+  );
+}
+
 function Body() {
   const [tab, setTab] = useState("Applications");
   return (
@@ -2423,7 +2472,6 @@ function Services() {
   }
 
   async function deleteService(serviceId) {
-    if (!window.confirm("Delete this Service? Only possible if no enrollment has ever referenced it.")) return;
     setError("");
     setBusyServiceIds((prev) => new Set(prev).add(serviceId));
     try {
@@ -3086,14 +3134,13 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete, busyServiceI
             <button className="btn-ghost" onClick={() => onEdit(row.service)}>
               Edit
             </button>
-            <button
-              className="btn-ghost"
+            <ConfirmButton
+              label="Delete"
+              confirmText="Delete this Service? Only possible if no enrollment has ever referenced it."
               style={{ color: "var(--bad)" }}
               disabled={busyServiceIds?.has(row.ServiceID)}
-              onClick={() => onDelete(row.ServiceID)}
-            >
-              {busyServiceIds?.has(row.ServiceID) ? "Deleting…" : "Delete"}
-            </button>
+              onConfirm={() => onDelete(row.ServiceID)}
+            />
           </td>
         </tr>
 
@@ -4314,13 +4361,11 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
   }
 
   async function remove() {
-    if (window.confirm(`Remove ${nameOf(enrollment.UserID)}'s enrollment in ${serviceNameOf(enrollment.ServiceID)}?`)) {
-      setRemoving(true);
-      try {
-        await onDelete(enrollment.EnrolmentID);
-      } finally {
-        setRemoving(false);
-      }
+    setRemoving(true);
+    try {
+      await onDelete(enrollment.EnrolmentID);
+    } finally {
+      setRemoving(false);
     }
   }
 
@@ -4395,11 +4440,47 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
         </button>
-        <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
-          {removing ? "Removing…" : "Delete"}
-        </button>
+        <ConfirmButton
+          label="Delete"
+          confirmText={`Remove ${nameOf(enrollment.UserID)}'s enrollment in ${serviceNameOf(enrollment.ServiceID)}?`}
+          confirmLabel="Yes, remove"
+          busyLabel="Removing…"
+          style={{ color: "var(--bad)" }}
+          disabled={removing}
+          onConfirm={remove}
+        />
       </td>
     </tr>
+  );
+}
+
+// Visual-refinement pass: the skipped-item list used to be dumped inline
+// as one long comma-joined sentence appended to the summary text --
+// unreadable past a handful of skipped subjects. The count now shows
+// inline; the actual list of who/what was skipped sits behind a "show
+// details" toggle, one press deeper, matching the progressive-disclosure
+// principle the rest of this pass is built around.
+function SummaryMessage({ summary }) {
+  const [showDetails, setShowDetails] = useState(false);
+  const { text, skippedItems } = summary;
+  return (
+    <div className="mt-2">
+      <p style={{ color: "var(--muted)" }}>{text}</p>
+      {skippedItems.length > 0 && (
+        <>
+          <button type="button" className="btn-ghost" style={{ padding: "0 0.3rem" }} onClick={() => setShowDetails((v) => !v)}>
+            {showDetails ? "▾ Hide" : "▸ Show"} skipped items ({skippedItems.length})
+          </button>
+          {showDetails && (
+            <ul className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+              {skippedItems.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+    </div>
   );
 }
 
@@ -4414,7 +4495,12 @@ function Billing() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [error, setError] = useState("");
-  const [summary, setSummary] = useState("");
+  // Visual-refinement pass: summary used to be a single string, with the
+  // full skipped-item list dumped inline as one long comma-joined
+  // sentence -- unreadable past a handful of items. Now { text,
+  // skippedItems }, skippedItems rendered behind a "show details" toggle
+  // (SummaryMessage below) instead of always inline.
+  const [summary, setSummary] = useState(null);
   const [generating, setGenerating] = useState(false);
 
   async function load() {
@@ -4444,19 +4530,20 @@ function Billing() {
 
   async function generate() {
     setError("");
-    setSummary("");
+    setSummary(null);
     setGenerating(true);
     try {
       const [{ created: createdInvoices, skipped: skippedInvoices }, { created: createdPaychecks, skipped: skippedPaychecks }] = await Promise.all([
         api("/api/invoices", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
         api("/api/paychecks", { method: "POST", body: JSON.stringify({ action: "generate", year: Number(year), month: Number(month) }) }),
       ]);
-      const parts = [`Generated ${createdInvoices?.length || 0} invoice${createdInvoices?.length === 1 ? "" : "s"}, ${createdPaychecks?.length || 0} paycheck${createdPaychecks?.length === 1 ? "" : "s"}.`];
+      let text = `Generated ${createdInvoices?.length || 0} invoice${createdInvoices?.length === 1 ? "" : "s"}, ${createdPaychecks?.length || 0} paycheck${createdPaychecks?.length === 1 ? "" : "s"}.`;
+      const skippedItems = [...(skippedInvoices || []), ...(skippedPaychecks || [])].map((s) => `${s.studentId || s.staffId}/${s.serviceId}`);
       const skippedCount = (skippedInvoices?.length || 0) + (skippedPaychecks?.length || 0);
       if (skippedCount) {
-        parts.push(`⚠ Skipped ${skippedInvoices?.length || 0} invoice(s) and ${skippedPaychecks?.length || 0} paycheck(s) that would have billed $0 (no scheduled hours) — no $0 record was created for these. Check the Batch's schedule or its billing type: ${[...(skippedInvoices || []), ...(skippedPaychecks || [])].map((s) => `${s.studentId || s.staffId}/${s.serviceId}`).join(", ")}.`);
+        text += ` ⚠ Skipped ${skippedInvoices?.length || 0} invoice(s) and ${skippedPaychecks?.length || 0} paycheck(s) that would have billed $0 (no scheduled hours), check the Batch's schedule or its billing type.`;
       }
-      setSummary(parts.join(" "));
+      setSummary({ text, skippedItems });
       load();
     } catch (e) {
       setError(e.message);
@@ -4493,7 +4580,15 @@ function Billing() {
   return (
     <div className="space-y-6">
       <div className="card">
-        <h2 className="font-semibold mb-4">Generate Drafts</h2>
+        <h2 className="font-semibold">Generate Drafts</h2>
+        {/* Visual-refinement pass: four adjacent billing-action cards (this
+            one, Rebuild Drafts, and the two manual forms below) had no
+            guidance on which one applies to which situation -- a new
+            Management user has to infer the difference from the button
+            label alone. */}
+        <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
+          Use for: the normal monthly run, covers everyone with an active enrollment.
+        </p>
         <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
           Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount
           is auto-converted using the exchange rate as of the 1st of the invoice/paycheck&apos;s own month,
@@ -4513,13 +4608,13 @@ function Billing() {
           </button>
         </div>
         {error && <p style={{ color: "var(--bad)" }} className="mt-2">{error}</p>}
-        {summary && <p style={{ color: "var(--muted)" }} className="mt-2">{summary}</p>}
+        {summary && <SummaryMessage summary={summary} />}
       </div>
 
       <RebuildDrafts
         users={users}
         onDone={(msg) => {
-          setSummary(msg);
+          setSummary({ text: msg, skippedItems: [] });
           load();
         }}
       />
@@ -4540,6 +4635,7 @@ function Billing() {
         />
         <ManualBillingForm
           title="Create Paycheck (manual)"
+          hint="Use for: one-off exceptions Generate Drafts won't create, a custom amount for a specific subject this month."
           personLabel="Staff"
           people={users.filter((u) => ["Teacher", "Staff", "Ambassador"].includes(u.UserType))}
           services={services}
@@ -4654,7 +4750,10 @@ function RebuildDrafts({ users, onDone }) {
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">Rebuild Drafts</h2>
+      <h2 className="font-semibold">Rebuild Drafts</h2>
+      <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
+        Use for: fixing stale drafts after an attendance or rate correction. Won&apos;t catch anyone new, Generate Drafts already covers them.
+      </p>
       <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
         For the selected people, deletes their existing DRAFT invoices/paychecks for this month and
         regenerates them fresh with current attendance/rate data. Never touches a Sent record.
@@ -4756,7 +4855,10 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">Create Invoice (manual)</h2>
+      <h2 className="font-semibold">Create Invoice (manual)</h2>
+      <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
+        Use for: one-off exceptions Generate Drafts won&apos;t create, a custom amount for a specific subject this month.
+      </p>
       <form onSubmit={submit} className="space-y-3">
         <select className="field" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
           <option value="">Select Student…</option>
@@ -4803,7 +4905,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
   );
 }
 
-function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
+function ManualBillingForm({ title, hint, personLabel, people, services, onSubmit }) {
   const now = new Date();
   const [personId, setPersonId] = useState("");
   const [serviceId, setServiceId] = useState("");
@@ -4831,7 +4933,12 @@ function ManualBillingForm({ title, personLabel, people, services, onSubmit }) {
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">{title}</h2>
+      <h2 className="font-semibold">{title}</h2>
+      {hint && (
+        <p className="text-xs mb-3" style={{ color: "var(--accent)" }}>
+          {hint}
+        </p>
+      )}
       <form onSubmit={submit} className="space-y-3">
         <select className="field" value={personId} onChange={(e) => setPersonId(e.target.value)} required>
           <option value="">Select {personLabel}…</option>
@@ -4888,6 +4995,41 @@ function groupInvoicesByPerson(rows, nameOf) {
   return [...byPerson.entries()]
     .map(([studentId, rows]) => ({ studentId, name: nameOf(studentId), rows }))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Visual-refinement pass: the collapsed accordion header used to show
+// only a count ("N invoices"), zero signal about whether those were
+// Draft, Sent-but-unpaid, or awaiting approval -- finding "who hasn't
+// paid" meant expanding every single person. paidFlagKey is
+// "StudentPaidFlag" for invoices, "StaffReceivedFlag" for paychecks.
+function personStatusSummary(personRows, paidFlagKey) {
+  const draft = personRows.filter((r) => r.Status === "Draft").length;
+  const needsApproval = personRows.filter((r) => r[paidFlagKey] && Number(r.INRDue) > 0).length;
+  const unpaid = personRows.filter((r) => r.Status === "Sent" && !r[paidFlagKey]).length;
+  return { draft, needsApproval, unpaid };
+}
+
+function PersonStatusBadges({ personRows, paidFlagKey }) {
+  const { draft, needsApproval, unpaid } = personStatusSummary(personRows, paidFlagKey);
+  return (
+    <span className="ml-2" style={{ fontWeight: "normal" }}>
+      {draft > 0 && (
+        <span className="badge badge-pending ml-1">
+          {draft} draft
+        </span>
+      )}
+      {unpaid > 0 && (
+        <span className="badge badge-info ml-1">
+          {unpaid} unpaid
+        </span>
+      )}
+      {needsApproval > 0 && (
+        <span className="badge badge-bad ml-1">
+          {needsApproval} needs approval
+        </span>
+      )}
+    </span>
+  );
 }
 
 function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
@@ -4952,6 +5094,7 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
                   onClick={() => togglePerson(studentId)}
                 >
                   {expanded ? "▾" : "▸"} {name} — {personRows.length} invoice{personRows.length === 1 ? "" : "s"}
+                  <PersonStatusBadges personRows={personRows} paidFlagKey="StudentPaidFlag" />
                 </td>
               </tr>
               {expanded &&
@@ -5046,13 +5189,11 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
   }
 
   async function remove() {
-    if (window.confirm("Delete this invoice? This cannot be undone.")) {
-      setRemoving(true);
-      try {
-        await onDelete(row.InvoiceID);
-      } finally {
-        setRemoving(false);
-      }
+    setRemoving(true);
+    try {
+      await onDelete(row.InvoiceID);
+    } finally {
+      setRemoving(false);
     }
   }
 
@@ -5112,18 +5253,29 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
         <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td className="num">INR {Number(row.INRAmount).toFixed(2)}</td>
+        <td className="num">{Number(row.INRAmount).toFixed(2)}</td>
         <td className="num">
           {editingDue ? (
-            <input
-              className="field"
-              style={{ width: 90 }}
-              type="number"
-              value={inrDue}
-              onChange={(e) => setInrDue(e.target.value)}
-            />
+            // Visual-refinement pass: Save/Cancel used to render in the far
+            // Actions column, three columns away from the input they act
+            // on -- moved next to the field itself.
+            <span className="flex items-center gap-1 justify-end flex-wrap">
+              <input
+                className="field"
+                style={{ width: 90 }}
+                type="number"
+                value={inrDue}
+                onChange={(e) => setInrDue(e.target.value)}
+              />
+              <button className="btn" style={{ padding: "0.25rem 0.6rem" }} disabled={saving} onClick={saveDue}>
+                {saving ? "…" : "Save"}
+              </button>
+              <button className="btn-ghost" style={{ padding: "0.25rem 0.6rem" }} disabled={saving} onClick={cancelDue}>
+                Cancel
+              </button>
+            </span>
           ) : (
-            `INR ${Number(row.INRDue).toFixed(2)}`
+            Number(row.INRDue).toFixed(2)
           )}
         </td>
         <td>
@@ -5161,16 +5313,7 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
           <span className="flex items-center gap-1 flex-wrap table-actions">
             {needsApproval ? (
               <ApprovePaymentControl onApprove={(dueValue) => onPatch(row.InvoiceID, { inrDue: dueValue })} />
-            ) : editingDue ? (
-              <>
-                <button className="btn" disabled={saving} onClick={saveDue}>
-                  {saving ? "Saving…" : "Save"}
-                </button>
-                <button className="btn-ghost" disabled={saving} onClick={cancelDue}>
-                  Cancel
-                </button>
-              </>
-            ) : (
+            ) : editingDue ? null : (
               <>
                 <button className="btn-ghost" onClick={() => setEditingDue(true)}>
                   Edit Due
@@ -5187,9 +5330,13 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${row.InvoiceID}`} download>
                   PDF
                 </a>
-                <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
-                  {removing ? "Deleting…" : "Delete"}
-                </button>
+                <ConfirmButton
+                  label="Delete"
+                  confirmText="Delete this invoice? This cannot be undone."
+                  style={{ color: "var(--bad)" }}
+                  disabled={removing}
+                  onConfirm={remove}
+                />
               </>
             )}
           </span>
@@ -5293,7 +5440,14 @@ function LineItemRow({ invoiceId, lineItem, index, serviceName, onPatchLineItem 
       </td>
       <td className="num">
         {editing ? (
-          <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          // Visual-refinement pass: the currency label used to disappear
+          // the moment editing started, the one piece of context (what
+          // currency this number even is) missing exactly when it's most
+          // needed.
+          <span className="flex items-center gap-1 justify-end">
+            <span style={{ color: "var(--muted)" }}>{lineItem.Currency || "INR"}</span>
+            <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          </span>
         ) : (
           `${lineItem.Currency || "INR"} ${lineItem.Amount}`
         )}
@@ -5416,6 +5570,7 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
                       onClick={() => togglePerson(staffId)}
                     >
                       {expanded ? "▾" : "▸"} {name} — {personRows.length} paycheck{personRows.length === 1 ? "" : "s"}
+                      <PersonStatusBadges personRows={personRows} paidFlagKey="StaffReceivedFlag" />
                     </td>
                   </tr>
                   {expanded &&
@@ -5460,13 +5615,11 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
   }
 
   async function remove() {
-    if (window.confirm("Delete this paycheck? This cannot be undone.")) {
-      setRemoving(true);
-      try {
-        await onDelete(row.PaycheckID);
-      } finally {
-        setRemoving(false);
-      }
+    setRemoving(true);
+    try {
+      await onDelete(row.PaycheckID);
+    } finally {
+      setRemoving(false);
     }
   }
 
@@ -5526,18 +5679,29 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
         </td>
         <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
-        <td className="num">INR {Number(row.INRAmount).toFixed(2)}</td>
+        <td className="num">{Number(row.INRAmount).toFixed(2)}</td>
         <td className="num">
           {editingDue ? (
-            <input
-              className="field"
-              style={{ width: 90 }}
-              type="number"
-              value={inrDue}
-              onChange={(e) => setInrDue(e.target.value)}
-            />
+            // Visual-refinement pass: Save/Cancel used to render in the far
+            // Actions column, three columns away from the input they act
+            // on -- moved next to the field itself.
+            <span className="flex items-center gap-1 justify-end flex-wrap">
+              <input
+                className="field"
+                style={{ width: 90 }}
+                type="number"
+                value={inrDue}
+                onChange={(e) => setInrDue(e.target.value)}
+              />
+              <button className="btn" style={{ padding: "0.25rem 0.6rem" }} disabled={saving} onClick={saveDue}>
+                {saving ? "…" : "Save"}
+              </button>
+              <button className="btn-ghost" style={{ padding: "0.25rem 0.6rem" }} disabled={saving} onClick={cancelDue}>
+                Cancel
+              </button>
+            </span>
           ) : (
-            `INR ${Number(row.INRDue).toFixed(2)}`
+            Number(row.INRDue).toFixed(2)
           )}
         </td>
         <td>
@@ -5568,16 +5732,7 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
           <span className="flex items-center gap-1 flex-wrap table-actions">
             {needsApproval ? (
               <ApprovePaymentControl onApprove={(dueValue) => onPatch(row.PaycheckID, { inrDue: dueValue })} />
-            ) : editingDue ? (
-              <>
-                <button className="btn" disabled={saving} onClick={saveDue}>
-                  {saving ? "Saving…" : "Save"}
-                </button>
-                <button className="btn-ghost" disabled={saving} onClick={cancelDue}>
-                  Cancel
-                </button>
-              </>
-            ) : (
+            ) : editingDue ? null : (
               <>
                 <button className="btn-ghost" onClick={() => setEditingDue(true)}>
                   Edit Due
@@ -5594,9 +5749,13 @@ function PaycheckRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/paychecks/pdf?paycheckId=${row.PaycheckID}`} download>
                   PDF
                 </a>
-                <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
-                  {removing ? "Deleting…" : "Delete"}
-                </button>
+                <ConfirmButton
+                  label="Delete"
+                  confirmText="Delete this paycheck? This cannot be undone."
+                  style={{ color: "var(--bad)" }}
+                  disabled={removing}
+                  onConfirm={remove}
+                />
               </>
             )}
           </span>
@@ -5700,7 +5859,14 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
       </td>
       <td className="num">
         {editing ? (
-          <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          // Visual-refinement pass: the currency label used to disappear
+          // the moment editing started, the one piece of context (what
+          // currency this number even is) missing exactly when it's most
+          // needed.
+          <span className="flex items-center gap-1 justify-end">
+            <span style={{ color: "var(--muted)" }}>{lineItem.Currency || "INR"}</span>
+            <input className="field" style={{ width: 90 }} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          </span>
         ) : (
           `${lineItem.Currency || "INR"} ${lineItem.Amount}`
         )}
@@ -6247,9 +6413,13 @@ function GuideRow({ guide, onUpdate, onDelete }) {
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
         </button>
-        <button className="btn-ghost" style={{ color: "var(--bad)" }} disabled={removing} onClick={remove}>
-          {removing ? "Deleting…" : "Delete"}
-        </button>
+        <ConfirmButton
+          label="Delete"
+          confirmText={`Delete the guide "${guide.Name}"?`}
+          style={{ color: "var(--bad)" }}
+          disabled={removing}
+          onConfirm={remove}
+        />
       </div>
     </div>
   );
