@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
+import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, groupMatches } from "@/lib/client";
 import { amountDueInOwnCurrency } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
@@ -17,7 +18,6 @@ function Body({ user }) {
   const [scheduleById, setScheduleById] = useState({});
   const [serviceId, setServiceId] = useState("");
   const [requesting, setRequesting] = useState(false);
-  const [busyInvoiceIds, setBusyInvoiceIds] = useState(new Set());
 
   async function load() {
     const [bundle, { scheduleItems }] = await Promise.all([
@@ -62,21 +62,36 @@ function Body({ user }) {
     }));
   }
 
-  async function payInvoice(invoiceId) {
-    setBusyInvoiceIds((prev) => new Set(prev).add(invoiceId));
+  // TKT-0091: this used to PATCH status: "Paid" directly, a Management-only
+  // field -- the request was always rejected for a real Trial account, so
+  // the invoice's Status could never actually change. Switched to the same
+  // self-report-then-Management-confirms pattern already used by the
+  // Student dashboard (studentPaidFlag + a payment-proof upload), the
+  // established correct behavior per TKT-0089.
+  async function setInvoicePaid(invoiceId, paid) {
+    setError("");
     try {
-      const res = await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId, status: "Paid" }) });
+      const res = await api("/api/invoices", { method: "PATCH", body: JSON.stringify({ invoiceId, studentPaidFlag: paid }) });
       setData((prev) => ({
         ...prev,
-        invoices: prev.invoices.map((i) => (i.InvoiceID === invoiceId ? res.invoice : i)),
+        invoices: prev.invoices.map((i) => (i.InvoiceID === res.invoice.InvoiceID ? res.invoice : i)),
       }));
-    } finally {
-      setBusyInvoiceIds((prev) => {
-        const next = new Set(prev);
-        next.delete(invoiceId);
-        return next;
-      });
+    } catch (e) {
+      setError(e.message);
     }
+  }
+
+  async function confirmPaid(invoiceId, file) {
+    const form = new FormData();
+    form.append("invoiceId", invoiceId);
+    form.append("file", file);
+    const res = await fetch("/api/invoices/mark-paid", { method: "POST", body: form });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || "Could not confirm payment.");
+    setData((prev) => ({
+      ...prev,
+      invoices: prev.invoices.map((i) => (i.InvoiceID === body.invoice.InvoiceID ? body.invoice : i)),
+    }));
   }
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
@@ -178,17 +193,15 @@ function Body({ user }) {
                 <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
                 <td>{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
-                  <span className={`badge ${i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
+                  <span className={`badge ${i.Status === "Sent" || i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
                 </td>
                 <td>
                   {i.Status === "Sent" && (
-                    <button
-                      className="btn"
-                      disabled={busyInvoiceIds.has(i.InvoiceID)}
-                      onClick={() => payInvoice(i.InvoiceID)}
-                    >
-                      {busyInvoiceIds.has(i.InvoiceID) ? "Marking…" : "Mark as paid"}
-                    </button>
+                    <InvoicePaidControl
+                      invoice={i}
+                      onMarkUnpaid={(id) => setInvoicePaid(id, false)}
+                      onConfirmPaid={confirmPaid}
+                    />
                   )}
                 </td>
               </tr>
