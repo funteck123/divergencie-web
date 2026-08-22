@@ -3890,7 +3890,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-6 md:grid-cols-2 items-start">
       <div className="card">
         <h2 className="font-semibold mb-4">Enroll a {title} into Service(s)</h2>
         <form onSubmit={submit} className="space-y-3">
@@ -5584,7 +5584,7 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
 
   return (
     <tr>
-      <td>{t.TicketID}</td>
+      <td style={{ whiteSpace: "nowrap" }}>{t.TicketID}</td>
       <td>{nameOf(t.SenderUserID)}</td>
       <td style={{ maxWidth: 320 }}>
         {editing ? (

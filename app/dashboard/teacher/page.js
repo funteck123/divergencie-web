@@ -287,9 +287,15 @@ function Body({ user }) {
               <tr key={p.PaycheckID}>
                 <td>{p.Month}/{p.Year}</td>
                 <td>
-                  {Array.isArray(p.LineItems)
-                    ? p.LineItems.map((li) => serviceNameOf(li.ServiceID, li.BatchID)).join(", ")
-                    : serviceNameOf(p.ServiceID, p.BatchID)}
+                  {Array.isArray(p.LineItems) ? (
+                    <div className="space-y-1">
+                      {p.LineItems.map((li, idx) => (
+                        <div key={li.LineItemID || idx}>{serviceNameOf(li.ServiceID, li.BatchID)}</div>
+                      ))}
+                    </div>
+                  ) : (
+                    serviceNameOf(p.ServiceID, p.BatchID)
+                  )}
                 </td>
                 <td>{Array.isArray(p.LineItems) ? p.LineItems.reduce((sum, li) => sum + (Number(li.AttendedHours) || 0), 0) : p.AttendedHours}</td>
                 <td>{p.Currency || "INR"} {p.Amount}</td>
