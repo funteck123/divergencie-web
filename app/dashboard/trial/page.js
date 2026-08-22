@@ -82,7 +82,9 @@ function Body({ user }) {
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
   const myTrials = data.trialItems;
-  const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Student"));
+  // TKT-0071: Book services shouldn't be trialable — a Trial is for
+  // sampling a live class (Course), not a one-off resource purchase.
+  const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Student") && s.Type !== "Book");
   const slotsForService = serviceId ? data.availableTrialSlots.filter((s) => s.ServiceID === serviceId) : [];
 
   return (
