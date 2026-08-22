@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
 import { isValidTimezone, normalizeTimezone } from "@/lib/timezones";
 import { requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -403,4 +403,55 @@ export async function PATCH(req) {
     snapshot: { before, after: user },
   });
   return NextResponse.json({ user });
+}
+
+// No delete path existed for a User before this — accounts are normally
+// meant to stay forever as billing/attendance history, so this is
+// deliberately narrow: it only removes an account that has NO real history
+// anywhere (enrollments, invoices, paychecks, attendance, trial/interview
+// records, or a Parent still pointing at it as a StudentID). Built for
+// cleaning up disposable test accounts created during UI verification —
+// anything with real history is refused outright rather than force-deleted.
+// body: { userId }
+function userHasHistory(db, userId) {
+  return (
+    db.enrollments.some((e) => e.UserID === userId) ||
+    db.invoices.some((i) => i.StudentID === userId) ||
+    db.paychecks.some((p) => p.StaffID === userId) ||
+    db.attendanceItems.some((a) => a.UserID === userId || a.LoggedBy === userId) ||
+    db.trialItems.some((t) => t.TrialAccID === userId) ||
+    db.interviewItems.some((i) => i.InterviewAccID === userId) ||
+    db.users.some((u) => u.UserType === "Parent" && (u.StudentIDs || []).includes(userId))
+  );
+}
+
+export async function DELETE(req) {
+  const { session, error: authError } = requireManagement(req);
+  if (authError) return authError;
+
+  const { userId } = await req.json();
+  if (!userId) return NextResponse.json({ error: "userId is required." }, { status: 400 });
+
+  const db = await readDB();
+  const index = db.users.findIndex((u) => u.UserID === userId);
+  if (index === -1) return NextResponse.json({ error: "User not found." }, { status: 404 });
+
+  if (userHasHistory(db, userId)) {
+    return NextResponse.json(
+      { error: "This account has real history (enrollment, billing, attendance, or a Parent link) and can't be deleted." },
+      { status: 400 }
+    );
+  }
+
+  const [deletedUser] = db.users.splice(index, 1);
+  const credIndex = db.credentials.findIndex((c) => c.UserID === userId);
+  const deletedCred = credIndex !== -1 ? db.credentials.splice(credIndex, 1)[0] : null;
+
+  await deleteRecords(db, [
+    { collection: "users", ids: [userId] },
+    ...(deletedCred ? [{ collection: "credentials", ids: [deletedCred.UserID] }] : []),
+  ]);
+  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "User", entityId: userId, summary: `Deleted ${deletedUser.UserType} "${deletedUser.Name}"`, snapshot: deletedUser });
+
+  return NextResponse.json({ ok: true });
 }
