@@ -10,7 +10,7 @@ const TERMS =
   "All sales are final, and no refunds or exchanges are offered—please review your order carefully " +
   "before confirming. Payments must be made by the due date, with penalties incurred for late payments. " +
   "DivergenCIE Coaching is not liable for incorrect payments. By making payment, you agree to these terms.\n\n" +
-  "For any delays or issues, please notify us at divergenCIE@outlook.com. Let us help you get A*. We care!";
+  "For any delays or issues, please notify us at finance@divergencie.co.uk. Let us help you get A*. We care!";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
