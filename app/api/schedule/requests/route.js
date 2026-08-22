@@ -43,12 +43,11 @@ export async function GET(req) {
 }
 
 // body: { type: "Trial"|"TeacherInterview"|"StaffInterview"|"AmbassadorInterview", id, action: "approve" | "reject", scheduleId? }
-// scheduleId is required when approving an Interview request (TKT-0021: the
-// requester never picked a slot themselves — this is where Management
-// assigns one, either an existing open-pool slot or one freshly created via
-// POST /api/schedule just before this call). Ignored for Trial (its
-// ScheduleItemID was already set when the requester picked it) and for
-// reject (no slot needed).
+// scheduleId is required when approving a Trial or Interview request
+// (TKT-0080/TKT-0021: the requester never picked a slot themselves — this
+// is where Management assigns one, either an existing open-pool slot or
+// one freshly created via POST /api/schedule just before this call).
+// Ignored for reject (no slot needed).
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
@@ -73,10 +72,25 @@ export async function PATCH(req) {
       return NextResponse.json({ trialItem: item });
     }
 
-    // Approving a Trial slot only schedules the session — no billing happens
-    // here. A Trial exists to decide whether to add the Service to the
-    // Student account; billing only starts if/when Management does that via
-    // POST /api/trial-enroll, after feedback comes in.
+    // TKT-0080: the requester never picked a slot themselves anymore —
+    // Management assigns one here, same as Interview below. Approving only
+    // schedules the session — no billing happens here. A Trial exists to
+    // decide whether to add the Service to the Student account; billing
+    // only starts if/when Management does that via POST /api/trial-enroll,
+    // after feedback comes in.
+    if (!scheduleId) {
+      return NextResponse.json({ error: "scheduleId is required to approve a Trial request." }, { status: 400 });
+    }
+    const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
+    if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
+    if (slot.ServiceID !== item.ServiceID) {
+      return NextResponse.json({ error: "That slot isn't for the same Service this request is for." }, { status: 400 });
+    }
+    if (isSlotBooked(db, scheduleId)) {
+      return NextResponse.json({ error: "That slot is already booked." }, { status: 409 });
+    }
+
+    item.ScheduleItemID = scheduleId;
     item.Status = "Scheduled";
     await writeDB(db, ["trialItems"]);
     return NextResponse.json({ trialItem: item });

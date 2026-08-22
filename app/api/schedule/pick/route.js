@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
-import { serviceGroupOf, requiredGroupForBookingType, groupMatches, BOOKING_TYPES } from "@/lib/scheduleGen";
+import { requiredGroupForBookingType, groupMatches, BOOKING_TYPES } from "@/lib/scheduleGen";
 import { requireSelfOrManagement } from "@/lib/authz";
 
 // body:
-//   Trial:    { userId, type: "Trial", scheduleId } — self-service, picks a
-//             specific open-pool slot directly, same as always.
+//   Trial:    { userId, type: "Trial", serviceId } — TKT-0080: no slot
+//             picker for Trial accounts anymore either (matches Interview's
+//             existing pattern below, TKT-0021). This only records the
+//             request against a Service; Management assigns the actual
+//             slot (an existing open one, or a newly created one via POST
+//             /api/schedule) when approving it via PATCH
+//             /api/schedule/requests.
 //   Interview: { userId, type: "TeacherInterview"|"StaffInterview"|
 //             "AmbassadorInterview", serviceId } — TKT-0021: no slot picker
 //             for Interview accounts anymore. This only records the request
@@ -18,7 +23,7 @@ import { requireSelfOrManagement } from "@/lib/authz";
 // actually locks a slot (see isSlotBooked). This route only records a
 // Pending request.
 export async function POST(req) {
-  const { scheduleId, serviceId, userId, type } = await req.json();
+  const { serviceId, userId, type } = await req.json();
   const { error } = requireSelfOrManagement(req, userId);
   if (error) return error;
 
@@ -29,11 +34,11 @@ export async function POST(req) {
   const db = await readDB();
 
   if (type === "Trial") {
-    const slot = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
-    if (!slot) return NextResponse.json({ error: "Slot not found." }, { status: 404 });
+    const service = db.services.find((s) => s.ServiceID === serviceId);
+    if (!service) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
     const requiredGroup = requiredGroupForBookingType(type);
-    if (!groupMatches(serviceGroupOf(db, slot.ServiceID), requiredGroup)) {
+    if (!groupMatches(service.Group, requiredGroup)) {
       return NextResponse.json(
         { error: `${type} accounts can only book ${requiredGroup}-open services.` },
         { status: 400 }
@@ -41,16 +46,16 @@ export async function POST(req) {
     }
 
     const alreadyRequested = db.trialItems.some(
-      (t) => t.ScheduleItemID === scheduleId && t.TrialAccID === userId && t.Status !== "Rejected"
+      (t) => t.ServiceID === serviceId && t.TrialAccID === userId && t.Status !== "Rejected"
     );
     if (alreadyRequested) {
-      return NextResponse.json({ error: "You already requested this slot." }, { status: 409 });
+      return NextResponse.json({ error: "You already have a request in progress for this service." }, { status: 409 });
     }
     const item = {
       TrialID: await nextId(db, "TRI"),
       TrialAccID: userId,
-      ScheduleItemID: scheduleId,
-      ServiceID: slot.ServiceID,
+      ScheduleItemID: "",
+      ServiceID: serviceId,
       Feedback: "",
       Status: "Pending",
       ServiceAdded: false,

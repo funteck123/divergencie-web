@@ -16,7 +16,7 @@ function Body({ user }) {
   const [error, setError] = useState("");
   const [scheduleById, setScheduleById] = useState({});
   const [serviceId, setServiceId] = useState("");
-  const [busyScheduleIds, setBusyScheduleIds] = useState(new Set());
+  const [requesting, setRequesting] = useState(false);
   const [busyInvoiceIds, setBusyInvoiceIds] = useState(new Set());
 
   async function load() {
@@ -34,23 +34,23 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function book(scheduleId) {
+  // TKT-0080: no slot picker — this just records the request against a
+  // Service, same pattern as Interview (TKT-0021). Management assigns the
+  // actual slot when approving it.
+  async function requestTrial() {
     setError("");
-    setBusyScheduleIds((prev) => new Set(prev).add(scheduleId));
+    setRequesting(true);
     try {
       const res = await api("/api/schedule/pick", {
         method: "POST",
-        body: JSON.stringify({ scheduleId, userId: user.UserID, type: "Trial" }),
+        body: JSON.stringify({ serviceId, userId: user.UserID, type: "Trial" }),
       });
+      setServiceId("");
       setData((prev) => ({ ...prev, trialItems: [...prev.trialItems, res.trialItem] }));
     } catch (e) {
       setError(e.message);
     } finally {
-      setBusyScheduleIds((prev) => {
-        const next = new Set(prev);
-        next.delete(scheduleId);
-        return next;
-      });
+      setRequesting(false);
     }
   }
 
@@ -85,7 +85,9 @@ function Body({ user }) {
   // TKT-0071: Book services shouldn't be trialable — a Trial is for
   // sampling a live class (Course), not a one-off resource purchase.
   const eligibleServices = data.services.filter((s) => groupMatches(s.Group, "Student") && s.Type !== "Book");
-  const slotsForService = serviceId ? data.availableTrialSlots.filter((s) => s.ServiceID === serviceId) : [];
+  const requestedServiceIds = new Set(
+    myTrials.filter((t) => t.Status !== "Rejected").map((t) => t.ServiceID)
+  );
 
   return (
     <div className="space-y-6">
@@ -95,7 +97,7 @@ function Body({ user }) {
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Trial Sessions</h2>
-        {myTrials.length === 0 && <p style={{ color: "var(--muted)" }}>No sessions booked yet — pick a slot below.</p>}
+        {myTrials.length === 0 && <p style={{ color: "var(--muted)" }}>No trial requested yet — request one below.</p>}
         {myTrials.map((t) => {
           const slot = scheduleById[t.ScheduleItemID];
           return (
@@ -134,52 +136,25 @@ function Body({ user }) {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold mb-4">Available Trial Slots</h2>
-        <select className="field mb-3" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
-          <option value="">Select a service…</option>
-          {eligibleServices.map((s) => (
-            <option key={s.ServiceID} value={s.ServiceID}>
-              {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
-            </option>
-          ))}
-        </select>
-        {serviceId && (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Instructor</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {slotsForService.map((s) => (
-                <tr key={s.ScheduleID}>
-                  <td>{formatDate(s.Date)}</td>
-                  <td>{s.Time}</td>
-                  <td>{s.Facilitator}</td>
-                  <td>
-                    <button
-                      className="btn"
-                      disabled={busyScheduleIds.has(s.ScheduleID)}
-                      onClick={() => book(s.ScheduleID)}
-                    >
-                      {busyScheduleIds.has(s.ScheduleID) ? "Booking…" : "Book"}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {slotsForService.length === 0 && (
-                <tr>
-                  <td colSpan={4} style={{ color: "var(--muted)" }}>
-                    No open slots for this service right now — check back later.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+        <h2 className="font-semibold mb-4">Request a Trial</h2>
+        <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
+          Pick the service you&apos;d like to trial. No need to choose a time. A slot will be assigned once your
+          request is approved.
+        </p>
+        <div className="flex gap-3">
+          <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+            <option value="">Select a service…</option>
+            {eligibleServices.map((s) => (
+              <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
+                {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                {requestedServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
+              </option>
+            ))}
+          </select>
+          <button className="btn" disabled={!serviceId || requesting} onClick={requestTrial}>
+            {requesting ? "Requesting…" : "Request Trial"}
+          </button>
+        </div>
       </div>
 
       <div className="card">

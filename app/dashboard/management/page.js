@@ -467,19 +467,20 @@ function Pipeline() {
   const trialSort = useSort(trialRows, "_name");
   const interviewRows = interviewItems.map((i) => ({ ...i, _name: nameOf(i.InterviewAccID), _service: serviceNameOf(i.ServiceID) }));
   const interviewSort = useSort(interviewRows, "_name");
+  // TKT-0080/TKT-0021: neither a Trial nor an Interview request has a Slot
+  // yet at the pending stage anymore — Management assigns one on approval,
+  // via the same InterviewSlotAssign control for both — so _service comes
+  // from the request's own ServiceID, and _date/_time are always empty here.
   const pendingRows = [
     ...pendingTrials.map((t) => ({
       ...t,
       _type: "Trial",
       _requester: t.RequesterName,
-      _service: t.Slot?.ServiceName,
-      _date: t.Slot?.Date,
-      _time: t.Slot?.Time,
-      _isTrial: true,
+      _service: serviceNameOf(t.ServiceID),
+      _date: "",
+      _time: "",
+      _bookingType: "Trial",
     })),
-    // TKT-0021: an Interview request never has a Slot yet at the pending
-    // stage — Management assigns one on approval — so _service comes from
-    // the request's own ServiceID, and _date/_time are always empty here.
     ...pendingInterviews.map((i) => ({
       ...i,
       _type: INTERVIEW_ACC_LABEL[i.RequesterType] || "Interview",
@@ -487,11 +488,13 @@ function Pipeline() {
       _service: serviceNameOf(i.ServiceID),
       _date: "",
       _time: "",
-      _isTrial: false,
       _bookingType: i.RequesterType ? i.RequesterType.replace(/Acc$/, "") : "StaffInterview",
     })),
   ];
-  const pendingSort = useSort(pendingRows, "_date");
+  // TKT-0080: neither Trial nor Interview requests carry a real date at the
+  // pending stage anymore (both are request-only now) — sort by type
+  // instead of the always-empty _date this defaulted to before.
+  const pendingSort = useSort(pendingRows, "_type");
 
   return (
     <div className="grid gap-6">
@@ -639,39 +642,19 @@ function Pipeline() {
               <SortableTh label="Type" sortKeyName="_type" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
               <SortableTh label="Requester" sortKeyName="_requester" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
-              <SortableTh label="Date" sortKeyName="_date" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
-              <SortableTh label="Time" sortKeyName="_time" sortKey={pendingSort.sortKey} sortDir={pendingSort.sortDir} onSort={pendingSort.toggleSort} />
+              <th colSpan={2}>Assign slot</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {pendingSort.sorted.map((row) =>
-              row._isTrial ? (
-                <tr key={row.TrialID}>
-                  <td>{row._type}</td>
-                  <td>{row._requester}</td>
-                  <td>{row._service}</td>
-                  <td>{formatDate(row._date)}</td>
-                  <td>{row._time}</td>
-                  <td className="space-x-2">
-                    <button
-                      className="btn"
-                      disabled={busyRequestIds.has(row.TrialID)}
-                      onClick={() => actOnRequest("Trial", row.TrialID, "approve")}
-                    >
-                      {busyRequestIds.has(row.TrialID) ? "Working…" : "Approve"}
-                    </button>
-                    <button
-                      className="btn-ghost"
-                      disabled={busyRequestIds.has(row.TrialID)}
-                      onClick={() => actOnRequest("Trial", row.TrialID, "reject")}
-                    >
-                      {busyRequestIds.has(row.TrialID) ? "Working…" : "Reject"}
-                    </button>
-                  </td>
-                </tr>
-              ) : (
-                <tr key={row.InterviewID}>
+            {pendingSort.sorted.map((row) => {
+              // TKT-0080: Trial requests now go through the exact same
+              // slot-assignment flow Interview requests already used
+              // (TKT-0021) — neither has a Slot at the pending stage
+              // anymore, so both share this one render path.
+              const id = row.TrialID || row.InterviewID;
+              return (
+                <tr key={id}>
                   <td>{row._type}</td>
                   <td>{row._requester}</td>
                   <td>{row._service}</td>
@@ -679,24 +662,24 @@ function Pipeline() {
                     <InterviewSlotAssign
                       row={row}
                       openPoolSlots={openPoolSlots}
-                      onApproveWithSlot={(scheduleId) => actOnRequest(row._bookingType, row.InterviewID, "approve", scheduleId)}
+                      onApproveWithSlot={(scheduleId) => actOnRequest(row._bookingType, id, "approve", scheduleId)}
                       onCreateAndApprove={(date, time, duration, facilitator) =>
-                        createSlotAndApprove(row._bookingType, row.InterviewID, row.ServiceID, date, time, duration, facilitator)
+                        createSlotAndApprove(row._bookingType, id, row.ServiceID, date, time, duration, facilitator)
                       }
                     />
                   </td>
                   <td>
                     <button
                       className="btn-ghost"
-                      disabled={busyRequestIds.has(row.InterviewID)}
-                      onClick={() => actOnRequest(row._bookingType, row.InterviewID, "reject")}
+                      disabled={busyRequestIds.has(id)}
+                      onClick={() => actOnRequest(row._bookingType, id, "reject")}
                     >
-                      {busyRequestIds.has(row.InterviewID) ? "Working…" : "Reject"}
+                      {busyRequestIds.has(id) ? "Working…" : "Reject"}
                     </button>
                   </td>
                 </tr>
-              )
-            )}
+              );
+            })}
             {pendingTrials.length === 0 && pendingInterviews.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ color: "var(--muted)" }}>
