@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Check, ShieldCheck, Zap, Star, CreditCard, HelpCircle, X, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const PRICING_DATA: Record<string, any> = {
   GBP: { symbol: "£", t1: "120", t2: "180", t3: "280" },
@@ -187,7 +188,7 @@ export default function PricingPage() {
             {paymentMethods.map((m, idx) => (
               <div key={idx} className="p-10 bg-white dark:bg-[var(--bg-primary)] border border-[var(--border-subtle)] hover:shadow-xl transition-all">
                 <div className="flex justify-between items-start mb-8">
-                  {m.isGlobal ? <Globe size={32} className="text-[var(--gold)]" /> : <img src={m.flagUrl} alt={m.country} className="w-10 h-auto shadow-sm" />}
+                  {m.isGlobal ? <Globe size={32} className="text-[var(--gold)]" /> : <Image src={m.flagUrl} alt={m.country} width={80} height={60} className="w-10 h-auto shadow-sm" />}
                 </div>
                 <p className="font-black text-[var(--navy)] dark:text-white uppercase tracking-widest text-sm mb-2">{m.country}</p>
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed">{m.methods.join(" · ")}</p>

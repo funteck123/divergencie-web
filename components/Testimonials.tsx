@@ -36,6 +36,10 @@ export default function Testimonials() {
   useEffect(() => {
     const timer = setInterval(next, 8000);
     return () => clearInterval(timer);
+    // `next` is recreated every render; including it below would restart
+    // the interval on every unrelated re-render instead of only when
+    // `current` changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current]);
 
   return (

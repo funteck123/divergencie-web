@@ -50,3 +50,11 @@ builds
 # Local Supabase data backups — contains real PII (names, phone numbers,
 # passport/IC numbers). This repo is public — never commit these.
 /backups/
+
+# NPC-sim persona/script/state files — each one embeds that NPC's own
+# live API key (a real Bearer token), same reason as planning/keys.md above.
+/lib/npc/state/
+
+# Redis snapshot file (redis-server writes this to its cwd) — debris from
+# running the local redis-server used by the YouTube-transcript tool.
+dump.rdb

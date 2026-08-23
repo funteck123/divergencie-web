@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
+import Image from "next/image";
 import DashboardShell from "@/components/DashboardShell";
 import { api } from "@/lib/client";
 
@@ -104,7 +105,7 @@ function DriveFolderGrid({ link }) {
               className="p-3 rounded flex flex-col items-center gap-2 text-center text-sm"
               style={{ background: "var(--panel-2)" }}
             >
-              {f.iconLink && <img src={f.iconLink} alt="" width={32} height={32} />}
+              {f.iconLink && <Image src={f.iconLink} alt="" width={32} height={32} />}
               <span>{f.name}</span>
             </a>
           ))}

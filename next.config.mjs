@@ -22,8 +22,15 @@ const nextConfig = {
   // whose subdomain is random and changes every time the tunnel restarts.
   allowedDevOrigins: ["helping-ibex-nominally.ngrok-free.app", "*.trycloudflare.com"],
   // Marketing pages (ported from v6) hotlink a couple of unsplash images.
+  // flagcdn.com serves the pricing page's country flag icons; Google's
+  // Drive icon CDN serves per-file-type icons for db.googleDrive.js's
+  // Resources listing (the `iconLink` field on a Drive file).
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "flagcdn.com" },
+      { protocol: "https", hostname: "drive-thirdparty.googleusercontent.com" },
+    ],
   },
   // canvas (used for PDF/schedule-image generation) is a native addon —
   // keep it external to the server bundle rather than letting webpack try

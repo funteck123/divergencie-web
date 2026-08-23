@@ -2,6 +2,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { ShieldCheck, Award, Globe, Zap, Users, GraduationCap, Star, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const teachers = [
   { name: "Aisha Rahman", role: "A Level Specialist", subject: "Mathematics · Further Maths", qual: "Cambridge Mathematics graduate · 8 yrs experience · 40+ A* students", avatar: "A" },
@@ -49,16 +50,20 @@ export default function AboutPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
               <div className="border-4 border-[var(--navy)] p-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" 
-                  alt="Students" 
+                <Image
+                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
+                  alt="Students"
+                  width={800}
+                  height={533}
                   className="w-full grayscale hover:grayscale-0 transition-all duration-700"
                 />
               </div>
               <div className="absolute -bottom-8 -right-8 w-64 hidden md:block border-4 border-[var(--gold)] bg-white p-2">
-                <img 
-                  src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&q=80" 
-                  alt="Results" 
+                <Image
+                  src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&q=80"
+                  alt="Results"
+                  width={400}
+                  height={267}
                   className="w-full"
                 />
               </div>
