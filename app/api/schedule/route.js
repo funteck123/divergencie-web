@@ -47,6 +47,16 @@ export async function POST(req) {
     );
   }
 
+  // `Number(duration) || 1` only guarded against 0/NaN, not negatives --
+  // a red-team pass showed a negative duration would have been stored
+  // as-is and fed straight into downstream billing-hours math.
+  if (duration !== undefined) {
+    const n = Number(duration);
+    if (!Number.isFinite(n) || n <= 0) {
+      return NextResponse.json({ error: "duration must be a positive number." }, { status: 400 });
+    }
+  }
+
   const item = {
     ScheduleID: await nextId(db, "SCH"),
     ServiceID: service.ServiceID,
