@@ -178,9 +178,9 @@ function Body({ user }) {
           <thead>
             <tr>
               <th>Period</th>
-              <th>Amount</th>
-              <th>Amount Due</th>
-              <th>Total Due ({data.user.Currency || "INR"})</th>
+              <th className="num">Amount</th>
+              <th className="num">Amount Due</th>
+              <th className="num">Total Due ({data.user.Currency || "INR"})</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -197,9 +197,9 @@ function Body({ user }) {
                     </div>
                   )}
                 </td>
-                <td>{i.Currency || "INR"} {i.Amount}</td>
-                <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
-                <td>{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
+                <td className="num">{i.Currency || "INR"} {i.Amount}</td>
+                <td className="num">{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
+                <td className="num">{i.ConvertedDue != null ? `${data.user.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
                   <span className={`badge ${i.Status === "Sent" || i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
                 </td>

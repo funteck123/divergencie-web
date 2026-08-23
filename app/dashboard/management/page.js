@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
+import Image from "next/image";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
@@ -212,7 +213,10 @@ function Applications() {
   const [issued, setIssued] = useState({}); // regFormId -> {username,password}
   const [error, setError] = useState("");
   const [busyIds, setBusyIds] = useState(new Set());
-  const { sorted, sortKey, sortDir, toggleSort } = useSort(regForms, "RegFormID");
+  const [search, setSearch] = useState("");
+  const searchLower = search.trim().toLowerCase();
+  const filtered = regForms.filter((r) => !searchLower || r.Name.toLowerCase().includes(searchLower));
+  const { sorted, sortKey, sortDir, toggleSort } = useSort(filtered, "RegFormID");
 
   async function load() {
     const { regForms } = await api("/api/regforms");
@@ -250,6 +254,7 @@ function Applications() {
     <div className="card">
       <h2 className="font-semibold mb-4">RegForm Applications</h2>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder="Search applicant name…" />
       <table>
         <thead>
           <tr>
@@ -338,7 +343,7 @@ function Pipeline() {
   const [busyRequestIds, setBusyRequestIds] = useState(new Set());
 
   async function load() {
-    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlots, scheduleItems }] = await Promise.all([
+    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlotIds, scheduleItems }] = await Promise.all([
       api("/api/users"),
       api("/api/services"),
       api("/api/invoices"),
@@ -350,7 +355,11 @@ function Pipeline() {
     setInvoices(invoices);
     setPendingTrials(pendingTrials);
     setPendingInterviews(pendingInterviews);
-    setOpenPoolSlots(openPoolSlots);
+    // /api/schedule now sends open-pool IDs only (not full duplicate
+    // objects, see its own comment) — reconstitute from scheduleItems,
+    // which we already have in full.
+    const openPoolIdSet = new Set(openPoolSlotIds);
+    setOpenPoolSlots(scheduleItems.filter((s) => openPoolIdSet.has(s.ScheduleID)));
     setScheduleItems(scheduleItems);
     // trial/interview items aren't exposed as a top-level list endpoint;
     // derive them from each pending account's /api/me bundle instead — run
@@ -558,9 +567,21 @@ function Pipeline() {
     );
   }
 
-  const trialRows = trialItems.map((t) => ({ ...t, _name: nameOf(t.TrialAccID), _service: serviceNameOf(t.ServiceID) }));
+  const [trialSearch, setTrialSearch] = useState("");
+  const [interviewSearch, setInterviewSearch] = useState("");
+  const trialRows = trialItems
+    .map((t) => ({ ...t, _name: nameOf(t.TrialAccID), _service: serviceNameOf(t.ServiceID) }))
+    .filter((t) => {
+      const q = trialSearch.trim().toLowerCase();
+      return !q || t._name.toLowerCase().includes(q) || t._service.toLowerCase().includes(q);
+    });
   const trialSort = useSort(trialRows, "_name");
-  const interviewRows = interviewItems.map((i) => ({ ...i, _name: nameOf(i.InterviewAccID), _service: serviceNameOf(i.ServiceID) }));
+  const interviewRows = interviewItems
+    .map((i) => ({ ...i, _name: nameOf(i.InterviewAccID), _service: serviceNameOf(i.ServiceID) }))
+    .filter((i) => {
+      const q = interviewSearch.trim().toLowerCase();
+      return !q || i._name.toLowerCase().includes(q) || i._service.toLowerCase().includes(q);
+    });
   const interviewSort = useSort(interviewRows, "_name");
   // TKT-0080/TKT-0021: neither a Trial nor an Interview request has a Slot
   // yet at the pending stage anymore — Management assigns one on approval,
@@ -596,6 +617,7 @@ function Pipeline() {
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       <div className="card">
         <h2 className="font-semibold mb-4">Trial Pipeline</h2>
+        <BillingFilterBar search={trialSearch} onSearch={setTrialSearch} searchPlaceholder="Search name or service…" />
         <div className="overflow-x-auto">
         <table>
           <thead>
@@ -618,7 +640,9 @@ function Pipeline() {
               return (
                 <tr key={t.TrialID}>
                   <td>{t._name}</td>
-                  <td>{t._service}</td>
+                  <td>
+                    <span className="subject-truncate" title={t._service}>{t._service}</span>
+                  </td>
                   <td><span className="badge badge-info">{t.Status}</span></td>
                   <td style={{ color: "var(--muted)" }}>{slot ? `${formatDate(slot.Date)} at ${slot.Time}` : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>{slot ? slot.Facilitator || "no instructor set" : "—"}</td>
@@ -644,8 +668,8 @@ function Pipeline() {
                 </tr>
               );
             })}
-            {trialItems.length === 0 && (
-              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>No trial bookings yet.</td></tr>
+            {trialRows.length === 0 && (
+              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>{trialItems.length === 0 ? "No trial bookings yet." : "No matches."}</td></tr>
             )}
           </tbody>
         </table>
@@ -654,6 +678,7 @@ function Pipeline() {
 
       <div className="card">
         <h2 className="font-semibold mb-4">Interview Pipeline</h2>
+        <BillingFilterBar search={interviewSearch} onSearch={setInterviewSearch} searchPlaceholder="Search name or service…" />
         <div className="overflow-x-auto">
         <table>
           <thead>
@@ -675,7 +700,9 @@ function Pipeline() {
               return (
               <tr key={i.InterviewID}>
                 <td>{i._name}</td>
-                <td>{i._service}</td>
+                <td>
+                  <span className="subject-truncate" title={i._service}>{i._service}</span>
+                </td>
                 <td>
                   <span className="badge badge-info">{i.Status}</span>
                   {/* TKT-0033 */}
@@ -737,8 +764,8 @@ function Pipeline() {
               </tr>
               );
             })}
-            {interviewItems.length === 0 && (
-              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>No interview bookings yet.</td></tr>
+            {interviewRows.length === 0 && (
+              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>{interviewItems.length === 0 ? "No interview bookings yet." : "No matches."}</td></tr>
             )}
           </tbody>
         </table>
@@ -769,7 +796,9 @@ function Pipeline() {
                 <tr key={id}>
                   <td>{row._type}</td>
                   <td>{row._requester}</td>
-                  <td>{row._service}</td>
+                  <td>
+                    <span className="subject-truncate" title={row._service}>{row._service}</span>
+                  </td>
                   <td colSpan={2}>
                     <InterviewSlotAssign
                       row={row}
@@ -1307,6 +1336,9 @@ function Accounts() {
 // every possible field for every account type.
 function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds, convertEligible }) {
   const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
+  const [search, setSearch] = useState("");
+  const searchLower = search.trim().toLowerCase();
+  const searchedRows = rows.filter((u) => !searchLower || u.Name.toLowerCase().includes(searchLower) || u.UserID.toLowerCase().includes(searchLower));
 
   // Columns that render plain text/values can be sorted directly off their
   // own `render(u)` output; ones that render JSX (links, badges, truncated
@@ -1314,7 +1346,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
   // underlying primitive — copied onto each row under a synthetic __colN
   // key so useSort's plain a[sortKey] lookup works the same way for every
   // column, dynamic or fixed.
-  const sortableRows = rows.map((u) => {
+  const sortableRows = searchedRows.map((u) => {
     const extra = {};
     columns.forEach((c, i) => {
       if (c.sortValue) extra[`__col${i}`] = c.sortValue(u);
@@ -1326,6 +1358,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
   return (
     <div className="card">
       <h2 className="font-semibold mb-4">{title}</h2>
+      <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder={`Search ${title.toLowerCase()}…`} />
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
@@ -1420,10 +1453,10 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                 )}
               </Fragment>
             ))}
-            {rows.length === 0 && (
+            {sorted.length === 0 && (
               <tr>
                 <td colSpan={colSpan} style={{ color: "var(--muted)" }}>
-                  None yet.
+                  {rows.length === 0 ? "None yet." : "No matches."}
                 </td>
               </tr>
             )}
@@ -2185,7 +2218,6 @@ function Services() {
   const suggestedName = computeSuggestedName();
   useEffect(() => {
     if (!nameManuallyEdited) setName(suggestedName);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [suggestedName, nameManuallyEdited]);
 
   // TKT-0116: switching Group never reset Type, so e.g. toggling from
@@ -3141,7 +3173,9 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete, busyServiceI
           )}
           <td>{singleLeaf ? <RatesCell rates={singleLeaf.rates} /> : "—"}</td>
           <td style={{ color: "var(--muted)" }}>{singleLeaf ? <OccurrencesCell occurrences={singleLeaf.occurrences} /> : "—"}</td>
-          <td>{row.Name}</td>
+          <td>
+            <span className="subject-truncate" title={row.Name}>{row.Name}</span>
+          </td>
           <td>
             <button className="btn-ghost" onClick={() => onEdit(row.service)}>
               Edit
@@ -3369,6 +3403,8 @@ function SchedulePool() {
   const [facilitator, setFacilitator] = useState("");
   const [error, setError] = useState("");
   const [expandedAttendance, setExpandedAttendance] = useState(null);
+  const [openPoolSearch, setOpenPoolSearch] = useState("");
+  const [serviceSlotsSearch, setServiceSlotsSearch] = useState("");
   // TKT-0027: hide past sessions by default in the Service Schedule list
   // view (today's own sessions still show).
   const [showPastSchedule, setShowPastSchedule] = useState(false);
@@ -3383,7 +3419,7 @@ function SchedulePool() {
   const [creatingSlot, setCreatingSlot] = useState(false);
 
   async function load() {
-    const [{ scheduleItems, openPoolSlots }, { services }, { rescheduleRequests }, { enrollments }, { attendanceItems }] = await Promise.all([
+    const [{ scheduleItems, openPoolSlotIds }, { services }, { rescheduleRequests }, { enrollments }, { attendanceItems }] = await Promise.all([
       api("/api/schedule"),
       api("/api/services"),
       api("/api/schedule/reschedule-requests"),
@@ -3391,7 +3427,10 @@ function SchedulePool() {
       api("/api/attendance"),
     ]);
     setItems(scheduleItems);
-    setOpenPoolSlots(openPoolSlots);
+    // /api/schedule now sends open-pool IDs only, see its own comment —
+    // reconstitute from scheduleItems, which we already have in full.
+    const openPoolIdSet = new Set(openPoolSlotIds);
+    setOpenPoolSlots(scheduleItems.filter((s) => openPoolIdSet.has(s.ScheduleID)));
     setServices(services);
     setRescheduleRequests(rescheduleRequests);
     setEnrollments(enrollments);
@@ -3495,8 +3534,16 @@ function SchedulePool() {
   })();
   const serviceSlotsForList = (conflictsOnly ? pastFiltered.filter((s) => conflictingScheduleIds.has(s.ScheduleID)) : pastFiltered);
 
-  const openPoolSort = useSort(openPoolSlots, "Date");
-  const serviceSlotsSort = useSort(serviceSlotsForList, "Date");
+  const openPoolFiltered = openPoolSlots.filter((s) => {
+    const q = openPoolSearch.trim().toLowerCase();
+    return !q || (s.ServiceName || "").toLowerCase().includes(q) || (s.Facilitator || "").toLowerCase().includes(q);
+  });
+  const serviceSlotsFiltered = serviceSlotsForList.filter((s) => {
+    const q = serviceSlotsSearch.trim().toLowerCase();
+    return !q || (s.ServiceName || "").toLowerCase().includes(q) || (s.Facilitator || "").toLowerCase().includes(q);
+  });
+  const openPoolSort = useSort(openPoolFiltered, "Date");
+  const serviceSlotsSort = useSort(serviceSlotsFiltered, "Date");
 
   return (
     <div className="space-y-6">
@@ -3633,6 +3680,8 @@ function SchedulePool() {
         {poolView === "calendar" ? (
           <ScheduleCalendar scheduleItems={openPoolSlots} attendanceItems={[]} readOnly colorByGroup />
         ) : (
+          <>
+          <BillingFilterBar search={openPoolSearch} onSearch={setOpenPoolSearch} searchPlaceholder="Search service or instructor…" />
           <table>
             <thead>
               <tr>
@@ -3652,15 +3701,19 @@ function SchedulePool() {
                       title={normalizeGroup(s.ServiceGroup).join(" + ")}
                       style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, background: groupGradient(normalizeGroup(s.ServiceGroup)), marginRight: 6 }}
                     />
-                    {s.ServiceName}
+                    <span className="subject-truncate" title={s.ServiceName}>{s.ServiceName}</span>
                   </td>
                   <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
                   <td>{s.Facilitator}</td>
                 </tr>
               ))}
+              {openPoolSort.sorted.length === 0 && (
+                <tr><td colSpan={5} style={{ color: "var(--muted)" }}>{openPoolSlots.length === 0 ? "No open pool slots." : "No matches."}</td></tr>
+              )}
             </tbody>
           </table>
+          </>
         )}
 
       </div>
@@ -3692,13 +3745,25 @@ function SchedulePool() {
             </label>
           </div>
         )}
+        {serviceView === "list" && (
+          <BillingFilterBar search={serviceSlotsSearch} onSearch={setServiceSlotsSearch} searchPlaceholder="Search service or instructor…" />
+        )}
         {serviceView === "image" ? (
           <div className="space-y-3">
-            <img
-              src="/api/schedule/admin-image"
-              alt="Weekly schedule"
-              style={{ maxWidth: "100%", borderRadius: 8, border: "1px solid var(--border)" }}
-            />
+            {/* Same reasoning as components/ScheduleImage.jsx: the PNG's real
+                aspect ratio isn't known ahead of render, so fill + object-fit:
+                contain inside a sized wrapper avoids guessing dimensions and
+                never crops/distorts, at the cost of a 700px height cap that
+                didn't exist on the plain <img> (letterboxed, not cropped).
+                unoptimized is required, not optional: this route needs the
+                caller's own session cookie (requireManagement), but Next's
+                built-in image optimizer fetches the src server-side without
+                forwarding cookies, so an optimized fetch 401s silently and
+                the image never loads. unoptimized makes the browser fetch it
+                directly instead, with the real session. */}
+            <div style={{ position: "relative", width: "100%", height: 700, borderRadius: 8, border: "1px solid var(--border)" }}>
+              <Image src="/api/schedule/admin-image" alt="Weekly schedule" fill style={{ objectFit: "contain" }} unoptimized />
+            </div>
             <div>
               <a className="btn-ghost" href="/api/schedule/admin-image?download=1" download="DC_Admin_Weekly_Schedule.png">
                 Download PNG
@@ -3722,7 +3787,7 @@ function SchedulePool() {
                 <SortableTh label="Service" sortKeyName="ServiceName" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <SortableTh label="Date" sortKeyName="Date" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <SortableTh label="Time" sortKeyName="Time" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
-                <SortableTh label="Hrs" sortKeyName="Duration" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
+                <SortableTh className="num" label="Hrs" sortKeyName="Duration" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <SortableTh label="Instructor" sortKeyName="Facilitator" sortKey={serviceSlotsSort.sortKey} sortDir={serviceSlotsSort.sortDir} onSort={serviceSlotsSort.toggleSort} />
                 <th>Attendance</th>
                 <th>Reschedule</th>
@@ -3740,11 +3805,11 @@ function SchedulePool() {
                       title={normalizeGroup(s.ServiceGroup).join(" + ")}
                       style={{ display: "inline-block", width: 10, height: 10, borderRadius: 3, background: groupGradient(normalizeGroup(s.ServiceGroup)), marginRight: 6 }}
                     />
-                    {s.ServiceName}
+                    <span className="subject-truncate" title={s.ServiceName}>{s.ServiceName}</span>
                   </td>
                   <td>{formatDate(s.Date)}</td>
                   <td>{s.Time}</td>
-                  <td>{s.Duration}</td>
+                  <td className="num">{s.Duration}</td>
                   <td>{s.Facilitator}</td>
                   <td>
                     <button className="btn-ghost" onClick={() => setExpandedAttendance(expanded ? null : s.ScheduleID)}>
@@ -3774,7 +3839,11 @@ function SchedulePool() {
               {serviceSlotsSort.sorted.length === 0 && (
                 <tr>
                   <td colSpan={7} style={{ color: "var(--muted)" }}>
-                    {serviceSlots.length === 0 ? "No sessions." : "No upcoming sessions — check \"Show past\" to see history."}
+                    {serviceSlots.length === 0
+                      ? "No sessions."
+                      : serviceSlotsForList.length > 0
+                      ? "No matches."
+                      : "No upcoming sessions — check \"Show past\" to see history."}
                   </td>
                 </tr>
               )}
@@ -4058,13 +4127,21 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
     return { selectedService, availableBatches, availableRates };
   }
 
-  const enrollmentRows = enrollments.map((e) => ({
-    ...e,
-    _person: nameOf(e.UserID),
-    _service: serviceNameOf(e.ServiceID),
-    _batch: batchNameOf(e.ServiceID, e.BatchID),
-    _rate: e.Currency ? `${e.Currency} ${rateById(services.find((s) => s.ServiceID === e.ServiceID), e.BatchID, e.RateID)?.Rate ?? ""}` : "",
-  }));
+  // Enrollments audit pass: no way to jump to one person in a long list,
+  // same gap Billing had before its own filter bar. Search-only reuse of
+  // BillingFilterBar (no status concept here), collapsed by default.
+  const [search, setSearch] = useState("");
+  const searchLower = search.trim().toLowerCase();
+
+  const enrollmentRows = enrollments
+    .map((e) => ({
+      ...e,
+      _person: nameOf(e.UserID),
+      _service: serviceNameOf(e.ServiceID),
+      _batch: batchNameOf(e.ServiceID, e.BatchID),
+      _rate: e.Currency ? `${e.Currency} ${rateById(services.find((s) => s.ServiceID === e.ServiceID), e.BatchID, e.RateID)?.Rate ?? ""}` : "",
+    }))
+    .filter((e) => !searchLower || e._person.toLowerCase().includes(searchLower) || e._service.toLowerCase().includes(searchLower));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(enrollmentRows, "_person");
 
   function updateRow(index, patch) {
@@ -4259,13 +4336,18 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
       </div>
       <div className="card">
         <h2 className="font-semibold mb-4">Current {title} Enrollments</h2>
+        <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder={`Search ${title.toLowerCase()}…`} />
         {/* TKT-0114: this table has no natural row cap, and used to have no
             overflow handling at all, so a long list pushed the whole 50/50
             layout wide instead of staying inside its own card. Vertical
             scroll within a fixed max-height keeps the split intact; the
             inner overflow-x-auto still catches genuinely wide content
-            (many columns on a narrow card) without that scrolling the page. */}
-        <div style={{ maxHeight: 480, overflowY: "auto" }}>
+            (many columns on a narrow card) without that scrolling the page.
+            Audit pass: that scroll used to clip its last row mid-cell with
+            no hint there was more below -- className="scroll-fade" adds a
+            soft bottom gradient (see globals.css) so a cut-off row reads as
+            "scroll for more," not as broken rendering. */}
+        <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
           <div className="overflow-x-auto">
             <table>
               <thead>
@@ -4273,9 +4355,9 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                   <SortableTh label="Person" sortKeyName="_person" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                   <SortableTh label="Service" sortKeyName="_service" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                   <SortableTh label="Batch" sortKeyName="_batch" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="Start" sortKeyName="StartDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-                  <SortableTh label="End" sortKeyName="EndDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh className="num" label="Rate" sortKeyName="_rate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh className="num" label="Start" sortKeyName="StartDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+                  <SortableTh className="num" label="End" sortKeyName="EndDate" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
                   <th></th>
                 </tr>
               </thead>
@@ -4443,11 +4525,15 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
   return (
     <tr>
       <td>{nameOf(enrollment.UserID)}</td>
-      <td>{serviceNameOf(enrollment.ServiceID)}</td>
+      <td>
+        <span className="subject-truncate" title={serviceNameOf(enrollment.ServiceID)}>
+          {serviceNameOf(enrollment.ServiceID)}
+        </span>
+      </td>
       <td>{batchNameOf(enrollment.ServiceID, enrollment.BatchID)}</td>
-      <td>{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.BatchID, enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
-      <td>{enrollment.StartDate ? formatDate(enrollment.StartDate) : "—"}</td>
-      <td>{enrollment.EndDate ? formatDate(enrollment.EndDate) : "—"}</td>
+      <td className="num">{enrollment.Currency ? `${enrollment.Currency} ${rateById(services.find((s) => s.ServiceID === enrollment.ServiceID), enrollment.BatchID, enrollment.RateID)?.Rate ?? ""}` : "—"}</td>
+      <td className="num">{enrollment.StartDate ? formatDate(enrollment.StartDate) : "—"}</td>
+      <td className="num">{enrollment.EndDate ? formatDate(enrollment.EndDate) : "—"}</td>
       <td className="space-x-2">
         <button className="btn-ghost" onClick={() => setEditing(true)}>
           Edit
@@ -5087,9 +5173,13 @@ const STATUS_FILTER_LABEL = {
 // filtering, is exactly the "full detail upfront" the paper found doesn't
 // help -- collapsed behind one small toggle by default, active state still
 // visible on the toggle itself so a forgotten filter is never silent.
+// statusFilter/onStatusFilter are optional -- omitting them (e.g.
+// Enrollments, which has no status concept) hides the status dropdown and
+// makes this a plain search-only filter bar, same collapse behavior.
 function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, searchPlaceholder }) {
   const [open, setOpen] = useState(false);
-  const active = !!search.trim() || statusFilter !== "all";
+  const hasStatus = statusFilter !== undefined;
+  const active = !!search.trim() || (hasStatus && statusFilter !== "all");
 
   if (!open && !active) {
     return (
@@ -5110,20 +5200,22 @@ function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, sear
           value={search}
           onChange={(e) => onSearch(e.target.value)}
         />
-        <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
-          {Object.entries(STATUS_FILTER_LABEL).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {hasStatus && (
+          <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
+            {Object.entries(STATUS_FILTER_LABEL).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        )}
         {active && (
           <button
             type="button"
             className="btn-ghost text-sm"
             onClick={() => {
               onSearch("");
-              onStatusFilter("all");
+              if (hasStatus) onStatusFilter("all");
               setOpen(false);
             }}
           >
@@ -5241,7 +5333,16 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
                   colSpan={10}
                   className="font-medium cursor-pointer"
                   style={{ background: "var(--panel-2)" }}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={expanded}
                   onClick={() => togglePerson(studentId)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      togglePerson(studentId);
+                    }
+                  }}
                 >
                   {expanded ? "▾" : "▸"} {name} — {personRows.length} invoice{personRows.length === 1 ? "" : "s"}
                   <PersonStatusBadges personRows={personRows} paidFlagKey="StudentPaidFlag" />
@@ -5745,7 +5846,16 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
                       colSpan={10}
                       className="font-medium cursor-pointer"
                       style={{ background: "var(--panel-2)" }}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={expanded}
                       onClick={() => togglePerson(staffId)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          togglePerson(staffId);
+                        }
+                      }}
                     >
                       {expanded ? "▾" : "▸"} {name} — {personRows.length} paycheck{personRows.length === 1 ? "" : "s"}
                       <PersonStatusBadges personRows={personRows} paidFlagKey="StaffReceivedFlag" />
@@ -6089,6 +6199,7 @@ function Tickets() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [showClosed, setShowClosed] = useState(false);
+  const [search, setSearch] = useState("");
 
   async function load() {
     setError("");
@@ -6128,7 +6239,11 @@ function Tickets() {
     }
   }
 
-  const visible = tickets.filter((t) => showClosed || !t.ClosedAt).sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
+  const searchLower = search.trim().toLowerCase();
+  const visible = tickets
+    .filter((t) => showClosed || !t.ClosedAt)
+    .filter((t) => !searchLower || nameOf(t.SenderUserID).toLowerCase().includes(searchLower) || t.Message.toLowerCase().includes(searchLower))
+    .sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
   const openCount = tickets.filter((t) => !t.ClosedAt).length;
 
   return (
@@ -6141,6 +6256,7 @@ function Tickets() {
         </label>
       </div>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder="Search sender or message…" />
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>

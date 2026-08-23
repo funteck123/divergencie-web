@@ -236,7 +236,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
             <th>Time</th>
             <th>Instructor</th>
             <th>Status</th>
-            <th>Hours</th>
+            <th className="num">Hours</th>
           </tr>
         </thead>
         <tbody>
@@ -253,7 +253,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
                     {a.Status}
                   </span>
                 </td>
-                <td>{a.LoggedDuration}</td>
+                <td className="num">{a.LoggedDuration}</td>
               </tr>
             );
           })}
@@ -271,9 +271,9 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
           <tr>
             <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
             <th>Service</th>
-            <SortableTh label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
-            <th>Amount Due</th>
-            <th>Total Due ({student?.Currency || "INR"})</th>
+            <SortableTh className="num" label="Amount" sortKeyName="Amount" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
+            <th className="num">Amount Due</th>
+            <th className="num">Total Due ({student?.Currency || "INR"})</th>
             <th>Paid</th>
             <th></th>
           </tr>
@@ -301,9 +301,9 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
                   serviceNameOf(i.ServiceID, i.BatchID)
                 )}
               </td>
-              <td>{i.Currency || "INR"} {i.Amount}</td>
-              <td>{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
-              <td>{i.ConvertedDue != null ? `${student?.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
+              <td className="num">{i.Currency || "INR"} {i.Amount}</td>
+              <td className="num">{i.Currency || "INR"} {amountDueInOwnCurrency(i).toFixed(2)}</td>
+              <td className="num">{i.ConvertedDue != null ? `${student?.Currency || "INR"} ${i.ConvertedDue.toFixed(2)}` : "—"}</td>
               <td>
                 <InvoicePaidControl
                   invoice={i}

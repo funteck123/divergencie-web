@@ -205,7 +205,7 @@ function Body({ user }) {
                 <SortableTh label="Service" sortKeyName="ServiceName" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <SortableTh label="Date" sortKeyName="_dt" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Time</th>
-                <SortableTh label="Hrs" sortKeyName="Duration" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
+                <SortableTh className="num" label="Hrs" sortKeyName="Duration" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Instructor</th>
                 <th>Attendance</th>
                 <th>Reschedule</th>
@@ -221,7 +221,7 @@ function Body({ user }) {
                       <td>{s.ServiceName}</td>
                       <td>{formatDate(s.Date)}</td>
                       <td>{s.Time}</td>
-                      <td>{s.Duration}</td>
+                      <td className="num">{s.Duration}</td>
                       <td>{s.Facilitator || "—"}</td>
                       <td>
                         <button className="btn-ghost" onClick={() => setExpandedAttendance(expanded ? null : s.ScheduleID)}>
@@ -274,10 +274,10 @@ function Body({ user }) {
             <tr>
               <SortableTh label="Period" sortKeyName="_period" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
               <th>Service</th>
-              <SortableTh label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <SortableTh label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
-              <th>Amount Due</th>
-              <th>Total Due ({data.user.Currency || "INR"})</th>
+              <SortableTh className="num" label="Attended hrs" sortKeyName="AttendedHours" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
+              <SortableTh className="num" label="Amount" sortKeyName="Amount" sortKey={paySort.sortKey} sortDir={paySort.sortDir} onSort={paySort.toggleSort} />
+              <th className="num">Amount Due</th>
+              <th className="num">Total Due ({data.user.Currency || "INR"})</th>
               <th>Received</th>
               <th></th>
             </tr>
@@ -305,10 +305,10 @@ function Body({ user }) {
                     serviceNameOf(p.ServiceID, p.BatchID)
                   )}
                 </td>
-                <td>{Array.isArray(p.LineItems) ? p.LineItems.reduce((sum, li) => sum + (Number(li.AttendedHours) || 0), 0) : p.AttendedHours}</td>
-                <td>{p.Currency || "INR"} {p.Amount}</td>
-                <td>{p.Currency || "INR"} {amountDueInOwnCurrency(p).toFixed(2)}</td>
-                <td>{p.ConvertedDue != null ? `${data.user.Currency || "INR"} ${p.ConvertedDue.toFixed(2)}` : "—"}</td>
+                <td className="num">{Array.isArray(p.LineItems) ? p.LineItems.reduce((sum, li) => sum + (Number(li.AttendedHours) || 0), 0) : p.AttendedHours}</td>
+                <td className="num">{p.Currency || "INR"} {p.Amount}</td>
+                <td className="num">{p.Currency || "INR"} {amountDueInOwnCurrency(p).toFixed(2)}</td>
+                <td className="num">{p.ConvertedDue != null ? `${data.user.Currency || "INR"} ${p.ConvertedDue.toFixed(2)}` : "—"}</td>
                 <td>
                   {p.StaffReceivedFlag ? (
                     <span className="flex flex-col gap-1">

@@ -287,3 +287,35 @@ th:last-child, td:last-child {
   padding: 0.3rem 0.6rem;
   font-size: 0.82rem;
 }
+/* A long Service/Subject name used to force its column wide or wrap onto
+   two lines, squeezing every column after it. Truncated with an ellipsis,
+   full text still available on hover via the element's title. */
+.subject-truncate {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+/* A scrollable table used to clip its last visible row mid-cell with
+   nothing signaling there was more content below -- reads as a rendering
+   bug, not an intentional scroll boundary. A soft bottom gradient hints
+   "more below, scroll" the way a native app list would. Pure CSS, no JS
+   needed to detect scroll position, so it can't drift out of sync with
+   the actual content. */
+.scroll-fade {
+  position: relative;
+}
+.scroll-fade::after {
+  content: "";
+  position: sticky;
+  display: block;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  margin-top: -24px;
+  background: linear-gradient(to bottom, transparent, var(--panel));
+  pointer-events: none;
+}
