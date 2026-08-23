@@ -274,11 +274,20 @@ function Applications() {
               </td>
               <td>
                 {(() => {
-                  const cred = issued[r.RegFormID] || (r.Username && { username: r.Username, password: r.Password });
-                  return cred ? (
-                    <span style={{ color: "var(--muted)" }}>
-                      {cred.username} / {cred.password}
-                    </span>
+                  // Password is hashed server-side (lib/passwords.js) --
+                  // r.Password no longer comes back from GET /api/regforms.
+                  // `issued[r.RegFormID]` (this session's own just-approved
+                  // reveal) is the only source left for a visible password.
+                  if (issued[r.RegFormID]) {
+                    const cred = issued[r.RegFormID];
+                    return (
+                      <span style={{ color: "var(--muted)" }}>
+                        {cred.username} / {cred.password}
+                      </span>
+                    );
+                  }
+                  return r.Username ? (
+                    <span style={{ color: "var(--muted)" }}>{r.Username} (reset via Accounts to view password)</span>
                   ) : (
                     "—"
                   );
@@ -1356,9 +1365,12 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                     ) : u.ConvertedToUserID ? (
                       <span style={{ color: "var(--muted)" }}>→ {u.ConvertedToUserID}</span>
                     ) : u.Username ? (
-                      <span style={{ color: "var(--muted)" }}>
-                        {u.Username} / {u.Password}
-                      </span>
+                      // Password is hashed server-side now (lib/passwords.js)
+                      // and never sent back by GET /api/users -- it can no
+                      // longer be shown here, only reset (Edit -> new
+                      // password), which re-populates `issued` above via
+                      // this session's local echo, not a server read-back.
+                      <span style={{ color: "var(--muted)" }}>{u.Username} (reset to view password)</span>
                     ) : (
                       "—"
                     )}

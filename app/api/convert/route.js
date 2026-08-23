@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
+import { generatePassword, hashPassword } from "@/lib/passwords";
 
 function makeUsername(name, db) {
   const base = name.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -11,9 +12,6 @@ function makeUsername(name, db) {
     candidate = `${base}${n}`;
   }
   return candidate;
-}
-function randomPassword() {
-  return Math.random().toString(36).slice(-8);
 }
 
 // Every pending account type converts to exactly one final type — this is
@@ -116,10 +114,10 @@ export async function POST(req) {
     ...extra(),
   };
   const username = makeUsername(oldUser.Name, db);
-  const password = randomPassword();
+  const password = generatePassword();
 
   db.users.push(newUser);
-  db.credentials.push({ UserID: newUserId, Username: username, Password: password });
+  db.credentials.push({ UserID: newUserId, Username: username, Password: hashPassword(password) });
 
   if (newType === "Student") {
     for (const invoice of db.invoices) {

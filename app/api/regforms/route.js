@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
+import { generatePassword, hashPassword } from "@/lib/passwords";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
   if (error) return error;
 
   const db = await readDB();
+  // Password is hashed now (lib/passwords.js) and no longer returned here
+  // -- see the matching fix in app/api/users/route.js's GET for why.
   const regForms = db.regForms.map((form) => {
     if (!form.CreatedUserID) return form;
     const cred = db.credentials.find((c) => c.UserID === form.CreatedUserID);
-    return cred ? { ...form, Username: cred.Username, Password: cred.Password } : form;
+    return cred ? { ...form, Username: cred.Username } : form;
   });
   return NextResponse.json({ regForms });
 }
@@ -24,10 +27,6 @@ function makeUsername(name, db) {
     candidate = `${base}${n}`;
   }
   return candidate;
-}
-
-function randomPassword() {
-  return Math.random().toString(36).slice(-8);
 }
 
 // RequestedType -> the pending UserType/ID prefix it creates on approval.
@@ -83,9 +82,9 @@ export async function PATCH(req) {
       ...(form.Email ? { Email: form.Email } : {}),
     };
     const username = makeUsername(form.Name, db);
-    const password = randomPassword();
+    const password = generatePassword();
     db.users.push(user);
-    db.credentials.push({ UserID: userId, Username: username, Password: password });
+    db.credentials.push({ UserID: userId, Username: username, Password: hashPassword(password) });
 
     form.Status = "Approved";
     form.CreatedUserID = userId;

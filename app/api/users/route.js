@@ -4,6 +4,7 @@ import { isValidTimezone, normalizeTimezone } from "@/lib/timezones";
 import { requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
+import { generatePassword, hashPassword } from "@/lib/passwords";
 
 // Re-exported for existing importers (e.g. api/paychecks/pdf/route.js),
 // lib/accountTypes.js is the single source of truth now, shared with the
@@ -16,11 +17,14 @@ export async function GET(req) {
   if (error) return error;
 
   const db = await readDB();
-  // Management needs to see issued credentials persistently (not just at the
-  // moment an account is created/converted), join from db.credentials by UserID.
+  // SECURITY: this used to also join+return cred.Password (plaintext) --
+  // confirmed live-exploitable (red-team pass, 2026-08-24): any Management
+  // caller got every real account's actual login password back in this
+  // response. Passwords are hashed now and can't be read back at all, only
+  // regenerated; Username is still safe/useful to show here.
   const users = db.users.map((u) => {
     const cred = db.credentials.find((c) => c.UserID === u.UserID);
-    return cred ? { ...u, Username: cred.Username, Password: cred.Password } : { ...u };
+    return cred ? { ...u, Username: cred.Username } : { ...u };
   });
   return NextResponse.json({ users });
 }
@@ -35,10 +39,6 @@ function makeUsername(name, db) {
   }
   return candidate;
 }
-function randomPassword() {
-  return Math.random().toString(36).slice(-8);
-}
-
 const ID_PREFIX = {
   Management: "MGT",
   Teacher: "TCH",
@@ -245,9 +245,9 @@ export async function POST(req) {
   applyStudentExtras(user, userType, body);
 
   const username = makeUsername(name, db);
-  const password = randomPassword();
+  const password = generatePassword();
   db.users.push(user);
-  db.credentials.push({ UserID: userId, Username: username, Password: password });
+  db.credentials.push({ UserID: userId, Username: username, Password: hashPassword(password) });
   await writeDB(db, ["users", "credentials"]);
   // Never log credentials (username/password), the snapshot here is the
   // user record only, which carries no secrets.
@@ -391,7 +391,7 @@ export async function PATCH(req) {
   if (workFolderUrl !== undefined || timesheetUrl !== undefined) applyStaffExtras(user, user.UserType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
-  if (password !== undefined) cred.Password = password;
+  if (password !== undefined) cred.Password = hashPassword(password);
   await saveUserAndCredentials(user, cred);
   // snapshot is the user record only (before/after), credentials
   // (username/password) are never logged, only whether they were touched.

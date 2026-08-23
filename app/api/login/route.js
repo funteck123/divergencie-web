@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { sessionCookieFor } from "@/lib/session";
+import { verifyPassword } from "@/lib/passwords";
 
 export async function POST(req) {
   const { username, password } = await req.json();
+  const trimmedUsername = (username || "").trim();
   const db = await readDB();
 
-  const cred = db.credentials.find(
-    (c) => c.Username === (username || "").trim() && c.Password === password
-  );
-  if (!cred) {
+  // Password is hashed (scrypt) now, not plaintext-compared -- see
+  // lib/passwords.js. Username lookup first, then verify, so a
+  // nonexistent-username case and a wrong-password case take the same
+  // code path (both fall through to the same 401 below).
+  const cred = db.credentials.find((c) => c.Username === trimmedUsername);
+  if (!cred || !verifyPassword(password, cred.Password)) {
     return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
   }
 
