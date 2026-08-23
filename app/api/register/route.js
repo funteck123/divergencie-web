@@ -2,11 +2,18 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { BOOKING_TYPES } from "@/lib/scheduleGen";
 import { requireManagement } from "@/lib/authz";
+import { checkRegisterRateLimit } from "@/lib/rateLimit";
 
 // Public endpoint: anyone can submit a RegForm. No account, no schedule pick
 // happens here — Management reviews it later and, separately, creates open
 // Trial/Interview slots for approved requests to book.
 export async function POST(req) {
+  // Red-team pass (2026-08-24): 5 rapid POSTs, no throttle, all created
+  // real (if disposable-looking) RegForm rows -- an unauthenticated spam
+  // vector against the queue Management has to review.
+  const rateLimited = checkRegisterRateLimit(req);
+  if (rateLimited) return rateLimited;
+
   const body = await req.json();
   const { name, email, requestedType } = body;
 
