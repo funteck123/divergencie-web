@@ -2,10 +2,17 @@ import { NextResponse } from "next/server";
 import { readDB } from "@/lib/db";
 import { sessionCookieFor } from "@/lib/session";
 import { verifyPassword } from "@/lib/passwords";
+import { checkLoginRateLimit } from "@/lib/rateLimit";
 
 export async function POST(req) {
   const { username, password } = await req.json();
   const trimmedUsername = (username || "").trim();
+
+  // Red-team pass (2026-08-24): 8 rapid wrong-password attempts against a
+  // real account all returned instant 401s with no throttle at all.
+  const rateLimited = checkLoginRateLimit(req, trimmedUsername);
+  if (rateLimited) return rateLimited;
+
   const db = await readDB();
 
   // Password is hashed (scrypt) now, not plaintext-compared -- see
