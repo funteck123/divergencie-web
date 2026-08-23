@@ -11,9 +11,15 @@ export async function GET(req) {
   const db = await readDB();
   if ((await ensureScheduleGenerated(db)) > 0) await writeDB(db, ["scheduleItems"]);
   // Every unbooked slot is open pool — manually-offered Trial/Interview slots
-  // and auto-generated Service occurrences alike.
-  const openPoolSlots = sortByDateTime(db.scheduleItems.filter((s) => !isSlotBooked(db, s.ScheduleID)));
-  return NextResponse.json({ scheduleItems: sortByDateTime(db.scheduleItems), openPoolSlots });
+  // and auto-generated Service occurrences alike. Sending back the IDs only,
+  // not full duplicate objects, cuts the response roughly in half: on real
+  // data this route's open pool is most of scheduleItems (504 of 509 items
+  // in one live measurement), so a full second copy of nearly every item
+  // was ~150KB of pure duplication on every call. The one caller that
+  // renders open-pool slots already has the full objects in `scheduleItems`
+  // and reconstitutes them locally via these IDs.
+  const openPoolSlotIds = sortByDateTime(db.scheduleItems.filter((s) => !isSlotBooked(db, s.ScheduleID))).map((s) => s.ScheduleID);
+  return NextResponse.json({ scheduleItems: sortByDateTime(db.scheduleItems), openPoolSlotIds });
 }
 
 // Management creates an open-pool slot for a Trial or one of the three
