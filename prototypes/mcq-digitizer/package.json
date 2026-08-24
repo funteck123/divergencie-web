@@ -1,0 +1,10 @@
+{
+  "name": "mcq-digitizer-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone prototype: digitizes a Multiple Choice Question paper + its Mark Scheme into an instantly-graded interactive quiz. Fully rule-based -- no LLM, no API key, no network call. Not part of the main app's build.",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

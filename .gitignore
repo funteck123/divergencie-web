@@ -55,6 +55,30 @@ builds
 # live API key (a real Bearer token), same reason as planning/keys.md above.
 /lib/npc/state/
 
+# npc-browser: the browser-automation Student/Teacher/Parent NPC trio.
+# state/credentials.json holds real plaintext login passwords for the
+# ZZZ_AGENT_* accounts, and state/rendezvous.json is per-run coordination
+# state — neither belongs in git.
+/lib/npc-browser/state/
+# TKT-0146: logs/ was missed the first time (only state/ was covered) —
+# real cron output, low sensitivity but still shouldn't be committed.
+/lib/npc-browser/logs/
+
+# exam-grader prototype: samples/ can hold real uploaded student work
+# (handwritten scripts, real names) for manual testing — this repo is
+# public, real student PII never belongs in it, same reasoning as
+# /backups/ above.
+/prototypes/exam-grader/samples/
+# Real OPENROUTER_API_KEY -- never commit.
+/prototypes/exam-grader/.env
+/prototypes/quiz-digitizer/.env
+# Same reasoning as exam-grader/samples/ above -- real, third-party
+# question papers used for manual testing don't belong in a public repo.
+/prototypes/quiz-digitizer/samples/
+# mcq-digitizer has no .env (no LLM, no API key) but samples/ could still
+# hold a real user-provided MCQ paper later -- same reasoning as above.
+/prototypes/mcq-digitizer/samples/
+
 # Redis snapshot file (redis-server writes this to its cwd) — debris from
 # running the local redis-server used by the YouTube-transcript tool.
 dump.rdb
