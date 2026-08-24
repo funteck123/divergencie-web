@@ -65,7 +65,31 @@
 </header>
 
 <main>
-  <div id="stage1" class="stage active">
+  <div id="stage0" class="stage active">
+    <div class="card">
+      <h2>Choose a paper from the library</h2>
+      <p class="hint" id="libraryStatus">Loading library...</p>
+      <div id="libraryPicker" style="display:none;">
+        <label class="field-label">Board</label>
+        <select id="pickBoard"></select>
+        <label class="field-label">Subject</label>
+        <select id="pickSubject"></select>
+        <label class="field-label">Category</label>
+        <select id="pickCategory"></select>
+        <label class="field-label">Paper</label>
+        <select id="pickPaper"></select>
+        <p class="hint" id="pickPaperNote"></p>
+        <button class="primary-btn" id="fetchAndDigitizeBtn" style="margin-top:0.75rem;">Fetch this paper and start</button>
+      </div>
+      <div id="libraryError" class="hint" style="display:none; color:var(--bad); background:#fdecea; border:1px solid var(--bad); border-radius:8px; padding:0.75rem;"></div>
+    </div>
+    <p class="hint" style="text-align:center;">
+      <a href="#" id="showUploadLink">Or upload your own QP + MS PDFs instead</a>
+    </p>
+  </div>
+
+  <div id="stage1" class="stage">
+    <p class="hint"><a href="#" id="backToLibraryLink">&larr; Back to library</a></p>
     <div class="card">
       <h2>1. Question Paper (PDF)</h2>
       <input type="file" id="qpPdf" accept="application/pdf" />
@@ -119,6 +143,135 @@ function showStage(n) {
   document.getElementById(`stage${n}`).classList.add("active");
 }
 
+function applyDigitizeResult(data) {
+  quiz = data.questions;
+  const ambiguousCount = data.ambiguousAnswerKey?.length || 0;
+  const unmatchedNote = ambiguousCount
+    ? ` ${ambiguousCount} question${ambiguousCount === 1 ? "" : "s"} couldn't be graded automatically -- the mark scheme's explanation didn't narrow to exactly one answer letter for them (shown, but excluded from scoring).`
+    : "";
+  document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
+  renderQuiz();
+  showStage(2);
+}
+
+document.getElementById("showUploadLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  showStage(1);
+});
+document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  showStage(0);
+});
+
+// ---- Library picker ----
+let library = null;
+
+async function loadLibrary() {
+  const statusEl = document.getElementById("libraryStatus");
+  const errorEl = document.getElementById("libraryError");
+  try {
+    const res = await fetch("/api/library");
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    library = data;
+    statusEl.style.display = "none";
+    document.getElementById("libraryPicker").style.display = "block";
+    populateBoards();
+  } catch (e) {
+    statusEl.style.display = "none";
+    errorEl.textContent = `Library unavailable: ${e.message}`;
+    errorEl.style.display = "block";
+  }
+}
+
+function fillSelect(select, items) {
+  select.innerHTML = items.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+}
+
+function populateBoards() {
+  fillSelect(document.getElementById("pickBoard"), Object.keys(library));
+  populateSubjects();
+}
+function populateSubjects() {
+  const board = document.getElementById("pickBoard").value;
+  fillSelect(document.getElementById("pickSubject"), Object.keys(library[board] || {}));
+  populateCategories();
+}
+function populateCategories() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  fillSelect(document.getElementById("pickCategory"), Object.keys((library[board] || {})[subject] || {}));
+  populatePapers();
+}
+function populatePapers() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const category = document.getElementById("pickCategory").value;
+  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const paperSelect = document.getElementById("pickPaper");
+  paperSelect.innerHTML = papers.map((p, i) => `<option value="${i}">${escapeHtml(p.title)}${p.msId ? "" : " (no mark scheme found)"}</option>`).join("");
+  updatePaperNote();
+}
+function updatePaperNote() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const category = document.getElementById("pickCategory").value;
+  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const idx = Number(document.getElementById("pickPaper").value);
+  const paper = papers[idx];
+  const note = document.getElementById("pickPaperNote");
+  const btn = document.getElementById("fetchAndDigitizeBtn");
+  if (paper && !paper.msId) {
+    note.textContent = "No matching mark scheme was found in the library for this paper -- it can't be auto-graded.";
+    btn.disabled = true;
+  } else {
+    note.textContent = "";
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("pickBoard").addEventListener("change", populateSubjects);
+document.getElementById("pickSubject").addEventListener("change", populateCategories);
+document.getElementById("pickCategory").addEventListener("change", populatePapers);
+document.getElementById("pickPaper").addEventListener("change", updatePaperNote);
+
+document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async () => {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const category = document.getElementById("pickCategory").value;
+  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const idx = Number(document.getElementById("pickPaper").value);
+  const paper = papers[idx];
+  if (!paper || !paper.msId) return;
+
+  const btn = document.getElementById("fetchAndDigitizeBtn");
+  const statusEl = document.getElementById("libraryStatus");
+  const errorEl = document.getElementById("libraryError");
+  errorEl.style.display = "none";
+  btn.disabled = true;
+  statusEl.style.display = "block";
+  statusEl.textContent = `Fetching "${paper.title}" and digitizing...`;
+  try {
+    const res = await fetch("/api/fetch-and-digitize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    applyDigitizeResult(data);
+    statusEl.style.display = "none";
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = "block";
+    statusEl.style.display = "none";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+loadLibrary();
+
 document.getElementById("digitizeBtn").addEventListener("click", async () => {
   const errorEl = document.getElementById("error1");
   const statusEl = document.getElementById("status1");
@@ -143,14 +296,7 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-    quiz = data.questions;
-    const ambiguousCount = data.ambiguousAnswerKey?.length || 0;
-    const unmatchedNote = ambiguousCount
-      ? ` ${ambiguousCount} question${ambiguousCount === 1 ? "" : "s"} couldn't be graded automatically -- the mark scheme's explanation didn't narrow to exactly one answer letter for them (shown, but excluded from scoring).`
-      : "";
-    document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
-    renderQuiz();
-    showStage(2);
+    applyDigitizeResult(data);
     statusEl.textContent = "";
   } catch (e) {
     errorEl.textContent = e.message;
@@ -224,7 +370,7 @@ document.getElementById("restartBtn").addEventListener("click", () => {
   quiz = [];
   document.getElementById("qpPdf").value = "";
   document.getElementById("msPdf").value = "";
-  showStage(1);
+  showStage(0);
 });
 </script>
 </body>

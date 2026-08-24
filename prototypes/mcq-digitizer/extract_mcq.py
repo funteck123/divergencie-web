@@ -50,12 +50,27 @@ QUESTION_NUM_RE = re.compile(r'^(\d{1,2})[\.\)]\s*(?!\d)(.*)$')
 # letters' siblings.
 OPTION_LETTER_RE = re.compile(r'^\(?([A-D])\)?\.?$')
 # "B is incorrect...", "C and D are incorrect...", "A, B and C are
-# incorrect..." -- the real elimination-explanation format. Captures the
-# whole letter-list prefix; individual letters are pulled out of it after
-# matching, since a single regex group can't repeat a comma list cleanly.
+# incorrect...", "Answer B is incorrect...", "Hence, answer B is
+# incorrect..." -- real MS's use a bare form, an "Answer "-prefixed form,
+# and a mid-sentence form with a connector word before it (confirmed on
+# two different real subjects: Biology's is always bare and sentence-
+# initial, Physics always includes "Answer" and is often preceded by
+# "Hence" or similar). `\b` instead of `^` deliberately -- it must match
+# wherever in the sentence the letter-clause starts, not just line start.
+# Captures the whole letter-list prefix; individual letters are pulled out
+# of it after matching, since a single regex group can't repeat a comma
+# list cleanly.
 ELIMINATION_RE = re.compile(
-    r'^((?:[A-D](?:,\s*|\s+and\s+))*[A-D])\s+(?:is|are)\s+incorrect',
-    re.IGNORECASE | re.MULTILINE,
+    r'\b(?:Answer\s+)?((?:[A-D](?:,\s*|\s+and\s+))*[A-D])\s+(?:is|are)\s+incorrect',
+    re.IGNORECASE,
+)
+# "Answer B is correct...", "B is correct...", "Hence answer B is
+# correct..." -- a direct positive statement, seen for real (Physics MS)
+# alongside elimination sentences for the wrong options. Checked first
+# when present: more direct than inferring by elimination.
+CORRECT_RE = re.compile(
+    r'\b(?:Answer\s+)?([A-D])\s+is\s+correct',
+    re.IGNORECASE,
 )
 
 
@@ -241,9 +256,18 @@ def parse_ms(pdf_path):
             if start_pos <= _pos(l["page"], l["y0"]) < end_pos
         ]
         option_letters = option_letters_in_block(lines, start_pos, end_pos) or {"A", "B", "C", "D"}
+        block_text = "\n".join(block_lines)
+
+        # A direct "X is correct" statement is the strongest signal when
+        # present -- use it over elimination inference. Still only trusted
+        # when exactly one such statement appears in the block (a second,
+        # contradicting one is a real ambiguity, not a coin flip).
+        correct_matches = {m.group(1).upper() for m in CORRECT_RE.finditer(block_text)}
+        if len(correct_matches) == 1:
+            answers[s["number"]] = correct_matches.pop()
+            continue
 
         eliminated = set()
-        block_text = "\n".join(block_lines)
         for em in ELIMINATION_RE.finditer(block_text):
             eliminated.update(re.findall(r'[A-D]', em.group(1)))
 

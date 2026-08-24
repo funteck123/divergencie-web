@@ -1,22 +1,30 @@
 // Standalone server for the mcq-digitizer prototype -- no framework, no
-// LLM, no API key, no network call anywhere in this tool. MCQ grading
-// needs zero judgment (a selected letter either matches the answer key
-// or it doesn't), so this whole tool is deterministic PyMuPDF + regex,
-// start to finish -- unlike exam-grader/quiz-digitizer, there is no
-// reliability/cost tradeoff to manage here at all.
+// LLM, no API key anywhere in this tool. MCQ grading needs zero judgment
+// (a selected letter either matches the answer key or it doesn't), so
+// this whole tool is deterministic PyMuPDF + regex, start to finish --
+// unlike exam-grader/quiz-digitizer, there is no reliability/cost
+// tradeoff to manage here at all.
 //
-// One endpoint: POST /api/digitize, takes a Question Paper PDF AND a
-// Mark Scheme PDF (both required -- this tool's whole premise, per
-// explicit direction, is that both are always provided together, unlike
-// exam-grader's optional generate-MS mode). Shells out to extract_mcq.py,
-// which parses the QP's questions+lettered options and the MS's answer
-// key, and merges them into one structured quiz with each question's
-// correct answer already attached.
+// Three endpoints:
+//   POST /api/digitize            -- manual upload: QP+MS PDFs as base64.
+//   GET  /api/library             -- the pre-built Drive file map
+//                                     (data/mcq-digitizer/drive-map/drive-map.json,
+//                                     built by a one-time crawl, NOT a live
+//                                     Google Drive API/MCP call from this
+//                                     server), reshaped into QP/MS pairs
+//                                     per subject/category for a picker UI.
+//   POST /api/fetch-and-digitize  -- library flow: given one paper's
+//                                     {qpId, msId} from /api/library,
+//                                     downloads just those two PDFs by
+//                                     their public Drive link (a plain
+//                                     HTTPS GET, not Drive API access) and
+//                                     digitizes them the same way as a
+//                                     manual upload.
 //
 // Grading itself happens entirely client-side in index.html: since
 // there's no LLM involved, there's no reason to round-trip to the server
 // for something as simple as "does the selected letter match
-// correctAnswer" -- the digitized quiz (options shown, correct answers
+// correctAnswer" -- the digitized quiz (images shown, correct answers
 // withheld from the UI but present in the JS data) is graded instantly,
 // in the browser, the moment Submit is clicked.
 import http from "http";
@@ -30,6 +38,7 @@ import { promisify } from "util";
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5177;
+const DRIVE_MAP_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "drive-map", "drive-map.json");
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -46,25 +55,120 @@ function readBody(req) {
   });
 }
 
-async function digitize(qpBase64, msBase64) {
+async function digitizeFromPaths(qpPath, msPath) {
+  // Default maxBuffer (1MB) isn't enough once a response embeds a
+  // cropped PNG per question -- a real 40-question paper's output runs
+  // several times that. 64MB comfortably covers any real paper without
+  // being an unbounded allowance.
+  const { stdout } = await execFileAsync(
+    "python3", [path.join(__dirname, "extract_mcq.py"), qpPath, msPath],
+    { maxBuffer: 64 * 1024 * 1024 },
+  );
+  return JSON.parse(stdout);
+}
+
+async function digitizeFromBase64(qpBase64, msBase64) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-"));
   const qpPath = path.join(tmpDir, "qp.pdf");
   const msPath = path.join(tmpDir, "ms.pdf");
   fs.writeFileSync(qpPath, Buffer.from(qpBase64, "base64"));
   fs.writeFileSync(msPath, Buffer.from(msBase64, "base64"));
   try {
-    // Default maxBuffer (1MB) isn't enough once a response embeds a
-    // cropped PNG per question -- a real 40-question paper's output runs
-    // several times that. 64MB comfortably covers any real paper without
-    // being an unbounded allowance.
-    const { stdout } = await execFileAsync(
-      "python3", [path.join(__dirname, "extract_mcq.py"), qpPath, msPath],
-      { maxBuffer: 64 * 1024 * 1024 },
-    );
-    return JSON.parse(stdout);
+    return await digitizeFromPaths(qpPath, msPath);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
+}
+
+async function downloadDriveFile(fileId) {
+  const res = await fetch(`https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`, {
+    headers: { "User-Agent": "Mozilla/5.0" },
+    redirect: "follow",
+  });
+  if (!res.ok) {
+    throw new Error(`Drive download failed for ${fileId}: HTTP ${res.status}`);
+  }
+  const contentType = res.headers.get("content-type") || "";
+  const buf = Buffer.from(await res.arrayBuffer());
+  // A file large enough to trip Drive's virus-scan interstitial (or any
+  // sign-in wall) comes back as an HTML page, not a PDF -- fail loudly
+  // rather than hand extract_mcq.py garbage to choke on silently.
+  if (contentType.includes("text/html") || buf.slice(0, 5).toString("ascii") !== "%PDF-") {
+    throw new Error(`File ${fileId} did not download as a PDF (got ${contentType || "unknown content-type"}) -- it may be too large for a direct link or need Drive sign-in.`);
+  }
+  return buf;
+}
+
+async function digitizeFromDriveIds(qpId, msId) {
+  const [qpBuf, msBuf] = await Promise.all([downloadDriveFile(qpId), downloadDriveFile(msId)]);
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-"));
+  const qpPath = path.join(tmpDir, "qp.pdf");
+  const msPath = path.join(tmpDir, "ms.pdf");
+  fs.writeFileSync(qpPath, qpBuf);
+  fs.writeFileSync(msPath, msBuf);
+  try {
+    return await digitizeFromPaths(qpPath, msPath);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
+// The crawl (study/agent-notes/09-google-drive-without-mcp-method.md)
+// writes a raw tree: board -> subject -> category -> "QP"/"MS" -> array
+// of {name, id, url}. A QP and its MS share the same filename except for
+// the trailing "QP.pdf"/"MS.pdf" token -- that's the pairing key. This
+// runs once per /api/library request against a small local JSON file, no
+// network call, so no caching layer needed.
+// Real Drive data isn't uniformly named -- IGCSE subjects share a QP/MS
+// filename except for the trailing "QP"/"MS" token, but A Levels
+// Chemistry pairs look like "11.2-redox-(ial-cie-chemistry)-qp.pdf" vs
+// "11.2-Redox-CIE-IAL-Chemistry-MS-MCQ-Unlocked.pdf" -- no shared
+// substring, just the same underlying words in a different order/case/
+// separator. Normalizing to a sorted, stopword-filtered token set (never
+// stripping digits -- chapter numbers like "11" vs "11.2" are exactly
+// the thing that must NOT collapse together) pairs every well-formed
+// case; a genuine content mismatch (verified on real Chemistry data: some
+// QPs use a "11.2" sub-chapter number their MS counterpart doesn't
+// repeat) still correctly comes back unpaired rather than being forced.
+const NORMALIZE_STOPWORDS = new Set([
+  "qp", "ms", "mcq", "unlocked", "ial", "cie", "worksheet", "paper",
+  "mark", "scheme", "markscheme", "answer", "answers", "key", "level",
+  "alevel", "igcse", "cambridge", "caie", "question", "questions", "pdf",
+]);
+function normalizeTitle(name) {
+  const tokens = name.toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ")
+    .filter((t) => t && !NORMALIZE_STOPWORDS.has(t));
+  return tokens.sort().join(" ");
+}
+function displayTitleOf(name) {
+  return name.replace(/\s*[-_(]*\s*(QP|MS)\)?\s*\.pdf$/i, "").trim();
+}
+
+function buildLibrary() {
+  const raw = JSON.parse(fs.readFileSync(DRIVE_MAP_PATH, "utf8"));
+
+  const boards = {};
+  for (const [board, subjects] of Object.entries(raw)) {
+    boards[board] = {};
+    for (const [subject, categories] of Object.entries(subjects)) {
+      boards[board][subject] = {};
+      for (const [category, files] of Object.entries(categories)) {
+        const qpList = files.QP || files.qp || [];
+        const msList = files.MS || files.ms || [];
+        const msByKey = new Map(msList.map((f) => [normalizeTitle(f.name), f]));
+        const papers = qpList.map((qp) => {
+          const ms = msByKey.get(normalizeTitle(qp.name));
+          return {
+            title: displayTitleOf(qp.name),
+            qpId: qp.id, qpName: qp.name,
+            msId: ms ? ms.id : null, msName: ms ? ms.name : null,
+          };
+        });
+        boards[board][subject][category] = papers;
+      }
+    }
+  }
+  return boards;
 }
 
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json" };
@@ -78,11 +182,45 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Both a Question Paper and a Mark Scheme PDF are required." }));
         return;
       }
-      const result = await digitize(body.qpBase64, body.msBase64);
+      const result = await digitizeFromBase64(body.qpBase64, body.msBase64);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url === "/api/library") {
+    try {
+      if (!fs.existsSync(DRIVE_MAP_PATH)) {
+        res.writeHead(503, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Drive map not built yet -- data/mcq-digitizer/drive-map/drive-map.json is missing." }));
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(buildLibrary()));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "POST" && req.url === "/api/fetch-and-digitize") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      if (!body.qpId || !body.msId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Both qpId and msId are required." }));
+        return;
+      }
+      const result = await digitizeFromDriveIds(body.qpId, body.msId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(502, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;

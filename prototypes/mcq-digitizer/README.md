@@ -25,10 +25,35 @@ doesn't generalize (see below) — it doesn't even try to OCR or re-typeset anyt
 
 No API key, no `.env`, no OpenRouter dependency, no image-recognition dependency at all.
 
+## Library mode: browse instead of upload
+
+The default screen is a picker (Board → Subject → Category → Paper) built from a
+pre-built local JSON map of DivergenCIE's own Drive
+(`data/mcq-digitizer/drive-map/drive-map.json`, gitignored, built by a one-time crawl --
+see `study/agent-notes/08-dc-course-materials-drive-structure.md` and `09-...method.md`).
+**This server makes no live Google Drive API/MCP call of any kind** -- the map is a
+static file, and picking a paper only triggers a plain HTTPS download of that one paper's
+two PDFs by their public Drive link (`GET /api/library` serves the map reshaped into
+QP/MS pairs; `POST /api/fetch-and-digitize` downloads + digitizes one pair on demand).
+Manual upload (the original flow) is still available as a fallback link.
+
+QP/MS pairing is done by normalizing each filename to a sorted, stopword-filtered token
+set (never stripping digits, since a chapter number like "11" vs "11.2" is exactly the
+thing that must not collapse together) -- needed because the real Drive data isn't
+uniformly named: IGCSE files share a name except for the trailing QP/MS token, but A
+Levels Chemistry's QP and MS filenames share no substring at all, just the same words in
+a different order/case ("11.2-redox-(ial-cie-chemistry)-qp.pdf" vs
+"11.2-Redox-CIE-IAL-Chemistry-MS-MCQ-Unlocked.pdf"). Real result across the whole mapped
+library: **186/196 (95%) of QPs paired correctly** with their MS; the other 10 are a
+genuine content mismatch in that one folder (some QPs there use a sub-chapter number like
+"11.2" their MS counterpart doesn't repeat) and are correctly left unpaired rather than
+guessed.
+
 ## How it works
 
-1. Upload a QP PDF and an MS PDF.
-2. `POST /api/digitize` shells out to `extract_mcq.py`, which:
+1. Either pick a paper from the library, or upload a QP PDF and an MS PDF manually.
+2. `extract_mcq.py` (shelled out to by either `/api/fetch-and-digitize` or
+   `/api/digitize`):
    - Finds each question's start (a heading line like `"1."` or `"Question 1"`, bold or
      ≥10.5pt) and crops everything from there to where its own content ends — as a PNG,
      never re-typeset text — plus the set of option letters (A/B/C/D, or fewer) it can see
@@ -89,20 +114,41 @@ approach was built and retested against the same real files:
   ("Topic: 5.0 Enzymes" parsed as "question 5") — fixed with a `(?!\d)` guard so a decimal
   topic number is never mistaken for a question heading.
 
+**A second real subject, tested after library mode was added**: `CAIE IGCSE Physics
+Ch1.1 Length & Time`. Its MS uses a *different* elimination phrasing than Biology's --
+always prefixed with "Answer " (`"Answer B is incorrect..."`, `"Answer A is correct."`),
+and sometimes mid-sentence after a connector word (`"Hence, answer B is correct"`),
+neither of which the original bare-letter-at-line-start regex caught. Fixed by relaxing
+`ELIMINATION_RE`/adding `CORRECT_RE` to match `\b` anywhere in the block text rather than
+only `^` at a line start, and by trying a direct "X is correct" statement before falling
+back to elimination (more direct when both are present). Result: **16/16 questions found,
+4/16 (25%) confidently graded** -- lower than Biology's 65%, and confirmed why by reading
+the actual pages: several of this MS's own pages are genuinely near-empty (just the
+question-number banner and a page footer, no explanation text at all) -- a real per-
+document ceiling, not a parsing gap left on the table.
+
 ## Known limitations (honest, real, not hedged away)
 
-- **~65% auto-grading coverage is a real, current ceiling** on an MS written in this
-  elimination-explanation style, not a bug to be fixed later — the other ~35% genuinely
-  don't state which letters are wrong anywhere in their text, only the reasoning for the
-  right one, which needs actual reading comprehension (an LLM) to resolve. Explicitly out
-  of scope per direction: no LLM, no OCR, in this tool.
+- **Auto-grading coverage varies by MS authoring style and is a real ceiling, not a bug
+  to keep chasing** -- confirmed on two different real subjects with two different
+  elimination phrasings (65% on Biology, 25% on Physics, the latter because several of its
+  own pages have no explanation text at all). Whatever isn't resolvable by elimination or a
+  direct statement needs actual reading comprehension (an LLM) to close further --
+  explicitly out of scope per direction: no LLM, no OCR, in this tool.
 - Heading detection (`"1."` bold/≥10.5pt, or `"Question 1"`) is still a heuristic tuned to
-  what's been seen so far (two real papers + one self-authored sample) — a paper with a
-  meaningfully different heading style could still slip past it.
+  what's been seen so far (three real papers across two subjects + one self-authored
+  sample) — a paper with a meaningfully different heading style could still slip past it.
 - A question whose own content spans more than 2 pages only gets 2 crop images (start page
   tail + end page head) — a 3+-page single question isn't handled.
-- Not yet tested against a subject/board other than CAIE IGCSE Biology, or a paper using
-  numeric (1/2/3/4) rather than lettered options.
+- QP/MS filename pairing (library mode) is 95% (186/196) across the whole mapped library --
+  the other 5% is a genuine content mismatch in one subject's source files, not a pairing
+  bug (see "Library mode" above).
+- Not yet tested against a subject/board other than CAIE IGCSE Biology/Physics, or a paper
+  using numeric (1/2/3/4) rather than lettered options.
+- `/api/fetch-and-digitize` downloads straight from a public Drive link with no size cap
+  handling beyond detecting Drive's own HTML interstitial (for files too large for a direct
+  link) and failing loudly -- untested against a paper large enough to actually trigger
+  that interstitial.
 
 ## Running it
 
