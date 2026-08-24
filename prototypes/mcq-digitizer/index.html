@@ -31,6 +31,12 @@
   .mcq-item { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
   .mcq-item .qnum { font-weight: 700; color: var(--navy); font-size: 0.95rem; }
   .mcq-item .qtext { margin: 0.5rem 0 0.75rem; font-size: 0.9rem; }
+  .mcq-item .qimg { max-width: 100%; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.75rem; display: block; }
+  .mcq-item .ungradable-note { font-size: 0.75rem; color: var(--coral); background: #fdecea; border-radius: 6px; padding: 0.5rem 0.7rem; margin-bottom: 0.6rem; }
+  .letter-row { display: flex; gap: 0.5rem; }
+  .letter-btn { flex: 1; text-align: center; padding: 0.6rem 0; border: 1.5px solid var(--border); border-radius: 6px; font-weight: 700; cursor: pointer; background: white; }
+  .letter-btn input { display: none; }
+  .letter-btn.selected { border-color: var(--navy); background: var(--navy); color: white; }
   .option-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.4rem; cursor: pointer; }
   .option-row:hover { border-color: var(--sky); }
   .option-row input { flex-shrink: 0; }
@@ -138,8 +144,9 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     quiz = data.questions;
-    const unmatchedNote = data.unmatchedAnswerKey?.length
-      ? ` (${data.unmatchedAnswerKey.length} question${data.unmatchedAnswerKey.length === 1 ? "" : "s"} had no matching answer in the mark scheme: ${data.unmatchedAnswerKey.join(", ")})`
+    const ambiguousCount = data.ambiguousAnswerKey?.length || 0;
+    const unmatchedNote = ambiguousCount
+      ? ` ${ambiguousCount} question${ambiguousCount === 1 ? "" : "s"} couldn't be graded automatically -- the mark scheme's explanation didn't narrow to exactly one answer letter for them (shown, but excluded from scoring).`
       : "";
     document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
     renderQuiz();
@@ -159,16 +166,25 @@ function renderQuiz() {
   container.innerHTML = quiz.map((q) => `
     <div class="mcq-item">
       <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
-      <div class="qtext">${escapeHtml(q.questionText)}</div>
-      ${q.options.map((opt) => `
-        <label class="option-row">
-          <input type="radio" name="q${escapeHtml(q.questionNumber)}" value="${escapeHtml(opt.label)}" />
-          <span class="opt-label">${escapeHtml(opt.label)}</span>
-          <span>${escapeHtml(opt.text)}</span>
-        </label>
-      `).join("")}
+      ${q.images.map((img) => `<img class="qimg" src="${img}" alt="Question ${escapeHtml(q.questionNumber)}" />`).join("")}
+      ${!q.correctAnswer ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
+      <div class="letter-row">
+        ${q.optionLetters.map((letter) => `
+          <label class="letter-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-letter="${escapeHtml(letter)}">
+            <input type="radio" name="q${escapeHtml(q.questionNumber)}" value="${escapeHtml(letter)}" />
+            ${escapeHtml(letter)}
+          </label>
+        `).join("")}
+      </div>
     </div>
   `).join("");
+  container.querySelectorAll(".letter-btn input").forEach((input) => {
+    input.addEventListener("change", () => {
+      const name = input.name;
+      container.querySelectorAll(`.letter-btn[data-qnum="${CSS.escape(name.slice(1))}"]`).forEach((btn) => btn.classList.remove("selected"));
+      input.closest(".letter-btn").classList.add("selected");
+    });
+  });
 }
 
 document.getElementById("submitQuizBtn").addEventListener("click", () => {
@@ -192,17 +208,14 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
   document.getElementById("scoreText").textContent = `${correctCount} / ${gradable}`;
 
   const container = document.getElementById("resultsContainer");
-  container.innerHTML = results.map((r) => {
-    const optText = (label) => r.options.find((o) => o.label === label)?.text || "";
-    return `
-      <div class="result-item ${r.verdict === "correct" ? "correct" : r.verdict === "incorrect" ? "incorrect" : "unanswered"}">
-        <span class="rverdict ${r.verdict === "correct" ? "correct" : "incorrect"}">${r.verdict === "correct" ? "Correct" : r.verdict === "incorrect" ? "Incorrect" : r.verdict === "unanswered" ? "Unanswered" : "No answer key"}</span>
-        <span class="rq">Question ${escapeHtml(r.questionNumber)}</span>
-        <div>Your answer: ${r.studentAnswer ? `${escapeHtml(r.studentAnswer)} — ${escapeHtml(optText(r.studentAnswer))}` : "(none selected)"}</div>
-        ${r.verdict !== "correct" && r.correctAnswer ? `<div style="margin-top:0.3rem;"><strong>Correct answer:</strong> ${escapeHtml(r.correctAnswer)} — ${escapeHtml(optText(r.correctAnswer))}</div>` : ""}
-      </div>
-    `;
-  }).join("");
+  container.innerHTML = results.map((r) => `
+    <div class="result-item ${r.verdict === "correct" ? "correct" : r.verdict === "incorrect" ? "incorrect" : "unanswered"}">
+      <span class="rverdict ${r.verdict === "correct" ? "correct" : "incorrect"}">${r.verdict === "correct" ? "Correct" : r.verdict === "incorrect" ? "Incorrect" : r.verdict === "unanswered" ? "Unanswered" : "Not auto-gradable"}</span>
+      <span class="rq">Question ${escapeHtml(r.questionNumber)}</span>
+      <div>Your answer: ${r.studentAnswer ? escapeHtml(r.studentAnswer) : "(none selected)"}</div>
+      ${r.verdict !== "correct" && r.correctAnswer ? `<div style="margin-top:0.3rem;"><strong>Correct answer:</strong> ${escapeHtml(r.correctAnswer)}</div>` : ""}
+    </div>
+  `).join("");
 
   showStage(3);
 });

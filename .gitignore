@@ -75,17 +75,19 @@ builds
 # Same reasoning as exam-grader/samples/ above -- real, third-party
 # question papers used for manual testing don't belong in a public repo.
 /prototypes/quiz-digitizer/samples/
-# mcq-digitizer's .env holds Google Drive folder/sheet links, not an API
-# key, but the folder structure could reveal internal course/student info.
-/prototypes/mcq-digitizer/.env
-# mcq-digitizer has no LLM/API key but samples/ could still hold a real
-# user-provided MCQ paper later -- same reasoning as above.
+# mcq-digitizer has no LLM/API key (Drive links now live in the root
+# .env, not a per-prototype one) but samples/ could still hold a real
+# user-provided MCQ paper -- same reasoning as the other prototypes above.
 /prototypes/mcq-digitizer/samples/
 
 # study/ is a working scratch area (agent notes, reference screenshots,
 # now Google Drive links to real course materials) -- not meant to be
 # public repo content.
 /study/
+
+# Python bytecode cache -- shows up wherever a prototype's .py script
+# gets run (mcq-digitizer, quiz-digitizer).
+__pycache__/
 
 # Redis snapshot file (redis-server writes this to its cwd) — debris from
 # running the local redis-server used by the YouTube-transcript tool.

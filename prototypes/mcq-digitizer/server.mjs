@@ -53,7 +53,14 @@ async function digitize(qpBase64, msBase64) {
   fs.writeFileSync(qpPath, Buffer.from(qpBase64, "base64"));
   fs.writeFileSync(msPath, Buffer.from(msBase64, "base64"));
   try {
-    const { stdout } = await execFileAsync("python3", [path.join(__dirname, "extract_mcq.py"), qpPath, msPath]);
+    // Default maxBuffer (1MB) isn't enough once a response embeds a
+    // cropped PNG per question -- a real 40-question paper's output runs
+    // several times that. 64MB comfortably covers any real paper without
+    // being an unbounded allowance.
+    const { stdout } = await execFileAsync(
+      "python3", [path.join(__dirname, "extract_mcq.py"), qpPath, msPath],
+      { maxBuffer: 64 * 1024 * 1024 },
+    );
     return JSON.parse(stdout);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
