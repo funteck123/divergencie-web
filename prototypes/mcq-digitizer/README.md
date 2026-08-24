@@ -127,17 +127,59 @@ the actual pages: several of this MS's own pages are genuinely near-empty (just 
 question-number banner and a page footer, no explanation text at all) -- a real per-
 document ceiling, not a parsing gap left on the table.
 
+## Systematic pass across all 5 subjects (2026-08-25)
+
+The two-file spot check above wasn't enough to trust as "the" coverage rate -- sampled 24
+real MS files (4 per subject, random) across the whole library and found two more real,
+fixable bugs, plus one genuine source-content limit:
+
+- **Heading font size doesn't generalize across documents, at all.** The Enzymes file's
+  headings were `10.98pt` against `10.0pt` body text (bigger); a real IGCSE Chemistry file
+  had headings and body text at the *identical* size; a real A Level Physics file had
+  headings at `10.02pt` against `10.98pt` "body" text (*smaller*). No fixed threshold can
+  satisfy all three. Fixed by dropping the size/bold gate entirely for the punctuated `"N."`
+  form and trusting the punctuation pattern itself -- confirmed clean (no new false
+  positives) across all 24 sampled files plus the two originally-verified real papers.
+- **A second heading form exists with no punctuation at all** (`"1 For each atom of
+  carbon..."`, no `.`/`)` after the number) -- real, on an IGCSE Chemistry file. Added as a
+  second pattern, but *only* accepted when an option-letter line (A/B/C/D alone) appears
+  within the next 20 lines -- guards against an ordinary sentence that happens to start
+  with a number.
+- **A third answer-key format exists**: some files (all of A Levels Chemistry/Biology/
+  Physics, in this sample) use a plain flat list -- `"1."` then `"B"` on the very next line,
+  no explanation at all. This isn't new logic, just previously unreachable: once heading
+  detection stopped requiring a specific font size, these questions' single-letter blocks
+  resolved automatically through the *existing* elimination logic (a block containing only
+  one bare letter and no eliminated letters has exactly one letter "remaining").
+- Also widened `CORRECT_RE`/`ELIMINATION_RE` for two more real phrasings found in this
+  pass: `"X is the correct answer"` (Chemistry) and `"X is/are therefore incorrect"`.
+
+**Result, whole 24-file sample, before -> after this pass**: A Levels Chemistry/Biology/
+Physics went from largely **0% (undetected entirely)** to **100%**. IGCSE Chemistry rose
+to **62%**, IGCSE Biology to **56%**. IGCSE Physics stayed low at **4%** -- confirmed why,
+not assumed: three different real IGCSE Physics MS files were checked page-by-page, and
+all three have long runs of genuinely near-empty pages (pages 2-16 of one file run ~141
+characters each -- just a page number and a "Question N" label, no diagram, no
+explanation) that no parser can extract an answer from, because there is no answer text
+there to extract. **Grand total across the sample: 622/778 (80%)**, verified live end-to-
+end afterward against a brand-new subject never tested before (A Levels Chemistry Ch1
+Atoms/Molecules/Stoichiometry, via the actual running library-fetch flow): **36/36
+questions found, 36/36 (100%) confidently graded**.
+
 ## Known limitations (honest, real, not hedged away)
 
-- **Auto-grading coverage varies by MS authoring style and is a real ceiling, not a bug
-  to keep chasing** -- confirmed on two different real subjects with two different
-  elimination phrasings (65% on Biology, 25% on Physics, the latter because several of its
-  own pages have no explanation text at all). Whatever isn't resolvable by elimination or a
-  direct statement needs actual reading comprehension (an LLM) to close further --
-  explicitly out of scope per direction: no LLM, no OCR, in this tool.
-- Heading detection (`"1."` bold/≥10.5pt, or `"Question 1"`) is still a heuristic tuned to
-  what's been seen so far (three real papers across two subjects + one self-authored
-  sample) — a paper with a meaningfully different heading style could still slip past it.
+- **Auto-grading coverage varies by MS authoring style AND by how complete the source file
+  itself is, and is a real ceiling, not a bug to keep chasing.** Measured at 80% (622/778)
+  across a 24-file random sample spanning all 5 subjects (100% on A Levels, 56-62% on IGCSE
+  Chemistry/Biology, 4% on IGCSE Physics because several of its own real source files are
+  missing their explanation content outright -- see the systematic-pass section above for
+  the exact evidence). Whatever isn't resolvable by elimination or a direct statement needs
+  actual reading comprehension (an LLM) to close further -- explicitly out of scope per
+  direction: no LLM, no OCR, in this tool.
+- Heading detection (punctuated `"N."`/`"N)"`, a validated bare `"N text"` form, or
+  `"Question N"`) is a heuristic tuned to what's been seen so far (24+ real files across
+  all 5 subjects + one self-authored sample) — a paper with a meaningfully different
+  heading style could still slip past it.
 - A question whose own content spans more than 2 pages only gets 2 crop images (start page
   tail + end page head) — a 3+-page single question isn't handled.
 - QP/MS filename pairing (library mode) is 95% (186/196) across the whole mapped library --

@@ -44,6 +44,14 @@ QUESTION_KEYWORD_RE = re.compile(r'^Question\s+(\d{1,2})\.?\s*(.*)$', re.IGNOREC
 # mistaken for "question 5" -- a real question is never followed
 # immediately by another digit.
 QUESTION_NUM_RE = re.compile(r'^(\d{1,2})[\.\)]\s*(?!\d)(.*)$')
+# A heading with NO punctuation at all after the number ("1 For each atom
+# of carbon...") -- confirmed real (a savemyexams-sourced MS format).
+# Riskier than the punctuated form since an ordinary sentence could
+# coincidentally start a line with a bare number -- find_question_starts
+# only keeps a match of THIS pattern if option letters are found nearby
+# afterward (see the validation pass there), which a coincidental body
+# sentence never has.
+QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(].*)$')
 # A bare option-letter line: "A", "A.", "(A)" and nothing else -- used to
 # both detect which option letters exist for a question (some real
 # questions only have 3, not 4) and, in parse_ms, to find eliminated
@@ -61,15 +69,17 @@ OPTION_LETTER_RE = re.compile(r'^\(?([A-D])\)?\.?$')
 # of it after matching, since a single regex group can't repeat a comma
 # list cleanly.
 ELIMINATION_RE = re.compile(
-    r'\b(?:Answer\s+)?((?:[A-D](?:,\s*|\s+and\s+))*[A-D])\s+(?:is|are)\s+incorrect',
+    r'\b(?:Answer\s+)?((?:[A-D](?:,\s*|\s+and\s+))*[A-D])\s+(?:is|are)\s+(?:therefore\s+)?(?:the\s+)?incorrect',
     re.IGNORECASE,
 )
 # "Answer B is correct...", "B is correct...", "Hence answer B is
-# correct..." -- a direct positive statement, seen for real (Physics MS)
-# alongside elimination sentences for the wrong options. Checked first
-# when present: more direct than inferring by elimination.
+# correct...", "C is the correct answer..." -- a direct positive
+# statement, seen for real (Physics MS uses "Answer X is correct",
+# Chemistry MS uses "X is the correct answer") alongside elimination
+# sentences for the wrong options. Checked first when present: more
+# direct than inferring by elimination.
 CORRECT_RE = re.compile(
-    r'\b(?:Answer\s+)?([A-D])\s+is\s+correct',
+    r'\b(?:Answer\s+)?([A-D])\s+is\s+(?:the\s+correct\s+answer|correct)\b',
     re.IGNORECASE,
 )
 
@@ -113,23 +123,39 @@ def extract_lines(doc):
 def find_question_starts(lines):
     """Every detected question boundary, in document order: {number,
     inlineText (whatever followed the number on its own line, often
-    empty), page, y0}."""
+    empty), page, y0}.
+
+    Font size/bold was tried as the gate for the punctuated "N." form and
+    dropped: real files disagree with each other about whether a heading
+    is bigger, equal to, or (once, for real) SMALLER than its own body
+    text, so no fixed threshold generalizes. The punctuation itself
+    ("N." or "N)" at a line's start, never followed by another digit) is
+    tight enough on its own -- confirmed across every real file sampled
+    so far, no false positives found from dropping the gate."""
     starts = []
-    for line in lines:
+    for idx, line in enumerate(lines):
         m = QUESTION_KEYWORD_RE.match(line["text"])
-        # >= 10.5, not 11: PyMuPDF reports a nominal 11pt heading as
-        # 10.98-10.99 in real files (rounding in the PDF's own font
-        # metrics, not a bug in this extraction) -- a strict >= 11 silently
-        # dropped every heading that came in a hair under it. Real body
-        # text tops out at 10.0 here, so 10.5 is a safe cut with margin
-        # on both sides, not just a fudge to make one file pass.
-        if not m and (line["bold"] or line["size"] >= 10.5):
+        if not m:
             m = QUESTION_NUM_RE.match(line["text"])
         if m:
             starts.append({
                 "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                 "page": line["page"], "y0": line["y0"],
             })
+            continue
+        # The bare "N text" form (no punctuation at all) is real but
+        # riskier -- a body sentence can coincidentally start a line with
+        # a number. Only accepted if an option-letter line (A/B/C/D alone)
+        # shows up within the next 20 lines, which a coincidental digit
+        # never has.
+        m = QUESTION_BARE_RE.match(line["text"])
+        if m:
+            nearby = lines[idx + 1: idx + 21]
+            if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                starts.append({
+                    "number": m.group(1), "inlineText": m.group(2).strip(),
+                    "page": line["page"], "y0": line["y0"],
+                })
     return starts
 
 
