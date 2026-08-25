@@ -33,7 +33,9 @@ import sys
 import re
 import json
 import base64
+import io
 import fitz
+from PIL import Image
 
 QUESTION_KEYWORD_RE = re.compile(r'^Question\s+(\d{1,2})\.?\s*(.*)$', re.IGNORECASE)
 # `\s*` (not `\s+`) deliberately -- a real question heading is often just
@@ -174,11 +176,37 @@ def option_letters_in_block(lines, start_pos, end_pos):
     return letters
 
 
-def render_question_images(doc, page_start, y_start, page_end, y_end):
-    """Crops the question's stem+options exactly as printed, as one PNG
-    per page it spans (almost always one; two only if a question's
-    options run past a page break -- returned as a second image rather
-    than stitched, since this tool has no image-compositing dependency)."""
+def stitch_images_vertically(png_bytes_list, padding=24):
+    """Combines multiple page-crop PNGs into ONE image, stacked top to
+    bottom in the same order given (document reading order -- the
+    earliest page's content first), with a plain white padding gap
+    between each so a page-break join never looks like it ran two
+    unrelated crops together with no visual separation."""
+    if len(png_bytes_list) == 1:
+        return png_bytes_list[0]
+    imgs = [Image.open(io.BytesIO(b)).convert("RGB") for b in png_bytes_list]
+    max_w = max(im.width for im in imgs)
+    total_h = sum(im.height for im in imgs) + padding * (len(imgs) - 1)
+    canvas = Image.new("RGB", (max_w, total_h), "white")
+    y = 0
+    for i, im in enumerate(imgs):
+        canvas.paste(im, (0, y))
+        y += im.height
+        if i < len(imgs) - 1:
+            y += padding
+    buf = io.BytesIO()
+    canvas.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def render_question_image(doc, page_start, y_start, page_end, y_end):
+    """Crops the question's stem+options exactly as printed. Almost
+    always one page; when a question's own content spans a page break,
+    each page's crop is rendered separately (so nothing before y_start
+    on the first page or after y_end on the last page leaks in) and then
+    combined into a SINGLE image via stitch_images_vertically -- one
+    image per question, always, never a list the caller has to know how
+    to join itself."""
     images = []
     if page_start == page_end:
         page = doc[page_start]
@@ -198,7 +226,7 @@ def render_question_images(doc, page_start, y_start, page_end, y_end):
             last_page = doc[page_end]
             rect2 = fitz.Rect(0, 0, last_page.rect.width, y_end - 4)
             images.append(last_page.get_pixmap(clip=rect2, matrix=fitz.Matrix(2, 2)).tobytes("png"))
-    return images
+    return stitch_images_vertically(images)
 
 
 def parse_qp(pdf_path):
@@ -237,16 +265,13 @@ def parse_qp(pdf_path):
             if y_bottom is not None:
                 y_bottom += 10
 
-        images = render_question_images(doc, s["page"], s["y0"], page_end, y_bottom)
-        images_b64 = [
-            "data:image/png;base64," + base64.b64encode(img).decode("ascii")
-            for img in images
-        ]
+        image_bytes = render_question_image(doc, s["page"], s["y0"], page_end, y_bottom)
+        image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
 
         questions.append({
             "questionNumber": s["number"],
             "optionLetters": sorted(letters) if letters else ["A", "B", "C", "D"],
-            "images": images_b64,
+            "image": image_b64,
         })
     doc.close()
     return questions

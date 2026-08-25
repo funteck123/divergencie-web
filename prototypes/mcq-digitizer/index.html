@@ -312,7 +312,7 @@ function renderQuiz() {
   container.innerHTML = quiz.map((q) => `
     <div class="mcq-item">
       <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
-      ${q.images.map((img) => `<img class="qimg" src="${img}" alt="Question ${escapeHtml(q.questionNumber)}" />`).join("")}
+      <img class="qimg" src="${q.image}" alt="Question ${escapeHtml(q.questionNumber)}" />
       ${!q.correctAnswer ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
       <div class="letter-row">
         ${q.optionLetters.map((letter) => `
