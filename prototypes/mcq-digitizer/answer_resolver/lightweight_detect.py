@@ -116,10 +116,17 @@ def detect_answer(pdf_path, page_num):
         # Real failure found on a real file: a page with unrelated red
         # diagram elements produced 6 red blobs (should have been 3),
         # confidently inferring a nonsensical "E" answer for a 4-option
-        # question. No real MCQ page here has more than ~5 options, so a
-        # mark count outside 2-5 means something other than the answer
-        # icons got picked up -- ambiguous, not a guess.
-        "plausible": 2 <= total <= 5,
+        # question. The original fix here capped `total` at 5, reasoning
+        # "no real MCQ page has more than ~5 options" -- but this whole
+        # tool only ever supports A-D (4 options; OPTION_LETTER_RE and
+        # everything downstream of it are hard-bounded to A-D), and
+        # `total <= 5` still lets the green mark land at index 4 --
+        # chr(65+4) = "E" -- if it happens to rank last among 5 detected
+        # marks. Confirmed this exact failure recurred for real on CAIE
+        # IGCSE Physics Ch2.2 "Thermal Properties" Worksheet 2 Q3 despite
+        # the earlier fix. The bound needs to match what chr(65+idx) can
+        # ever validly produce -- at most 4 marks, not 5.
+        "plausible": 2 <= total <= 4,
     }
 
 if __name__ == "__main__":

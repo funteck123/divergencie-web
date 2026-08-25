@@ -116,7 +116,13 @@ def resolve_file(ms_id, cache):
             r = lw.detect_answer(pdf_path, page)
         except Exception:
             r = None
-        if r and r["greenCount"] == 1 and r["plausible"]:
+        # idx < 4 is a hard second gate, not redundant with r["plausible"]
+        # -- this tool only ever supports A-D, and a real bug (an
+        # out-of-bounds "E" answer) already reached the database once
+        # through this exact path despite lightweight_detect.py's own
+        # bound being intended to prevent it. Never trust a single layer
+        # for a value that flows straight into a graded answer.
+        if r and r["greenCount"] == 1 and r["plausible"] and r["markOrder"].index("green") < 4:
             idx = r["markOrder"].index("green")
             letter = chr(65 + idx)
             file_cache[qnum] = {"answer": letter, "source": "lightweight"}

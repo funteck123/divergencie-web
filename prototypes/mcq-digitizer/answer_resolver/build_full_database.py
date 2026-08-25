@@ -132,19 +132,25 @@ def save_json_atomic(path, data):
 
 
 def save_question_images(qp_id, questions):
+    # extract_mcq.parse_qp returns ONE stitched image per question under
+    # "image" (singular) -- this used to be a list under "images" before
+    # this session's crop-stitching consolidation, a schema this function
+    # never got updated for; calling it as written would KeyError the
+    # instant a real rebuild ran. Also drops the old "skip if the file
+    # already exists" check -- appropriate for an incremental patch run,
+    # but wrong for a full rebuild meant to replace every crop with this
+    # session's fixed version: an existing file at this path is exactly
+    # the STALE pre-fix image a rebuild exists to replace, not a reason
+    # to keep it.
     img_dir = os.path.join(IMAGES_DIR, qp_id)
     os.makedirs(img_dir, exist_ok=True)
     for q in questions:
-        paths = []
-        for i, data_uri in enumerate(q["images"]):
-            b64 = data_uri.split(",", 1)[1]
-            rel_path = f"data/mcq-digitizer/full-library/images/{qp_id}/q{q['questionNumber']}_{i}.png"
-            abs_path = os.path.join(REPO_ROOT, rel_path)
-            if not os.path.exists(abs_path):
-                open(abs_path, "wb").write(base64.b64decode(b64))
-            paths.append(rel_path)
-        q["imagePaths"] = paths
-        del q["images"]
+        b64 = q["image"].split(",", 1)[1]
+        rel_path = f"data/mcq-digitizer/full-library/images/{qp_id}/q{q['questionNumber']}.png"
+        abs_path = os.path.join(REPO_ROOT, rel_path)
+        open(abs_path, "wb").write(base64.b64decode(b64))
+        q["imagePaths"] = [rel_path]
+        del q["image"]
     return questions
 
 
@@ -206,7 +212,13 @@ def resolve_remaining(ms_id, ms_path, needed_qnums, cache):
             r = lw.detect_answer(ms_path, page)
         except Exception:
             r = None
-        if r and r["greenCount"] == 1 and r["plausible"]:
+        # idx < 4 is a hard second gate, not redundant with r["plausible"]
+        # -- this tool only ever supports A-D, and a real bug (an
+        # out-of-bounds "E" answer) already reached the database once
+        # through this exact path despite lightweight_detect.py's own
+        # bound being intended to prevent it. Never trust a single layer
+        # for a value that flows straight into a graded answer.
+        if r and r["greenCount"] == 1 and r["plausible"] and r["markOrder"].index("green") < 4:
             idx = r["markOrder"].index("green")
             file_cache[qnum] = {"answer": chr(65 + idx), "source": "lightweight"}
         else:
