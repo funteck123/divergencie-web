@@ -161,7 +161,7 @@ def ambiguous_with_pages(pdf_path):
     this one just needs the pure page-mapping given any MS pdf path."""
     doc = fitz.open(pdf_path)
     lines = em.extract_lines(doc)
-    starts, _quasi = em.find_question_starts(lines)
+    starts, _quasi = em.find_question_starts(lines, doc)
     results = {}
     for i, s in enumerate(starts):
         m = re.match(r'^([A-Da-d])\.?$', s["inlineText"])

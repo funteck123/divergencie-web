@@ -241,7 +241,30 @@ def _is_tick_row(lines, idx, tolerance=3, min_siblings=2):
     return False
 
 
-def find_question_starts(lines):
+def _page_image_ranges(doc):
+    """{page_num: [(top, bottom), ...]} for every embedded raster-image
+    block in the document -- precomputed once per call so the option-
+    proximity check below can consult it cheaply per candidate line."""
+    ranges = {}
+    for pno in range(doc.page_count):
+        imgs = [
+            (b["bbox"][1], b["bbox"][3])
+            for b in doc[pno].get_text("dict").get("blocks", [])
+            if b.get("type") == 1 and b.get("bbox")
+        ]
+        if imgs:
+            ranges[pno] = imgs
+    return ranges
+
+
+def _has_nearby_image(page_images, page, y0, y_window=600):
+    return any(
+        y0 - 50 <= top < y0 + y_window
+        for top, _bot in page_images.get(page, [])
+    )
+
+
+def find_question_starts(lines, doc=None):
     """Every detected question boundary, in document order: {number,
     inlineText (whatever followed the number on its own line, often
     empty), page, y0}.
@@ -272,6 +295,17 @@ def find_question_starts(lines):
     raw_by_idx = lines
     lines = sorted(lines, key=lambda l: (l["page"], l["y0"]))
     starts = []
+    # A bare numbered stem next to a raster-image answer table (a common
+    # real MS layout -- an infographic-style table/flowchart with
+    # checkmarks/crosses, not extractable A-D text) has NO nearby
+    # OPTION_LETTER_RE match at all, so the option-proximity gate below
+    # rejected it outright and the whole question vanished from the MS
+    # answer-resolution pipeline entirely -- confirmed real and, by far,
+    # the dominant cause of "can't auto-grade" questions across the real
+    # corpus (74 of 87 in one full-library audit). An embedded image
+    # nearby is just as valid evidence this is a real question as
+    # extractable option-letter text is.
+    page_images = _page_image_ranges(doc) if doc is not None else {}
     # Some real questions are structurally real (a real numbered stem,
     # sentence-shaped, at the right position) but never become a
     # detected "question" because they genuinely have no A-D options
@@ -326,7 +360,7 @@ def find_question_starts(lines):
             # sentence; nothing this short is one.
             if len(content) >= 20:
                 nearby = lines[idx + 1: idx + 31]
-                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby) or _has_nearby_image(page_images, line["page"], line["y0"]):
                     starts.append({
                         "number": m.group(1), "inlineText": content,
                         "page": line["page"], "y0": line["y0"],
@@ -350,7 +384,7 @@ def find_question_starts(lines):
             content = m.group(2)
             if len(content) >= 25 and len(content.split()) >= 5:
                 nearby = lines[idx + 1: idx + 31]
-                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby) or _has_nearby_image(page_images, line["page"], line["y0"]):
                     starts.append({
                         "number": m.group(1), "inlineText": content.strip(),
                         "page": line["page"], "y0": line["y0"],
@@ -390,7 +424,7 @@ def find_question_starts(lines):
             candidates = [c for c in (next_in_raw_order, next_in_position_order) if c]
             if any(SENTENCE_START_RE.match(c["text"]) for c in candidates):
                 nearby = lines[idx + 1: idx + 31]
-                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby) or _has_nearby_image(page_images, line["page"], line["y0"]):
                     starts.append({
                         "number": m.group(1), "inlineText": "",
                         "page": line["page"], "y0": line["y0"],
@@ -657,7 +691,7 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
 def parse_qp(pdf_path):
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    starts, quasi = find_question_starts(lines)
+    starts, quasi = find_question_starts(lines, doc)
     quasi_pos = sorted(_pos(q["page"], q["y0"]) for q in quasi)
 
     questions = []
@@ -798,7 +832,7 @@ def parse_ms(pdf_path):
     `ambiguous` instead of a wrong answer."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    starts, _quasi = find_question_starts(lines)
+    starts, _quasi = find_question_starts(lines, doc)
 
     answers = {}
     ambiguous = []
