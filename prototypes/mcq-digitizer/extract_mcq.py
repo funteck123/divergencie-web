@@ -68,6 +68,30 @@ QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(].*)$')
 # content) -- a plain digit-starting variant of the pattern above matched
 # dozens of short numeric table fragments on a different real file.
 QUESTION_BARE_DIGIT_RE = re.compile(r'^(\d{1,2})\s+(\d.*)$')
+# The number completely ALONE on its own line, with the real question
+# text starting on the NEXT line entirely (confirmed real and, after a
+# broad sweep of the whole real library, common -- not a rare edge case:
+# "2" alone, then "The diagram shows how the molecules..." on the next
+# line, was silently merging most of a 27-question paper into question
+# 1's block). Gated hard: the line immediately following (not just
+# "somewhere nearby") must itself look like the start of a real sentence
+# -- confirmed on real false-positive data (a temperature table's bare
+# "37" is followed by a stray "C" or another bare digit, never a
+# capitalized multi-word sentence).
+QUESTION_BARE_ALONE_RE = re.compile(r'^(\d{1,2})$')
+# `[A-Z(]` plus common opening-quote characters -- a real question was
+# found starting with a curly quote ("'Particles moving very slowly...'"
+# -- U+2018) which plain ASCII didn't allow for.
+SENTENCE_START_RE = re.compile(r'^[A-Z(‘“"\'].{19,}$')
+# Some real papers switch to a genuinely different question format partway
+# through ("Section B: ... one or more of the three numbered statements 1
+# to 3 may be correct") -- a real, different multiple-response style this
+# tool doesn't parse (no plain A-D single answer), already out of scope.
+# The problem this alone causes: without a boundary marker of its own,
+# the LAST detected Section-A question's crop silently swallowed the
+# entire rest of the document, several pages, since nothing told the
+# crop logic where Section A's real content actually ends.
+SECTION_BREAK_RE = re.compile(r'^Section\s+[A-Z]\b', re.IGNORECASE)
 # A bare option-letter line: "A", "A.", "(A)" and nothing else -- used to
 # both detect which option letters exist for a question (some real
 # questions only have 3, not 4) and, in parse_ms, to find eliminated
@@ -144,6 +168,17 @@ def extract_lines(doc):
                 lines.append({
                     "text": text, "size": size, "bold": bold,
                     "page": page_num, "y0": bbox[1], "y1": bbox[3],
+                    # This document's own raw stream order -- kept
+                    # because it's what actually preserves a wrapped
+                    # paragraph's own line order correctly (confirmed
+                    # real: one file's own y0 coordinates put a
+                    # sentence's SECOND wrapped line before its first),
+                    # even on the same real files where headings
+                    # themselves come out of (page, y0) order and need
+                    # position-sorting instead. Different bugs, different
+                    # fixes -- this tag lets find_question_starts use
+                    # whichever order is actually right for a given check.
+                    "raw_idx": len(lines),
                 })
     return lines
 
@@ -159,7 +194,25 @@ def find_question_starts(lines):
     text, so no fixed threshold generalizes. The punctuation itself
     ("N." or "N)" at a line's start, never followed by another digit) is
     tight enough on its own -- confirmed across every real file sampled
-    so far, no false positives found from dropping the gate."""
+    so far, no false positives found from dropping the gate.
+
+    Iterates a POSITION-sorted copy of `lines`, not the raw list order --
+    confirmed real and serious on one file: PyMuPDF's own block traversal
+    order can be completely scrambled relative to visual position (a
+    heading number at the true top of a page appeared in list order
+    right before a LATER page's content, with that page's own real
+    question numbers interleaved out of sequence). The option-letter
+    proximity check relies on this position order. But a DIFFERENT real
+    file showed the opposite problem for a DIFFERENT check: a long
+    question stem's own wrapped second line had a smaller y0 than its
+    first line, so position order broke the "is the next line a real
+    sentence" check for a bare heading, while raw stream order (which
+    reliably preserves a paragraph's own internal line sequence) got it
+    right. Each line keeps its original `raw_idx` from extract_lines
+    specifically so a check can use whichever order is actually correct
+    for it, not just whichever this function iterates in."""
+    raw_by_idx = lines
+    lines = sorted(lines, key=lambda l: (l["page"], l["y0"]))
     starts = []
     for idx, line in enumerate(lines):
         m = QUESTION_KEYWORD_RE.match(line["text"])
@@ -174,8 +227,11 @@ def find_question_starts(lines):
         # The bare "N text" form (no punctuation at all) is real but
         # riskier -- a body sentence can coincidentally start a line with
         # a number. Only accepted if an option-letter line (A/B/C/D alone)
-        # shows up within the next 20 lines, which a coincidental digit
-        # never has.
+        # shows up within the next 30 lines, which a coincidental digit
+        # never has. (30, not the original 20: a real question's own
+        # option letter came in at position 21 -- a complex diagram with
+        # a labeled numbered-correspondence table between the stem and
+        # its actual A/B/C/D options -- missing detection by one line.)
         m = QUESTION_BARE_RE.match(line["text"])
         # "0" is never a real question number in this corpus (numbering
         # starts at 1) -- excluded here because it's a real, confirmed
@@ -185,7 +241,7 @@ def find_question_starts(lines):
         # A/B/C/D sub-graph labels and would otherwise pass the
         # nearby-option-letter check below completely legitimately.
         if m and m.group(1) != "0":
-            nearby = lines[idx + 1: idx + 21]
+            nearby = lines[idx + 1: idx + 31]
             if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
                 starts.append({
                     "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
@@ -207,10 +263,48 @@ def find_question_starts(lines):
         if m:
             content = m.group(2)
             if len(content) >= 25 and len(content.split()) >= 5:
-                nearby = lines[idx + 1: idx + 21]
+                nearby = lines[idx + 1: idx + 31]
                 if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
                     starts.append({
                         "number": m.group(1), "inlineText": content.strip(),
+                        "page": line["page"], "y0": line["y0"],
+                    })
+            continue
+        m = QUESTION_BARE_ALONE_RE.match(line["text"])
+        # A page-footer number is real, dense MS-explanation-text noise
+        # this exact bare-alone-digit pattern is defenseless against on
+        # its own -- confirmed real: a footer "41" on page 41 of a real
+        # 47-page MS sits right next to substantial real prose either
+        # way you order lines, so the sentence check alone passed it,
+        # silently corrupting the answer key with 6 fake trailing
+        # "questions". The general size/bold gate was deliberately
+        # dropped earlier for the punctuated form (real files disagree
+        # too much about heading-vs-body relative size for one threshold
+        # to work) -- but a page-footer number's size has been a
+        # consistent 8.0pt across every real file seen in this whole
+        # investigation, clearly below any real heading's ~11pt, so a
+        # floor specifically here (the riskiest, least-constrained
+        # pattern) is a different, narrower, safe bet.
+        if m and m.group(1) != "0" and line["size"] >= 9:
+            # Two real files disagreed about which "next line" ordering
+            # is correct for THIS check: one needs raw stream order (a
+            # wrapped sentence's own lines came out of position order);
+            # a different one needs position order (this file's heading
+            # numbers are their own out-of-stream-order layer, same
+            # reason the whole function sorts by position at all). No
+            # single ordering satisfies both, so both are tried -- still
+            # gated by the same strict sentence check either way, so this
+            # doesn't loosen what counts as "looks like a real question
+            # start", only which candidate line gets checked against it.
+            raw_idx = line["raw_idx"]
+            next_in_raw_order = raw_by_idx[raw_idx + 1] if raw_idx + 1 < len(raw_by_idx) else None
+            next_in_position_order = lines[idx + 1] if idx + 1 < len(lines) else None
+            candidates = [c for c in (next_in_raw_order, next_in_position_order) if c]
+            if any(SENTENCE_START_RE.match(c["text"]) for c in candidates):
+                nearby = lines[idx + 1: idx + 31]
+                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                    starts.append({
+                        "number": m.group(1), "inlineText": "",
                         "page": line["page"], "y0": line["y0"],
                     })
 
@@ -234,7 +328,16 @@ def find_question_starts(lines):
     nums = [int(s["number"]) for s in starts]
     for i in range(n):
         for j in range(i):
-            if nums[j] < nums[i] and lengths[j] + 1 > lengths[i]:
+            # A real MS was found with a real 1-11 sequence, then one
+            # stray "85" (a genuine answer VALUE at heading-like size and
+            # font, in a spot the earlier page-footer size gate can't
+            # touch) tacked onto the end -- LIS without a gap cap has no
+            # reason to reject it (11 -> 85 still "increasing"), even
+            # though no real paper jumps by dozens between consecutive
+            # questions. Capping the allowed step at 20 rejects that
+            # specific class without needing a character-level check on
+            # what's clearly plausible, heading-shaped text.
+            if nums[j] < nums[i] and nums[i] - nums[j] <= 20 and lengths[j] + 1 > lengths[i]:
                 lengths[i] = lengths[j] + 1
                 prev[i] = j
     if n == 0:
@@ -386,6 +489,19 @@ def parse_qp(pdf_path):
         # it. Using that boundary blindly produced a pointless blank
         # trailing image for every such question.
         pages_with_content = sorted(set(l["page"] for l in block_lines)) or [s["page"]]
+        # A "Section B"-style break (a genuinely different question format,
+        # already out of scope) has no boundary marker of its own, so
+        # without this the LAST Section-A question's block silently ran
+        # to the end of the document -- confirmed real, several pages'
+        # worth on a real file. Cut the block off at (not including)
+        # wherever the FIRST such marker sits, by position rather than
+        # whole-page, in case a marker ever shares a page with real
+        # content that comes before it.
+        section_break_lines = [l for l in block_lines if SECTION_BREAK_RE.match(l["text"])]
+        if section_break_lines:
+            cutoff_pos = min(_pos(l["page"], l["y0"]) for l in section_break_lines)
+            block_lines = [l for l in block_lines if _pos(l["page"], l["y0"]) < cutoff_pos]
+            pages_with_content = sorted(set(l["page"] for l in block_lines)) or [s["page"]]
         # Drop trailing pages that turn out to be nothing but publisher
         # branding/copyright boilerplate (confirmed real: a question's
         # content spills onto the next page only because of a footer like
