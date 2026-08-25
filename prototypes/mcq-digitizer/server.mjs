@@ -41,30 +41,59 @@ const PORT = process.env.PORT || 5177;
 const DRIVE_MAP_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "drive-map", "drive-map.json");
 const ANSWER_CACHE_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "answer-cache", "cache.json");
 
+class PayloadTooLargeError extends Error {}
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = "";
+    let tooLarge = false;
     req.on("data", (chunk) => {
+      // A real adversarial test (>40MB body) showed the old req.destroy()
+      // here killing the underlying socket before any response could be
+      // written -- the client just saw a connection reset, not a clean
+      // error. Just stop accumulating and let the request drain normally
+      // so the outer handler can still write a proper 413 response.
+      if (tooLarge) return;
       data += chunk;
       if (data.length > 40 * 1024 * 1024) {
-        reject(new Error("request body too large (40MB limit)"));
-        req.destroy();
+        tooLarge = true;
+        reject(new PayloadTooLargeError("Request body too large (40MB limit)."));
       }
     });
-    req.on("end", () => resolve(data));
+    req.on("end", () => {
+      if (!tooLarge) resolve(data);
+    });
     req.on("error", reject);
   });
 }
+
+class InvalidPdfError extends Error {}
 
 async function digitizeFromPaths(qpPath, msPath) {
   // Default maxBuffer (1MB) isn't enough once a response embeds a
   // cropped PNG per question -- a real 40-question paper's output runs
   // several times that. 64MB comfortably covers any real paper without
   // being an unbounded allowance.
-  const { stdout } = await execFileAsync(
-    "python3", [path.join(__dirname, "extract_mcq.py"), qpPath, msPath],
-    { maxBuffer: 64 * 1024 * 1024 },
-  );
+  let stdout;
+  try {
+    ({ stdout } = await execFileAsync(
+      "python3", [path.join(__dirname, "extract_mcq.py"), qpPath, msPath],
+      { maxBuffer: 64 * 1024 * 1024 },
+    ));
+  } catch (e) {
+    // A real adversarial test (non-PDF bytes sent as qpBase64/msBase64)
+    // showed this leaking a full Python traceback -- including local
+    // filesystem paths -- straight into the HTTP response. PyMuPDF's own
+    // "FileDataError...Failed to open file...as type pdf" is the one
+    // recognizable signature for "this wasn't a real PDF" (a genuine
+    // client mistake); anything else is an unexpected parser failure and
+    // stays a generic message rather than exposing internals either way.
+    const stderr = e.stderr || e.message || "";
+    if (stderr.includes("FileDataError") || stderr.includes("Failed to open file")) {
+      throw new InvalidPdfError("One or both uploaded files could not be read as a PDF.");
+    }
+    throw new Error("Failed to process the uploaded PDFs.");
+  }
   return JSON.parse(stdout);
 }
 
@@ -247,8 +276,25 @@ const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css
 
 const server = http.createServer(async (req, res) => {
   if (req.method === "POST" && req.url === "/api/digitize") {
+    let body;
     try {
-      const body = JSON.parse(await readBody(req));
+      body = JSON.parse(await readBody(req));
+    } catch (e) {
+      // A malformed/empty body is the CLIENT's mistake, not a server
+      // failure -- confirmed via a real adversarial test this was
+      // falling into the generic catch below and returning 500 with a
+      // raw JSON.parse error message, which is both the wrong status
+      // code and unnecessary internal detail to expose.
+      if (e instanceof PayloadTooLargeError) {
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: e.message }));
+      } else {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Request body must be valid JSON." }));
+      }
+      return;
+    }
+    try {
       if (!body.qpBase64 || !body.msBase64) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Both a Question Paper and a Mark Scheme PDF are required." }));
@@ -258,7 +304,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {
-      res.writeHead(500, { "Content-Type": "application/json" });
+      res.writeHead(e instanceof InvalidPdfError ? 400 : 500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;
@@ -271,8 +317,17 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Drive map not built yet -- data/mcq-digitizer/drive-map/drive-map.json is missing." }));
         return;
       }
+      // A real adversarial test (corrupted drive-map.json) proved this
+      // ordering fatal: writeHead(200) ran, THEN buildLibrary() threw
+      // while being evaluated as the argument to the next line -- the
+      // catch below tried writeHead(500) on a response whose headers
+      // were already sent, which Node treats as an uncaught
+      // ERR_HTTP_HEADERS_SENT and crashes the entire process, not just
+      // this one request. Compute the body fully before writing any
+      // headers so a failure here never touches the response at all.
+      const body = JSON.stringify(buildLibrary());
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(buildLibrary()));
+      res.end(body);
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
@@ -281,8 +336,20 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === "POST" && req.url === "/api/fetch-and-digitize") {
+    let body;
     try {
-      const body = JSON.parse(await readBody(req));
+      body = JSON.parse(await readBody(req));
+    } catch (e) {
+      if (e instanceof PayloadTooLargeError) {
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: e.message }));
+      } else {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Request body must be valid JSON." }));
+      }
+      return;
+    }
+    try {
       if (!body.qpId || !body.msId) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Both qpId and msId are required." }));
@@ -292,7 +359,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {
-      res.writeHead(502, { "Content-Type": "application/json" });
+      res.writeHead(e instanceof InvalidPdfError ? 400 : 502, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;
