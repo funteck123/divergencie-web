@@ -30,7 +30,7 @@ def load_env(path):
 
 ENV = load_env("/home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/.env")
 API_KEY = ENV["GEMINI_API_KEY"]
-MODEL = "gemini-3.7-flash"  # 3.5-flash and 3.6-flash both hit their 20/day free quota; 3.7 (newest flash) has a separate bucket
+MODEL = "gemini-3.5-flash-lite"  # 3.5/3.6/3.7-flash exhausted; 2.5-flash is retired for new users (confirmed via a live 404)
 
 def composite(page_paths, labels):
     imgs = [Image.open(p).convert("RGB") for p in page_paths]
