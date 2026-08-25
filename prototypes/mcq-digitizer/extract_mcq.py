@@ -48,12 +48,26 @@ QUESTION_KEYWORD_RE = re.compile(r'^Question\s+(\d{1,2})\.?\s*(.*)$', re.IGNOREC
 QUESTION_NUM_RE = re.compile(r'^(\d{1,2})[\.\)]\s*(?!\d)(.*)$')
 # A heading with NO punctuation at all after the number ("1 For each atom
 # of carbon...") -- confirmed real (a savemyexams-sourced MS format).
-# Riskier than the punctuated form since an ordinary sentence could
-# coincidentally start a line with a bare number -- find_question_starts
-# only keeps a match of THIS pattern if option letters are found nearby
-# afterward (see the validation pass there), which a coincidental body
-# sentence never has.
+# Requiring the char right after the number to be an uppercase letter or
+# "(" was tried more permissively once (accepting a digit too, for a real
+# "32 0.200 mol of a hydrocarbon..." case) and reverted: on a real file
+# full of temperature/data-table values ("37 degC", "40 degC", "65 degC"
+# etc, each followed somewhere nearby by table-column letters that look
+# just like option letters), that broader version matched dozens of
+# spurious "questions", corrupting a paper that parsed perfectly before.
+# Only ~1 known real case needs the broader form; many real files break
+# under it -- not a trade worth making. find_question_starts also
+# requires option letters nearby afterward (see the validation pass
+# there) as a second layer, but the character class here is doing real
+# work too, not just belt-and-suspenders.
 QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(].*)$')
+# The same bare form, but for the rarer real case where the content
+# starts with a digit ("32 0.200 mol of a hydrocarbon..."). Kept
+# separate from QUESTION_BARE_RE and gated much harder in
+# find_question_starts (a length + word-count floor on the captured
+# content) -- a plain digit-starting variant of the pattern above matched
+# dozens of short numeric table fragments on a different real file.
+QUESTION_BARE_DIGIT_RE = re.compile(r'^(\d{1,2})\s+(\d.*)$')
 # A bare option-letter line: "A", "A.", "(A)" and nothing else -- used to
 # both detect which option letters exist for a question (some real
 # questions only have 3, not 4) and, in parse_ms, to find eliminated
@@ -163,14 +177,76 @@ def find_question_starts(lines):
         # shows up within the next 20 lines, which a coincidental digit
         # never has.
         m = QUESTION_BARE_RE.match(line["text"])
-        if m:
+        # "0" is never a real question number in this corpus (numbering
+        # starts at 1) -- excluded here because it's a real, confirmed
+        # false-positive source on its own: a graph's y-axis origin label
+        # ("0" alone on its own line, repeated once per mini-graph),
+        # which coincidentally sits right next to that question's real
+        # A/B/C/D sub-graph labels and would otherwise pass the
+        # nearby-option-letter check below completely legitimately.
+        if m and m.group(1) != "0":
             nearby = lines[idx + 1: idx + 21]
             if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
                 starts.append({
-                    "number": m.group(1), "inlineText": m.group(2).strip(),
+                    "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                     "page": line["page"], "y0": line["y0"],
                 })
-    return starts
+            continue
+        # A digit-starting bare heading ("32 0.200 mol of a hydrocarbon
+        # undergo complete combustion...") is real too, but MUCH riskier
+        # than the letter-starting form -- confirmed on a different real
+        # file full of short numeric table fragments ("37 degC", "40
+        # degC", "48 minutes") that match the same shape. The
+        # distinguishing signal that survived testing: a real question
+        # stem is a long, multi-word sentence; a data-table fragment
+        # never is. Both a length floor and a word-count floor, not just
+        # one -- a short sentence could clear a length-only bar, and a
+        # long single "word" (a run-on chemical formula) could clear a
+        # word-count-only bar.
+        m = QUESTION_BARE_DIGIT_RE.match(line["text"])
+        if m:
+            content = m.group(2)
+            if len(content) >= 25 and len(content.split()) >= 5:
+                nearby = lines[idx + 1: idx + 21]
+                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                    starts.append({
+                        "number": m.group(1), "inlineText": content.strip(),
+                        "page": line["page"], "y0": line["y0"],
+                    })
+
+    # Real papers number their questions strictly increasingly (1, 2,
+    # 3...). Confirmed a real false-positive class from the bare-number
+    # form even with the nearby-option-letter check: a cover page's "Time
+    # Allowed: 69 minutes" and a numeric answer choice like "60 cm3" each
+    # coincidentally had an option-letter-shaped line within 20 lines.
+    # A plain greedy left-to-right "keep if bigger than the last kept"
+    # scan is NOT safe here -- confirmed on real data: the cover-page
+    # "69" comes before every real question in the document, so a greedy
+    # scan locks onto it first and then rejects all 44 real questions
+    # (1-44) for being "smaller than 69". Fixed by taking the actual
+    # LONGEST strictly-increasing subsequence (standard O(n^2) DP, n is
+    # at most a few dozen candidates) -- the real 44-long run of genuine
+    # questions correctly outweighs a 2-long run of stray high numbers.
+    starts.sort(key=lambda s: (s["page"], s["y0"]))
+    n = len(starts)
+    lengths = [1] * n
+    prev = [-1] * n
+    nums = [int(s["number"]) for s in starts]
+    for i in range(n):
+        for j in range(i):
+            if nums[j] < nums[i] and lengths[j] + 1 > lengths[i]:
+                lengths[i] = lengths[j] + 1
+                prev[i] = j
+    if n == 0:
+        return []
+    best = max(range(n), key=lambda i: lengths[i])
+    seq_idx = []
+    i = best
+    while i != -1:
+        seq_idx.append(i)
+        i = prev[i]
+    seq_idx.reverse()
+    return [starts[i] for i in seq_idx]
 
 
 def _pos(page, y0):
@@ -205,6 +281,30 @@ def is_branding_only(page_lines):
             continue
         return False
     return True
+
+
+def content_lines_excluding_trailing_branding(page_lines):
+    """A page can have genuine content followed immediately by publisher
+    branding/copyright boilerplate BEFORE the next question starts
+    (confirmed real: a question's own content, then the branding banner,
+    then a page number, all on the one page) -- is_branding_only() only
+    catches a page that's NOTHING but that; this trims just the trailing
+    run of it so a crop's bottom edge lands at the real content's own
+    last line, not the banner below it. Only trims from the true end
+    inward -- if a branding line is followed by more real content (a
+    separate, disclosed limitation: that only happens when an in-between
+    question's own heading wasn't detected, not something this trim can
+    fix), nothing here is touched, since this is not that line's problem
+    to solve."""
+    ordered = sorted(page_lines, key=lambda l: l["y0"])
+    end = len(ordered)
+    while end > 0:
+        text = ordered[end - 1]["text"].strip()
+        if not text or BRANDING_RE.search(text) or re.fullmatch(r'\d{1,3}', text):
+            end -= 1
+        else:
+            break
+    return ordered[:end]
 
 
 def stitch_images_vertically(png_bytes_list, padding=24):
@@ -296,12 +396,13 @@ def parse_qp(pdf_path):
         ):
             pages_with_content = pages_with_content[:-1]
         page_end = pages_with_content[-1]
+        last_page_content = content_lines_excluding_trailing_branding(
+            [l for l in block_lines if l["page"] == page_end]
+        )
         if page_end == s["page"]:
-            y_bottom = max((l["y1"] for l in block_lines), default=s["y0"] + 20) + 10
+            y_bottom = max((l["y1"] for l in last_page_content), default=s["y0"] + 20) + 10
         else:
-            y_bottom = max(
-                (l["y1"] for l in block_lines if l["page"] == page_end), default=None
-            )
+            y_bottom = max((l["y1"] for l in last_page_content), default=None)
             if y_bottom is not None:
                 y_bottom += 10
 
