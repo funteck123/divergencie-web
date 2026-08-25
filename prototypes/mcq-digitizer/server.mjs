@@ -39,6 +39,7 @@ const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5177;
 const DRIVE_MAP_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "drive-map", "drive-map.json");
+const ANSWER_CACHE_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "answer-cache", "cache.json");
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -99,6 +100,49 @@ async function downloadDriveFile(fileId) {
   return buf;
 }
 
+// Some real MS files (savemyexams-sourced) present their explanation as
+// a designed infographic image (colored callout boxes, a green
+// checkmark/red X icon per option) with NO text layer at all -- this
+// tool's own no-LLM/no-OCR text parsing correctly can't read those, and
+// correctly reports them ambiguous rather than guess. For library-
+// sourced papers only, a SEPARATE offline batch process
+// (answer_resolver/resolve_ambiguous.py) pre-resolves as many of those
+// as it can -- first via pure icon-color detection (no LLM), falling
+// back to an LLM (Gemini) reading a batch of pages only for whatever the
+// no-LLM pass can't -- and writes the results to a small local cache
+// file. This function only ever READS that pre-built cache; it makes no
+// LLM call itself and the manual-upload path (digitizeFromBase64) never
+// consults it at all, since it has no msId to key on.
+function loadAnswerCache(msId) {
+  try {
+    const cache = JSON.parse(fs.readFileSync(ANSWER_CACHE_PATH, "utf8"));
+    return cache[msId] || null;
+  } catch {
+    return null;
+  }
+}
+
+function applyAnswerCache(result, msId) {
+  const entry = loadAnswerCache(msId);
+  if (!entry) return result;
+  for (const q of result.questions) {
+    if (q.correctAnswer) continue;
+    const cached = entry[q.questionNumber];
+    if (cached && cached.answer) {
+      q.correctAnswer = cached.answer;
+      q.correctAnswerSource = cached.source;
+    }
+  }
+  result.unmatchedAnswerKey = result.questions
+    .filter((q) => !q.correctAnswer)
+    .map((q) => q.questionNumber)
+    .filter((n) => result.unmatchedAnswerKey.includes(n));
+  result.ambiguousAnswerKey = result.ambiguousAnswerKey.filter(
+    (n) => !result.questions.find((q) => q.questionNumber === n && q.correctAnswer)
+  );
+  return result;
+}
+
 async function digitizeFromDriveIds(qpId, msId) {
   const [qpBuf, msBuf] = await Promise.all([downloadDriveFile(qpId), downloadDriveFile(msId)]);
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-"));
@@ -107,7 +151,8 @@ async function digitizeFromDriveIds(qpId, msId) {
   fs.writeFileSync(qpPath, qpBuf);
   fs.writeFileSync(msPath, msBuf);
   try {
-    return await digitizeFromPaths(qpPath, msPath);
+    const result = await digitizeFromPaths(qpPath, msPath);
+    return applyAnswerCache(result, msId);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
@@ -134,11 +179,38 @@ const NORMALIZE_STOPWORDS = new Set([
   "qp", "ms", "mcq", "unlocked", "ial", "cie", "worksheet", "paper",
   "mark", "scheme", "markscheme", "answer", "answers", "key", "level",
   "alevel", "igcse", "cambridge", "caie", "question", "questions", "pdf",
+  // Pairing already happens within one subject's own category folder, so
+  // the subject name is redundant for matching -- and a real MS file was
+  // found that omits it from its own filename entirely while its QP
+  // includes it ("12-Electrolysis...MS...pdf" has no "chemistry" in it
+  // at all), which broke an exact token-set match for no real reason.
+  "chemistry", "biology", "physics",
 ]);
 function normalizeTitle(name) {
-  const tokens = name.toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ")
-    .filter((t) => t && !NORMALIZE_STOPWORDS.has(t));
-  return tokens.sort().join(" ");
+  const tokens = name
+    // A real MS file was found versioned as "...MCQ_2-Unlocked.pdf" --
+    // that trailing digit is a version marker with no counterpart in
+    // its QP's filename at all (not a duplicate of an existing chapter
+    // number, an unrelated one), so a plain "mcq" stopword removal
+    // still left a stray "2" token breaking the match. Strip the whole
+    // "mcq_N"/"mcqN" unit together, before tokenizing.
+    .replace(/mcq[_\s]?\d+/gi, " mcq ")
+    .toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ")
+    .filter((t) => t && !NORMALIZE_STOPWORDS.has(t))
+    // A lone "s" is an apostrophe artifact, not content -- real pairing
+    // bug found on real data: one filename spells a chapter "hesss" (no
+    // separator) while its actual MS counterpart spells it "hess_s" (an
+    // underscore where the apostrophe was), splitting into two tokens
+    // "hess"+"s" that never matched "hesss" as one token. Confirmed via
+    // the live library: dropping "s" pairs them; nothing else does.
+    .filter((t) => t !== "s");
+  // A Set, not the raw array -- real pairing bug found on real data: an
+  // MS filename versioned as "...MCQ_1-Unlocked.pdf" contributes an
+  // extra "1" token beyond what its QP counterpart has (e.g. a chapter
+  // already numbered "25.1"), and joining a SORTED ARRAY (not a
+  // deduplicated set) produces a different string for one "1" vs two,
+  // even though the extra one carries no real content difference.
+  return [...new Set(tokens)].sort().join(" ");
 }
 function displayTitleOf(name) {
   return name.replace(/\s*[-_(]*\s*(QP|MS)\)?\s*\.pdf$/i, "").trim();

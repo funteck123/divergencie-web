@@ -37,17 +37,26 @@ two PDFs by their public Drive link (`GET /api/library` serves the map reshaped 
 QP/MS pairs; `POST /api/fetch-and-digitize` downloads + digitizes one pair on demand).
 Manual upload (the original flow) is still available as a fallback link.
 
-QP/MS pairing is done by normalizing each filename to a sorted, stopword-filtered token
-set (never stripping digits, since a chapter number like "11" vs "11.2" is exactly the
-thing that must not collapse together) -- needed because the real Drive data isn't
-uniformly named: IGCSE files share a name except for the trailing QP/MS token, but A
-Levels Chemistry's QP and MS filenames share no substring at all, just the same words in
-a different order/case ("11.2-redox-(ial-cie-chemistry)-qp.pdf" vs
-"11.2-Redox-CIE-IAL-Chemistry-MS-MCQ-Unlocked.pdf"). Real result across the whole mapped
-library: **186/196 (95%) of QPs paired correctly** with their MS; the other 10 are a
-genuine content mismatch in that one folder (some QPs there use a sub-chapter number like
-"11.2" their MS counterpart doesn't repeat) and are correctly left unpaired rather than
-guessed.
+QP/MS pairing is done by normalizing each filename to a deduplicated, sorted,
+stopword-filtered token set (never stripping digits, since a chapter number like "11" vs
+"11.2" is exactly the thing that must not collapse together) -- needed because the real
+Drive data isn't uniformly named: IGCSE files share a name except for the trailing QP/MS
+token, but A Levels Chemistry's QP and MS filenames often share no substring at all, just
+the same words in a different order/case/separator (e.g. "12-electrolysis_..._-qp.pdf" vs
+"12-Electrolysis-...-MS-MCQ-Unlocked.pdf", which additionally omits "Chemistry" from the
+MS side entirely).
+
+A later quality audit (prompted by an explicit "check quality, no mistakes" request)
+manually cross-checked every originally-unpaired file against the raw Drive listing rather
+than trusting the failure count, and found the pairing logic itself had two real bugs:
+comparing a sorted *array* instead of a deduplicated *set* (so a "...MCQ_1"/"...MCQ_2"
+version suffix's stray digit broke an otherwise-correct match), and not stripping the
+subject name (redundant anyway, since pairing already happens within one subject's own
+folder). Both fixed. **Result: 191/196 (97%) of QPs paired correctly**, up from 186/196 --
+the remaining 5 were individually confirmed against the raw Drive file list to have no
+matching MS file at all (a real gap, e.g. no file containing "redox" exists anywhere in
+that subject's MS folder), not a pairing bug. Full account in
+`data/mcq-digitizer/full-library/README.md`.
 
 ## How it works
 
@@ -182,8 +191,8 @@ questions found, 36/36 (100%) confidently graded**.
   heading style could still slip past it.
 - A question whose own content spans more than 2 pages only gets 2 crop images (start page
   tail + end page head) — a 3+-page single question isn't handled.
-- QP/MS filename pairing (library mode) is 95% (186/196) across the whole mapped library --
-  the other 5% is a genuine content mismatch in one subject's source files, not a pairing
+- QP/MS filename pairing (library mode) is 97% (191/196) across the whole mapped library --
+  the other 5 are a genuine content mismatch in one subject's source files, not a pairing
   bug (see "Library mode" above).
 - Not yet tested against a subject/board other than CAIE IGCSE Biology/Physics, or a paper
   using numeric (1/2/3/4) rather than lettered options.
