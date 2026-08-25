@@ -107,6 +107,20 @@ OPTION_LETTER_RE = re.compile(r'^\(?([A-D])\)?\.?$')
 # standalone, since a bare "letter + whitespace" match would otherwise
 # false-positive on any ordinary sentence starting with the word "A ".
 OPTION_LETTER_MERGED_RE = re.compile(r'^\(?([A-D])\)?[.):]?\s+\S')
+# A different real zigzag layout: each option's own VALUE line ends with
+# the NEXT option's letter trailing at the end ("0.5 %           B",
+# "0.8 %           C", ...), not the letter's own line at all -- confirmed
+# real on CAIE A Level Physics Ch1 "Measurement Techniques" Q44, where
+# only the first, isolated "A" ever matched and B/C/D were silently
+# dropped even though the crop clearly shows all 4 options on their own
+# visual row. Requires a wide (>=3 space) gap before the letter -- this
+# is physics content, where a real measurement is very often followed by
+# a genuine single-letter UNIT symbol with a single natural space ("50
+# A" for amps, similarly N/V/W/J...); the real column-alignment gap
+# measured on the confirmed case above is 11 spaces, nothing like a
+# natural unit separator, so a wide-gap floor is what actually
+# distinguishes the two rather than banning trailing letters outright.
+OPTION_LETTER_TRAILING_RE = re.compile(r'\S\s{3,}([A-D])$')
 # Any single uppercase letter alone on its own line, not just A-D -- used
 # as a noise signal (see option_letters_in_block).
 SINGLE_LETTER_RE = re.compile(r'^\(?([A-Z])\)?\.?$')
@@ -447,7 +461,11 @@ def option_letters_in_block(lines, start_pos, end_pos):
         sm = SINGLE_LETTER_RE.match(text)
         if sm and sm.group(1) not in "ABCD":
             other_single_letters.add(sm.group(1))
-        m = OPTION_LETTER_RE.match(text) or OPTION_LETTER_MERGED_RE.match(text)
+        m = (
+            OPTION_LETTER_RE.match(text)
+            or OPTION_LETTER_MERGED_RE.match(text)
+            or OPTION_LETTER_TRAILING_RE.search(text)
+        )
         if m:
             found.add(m.group(1).upper())
     if other_single_letters:
