@@ -35,7 +35,7 @@ import json
 import base64
 import io
 import fitz
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 QUESTION_KEYWORD_RE = re.compile(r'^Question\s+(\d{1,2})\.?\s*(.*)$', re.IGNORECASE)
 # `\s*` (not `\s+`) deliberately -- a real question heading is often just
@@ -264,6 +264,26 @@ def _has_nearby_image(page_images, page, y0, y_window=600):
     )
 
 
+def _has_statement_markers(nearby, min_count=2):
+    """True when 2+ lines in `nearby` are bare "1"/"2"/"3" -- the
+    reliable signature of CAIE's "Section B" / "multiple completion"
+    format: one or more of three numbered statements may be correct,
+    and the response letters A-D are a FIXED, universal convention
+    (confirmed verbatim from a real CAIE paper's own instructions text,
+    not assumed):
+        A = 1, 2 and 3 are correct
+        B = 1 and 2 only are correct
+        C = 2 and 3 only are correct
+        D = 1 only is correct
+    This is a real, standard, gradable CAIE question type -- NOT out of
+    scope -- it just never prints A-D on the question page itself (the
+    key is stated once, in the instructions, before the whole section).
+    A question flagged by this check gets the fixed key image attached
+    to its own crop (see STATEMENT_KEY_IMAGE) and optionLetters forced
+    to the full A-D set, since no per-question text ever encodes them."""
+    return sum(1 for l in nearby if l["text"] in ("1", "2", "3")) >= min_count
+
+
 def find_question_starts(lines, doc=None):
     """Every detected question boundary, in document order: {number,
     inlineText (whatever followed the number on its own line, often
@@ -328,6 +348,7 @@ def find_question_starts(lines, doc=None):
             starts.append({
                 "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                 "page": line["page"], "y0": line["y0"],
+                "isStatementFormat": _has_statement_markers(lines[idx + 1: idx + 31]),
             })
             continue
         # The bare "N text" form (no punctuation at all) is real but
@@ -360,10 +381,14 @@ def find_question_starts(lines, doc=None):
             # sentence; nothing this short is one.
             if len(content) >= 20:
                 nearby = lines[idx + 1: idx + 31]
-                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby) or _has_nearby_image(page_images, line["page"], line["y0"]):
+                has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
+                has_image = _has_nearby_image(page_images, line["page"], line["y0"])
+                is_statement = _has_statement_markers(nearby)
+                if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": content,
                         "page": line["page"], "y0": line["y0"],
+                        "isStatementFormat": is_statement,
                     })
                 else:
                     quasi.append({"page": line["page"], "y0": line["y0"]})
@@ -384,10 +409,14 @@ def find_question_starts(lines, doc=None):
             content = m.group(2)
             if len(content) >= 25 and len(content.split()) >= 5:
                 nearby = lines[idx + 1: idx + 31]
-                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby) or _has_nearby_image(page_images, line["page"], line["y0"]):
+                has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
+                has_image = _has_nearby_image(page_images, line["page"], line["y0"])
+                is_statement = _has_statement_markers(nearby)
+                if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": content.strip(),
                         "page": line["page"], "y0": line["y0"],
+                        "isStatementFormat": is_statement,
                     })
                 else:
                     quasi.append({"page": line["page"], "y0": line["y0"]})
@@ -424,10 +453,14 @@ def find_question_starts(lines, doc=None):
             candidates = [c for c in (next_in_raw_order, next_in_position_order) if c]
             if any(SENTENCE_START_RE.match(c["text"]) for c in candidates):
                 nearby = lines[idx + 1: idx + 31]
-                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby) or _has_nearby_image(page_images, line["page"], line["y0"]):
+                has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
+                has_image = _has_nearby_image(page_images, line["page"], line["y0"])
+                is_statement = _has_statement_markers(nearby)
+                if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": "",
                         "page": line["page"], "y0": line["y0"],
+                        "isStatementFormat": is_statement,
                     })
                 else:
                     quasi.append({"page": line["page"], "y0": line["y0"]})
@@ -579,6 +612,60 @@ def content_lines_excluding_trailing_branding(page_lines):
         else:
             break
     return ordered[:end]
+
+
+# CAIE's "Section B" / "multiple completion" format: one or more of
+# three numbered statements (1, 2, 3) may be correct, and the response
+# letters A-D are this FIXED, universal combination key -- confirmed
+# verbatim from a real CAIE paper's own instructions text ("The
+# responses A to D should be selected on the basis of..."), not
+# assumed. The question page itself never repeats this key per
+# question (it's stated once, before the whole section), so a cropped
+# question image showing only the numbered statements is meaningless
+# without it attached.
+STATEMENT_KEY_ROWS = [
+    ("A", "1, 2 and 3 correct"),
+    ("B", "1 and 2 only correct"),
+    ("C", "2 and 3 only correct"),
+    ("D", "1 only correct"),
+]
+_STATEMENT_KEY_CACHE = None
+
+
+def render_statement_key_image(width=1190):
+    """Renders CAIE's fixed Section-B combination key as one PNG,
+    generated once via PIL and cached -- the key is identical for every
+    such question, so there's no reason to regenerate it per question."""
+    global _STATEMENT_KEY_CACHE
+    if _STATEMENT_KEY_CACHE is not None:
+        return _STATEMENT_KEY_CACHE
+    row_h = 50
+    header_h = 46
+    height = header_h + row_h * len(STATEMENT_KEY_ROWS) + 20
+    img = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(img)
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
+        font_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 22)
+    except OSError:
+        font = font_bold = ImageFont.load_default()
+    draw.text((10, 5), "The responses A to D should be selected on the basis of:", fill="black", font=font)
+    col1_w, col2_w = 60, 400
+    y = header_h
+    x0 = 10
+    table_w = col1_w + col2_w
+    draw.rectangle([x0, y, x0 + table_w, y + row_h * len(STATEMENT_KEY_ROWS)], outline="black", width=2)
+    for i, (letter, meaning) in enumerate(STATEMENT_KEY_ROWS):
+        row_y = y + i * row_h
+        if i > 0:
+            draw.line([(x0, row_y), (x0 + table_w, row_y)], fill="black", width=1)
+        draw.line([(x0 + col1_w, row_y), (x0 + col1_w, row_y + row_h)], fill="black", width=1)
+        draw.text((x0 + 18, row_y + 12), letter, fill="black", font=font_bold)
+        draw.text((x0 + col1_w + 14, row_y + 12), meaning, fill="black", font=font)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    _STATEMENT_KEY_CACHE = buf.getvalue()
+    return _STATEMENT_KEY_CACHE
 
 
 def stitch_images_vertically(png_bytes_list, padding=24):
@@ -797,6 +884,17 @@ def parse_qp(pdf_path):
             y_bottom = draw_bottom if y_bottom is None else max(y_bottom, draw_bottom)
 
         image_bytes = render_question_image(doc, s["page"], s["y0"], page_end, y_bottom)
+
+        # A "Section B" statement-format question never prints A-D on
+        # its own page (the key is stated once, before the whole
+        # section) -- the crop is meaningless without it, so the fixed
+        # key table (see render_statement_key_image) is attached
+        # directly to this question's own image, and its options are
+        # always the full A-D set since no per-question text ever
+        # encodes them.
+        if s.get("isStatementFormat"):
+            image_bytes = stitch_images_vertically([image_bytes, render_statement_key_image()])
+            letters = {"A", "B", "C", "D"}
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
 
         # A raster image OR vector drawing in this question's own range
@@ -810,7 +908,7 @@ def parse_qp(pdf_path):
         # design, so the honest, safe answer is the full default set
         # rather than a specific but possibly-wrong one -- worst case is
         # an extra unclickable-but-harmless button, never a missing one.
-        if has_image_content or has_drawing_content:
+        if (has_image_content or has_drawing_content) and not s.get("isStatementFormat"):
             letters = set()
 
         questions.append({
