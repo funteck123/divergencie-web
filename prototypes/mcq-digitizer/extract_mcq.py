@@ -568,6 +568,31 @@ def image_block_bottom(page, y_low, y_high):
     return bottom
 
 
+def drawing_block_bottom(page, y_low, y_high):
+    """Same idea as image_block_bottom, for VECTOR-drawn diagrams (field
+    lines, circles, molecule skeletons -- drawn with PDF path/line
+    operators, not an embedded raster image) -- a second, real, distinct
+    crop-truncation cause confirmed on CAIE IGCSE Chemistry Ch9 "Property
+    of Metals" Q4 (alloy-structure atom diagrams) and CAIE A Level
+    Physics Ch18 "Uniform Electric Fields" Q17 (field-line diagrams):
+    both crops stopped right after the bare "A"/"B" option labels,
+    because PyMuPDF's get_text('dict') has no block type for vector
+    paths at all -- image_block_bottom's raster-only check can't see
+    them either. page.get_drawings() is the separate API that does.
+    Only drawings whose own top falls within [y_low, y_high) count, for
+    the same reason as image_block_bottom: never pull in a later
+    question's own diagram on the same page."""
+    bottom = None
+    for d in page.get_drawings():
+        rect = d.get("rect")
+        if not rect:
+            continue
+        top, bot = rect.y0, rect.y1
+        if y_low <= top < y_high:
+            bottom = bot if bottom is None else max(bottom, bot)
+    return bottom
+
+
 def render_question_image(doc, page_start, y_start, page_end, y_end):
     """Crops the question's stem+options exactly as printed. Almost
     always one page; when a question's own content spans a page break,
@@ -700,20 +725,27 @@ def parse_qp(pdf_path):
             img_bottom = min(img_bottom, limit_y) + 16
             y_bottom = img_bottom if y_bottom is None else max(y_bottom, img_bottom)
 
+        draw_bottom = drawing_block_bottom(doc[page_end], img_y_low, limit_y)
+        has_drawing_content = draw_bottom is not None
+        if has_drawing_content:
+            draw_bottom = min(draw_bottom, limit_y) + 16
+            y_bottom = draw_bottom if y_bottom is None else max(y_bottom, draw_bottom)
+
         image_bytes = render_question_image(doc, s["page"], s["y0"], page_end, y_bottom)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
 
-        # A raster image in this question's own range means its options
-        # very likely live INSIDE that image (a rendered answer table is
-        # the confirmed real case), not as extractable text at all -- no
-        # text-based regex can read pixels. Trusting a partial text match
+        # A raster image OR vector drawing in this question's own range
+        # means its options very likely live INSIDE that graphic (a
+        # rendered answer table or a labeled diagram are both confirmed
+        # real cases), not as extractable text at all -- no text-based
+        # regex can read pixels or paths. Trusting a partial text match
         # here produced confirmed-wrong results (e.g. a lone stray "A"
         # from an unrelated diagram label, with the real answer being
         # B/C/D). This tool has no OCR/LLM step for the QP side by
         # design, so the honest, safe answer is the full default set
         # rather than a specific but possibly-wrong one -- worst case is
         # an extra unclickable-but-harmless button, never a missing one.
-        if has_image_content:
+        if has_image_content or has_drawing_content:
             letters = set()
 
         questions.append({
