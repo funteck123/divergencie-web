@@ -15,11 +15,21 @@
 //                                     per subject/category for a picker UI.
 //   POST /api/fetch-and-digitize  -- library flow: given one paper's
 //                                     {qpId, msId} from /api/library,
-//                                     downloads just those two PDFs by
+//                                     serves it straight from the
+//                                     pre-built full-library database
+//                                     (data/mcq-digitizer/full-library/
+//                                     database.json + saved crop images)
+//                                     when it's already there -- instant,
+//                                     and carries every answer the
+//                                     offline Gemini/lightweight fallback
+//                                     chain resolved. Only a paper NOT in
+//                                     that database (a real download/
+//                                     pairing failure) falls back to
+//                                     downloading the two PDFs live by
 //                                     their public Drive link (a plain
-//                                     HTTPS GET, not Drive API access) and
-//                                     digitizes them the same way as a
-//                                     manual upload.
+//                                     HTTPS GET, not Drive API access)
+//                                     and digitizing them the same way as
+//                                     a manual upload.
 //
 // Grading itself happens entirely client-side in index.html: since
 // there's no LLM involved, there's no reason to round-trip to the server
@@ -38,8 +48,10 @@ import { promisify } from "util";
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5177;
-const DRIVE_MAP_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "drive-map", "drive-map.json");
-const ANSWER_CACHE_PATH = path.join(__dirname, "..", "..", "data", "mcq-digitizer", "answer-cache", "cache.json");
+const REPO_ROOT = path.join(__dirname, "..", "..");
+const DRIVE_MAP_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "drive-map", "drive-map.json");
+const ANSWER_CACHE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "answer-cache", "cache.json");
+const DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "full-library", "database.json");
 
 class PayloadTooLargeError extends Error {}
 
@@ -172,7 +184,56 @@ function applyAnswerCache(result, msId) {
   return result;
 }
 
+// The full-library rebuild (answer_resolver/build_full_database.py)
+// already downloaded, cropped, and resolved every paper it could reach
+// -- including a slow batched-Gemini pass this live request path has no
+// business repeating on every single page load. Serving a paper already
+// in database.json straight from disk is both much faster (no Drive
+// download, no PyMuPDF re-render, no LLM call) AND more complete: it
+// carries every answer the offline Gemini/lightweight fallback chain
+// resolved, not just what plain MS text-parsing plus the answer-cache
+// can find live. Only papers NOT in the database (the ~10 real
+// download/pairing failures, confirmed in failures.json) still fall
+// through to the live path below.
+let databaseCache = null;
+let databaseCacheMtime = 0;
+function loadDatabase() {
+  try {
+    const stat = fs.statSync(DATABASE_PATH);
+    if (databaseCache && stat.mtimeMs === databaseCacheMtime) return databaseCache;
+    databaseCache = JSON.parse(fs.readFileSync(DATABASE_PATH, "utf8"));
+    databaseCacheMtime = stat.mtimeMs;
+    return databaseCache;
+  } catch {
+    return null;
+  }
+}
+
+function digitizeFromDatabaseEntry(entry) {
+  const questions = entry.questions.map((q) => {
+    const imgPath = path.join(REPO_ROOT, q.imagePaths[0]);
+    const b64 = fs.readFileSync(imgPath).toString("base64");
+    return {
+      questionNumber: q.questionNumber,
+      optionLetters: q.optionLetters,
+      image: "data:image/png;base64," + b64,
+      correctAnswer: q.correctAnswer,
+    };
+  });
+  return {
+    questions,
+    unmatchedAnswerKey: questions.filter((q) => !q.correctAnswer).map((q) => q.questionNumber),
+    ambiguousAnswerKey: [],
+  };
+}
+
 async function digitizeFromDriveIds(qpId, msId) {
+  const db = loadDatabase();
+  const dbEntry = db && db.find((p) => p.qpId === qpId);
+  if (dbEntry) {
+    return digitizeFromDatabaseEntry(dbEntry);
+  }
+
   const [qpBuf, msBuf] = await Promise.all([downloadDriveFile(qpId), downloadDriveFile(msId)]);
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-"));
   const qpPath = path.join(tmpDir, "qp.pdf");
