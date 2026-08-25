@@ -214,6 +214,20 @@ def find_question_starts(lines):
     raw_by_idx = lines
     lines = sorted(lines, key=lambda l: (l["page"], l["y0"]))
     starts = []
+    # Some real questions are structurally real (a real numbered stem,
+    # sentence-shaped, at the right position) but never become a
+    # detected "question" because they genuinely have no A-D options
+    # nearby -- a different multi-statement format this tool doesn't
+    # parse (confirmed real, twice: once behind a literal "Section B"
+    # text marker, once with NO marker text at all, just a plain numbered
+    # stem that switches formats with nothing announcing it). Without
+    # this list, the PRECEDING real question's crop had nothing telling
+    # it where its own content actually ends, and silently ran through
+    # several of these un-parseable questions into whatever came after.
+    # These are boundary markers only -- never returned as questions,
+    # never LIS-filtered, just used by parse_qp/parse_ms to know where a
+    # neighboring question's own crop must stop.
+    quasi = []
     for idx, line in enumerate(lines):
         m = QUESTION_KEYWORD_RE.match(line["text"])
         if not m:
@@ -247,6 +261,8 @@ def find_question_starts(lines):
                     "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                     "page": line["page"], "y0": line["y0"],
                 })
+            else:
+                quasi.append({"page": line["page"], "y0": line["y0"]})
             continue
         # A digit-starting bare heading ("32 0.200 mol of a hydrocarbon
         # undergo complete combustion...") is real too, but MUCH riskier
@@ -269,6 +285,8 @@ def find_question_starts(lines):
                         "number": m.group(1), "inlineText": content.strip(),
                         "page": line["page"], "y0": line["y0"],
                     })
+                else:
+                    quasi.append({"page": line["page"], "y0": line["y0"]})
             continue
         m = QUESTION_BARE_ALONE_RE.match(line["text"])
         # A page-footer number is real, dense MS-explanation-text noise
@@ -307,6 +325,8 @@ def find_question_starts(lines):
                         "number": m.group(1), "inlineText": "",
                         "page": line["page"], "y0": line["y0"],
                     })
+                else:
+                    quasi.append({"page": line["page"], "y0": line["y0"]})
 
     # Real papers number their questions strictly increasingly (1, 2,
     # 3...). Confirmed a real false-positive class from the bare-number
@@ -341,7 +361,7 @@ def find_question_starts(lines):
                 lengths[i] = lengths[j] + 1
                 prev[i] = j
     if n == 0:
-        return []
+        return [], quasi
     best = max(range(n), key=lambda i: lengths[i])
     seq_idx = []
     i = best
@@ -349,7 +369,7 @@ def find_question_starts(lines):
         seq_idx.append(i)
         i = prev[i]
     seq_idx.reverse()
-    return [starts[i] for i in seq_idx]
+    return [starts[i] for i in seq_idx], quasi
 
 
 def _pos(page, y0):
@@ -466,7 +486,8 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
 def parse_qp(pdf_path):
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    starts = find_question_starts(lines)
+    starts, quasi = find_question_starts(lines)
+    quasi_pos = sorted(_pos(q["page"], q["y0"]) for q in quasi)
 
     questions = []
     for i, s in enumerate(starts):
@@ -475,6 +496,15 @@ def parse_qp(pdf_path):
             _pos(starts[i + 1]["page"], starts[i + 1]["y0"])
             if i + 1 < len(starts) else _pos(doc.page_count, 0)
         )
+        # A quasi-heading (a real, sentence-shaped numbered stem with no
+        # A-D options nearby -- a different question format this tool
+        # doesn't parse, confirmed real with NO text marker announcing
+        # the format switch at all) between this question and its
+        # otherwise-next boundary still marks where THIS question's own
+        # content ends, even though it never becomes a question itself.
+        next_quasi = next((p for p in quasi_pos if start_pos < p < end_pos), None)
+        if next_quasi:
+            end_pos = next_quasi
 
         block_lines = [l for l in lines if start_pos <= _pos(l["page"], l["y0"]) < end_pos]
         letters = {
@@ -544,7 +574,7 @@ def parse_ms(pdf_path):
     `ambiguous` instead of a wrong answer."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    starts = find_question_starts(lines)
+    starts, _quasi = find_question_starts(lines)
 
     answers = {}
     ambiguous = []

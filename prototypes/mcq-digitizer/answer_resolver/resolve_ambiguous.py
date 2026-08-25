@@ -56,7 +56,7 @@ def ambiguous_with_pages(pdf_path):
     block", not the whole rest of the document."""
     doc = fitz.open(pdf_path)
     lines = em.extract_lines(doc)
-    starts = em.find_question_starts(lines)
+    starts, _quasi = em.find_question_starts(lines)
 
     results = {}
     for i, s in enumerate(starts):
