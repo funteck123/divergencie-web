@@ -673,7 +673,8 @@ def parse_qp(pdf_path):
         # so it can't accidentally pull in someone else's image.
         img_y_low = max(0, s["y0"] - 50) if page_end == s["page"] else 0
         img_bottom = image_block_bottom(doc[page_end], img_y_low, limit_y)
-        if img_bottom is not None:
+        has_image_content = img_bottom is not None
+        if has_image_content:
             # A little extra margin beyond the text-line +10 above -- a
             # real table border sits a few px past its image block's own
             # reported bbox bottom (confirmed real: +10 alone clipped the
@@ -683,6 +684,19 @@ def parse_qp(pdf_path):
 
         image_bytes = render_question_image(doc, s["page"], s["y0"], page_end, y_bottom)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
+
+        # A raster image in this question's own range means its options
+        # very likely live INSIDE that image (a rendered answer table is
+        # the confirmed real case), not as extractable text at all -- no
+        # text-based regex can read pixels. Trusting a partial text match
+        # here produced confirmed-wrong results (e.g. a lone stray "A"
+        # from an unrelated diagram label, with the real answer being
+        # B/C/D). This tool has no OCR/LLM step for the QP side by
+        # design, so the honest, safe answer is the full default set
+        # rather than a specific but possibly-wrong one -- worst case is
+        # an extra unclickable-but-harmless button, never a missing one.
+        if has_image_content:
+            letters = set()
 
         questions.append({
             "questionNumber": s["number"],
