@@ -210,6 +210,37 @@ def extract_lines(doc):
     return lines
 
 
+def _is_tick_row(lines, idx, tolerance=3, min_siblings=2):
+    """True when 2+ OTHER bare 1-2 digit lines sit within `tolerance`
+    y-points of this one, on the same page -- a ruler/table tick-mark
+    row (e.g. a "1  2  3" cm scale), not a real question-number heading.
+    Confirmed real, high-severity bug: a ruler diagram's own "2" cm-mark
+    label (18pt -- comfortably clearing the existing size>=9 floor,
+    which only ever guarded against the OPPOSITE direction, a small
+    footer number) got accepted as a genuine second question start,
+    splitting one real question (a feather-length reading question) into
+    two broken fragments -- the first truncated right at the ruler with
+    no options at all, the second re-showing part of the ruler followed
+    by the real options that should have belonged to the first. `lines`
+    is position-sorted, so real siblings of a tick-row candidate sit
+    within a few index positions of it; a small window is enough."""
+    cur = lines[idx]
+    siblings = 0
+    for j in range(max(0, idx - 10), min(len(lines), idx + 11)):
+        if j == idx:
+            continue
+        other = lines[j]
+        if other["page"] != cur["page"]:
+            continue
+        if abs(other["y0"] - cur["y0"]) > tolerance:
+            continue
+        if re.match(r'^\d{1,2}$', other["text"]):
+            siblings += 1
+            if siblings >= min_siblings:
+                return True
+    return False
+
+
 def find_question_starts(lines):
     """Every detected question boundary, in document order: {number,
     inlineText (whatever followed the number on its own line, often
@@ -342,7 +373,7 @@ def find_question_starts(lines):
         # investigation, clearly below any real heading's ~11pt, so a
         # floor specifically here (the riskiest, least-constrained
         # pattern) is a different, narrower, safe bet.
-        if m and m.group(1) != "0" and line["size"] >= 9:
+        if m and m.group(1) != "0" and line["size"] >= 9 and not _is_tick_row(lines, idx):
             # Two real files disagreed about which "next line" ordering
             # is correct for THIS check: one needs raw stream order (a
             # wrapped sentence's own lines came out of position order);
