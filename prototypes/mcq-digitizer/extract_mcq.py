@@ -59,6 +59,18 @@ QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(].*)$')
 # questions only have 3, not 4) and, in parse_ms, to find eliminated
 # letters' siblings.
 OPTION_LETTER_RE = re.compile(r'^\(?([A-D])\)?\.?$')
+# Publisher branding/copyright boilerplate seen across multiple real
+# source files ("Save My Exams! - The Home of Revision", "Model answers
+# are copyright...", "Head to savemyexams.co.uk...", "For more awesome
+# resources, visit us at www.savemyexams.co.uk/") -- when a question's
+# content spills onto a second page and that page turns out to be ONLY
+# this kind of noise (confirmed real: a whole trailing page that's
+# nothing but this plus a bare page number), it gets dropped entirely
+# rather than stitched in, per explicit direction.
+BRANDING_RE = re.compile(
+    r'savemyexams|save my exams|model answers are copyright|home of revision',
+    re.IGNORECASE,
+)
 # "B is incorrect...", "C and D are incorrect...", "A, B and C are
 # incorrect...", "Answer B is incorrect...", "Hence, answer B is
 # incorrect..." -- real MS's use a bare form, an "Answer "-prefixed form,
@@ -176,6 +188,25 @@ def option_letters_in_block(lines, start_pos, end_pos):
     return letters
 
 
+def is_branding_only(page_lines):
+    """True when every non-empty line on this page (within a question's
+    own block) is either publisher branding/copyright boilerplate or a
+    bare page number -- i.e. a trailing page that spilled over with
+    nothing a student actually needs to see."""
+    if not page_lines:
+        return True
+    for l in page_lines:
+        text = l["text"].strip()
+        if not text:
+            continue
+        if BRANDING_RE.search(text):
+            continue
+        if re.fullmatch(r'\d{1,3}', text):
+            continue
+        return False
+    return True
+
+
 def stitch_images_vertically(png_bytes_list, padding=24):
     """Combines multiple page-crop PNGs into ONE image, stacked top to
     bottom in the same order given (document reading order -- the
@@ -255,6 +286,15 @@ def parse_qp(pdf_path):
         # it. Using that boundary blindly produced a pointless blank
         # trailing image for every such question.
         pages_with_content = sorted(set(l["page"] for l in block_lines)) or [s["page"]]
+        # Drop trailing pages that turn out to be nothing but publisher
+        # branding/copyright boilerplate (confirmed real: a question's
+        # content spills onto the next page only because of a footer like
+        # "Save My Exams! - The Home of Revision", not real content) --
+        # per explicit direction, delete rather than stitch that in.
+        while len(pages_with_content) > 1 and is_branding_only(
+            [l for l in block_lines if l["page"] == pages_with_content[-1]]
+        ):
+            pages_with_content = pages_with_content[:-1]
         page_end = pages_with_content[-1]
         if page_end == s["page"]:
             y_bottom = max((l["y1"] for l in block_lines), default=s["y0"] + 20) + 10
