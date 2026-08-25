@@ -97,6 +97,19 @@ SECTION_BREAK_RE = re.compile(r'^Section\s+[A-Z]\b', re.IGNORECASE)
 # questions only have 3, not 4) and, in parse_ms, to find eliminated
 # letters' siblings.
 OPTION_LETTER_RE = re.compile(r'^\(?([A-D])\)?\.?$')
+# Some real files put the option letter and its text on ONE merged line
+# ("A X has a larger thermal capacity than Y.") instead of the letter
+# alone on its own line -- confirmed real on CAIE IGCSE Physics Ch2.2 Q17,
+# where OPTION_LETTER_RE alone silently produced optionLetters=['D'] even
+# though the crop clearly shows options A-D, so the quiz UI rendered only
+# a single clickable "D" button for a question with 4 real choices. Used
+# only inside option_letters_in_block's strict-sequence scan below, never
+# standalone, since a bare "letter + whitespace" match would otherwise
+# false-positive on any ordinary sentence starting with the word "A ".
+OPTION_LETTER_MERGED_RE = re.compile(r'^\(?([A-D])\)?[.):]?\s+\S')
+# Any single uppercase letter alone on its own line, not just A-D -- used
+# as a noise signal (see option_letters_in_block).
+SINGLE_LETTER_RE = re.compile(r'^\(?([A-Z])\)?\.?$')
 # Publisher branding/copyright boilerplate seen across multiple real
 # source files ("Save My Exams! - The Home of Revision", "Model answers
 # are copyright...", "Head to savemyexams.co.uk...", "For more awesome
@@ -255,14 +268,26 @@ def find_question_starts(lines):
         # A/B/C/D sub-graph labels and would otherwise pass the
         # nearby-option-letter check below completely legitimately.
         if m and m.group(1) != "0":
-            nearby = lines[idx + 1: idx + 31]
-            if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
-                starts.append({
-                    "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
-                    "page": line["page"], "y0": line["y0"],
-                })
-            else:
-                quasi.append({"page": line["page"], "y0": line["y0"]})
+            content = (m.group(2) or "").strip()
+            # A minimum content length, matching the digit-form sibling
+            # pattern below -- confirmed real false positive without it:
+            # a force-diagram label "45 N" (content is just "N", 1 char)
+            # on CAIE A Level Physics Ch4 "Moments" Q42 matched this
+            # pattern and got promoted to a full "start" (a genuine
+            # numbered force value, 45, happened to be both a plausible
+            # next question number AND to have a real "A" option-letter
+            # line coincidentally nearby), truncating Q42's own crop down
+            # to a single line. A real question stem is always a full
+            # sentence; nothing this short is one.
+            if len(content) >= 20:
+                nearby = lines[idx + 1: idx + 31]
+                if any(OPTION_LETTER_RE.match(l["text"]) for l in nearby):
+                    starts.append({
+                        "number": m.group(1), "inlineText": content,
+                        "page": line["page"], "y0": line["y0"],
+                    })
+                else:
+                    quasi.append({"page": line["page"], "y0": line["y0"]})
             continue
         # A digit-starting bare heading ("32 0.200 mol of a hydrocarbon
         # undergo complete combustion...") is real too, but MUCH riskier
@@ -377,14 +402,57 @@ def _pos(page, y0):
 
 
 def option_letters_in_block(lines, start_pos, end_pos):
-    letters = set()
+    """Collects A-D option-letter markers from one question/answer block.
+    Two real correctness bugs found via red-teaming the actual QP/MS
+    content (not just server behavior), both fixed here:
+
+    (1) Merged letter+text lines (see OPTION_LETTER_MERGED_RE) are also
+    accepted, not just a letter alone on its own line -- confirmed real
+    on CAIE IGCSE Physics Ch2.2 Q17, where OPTION_LETTER_RE alone
+    silently produced optionLetters=['D'] even though the crop clearly
+    shows options A-D, so the quiz UI rendered only a single clickable
+    "D" button for a question with 4 real choices. An earlier version of
+    this fix required letters to appear as a strict A,B,C,D... run in
+    position order, to guard against matching an ordinary sentence that
+    starts with the word "A " -- that itself proved wrong on real data:
+    a different real file (CAIE IGCSE Physics Ch1.1 Q2) lists its four
+    options in a non-alphabetical stream/visual order (a 2-column C/D
+    over A/B grid), so the ordering requirement rejected genuine matches
+    and caused a real regression (16/16-confident baseline dropped to
+    4/16). Matches are now unordered. The residual false-positive risk
+    (a stem sentence starting with "A ") only ever ADDS a phantom letter
+    to the set, which can only push a resolvable answer toward ambiguous
+    or add a spurious extra button -- never flip a correct answer into a
+    wrong one -- so it is an acceptable direction to fail in.
+
+    (2) A block containing isolated single-letter lines OUTSIDE A-D
+    (element symbols in a chemical structure diagram like H, O are the
+    confirmed real case -- CAIE IGCSE Chemistry "Names of compounds" Q7,
+    whose MS block is literally a text-rendered skeletal formula with H/
+    C/O atoms each on their own line) means bare single-letter lines in
+    THIS block are diagram/table noise, not real option markers -- a bare
+    "C" there is carbon, not option C. Confirmed real: this fed a
+    completely spurious resolved answer into parse_ms's elimination logic
+    for a block with no actual answer-key content in it at all. Any such
+    block returns an empty set so the caller's own default (full A-D)
+    fallback applies instead of trusting the noise.
+    """
+    found = set()
+    other_single_letters = set()
     for line in lines:
         p = _pos(line["page"], line["y0"])
-        if start_pos <= p < end_pos:
-            m = OPTION_LETTER_RE.match(line["text"])
-            if m:
-                letters.add(m.group(1).upper())
-    return letters
+        if not (start_pos <= p < end_pos):
+            continue
+        text = line["text"]
+        sm = SINGLE_LETTER_RE.match(text)
+        if sm and sm.group(1) not in "ABCD":
+            other_single_letters.add(sm.group(1))
+        m = OPTION_LETTER_RE.match(text) or OPTION_LETTER_MERGED_RE.match(text)
+        if m:
+            found.add(m.group(1).upper())
+    if other_single_letters:
+        return set()
+    return found
 
 
 def is_branding_only(page_lines):
@@ -453,6 +521,35 @@ def stitch_images_vertically(png_bytes_list, padding=24):
     return buf.getvalue()
 
 
+def image_block_bottom(page, y_low, y_high):
+    """Bottom y-coordinate of the lowest embedded raster-image block on
+    this page whose own top falls within [y_low, y_high), or None if
+    there isn't one. Real, previously-undiscovered crop bug found via
+    red-teaming actual question images (not just server behavior or MS
+    text-parsing): CAIE IGCSE Chemistry Ch2 "Atomic structure" Q18's
+    entire A-D answer table is a raster image, not text -- extract_lines
+    only sees text blocks (PyMuPDF's own type=0), so the text-only
+    y_bottom calculation below stopped right after the one-line question
+    stem and silently cropped the whole answer table out of the image,
+    even though optionLetters still (wrongly, via the empty-set default
+    fallback) reported a full A-D set -- the crop just never showed the
+    student what the options actually meant. Only images whose OWN top
+    edge starts within this question's own [y_low, y_high) range count,
+    so a later question's own diagram on the same page is never
+    swallowed by this one's crop."""
+    bottom = None
+    for block in page.get_text("dict").get("blocks", []):
+        if block.get("type") != 1:
+            continue
+        bbox = block.get("bbox")
+        if not bbox:
+            continue
+        top, bot = bbox[1], bbox[3]
+        if y_low <= top < y_high:
+            bottom = bot if bottom is None else max(bottom, bot)
+    return bottom
+
+
 def render_question_image(doc, page_start, y_start, page_end, y_end):
     """Crops the question's stem+options exactly as printed. Almost
     always one page; when a question's own content spans a page break,
@@ -507,10 +604,12 @@ def parse_qp(pdf_path):
             end_pos = next_quasi
 
         block_lines = [l for l in lines if start_pos <= _pos(l["page"], l["y0"]) < end_pos]
-        letters = {
-            m.group(1).upper() for l in block_lines
-            if (m := OPTION_LETTER_RE.match(l["text"]))
-        }
+        # Shares option_letters_in_block's merged-line and diagram-noise
+        # handling with parse_ms -- the same real bugs (a merged
+        # letter+text line, or bare element-symbol lines in a diagram)
+        # can corrupt either side, and this is the one place both fixes
+        # live.
+        letters = option_letters_in_block(lines, start_pos, end_pos)
 
         # Crop to where this question's OWN content actually ends, not to
         # the next question's start position -- a question is very often
@@ -551,6 +650,36 @@ def parse_qp(pdf_path):
             y_bottom = max((l["y1"] for l in last_page_content), default=None)
             if y_bottom is not None:
                 y_bottom += 10
+
+        # Text-only y_bottom misses any embedded raster-image content on
+        # page_end (a diagram, or -- confirmed real -- a whole answer
+        # table rendered as an image) that sits below the last detected
+        # text line but still genuinely belongs to this question. Extend
+        # the crop to cover it, bounded by whichever boundary already
+        # applies on this page (a section break if one was found, else
+        # this question's own end_pos) so a later question's own image
+        # on the same page never gets pulled in.
+        limit_pos = cutoff_pos if section_break_lines else end_pos
+        limit_y = limit_pos[1] if limit_pos[0] == page_end else doc[page_end].rect.height
+        # A generous 50pt margin ABOVE s["y0"], not an exact match --
+        # confirmed real on CAIE A Level Physics Ch2 "Motion Graphs" Q14:
+        # its whole stem+diagram+options is ONE big embedded image whose
+        # own top edge sits ~12pt above the "14" question-number text
+        # label overlaid near its top, not flush with it. A strict
+        # top>=s["y0"] check missed the image entirely and truncated the
+        # crop down to nothing but the bare label. 50pt comfortably
+        # covers that real gap while staying far short of the ~250pt gap
+        # to the previous question's own last content on the same page,
+        # so it can't accidentally pull in someone else's image.
+        img_y_low = max(0, s["y0"] - 50) if page_end == s["page"] else 0
+        img_bottom = image_block_bottom(doc[page_end], img_y_low, limit_y)
+        if img_bottom is not None:
+            # A little extra margin beyond the text-line +10 above -- a
+            # real table border sits a few px past its image block's own
+            # reported bbox bottom (confirmed real: +10 alone clipped the
+            # bottom border row of Q18's answer table).
+            img_bottom = min(img_bottom, limit_y) + 16
+            y_bottom = img_bottom if y_bottom is None else max(y_bottom, img_bottom)
 
         image_bytes = render_question_image(doc, s["page"], s["y0"], page_end, y_bottom)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
