@@ -8,6 +8,18 @@ import { api, groupMatches } from "@/lib/client";
 import { amountDueInOwnCurrency } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 
+// TKT-0126: Student and Parent dashboards both got a per-invoice Stripe
+// "Pay online" link (TKT-0039); Trial never did, even though the Add
+// Service flow (app/api/trial-enroll/route.js) bills a real invoice one
+// month in advance the same way a regular enrollment does. No Email field
+// on a TrialAcc account (unlike Student), so no prefilled_email -- same
+// reasoning as the Parent dashboard's own version of this helper.
+function stripePaymentLink(invoiceId) {
+  const url = new URL(process.env.NEXT_PUBLIC_STRIPE_GATEWAY);
+  url.searchParams.set("client_reference_id", invoiceId);
+  return url.toString();
+}
+
 export default function TrialDashboard() {
   return <DashboardShell allowedType="TrialAcc">{(user) => <Body user={user} />}</DashboardShell>;
 }
@@ -204,13 +216,26 @@ function Body({ user }) {
                   <span className={`badge ${i.Status === "Sent" || i.Status === "Paid" ? "badge-good" : "badge-pending"}`}>{i.Status}</span>
                 </td>
                 <td>
-                  {i.Status === "Sent" && (
-                    <InvoicePaidControl
-                      invoice={i}
-                      onMarkUnpaid={(id) => setInvoicePaid(id, false)}
-                      onConfirmPaid={confirmPaid}
-                    />
-                  )}
+                  <span className="flex items-center gap-1 flex-wrap">
+                    {process.env.NEXT_PUBLIC_STRIPE_GATEWAY && !i.StudentPaidFlag && (
+                      <a
+                        className="btn-ghost"
+                        style={{ whiteSpace: "nowrap" }}
+                        href={stripePaymentLink(i.InvoiceID)}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Pay online
+                      </a>
+                    )}
+                    {i.Status === "Sent" && (
+                      <InvoicePaidControl
+                        invoice={i}
+                        onMarkUnpaid={(id) => setInvoicePaid(id, false)}
+                        onConfirmPaid={confirmPaid}
+                      />
+                    )}
+                  </span>
                 </td>
               </tr>
             ))}
