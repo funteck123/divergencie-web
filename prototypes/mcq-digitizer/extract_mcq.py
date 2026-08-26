@@ -238,7 +238,7 @@ def extract_lines(doc):
                 bbox = line.get("bbox", [0, 0, 0, 0])
                 lines.append({
                     "text": text, "size": size, "bold": bold,
-                    "page": page_num, "y0": bbox[1], "y1": bbox[3],
+                    "page": page_num, "y0": bbox[1], "y1": bbox[3], "x0": bbox[0],
                     # This document's own raw stream order -- kept
                     # because it's what actually preserves a wrapped
                     # paragraph's own line order correctly (confirmed
@@ -349,6 +349,99 @@ def _is_tick_row(lines, idx, tolerance=3, min_siblings=2):
             siblings += 1
             if siblings >= min_siblings:
                 return True
+    return False
+
+
+def _is_table_value_row(lines, idx, tolerance=3):
+    """True when a real OPTION_LETTER_RE line ("A", "B"...) sits within
+    `tolerance` y-points of this bare 1-2 digit candidate, on the same
+    page -- a real option's own data-table row ("A | 160 | 60 | 80"),
+    not a new question-number heading. Confirmed real, high-severity:
+    unlike _is_tick_row's ruler-tick shape (2+ OTHER bare digits at the
+    same y), this one only needs ONE sibling, because that sibling being
+    specifically an A-D option letter is already unambiguous on its own
+    -- a real question heading never shares its own row with an option
+    letter. Found via a real regression: a resistor-values MCQ's own
+    table ("A  160  60  80") put bare "60" and "80" on the SAME row as
+    option letter "A", and since real A-D letters genuinely existed
+    further down the SAME table (belonging to this question, not a new
+    one), an earlier fix's "scope to the next heading" fallback wrongly
+    accepted both as new question starts -- inventing two phantom
+    questions ("60", "80") between the real Q48 and Q49 on a live paper
+    (CAIE A Level Physics "Ch9 Resistance & Resistivity" Worksheet 1)."""
+    cur = lines[idx]
+    for j in range(max(0, idx - 10), min(len(lines), idx + 11)):
+        if j == idx:
+            continue
+        other = lines[j]
+        if other["page"] != cur["page"]:
+            continue
+        if abs(other["y0"] - cur["y0"]) > tolerance:
+            continue
+        if OPTION_LETTER_RE.match(other["text"]):
+            return True
+    return False
+
+
+def _is_tick_column(lines, idx, x_tolerance=8, min_siblings=2, index_window=40):
+    """True when 2+ OTHER bare 1-2 digit lines sit within `x_tolerance`
+    x-points of this one, WITH NO REAL QUESTION CONTENT IN BETWEEN -- a
+    graph's own Y-AXIS tick label column (e.g. "20"/"15"/"10"/"5"/"0"
+    stacked at DIFFERENT y-values but the same x-position), not a real
+    question-number heading. _is_tick_row already catches the horizontal
+    case (siblings at the same y, different x -- an X-axis or ruler
+    scale); this is its vertical mirror, needed because a Y-axis label
+    column is the exact opposite shape and slips straight through that
+    check. Confirmed real and severe: a bare "20" -- the top tick of a
+    graph's y-axis, right after the real question's own stem and before
+    its graph and options -- got accepted as a genuine "Q20" start,
+    truncating the real question's crop down to its bare two-line stem
+    with no graph and no options at all (CAIE IGCSE Biology "Ch12
+    Respiration" Worksheet 1 Q19).
+
+    A plain INDEX-DISTANCE bound is not the right gate on its own --
+    confirmed real and severe both ways. An unbounded page-wide scan
+    broke catastrophically across dozens of unrelated papers (one
+    file's count dropped from 22 real questions to 4), because real
+    question numbers on a page are almost always left-aligned at the
+    SAME x-position as each other -- the exact same shape this check is
+    built to catch. But a tight index window (6) ALSO produced a false
+    positive of its own: three real, consecutive question headings
+    ("7", "8", "9") on the same page in CAIE IGCSE Chemistry "Ch3
+    Stoichiometry" Worksheet 2 share the same left-margin x0 and sit
+    within 4-5 line-indices of each other (each question is short), so
+    "7" and "9" were wrongly counted as tick-column siblings of "8".
+
+    The actual distinguishing feature isn't index distance at all: a
+    real axis label column's siblings have NOTHING but other bare
+    numbers between them; two real question headings always have that
+    question's own stem/option/statement content in between. So instead
+    of bounding by index proximity, disqualify any candidate sibling
+    that has real content (a sentence-like line or an option letter)
+    sitting between it and `cur` -- that's what actually separates the
+    two shapes, independent of how close together they happen to sit."""
+    cur = lines[idx]
+    siblings = 0
+    for j in range(max(0, idx - index_window), min(len(lines), idx + index_window + 1)):
+        if j == idx:
+            continue
+        other = lines[j]
+        if other["page"] != cur["page"]:
+            continue
+        if abs(other.get("x0", 0) - cur.get("x0", 0)) > x_tolerance:
+            continue
+        if not re.match(r'^\d{1,2}$', other["text"]):
+            continue
+        lo, hi = (idx, j) if j > idx else (j, idx)
+        has_real_content = any(
+            SENTENCE_START_RE.match(lines[k]["text"]) or OPTION_LETTER_RE.match(lines[k]["text"])
+            for k in range(lo + 1, hi)
+        )
+        if has_real_content:
+            continue
+        siblings += 1
+        if siblings >= min_siblings:
+            return True
     return False
 
 
@@ -644,7 +737,22 @@ def find_question_starts(lines, doc=None):
             # characterised..."; "38 What is" wrapped mid-clause). See
             # _stem_with_continuation's own docstring for why this is
             # still safe against the original "45 N" false positive.
-            if len(_stem_with_continuation(lines, idx, content)) >= 20:
+            #
+            # A genuinely short but COMPLETE real question ("13 What are
+            # alleles?", 18 chars) still clears this floor even without
+            # reaching 20 -- confirmed real, CAIE IGCSE Biology "Ch17
+            # Inheritance" Q13, silently dropped by the length floor alone
+            # because its very next line is a real A-D option letter, which
+            # _stem_with_continuation correctly refuses to merge into the
+            # stem (that would corrupt inlineText, not extend it). A
+            # coincidental short label ("N", "45 N", "60 cm3") is never
+            # BOTH a capitalized word AND ends in "?" the way a real
+            # question does -- that combined shape, not length alone, is
+            # what actually distinguishes a real short question from this
+            # floor's original target.
+            extended_stem = _stem_with_continuation(lines, idx, content)
+            is_short_complete_question = extended_stem[:1].isupper() and extended_stem.rstrip().endswith("?")
+            if len(extended_stem) >= 20 or is_short_complete_question:
                 # 55, not 31 -- confirmed real false negative on a real
                 # displacement-time graph question (CAIE A Level Physics
                 # Wave Basics Worksheet 1, Q43): its x-axis tick labels
@@ -731,6 +839,8 @@ def find_question_starts(lines, doc=None):
             m and m.group(1) != "0" and line["size"] >= 9
             and not _is_tick_row(lines, idx)
             and not _is_stacked_notation(lines, idx)
+            and not _is_table_value_row(lines, idx)
+            and not _is_tick_column(lines, idx)
         ):
             # Two real files disagreed about which "next line" ordering
             # is correct for THIS check: one needs raw stream order (a
@@ -746,7 +856,32 @@ def find_question_starts(lines, doc=None):
             next_in_raw_order = raw_by_idx[raw_idx + 1] if raw_idx + 1 < len(raw_by_idx) else None
             next_in_position_order = lines[idx + 1] if idx + 1 < len(lines) else None
             candidates = [c for c in (next_in_raw_order, next_in_position_order) if c]
-            if any(SENTENCE_START_RE.match(c["text"]) for c in candidates):
+            has_sentence = any(SENTENCE_START_RE.match(c["text"]) for c in candidates)
+            # A real question can be genuinely sentence-less on its own
+            # heading's immediate next line without being fake at all --
+            # confirmed real, CAIE IGCSE Biology "Ch17 Inheritance" Q11: a
+            # Punnett-square/genotype diagram (rendered as real, if
+            # short, TEXT fragments -- "HbA HbA", a bare "D" among them)
+            # sits between the bare "11" and the next real heading, with
+            # real A-D option letters further down the SAME diagram --
+            # but nothing in it is ever a single line long/capitalized
+            # enough to pass the sentence check above on its own. This
+            # branch used to require that sentence check as a hard gate
+            # before EVER looking for options/an image/statement markers,
+            # unlike every other branch in this function where those are
+            # independently sufficient evidence -- so a real question
+            # with real, scoped-nearby A-D options got silently dropped
+            # whenever it also happened to lack an immediately-sentence-
+            # shaped next line. Scoped (stops at the next real heading, so
+            # this can't bleed into a LATER unrelated question's own
+            # options the way an unbounded scan already confirmed real and
+            # unsafe elsewhere in this file) rather than the same 55-line
+            # flat window the sentence-gated path below uses, since here
+            # there's no sentence check already filtering the candidate
+            # down first.
+            if has_sentence or _has_nearby_image(page_images, line["page"], line["y0"]) or option_letters_in_block(
+                lines, (line["page"], line["y0"]), _next_heading_pos(lines, idx),
+            ):
                 nearby = lines[idx + 1: idx + 55]
                 has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
                 has_image = _has_nearby_image(page_images, line["page"], line["y0"])
@@ -846,6 +981,25 @@ def find_question_starts(lines, doc=None):
 
 def _pos(page, y0):
     return (page, y0)
+
+
+def _next_heading_pos(lines, idx):
+    """(page, y0) of the next line, after position-sorted index idx, that
+    itself looks like a real question-number heading candidate of any
+    shape -- used to scope a bare-alone-number candidate's own search for
+    real nearby evidence (option letters, an image) so it can never bleed
+    into a LATER, unrelated question's own content, mirroring the same
+    scoping principle _has_statement_markers already applies for its own
+    internal boundary-scoped option search."""
+    for l in lines[idx + 1:]:
+        t = l["text"]
+        if (
+            QUESTION_KEYWORD_RE.match(t) or QUESTION_NUM_RE.match(t)
+            or QUESTION_BARE_RE.match(t) or QUESTION_BARE_DIGIT_RE.match(t)
+            or QUESTION_BARE_ALONE_RE.match(t)
+        ):
+            return (l["page"], l["y0"])
+    return (10 ** 9, 0)
 
 
 def option_letters_in_block(lines, start_pos, end_pos):
@@ -1217,6 +1371,21 @@ def parse_qp(pdf_path):
         if has_drawing_content:
             draw_bottom = min(draw_bottom, limit_y) + 16
             y_bottom = draw_bottom if y_bottom is None else max(y_bottom, draw_bottom)
+
+        # A final hard clamp to the next question's own start position --
+        # confirmed real: the "+16" margins above (added to catch a real
+        # table border sitting a few px past its detected bbox) are each
+        # clamped to limit_y BEFORE the +16 is added, so the margin itself
+        # can still push a few pixels PAST it. Harmless when the next
+        # question starts lower down the page, but a real, user-reported
+        # visual bug when it doesn't: CAIE A Level Physics "Ch2 Motion
+        # Graphs" Worksheet 1 Q43's own crop visibly showed the start of
+        # Q44's own heading text ("44 The diagram shows...") at its very
+        # bottom. Never legitimate for a crop to extend past where the
+        # NEXT real question starts on the same page, so this is a plain
+        # min(), not a re-run of the content-driven logic above.
+        if end_pos[0] == page_end:
+            y_bottom = min(y_bottom, end_pos[1])
 
         image_bytes = render_question_image(doc, s["page"], s["y0"], page_end, y_bottom)
 
