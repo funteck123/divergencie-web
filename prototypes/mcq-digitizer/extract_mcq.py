@@ -83,6 +83,20 @@ QUESTION_BARE_ALONE_RE = re.compile(r'^(\d{1,2})$')
 # found starting with a curly quote ("'Particles moving very slowly...'"
 # -- U+2018) which plain ASCII didn't allow for.
 SENTENCE_START_RE = re.compile(r'^[A-Z(‘“"\'].{19,}$')
+# A narrower sibling of SENTENCE_START_RE, capital letters ONLY -- used
+# solely by _stem_with_continuation to decide whether a candidate's next
+# line is someone ELSE's real sentence rather than its own continuation.
+# The broader class above deliberately allows "(" as a real sentence's own
+# opening character, but that turned out wrong for THIS specific check:
+# confirmed real, a genuine continuation line can itself be a chemical
+# equation that happens to start with "(" ("(CH3)3SiCl + C2H5O- -> ..."),
+# which isn't a fresh sentence at all -- using the broader class here
+# wrongly blocked a real recovery (CAIE IAL Chemistry "20.2 Intro to
+# Organic Chemistry" Q42). A real, unrelated question's stem starting
+# immediately after a short label is reliably capital-letter prose, not
+# formula notation, so narrowing to capitals only is what actually
+# distinguishes "someone else's real sentence" from "my own equation".
+NEW_SENTENCE_CAPITAL_RE = re.compile(r'^[A-Z].{19,}$')
 # Marks the transition into a real CAIE "Section B" (statement-format,
 # see _has_statement_markers) block. Without a boundary marker of its
 # own, the LAST detected Section-A question's crop silently swallowed
@@ -238,6 +252,60 @@ def extract_lines(doc):
                     "raw_idx": len(lines),
                 })
     return lines
+
+
+def _stem_with_continuation(lines, idx, content, max_lines=8):
+    """Extends a bare heading's own first-line `content` with however many
+    of its immediately following lines are plainly the same sentence
+    wrapping onward rather than a new candidate of their own -- confirmed
+    real and, once looked for, common: isotope/nuclide notation ("The
+    1H3+ ion...", where the superscript "3" and subscript "1" render as
+    their own tiny fragment) and ordinary word-wrap alike can leave a real
+    question's OWN first line far short of the 20/25-char length floors
+    below, even though the full stem clearly clears them once enough of
+    its own following lines are included. A single extra line covers most
+    real cases ("42 The 1H3" + "+ ion was first characterised..." --
+    confirmed real, CAIE IAL Chemistry "2.1 Atomic Structure" Q42) but not
+    all: heavier nuclide notation can wrap across many short fragments in
+    a row ("7  The isotope" / "Rn" / "decays in a sequence of emissions to
+    form the isotope" / "Pb." / "At each stage" / "of the decay
+    sequence..." -- confirmed real, CAIE A Level Physics "Ch11 Particle
+    Physics" Worksheet 1 Q7, silently dropped entirely by a one-line
+    extension). Bounded at `max_lines` so a genuinely broken heading can't
+    merge indefinitely into unrelated later content.
+
+    Stops merging, line by line, the moment a line doesn't itself look
+    like a heading, a bare digit, or an option letter -- a real short
+    table-fragment's own next line is reliably ANOTHER short fragment or
+    a stray letter, never a full sentence, so this doesn't relax what the
+    floor is actually filtering for.
+
+    Also stops the moment a line reads as the START of a brand new,
+    complete, capitalized sentence (NEW_SENTENCE_CAPITAL_RE) -- confirmed
+    real and severe without this guard: merging past it once reintroduced
+    the EXACT original false positive this whole length floor exists to
+    prevent (CAIE A Level Physics Ch4 "Moments" Q42's own force-diagram
+    label "45 N", content="N"). There, the very next line is a genuine
+    new sentence belonging to a DIFFERENT, already-open question's own
+    body text ("Which of the following describes the resultant force..."),
+    not a continuation of "N" at all. A real wrapped continuation reads as
+    the tail of the SAME clause and essentially never starts a fresh
+    capitalized sentence of its own (it starts mid-clause: "+ ion was
+    first characterised...", "always involved in...", "P" alone, "Rn") --
+    that grammatical shape, not just line length, is what actually
+    separates a real split stem from a coincidental short label followed
+    by someone else's real content."""
+    for j in range(idx + 1, min(idx + 1 + max_lines, len(lines))):
+        nxt = lines[j]["text"]
+        if (
+            QUESTION_KEYWORD_RE.match(nxt) or QUESTION_NUM_RE.match(nxt)
+            or QUESTION_BARE_RE.match(nxt) or QUESTION_BARE_DIGIT_RE.match(nxt)
+            or QUESTION_BARE_ALONE_RE.match(nxt) or OPTION_LETTER_RE.match(nxt)
+            or NEW_SENTENCE_CAPITAL_RE.match(nxt)
+        ):
+            break
+        content = (content + " " + nxt).strip()
+    return content
 
 
 def _is_tick_row(lines, idx, tolerance=3, min_siblings=2):
@@ -552,7 +620,18 @@ def find_question_starts(lines, doc=None):
             # line coincidentally nearby), truncating Q42's own crop down
             # to a single line. A real question stem is always a full
             # sentence; nothing this short is one.
-            if len(content) >= 20:
+            # Checked against the ONE-LINE-EXTENDED stem, not the bare
+            # first line alone -- confirmed real and, once looked for,
+            # widespread across the corpus (dozens of files, one whole
+            # question each): isotope/nuclide notation and ordinary
+            # word-wrap alike can leave a real heading's own first line
+            # far short of this floor even though the full stem clearly
+            # isn't ("42 The 1H3" -- the isotope superscript ate the rest
+            # of the line -- real content: "...+ ion was first
+            # characterised..."; "38 What is" wrapped mid-clause). See
+            # _stem_with_continuation's own docstring for why this is
+            # still safe against the original "45 N" false positive.
+            if len(_stem_with_continuation(lines, idx, content)) >= 20:
                 # 55, not 31 -- confirmed real false negative on a real
                 # displacement-time graph question (CAIE A Level Physics
                 # Wave Basics Worksheet 1, Q43): its x-axis tick labels
@@ -595,7 +674,12 @@ def find_question_starts(lines, doc=None):
         m = QUESTION_BARE_DIGIT_RE.match(line["text"])
         if m:
             content = m.group(2)
-            if len(content) >= 25 and len(content.split()) >= 5:
+            # Checked against the one-line-extended stem -- see
+            # _stem_with_continuation's docstring and the sibling check
+            # above for why (same real, widespread short-first-line
+            # failure mode as the letter-starting form).
+            extended = _stem_with_continuation(lines, idx, content)
+            if len(extended) >= 25 and len(extended.split()) >= 5:
                 nearby = lines[idx + 1: idx + 55]
                 has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
                 has_image = _has_nearby_image(page_images, line["page"], line["y0"])
