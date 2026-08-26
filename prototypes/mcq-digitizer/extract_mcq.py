@@ -83,15 +83,20 @@ QUESTION_BARE_ALONE_RE = re.compile(r'^(\d{1,2})$')
 # found starting with a curly quote ("'Particles moving very slowly...'"
 # -- U+2018) which plain ASCII didn't allow for.
 SENTENCE_START_RE = re.compile(r'^[A-Z(‘“"\'].{19,}$')
-# Some real papers switch to a genuinely different question format partway
-# through ("Section B: ... one or more of the three numbered statements 1
-# to 3 may be correct") -- a real, different multiple-response style this
-# tool doesn't parse (no plain A-D single answer), already out of scope.
-# The problem this alone causes: without a boundary marker of its own,
-# the LAST detected Section-A question's crop silently swallowed the
-# entire rest of the document, several pages, since nothing told the
-# crop logic where Section A's real content actually ends.
-SECTION_BREAK_RE = re.compile(r'^Section\s+[A-Z]\b', re.IGNORECASE)
+# Marks the transition into a real CAIE "Section B" (statement-format,
+# see _has_statement_markers) block. Without a boundary marker of its
+# own, the LAST detected Section-A question's crop silently swallowed
+# several pages of the following section, since nothing told the crop
+# logic where Section A's real content actually ends. Anchored to match
+# the WHOLE line, not just its prefix -- confirmed real and reported
+# live by a user: "Section X of dam" and "Section Y of dam" (ordinary
+# physics diagram labels, nothing to do with exam sections at all) are
+# a genuine, coincidental collision with a prefix-only match, and
+# silently truncated that question's own crop right there. A real
+# section marker's own line is ALWAYS just "Section A"/"Section B" and
+# nothing else (confirmed against real source PDFs); a full-line anchor
+# is what actually distinguishes the two, not the prefix.
+SECTION_BREAK_RE = re.compile(r'^Section\s+[A-Z]$', re.IGNORECASE)
 # A bare option-letter line: "A", "A.", "(A)" and nothing else -- used to
 # both detect which option letters exist for a question (some real
 # questions only have 3, not 4) and, in parse_ms, to find eliminated
@@ -280,8 +285,125 @@ def _has_statement_markers(nearby, min_count=2):
     key is stated once, in the instructions, before the whole section).
     A question flagged by this check gets the fixed key image attached
     to its own crop (see STATEMENT_KEY_IMAGE) and optionLetters forced
-    to the full A-D set, since no per-question text ever encodes them."""
-    return sum(1 for l in nearby if l["text"] in ("1", "2", "3")) >= min_count
+    to the full A-D set, since no per-question text ever encodes them.
+
+    Two real bugs found live, both from trying to tell a real marker
+    apart from a plain ruler's own scale ("0  1  2  3  4  5"), which
+    also produces bare "1"/"2"/"3" lines:
+
+    (1) Originally counted ruler ticks the same as real markers -- the
+    fixed Section-B key got wrongly stitched onto an ordinary ruler-
+    diagram question with no relation to statements at all.
+
+    (2) The first fix (reject a "1"/"2"/"3" that has ANY other bare
+    digit nearby at a similar y0) overshot in two different ways: it
+    broke a real marker whose own statement TEXT sits on the same
+    visual row as its number (e.g. "1" at y0=213.14 beside "The
+    activation energy..." at y0=213.42 -- not a digit, shouldn't have
+    mattered, but a bug in that check's own logic (comparing to `l`
+    instead of collecting real digit-only siblings) let it slip in);
+    AND it broke a real case where a paper lays its three statements
+    out in a horizontal ROW instead of stacked (three short equations,
+    "1 <eqn>   2 <eqn>   3 <eqn>", genuinely all at the same y0) --
+    confirmed real, a genuine statement question about ideal gas
+    equations got wrongly excluded entirely.
+
+    The signal that actually distinguishes the two: a ruler ALWAYS has
+    a bare "0" nearby (confirmed across every real example -- a ruler's
+    own origin tick), which a real statement set never does. An earlier
+    version of this check disqualified on ANY other bare digit, not
+    specifically "0" -- also wrong on real data: a genuine statement
+    question about isotope notation legitimately contains its own bare
+    mass-number lines ("40", "39") that have nothing to do with a
+    ruler.
+
+    A y-range-scoped version of this same check (comparing only against
+    OTHER bare digits within the y-span the 1/2/3 candidates themselves
+    cover) was tried and also proved wrong on real data: three short
+    real Section-B questions back to back on one page put the SECOND
+    and THIRD question's own content -- including an unrelated bare
+    "40"/"39" from an isotope notation like the numbers in an actual
+    nuclide symbol -- inside the first question's own 30-line lookahead
+    window, and a naive numeric y-range comparison doesn't know those
+    numbers belong to a different question entirely (worse, once a
+    page break is crossed, y0 resets, so comparing raw y0 across pages
+    is meaningless regardless of range).
+
+    The robust fix: stop scanning `nearby` entirely the moment another
+    line that itself looks like the START of a different question
+    appears (matches QUESTION_KEYWORD_RE, QUESTION_NUM_RE, or
+    QUESTION_BARE_RE) -- content belonging to a different question is
+    never relevant to whether THIS one is a statement-format question,
+    and this boundary is exact, unlike a distance-based heuristic.
+
+    That stop condition itself then produced a THIRD real bug: a
+    chemical equation with a fraction ("SO2 + ½O2 → SO3") gets
+    its numerator extracted onto its own merged line ("1 O2 →
+    SO3"), which coincidentally matches the same heading-shaped pattern
+    (digit, space, capital letter) -- stopping the scan immediately,
+    before ever reaching the block's own real markers a few lines
+    later. Real question numbers at the point any of these checks run
+    are never 1, 2, or 3 (this corpus's questions are always deep into
+    a much higher range by the time Section B appears) -- so a
+    heading-shaped match only counts as a genuine stop boundary when
+    its captured number is something ELSE. A captured "1"/"2"/"3" is
+    always this exact false-positive shape, never a real next
+    question, and is correctly left for the marker-collection check
+    below instead."""
+    marker_lines = []
+    for l in nearby:
+        text = l["text"]
+        m_next = (
+            QUESTION_KEYWORD_RE.match(text)
+            or QUESTION_NUM_RE.match(text)
+            or QUESTION_BARE_RE.match(text)
+        )
+        if m_next and m_next.group(1) not in ("1", "2", "3"):
+            break  # a different question's own content starts here
+        if m_next:
+            # A statement marker isn't always a bare "1"/"2"/"3" alone --
+            # confirmed real: some papers merge the number and its own
+            # statement text onto one line ("1 It is different for the
+            # forward and back reactions..."), the same letter+text
+            # merged-line format already known from option lines
+            # elsewhere in this file. m_next already confirmed this
+            # matches a heading-shape with a captured number in
+            # {1,2,3} (the "not in" branch above would have broken
+            # otherwise), so it's a real marker here too.
+            marker_lines.append(l)
+            continue
+        if OPTION_LETTER_RE.match(text):
+            # Real A-D options found WITHIN this question's own bounded
+            # scope (up to the next question) is decisive: this is an
+            # ordinary MCQ, never a statement-format one. Deliberately
+            # NOT the caller's own unbounded `has_options` (computed
+            # over the full, un-stopped 30-line lookahead) -- confirmed
+            # real regression from trying that: a short real statement
+            # question's lookahead window reached past its own end into
+            # the NEXT question's real A-D options, wrongly attributing
+            # them to this one. This scoped check only ever sees options
+            # that are actually within the current question's own
+            # content, matching where marker_lines and the "4" check
+            # below also stop looking.
+            return False
+        if text in ("1", "2", "3"):
+            marker_lines.append(l)
+        elif text == "4" and (not marker_lines or l["size"] >= marker_lines[0]["size"] - 1):
+            # Checking "is there a bare 4" alone (with no size check) was
+            # ALSO wrong: a genuine statement question's own chemical
+            # formula can legitimately contain a subscript "4" (P4O10,
+            # tetraphosphorus decoxide) that gets extracted onto its own
+            # line -- but a subscript renders in a visibly SMALLER font
+            # (confirmed real: 7pt) than the surrounding body text and
+            # the real "1"/"2"/"3" markers (11pt), the same size gap
+            # this file's page-footer-number check elsewhere relies on.
+            # A ruler's own tick-mark numbers, by contrast, render at
+            # essentially the SAME size as everything else in the
+            # diagram (confirmed real: also 11pt) -- so only a same-
+            # size-or-larger "4" counts as a real tick mark; a
+            # conspicuously smaller one is a subscript and is ignored.
+            return False
+    return len(marker_lines) >= min_count
 
 
 def find_question_starts(lines, doc=None):
@@ -348,7 +470,7 @@ def find_question_starts(lines, doc=None):
             starts.append({
                 "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                 "page": line["page"], "y0": line["y0"],
-                "isStatementFormat": _has_statement_markers(lines[idx + 1: idx + 31]),
+                "isStatementFormat": _has_statement_markers(lines[idx + 1: idx + 55]),
             })
             continue
         # The bare "N text" form (no punctuation at all) is real but
@@ -380,9 +502,24 @@ def find_question_starts(lines, doc=None):
             # to a single line. A real question stem is always a full
             # sentence; nothing this short is one.
             if len(content) >= 20:
-                nearby = lines[idx + 1: idx + 31]
+                # 55, not 31 -- confirmed real false negative on a real
+                # displacement-time graph question (CAIE A Level Physics
+                # Wave Basics Worksheet 1, Q43): its x-axis tick labels
+                # ("0 5 10 15 20 25 30...55") render as ~24 separate
+                # single-digit lines before the real A/B/C/D options
+                # table, pushing those options to line 32 of the
+                # lookahead -- past the old 30-line window, so has_options
+                # came back False and the whole question was dropped as
+                # quasi even though it has genuine options.
+                nearby = lines[idx + 1: idx + 55]
                 has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
                 has_image = _has_nearby_image(page_images, line["page"], line["y0"])
+                # _has_statement_markers does its own internal,
+                # boundary-scoped check for real A-D options -- NOT
+                # this unbounded has_options -- confirmed real
+                # regression from using the unbounded one: a short
+                # statement question's 30-line lookahead reached past
+                # its own end into the NEXT question's real options.
                 is_statement = _has_statement_markers(nearby)
                 if has_options or has_image or is_statement:
                     starts.append({
@@ -408,9 +545,15 @@ def find_question_starts(lines, doc=None):
         if m:
             content = m.group(2)
             if len(content) >= 25 and len(content.split()) >= 5:
-                nearby = lines[idx + 1: idx + 31]
+                nearby = lines[idx + 1: idx + 55]
                 has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
                 has_image = _has_nearby_image(page_images, line["page"], line["y0"])
+                # _has_statement_markers does its own internal,
+                # boundary-scoped check for real A-D options -- NOT
+                # this unbounded has_options -- confirmed real
+                # regression from using the unbounded one: a short
+                # statement question's 30-line lookahead reached past
+                # its own end into the NEXT question's real options.
                 is_statement = _has_statement_markers(nearby)
                 if has_options or has_image or is_statement:
                     starts.append({
@@ -452,9 +595,15 @@ def find_question_starts(lines, doc=None):
             next_in_position_order = lines[idx + 1] if idx + 1 < len(lines) else None
             candidates = [c for c in (next_in_raw_order, next_in_position_order) if c]
             if any(SENTENCE_START_RE.match(c["text"]) for c in candidates):
-                nearby = lines[idx + 1: idx + 31]
+                nearby = lines[idx + 1: idx + 55]
                 has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
                 has_image = _has_nearby_image(page_images, line["page"], line["y0"])
+                # _has_statement_markers does its own internal,
+                # boundary-scoped check for real A-D options -- NOT
+                # this unbounded has_options -- confirmed real
+                # regression from using the unbounded one: a short
+                # statement question's 30-line lookahead reached past
+                # its own end into the NEXT question's real options.
                 is_statement = _has_statement_markers(nearby)
                 if has_options or has_image or is_statement:
                     starts.append({
@@ -497,6 +646,40 @@ def find_question_starts(lines, doc=None):
             if nums[j] < nums[i] and nums[i] - nums[j] <= 20 and lengths[j] + 1 > lengths[i]:
                 lengths[i] = lengths[j] + 1
                 prev[i] = j
+    # A statement-format question's own "2"/"3" continuation markers
+    # ("2 It is low for a reaction..." merged-line form) independently
+    # match a heading-like shape too, so the main loop above evaluates
+    # each of them AGAIN as its own candidate -- scanning forward from
+    # "2" alone only ever finds the one remaining marker ("3"), never
+    # the 2+ this check requires, so each wrongly lands in `quasi`
+    # (not `starts`, since it also lacks real options/an image on its
+    # own). Those quasi entries then truncated the PRECEDING real
+    # question's own crop right at "2", cutting off its own genuine
+    # "2" and "3" -- confirmed real. Any quasi entry that falls inside
+    # a statement-format question's own extent is exactly this noise,
+    # not a real boundary, and is dropped here.
+    quasi_pos = {(q["page"], q["y0"]) for q in quasi}
+    for s in starts:
+        if not s.get("isStatementFormat"):
+            continue
+        start_pos = (s["page"], s["y0"])
+        idx = next(i for i, l in enumerate(lines) if (l["page"], l["y0"]) == start_pos)
+        end_pos = None
+        for l in lines[idx + 1:]:
+            m_next = (
+                QUESTION_KEYWORD_RE.match(l["text"])
+                or QUESTION_NUM_RE.match(l["text"])
+                or QUESTION_BARE_RE.match(l["text"])
+            )
+            if m_next and m_next.group(1) not in ("1", "2", "3"):
+                end_pos = (l["page"], l["y0"])
+                break
+        quasi_pos -= {
+            p for p in quasi_pos
+            if start_pos < p < (end_pos or (10 ** 9, 0))
+        }
+    quasi = [q for q in quasi if (q["page"], q["y0"]) in quasi_pos]
+
     if n == 0:
         return [], quasi
     best = max(range(n), key=lambda i: lengths[i])
