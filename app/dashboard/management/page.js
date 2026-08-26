@@ -207,6 +207,59 @@ function Badge({ children, kind = "info" }) {
   return <span className={`badge badge-${kind}`}>{children}</span>;
 }
 
+// TKT-0131: Pipeline used to show only the current Status string
+// ("FeedbackSubmitted", "OfferSent"...), leaving admins to hold the full
+// ordered sequence in their head to tell what's next or whether something's
+// stuck. This renders the whole sequence at once with the current step
+// called out, so the next required action is visible without leaving the
+// row. Not a regression fix (git history confirmed no such view ever
+// existed) -- new functionality against the confirmed sequences: Trial is
+// Pending -> Scheduled -> Feedback -> Service Added (app/api/schedule/
+// requests/route.js sets Scheduled, app/api/trial-feedback/route.js sets
+// FeedbackSubmitted, app/api/trial-enroll/route.js sets ServiceAdded);
+// Interview is Pending -> Scheduled -> Task Submitted -> Offer Sent ->
+// Accepted (app/api/interview-task/route.js, app/api/interview-offer/
+// route.js). Rejected/Waitlisted are dead ends off that line, not a step
+// on it, so they render as a plain badge instead of a stepper position.
+const TRIAL_STEPS = ["Pending", "Scheduled", "Feedback", "Service Added"];
+function trialStepIndex(t) {
+  if (t.ServiceAdded) return 3;
+  if (t.Status === "FeedbackSubmitted") return 2;
+  if (t.Status === "Scheduled") return 1;
+  return 0;
+}
+
+const INTERVIEW_STEPS = ["Pending", "Scheduled", "Task Submitted", "Offer Sent", "Accepted"];
+function interviewStepIndex(i) {
+  if (i.Status === "OfferAccepted") return 4;
+  if (i.Status === "OfferSent") return 3;
+  if (i.Status === "TaskSubmitted") return 2;
+  if (i.Status === "Scheduled") return 1;
+  return 0;
+}
+
+function StepIndicator({ steps, currentIndex, deadEnd }) {
+  if (deadEnd) return <Badge kind="bad">{deadEnd}</Badge>;
+  return (
+    <span className="flex items-center gap-1 flex-wrap text-xs" style={{ whiteSpace: "nowrap" }}>
+      {steps.map((label, i) => (
+        <span key={label} className="flex items-center gap-1">
+          {i > 0 && <span style={{ color: "var(--muted)" }}>→</span>}
+          <span
+            style={{
+              color: i < currentIndex ? "var(--good)" : i === currentIndex ? "var(--text)" : "var(--muted)",
+              fontWeight: i === currentIndex ? 600 : 400,
+              opacity: i > currentIndex ? 0.5 : 1,
+            }}
+          >
+            {label}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /* ---------------- Applications ---------------- */
 function Applications() {
   const [regForms, setRegForms] = useState([]);
@@ -656,7 +709,7 @@ function Pipeline() {
             <tr>
               <SortableTh label="Name" sortKeyName="_name" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
-              <SortableTh label="Status" sortKeyName="Status" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
+              <SortableTh label="Progress" sortKeyName="Status" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <th>Scheduled</th>
               <th>Instructor</th>
               <th>Feedback</th>
@@ -675,7 +728,9 @@ function Pipeline() {
                   <td>
                     <span className="subject-truncate" title={t._service}>{t._service}</span>
                   </td>
-                  <td><span className="badge badge-info">{t.Status}</span></td>
+                  <td>
+                    <StepIndicator steps={TRIAL_STEPS} currentIndex={trialStepIndex(t)} deadEnd={t.Status === "Rejected" ? "Rejected" : null} />
+                  </td>
                   <td style={{ color: "var(--muted)" }}>{slot ? `${formatDate(slot.Date)} at ${slot.Time}` : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>{slot ? slot.Facilitator || "no instructor set" : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
@@ -720,7 +775,7 @@ function Pipeline() {
             <tr>
               <SortableTh label="Name" sortKeyName="_name" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
-              <SortableTh label="Status" sortKeyName="Status" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
+              <SortableTh label="Progress" sortKeyName="Status" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <th>Scheduled</th>
               <th>Instructor</th>
               <th>Task</th>
@@ -739,7 +794,11 @@ function Pipeline() {
                   <span className="subject-truncate" title={i._service}>{i._service}</span>
                 </td>
                 <td>
-                  <span className="badge badge-info">{i.Status}</span>
+                  <StepIndicator
+                    steps={INTERVIEW_STEPS}
+                    currentIndex={interviewStepIndex(i)}
+                    deadEnd={i.Status === "Rejected" ? "Rejected" : i.Status === "Waitlisted" ? "Waitlisted" : null}
+                  />
                   {/* TKT-0033 */}
                   {i.OfferSentAt && (
                     <div className="text-xs" style={{ color: "var(--muted)" }}>
