@@ -246,6 +246,32 @@ def _is_tick_row(lines, idx, tolerance=3, min_siblings=2):
     return False
 
 
+def _is_stacked_notation(lines, idx, max_gap=16):
+    """True when another bare 1-2 digit line of the same small size sits
+    directly ABOVE this one (within `max_gap` y-points) on the same page
+    -- an isotope/nuclide mass-number-over-atomic-number stack (e.g. the
+    superscript "60" over the subscript "27" in isotope notation for
+    cobalt-60), not a real question-number heading. Confirmed real: this
+    exact case (CAIE IAL Chemistry "2.2 Atomic Structure", the "27" in
+    the cobalt-60 isotope notation) got promoted to a full phantom
+    question start because it's small enough (9pt, like a real subscript)
+    to be a bare-heading candidate but ISN'T a horizontal tick row
+    (`_is_tick_row` only catches siblings at nearly the SAME y-position,
+    not one stacked a line-height above), and its "next real sentence"
+    happened to fall right after it in position-sorted order purely by
+    y-coordinate coincidence -- splitting one real Section B question in
+    two, one half missing its own numbered statements entirely."""
+    cur = lines[idx]
+    for j in range(max(0, idx - 5), idx):
+        other = lines[j]
+        if other["page"] != cur["page"]:
+            continue
+        gap = cur["y0"] - other["y0"]
+        if 0 < gap <= max_gap and re.match(r'^\d{1,2}$', other["text"]) and abs(other["size"] - cur["size"]) < 1:
+            return True
+    return False
+
+
 def _page_image_ranges(doc):
     """{page_num: [(top, bottom), ...]} for every embedded raster-image
     block in the document -- precomputed once per call so the option-
@@ -579,7 +605,11 @@ def find_question_starts(lines, doc=None):
         # investigation, clearly below any real heading's ~11pt, so a
         # floor specifically here (the riskiest, least-constrained
         # pattern) is a different, narrower, safe bet.
-        if m and m.group(1) != "0" and line["size"] >= 9 and not _is_tick_row(lines, idx):
+        if (
+            m and m.group(1) != "0" and line["size"] >= 9
+            and not _is_tick_row(lines, idx)
+            and not _is_stacked_notation(lines, idx)
+        ):
             # Two real files disagreed about which "next line" ordering
             # is correct for THIS check: one needs raw stream order (a
             # wrapped sentence's own lines came out of position order);
