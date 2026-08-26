@@ -213,7 +213,7 @@ function Body({ user }) {
             onLogAttendance={logAttendance}
             portalColor={GROUP_COLORS.Student}
             renderExpanded={(scheduleId, s) => (
-              <SessionAttendance scheduleId={scheduleId} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" />
+              <SessionAttendance scheduleId={scheduleId} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" onLogged={load} />
             )}
           />
         ) : (
@@ -264,7 +264,7 @@ function Body({ user }) {
                     {expanded && (
                       <tr>
                         <td colSpan={7}>
-                          <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" />
+                          <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" onLogged={load} />
                         </td>
                       </tr>
                     )}

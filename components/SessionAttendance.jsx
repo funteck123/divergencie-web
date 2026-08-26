@@ -19,7 +19,18 @@ import { formatDateTime } from "@/lib/formatDate";
 //   - Management (isManagement=true): read-only roster/history, plus "Mark
 //     correct" on any non-accepted record once 2+ exist for the same
 //     subject — flips AcceptedForBilling, never deletes either record.
-export default function SessionAttendance({ scheduleId, duration, viewerUserId, viewerType, isManagement = false }) {
+// TKT-0128: logging/editing attendance here only ever refreshed this
+// component's OWN independent fetch (`load()` above) — the parent
+// dashboard's own `data.attendanceItems`, which ScheduleCalendar's
+// collapsed chip and the List view's own badge both read directly, never
+// learned a record changed. Marking attendance inside an expanded
+// session correctly updated the expanded panel itself, but the chip you'd
+// see after collapsing it (or the same badge in List view) kept showing
+// "not logged" until a full page reload re-fetched everything from
+// scratch. `onLogged`, when passed, is called after every successful
+// log/markCorrect/saveEdit so the parent can refresh its own copy too —
+// each dashboard passes its own top-level `load`.
+export default function SessionAttendance({ scheduleId, duration, viewerUserId, viewerType, isManagement = false, onLogged }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -45,6 +56,7 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
         body: JSON.stringify({ scheduleItemId: scheduleId, userId: subjectUserId, status, loggedDuration }),
       });
       load();
+      onLogged?.();
     } catch (e) {
       setError(e.message);
     }
@@ -55,6 +67,7 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
     try {
       await api("/api/attendance", { method: "PATCH", body: JSON.stringify({ attendanceId }) });
       load();
+      onLogged?.();
     } catch (e) {
       setError(e.message);
     }
@@ -70,6 +83,7 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
       await api("/api/attendance", { method: "PATCH", body: JSON.stringify({ attendanceId, status, loggedDuration }) });
       setEditingId(null);
       load();
+      onLogged?.();
     } catch (e) {
       setError(e.message);
     }

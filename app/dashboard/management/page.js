@@ -3812,7 +3812,7 @@ function SchedulePool() {
             readOnly
             colorByGroup
             renderExpanded={(scheduleId, s) => (
-              <SessionAttendance scheduleId={scheduleId} duration={s.Duration} isManagement />
+              <SessionAttendance scheduleId={scheduleId} duration={s.Duration} isManagement onLogged={load} />
             )}
           />
         ) : (
@@ -3864,7 +3864,7 @@ function SchedulePool() {
                 {expanded && (
                   <tr>
                     <td colSpan={7}>
-                      <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} isManagement />
+                      <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} isManagement onLogged={load} />
                     </td>
                   </tr>
                 )}
