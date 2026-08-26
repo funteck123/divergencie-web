@@ -165,9 +165,13 @@ BRANDING_RE = re.compile(
 # wherever in the sentence the letter-clause starts, not just line start.
 # Captures the whole letter-list prefix; individual letters are pulled out
 # of it after matching, since a single regex group can't repeat a comma
-# list cleanly.
+# list cleanly. Also accepts "X is NOT correct" as an equivalent phrasing
+# to "X is incorrect" (confirmed real, same word choice used
+# interchangeably across different worksheets of the same source: "A is
+# not correct as methane is a gas...").
 ELIMINATION_RE = re.compile(
-    r'\b(?:Answer\s+)?((?:[A-D](?:,\s*|\s+and\s+))*[A-D])\s+(?:is|are)\s+(?:therefore\s+)?(?:the\s+)?incorrect',
+    r'\b(?:Answer\s+)?((?:[A-D](?:,\s*|\s+and\s+))*[A-D])\s+(?:is|are)\s+(?:therefore\s+)?'
+    r'(?:not\s+correct|(?:the\s+)?incorrect)',
     re.IGNORECASE,
 )
 # "Answer B is correct...", "B is correct...", "Hence answer B is
@@ -190,6 +194,27 @@ RECOGNIZED_RE = re.compile(
     r'\b([A-D])\s+can\s+be\s+recognized\s+as\b',
     re.IGNORECASE,
 )
+# A question stem phrased as "Which statement is NOT correct?" (or "...is
+# NOT true?") flips which polarity of explanation sentence actually names
+# the MCQ's own answer. For a normal "which is correct" question, an MS
+# explains each WRONG option as "X is incorrect" (elimination, leaving the
+# one right answer) and may directly state "X is correct" for the right
+# one. For a "which is NOT correct" question, the MS instead fact-checks
+# each option's own claim -- "Statement D is correct [as a fact]" for
+# every option that's a TRUE statement, and "A is the incorrect statement"
+# for the one that's false -- and it's the FALSE one, explicitly labeled
+# "incorrect", that is the actual MCQ answer. Confirmed real and
+# confidently WRONG without this check: a real MS says outright "A is the
+# incorrect statement as methane is a gas and not a liquid", i.e. the MS
+# itself names A as the answer in plain language, yet naively matching
+# CORRECT_RE's "X is correct" against the SAME block also matches
+# "Statement D is correct" (a fact-check of D's own claim, not the MCQ
+# answer) and returns D with false confidence, silently overriding the
+# MS's own explicit statement of the real answer (CAIE IGCSE Chemistry
+# "Ch10 Carbon Dioxide & Methane" Worksheet 1 Q3, and confirmed to recur
+# on at least 2 more worksheet-1/13/20 style repeats of the exact same
+# question format in the same MS).
+NEGATED_QUESTION_RE = re.compile(r'\bnot\s+correct\b|\bnot\s+true\b', re.IGNORECASE)
 # A decorative bullet glyph a mark scheme's own PDF font renders before
 # each explanation line -- sometimes maps to a real Unicode checkmark
 # (U+2713/U+2714), sometimes to a raw Private-Use-Area codepoint the font's
@@ -1453,8 +1478,85 @@ def parse_ms(pdf_path):
             l["text"] for l in lines
             if start_pos <= _pos(l["page"], l["y0"]) < end_pos
         ]
-        option_letters = option_letters_in_block(lines, start_pos, end_pos) or {"A", "B", "C", "D"}
+        # A block with exactly one detected option letter is genuinely
+        # ambiguous between two real, opposite shapes, and the block's own
+        # LENGTH is what tells them apart. A simple answer-key MS (e.g.
+        # "1.\nA\n2.\nB\n3.\nB...", one bare letter per question, nothing
+        # else) legitimately produces a 2-line block (the heading plus its
+        # one bare letter) where that lone letter genuinely IS the whole
+        # answer -- this is a common, valid format across many real papers
+        # and must still be trusted. But a long explanatory block can
+        # contain a stray letter that coincidentally matches
+        # OPTION_LETTER_RE without being a real option marker at all --
+        # confirmed real: a gap-fill MS's own explanation prose contains a
+        # bare "C" from the equation "C + O2 -> CO2", wrongly treated as
+        # the block's entire option universe (size 1), which then passed
+        # straight through elimination as the "only remaining" answer with
+        # nothing actually eliminated (CAIE IGCSE Chemistry "Ch10 Water"
+        # Worksheet 2 Q12; real answer per the MS's own worked reasoning
+        # was D, not the C that leaked through). Distinguish by block
+        # length, EXCLUDING publisher branding/copyright boilerplate
+        # (BRANDING_RE) first -- a short simple-list block ("33.\nD") can
+        # legitimately gain 2 extra trailing lines purely because it's
+        # the last question on a page, right before a footer like "Save
+        # My Exams! - The Home of Revision" (confirmed real, CAIE A Level
+        # Physics "Ch4 Forces" Worksheet 1 Q33 -- without excluding this,
+        # the same page-boundary coincidence that adds real content
+        # elsewhere was wrongly discarding a genuinely correct single
+        # letter here). A short content block (<=3 real lines, matching
+        # the simple-list format with no prose) trusts a lone letter; a
+        # longer one (real explanatory prose) does not, and falls back
+        # to the full option set instead.
+        found_letters = option_letters_in_block(lines, start_pos, end_pos)
+        content_lines = [l for l in block_lines if not BRANDING_RE.search(l)]
+        if len(found_letters) >= 2 or (len(found_letters) == 1 and len(content_lines) <= 3):
+            option_letters = found_letters
+        else:
+            option_letters = {"A", "B", "C", "D"}
         block_text = "\n".join(block_lines)
+
+        # Check the question's own stem (bounded to the first few lines,
+        # before the explanation prose) for "NOT correct"/"NOT true"
+        # phrasing -- this flips which sentence pattern actually names the
+        # MCQ's own answer (see NEGATED_QUESTION_RE for the full case).
+        # Real MS documents use TWO genuinely different, easily-confused
+        # conventions to explain a negated question, both using the same
+        # word "incorrect", with opposite roles:
+        #   Style 1 (direct): the one FALSE-claim option is itself called
+        #   "incorrect"/"not correct" in a single sentence naming exactly
+        #   one letter -- that letter directly IS the MCQ's own answer
+        #   (confirmed real: "A is the incorrect statement as methane is a
+        #   gas and not a liquid").
+        #   Style 2 (elimination): the TRUE-claim options are each called
+        #   "incorrect" IN THE SENSE OF "not the target answer" -- e.g.
+        #   "Option B is incorrect" plus "Option C and D are incorrect",
+        #   naming three letters combined, leaving the fourth (never
+        #   called incorrect at all) as the real answer (confirmed real,
+        #   CAIE IGCSE Chemistry "Ch10 Air" Worksheet 2 Q17, whose own
+        #   final line spells it out explicitly: "Option A is the only
+        #   one which matches with the question"). An earlier version of
+        #   this fix only checked for Style 1's single-letter form and
+        #   regressed this exact case from a correct A to a wrong B,
+        #   because it saw the "Option B is incorrect" sentence as an
+        #   isolated single-letter match without noticing the OTHER
+        #   sentence eliminates two more letters (C and D) the same way.
+        # Both styles use the same list-capturing shape ELIMINATION_RE
+        # already parses, so collect all "X [, Y and Z] is/are incorrect"
+        # mentions once and check both readings: exactly 1 letter mentioned
+        # is Style 1's direct answer; exactly 3 mentioned (out of the 4
+        # options) is Style 2, and the one letter never mentioned is the
+        # answer by elimination.
+        if NEGATED_QUESTION_RE.search("\n".join(block_lines[:6])):
+            incorrect_mentioned = set()
+            for em in ELIMINATION_RE.finditer(block_text):
+                incorrect_mentioned.update(re.findall(r'[A-D]', em.group(1)))
+            if len(incorrect_mentioned) == 1:
+                answers[s["number"]] = incorrect_mentioned.pop()
+                continue
+            not_mentioned = option_letters - incorrect_mentioned
+            if len(incorrect_mentioned) == 3 and len(not_mentioned) == 1:
+                answers[s["number"]] = not_mentioned.pop()
+                continue
 
         # A direct "X is correct" statement is the strongest signal when
         # present -- use it over elimination inference. Still only trusted
