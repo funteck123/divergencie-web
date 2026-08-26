@@ -116,7 +116,7 @@ function Body({ user }) {
 
 function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, onRescheduleSubmitted }) {
   const { student, schedule, attendance, invoices, enrollments, rescheduleRequests } = child;
-  const [view, setView] = useState("weekly");
+  const [view, setView] = useState("calendar");
   // TKT-0027: hide past schedule entries by default in the List view.
   const [showPastSchedule, setShowPastSchedule] = useState(false);
   const todayStr = todayDateStr();

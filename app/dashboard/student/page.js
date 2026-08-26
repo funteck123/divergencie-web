@@ -38,7 +38,7 @@ function stripePaymentLink(invoiceId, email) {
 function Body({ user }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
-  const [view, setView] = useState("weekly");
+  const [view, setView] = useState("calendar");
   const [expandedAttendance, setExpandedAttendance] = useState(null);
   // TKT-0027: hide past schedule/attendance entries by default in the List
   // view (today's own sessions still show — they still need logging).
