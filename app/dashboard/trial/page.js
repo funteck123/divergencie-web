@@ -205,6 +205,7 @@ function Body({ user }) {
       <div className="card">
         <h2 className="font-semibold mb-4">My Invoices</h2>
         <FilterBar search={invSearch} onSearch={setInvSearch} searchPlaceholder="Search month/year…" />
+        <div className="overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -267,6 +268,7 @@ function Body({ user }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

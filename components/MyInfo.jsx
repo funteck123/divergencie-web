@@ -87,6 +87,7 @@ export default function MyInfo({ user, linkedChildren }) {
   return (
     <div className="card">
       <h2 className="font-semibold mb-4">My Info</h2>
+      <div className="overflow-x-auto">
       <table>
         <tbody>
           {rows.map(([label, value]) => (
@@ -107,6 +108,7 @@ export default function MyInfo({ user, linkedChildren }) {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

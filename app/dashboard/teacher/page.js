@@ -151,6 +151,7 @@ function Body({ user }) {
       <div className="card">
         <h2 className="font-semibold mb-4">My Enrollments</h2>
         <FilterBar search={enrollSearch} onSearch={setEnrollSearch} searchPlaceholder="Search service…" />
+        <div className="overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -185,6 +186,7 @@ function Body({ user }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       <ResourcesSection services={enrolledServices} />
@@ -232,6 +234,7 @@ function Body({ user }) {
             )}
           />
         ) : (
+          <div className="overflow-x-auto">
           <table>
             <thead>
               <tr>
@@ -299,12 +302,14 @@ function Body({ user }) {
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Paychecks</h2>
         <FilterBar search={paySearch} onSearch={setPaySearch} searchPlaceholder="Search service…" />
+        <div className="overflow-x-auto">
         <table>
           <thead>
             <tr>
@@ -381,6 +386,7 @@ function Body({ user }) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

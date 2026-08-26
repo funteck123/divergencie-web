@@ -206,6 +206,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
         ) : view === "calendar" ? (
           <ScheduleCalendar scheduleItems={schedule} attendanceItems={attendance} readOnly />
         ) : (
+          <div className="overflow-x-auto">
           <table>
             <thead>
               <tr>
@@ -246,12 +247,14 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
               )}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 
       <h3 className="text-sm mb-2" style={{ color: "var(--muted)" }}>
         Attendance
       </h3>
+      <div className="overflow-x-auto">
       <table className="mb-4">
         <thead>
           <tr>
@@ -286,11 +289,13 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
           )}
         </tbody>
       </table>
+      </div>
 
       <h3 className="text-sm mb-2" style={{ color: "var(--muted)" }}>
         Invoices
       </h3>
       <FilterBar search={invSearch} onSearch={setInvSearch} searchPlaceholder="Search service…" />
+      <div className="overflow-x-auto">
       <table>
         <thead>
           <tr>
@@ -361,6 +366,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
