@@ -3438,6 +3438,7 @@ function SchedulePool() {
   const [facilitator, setFacilitator] = useState("");
   const [error, setError] = useState("");
   const [expandedAttendance, setExpandedAttendance] = useState(null);
+  const [expandedConflict, setExpandedConflict] = useState(null);
   const [openPoolSearch, setOpenPoolSearch] = useState("");
   const [serviceSlotsSearch, setServiceSlotsSearch] = useState("");
   // TKT-0027: hide past sessions by default in the Service Schedule list
@@ -3567,6 +3568,18 @@ function SchedulePool() {
     }
     return ids;
   })();
+  // TKT-0132: conflictingScheduleIds already covers every conflict in the
+  // system (it's built off the full attendanceItems, not the Service
+  // Schedule list's own scoped/date-filtered view) -- but the only way to
+  // ever SEE one was the "conflicts only" checkbox buried inside Service
+  // Schedule's List view, which is itself scoped to enrolled-service
+  // occurrences and hides anything past unless "Show past" is also
+  // checked. A conflict needing resolution doesn't stop needing it just
+  // because its date has passed or nobody happened to have that specific
+  // filter combination open. Built off the full `items` (every schedule
+  // item, not just serviceSlots) so nothing is missed on that account
+  // either.
+  const conflictItems = items.filter((i) => conflictingScheduleIds.has(i.ScheduleID));
   const serviceSlotsForList = (conflictsOnly ? pastFiltered.filter((s) => conflictingScheduleIds.has(s.ScheduleID)) : pastFiltered);
 
   const openPoolFiltered = openPoolSlots.filter((s) => {
@@ -3582,6 +3595,60 @@ function SchedulePool() {
 
   return (
     <div className="space-y-6">
+      {/* TKT-0132: conflictingScheduleIds already covered every conflict
+          in the system, but the only way to see one was a checkbox buried
+          inside Service Schedule's List view, itself scoped to
+          enrolled-service occurrences and hiding anything past unless
+          "Show past" was also checked. This surfaces every conflict, past
+          or future, in one place — same "cross-cutting summary at the top"
+          pattern as Pending Reschedule Requests (TKT-0029) below. Each row
+          expands into the exact same SessionAttendance panel (isManagement)
+          used everywhere else attendance is resolved, wired to the same
+          onLogged={load} so resolving one refreshes conflictingScheduleIds
+          and this list drops it immediately. */}
+      {conflictItems.length > 0 && (
+        <div className="card">
+          <h2 className="font-semibold mb-4">Attendance Conflicts ({conflictItems.length})</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Instructor</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...conflictItems].sort((a, b) => (a.Date + a.Time).localeCompare(b.Date + b.Time)).map((s) => {
+                const expanded = expandedConflict === s.ScheduleID;
+                return (
+                  <Fragment key={s.ScheduleID}>
+                    <tr>
+                      <td>{s.ServiceName}</td>
+                      <td>{formatDate(s.Date)}</td>
+                      <td>{s.Time}</td>
+                      <td>{s.Facilitator || "—"}</td>
+                      <td>
+                        <button className="btn-ghost" onClick={() => setExpandedConflict(expanded ? null : s.ScheduleID)}>
+                          {expanded ? "Close" : "Resolve"}
+                        </button>
+                      </td>
+                    </tr>
+                    {expanded && (
+                      <tr>
+                        <td colSpan={5}>
+                          <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} isManagement onLogged={load} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
       {/* TKT-0029: previously a pending reschedule request was only ever
           visible on its own row, inside whichever view (Calendar or List)
           you happened to have open for that specific slot — nothing showed
