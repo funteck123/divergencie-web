@@ -166,6 +166,28 @@ CORRECT_RE = re.compile(
     r'\b(?:Answer\s+)?([A-D])\s+is\s+(?:the\s+correct\s+answer|correct)\b',
     re.IGNORECASE,
 )
+# "Cell A can be recognized as a palisade mesophyll cell..." -- a real,
+# explicit, unambiguous positive statement (often prefixed with a checkmark
+# bullet) that CORRECT_RE's "is correct"/"is the correct answer" phrasing
+# doesn't cover. Confirmed real: CAIE IGCSE Biology "Plant Nutrition"
+# Worksheet 1 Q12 states exactly this and nothing else, and was left
+# unresolved despite the answer being right there in the text.
+RECOGNIZED_RE = re.compile(
+    r'\b([A-D])\s+can\s+be\s+recognized\s+as\b',
+    re.IGNORECASE,
+)
+# A decorative bullet glyph a mark scheme's own PDF font renders before
+# each explanation line -- sometimes maps to a real Unicode checkmark
+# (U+2713/U+2714), sometimes to a raw Private-Use-Area codepoint the font's
+# cmap never resolved (U+E000-U+F8FF, confirmed real: U+F0FC in a Wingdings-
+# style embedded font). Purely decorative either way, but confirmed real
+# and severe when it's glued directly onto a REAL question number with no
+# separating space ("2.  The diagram shows..."): every heading regex
+# in this file requires the line to START with a digit, so the leading
+# glyph silently defeated every one of them and the whole question became
+# invisible to boundary detection, not just unresolved (CAIE IGCSE Biology
+# "Human Nutrition" Worksheet 1 Q2).
+LEADING_DECORATIVE_GLYPH_RE = re.compile(r'^[•✓✔-]+')
 
 
 def extract_lines(doc):
@@ -180,6 +202,9 @@ def extract_lines(doc):
             for line in block.get("lines", []):
                 spans = line.get("spans", [])
                 text = "".join(s.get("text", "") for s in spans).strip()
+                if not text:
+                    continue
+                text = LEADING_DECORATIVE_GLYPH_RE.sub("", text)
                 if not text:
                     continue
                 size = max((s.get("size", 0) for s in spans), default=0)
@@ -1170,6 +1195,7 @@ def parse_ms(pdf_path):
         # when exactly one such statement appears in the block (a second,
         # contradicting one is a real ambiguity, not a coin flip).
         correct_matches = {m.group(1).upper() for m in CORRECT_RE.finditer(block_text)}
+        correct_matches |= {m.group(1).upper() for m in RECOGNIZED_RE.finditer(block_text)}
         if len(correct_matches) == 1:
             answers[s["number"]] = correct_matches.pop()
             continue
