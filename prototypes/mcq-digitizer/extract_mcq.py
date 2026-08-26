@@ -302,6 +302,19 @@ def _stem_with_continuation(lines, idx, content, max_lines=8):
             or QUESTION_BARE_RE.match(nxt) or QUESTION_BARE_DIGIT_RE.match(nxt)
             or QUESTION_BARE_ALONE_RE.match(nxt) or OPTION_LETTER_RE.match(nxt)
             or NEW_SENTENCE_CAPITAL_RE.match(nxt)
+            # A "Field:" label -- confirmed real and severe without this
+            # guard: multi-line merging otherwise chained together several
+            # short cover-page metadata labels ("MS" + "Level:" + "A
+            # Level" + "Subject:"...), none individually long enough or
+            # capitalized-sentence-shaped enough to trip the other guards,
+            # until their combined length coincidentally cleared the
+            # floor -- inventing a phantom "question 1" pointing at this
+            # tool's own DivergenCIE cover page (CAIE A Level Physics
+            # "Ch1 Measurement Techniques" Worksheet 1's own MS, where the
+            # title itself wraps as "...Worksheet" / "1 MS"). A real
+            # question's own wrapped continuation is never a bare
+            # "Label:" field on its own line.
+            or nxt.rstrip().endswith(":")
         ):
             break
         content = (content + " " + nxt).strip()
