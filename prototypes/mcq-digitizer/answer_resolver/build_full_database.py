@@ -28,6 +28,7 @@ import json
 import re
 import time
 import base64
+import difflib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MCQ_DIR = os.path.dirname(HERE)
@@ -52,21 +53,112 @@ CACHE_PATH = os.path.join(REPO_ROOT, "data/mcq-digitizer/answer-cache/cache.json
 os.makedirs(PDFS_DIR, exist_ok=True)
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
-# ---- Pairing (ported verbatim from server.mjs's buildLibrary, same
-# normalization rules -- keep this identical to the live server's logic
-# so the database and the live picker agree on the same pairs). ----
+# ---- Pairing (ported from server.mjs's buildLibrary, same normalization
+# rules -- keep this identical to the live server's logic so the database
+# and the live picker agree on the same pairs). This copy had drifted out
+# of sync with server.mjs's own already-fixed version (confirmed real: 9
+# of 196 real papers failed pairing here using the STALE rules below,
+# even though server.mjs's own comments document these exact fixes
+# already found and applied there -- this copy just never received them).
 STOPWORDS = {
     "qp", "ms", "mcq", "unlocked", "ial", "cie", "worksheet", "paper",
     "mark", "scheme", "markscheme", "answer", "answers", "key", "level",
     "alevel", "igcse", "cambridge", "caie", "question", "questions", "pdf",
+    # Pairing already happens within one subject's own category folder, so
+    # the subject name is redundant for matching -- and a real MS file was
+    # found that omits it from its own filename entirely while its QP
+    # includes it ("12-Electrolysis...MS...pdf" has no "chemistry" in it
+    # at all), which broke an exact token-set match for no real reason.
+    "chemistry", "biology", "physics",
 }
 def normalize_title(name):
+    # A real MS file was found versioned as "...MCQ_2-Unlocked.pdf" -- that
+    # trailing digit is a version marker with no counterpart in its QP's
+    # filename at all (not a duplicate of an existing chapter number, an
+    # unrelated one), so plain "mcq" stopword removal still left a stray
+    # "2" token breaking the match. Strip the whole "mcq_N"/"mcqN" unit
+    # together, before tokenizing.
+    name = re.sub(r'mcq[_\s]?\d+', ' mcq ', name, flags=re.IGNORECASE)
     tokens = re.sub(r'[^a-z0-9]+', ' ', name.lower()).split()
     tokens = [t for t in tokens if t and t not in STOPWORDS]
-    return " ".join(sorted(tokens))
+    # A lone "s" is an apostrophe artifact, not content -- real pairing bug
+    # found on real data: one filename spells a chapter "hesss" (no
+    # separator) while a DIFFERENT real file's MS counterpart spells it
+    # "hess_s" (an underscore where the apostrophe was), splitting into two
+    # tokens "hess"+"s" that never matched as one token either way.
+    # Dropping the lone "s" fixes the "hess_s" side but NOT the "hesss"
+    # side (a single squashed word, not decomposable to "hess"+"s") --
+    # confirmed real, that specific pair still needs the fuzzy fallback
+    # below even with this filter in place.
+    tokens = [t for t in tokens if t != "s"]
+    # A set, not the raw list -- an MS filename versioned as
+    # "...MCQ_1-Unlocked.pdf" contributes an extra "1" token beyond what
+    # its QP counterpart has (e.g. a chapter already numbered "25.1"), and
+    # joining a sorted LIST (not a deduplicated set) produces a different
+    # string for one "1" vs two, even though the extra one carries no real
+    # content difference.
+    return " ".join(sorted(set(tokens)))
 
 def display_title_of(name):
     return re.sub(r'\s*[-_(]*\s*(QP|MS)\)?\s*\.pdf$', '', name, flags=re.IGNORECASE).strip()
+
+# Real source-library naming inconsistencies confirmed by hand across a
+# full audit of every "no matching MS" failure: the exact-match above
+# requires the normalized token SET to match exactly, with zero tolerance
+# for how two different people happened to type the same file's name.
+# Two specific inconsistency classes recur:
+#
+# (1) A stray Google-Drive dedup suffix on just one of the pair's two
+# files ("...MS-MCQ_1-Unlocked.pdf", confirmed real on 3+ files -- a
+# re-upload that Drive auto-renamed to avoid a collision), or an
+# apostrophe transliterated two different ways across the two files
+# ("Hess's" -> "hesss" in one filename, "Hess_s" -> two separate tokens
+# "hess"/"s" in the other). Both produce a near-miss: the two normalized
+# strings are almost identical, off by one stray token. A fuzzy string
+# ratio (not a token-set difference -- confirmed real that a token-set
+# size-2 threshold was too loose for the apostrophe case's actual token
+# count) reliably separates this from a genuinely different pair: every
+# real near-miss confirmed above 0.85, the closest real distinct-pair
+# collision found in this whole corpus (a same-chapter, different-
+# worksheet-number file) scored 0.588.
+#
+# (2) The QP and MS were independently given a genuinely DIFFERENT topic
+# word by whoever uploaded them (confirmed real: "11.1-redox" QP paired
+# against a real "11.1-Electrochemistry" MS -- an upstream content-
+# labeling inconsistency, not a typo). No string-similarity measure can
+# safely tell this apart from a wrong pairing (it scores 0.667, closer to
+# a genuine wrong-pair collision's 0.588 than to a real near-miss's
+# 0.85+) -- confirmed real can only be resolved by falling back to the
+# leading chapter-number prefix ("11.1") shared by both filenames, and
+# only when exactly one MS in the same folder carries that same prefix
+# (never picked when more than one candidate ties, to avoid guessing).
+FUZZY_MATCH_THRESHOLD = 0.85
+
+def _chapter_prefix(name):
+    m = re.match(r'^(\d+(?:\.\d+)?)[\s._-]', name)
+    return m.group(1) if m else None
+
+def _find_ms_match(qp_name, ms_list, ms_by_key):
+    """Exact normalized match first, then the two confirmed-real fallback
+    strategies above, in order. Returns the matched ms dict or None."""
+    exact = ms_by_key.get(normalize_title(qp_name))
+    if exact:
+        return exact
+
+    qp_norm = normalize_title(qp_name)
+    scored = sorted(
+        ((difflib.SequenceMatcher(None, qp_norm, normalize_title(ms["name"])).ratio(), ms) for ms in ms_list),
+        key=lambda pair: pair[0], reverse=True,
+    )
+    if scored and scored[0][0] >= FUZZY_MATCH_THRESHOLD:
+        return scored[0][1]
+
+    qp_prefix = _chapter_prefix(qp_name)
+    if qp_prefix:
+        prefix_matches = [ms for ms in ms_list if _chapter_prefix(ms["name"]) == qp_prefix]
+        if len(prefix_matches) == 1:
+            return prefix_matches[0]
+    return None
 
 def build_pairs():
     raw = json.load(open(DRIVE_MAP_PATH))
@@ -83,7 +175,7 @@ def build_pairs():
                 ms_list = files.get("MS", [])
                 ms_by_key = {normalize_title(f["name"]): f for f in ms_list}
                 for qp in qp_list:
-                    ms = ms_by_key.get(normalize_title(qp["name"]))
+                    ms = _find_ms_match(qp["name"], ms_list, ms_by_key)
                     pairs.append({
                         "board": board, "subject": subject, "category": category,
                         "title": display_title_of(qp["name"]),

@@ -256,15 +256,18 @@ async function digitizeFromDriveIds(qpId, msId) {
 // network call, so no caching layer needed.
 // Real Drive data isn't uniformly named -- IGCSE subjects share a QP/MS
 // filename except for the trailing "QP"/"MS" token, but A Levels
-// Chemistry pairs look like "11.2-redox-(ial-cie-chemistry)-qp.pdf" vs
-// "11.2-Redox-CIE-IAL-Chemistry-MS-MCQ-Unlocked.pdf" -- no shared
-// substring, just the same underlying words in a different order/case/
-// separator. Normalizing to a sorted, stopword-filtered token set (never
-// stripping digits -- chapter numbers like "11" vs "11.2" are exactly
-// the thing that must NOT collapse together) pairs every well-formed
-// case; a genuine content mismatch (verified on real Chemistry data: some
-// QPs use a "11.2" sub-chapter number their MS counterpart doesn't
-// repeat) still correctly comes back unpaired rather than being forced.
+// Chemistry pairs look like "12-electrolysis_electrode_potentials-qp.pdf"
+// vs "12-Electrolysis-Electrode-Potentials-MS-MCQ-Unlocked.pdf" -- no
+// shared substring, just the same underlying words in a different order/
+// case/separator. Normalizing to a sorted, stopword-filtered token set
+// (never stripping digits -- chapter numbers like "11" vs "11.2" are
+// exactly the thing that must NOT collapse together) pairs every well-
+// formed case. A genuine word-level content mismatch is a separate,
+// real, confirmed case of its own -- see findMsMatch's own chapter-prefix
+// fallback below for "11.1-redox...qp.pdf" pairing against a real MS
+// filed as "11.1-Electrochemistry...MS...pdf", an upstream naming
+// inconsistency between the two files, not a typo an exact-match
+// normalization could ever bridge on its own.
 const NORMALIZE_STOPWORDS = new Set([
   "qp", "ms", "mcq", "unlocked", "ial", "cie", "worksheet", "paper",
   "mark", "scheme", "markscheme", "answer", "answers", "key", "level",
@@ -306,6 +309,68 @@ function displayTitleOf(name) {
   return name.replace(/\s*[-_(]*\s*(QP|MS)\)?\s*\.pdf$/i, "").trim();
 }
 
+// Levenshtein-distance ratio (0..1) -- a standalone reimplementation, not
+// a port of Python's difflib.SequenceMatcher, but calibrated against the
+// exact same real confirmed cases used to pick that side's 0.85 threshold
+// so the two stay behaviorally aligned: real near-misses (a stray dedup
+// suffix, an apostrophe split two different ways across a QP/MS pair)
+// score >=0.85 here too, the closest real distinct-pair collision found
+// in the whole corpus still scores well under it.
+function levenshteinRatio(a, b) {
+  if (a === b) return 1;
+  if (!a.length || !b.length) return 0;
+  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  const dist = dp[a.length][b.length];
+  return 1 - dist / Math.max(a.length, b.length);
+}
+const FUZZY_MATCH_THRESHOLD = 0.85;
+
+function chapterPrefix(name) {
+  const m = name.match(/^(\d+(?:\.\d+)?)[\s._-]/);
+  return m ? m[1] : null;
+}
+
+// Two confirmed-real fallback strategies, tried in order, for when the
+// exact normalized match above still doesn't find a pair (see
+// NORMALIZE_STOPWORDS's own comment for the artifact classes these
+// catch): a fuzzy near-miss (an apostrophe squashed differently across
+// the two files, e.g. "hesss" vs "hess"+"s" after stopword filtering --
+// confirmed real, CAIE IAL Chemistry "8.1 Enthalpy Change & Hess's Law"),
+// then a shared leading chapter-number prefix ONLY when exactly one MS
+// candidate carries it (confirmed real: "11.1-redox...qp.pdf" pairs
+// against a real MS filed under "11.1-Electrochemistry...MS...pdf" --
+// a genuine upstream content-labeling inconsistency between the two
+// files' names, not a typo; never picked when more than one candidate
+// ties, to avoid guessing).
+function findMsMatch(qpName, msList, msByKey) {
+  const exact = msByKey.get(normalizeTitle(qpName));
+  if (exact) return exact;
+
+  const qpNorm = normalizeTitle(qpName);
+  let best = null;
+  let bestRatio = 0;
+  for (const ms of msList) {
+    const ratio = levenshteinRatio(qpNorm, normalizeTitle(ms.name));
+    if (ratio > bestRatio) { bestRatio = ratio; best = ms; }
+  }
+  if (best && bestRatio >= FUZZY_MATCH_THRESHOLD) return best;
+
+  const qpPrefix = chapterPrefix(qpName);
+  if (qpPrefix) {
+    const prefixMatches = msList.filter((ms) => chapterPrefix(ms.name) === qpPrefix);
+    if (prefixMatches.length === 1) return prefixMatches[0];
+  }
+  return null;
+}
+
 function buildLibrary() {
   const raw = JSON.parse(fs.readFileSync(DRIVE_MAP_PATH, "utf8"));
 
@@ -319,7 +384,7 @@ function buildLibrary() {
         const msList = files.MS || files.ms || [];
         const msByKey = new Map(msList.map((f) => [normalizeTitle(f.name), f]));
         const papers = qpList.map((qp) => {
-          const ms = msByKey.get(normalizeTitle(qp.name));
+          const ms = findMsMatch(qp.name, msList, msByKey);
           return {
             title: displayTitleOf(qp.name),
             qpId: qp.id, qpName: qp.name,
