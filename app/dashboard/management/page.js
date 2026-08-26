@@ -365,7 +365,15 @@ function Pipeline() {
     // derive them from each pending account's /api/me bundle instead — run
     // every account's fetch concurrently rather than one at a time (this was
     // a real N+1: sequential /api/me calls, one per pending account).
-    const trialAccs = users.filter((u) => u.UserType === "TrialAcc");
+    // TKT-0133: a TeacherInterviewAcc can now ALSO request a Trial
+    // (demo-teach a Student service) alongside their own Interview — its
+    // bundle needs fetching here too, or its Trial request would be
+    // created successfully but never actually appear in the Trial
+    // Pipeline table for Management to approve. Fetched twice for a
+    // TeacherInterviewAcc (once here, once via interviewAccs below) —
+    // redundant, not incorrect, and this whole path already exists purely
+    // to avoid a real top-level list endpoint.
+    const trialAccs = users.filter((u) => u.UserType === "TrialAcc" || u.UserType === "TeacherInterviewAcc");
     const interviewAccs = users.filter((u) => INTERVIEW_ACC_TYPES.includes(u.UserType));
     const [trialBundles, interviewBundles] = await Promise.all([
       Promise.all(trialAccs.map((acc) => api(`/api/me?userId=${acc.UserID}`))),

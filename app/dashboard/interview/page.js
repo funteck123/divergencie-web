@@ -29,6 +29,17 @@ function Body({ user }) {
   const [serviceId, setServiceId] = useState("");
   const [requesting, setRequesting] = useState(false);
   const [busyInterviewIds, setBusyInterviewIds] = useState(new Set());
+  // TKT-0133: a Teacher candidate needed a separate way to request a
+  // Trial (demo-teaching a real Student-facing service) alongside their
+  // own Interview request for Teacher-facing services -- confirmed via
+  // git history that no such picker ever existed here before (this is
+  // net-new, not a regression). POST /api/schedule/pick already accepts
+  // any requester regardless of their own UserType, gating purely on
+  // whether the target Service's own Group matches the booking type
+  // (Trial requires Group includes "Student") -- no backend change
+  // needed, this is UI-only.
+  const [trialServiceId, setTrialServiceId] = useState("");
+  const [requestingTrial, setRequestingTrial] = useState(false);
 
   async function load() {
     const [bundle, { scheduleItems }] = await Promise.all([
@@ -62,6 +73,38 @@ function Body({ user }) {
     } finally {
       setRequesting(false);
     }
+  }
+
+  // TKT-0133: mirrors requestInterview above, but records against
+  // trialItems (type: "Trial") instead of interviewItems -- same
+  // POST /api/schedule/pick, no slot picker, Management assigns the
+  // actual slot on approval.
+  async function requestTrial() {
+    setError("");
+    setRequestingTrial(true);
+    try {
+      const { trialItem } = await api("/api/schedule/pick", {
+        method: "POST",
+        body: JSON.stringify({ serviceId: trialServiceId, userId: user.UserID, type: "Trial" }),
+      });
+      setTrialServiceId("");
+      setData((prev) => ({ ...prev, trialItems: [...(prev.trialItems || []), trialItem] }));
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setRequestingTrial(false);
+    }
+  }
+
+  // Mirrors app/dashboard/trial/page.js's own submitFeedback -- same
+  // POST /api/trial-feedback, allowed for the trial account itself
+  // (requireSelfOrManagement) once its slot is Scheduled.
+  async function submitTrialFeedback(trialId, feedback) {
+    const { trialItem } = await api("/api/trial-feedback", { method: "POST", body: JSON.stringify({ trialId, feedback }) });
+    setData((prev) => ({
+      ...prev,
+      trialItems: prev.trialItems.map((t) => (t.TrialID === trialId ? trialItem : t)),
+    }));
   }
 
   async function submitTask(interviewId, link) {
@@ -103,6 +146,17 @@ function Body({ user }) {
   const eligibleServices = data.services.filter((s) => groupMatches(s.Group, INTERVIEW_GROUP[user.UserType] || "Staff"));
   const requestedServiceIds = new Set(
     data.interviewItems.filter((it) => it.Status !== "Rejected").map((it) => it.ServiceID)
+  );
+  // TKT-0133: same eligible-service filter app/dashboard/trial/page.js
+  // itself uses (TKT-0071: Book-type resources aren't trialable, a Trial
+  // is for sampling a live class). Only a Teacher candidate gets this —
+  // Staff/Ambassador tracks have no live-class demo concept.
+  const isTeacherTrack = user.UserType === "TeacherInterviewAcc";
+  const eligibleTrialServices = isTeacherTrack
+    ? data.services.filter((s) => groupMatches(s.Group, "Student") && s.Type !== "Book")
+    : [];
+  const requestedTrialServiceIds = new Set(
+    (data.trialItems || []).filter((t) => t.Status !== "Rejected").map((t) => t.ServiceID)
   );
 
   return (
@@ -198,6 +252,50 @@ function Body({ user }) {
         })}
       </div>
 
+      {/* TKT-0133: a Teacher candidate can also demo-teach a real
+          Student-facing service alongside their own Interview process —
+          same trial mechanics app/dashboard/trial/page.js itself uses
+          (Pending -> Scheduled -> feedback -> FeedbackSubmitted), shown
+          here since a Teacher candidate has no separate "Trial" portal of
+          their own. */}
+      {isTeacherTrack && (
+        <div className="card">
+          <h2 className="font-semibold mb-4">My Trial Sessions</h2>
+          {(data.trialItems || []).length === 0 && (
+            <p style={{ color: "var(--muted)" }}>No trial requested yet, request one below.</p>
+          )}
+          {(data.trialItems || []).map((t) => {
+            const slot = scheduleById[t.ScheduleItemID];
+            const serviceName = data.services.find((s) => s.ServiceID === t.ServiceID)?.Name || t.ServiceID;
+            return (
+              <div key={t.TrialID} className="mb-3 pb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                <p>
+                  {serviceName}
+                  {slot ? `, ${formatDate(slot.Date)} at ${slot.Time}` : ""}{" "}
+                  <span className="badge badge-info">{t.Status}</span>
+                </p>
+                {t.Status === "Pending" && (
+                  <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                    Your booking is being reviewed.
+                  </p>
+                )}
+                {t.Status === "Rejected" && (
+                  <p className="text-sm mt-1" style={{ color: "var(--bad)" }}>
+                    This request was rejected.
+                  </p>
+                )}
+                {t.Status === "Scheduled" && <TrialFeedbackForm onSubmit={(fb) => submitTrialFeedback(t.TrialID, fb)} />}
+                {t.Status === "FeedbackSubmitted" && (
+                  <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>
+                    Feedback submitted: {t.Feedback}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <PersonalInfoCard user={data.user} onSave={saveProfile} />
       <DocumentsCard user={data.user} onSave={saveProfile} />
 
@@ -228,6 +326,30 @@ function Body({ user }) {
           </div>
         )}
       </div>
+
+      {isTeacherTrack && (
+        <div className="card">
+          <h2 className="font-semibold mb-4">Request a Trial</h2>
+          <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
+            Pick a Student service you&apos;d like to demo-teach. No need to choose a time — a slot will be
+            assigned once your request is approved.
+          </p>
+          <div className="flex gap-3">
+            <select className="field" value={trialServiceId} onChange={(e) => setTrialServiceId(e.target.value)}>
+              <option value="">Select a service…</option>
+              {eligibleTrialServices.map((s) => (
+                <option key={s.ServiceID} value={s.ServiceID} disabled={requestedTrialServiceIds.has(s.ServiceID)}>
+                  {s.Code ? `${s.Code} · ${s.Name}` : s.Name}
+                  {requestedTrialServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
+                </option>
+              ))}
+            </select>
+            <button className="btn" disabled={!trialServiceId || requestingTrial} onClick={requestTrial}>
+              {requestingTrial ? "Requesting…" : "Request Trial"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -250,6 +372,32 @@ function TaskForm({ onSubmit }) {
       }}
     >
       <input className="field" placeholder="Link to your task submission…" value={link} onChange={(e) => setLink(e.target.value)} />
+      <button className="btn" type="submit" disabled={saving}>
+        {saving ? "Submitting…" : "Submit"}
+      </button>
+    </form>
+  );
+}
+
+// TKT-0133: mirrors app/dashboard/trial/page.js's own FeedbackForm.
+function TrialFeedbackForm({ onSubmit }) {
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+  return (
+    <form
+      className="flex gap-2 mt-2"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        if (!text.trim()) return;
+        setSaving(true);
+        try {
+          await onSubmit(text);
+        } finally {
+          setSaving(false);
+        }
+      }}
+    >
+      <input className="field" placeholder="How did the trial go?" value={text} onChange={(e) => setText(e.target.value)} />
       <button className="btn" type="submit" disabled={saving}>
         {saving ? "Submitting…" : "Submit"}
       </button>
