@@ -5013,7 +5013,18 @@ function Billing() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold text-xl mb-4">Invoices · Students</h2>
+        <h2 className="font-semibold text-xl mb-1">Invoices · Students</h2>
+        {/* Standalone guidance annotation -- the four action cards above
+            already explain themselves ("Use for: ..."), but nothing on the
+            page ever spelled out the invoice lifecycle itself or what the
+            status filter options actually mean, so a new admin had to
+            reverse-engineer it from the badges alone. */}
+        <p className="text-sm mb-4" style={{ color: "var(--accent)" }}>
+          Lifecycle: <strong>Draft</strong> (not yet sent) → <strong>Sent</strong> (student can see and pay it) →
+          student marks it paid, which shows as <strong>needs approval</strong> until you confirm the amount
+          received via Approve/Partial below → <strong>settled</strong>. Use the Status filter to jump straight to
+          any of these stages instead of expanding every student.
+        </p>
         <InvoiceBillingTable
           rows={invoices}
           nameOf={nameOf}
@@ -5025,7 +5036,16 @@ function Billing() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold text-xl mb-4">Paychecks</h2>
+        <h2 className="font-semibold text-xl mb-1">Paychecks</h2>
+        {/* Same standalone guidance as Invoices above, mirrored for the
+            staff side: StaffReceivedFlag is the self-report here instead
+            of StudentPaidFlag, otherwise the exact same lifecycle. */}
+        <p className="text-sm mb-4" style={{ color: "var(--accent)" }}>
+          Lifecycle: <strong>Draft</strong> (not yet sent) → <strong>Sent</strong> (staff can see it) → staff marks
+          it received, which shows as <strong>needs approval</strong> until you confirm the amount via
+          Approve/Partial below → <strong>settled</strong>. Use the Status filter to jump straight to any of these
+          stages instead of expanding every person.
+        </p>
         <PaycheckBillingTable
           rows={paychecks}
           nameOf={nameOf}
@@ -5248,7 +5268,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
           <div className="space-y-2">
             {enrolledServices.length === 0 && <p style={{ color: "var(--muted)" }}>No enrollments for this student.</p>}
             {enrolledServices.map((s) => (
-              <div key={s.ServiceID} className="flex items-center gap-2">
+              <label key={s.ServiceID} className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={!!checked[s.ServiceID]}
@@ -5264,7 +5284,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
                   value={amounts[s.ServiceID] || ""}
                   onChange={(e) => setAmounts((prev) => ({ ...prev, [s.ServiceID]: e.target.value }))}
                 />
-              </div>
+              </label>
             ))}
           </div>
         )}
