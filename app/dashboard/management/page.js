@@ -289,13 +289,16 @@ function Applications() {
                   if (issued[r.RegFormID]) {
                     const cred = issued[r.RegFormID];
                     return (
-                      <span style={{ color: "var(--muted)" }}>
-                        {cred.username} / {cred.password}
+                      <span className="flex items-center gap-1 flex-wrap">
+                        <span style={{ color: "var(--muted)" }}>
+                          {cred.username} / {cred.password}
+                        </span>
+                        <CopyCredentialsButton credentials={cred} />
                       </span>
                     );
                   }
                   return r.Username ? (
-                    <span style={{ color: "var(--muted)" }}>{r.Username} (reset via Accounts to view password)</span>
+                    <span style={{ color: "var(--muted)" }}>{r.Username} (Reset password in Accounts to view)</span>
                   ) : (
                     "—"
                   );
@@ -567,8 +570,11 @@ function Pipeline() {
     if (!account) return "—";
     if (issued[accountId]) {
       return (
-        <span style={{ color: "var(--muted)" }}>
-          {issued[accountId].username} / {issued[accountId].password}
+        <span className="flex items-center gap-1 flex-wrap">
+          <span style={{ color: "var(--muted)" }}>
+            {issued[accountId].username} / {issued[accountId].password}
+          </span>
+          <CopyCredentialsButton credentials={issued[accountId]} />
         </span>
       );
     }
@@ -1201,7 +1207,13 @@ function Accounts() {
       // read-back -- is the only place a reset password can ever be shown
       // at all. Without it, "reset to view password" reset the password
       // but never actually let anyone view it.
-      if (fields.password) {
+      // TKT-0137: a resetPassword:true call never sends a plaintext password
+      // in `fields` (the whole point is the admin never types one) -- the
+      // server generates it and this is the one place it's ever disclosed,
+      // via res.credentials, same reveal-once model as account creation.
+      if (res.credentials) {
+        setIssued((prev) => ({ ...prev, [userId]: res.credentials }));
+      } else if (fields.password) {
         setIssued((prev) => ({
           ...prev,
           [userId]: { username: fields.username !== undefined ? fields.username : users.find((u) => u.UserID === userId)?.Username, password: fields.password },
@@ -1457,18 +1469,22 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                   ))}
                   <td>
                     {issued[u.UserID] ? (
-                      <span style={{ color: "var(--muted)" }}>
-                        {issued[u.UserID].username} / {issued[u.UserID].password}
+                      <span className="flex items-center gap-1 flex-wrap">
+                        <span style={{ color: "var(--muted)" }}>
+                          {issued[u.UserID].username} / {issued[u.UserID].password}
+                        </span>
+                        <CopyCredentialsButton credentials={issued[u.UserID]} />
                       </span>
                     ) : u.ConvertedToUserID ? (
                       <span style={{ color: "var(--muted)" }}>→ {u.ConvertedToUserID}</span>
                     ) : u.Username ? (
-                      // Password is hashed server-side now (lib/passwords.js)
-                      // and never sent back by GET /api/users -- it can no
-                      // longer be shown here, only reset (Edit -> new
-                      // password), which re-populates `issued` above via
-                      // this session's local echo, not a server read-back.
-                      <span style={{ color: "var(--muted)" }}>{u.Username} (reset to view password)</span>
+                      // TKT-0137: password is hashed server-side
+                      // (lib/passwords.js) and never sent back by GET
+                      // /api/users -- it can only be reset, never read back.
+                      // "Reset password" (row action below) generates+shows
+                      // a new one in one click; this cell just shows the
+                      // stored username until that happens.
+                      <span style={{ color: "var(--muted)" }}>{u.Username}</span>
                     ) : (
                       "—"
                     )}
@@ -1504,6 +1520,15 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                         {busySaveIds?.has(u.UserID) ? "Working…" : u.Status === "Active" ? "Deactivate" : "Activate"}
                       </button>
                     )}
+                    {u.Username && !u.ConvertedToUserID && (
+                      <button
+                        className="btn-ghost"
+                        disabled={busySaveIds?.has(u.UserID)}
+                        onClick={() => saveEdit(u.UserID, { resetPassword: true })}
+                      >
+                        {busySaveIds?.has(u.UserID) ? "Resetting…" : "Reset password"}
+                      </button>
+                    )}
                     <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
                       {editingId === u.UserID ? "Close" : "Edit"}
                     </button>
@@ -1530,6 +1555,26 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
       </div>
       </div>
     </div>
+  );
+}
+
+// TKT-0137: credentials are only ever shown for the few seconds after a
+// reset/create, so a quick copy beats hand-selecting "user / pass" text.
+function CopyCredentialsButton({ credentials }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      className="btn-ghost"
+      style={{ padding: "0 6px" }}
+      onClick={async () => {
+        await navigator.clipboard.writeText(`${credentials.username} / ${credentials.password}`);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+    >
+      {copied ? "Copied!" : "Copy"}
+    </button>
   );
 }
 

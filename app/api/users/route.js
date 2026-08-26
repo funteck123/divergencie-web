@@ -287,6 +287,7 @@ export async function PATCH(req) {
     studentIds,
     username,
     password,
+    resetPassword,
     whatsappNumber,
     parentWhatsappNumber,
     parentEmail,
@@ -315,6 +316,7 @@ export async function PATCH(req) {
       studentIds,
       username,
       password,
+      resetPassword,
       whatsappNumber,
       parentWhatsappNumber,
       parentEmail,
@@ -338,6 +340,16 @@ export async function PATCH(req) {
   if (status !== undefined && !["Active", "Inactive"].includes(status)) {
     return NextResponse.json({ error: "status must be Active or Inactive." }, { status: 400 });
   }
+  if (resetPassword && password !== undefined) {
+    return NextResponse.json({ error: "cannot set password and resetPassword together." }, { status: 400 });
+  }
+  // TKT-0137: one-click "Reset password" row action -- admin no longer has
+  // to open Edit and type a new password themselves. A freshly generated
+  // password is a brand-new write, not a read-back of the stored hash, so
+  // returning it once here is the same disclosure model as account
+  // creation (POST above), not a reopening of the plaintext-GET leak fixed
+  // in 6b0ea3c.
+  const newPassword = resetPassword ? generatePassword() : password;
   if (timezone !== undefined && !isValidTimezone(timezone)) {
     return NextResponse.json({ error: "timezone is not a recognized IANA timezone." }, { status: 400 });
   }
@@ -368,7 +380,7 @@ export async function PATCH(req) {
   }
 
   let cred;
-  if (username !== undefined || password !== undefined) {
+  if (username !== undefined || newPassword !== undefined) {
     cred = existingCred;
     if (!cred) return NextResponse.json({ error: "No credentials found for this account." }, { status: 404 });
     if (username !== undefined && (await usernameTaken(username, userId))) {
@@ -391,11 +403,11 @@ export async function PATCH(req) {
   if (workFolderUrl !== undefined || timesheetUrl !== undefined) applyStaffExtras(user, user.UserType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, user.UserType, patchBody);
   if (username !== undefined) cred.Username = username;
-  if (password !== undefined) cred.Password = hashPassword(password);
+  if (newPassword !== undefined) cred.Password = hashPassword(newPassword);
   await saveUserAndCredentials(user, cred);
   // snapshot is the user record only (before/after), credentials
   // (username/password) are never logged, only whether they were touched.
-  const credentialsChanged = username !== undefined || password !== undefined;
+  const credentialsChanged = username !== undefined || newPassword !== undefined;
   await logAudit({
     actorUserId: session.userId,
     action: "edit",
@@ -404,7 +416,9 @@ export async function PATCH(req) {
     summary: `Edited ${user.UserType} "${user.Name}"${credentialsChanged ? " (credentials reset)" : ""}`,
     snapshot: { before, after: user },
   });
-  return NextResponse.json({ user });
+  return NextResponse.json(
+    resetPassword ? { user, credentials: { username: cred.Username, password: newPassword } } : { user }
+  );
 }
 
 // No delete path existed for a User before this, accounts are normally
