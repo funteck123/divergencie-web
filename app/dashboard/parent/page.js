@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
+import FilterBar from "@/components/FilterBar";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
 import ScheduleImage from "@/components/ScheduleImage";
@@ -119,12 +120,28 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
   // TKT-0027: hide past schedule entries by default in the List view.
   const [showPastSchedule, setShowPastSchedule] = useState(false);
   const todayStr = todayDateStr();
+  // TKT-0129/0130: neither table had a search box (sort already existed
+  // via useSort on both).
+  const [schedSearch, setSchedSearch] = useState("");
+  const [invSearch, setInvSearch] = useState("");
   const scheduleRows = schedule
     .filter((s) => showPastSchedule || s.Date >= todayStr)
-    .map((s) => ({ ...s, _dt: s.Date + s.Time }));
+    .map((s) => ({ ...s, _dt: s.Date + s.Time }))
+    .filter((s) => {
+      const q = schedSearch.trim().toLowerCase();
+      return !q || (s.ServiceName || "").toLowerCase().includes(q) || (s.Facilitator || "").toLowerCase().includes(q);
+    });
   const invoiceRows = invoices
     .filter((i) => i.Status !== "Draft")
-    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
+    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }))
+    .filter((i) => {
+      const q = invSearch.trim().toLowerCase();
+      if (!q) return true;
+      const names = Array.isArray(i.LineItems)
+        ? i.LineItems.map((li) => serviceNameOf(li.ServiceID, li.BatchID))
+        : [serviceNameOf(i.ServiceID, i.BatchID)];
+      return names.some((n) => n.toLowerCase().includes(q));
+    });
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
   const enrolledServices = (enrollments || [])
@@ -173,10 +190,13 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
         </div>
       </div>
       {view === "list" && (
-        <label className="text-sm flex items-center gap-2 mb-2" style={{ color: "var(--muted)" }}>
-          <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
-          Show past
-        </label>
+        <>
+          <label className="text-sm flex items-center gap-2 mb-2" style={{ color: "var(--muted)" }}>
+            <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
+            Show past
+          </label>
+          <FilterBar search={schedSearch} onSearch={setSchedSearch} searchPlaceholder="Search service or instructor…" />
+        </>
       )}
       <div className="mb-4">
         {view === "weekly" ? (
@@ -216,7 +236,11 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
               {schedSort.sorted.length === 0 && (
                 <tr>
                   <td colSpan={5} style={{ color: "var(--muted)" }}>
-                    {schedule.length === 0 ? "No sessions scheduled." : "No upcoming sessions — check \"Show past\" to see history."}
+                    {schedule.length === 0
+                      ? "No sessions scheduled."
+                      : schedSearch.trim()
+                      ? "No matches."
+                      : "No upcoming sessions — check \"Show past\" to see history."}
                   </td>
                 </tr>
               )}
@@ -266,6 +290,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
       <h3 className="text-sm mb-2" style={{ color: "var(--muted)" }}>
         Invoices
       </h3>
+      <FilterBar search={invSearch} onSearch={setInvSearch} searchPlaceholder="Search service…" />
       <table>
         <thead>
           <tr>
@@ -332,7 +357,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
             </tr>
           ))}
           {invSort.sorted.length === 0 && (
-            <tr><td colSpan={7} style={{ color: "var(--muted)" }}>No invoices yet.</td></tr>
+            <tr><td colSpan={7} style={{ color: "var(--muted)" }}>{invoices.filter((i) => i.Status !== "Draft").length === 0 ? "No invoices yet." : "No matches."}</td></tr>
           )}
         </tbody>
       </table>

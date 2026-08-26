@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
+import FilterBar from "@/components/FilterBar";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import SessionAttendance from "@/components/SessionAttendance";
 import WeeklyOccurrences from "@/components/WeeklyOccurrences";
@@ -99,19 +100,38 @@ function Body({ user }) {
   }
 
   const todayStr = todayDateStr();
+  // TKT-0129/0130: none of these three tables had a search box at all
+  // (sort already existed on Schedule/Invoices via useSort, Enrollments
+  // had neither) — added consistently across all three, and sort added
+  // to Enrollments to match the other two.
+  const [enrollSearch, setEnrollSearch] = useState("");
+  const [schedSearch, setSchedSearch] = useState("");
+  const [invSearch, setInvSearch] = useState("");
   const scheduleRows = (data?.scheduleItems || [])
     .filter((s) => showPastSchedule || s.Date >= todayStr)
-    .map((s) => ({ ...s, _dt: s.Date + s.Time }));
+    .map((s) => ({ ...s, _dt: s.Date + s.Time }))
+    .filter((s) => {
+      const q = schedSearch.trim().toLowerCase();
+      return !q || (s.ServiceName || "").toLowerCase().includes(q) || (s.Facilitator || "").toLowerCase().includes(q);
+    });
   const invoiceRows = (data?.invoices || [])
     .filter((i) => i.Status !== "Draft")
-    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }));
+    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }))
+    .filter((i) => {
+      const q = invSearch.trim().toLowerCase();
+      if (!q) return true;
+      const names = Array.isArray(i.LineItems)
+        ? i.LineItems.map((li) => serviceNameOf(li.ServiceID, li.BatchID))
+        : [serviceNameOf(i.ServiceID, i.BatchID)];
+      return names.some((n) => n.toLowerCase().includes(q));
+    });
   const schedSort = useSort(scheduleRows, "_dt");
   const invSort = useSort(invoiceRows, "_period", "desc");
   // Attach the ONE Batch+rate this account is actually enrolled at (its own
   // BatchID/RateID) — a Service can offer several Batches/rates, but a user
   // should only ever see the one that applies to them, not every option
   // Management could pick from.
-  const enrolledServices = (data?.enrollments || [])
+  const enrolledServicesAll = (data?.enrollments || [])
     .map((e) => {
       const s = (data.services || []).find((s) => s.ServiceID === e.ServiceID);
       if (!s) return null;
@@ -123,6 +143,16 @@ function Body({ user }) {
       return { ...s, _myRate: rateById(s, e.BatchID, e.RateID), _myBatch: myBatch, _myOccurrences: myOccurrences };
     })
     .filter(Boolean);
+  // Full, unfiltered list — ResourcesSection/WeeklyOccurrences need every
+  // enrollment regardless of the Enrollments table's own search box.
+  const enrolledServices = enrolledServicesAll;
+  const enrollSort = useSort(
+    enrolledServicesAll.filter((s) => {
+      const q = enrollSearch.trim().toLowerCase();
+      return !q || (s.Name || "").toLowerCase().includes(q);
+    }),
+    "Name"
+  );
 
   function serviceNameOf(id, batchId) {
     const s = (data?.services || []).find((s) => s.ServiceID === id);
@@ -139,17 +169,18 @@ function Body({ user }) {
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Enrollments</h2>
+        <FilterBar search={enrollSearch} onSearch={setEnrollSearch} searchPlaceholder="Search service…" />
         <table>
           <thead>
             <tr>
-              <th>Service</th>
+              <SortableTh label="Service" sortKeyName="Name" sortKey={enrollSort.sortKey} sortDir={enrollSort.sortDir} onSort={enrollSort.toggleSort} />
               <th>Type</th>
               <th>Rate</th>
               <th>Occurrences</th>
             </tr>
           </thead>
           <tbody>
-            {enrolledServices.map((s) => (
+            {enrollSort.sorted.map((s) => (
               <tr key={s.ServiceID}>
                 <td>{s.Name}</td>
                 <td>{s.Type}</td>
@@ -164,10 +195,10 @@ function Body({ user }) {
                 </td>
               </tr>
             ))}
-            {enrolledServices.length === 0 && (
+            {enrollSort.sorted.length === 0 && (
               <tr>
                 <td colSpan={4} style={{ color: "var(--muted)" }}>
-                  No enrollments yet — ask Management to enroll you in a Service.
+                  {enrolledServices.length === 0 ? "No enrollments yet — ask Management to enroll you in a Service." : "No matches."}
                 </td>
               </tr>
             )}
@@ -197,10 +228,13 @@ function Body({ user }) {
           </div>
         </div>
         {view === "list" && (
-          <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
-            <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
-            Show past
-          </label>
+          <>
+            <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
+              <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
+              Show past
+            </label>
+            <FilterBar search={schedSearch} onSearch={setSchedSearch} searchPlaceholder="Search service or instructor…" />
+          </>
         )}
         {view === "weekly" ? (
           <WeeklyOccurrences services={enrolledServices} />
@@ -276,6 +310,8 @@ function Body({ user }) {
                   <td colSpan={7} style={{ color: "var(--muted)" }}>
                     {data.scheduleItems.length === 0
                       ? "No sessions yet — ask Management to enroll you in a Service."
+                      : schedSearch.trim()
+                      ? "No matches."
                       : "No upcoming sessions — check \"Show past\" to see history."}
                   </td>
                 </tr>
@@ -287,6 +323,7 @@ function Body({ user }) {
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Invoices</h2>
+        <FilterBar search={invSearch} onSearch={setInvSearch} searchPlaceholder="Search service…" />
         <table>
           <thead>
             <tr>
@@ -357,7 +394,7 @@ function Body({ user }) {
             {invSort.sorted.length === 0 && (
               <tr>
                 <td colSpan={8} style={{ color: "var(--muted)" }}>
-                  No invoices yet.
+                  {(data?.invoices || []).filter((i) => i.Status !== "Draft").length === 0 ? "No invoices yet." : "No matches."}
                 </td>
               </tr>
             )}

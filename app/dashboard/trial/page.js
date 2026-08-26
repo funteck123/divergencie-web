@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
-import { api, groupMatches } from "@/lib/client";
+import SortableTh from "@/components/SortableTh";
+import FilterBar from "@/components/FilterBar";
+import { api, groupMatches, useSort } from "@/lib/client";
 import { amountDueInOwnCurrency } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 
@@ -30,6 +32,7 @@ function Body({ user }) {
   const [scheduleById, setScheduleById] = useState({});
   const [serviceId, setServiceId] = useState("");
   const [requesting, setRequesting] = useState(false);
+  const [invSearch, setInvSearch] = useState("");
 
   async function load() {
     const [bundle, { scheduleItems }] = await Promise.all([
@@ -105,6 +108,21 @@ function Body({ user }) {
       invoices: prev.invoices.map((i) => (i.InvoiceID === body.invoice.InvoiceID ? body.invoice : i)),
     }));
   }
+
+  // TKT-0129/0130: this table had no search or sort at all. useSort must
+  // run unconditionally (rules of hooks), before the `!data` guard below —
+  // data?.invoices safely handles the not-yet-loaded case. Deliberately NOT
+  // filtering out Status === "Draft" here (unlike Student/Teacher/Parent):
+  // app/api/trial-enroll/route.js creates a Trial's own invoice with
+  // Status "Draft" and nothing ever sends it, so filtering Draft the same
+  // way as the other dashboards would hide every Trial invoice outright.
+  const invoiceRows = (data?.invoices || [])
+    .map((i) => ({ ...i, _period: i.Year * 100 + i.Month }))
+    .filter((i) => {
+      const q = invSearch.trim().toLowerCase();
+      return !q || String(i.Month).includes(q) || String(i.Year).includes(q);
+    });
+  const invSort = useSort(invoiceRows, "_period", "desc");
 
   if (!data) return <p style={{ color: "var(--muted)" }}>Loading…</p>;
 
@@ -186,10 +204,11 @@ function Body({ user }) {
 
       <div className="card">
         <h2 className="font-semibold mb-4">My Invoices</h2>
+        <FilterBar search={invSearch} onSearch={setInvSearch} searchPlaceholder="Search month/year…" />
         <table>
           <thead>
             <tr>
-              <th>Period</th>
+              <SortableTh label="Period" sortKeyName="_period" sortKey={invSort.sortKey} sortDir={invSort.sortDir} onSort={invSort.toggleSort} />
               <th className="num">Amount</th>
               <th className="num">Amount Due</th>
               <th className="num">Total Due ({data.user.Currency || "INR"})</th>
@@ -198,7 +217,7 @@ function Body({ user }) {
             </tr>
           </thead>
           <tbody>
-            {data.invoices.map((i) => (
+            {invSort.sorted.map((i) => (
               <tr key={i.InvoiceID}>
                 <td>
                   {i.Month}/{i.Year}
@@ -239,10 +258,10 @@ function Body({ user }) {
                 </td>
               </tr>
             ))}
-            {data.invoices.length === 0 && (
+            {invSort.sorted.length === 0 && (
               <tr>
                 <td colSpan={6} style={{ color: "var(--muted)" }}>
-                  No invoices yet.
+                  {data.invoices.length === 0 ? "No invoices yet." : "No matches."}
                 </td>
               </tr>
             )}
