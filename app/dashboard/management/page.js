@@ -1167,6 +1167,22 @@ function Accounts() {
             : u
         )
       );
+      // TKT-0125: resetting a password here silently succeeded but never
+      // actually showed the admin the new plaintext -- the row's own
+      // credential cell reads `issued[userId]` (the same local-echo state
+      // `convert()` and account-creation populate), never the `Password`
+      // field this merge sets on `users`. Password is one-way hashed
+      // server-side (lib/passwords.js) and never sent back by any read, so
+      // this local echo -- of what the admin just typed, not a server
+      // read-back -- is the only place a reset password can ever be shown
+      // at all. Without it, "reset to view password" reset the password
+      // but never actually let anyone view it.
+      if (fields.password) {
+        setIssued((prev) => ({
+          ...prev,
+          [userId]: { username: fields.username !== undefined ? fields.username : users.find((u) => u.UserID === userId)?.Username, password: fields.password },
+        }));
+      }
     } catch (e) {
       setError(e.message);
     } finally {
