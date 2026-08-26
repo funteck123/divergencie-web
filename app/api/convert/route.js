@@ -89,14 +89,20 @@ export async function POST(req) {
   // only gets set AFTER this conversion, via app/api/trial-enroll/
   // route.js's own requirement that Convert happen first. Gating on
   // ServiceAdded here would make the two routes deadlock each other.
+  // TKT-0124: `.find()` picked whichever item happened to sit first for
+  // this account, silently assuming exactly one trial/interview item ever
+  // exists per account -- real accounts that applied more than once (a
+  // different service, a retry) have several, and an earlier stale one
+  // sitting first in the array rejected a genuinely eligible conversion.
+  // `.some()` checks every item belonging to this account.
   if (oldUser.UserType === "TrialAcc") {
-    const trialItem = db.trialItems.find((t) => t.TrialAccID === accountId);
-    if (trialItem?.Status !== "FeedbackSubmitted") {
+    const trials = db.trialItems.filter((t) => t.TrialAccID === accountId);
+    if (!trials.some((t) => t.Status === "FeedbackSubmitted")) {
       return NextResponse.json({ error: "This Trial can't be converted until Feedback has been submitted." }, { status: 400 });
     }
   } else {
-    const interviewItem = db.interviewItems.find((i) => i.InterviewAccID === accountId);
-    if (interviewItem?.Status !== "OfferAccepted") {
+    const interviews = db.interviewItems.filter((i) => i.InterviewAccID === accountId);
+    if (!interviews.some((i) => i.Status === "OfferAccepted")) {
       return NextResponse.json({ error: "This account can't be converted until the offer has been accepted." }, { status: 400 });
     }
   }

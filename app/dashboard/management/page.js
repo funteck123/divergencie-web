@@ -532,11 +532,20 @@ function Pipeline() {
   // AFTER conversion, by app/api/trial-enroll/route.js, which itself
   // requires the account already be Converted -- gating on it here would
   // make Convert and Add Service deadlock each other).
+  // TKT-0124: `.find()` picked whichever item happened to sit first for
+  // this account, silently assuming exactly one trial/interview item ever
+  // exists per account. A real account can accumulate several across
+  // different service applications (re-interviewing, retrying a trial for
+  // another subject); the button then judged eligibility off a stale
+  // earlier application instead of the one that actually reached the
+  // eligible status, hiding Convert even when a real qualifying item
+  // existed. `.some()` checks every item for this account, not just the
+  // first one found.
   function conversionEligible(accountId) {
-    const interviewItem = interviewItems.find((i) => i.InterviewAccID === accountId);
-    if (interviewItem) return interviewItem.Status === "OfferAccepted";
-    const trialItem = trialItems.find((t) => t.TrialAccID === accountId);
-    if (trialItem) return trialItem.Status === "FeedbackSubmitted";
+    const interviews = interviewItems.filter((i) => i.InterviewAccID === accountId);
+    if (interviews.length) return interviews.some((i) => i.Status === "OfferAccepted");
+    const trials = trialItems.filter((t) => t.TrialAccID === accountId);
+    if (trials.length) return trials.some((t) => t.Status === "FeedbackSubmitted");
     return true;
   }
 
@@ -1080,6 +1089,12 @@ function Accounts() {
   // Trial: Feedback submitted -- not ServiceAdded, which only gets set
   // AFTER conversion), mirroring the same check now applied in
   // Pipeline's own Convert control.
+  // TKT-0124: same `.find()`-picks-the-wrong-item bug as Pipeline's own
+  // conversionEligible -- an account with more than one trial/interview
+  // item (a real, supported case: re-interviewing, retrying a trial for a
+  // different service) had its eligibility judged off whichever item
+  // happened to load first, not the one that actually reached the
+  // eligible status. `.some()` checks every item for this account.
   const [convertEligible, setConvertEligible] = useState({});
 
   async function load() {
@@ -1090,9 +1105,13 @@ function Accounts() {
     const eligible = {};
     bundles.forEach((b, i) => {
       const acc = pendingAccs[i];
-      const interviewItem = b.interviewItems?.find((it) => it.InterviewAccID === acc.UserID);
-      const trialItem = b.trialItems?.find((t) => t.TrialAccID === acc.UserID);
-      eligible[acc.UserID] = interviewItem ? interviewItem.Status === "OfferAccepted" : trialItem ? trialItem.Status === "FeedbackSubmitted" : true;
+      const interviews = b.interviewItems?.filter((it) => it.InterviewAccID === acc.UserID) || [];
+      const trials = b.trialItems?.filter((t) => t.TrialAccID === acc.UserID) || [];
+      eligible[acc.UserID] = interviews.length
+        ? interviews.some((it) => it.Status === "OfferAccepted")
+        : trials.length
+        ? trials.some((t) => t.Status === "FeedbackSubmitted")
+        : true;
     });
     setConvertEligible(eligible);
   }
