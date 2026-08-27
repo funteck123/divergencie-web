@@ -40,7 +40,13 @@ import fitz
 # content .... 15") -- the trailing "\.?" covers both without needing two
 # separate patterns.
 TOC_LINE_RE = re.compile(r'^(\d+)\.?\s+(.+?)\s*\.{2,}\s*(\d+)\s*$')
-HEADING_CODE_RE = re.compile(r'^(\d+(?:\.\d+){0,3})\.?\s*(.*)$')
+# Optional single-letter prefix -- Co-ordinated/Combined Science number their
+# per-discipline sections "B1"/"B2.1" (Biology), "C1" (Chemistry), "P1"
+# (Physics) instead of bare digits. Found live: without the "[A-Z]?", every
+# heading in those two subjects (388 topics combined, ~19% of the whole
+# library) silently fell through to code=None/depth=0, flattening their
+# entire outline with no error or warning.
+HEADING_CODE_RE = re.compile(r'^([A-Z]?\d+(?:\.\d+){0,3})\.?\s*(.*)$')
 HEADING_SIZE_THRESHOLD = 13
 # \x07 and  are the two private-use bullet glyphs Cambridge's own
 # Wingdings-based bullet font extracts as (never a plain "•") -- found live
@@ -146,6 +152,21 @@ def build_outline(lines):
         while i < n and lines[i]["kind"] == "heading" and lines[i]["size"] == heading_size:
             heading_parts.append(lines[i]["text"])
             i += 1
+            # Stop extending this group as soon as it already forms a
+            # complete "code + title" heading -- a genuinely split heading
+            # (a bare code alone on its own line, e.g. Physics' "1", with
+            # the title following on the next line) has an EMPTY title at
+            # this point and should keep absorbing lines, but Co-ordinated/
+            # Combined Science print each heading complete on one line
+            # ("B2\tCells") immediately followed by the next one ("B2.1\t
+            # Cell structure") at the SAME bold size -- without this check
+            # those two full, unrelated headings silently merged into one
+            # garbled node ("B2 Cells B2.1 Cell structure"), losing B2.1 as
+            # its own entry entirely. Found live testing that subject.
+            candidate = " ".join(heading_parts).strip()
+            candidate_match = HEADING_CODE_RE.match(candidate)
+            if candidate_match and candidate_match.group(1) and candidate_match.group(2).strip():
+                break
         heading_text = " ".join(heading_parts).strip()
         m = HEADING_CODE_RE.match(heading_text)
         if m and m.group(1):

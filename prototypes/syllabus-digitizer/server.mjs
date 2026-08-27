@@ -76,11 +76,28 @@ function loadDatabase() {
   if (!fs.existsSync(DATABASE_PATH)) return null;
   const stat = fs.statSync(DATABASE_PATH);
   if (database && stat.mtimeMs === databaseMtimeMs) return database;
-  database = JSON.parse(fs.readFileSync(DATABASE_PATH, "utf8"));
-  databaseMtimeMs = stat.mtimeMs;
+  try {
+    database = JSON.parse(fs.readFileSync(DATABASE_PATH, "utf8"));
+    databaseMtimeMs = stat.mtimeMs;
+  } catch (e) {
+    // Real failure mode found red-teaming: a corrupt/half-written
+    // database.json (interrupted build, bad disk write) used to throw
+    // here uncaught, which took down EVERY subject at once even though
+    // only the shared file was bad. Treat a corrupt file as "no database"
+    // instead -- every subject still works via the live-extraction
+    // fallback below, just without the instant response, until a fresh
+    // `build_database.py` run replaces it.
+    console.warn(`WARNING: ${DATABASE_PATH} failed to parse (${e.message}) -- falling back to live extraction for every subject until it's rebuilt.`);
+    database = null;
+  }
   return database;
 }
 
+// Caches the in-flight PROMISE, not just the resolved result -- found
+// red-teaming: two near-simultaneous requests for the same not-yet-cached
+// filename used to each spawn their own python3 subprocess (the cache was
+// only populated after the first one finished). Storing the promise
+// immediately means the second request just awaits the first one's result.
 const liveExtractCache = new Map();
 
 async function extractSyllabusLive(filename) {
@@ -90,10 +107,16 @@ async function extractSyllabusLive(filename) {
   if (!fs.existsSync(pdfPath)) {
     throw new Error(`No such syllabus file: ${safeName}`);
   }
-  const { stdout } = await execFileAsync("python3", [path.join(__dirname, "extract_syllabus.py"), pdfPath]);
-  const result = JSON.parse(stdout);
-  liveExtractCache.set(filename, result);
-  return result;
+  const promise = execFileAsync("python3", [path.join(__dirname, "extract_syllabus.py"), pdfPath]).then(
+    ({ stdout }) => JSON.parse(stdout)
+  );
+  liveExtractCache.set(filename, promise);
+  try {
+    return await promise;
+  } catch (e) {
+    liveExtractCache.delete(filename); // don't cache a failure -- a later retry should get a fresh attempt
+    throw e;
+  }
 }
 
 async function getSyllabus(filename) {
@@ -135,7 +158,15 @@ const server = http.createServer(async (req, res) => {
 
   const filePath = req.url === "/" ? "index.html" : req.url.slice(1);
   const fullPath = path.join(__dirname, filePath);
-  if (!fullPath.startsWith(__dirname)) {
+  // path.relative + checking for a leading ".." is the real directory-
+  // boundary check -- a plain fullPath.startsWith(__dirname) string
+  // comparison (the previous check here) would wrongly allow a sibling
+  // directory that happens to share __dirname as a string prefix, e.g.
+  // "prototypes/syllabus-digitizer" vs. a future
+  // "prototypes/syllabus-digitizerBACKUP". Not currently exploitable (no
+  // such sibling exists yet), but found red-teaming as a real latent gap.
+  const rel = path.relative(__dirname, fullPath);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) {
     res.writeHead(403);
     res.end("Forbidden");
     return;

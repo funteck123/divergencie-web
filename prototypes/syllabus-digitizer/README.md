@@ -46,10 +46,17 @@ problem, not a judgment problem):
    from a numbered learning objective ("1 Define speed...") even though
    both can start with a bare digit — the text alone can't tell them
    apart, only the font can.
-3. Groups consecutive same-size bold lines into one heading (a heading
-   sometimes prints across two physical lines), reads its `N` / `N.N` /
-   `N.N.N` numbering to get its nesting depth, and collects everything
-   until the next heading as its content.
+3. Groups consecutive same-size bold lines into one heading, but only
+   until the group already reads as a complete "code + title" — a heading
+   sometimes prints its bare code and title as two separate physical lines
+   (keep merging), but some subjects print each heading complete on one
+   line immediately followed by the next one at the same size (stop after
+   one line, or two complete headings silently fuse into one garbled
+   node). Reads the heading's `N` / `N.N` / `N.N.N` numbering (optionally
+   letter-prefixed: `B1`, `C2.1`, `P3` — Co-ordinated/Combined Science
+   number their Biology/Chemistry/Physics sections this way) to get its
+   nesting depth, and collects everything until the next heading as its
+   content.
 4. Folds "1.5 Forces" + "1.5 Forces continued" (a heading reprinted after a
    page break) back into one node instead of showing a duplicate.
 
@@ -64,10 +71,10 @@ Syllabus content") depending on the syllabus's own production era.
 `data/syllabus-digitizer/database.json` -- gitignored, rebuilt on demand,
 never hand-edited.
 
-`server.mjs` lists the PDFs in `../syllabus-library/pdfs/`, shells out to
-the script per subject (cached per filename for the server's lifetime),
-and serves a static `index.html` that renders the result as a collapsible
-outline with a raw-JSON toggle.
+`server.mjs` lists the PDFs in `../syllabus-library/pdfs/`, serves each
+subject from the pre-built database (falling back to a cached live parse
+for anything not in it yet), and serves a static `index.html` that renders
+the result as a collapsible outline with a raw-JSON toggle.
 
 ## Known limitations (real, found testing against ~10 of the 44 subjects)
 
@@ -94,6 +101,38 @@ outline with a raw-JSON toggle.
   before the first numbered heading in the section is intentionally
   dropped, and content lines are reflowed (joined/newlined by a bullet
   heuristic) rather than preserving the PDF's exact line breaks.
+
+## Red-teamed 2026-08-28
+
+Adversarial pass against both the server and the extracted data. Fixed:
+
+- **Two of the largest subjects had a completely flat, broken outline.**
+  Co-ordinated Sciences (221 topics) and Combined Science (168 topics)
+  number their Biology/Chemistry/Physics sections `B1`/`C2.1`/`P3` instead
+  of bare digits — the code regex only matched digit-leading codes, so
+  every heading in both subjects got `code: null, depth: 0`, and a
+  same-size-merge heuristic additionally fused adjacent complete headings
+  ("B2 Cells" + "B2.1 Cell structure") into one garbled node. Together
+  these two subjects were ~19% of all topics in the library. Fixed by
+  accepting an optional letter prefix in the code pattern and stopping a
+  heading group as soon as it already forms a complete code+title match.
+- **A corrupt `database.json` used to 500 every subject at once** instead
+  of degrading to the live-extraction fallback that already existed for a
+  missing key. Now caught and logged; the whole tool keeps working (just
+  without the instant response) until the database is rebuilt.
+- **Two near-simultaneous requests for an uncached subject could spawn
+  duplicate `python3` subprocesses.** The live-extraction cache now stores
+  the in-flight promise immediately instead of only the resolved result.
+- **The static-file directory check was a string-prefix comparison**
+  (`fullPath.startsWith(__dirname)`), not a real path-boundary check —
+  not exploitable today, but would silently break against a future
+  sibling directory sharing a name prefix. Replaced with a `path.relative`
+  check.
+
+Verified clean: path traversal (both API and static-file routes, several
+encodings), a real 44-subject click-through in a headless browser with
+zero JS errors, and XSS via extracted PDF content (all rendered text is
+escaped; the one unescaped field is regex-constrained to digits/dots/letters).
 
 ## Scope note
 
