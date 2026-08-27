@@ -6,12 +6,16 @@
 //   1. GET /api/syllabi -- lists every PDF in ../syllabus-library/pdfs/,
 //      parsed from its own filename convention
 //      ({level}-{subject}-{code}-{cycle}.pdf, see that library's README).
-//   2. GET /api/syllabi/:filename -- shells out to extract_syllabus.py
-//      (PyMuPDF text/layout extraction, no LLM call -- this is a
-//      structural parsing problem, not a judgment problem) and returns
-//      the topic outline as JSON. Results are cached in memory per
-//      filename for the life of the server -- the PDFs never change at
-//      runtime, so there's no reason to re-run the parse on every click.
+//   2. GET /api/syllabi/:filename -- looks the subject up in the pre-built
+//      database (data/syllabus-digitizer/database.json, built by
+//      build_database.py) -- same pattern as mcq-digitizer's own
+//      full-library database: extraction runs once, offline, and the
+//      server just serves the finished JSON straight off disk, instant
+//      on every click instead of re-parsing a PDF live. Falls back to a
+//      live extract_syllabus.py run only for a PDF that was added to the
+//      library after the last `python3 build_database.py` -- so a new
+//      subject still works immediately, just not instantly, until the
+//      database is rebuilt.
 //   3. The browser renders the outline as a collapsible topic tree.
 //
 // No API key needed anywhere in this prototype -- unlike quiz-digitizer /
@@ -25,7 +29,9 @@ import { promisify } from "util";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.join(__dirname, "..", "..");
 const PDFS_DIR = path.join(__dirname, "..", "syllabus-library", "pdfs");
+const DATABASE_PATH = path.join(REPO_ROOT, "data", "syllabus-digitizer", "database.json");
 
 const PORT = process.env.PORT || 5177;
 
@@ -59,10 +65,26 @@ function listSyllabi() {
     .sort((a, b) => (a.level + a.subject).localeCompare(b.level + b.subject));
 }
 
-const extractCache = new Map();
+// Mtime-checked load, same reasoning as mcq-digitizer's own database
+// cache: reading the (small, single-file) JSON straight off disk on every
+// request is already instant, but this avoids even the readFileSync/parse
+// cost across requests when the file hasn't changed since the last one.
+let database = null;
+let databaseMtimeMs = 0;
 
-async function extractSyllabus(filename) {
-  if (extractCache.has(filename)) return extractCache.get(filename);
+function loadDatabase() {
+  if (!fs.existsSync(DATABASE_PATH)) return null;
+  const stat = fs.statSync(DATABASE_PATH);
+  if (database && stat.mtimeMs === databaseMtimeMs) return database;
+  database = JSON.parse(fs.readFileSync(DATABASE_PATH, "utf8"));
+  databaseMtimeMs = stat.mtimeMs;
+  return database;
+}
+
+const liveExtractCache = new Map();
+
+async function extractSyllabusLive(filename) {
+  if (liveExtractCache.has(filename)) return liveExtractCache.get(filename);
   const safeName = path.basename(filename);
   const pdfPath = path.join(PDFS_DIR, safeName);
   if (!fs.existsSync(pdfPath)) {
@@ -70,8 +92,18 @@ async function extractSyllabus(filename) {
   }
   const { stdout } = await execFileAsync("python3", [path.join(__dirname, "extract_syllabus.py"), pdfPath]);
   const result = JSON.parse(stdout);
-  extractCache.set(filename, result);
+  liveExtractCache.set(filename, result);
   return result;
+}
+
+async function getSyllabus(filename) {
+  const db = loadDatabase();
+  if (db?.subjects?.[filename]) return db.subjects[filename];
+  // Not in the pre-built database yet -- most likely a PDF added to the
+  // library after the last `python3 build_database.py` run. Falls back to
+  // a live parse so it still works, just without the instant response;
+  // rebuild the database to make it permanent.
+  return extractSyllabusLive(filename);
 }
 
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json" };
@@ -91,7 +123,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "GET" && req.url.startsWith("/api/syllabi/")) {
     try {
       const filename = decodeURIComponent(req.url.slice("/api/syllabi/".length));
-      const result = await extractSyllabus(filename);
+      const result = await getSyllabus(filename);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {

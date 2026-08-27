@@ -33,8 +33,15 @@ import re
 import json
 import fitz
 
-TOC_LINE_RE = re.compile(r'^(\d+)\s+(.+?)\s*\.{2,}\s*(\d+)\s*$')
+# Two real TOC styles found across the 44 subjects in this template family:
+# the newer one numbers chapters bare ("3  Subject content .... 12"), the
+# older one (Islamiyat, Pakistan Studies, and others still on an earlier
+# syllabus refresh) puts a period right after the number ("6.  Syllabus
+# content .... 15") -- the trailing "\.?" covers both without needing two
+# separate patterns.
+TOC_LINE_RE = re.compile(r'^(\d+)\.?\s+(.+?)\s*\.{2,}\s*(\d+)\s*$')
 HEADING_CODE_RE = re.compile(r'^(\d+(?:\.\d+){0,3})\.?\s*(.*)$')
+HEADING_SIZE_THRESHOLD = 13
 # \x07 and  are the two private-use bullet glyphs Cambridge's own
 # Wingdings-based bullet font extracts as (never a plain "•") -- found live
 # testing across several subjects; without these, every bullet point in a
@@ -66,10 +73,15 @@ def find_subject_content_range(doc):
         return None
 
     guessed = False
-    match = next((e for e in toc_entries if "subject content" in e[1].lower()), None)
+    # Two real chapter names found across the 44 subjects in this template
+    # family for the same thing: "Subject content" (newer syllabuses) and
+    # "Syllabus content" (older ones, e.g. Islamiyat, Pakistan Studies --
+    # also at a different chapter number, since those add an extra
+    # "Teacher support" chapter earlier that newer syllabuses dropped).
+    match = next((e for e in toc_entries if "subject content" in e[1].lower() or "syllabus content" in e[1].lower()), None)
     if match is None:
         # Real exception (Global Perspectives): no chapter literally called
-        # "Subject content". Fall back to whichever chapter is numbered 3 --
+        # either name above. Fall back to whichever chapter is numbered 3 --
         # every syllabus in this template starts real subject-matter
         # chapters after "1 Why choose" and "2 Syllabus overview".
         match = next((e for e in toc_entries if e[0] == 3), None)
@@ -99,6 +111,14 @@ def extract_lines(doc, start_idx, end_idx):
                     kind = "heading"
                 elif "Roman" in font:
                     kind = "label"
+                elif "Lt" in font and size >= HEADING_SIZE_THRESHOLD:
+                    # Real second heading style found live (Islamiyat,
+                    # among others): that subject's headings are the same
+                    # light weight as body text, distinguished only by a
+                    # noticeably larger size (14-18pt vs. the usual 10pt
+                    # body) -- without this, its whole outline came out as
+                    # a single empty chapter node.
+                    kind = "heading"
                 else:
                     kind = "body"
                 lines.append({"text": text, "kind": kind, "size": size})

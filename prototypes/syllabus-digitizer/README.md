@@ -8,11 +8,17 @@ outline. Not part of the main app's build.
 
 ```
 cd prototypes/syllabus-digitizer
+python3 build_database.py   # first time, and after adding new PDFs to syllabus-library
 node server.mjs
 ```
 
-Open `http://localhost:5177`. Pick a subject from the sidebar; it digitizes
-on first click and is cached in memory afterwards.
+Open `http://localhost:5177`. Every subject responds instantly (~30ms) --
+same pattern as `mcq-digitizer`'s own full-library database: extraction
+runs once, offline, into `data/syllabus-digitizer/database.json` (gitignored,
+like all of `data/` -- never committed, only the code that builds it), and
+the server just serves the finished JSON straight off disk. A PDF added to
+the library after the last `build_database.py` run still works immediately
+via a live parse -- just not instantly, until the database is rebuilt.
 
 No API key needed anywhere in this prototype -- unlike `quiz-digitizer` /
 `mcq-digitizer`, there's no grading or answer-resolution step here, so no
@@ -31,16 +37,32 @@ problem, not a judgment problem):
 2. Within that range, classifies every text line by font weight (all these
    PDFs share one production font family, `HelveticaNeueLTW1G`): `-Bd`
    (bold) = heading, `-Roman` = a sub-label like "Core"/"Supplement"/"Focus
-   points", `-Lt` (light) = body/bullet text. This is what tells a heading
-   ("1.2 Motion") apart from a numbered learning objective ("1 Define
-   speed...") even though both can start with a bare digit — the text
-   alone can't tell them apart, only the font can.
+   points", `-Lt` (light) = body/bullet text — UNLESS a `-Lt` line is also
+   noticeably larger than body text (>=13pt), which is a second, real
+   heading style some subjects use instead of bold (found live testing
+   Islamiyat and Art & Design: their whole "Subject content" chapter is
+   the same light weight throughout, headings included, distinguished only
+   by size). Either way, this is what tells a heading ("1.2 Motion") apart
+   from a numbered learning objective ("1 Define speed...") even though
+   both can start with a bare digit — the text alone can't tell them
+   apart, only the font can.
 3. Groups consecutive same-size bold lines into one heading (a heading
    sometimes prints across two physical lines), reads its `N` / `N.N` /
    `N.N.N` numbering to get its nesting depth, and collects everything
    until the next heading as its content.
 4. Folds "1.5 Forces" + "1.5 Forces continued" (a heading reprinted after a
    page break) back into one node instead of showing a duplicate.
+
+Two real Contents-page variants are both handled: the chapter is called
+"Subject content" in most subjects but "Syllabus content" in some older
+ones (Islamiyat, Pakistan Studies), and its TOC line either has a bare
+number ("3  Subject content") or a number with a trailing period ("6.
+Syllabus content") depending on the syllabus's own production era.
+
+`build_database.py` runs this extraction once for every PDF in
+`../syllabus-library/pdfs/` and writes the combined result to
+`data/syllabus-digitizer/database.json` -- gitignored, rebuilt on demand,
+never hand-edited.
 
 `server.mjs` lists the PDFs in `../syllabus-library/pdfs/`, shells out to
 the script per subject (cached per filename for the server's lifetime),
