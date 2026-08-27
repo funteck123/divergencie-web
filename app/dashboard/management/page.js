@@ -364,6 +364,7 @@ function Applications() {
     setRegForms(regForms);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -532,6 +533,7 @@ function Pipeline() {
     setInterviewItems(interviewBundles.flatMap((b) => b.interviewItems));
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -1318,6 +1320,7 @@ function Accounts() {
     setConvertEligible(eligible);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -2499,9 +2502,12 @@ function Services() {
     return [board, course, subjectCode, subjectName].filter(Boolean).join(" ");
   }
   const suggestedName = computeSuggestedName();
-  useEffect(() => {
-    if (!nameManuallyEdited) setName(suggestedName);
-  }, [suggestedName, nameManuallyEdited]);
+  // Was an effect syncing `name` from `suggestedName` whenever the user
+  // hadn't manually edited it -- classic "state derived from other state"
+  // case (react-hooks/set-state-in-effect correctly flagged it). No effect
+  // needed: the shown/submitted name is just suggestedName until the user
+  // types their own, computed at render time instead of stored.
+  const effectiveName = nameManuallyEdited ? name : suggestedName;
 
   // TKT-0116: switching Group never reset Type, so e.g. toggling from
   // Student to Staff left the Type combobox showing "Course" (typeOptions
@@ -2531,6 +2537,7 @@ function Services() {
     setAllUsers(users);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
   // TKT-0117: the role-based flat editor's Instructor field should offer
@@ -2763,9 +2770,9 @@ function Services() {
       return;
     }
     const body = isRoleBasedService
-      ? { name, type, group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
+      ? { name: effectiveName, type, group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
       : {
-        name,
+        name: effectiveName,
         type,
         group,
         board,
@@ -2824,7 +2831,7 @@ function Services() {
             <input
               className="field"
               placeholder="Service name"
-              value={name}
+              value={effectiveName}
               onChange={(e) => {
                 setName(e.target.value);
                 setNameManuallyEdited(true);
@@ -3731,6 +3738,7 @@ function SchedulePool() {
     setAttendanceItems(attendanceItems);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -4394,6 +4402,7 @@ function Enrollments() {
     setEnrollments(enrollments);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -5028,6 +5037,7 @@ function Billing() {
     setEnrollments(enrollments);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -6670,6 +6680,7 @@ function Tickets() {
     }
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
@@ -6933,6 +6944,7 @@ function AuditLog() {
     }
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset, entityType]);
@@ -7024,6 +7036,7 @@ function Guides() {
     setGuides(guides);
   }
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
     load();
   }, []);
 
