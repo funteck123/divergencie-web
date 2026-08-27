@@ -1,0 +1,10 @@
+{
+  "name": "syllabus-digitizer-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone prototype: turns a Cambridge syllabus booklet PDF from prototypes/syllabus-library/ into a browsable topic outline. Not part of the main app's build.",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

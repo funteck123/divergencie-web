@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Syllabus Digitizer — Prototype</title>
+<style>
+  :root {
+    --navy: #1a3c5e; --gold: #e8a832; --sky: #4a9fd4; --coral: #e05a4e; --charcoal: #5c5248;
+    --bg: #ffffff; --bg-soft: #f4f4f4; --border: #d7dee8; --text: #1a1a1a; --muted: #666666;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg-soft); color: var(--text); margin: 0; padding: 2rem 1rem 5rem; }
+  header { max-width: 1100px; margin: 0 auto 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+  header .badge { background: var(--navy); color: white; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em; padding: 0.25rem 0.6rem; border-radius: 999px; text-transform: uppercase; }
+  header h1 { font-size: 1.4rem; margin: 0; color: var(--navy); }
+  header p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.85rem; }
+
+  main { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; gap: 1.25rem; align-items: start; }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
+
+  #sidebar { padding: 0.75rem; max-height: calc(100vh - 8rem); overflow-y: auto; }
+  #sidebar input[type="search"] { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 0.85rem; margin-bottom: 0.6rem; }
+  .group-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--charcoal); margin: 0.9rem 0 0.3rem 0.3rem; }
+  .group-label:first-of-type { margin-top: 0.2rem; }
+  .subject-btn { display: block; width: 100%; text-align: left; background: none; border: none; border-radius: 6px; padding: 0.45rem 0.6rem; font-size: 0.85rem; cursor: pointer; color: var(--text); }
+  .subject-btn:hover { background: var(--bg-soft); }
+  .subject-btn.active { background: var(--navy); color: white; }
+  .subject-btn .code { color: var(--muted); font-size: 0.75rem; }
+  .subject-btn.active .code { color: #cfe0f0; }
+
+  #content { padding: 1.5rem; min-height: 300px; }
+  #placeholder { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 3rem 1rem; }
+  #meta { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1rem; }
+  #meta h2 { margin: 0; color: var(--navy); font-size: 1.15rem; }
+  #meta .sub { color: var(--muted); font-size: 0.8rem; }
+  #warning { background: #fff8e7; border: 1px solid var(--gold); color: #7a5b00; padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 0.8rem; margin-bottom: 1rem; }
+  #error { background: #fdecea; border: 1px solid var(--coral); color: #a33025; padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; white-space: pre-wrap; }
+  #status { text-align: center; color: var(--muted); padding: 3rem 1rem; font-size: 0.9rem; }
+
+  .topic { border-left: 3px solid var(--border); margin-bottom: 0.4rem; }
+  .topic[data-depth="0"] { border-left-color: var(--navy); }
+  .topic[data-depth="1"] { border-left-color: var(--sky); margin-left: 1rem; }
+  .topic[data-depth="2"] { border-left-color: var(--gold); margin-left: 2rem; }
+  .topic[data-depth="3"] { border-left-color: var(--coral); margin-left: 3rem; }
+  .topic-head { display: flex; gap: 0.5rem; align-items: baseline; cursor: pointer; padding: 0.5rem 0.75rem; user-select: none; }
+  .topic-head:hover { background: var(--bg-soft); }
+  .topic-head .code { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); font-size: 0.85rem; min-width: 2.5rem; }
+  .topic-head .title { font-weight: 600; font-size: 0.92rem; flex: 1; }
+  .topic-head .arrow { color: var(--muted); font-size: 0.75rem; transition: transform 0.15s; }
+  .topic.open > .topic-head .arrow { transform: rotate(90deg); }
+  .topic-content { display: none; padding: 0 0.75rem 0.8rem 3.25rem; font-size: 0.85rem; line-height: 1.55; color: var(--charcoal); white-space: pre-wrap; }
+  .topic.open > .topic-content { display: block; }
+  .topic-content .label-tag { color: var(--navy); font-weight: 700; }
+
+  #rawToggle { font-size: 0.75rem; color: var(--sky); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
+  #rawJson { display: none; margin-top: 1rem; background: var(--bg-soft); border-radius: 8px; padding: 0.75rem; font-size: 0.75rem; overflow-x: auto; max-height: 400px; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">Prototype</span>
+  <div>
+    <h1>Syllabus Digitizer</h1>
+    <p>DivergenCIE — browse the official Cambridge subject-content outline of any collected syllabus booklet</p>
+  </div>
+</header>
+
+<main>
+  <div id="sidebar" class="panel"></div>
+  <div id="content" class="panel">
+    <div id="placeholder">Pick a subject from the list to digitize its syllabus booklet into a topic outline.</div>
+  </div>
+</main>
+
+<script>
+let syllabi = [];
+let activeFilename = null;
+
+async function loadSidebar() {
+  const res = await fetch("/api/syllabi");
+  syllabi = await res.json();
+  renderSidebar(syllabi);
+}
+
+function renderSidebar(list) {
+  const sidebar = document.getElementById("sidebar");
+  const search = `<input type="search" id="search" placeholder="Filter subjects…" />`;
+  const groups = { "IGCSE": [], "A Level": [] };
+  for (const s of list) (groups[s.level] || (groups[s.level] = [])).push(s);
+
+  let html = search;
+  for (const level of Object.keys(groups)) {
+    if (groups[level].length === 0) continue;
+    html += `<div class="group-label">${level} (${groups[level].length})</div>`;
+    for (const s of groups[level]) {
+      html += `<button class="subject-btn${s.filename === activeFilename ? " active" : ""}" data-filename="${s.filename}">
+        ${s.subject} <span class="code">${s.code} · ${s.cycle}</span>
+      </button>`;
+    }
+  }
+  sidebar.innerHTML = html;
+
+  document.getElementById("search").addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    renderSidebar(q ? syllabi.filter((s) => s.subject.toLowerCase().includes(q) || s.code.includes(q)) : syllabi);
+  });
+  sidebar.querySelectorAll(".subject-btn").forEach((btn) => {
+    btn.addEventListener("click", () => digitize(btn.dataset.filename));
+  });
+}
+
+async function digitize(filename) {
+  activeFilename = filename;
+  renderSidebar(syllabi);
+  const content = document.getElementById("content");
+  content.innerHTML = `<div id="status">Digitizing…</div>`;
+  try {
+    const res = await fetch(`/api/syllabi/${encodeURIComponent(filename)}`);
+    const data = await res.json();
+    if (data.error) {
+      content.innerHTML = `<div id="error">${escapeHtml(data.error)}</div>`;
+      return;
+    }
+    renderOutline(filename, data);
+  } catch (e) {
+    content.innerHTML = `<div id="error">${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderTopicContent(text) {
+  return escapeHtml(text).replace(/\[([^\]]+)\]/g, '<span class="label-tag">$1</span>');
+}
+
+function renderOutline(filename, data) {
+  const meta = syllabi.find((s) => s.filename === filename) || {};
+  const content = document.getElementById("content");
+
+  let html = `<div id="meta">
+    <div>
+      <h2>${meta.subject || filename}</h2>
+      <div class="sub">${meta.level || ""} · ${meta.code || ""} · exams ${meta.cycle || ""} · ${data.pageCount} pages</div>
+    </div>
+    <button id="rawToggle">view raw JSON</button>
+  </div>`;
+
+  if (data.sectionGuessed) {
+    html += `<div id="warning">This subject has no chapter literally titled "Subject content" -- showing chapter 3 as a best guess instead. Check it looks right.</div>`;
+  }
+
+  if (!data.topics || data.topics.length === 0) {
+    html += `<div id="status">No topic headings detected in this booklet.</div>`;
+  } else {
+    for (const t of data.topics) {
+      html += `<div class="topic" data-depth="${t.depth}">
+        <div class="topic-head">
+          <span class="arrow">▶</span>
+          <span class="code">${t.code || ""}</span>
+          <span class="title">${escapeHtml(t.title)}</span>
+        </div>
+        <div class="topic-content">${renderTopicContent(t.content || "(no content text under this heading)")}</div>
+      </div>`;
+    }
+  }
+
+  html += `<pre id="rawJson">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+  content.innerHTML = html;
+
+  content.querySelectorAll(".topic-head").forEach((head) => {
+    head.addEventListener("click", () => head.parentElement.classList.toggle("open"));
+  });
+  document.getElementById("rawToggle").addEventListener("click", () => {
+    const el = document.getElementById("rawJson");
+    el.style.display = el.style.display === "block" ? "none" : "block";
+  });
+}
+
+loadSidebar();
+</script>
+</body>
+</html>
