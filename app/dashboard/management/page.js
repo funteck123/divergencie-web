@@ -3697,6 +3697,8 @@ function SchedulePool() {
   const [expandedConflict, setExpandedConflict] = useState(null);
   const [openPoolSearch, setOpenPoolSearch] = useState("");
   const [serviceSlotsSearch, setServiceSlotsSearch] = useState("");
+  const [conflictsSearch, setConflictsSearch] = useState("");
+  const [rescheduleSearch, setRescheduleSearch] = useState("");
   // TKT-0027: hide past sessions by default in the Service Schedule list
   // view (today's own sessions still show).
   const [showPastSchedule, setShowPastSchedule] = useState(false);
@@ -3848,6 +3850,28 @@ function SchedulePool() {
   });
   const openPoolSort = useSort(openPoolFiltered, "Date");
   const serviceSlotsSort = useSort(serviceSlotsFiltered, "Date");
+  // Both previously had zero search/sort -- Attendance Conflicts always
+  // sorted itself internally (fixed Date+Time ascending, no user control),
+  // Pending Reschedule Requests had neither at all. Same pattern as
+  // openPool/serviceSlots above.
+  const conflictItemsFiltered = conflictItems.filter((s) => {
+    const q = conflictsSearch.trim().toLowerCase();
+    return !q || (s.ServiceName || "").toLowerCase().includes(q) || (s.Facilitator || "").toLowerCase().includes(q);
+  });
+  const conflictsSort = useSort(conflictItemsFiltered, "Date");
+  const rescheduleFiltered = rescheduleRequests.filter((r) => {
+    const q = rescheduleSearch.trim().toLowerCase();
+    return !q || (r.Slot?.ServiceName || "").toLowerCase().includes(q) || (r.RequesterName || "").toLowerCase().includes(q);
+  });
+  const rescheduleSort = useSort(
+    rescheduleFiltered.map((r) => ({
+      ...r,
+      _service: r.Slot?.ServiceName || "",
+      _current: r.Slot ? `${r.Slot.RescheduledDate || r.Slot.Date} ${r.Slot.RescheduledTime || r.Slot.Time}` : "",
+      _requested: `${r.RequestedDate} ${r.RequestedTime}`,
+    })),
+    "_requested"
+  );
 
   return (
     <div className="space-y-6">
@@ -3865,21 +3889,22 @@ function SchedulePool() {
       {conflictItems.length > 0 && (
         <div className="card">
           <h2 className="font-semibold mb-4">Attendance Conflicts ({conflictItems.length})</h2>
+          <BillingFilterBar search={conflictsSearch} onSearch={setConflictsSearch} searchPlaceholder="Search service or instructor…" />
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
           <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
           <div className="overflow-x-auto">
           <table>
             <thead>
               <tr>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Instructor</th>
+                <SortableTh label="Service" sortKeyName="ServiceName" sortKey={conflictsSort.sortKey} sortDir={conflictsSort.sortDir} onSort={conflictsSort.toggleSort} />
+                <SortableTh label="Date" sortKeyName="Date" sortKey={conflictsSort.sortKey} sortDir={conflictsSort.sortDir} onSort={conflictsSort.toggleSort} />
+                <SortableTh label="Time" sortKeyName="Time" sortKey={conflictsSort.sortKey} sortDir={conflictsSort.sortDir} onSort={conflictsSort.toggleSort} />
+                <SortableTh label="Instructor" sortKeyName="Facilitator" sortKey={conflictsSort.sortKey} sortDir={conflictsSort.sortDir} onSort={conflictsSort.toggleSort} />
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {[...conflictItems].sort((a, b) => (a.Date + a.Time).localeCompare(b.Date + b.Time)).map((s) => {
+              {conflictsSort.sorted.map((s) => {
                 const expanded = expandedConflict === s.ScheduleID;
                 return (
                   <Fragment key={s.ScheduleID}>
@@ -3904,6 +3929,9 @@ function SchedulePool() {
                   </Fragment>
                 );
               })}
+              {conflictsSort.sorted.length === 0 && (
+                <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No matches.</td></tr>
+              )}
             </tbody>
           </table>
           </div>
@@ -3921,21 +3949,22 @@ function SchedulePool() {
       {rescheduleRequests.length > 0 && (
         <div className="card">
           <h2 className="font-semibold mb-4">Pending Reschedule Requests ({rescheduleRequests.length})</h2>
+          <BillingFilterBar search={rescheduleSearch} onSearch={setRescheduleSearch} searchPlaceholder="Search service or requester…" />
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
           <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
           <div className="overflow-x-auto">
           <table>
             <thead>
               <tr>
-                <th>Service</th>
-                <th>Requested by</th>
-                <th>Current</th>
-                <th>Requested</th>
+                <SortableTh label="Service" sortKeyName="_service" sortKey={rescheduleSort.sortKey} sortDir={rescheduleSort.sortDir} onSort={rescheduleSort.toggleSort} />
+                <SortableTh label="Requested by" sortKeyName="RequesterName" sortKey={rescheduleSort.sortKey} sortDir={rescheduleSort.sortDir} onSort={rescheduleSort.toggleSort} />
+                <SortableTh label="Current" sortKeyName="_current" sortKey={rescheduleSort.sortKey} sortDir={rescheduleSort.sortDir} onSort={rescheduleSort.toggleSort} />
+                <SortableTh label="Requested" sortKeyName="_requested" sortKey={rescheduleSort.sortKey} sortDir={rescheduleSort.sortDir} onSort={rescheduleSort.toggleSort} />
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {rescheduleRequests.map((r) => (
+              {rescheduleSort.sorted.map((r) => (
                 <tr key={r.RescheduleRequestID}>
                   <td>{r.Slot?.ServiceName || "—"}</td>
                   <td>{r.RequesterName}</td>
@@ -3963,6 +3992,9 @@ function SchedulePool() {
                   </td>
                 </tr>
               ))}
+              {rescheduleSort.sorted.length === 0 && (
+                <tr><td colSpan={5} style={{ color: "var(--muted)" }}>No matches.</td></tr>
+              )}
             </tbody>
           </table>
           </div>
@@ -6969,6 +7001,7 @@ function AuditLog() {
 function Guides() {
   const [guides, setGuides] = useState([]);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   async function load() {
     const { guides } = await api("/api/guides");
@@ -7022,11 +7055,23 @@ function Guides() {
         {guides.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>No guides yet — add one above.</p>
         ) : (
-          <div className="space-y-4">
-            {guides.map((g) => (
-              <GuideRow key={g.GuideID} guide={g} onUpdate={update} onDelete={remove} />
-            ))}
-          </div>
+          <>
+            {/* Not a <table> -- guides render as expandable cards (name,
+                audience, per-role links), so there's no column to sort by.
+                Search still helps once the list grows past a screenful. */}
+            <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder="Search guide name…" />
+            {(() => {
+              const filtered = guides.filter((g) => !search.trim() || g.Name.toLowerCase().includes(search.trim().toLowerCase()));
+              return (
+                <div className="space-y-4">
+                  {filtered.map((g) => (
+                    <GuideRow key={g.GuideID} guide={g} onUpdate={update} onDelete={remove} />
+                  ))}
+                  {filtered.length === 0 && <p style={{ color: "var(--muted)" }}>No matches.</p>}
+                </div>
+              );
+            })()}
+          </>
         )}
       </div>
     </div>
