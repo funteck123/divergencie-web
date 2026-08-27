@@ -101,17 +101,44 @@ function Body() {
   const [tab, setTab] = useState("Applications");
   return (
     <div>
-      <nav className="flex gap-2 mb-6 flex-wrap">
-        {TABS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={tab === t ? "btn" : "btn-ghost"}
-          >
-            {t}
-          </button>
-        ))}
-      </nav>
+      {/* Mobile UI fix: this used to be flex-wrap, which on a narrow phone
+          screen wraps 10 tabs into a ragged, hard-to-scan grid (reported
+          live from a real phone). A horizontal scroll strip is the
+          standard mobile pattern for a tab row that doesn't fit (e.g. iOS
+          Settings sub-tabs) -- one row, swipe to see the rest, buttons
+          keep their full desktop size instead of getting cramped. Desktop
+          is unaffected: all 10 tabs already fit on one row at typical
+          desktop widths, so there's nothing to scroll there in practice. */}
+      {/* position:relative wrapper + absolutely-positioned fade sibling
+          (not a child of the scrolling <nav> itself) so the hint stays
+          fixed to the right edge of the viewport as the nav scrolls
+          underneath it, instead of scrolling away with the tabs. */}
+      <div style={{ position: "relative", marginBottom: "1.5rem" }}>
+        <nav className="flex gap-2 overflow-x-auto" style={{ flexWrap: "nowrap", WebkitOverflowScrolling: "touch" }}>
+          {TABS.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={tab === t ? "btn" : "btn-ghost"}
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+            >
+              {t}
+            </button>
+          ))}
+        </nav>
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: 28,
+            background: "linear-gradient(to right, transparent, var(--bg))",
+            pointerEvents: "none",
+          }}
+        />
+      </div>
       {tab === "Applications" && <Applications />}
       {tab === "Pipeline" && <Pipeline />}
       {tab === "Accounts" && <Accounts />}
@@ -258,6 +285,67 @@ function StepIndicator({ steps, currentIndex, deadEnd }) {
       ))}
     </span>
   );
+}
+
+// TKT-0149: Pipeline's Trial/Interview tables only ever had a search box
+// behind the "Filter" toggle -- Billing's tables already have a real
+// status dropdown alongside search (BillingFilterBar's statusOptions),
+// Pipeline never got the same treatment. Reusing that exact mechanism
+// instead of building a second one.
+const TRIAL_STATUS_FILTER_LABEL = {
+  all: "All statuses",
+  pending: "Pending",
+  scheduled: "Scheduled",
+  feedback: "Feedback submitted",
+  "service-added": "Service added",
+  rejected: "Rejected",
+};
+function trialRowMatchesStatusFilter(t, statusFilter) {
+  switch (statusFilter) {
+    case "pending":
+      return t.Status === "Pending";
+    case "scheduled":
+      return t.Status === "Scheduled";
+    case "feedback":
+      return t.Status === "FeedbackSubmitted" && !t.ServiceAdded;
+    case "service-added":
+      return !!t.ServiceAdded;
+    case "rejected":
+      return t.Status === "Rejected";
+    default:
+      return true;
+  }
+}
+
+const INTERVIEW_STATUS_FILTER_LABEL = {
+  all: "All statuses",
+  pending: "Pending",
+  scheduled: "Scheduled",
+  "task-submitted": "Task submitted",
+  "offer-sent": "Offer sent",
+  accepted: "Accepted",
+  waitlisted: "Waitlisted",
+  rejected: "Rejected",
+};
+function interviewRowMatchesStatusFilter(i, statusFilter) {
+  switch (statusFilter) {
+    case "pending":
+      return i.Status === "Pending";
+    case "scheduled":
+      return i.Status === "Scheduled";
+    case "task-submitted":
+      return i.Status === "TaskSubmitted";
+    case "offer-sent":
+      return i.Status === "OfferSent";
+    case "accepted":
+      return i.Status === "OfferAccepted";
+    case "waitlisted":
+      return i.Status === "Waitlisted";
+    case "rejected":
+      return i.Status === "Rejected";
+    default:
+      return true;
+  }
 }
 
 /* ---------------- Applications ---------------- */
@@ -649,19 +737,30 @@ function Pipeline() {
   }
 
   const [trialSearch, setTrialSearch] = useState("");
+  const [trialStatusFilter, setTrialStatusFilter] = useState("all");
   const [interviewSearch, setInterviewSearch] = useState("");
+  const [interviewStatusFilter, setInterviewStatusFilter] = useState("all");
+  // TKT-0148: "Scheduled" had no sort at all -- _scheduledAt gives it a
+  // plain sortable string (slot's own Date+Time, blank for not-yet-
+  // scheduled rows, which sorts first).
   const trialRows = trialItems
-    .map((t) => ({ ...t, _name: nameOf(t.TrialAccID), _service: serviceNameOf(t.ServiceID) }))
+    .map((t) => {
+      const slot = t.ScheduleItemID ? slotOf(t.ScheduleItemID) : null;
+      return { ...t, _name: nameOf(t.TrialAccID), _service: serviceNameOf(t.ServiceID), _scheduledAt: slot ? `${slot.Date} ${slot.Time}` : "" };
+    })
     .filter((t) => {
       const q = trialSearch.trim().toLowerCase();
-      return !q || t._name.toLowerCase().includes(q) || t._service.toLowerCase().includes(q);
+      return (!q || t._name.toLowerCase().includes(q) || t._service.toLowerCase().includes(q)) && trialRowMatchesStatusFilter(t, trialStatusFilter);
     });
   const trialSort = useSort(trialRows, "_name");
   const interviewRows = interviewItems
-    .map((i) => ({ ...i, _name: nameOf(i.InterviewAccID), _service: serviceNameOf(i.ServiceID) }))
+    .map((i) => {
+      const slot = i.ScheduleItemID ? slotOf(i.ScheduleItemID) : null;
+      return { ...i, _name: nameOf(i.InterviewAccID), _service: serviceNameOf(i.ServiceID), _scheduledAt: slot ? `${slot.Date} ${slot.Time}` : "" };
+    })
     .filter((i) => {
       const q = interviewSearch.trim().toLowerCase();
-      return !q || i._name.toLowerCase().includes(q) || i._service.toLowerCase().includes(q);
+      return (!q || i._name.toLowerCase().includes(q) || i._service.toLowerCase().includes(q)) && interviewRowMatchesStatusFilter(i, interviewStatusFilter);
     });
   const interviewSort = useSort(interviewRows, "_name");
   // TKT-0080/TKT-0021: neither a Trial nor an Interview request has a Slot
@@ -698,7 +797,14 @@ function Pipeline() {
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       <div className="card">
         <h2 className="font-semibold mb-4">Trial Pipeline</h2>
-        <BillingFilterBar search={trialSearch} onSearch={setTrialSearch} searchPlaceholder="Search name or service…" />
+        <BillingFilterBar
+          search={trialSearch}
+          onSearch={setTrialSearch}
+          searchPlaceholder="Search name or service…"
+          statusFilter={trialStatusFilter}
+          onStatusFilter={setTrialStatusFilter}
+          statusOptions={TRIAL_STATUS_FILTER_LABEL}
+        />
         {/* TKT-0134: same maxHeight+overflowY cap as Enrollments (TKT-0114)
             — Pipeline tables grow unbounded with real bookings and were
             called out by name as needing this. */}
@@ -710,7 +816,7 @@ function Pipeline() {
               <SortableTh label="Name" sortKeyName="_name" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <SortableTh label="Progress" sortKeyName="Status" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
-              <th>Scheduled</th>
+              <SortableTh label="Scheduled" sortKeyName="_scheduledAt" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <th>Instructor</th>
               <th>Feedback</th>
               <th></th>
@@ -766,7 +872,14 @@ function Pipeline() {
 
       <div className="card">
         <h2 className="font-semibold mb-4">Interview Pipeline</h2>
-        <BillingFilterBar search={interviewSearch} onSearch={setInterviewSearch} searchPlaceholder="Search name or service…" />
+        <BillingFilterBar
+          search={interviewSearch}
+          onSearch={setInterviewSearch}
+          searchPlaceholder="Search name or service…"
+          statusFilter={interviewStatusFilter}
+          onStatusFilter={setInterviewStatusFilter}
+          statusOptions={INTERVIEW_STATUS_FILTER_LABEL}
+        />
         {/* TKT-0134: same cap as Trial Pipeline above. */}
         <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
         <div className="overflow-x-auto">
@@ -776,7 +889,7 @@ function Pipeline() {
               <SortableTh label="Name" sortKeyName="_name" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <SortableTh label="Service" sortKeyName="_service" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <SortableTh label="Progress" sortKeyName="Status" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
-              <th>Scheduled</th>
+              <SortableTh label="Scheduled" sortKeyName="_scheduledAt" sortKey={interviewSort.sortKey} sortDir={interviewSort.sortDir} onSort={interviewSort.toggleSort} />
               <th>Instructor</th>
               <th>Task</th>
               <th>Offer</th>
@@ -2718,11 +2831,16 @@ function Services() {
               }}
               required
             />
+            {/* Mobile UI fix: this row (input + button, both flex-shrinking
+                by default) let the button lose the fight for space on a
+                narrow screen, wrapping its own "↺ Suggest" text onto two
+                lines instead of shrinking the input next to it. */}
             <button
               type="button"
               className="btn-ghost"
               title="Fill from the fields below"
               onClick={() => setNameManuallyEdited(false)}
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
             >
               ↺ Suggest
             </button>
@@ -5458,7 +5576,7 @@ const STATUS_FILTER_LABEL = {
 // statusFilter/onStatusFilter are optional -- omitting them (e.g.
 // Enrollments, which has no status concept) hides the status dropdown and
 // makes this a plain search-only filter bar, same collapse behavior.
-function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, searchPlaceholder }) {
+function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, searchPlaceholder, statusOptions = STATUS_FILTER_LABEL }) {
   const [open, setOpen] = useState(false);
   const hasStatus = statusFilter !== undefined;
   const active = !!search.trim() || (hasStatus && statusFilter !== "all");
@@ -5484,7 +5602,7 @@ function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, sear
         />
         {hasStatus && (
           <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
-            {Object.entries(STATUS_FILTER_LABEL).map(([value, label]) => (
+            {Object.entries(statusOptions).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
