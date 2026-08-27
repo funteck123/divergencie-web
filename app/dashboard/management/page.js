@@ -5555,9 +5555,10 @@ function groupInvoicesByPerson(rows, nameOf) {
   for (const list of byPerson.values()) {
     list.sort((a, b) => b.Year * 100 + b.Month - (a.Year * 100 + a.Month));
   }
-  return [...byPerson.entries()]
-    .map(([studentId, rows]) => ({ studentId, name: nameOf(studentId), rows }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  // Was hardcoded alphabetical with no way to change it -- the table
+  // component now runs this through useSort instead, so the caller
+  // controls order (and can reverse it), same as every other table here.
+  return [...byPerson.entries()].map(([studentId, rows]) => ({ studentId, name: nameOf(studentId), rows }));
 }
 
 // Visual-refinement pass: the collapsed accordion header used to show
@@ -5717,9 +5718,11 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
 
   const filteredRows = rows.filter((r) => rowMatchesStatusFilter(r, statusFilter, "StudentPaidFlag"));
   const searchLower = search.trim().toLowerCase();
-  const people = groupInvoicesByPerson(filteredRows, nameOf).filter(
+  const peopleUnsorted = groupInvoicesByPerson(filteredRows, nameOf).filter(
     (p) => !searchLower || p.name.toLowerCase().includes(searchLower)
   );
+  const peopleSort = useSort(peopleUnsorted, "name");
+  const people = peopleSort.sorted;
 
   return (
     <>
@@ -5747,7 +5750,7 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
       <table className="billing-table">
         <thead>
           <tr>
-            <th>Student</th>
+            <SortableTh label="Student" sortKeyName="name" sortKey={peopleSort.sortKey} sortDir={peopleSort.sortDir} onSort={peopleSort.toggleSort} />
             <th>Subjects</th>
             <th>Period</th>
             <th className="num">Amount</th>
@@ -6201,11 +6204,14 @@ function groupPaychecksByRoleAndPerson(rows, nameOf, roleOf) {
       list.sort((a, b) => b.Year * 100 + b.Month - (a.Year * 100 + a.Month));
     }
   }
+  // Role order (Teacher/Staff/Ambassador) is a deliberate fixed category
+  // order, not something to sort -- but within each role, people were
+  // hardcoded alphabetical with no way to change it. Left unsorted here;
+  // the table component runs the flattened people list through useSort
+  // and regroups by role afterward, same reasoning as invoices above.
   return STAFF_ROLE_ORDER.map((role) => ({
     role,
-    people: [...byRole.get(role).entries()]
-      .map(([staffId, rows]) => ({ staffId, name: nameOf(staffId), rows }))
-      .sort((a, b) => a.name.localeCompare(b.name)),
+    people: [...byRole.get(role).entries()].map(([staffId, rows]) => ({ staffId, name: nameOf(staffId), rows })),
   })).filter((g) => g.people.length > 0);
 }
 
@@ -6230,9 +6236,19 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
 
   const filteredRows = rows.filter((r) => rowMatchesStatusFilter(r, statusFilter, "StaffReceivedFlag"));
   const searchLower = search.trim().toLowerCase();
-  const groups = groupPaychecksByRoleAndPerson(filteredRows, nameOf, roleOf)
+  const roleGroupsUnsorted = groupPaychecksByRoleAndPerson(filteredRows, nameOf, roleOf)
     .map((g) => ({ ...g, people: g.people.filter((p) => !searchLower || p.name.toLowerCase().includes(searchLower)) }))
     .filter((g) => g.people.length > 0);
+  // Role order (Teacher/Staff/Ambassador) stays fixed -- only the person
+  // order within each role is user-sortable. Flatten across roles so one
+  // useSort/toggle governs all of them, then regroup by role afterward;
+  // filtering a sorted array by role is stable, so each role's internal
+  // order comes out following the sort.
+  const peopleFlat = roleGroupsUnsorted.flatMap((g) => g.people.map((p) => ({ ...p, _role: g.role })));
+  const peopleSort = useSort(peopleFlat, "name");
+  const groups = STAFF_ROLE_ORDER.map((role) => ({ role, people: peopleSort.sorted.filter((p) => p._role === role) })).filter(
+    (g) => g.people.length > 0
+  );
 
   return (
     <>
@@ -6265,7 +6281,7 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
           <table className="billing-table">
             <thead>
               <tr>
-                <th>Person</th>
+                <SortableTh label="Person" sortKeyName="name" sortKey={peopleSort.sortKey} sortDir={peopleSort.sortDir} onSort={peopleSort.toggleSort} />
                 <th>Subjects</th>
                 <th>Period</th>
                 <th className="num">Amount</th>
