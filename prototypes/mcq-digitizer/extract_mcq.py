@@ -519,7 +519,7 @@ def _has_nearby_image(page_images, page, y0, y_window=600):
     )
 
 
-def _has_statement_markers(nearby, min_count=2):
+def _has_statement_markers(nearby, min_count=2, is_igcse=False):
     """True when 2+ lines in `nearby` are bare "1"/"2"/"3" -- the
     reliable signature of CAIE's "Section B" / "multiple completion"
     format: one or more of three numbered statements may be correct,
@@ -599,7 +599,33 @@ def _has_statement_markers(nearby, min_count=2):
     its captured number is something ELSE. A captured "1"/"2"/"3" is
     always this exact false-positive shape, never a real next
     question, and is correctly left for the marker-collection check
-    below instead."""
+    below instead.
+
+    is_igcse: a fourth real false-positive class, found via a full-corpus
+    sweep (9 hits across 8 IGCSE papers, 0 false negatives among 354 real
+    A-Level hits) -- an IGCSE question's OWN content can coincidentally
+    contain 2-3 bare "1"/"2"/"3" lines with nothing to do with Section B
+    at all: a numbered 2-item stem enumeration (e.g. "1 When limestone is
+    heated... 2 Water is dripped onto..." describing two reactions, not
+    three statements), or a diagram's own numbered arrow/branch labels
+    (a food-chain diagram's "consumer 1"/"2"/"3", a flow-diagram's "1"/
+    "2"/"3" arrows into an unrelated 4-row A-D table). Every one of the
+    3 prior heuristics above (ruler-tick rejection, stop-at-next-question,
+    subscript-size check) was designed to separate a real marker from a
+    ruler or an unrelated digit -- none of them can distinguish a real
+    statement (always followed by real sentence/equation content) from a
+    diagram's own point labels, because both LOOK identical: a bare
+    digit followed by short text. The one fact that's actually reliable
+    (confirmed against this project's real source material, not
+    assumed): Section B / multiple-completion is exclusively a CAIE
+    A-Level convention -- IGCSE papers never use it, full stop. Rather
+    than chase a 4th content-shape heuristic with its own future false
+    positives, this is a categorical exclusion by qualification level
+    (read once per paper from its own "Level:" metadata header, see
+    _paper_is_igcse), which cannot regress any of the 354 genuine
+    A-Level detections since it only ever suppresses IGCSE papers."""
+    if is_igcse:
+        return False
     marker_lines = []
     for l in nearby:
         text = l["text"]
@@ -656,6 +682,27 @@ def _has_statement_markers(nearby, min_count=2):
     return len(marker_lines) >= min_count
 
 
+def _paper_is_igcse(doc):
+    """Cheap, authoritative qualification-level check: every QP in this
+    project's real source material carries a "File:.../Level:.../IGCSE"
+    (or "A Level"/"AS Level"/"IAL") metadata header on its own first
+    page (confirmed verbatim, e.g. "CAIE IGCSE Chemistry Ch5 Energetics
+    of a reaction (MCQ) Worksheet 1 QP ... Level: IGCSE"). Used to
+    categorically exclude IGCSE papers from Section-B / multiple-
+    completion detection, which is exclusively a CAIE A-Level format --
+    see _has_statement_markers's is_igcse docstring for the false
+    positives this was built to fix. Defaults to False (not IGCSE, i.e.
+    Section-B detection stays active) if doc is missing or the header
+    isn't found, matching this function's existing behavior before this
+    check existed."""
+    if doc is None or doc.page_count == 0:
+        return False
+    try:
+        return "IGCSE" in doc[0].get_text()
+    except Exception:
+        return False
+
+
 def find_question_starts(lines, doc=None):
     """Every detected question boundary, in document order: {number,
     inlineText (whatever followed the number on its own line, often
@@ -687,6 +734,7 @@ def find_question_starts(lines, doc=None):
     raw_by_idx = lines
     lines = sorted(lines, key=lambda l: (l["page"], l["y0"]))
     starts = []
+    is_igcse = _paper_is_igcse(doc)
     # A bare numbered stem next to a raster-image answer table (a common
     # real MS layout -- an infographic-style table/flowchart with
     # checkmarks/crosses, not extractable A-D text) has NO nearby
@@ -720,7 +768,7 @@ def find_question_starts(lines, doc=None):
             starts.append({
                 "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                 "page": line["page"], "y0": line["y0"],
-                "isStatementFormat": _has_statement_markers(lines[idx + 1: idx + 55]),
+                "isStatementFormat": _has_statement_markers(lines[idx + 1: idx + 55], is_igcse=is_igcse),
             })
             continue
         # The bare "N text" form (no punctuation at all) is real but
@@ -796,7 +844,7 @@ def find_question_starts(lines, doc=None):
                 # regression from using the unbounded one: a short
                 # statement question's 30-line lookahead reached past
                 # its own end into the NEXT question's real options.
-                is_statement = _has_statement_markers(nearby)
+                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse)
                 if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": content,
@@ -835,7 +883,7 @@ def find_question_starts(lines, doc=None):
                 # regression from using the unbounded one: a short
                 # statement question's 30-line lookahead reached past
                 # its own end into the NEXT question's real options.
-                is_statement = _has_statement_markers(nearby)
+                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse)
                 if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": content.strip(),
@@ -916,7 +964,7 @@ def find_question_starts(lines, doc=None):
                 # regression from using the unbounded one: a short
                 # statement question's 30-line lookahead reached past
                 # its own end into the NEXT question's real options.
-                is_statement = _has_statement_markers(nearby)
+                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse)
                 if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": "",
