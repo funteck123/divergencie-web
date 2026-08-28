@@ -98,25 +98,50 @@ that as the primary way every topic is shown. Extracted text is still
 kept alongside each image, collapsed under a "View extracted text"
 toggle, as a searchable fallback.
 
-**Which nodes get an image.** Only two levels of the tree: every
-**chapter** (a depth-0 heading, e.g. "2 Thermal physics") and every
-**leaf topic** (a node with no children, e.g. "2.1.1 States of matter").
-An intermediate sub-heading that has its own children (e.g. "1.5 Forces",
-which nests "1.5.1"/"1.5.2"/"1.5.3" under it) does not get its own image
--- its content is already fully covered by its children's images, and
-by its own chapter's whole-chapter overview image.
+**Which nodes get an image.** Three levels of the tree: every
+**chapter** (a depth-0 heading, e.g. "2 Thermal physics"), every
+**depth-1 sub-heading** (e.g. "2.1 Kinetic particle model of matter"),
+and every **leaf topic** (a node with no children, e.g. "2.1.1 States of
+matter"). An intermediate sub-heading deeper than depth 1 that still has
+its own children (e.g. a hypothetical "1.5.2" with further "1.5.2.1"/
+"1.5.2.2" nested under it) does not get its own image -- its content is
+already fully covered by its children's images and by its own
+chapter/section overview image.
 
 **What each image contains.** A leaf topic's image spans from its own
 heading down to the start of the next node in the syllabus (whatever
 that next node's level), same window logic the (now-removed) diagram
 detector used to use. A chapter's image spans from its own heading all
-the way down to the start of the *next chapter* -- i.e. it deliberately
-includes everything under it, as one long overview image of the entire
-chapter, potentially stitched from many pages. Page crops exclude the
+the way down to the start of the *next chapter*, and a depth-1 section's
+image spans down to the start of the next depth-0-or-1 node -- both
+deliberately include everything nested under them, as one long overview
+image, potentially stitched from many pages. Page crops exclude the
 running header/footer margins and are rendered at `IMAGE_ZOOM = 2.0` via
 PyMuPDF's `get_pixmap(clip=...)`; when a window spans more than one PDF
 page, the per-page crops are stitched into one tall image top-to-bottom
 with PIL.
+
+### Subject overview image (the first thing shown)
+
+Every syllabus in this template has its own real **"Content overview"**
+page -- inside chapter 2 ("Syllabus overview"), before "Subject content"
+starts -- that lists every top-level topic in the whole subject on one
+page (e.g. Physics: "1 Motion, forces and energy" through "6 Space
+physics"). `find_content_overview_range()` locates it the same way the
+Contents page is already used to locate the "Subject content" chapter
+itself: this chapter's own sub-entries print as two separate lines on
+the Contents page ("Content overview" then a bare page number, unlike a
+top-level chapter's single dot-leader line), so the exact page is read
+off the document itself rather than guessed or generated. `server.mjs`
+and the client show this as the very first image for a subject, above
+the chapter list.
+
+This is a deliberately **real, cropped page** -- not a synthesized
+index image. Three of the 44 subjects (Global Perspectives, Islamiyat,
+Pakistan Studies) use an older template with no "Content overview" page
+at all; for these, `overviewImageMissing: true` is set instead and the
+UI shows a plain warning banner ("this subject's booklet uses an older
+template...") rather than fabricating a substitute page.
 
 **Where images live.** Real nested folders on disk, mirroring the tree:
 `data/syllabus-digitizer/images/{Level}/{Subject}/{Chapter}/{file}.png`

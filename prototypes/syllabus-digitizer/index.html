@@ -38,6 +38,7 @@
   #warning { background: #fff8e7; border: 1px solid var(--gold); color: #7a5b00; padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 0.8rem; margin-bottom: 1rem; }
   #error { background: #fdecea; border: 1px solid var(--coral); color: #a33025; padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; white-space: pre-wrap; }
   #status { text-align: center; color: var(--muted); padding: 3rem 1rem; font-size: 0.9rem; }
+  .overview-image { display: block; max-width: 100%; height: auto; margin: 0 0 1.25rem; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; background: #fff; }
 
   /* Real parent/child nesting now (see renderTopicNodes) -- depth only
      picks the border color for a quick visual "how deep am I" cue, it no
@@ -264,6 +265,13 @@ function renderOutline(filename, data) {
 
   if (data.sectionGuessed) {
     html += `<div id="warning">This subject has no chapter literally titled "Subject content" -- showing chapter 3 as a best guess instead. Check it looks right.</div>`;
+  }
+
+  if (data.overviewImage) {
+    const src = "/images/" + data.overviewImage.split("/").map(encodeURIComponent).join("/");
+    html += `<img class="overview-image" src="${src}" alt="${escapeHtml(meta.subject || filename)} content overview" loading="lazy" />`;
+  } else if (data.overviewImageMissing) {
+    html += `<div id="warning">This subject's booklet uses an older template with no "Content overview" page -- showing chapters directly below instead.</div>`;
   }
 
   const tree = data.tree || data.topics; // fall back for any pre-tree cached response

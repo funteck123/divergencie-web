@@ -413,6 +413,63 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
         node["image"] = rel_path
 
 
+def find_content_overview_range(doc):
+    """Locates the syllabus's own real "Content overview" page -- a
+    literal page inside the "2 Syllabus overview" chapter that lists
+    every top-level topic at a glance -- NOT something this tool
+    generates. Found via the Contents page's own two-line sub-entry
+    format for that chapter's sub-headings ("Content overview\t" then
+    "8" as a separate line -- unlike a top-level chapter, which prints
+    its own dot-leader line all on one line, e.g. "3  Subject content
+    ....... 12"). Returns (start_page, end_page) as 1-indexed printed
+    page numbers, end_page exclusive (the next sub-entry's own start
+    page), or None. Three subjects in the 44-subject library use an
+    older template with no such page at all -- Global Perspectives,
+    Islamiyat, Pakistan Studies, checked live -- and correctly return
+    None here rather than guessing some other page is this one."""
+    for i in range(1, min(6, doc.page_count)):
+        lines = doc[i].get_text().split("\n")
+        for idx, line in enumerate(lines):
+            label = line.strip().rstrip("\t").strip()
+            if label.lower() != "content overview" or idx + 1 >= len(lines):
+                continue
+            nxt = lines[idx + 1].strip()
+            if not nxt.isdigit():
+                continue
+            start_page = int(nxt)
+            for j in range(idx + 2, len(lines) - 1):
+                lbl2 = lines[j].strip().rstrip("\t").strip()
+                pg2 = lines[j + 1].strip()
+                if lbl2 and pg2.isdigit() and not re.match(r"^\d", lbl2):
+                    return start_page, int(pg2)
+            return start_page, None
+    return None
+
+
+def attach_overview_image(doc, images_dir, subject_rel_path):
+    """Crops the real "Content overview" page(s) found by
+    find_content_overview_range() into `_overview.png`, the first thing
+    shown for a subject -- the syllabus's own topic-at-a-glance page, not
+    a generated substitute. Returns None (and the caller flags it) for
+    the three subjects with no such page in their template."""
+    rng = find_content_overview_range(doc)
+    if rng is None:
+        return None
+    start_page_1idx, end_page_1idx = rng
+    start_page = start_page_1idx - 1
+    end_page = (end_page_1idx - 2) if end_page_1idx else (doc.page_count - 1)
+    if end_page < start_page:
+        end_page = start_page
+    image = _crop_window_image(doc, start_page, HEADER_MARGIN_PT, end_page, None)
+    if image is None:
+        return None
+    rel_path = f"{subject_rel_path}/_overview.png"
+    abs_path = os.path.join(images_dir, subject_rel_path, "_overview.png")
+    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+    image.save(abs_path, "PNG")
+    return rel_path
+
+
 def build_outline(lines, doc=None, section_end_idx=None, images_dir=None, subject_rel_path=None):
     """Groups the classified lines into a flat, depth-tagged outline: each
     heading (possibly split across consecutive bold lines -- e.g. a bare

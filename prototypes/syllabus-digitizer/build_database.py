@@ -14,7 +14,7 @@ import time
 import shutil
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from extract_syllabus import find_subject_content_range, extract_lines, build_outline, build_tree, safe_filename
+from extract_syllabus import find_subject_content_range, extract_lines, build_outline, build_tree, safe_filename, attach_overview_image
 import fitz
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -69,6 +69,14 @@ def extract_one(pdf_path, subject_rel_path):
         images_dir=IMAGES_DIR, subject_rel_path=subject_rel_path,
     )
     result["tree"] = build_tree(result["topics"])
+    overview_image = attach_overview_image(doc, IMAGES_DIR, subject_rel_path)
+    if overview_image:
+        result["overviewImage"] = overview_image
+    else:
+        # Real gap in 3 of the 44 subjects (older template, no "Content
+        # overview" page at all) -- flagged for the UI rather than
+        # silently showing nothing, same pattern as sectionGuessed above.
+        result["overviewImageMissing"] = True
     return result
 
 
