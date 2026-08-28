@@ -76,6 +76,12 @@ GLYPH_BULLET_RE = re.compile(r'^[•\-–\x07]\s*')
 # "starts with the glyph" check only looks at character position 0.
 LEADING_CODE_RE = re.compile(r'^[A-Z]?\d{1,2}(?:\.\d{1,2}){0,3}\s*')
 NUMBERED_ITEM_TAB_RE = re.compile(r'^\d{1,2}\t')
+# Known recurring two-column-table header labels that print in bold in
+# this template despite being structurally a label, not a heading -- see
+# the classification code below for why this matters. Not exhaustive by
+# construction (a new subject could use a different bold column header
+# this list doesn't know about); add to this set if another one turns up.
+BOLD_COLUMN_HEADER_LABELS = {"notes and examples", "learning outcomes"}
 # Only the true private-use glyph, never a plain dash/bullet character, is
 # checked AFTER stripping a leading code -- found live testing Chemistry's
 # ion notation: an anion's charge prints as a superscript run starting
@@ -208,15 +214,17 @@ def extract_lines(doc, start_idx, end_idx):
                 # is scoped to this template's own font family specifically
                 # to close off that whole class of collision.
                 family_suffix = font.rsplit("-", 1)[-1] if font.startswith("HelveticaNeueLTW1G") else None
-                if text.strip().lower() == "notes and examples":
-                    # Mathematics prints its two-column table's right-hand
-                    # header ("Notes and examples") in bold, the SAME
-                    # weight as a real heading -- found live testing:
-                    # since it's classified as a heading, it was
+                if text.strip().lower() in BOLD_COLUMN_HEADER_LABELS:
+                    # Some subjects print a two-column table's right-hand
+                    # header in bold, the SAME weight as a real heading --
+                    # found live testing Mathematics ("Notes and
+                    # examples") and A-Level Biology ("Learning
+                    # outcomes"), 150+ and 24 occurrences respectively.
+                    # Since it's classified as a heading, it was
                     # immediately terminating the PRECEDING numbered
                     # topic's own content collection with nothing in it,
                     # and vacuuming that topic's entire real requirement
-                    # text into a "Notes and examples" child instead --
+                    # text into a child under this label instead --
                     # silently mislabeling every single Core/Extended
                     # topic's actual content as if it were mere
                     # supplementary notes. Structurally this plays the
