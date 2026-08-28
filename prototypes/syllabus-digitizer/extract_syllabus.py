@@ -75,7 +75,11 @@ GLYPH_BULLET_RE = re.compile(r'^[•\-–\x07]\s*')
 # sub-headings demoted to body/label text the same way), since a plain
 # "starts with the glyph" check only looks at character position 0.
 LEADING_CODE_RE = re.compile(r'^[A-Z]?\d{1,2}(?:\.\d{1,2}){0,3}\s*')
-NUMBERED_ITEM_TAB_RE = re.compile(r'^\d{1,2}\t')
+# A literal tab (Biology: "10\tState that...") or a Unicode en-space
+# (Mathematics: "1  Measure and draw...") -- two different real
+# separator characters Cambridge uses between a bare number and its text
+# on the SAME line, found live testing each subject in turn.
+NUMBERED_ITEM_SEP_RE = re.compile('^\\d{1,2}[\t\u2002]')
 # Known recurring two-column-table header labels that print in bold in
 # this template despite being structurally a label, not a heading -- see
 # the classification code below for why this matters. Not exhaustive by
@@ -404,17 +408,17 @@ def build_outline(lines):
                 stripped_once = without_code if without_code != text else text
                 item_text = GLYPH_BULLET_RE.sub("", stripped_once, count=1)
                 content_parts.append(f"\n• {item_text}")
-            elif NUMBERED_ITEM_TAB_RE.match(text):
+            elif NUMBERED_ITEM_SEP_RE.match(text):
                 # A numbered item's digit and its text can also print on
                 # ONE physical line with no glyph at all in between --
-                # "10\tState that synapses..." -- found live testing
-                # Biology, once double-digit item numbers stopped being a
-                # rare tail case. A real TAB (not just any whitespace)
-                # right after the digit is the specific signal Cambridge
-                # uses as the number-to-text separator in this template;
-                # requiring it (rather than accepting any digit-led line)
-                # keeps this from re-colliding with ion notation like
-                # "2–", which never has a tab after its digit.
+                # "10\tState that synapses..." (Biology, tab) / "1
+                # Measure and draw lines and angles." (Mathematics,
+                # en-space) -- found live testing each, once double-digit
+                # item numbers stopped being a rare tail case. Requiring
+                # one of these two specific separators (not just any
+                # digit-led line) keeps this from re-colliding with ion
+                # notation like "2–", which never has either after its
+                # digit.
                 content_parts.append(f"\n• {without_code}")
             elif BARE_PAGE_NUMBER_RE.match(text):
                 # A numbered Core/Supplement item can print as a
