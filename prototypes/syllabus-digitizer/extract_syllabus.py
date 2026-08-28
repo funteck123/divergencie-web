@@ -208,7 +208,24 @@ def extract_lines(doc, start_idx, end_idx):
                 # is scoped to this template's own font family specifically
                 # to close off that whole class of collision.
                 family_suffix = font.rsplit("-", 1)[-1] if font.startswith("HelveticaNeueLTW1G") else None
-                if family_suffix == "Bd":
+                if text.strip().lower() == "notes and examples":
+                    # Mathematics prints its two-column table's right-hand
+                    # header ("Notes and examples") in bold, the SAME
+                    # weight as a real heading -- found live testing:
+                    # since it's classified as a heading, it was
+                    # immediately terminating the PRECEDING numbered
+                    # topic's own content collection with nothing in it,
+                    # and vacuuming that topic's entire real requirement
+                    # text into a "Notes and examples" child instead --
+                    # silently mislabeling every single Core/Extended
+                    # topic's actual content as if it were mere
+                    # supplementary notes. Structurally this plays the
+                    # exact same role as "Core"/"Supplement" (a label
+                    # marking what follows), just in a different font
+                    # weight for this one subject's table layout, so it's
+                    # special-cased to a label regardless of font.
+                    kind = "label"
+                elif family_suffix == "Bd":
                     kind = "heading"
                 elif family_suffix == "Roman" and (
                     BARE_CODE_RE.match(text)
