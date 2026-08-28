@@ -75,6 +75,7 @@ GLYPH_BULLET_RE = re.compile(r'^[•\-–\x07]\s*')
 # sub-headings demoted to body/label text the same way), since a plain
 # "starts with the glyph" check only looks at character position 0.
 LEADING_CODE_RE = re.compile(r'^[A-Z]?\d{1,2}(?:\.\d{1,2}){0,3}\s*')
+NUMBERED_ITEM_TAB_RE = re.compile(r'^\d{1,2}\t')
 # Only the true private-use glyph, never a plain dash/bullet character, is
 # checked AFTER stripping a leading code -- found live testing Chemistry's
 # ion notation: an anion's charge prints as a superscript run starting
@@ -378,6 +379,18 @@ def build_outline(lines):
                 stripped_once = without_code if without_code != text else text
                 item_text = GLYPH_BULLET_RE.sub("", stripped_once, count=1)
                 content_parts.append(f"\n• {item_text}")
+            elif NUMBERED_ITEM_TAB_RE.match(text):
+                # A numbered item's digit and its text can also print on
+                # ONE physical line with no glyph at all in between --
+                # "10\tState that synapses..." -- found live testing
+                # Biology, once double-digit item numbers stopped being a
+                # rare tail case. A real TAB (not just any whitespace)
+                # right after the digit is the specific signal Cambridge
+                # uses as the number-to-text separator in this template;
+                # requiring it (rather than accepting any digit-led line)
+                # keeps this from re-colliding with ion notation like
+                # "2–", which never has a tab after its digit.
+                content_parts.append(f"\n• {without_code}")
             elif BARE_PAGE_NUMBER_RE.match(text):
                 # A numbered Core/Supplement item can print as a
                 # completely bare number with no trailing punctuation at
