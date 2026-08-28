@@ -62,7 +62,7 @@ def extract_one(pdf_path):
     result["sectionGuessed"] = guessed
     result["sectionPageRange"] = [start_idx + 1, end_idx]
     lines = extract_lines(doc, start_idx, end_idx)
-    result["topics"] = build_outline(lines)
+    result["topics"] = build_outline(lines, doc=doc, section_end_idx=end_idx)
     result["tree"] = build_tree(result["topics"])
     return result
 
@@ -82,8 +82,10 @@ def main():
         meta = parse_filename(filename)
         subjects[filename] = {**meta, "filename": filename, **extracted}
         topic_count = len(extracted.get("topics", []))
+        diagram_count = sum(len(t.get("diagrams", [])) for t in extracted.get("topics", []))
         flag = " (guessed section)" if extracted.get("sectionGuessed") else ""
-        print(f"OK {filename}: {topic_count} topics{flag}")
+        diagram_flag = f", {diagram_count} diagram(s)" if diagram_count else ""
+        print(f"OK {filename}: {topic_count} topics{diagram_flag}{flag}")
 
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     database = {

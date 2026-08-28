@@ -31,6 +31,7 @@
 import sys
 import re
 import json
+import base64
 import fitz
 
 # Two real TOC styles found across the 44 subjects in this template family:
@@ -286,16 +287,141 @@ def extract_lines(doc, start_idx, end_idx):
                 else:
                     kind = "body"
                 first_span_size = round(spans[0].get("size", 0)) if spans else size
-                lines.append({"text": text, "kind": kind, "size": size, "first_span_size": first_span_size})
+                y0 = line.get("bbox", (0, 0, 0, 0))[1]
+                lines.append({
+                    "text": text, "kind": kind, "size": size,
+                    "first_span_size": first_span_size,
+                    "page": page_num, "y0": y0,
+                })
     return lines
 
 
-def build_outline(lines):
+# A diagram in this template is always vector line-art (bonds, number
+# lines, geometric figures, flowcharts) -- none of the 44 subjects embed
+# a single raster image in their Subject content chapter, found checking
+# `page.get_images()` live. A decorative table-header fill ("Core"/
+# "Supplement" row highlight) is a solid-color rectangle with no stroke
+# (drawing `type == "f"`), always excluded below; a genuine diagram is
+# built from stroke-type lines/curves, which a real table's own border
+# grid can occasionally also produce -- MIN_DIAGRAM_PATHS exists
+# specifically to keep an ordinary bordered data table (a handful of
+# straight grid lines) below the threshold a real technical drawing
+# (dozens of line/curve segments) clears.
+MIN_DIAGRAM_PATHS = 6
+DIAGRAM_ZOOM = 2.5
+HEADER_MARGIN_PT = 80
+FOOTER_MARGIN_PT = 60
+
+
+AXIS_TOLERANCE_PT = 2.0
+
+
+def _drawing_items_with_midpoints(page):
+    """Yields (mid_y, points, is_axis_aligned) for every stroke-type path
+    segment on the page, skipping pure decorative fills (drawing type "f"
+    with no stroke -- table-header background bars, never a real diagram
+    in this template). is_axis_aligned is True for a straight horizontal
+    or vertical line/rectangle edge (the shape of an ordinary table
+    border or grid line), False for a curve or a diagonal line (the shape
+    of real diagram content -- an angled chemical bond, a curved wedge
+    bond, a circle) -- see _diagram_crop for why this matters."""
+    for d in page.get_drawings():
+        if d["type"] == "f":
+            continue
+        for item in d["items"]:
+            kind = item[0]
+            if kind == "re":
+                r = item[1]
+                yield (r.y0 + r.y1) / 2, [(r.x0, r.y0), (r.x1, r.y1)], True
+            elif kind == "l":
+                p1, p2 = item[1], item[2]
+                axis_aligned = abs(p1.x - p2.x) < AXIS_TOLERANCE_PT or abs(p1.y - p2.y) < AXIS_TOLERANCE_PT
+                yield (p1.y + p2.y) / 2, [(p1.x, p1.y), (p2.x, p2.y)], axis_aligned
+            elif kind in ("c", "qu"):
+                pts = [p for p in item[1:] if hasattr(p, "y")]
+                if pts:
+                    yield sum(p.y for p in pts) / len(pts), [(p.x, p.y) for p in pts], False
+
+
+def _diagram_crop(page, y_top, y_bottom):
+    """Returns a base64 PNG data URL for the union bounding box of every
+    real drawing path in [y_top, y_bottom] on this page, or None if fewer
+    than MIN_DIAGRAM_PATHS qualify. One union box per window rather than
+    per-shape clustering -- found live testing that clustering individual
+    line segments (e.g. the parallel hatch lines of a stereochemistry
+    wedge bond) fragments a single real diagram into dozens of tiny
+    slivers instead of one clean crop; scoping to one topic's own content
+    window already keeps unrelated diagrams from different topics out of
+    the same box in the normal case.
+
+    Also rejects a window where EVERY qualifying path is axis-aligned --
+    found live testing Pakistan Studies: an ordinary bordered table (a
+    box with a header row and a vertical divider) has enough straight
+    border/grid lines to clear MIN_DIAGRAM_PATHS on path count alone, but
+    a genuine technical diagram always has at least one diagonal line or
+    curve (an angled bond, a circle, a curved arrow) somewhere in it."""
+    count = 0
+    pts = []
+    has_real_shape = False
+    for mid_y, item_pts, axis_aligned in _drawing_items_with_midpoints(page):
+        if y_top - 5 <= mid_y <= y_bottom + 5:
+            count += 1
+            pts.extend(item_pts)
+            has_real_shape = has_real_shape or not axis_aligned
+    if count < MIN_DIAGRAM_PATHS or not pts or not has_real_shape:
+        return None
+    pad = 12
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    bbox = fitz.Rect(min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad)
+    bbox &= page.rect
+    if bbox.is_empty or bbox.width < 10 or bbox.height < 10:
+        return None
+    pix = page.get_pixmap(clip=bbox, matrix=fitz.Matrix(DIAGRAM_ZOOM, DIAGRAM_ZOOM))
+    b64 = base64.b64encode(pix.tobytes("png")).decode("ascii")
+    return f"data:image/png;base64,{b64}"
+
+
+def attach_diagrams(doc, nodes, section_end_idx):
+    """For each node, scans the page(s) between its own heading and the
+    next node's heading (its real content window) for genuine diagram
+    content, and attaches any found as a base64 PNG on node["diagrams"].
+    A node whose real content was pushed into a later "continued" reprint
+    (see _merge_continued) still gets the pages in between checked, since
+    the intervening node was already dropped from `nodes` by that point --
+    the window naturally extends across them."""
+    last_page = (section_end_idx - 1) if section_end_idx else (doc.page_count - 1)
+    for i, node in enumerate(nodes):
+        start_page, start_y = node["_page"], node["_y0"]
+        if i + 1 < len(nodes):
+            end_page, end_y = nodes[i + 1]["_page"], nodes[i + 1]["_y0"]
+        else:
+            end_page, end_y = last_page, None  # None = to the bottom of the page
+        diagrams = []
+        for page_num in range(start_page, end_page + 1):
+            page = doc[page_num]
+            y_top = start_y if page_num == start_page else HEADER_MARGIN_PT
+            if page_num == end_page and end_y is not None:
+                y_bottom = end_y
+            else:
+                y_bottom = page.rect.height - FOOTER_MARGIN_PT
+            if y_bottom <= y_top:
+                continue
+            crop = _diagram_crop(page, y_top, y_bottom)
+            if crop:
+                diagrams.append(crop)
+        if diagrams:
+            node["diagrams"] = diagrams
+
+
+def build_outline(lines, doc=None, section_end_idx=None):
     """Groups the classified lines into a flat, depth-tagged outline: each
     heading (possibly split across consecutive bold lines -- e.g. a bare
     "1.3" line followed by its title on the next line, both bold) becomes
     one node, with its body/label text joined underneath until the next
-    heading."""
+    heading. When `doc` is given, also crops any real diagram found
+    between each node and the next as an embedded image (see
+    attach_diagrams)."""
     nodes = []
     i = 0
     n = len(lines)
@@ -307,6 +433,8 @@ def build_outline(lines):
 
     while i < n:
         heading_size = lines[i]["size"]
+        heading_page = lines[i]["page"]
+        heading_y0 = lines[i]["y0"]
         heading_parts = [lines[i]["text"]]
         i += 1
         # Only keep absorbing more same-size bold lines into this ONE
@@ -460,12 +588,19 @@ def build_outline(lines):
             i += 1
         content = "".join(content_parts).strip()
 
-        nodes.append({"code": code, "depth": depth, "title": title, "content": content, "size": heading_size})
+        nodes.append({
+            "code": code, "depth": depth, "title": title, "content": content,
+            "size": heading_size, "_page": heading_page, "_y0": heading_y0,
+        })
 
     nodes = _merge_empty_heading_runs(_merge_continued(nodes))
     _infer_uncoded_depth(nodes)
+    if doc is not None:
+        attach_diagrams(doc, nodes, section_end_idx)
     for node in nodes:
         del node["size"]
+        del node["_page"]
+        del node["_y0"]
     return nodes
 
 
@@ -581,6 +716,8 @@ def _merge_empty_heading_runs(nodes):
                     "title": " / ".join(n["title"] for n in run),
                     "content": "",
                     "size": node["size"],
+                    "_page": node["_page"],
+                    "_y0": node["_y0"],
                 })
                 i = j
                 continue
@@ -608,7 +745,7 @@ def main():
     result["sectionPageRange"] = [start_idx + 1, end_idx]
 
     lines = extract_lines(doc, start_idx, end_idx)
-    result["topics"] = build_outline(lines)
+    result["topics"] = build_outline(lines, doc=doc, section_end_idx=end_idx)
     result["tree"] = build_tree(result["topics"])
     print(json.dumps(result))
 

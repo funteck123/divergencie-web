@@ -58,6 +58,7 @@
   .topic.open > .topic-content { display: block; }
   .topic-children { margin-top: 0.6rem; }
   .topic-children:empty { display: none; }
+  .topic-diagram { display: block; max-width: 100%; height: auto; margin: 0.7rem 0; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; background: #fff; }
   .content-label { color: var(--navy); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 0.7rem 0 0.35rem; }
   .content-label:first-child { margin-top: 0; }
   .content-para { margin: 0 0 0.6rem; }
@@ -215,6 +216,16 @@ function renderTopicNodes(nodes) {
       // subtopics beneath it) shouldn't show the "no content" placeholder
       // -- that's only meaningful for an actual leaf with nothing in it.
       const body = t.content ? renderTopicContent(t.content) : hasChildren ? "" : renderTopicContent(t.content);
+      // A cropped diagram (a chemical structure, a number line, a
+      // flowchart symbol) that the source PDF draws as vector line-art
+      // rather than real text -- extract_syllabus.py finds these by
+      // spotting real diagram content (diagonal lines/curves, not just a
+      // table's straight borders) between one topic and the next, and
+      // crops that region as a PNG. Shown after the text content, since
+      // it's supplementary to what's already readable as text.
+      const diagrams = (t.diagrams || [])
+        .map((src) => `<img class="topic-diagram" src="${src}" alt="Diagram for ${escapeHtml(t.title)}" loading="lazy" />`)
+        .join("");
       return `<div class="topic" data-depth="${t.depth}">
         <div class="topic-head">
           <span class="arrow">▶</span>
@@ -223,6 +234,7 @@ function renderTopicNodes(nodes) {
         </div>
         <div class="topic-content">
           ${body}
+          ${diagrams}
           ${children ? `<div class="topic-children">${children}</div>` : ""}
         </div>
       </div>`;
