@@ -14,7 +14,7 @@ import time
 import shutil
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from extract_syllabus import find_subject_content_range, extract_lines, build_outline, build_tree, safe_filename, attach_overview_image
+from extract_syllabus import find_subject_content_range, extract_lines, build_outline, build_tree, safe_filename, attach_overview_image, attach_formula_sheet_image
 import fitz
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -77,6 +77,9 @@ def extract_one(pdf_path, subject_rel_path):
         # overview" page at all) -- flagged for the UI rather than
         # silently showing nothing, same pattern as sectionGuessed above.
         result["overviewImageMissing"] = True
+    formula_sheet_image = attach_formula_sheet_image(doc, IMAGES_DIR, subject_rel_path)
+    if formula_sheet_image:
+        result["formulaSheetImage"] = formula_sheet_image
     return result
 
 

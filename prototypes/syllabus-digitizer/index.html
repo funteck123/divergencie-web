@@ -64,6 +64,10 @@
   .text-fallback summary { cursor: pointer; font-size: 0.78rem; color: var(--sky); user-select: none; }
   .text-fallback summary:hover { text-decoration: underline; }
   .text-fallback[open] summary { margin-bottom: 0.6rem; }
+  .formula-sheet { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .formula-sheet summary { cursor: pointer; font-weight: 700; font-size: 0.85rem; color: var(--navy); user-select: none; }
+  .formula-sheet summary:hover { text-decoration: underline; }
+  .formula-sheet[open] summary { margin-bottom: 0.75rem; }
   .content-label { color: var(--navy); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 0.7rem 0 0.35rem; }
   .content-label:first-child { margin-top: 0; }
   .content-para { margin: 0 0 0.6rem; }
@@ -279,6 +283,14 @@ function renderOutline(filename, data) {
     html += `<div id="status">No topic headings detected in this booklet.</div>`;
   } else {
     html += renderTopicNodes(tree);
+  }
+
+  if (data.formulaSheetImage) {
+    const src = "/images/" + data.formulaSheetImage.split("/").map(encodeURIComponent).join("/");
+    html += `<details class="formula-sheet">
+      <summary>View formula/data sheet</summary>
+      <img class="overview-image" src="${src}" alt="${escapeHtml(meta.subject || filename)} formula sheet" loading="lazy" />
+    </details>`;
   }
 
   html += `<pre id="rawJson">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;

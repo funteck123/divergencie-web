@@ -545,6 +545,97 @@ def attach_overview_image(doc, images_dir, subject_rel_path):
     return rel_path
 
 
+FORMULA_CHAPTER_NAME_RE = re.compile(r'list of formulae|formulae and statistical tables', re.IGNORECASE)
+FORMULA_SUBENTRY_RE = re.compile(r'formula|data section|data and formulae', re.IGNORECASE)
+
+
+def find_formula_sheet_range(doc):
+    """Locates a syllabus's own real formula/data-sheet page(s) -- found
+    live across the 13 A Level subjects in this template family in two
+    different shapes: A Level and Further Mathematics print it as its
+    OWN top-level chapter ("5  List of formulae and statistical tables
+    (MF19) .... 43", the same single dot-leader-line format as "Subject
+    content" itself), while Physics/Biology/Chemistry print it as a
+    SUB-ENTRY of their "6 Additional information" chapter ("Data and
+    formulae\t" / "58" as two separate lines, the same shape
+    find_content_overview_range() already reads for "Content overview").
+    Neither format is guessed at by content -- every subject checked
+    live prints one of these two exact TOC shapes for whichever label it
+    uses ("List of formulae...", "Data and formulae", "Mathematical
+    formulae (A Level only)", "Data section"), so matching the shared
+    keyword ("formula"/"data section") against either shape is reading
+    the boundary off the document, not inferring it. Returns
+    (start_page, end_page) as 1-indexed printed pages, end exclusive, or
+    None for the subjects with no such page at all (Business, Computer
+    Science, English, Law, Literature -- checked live)."""
+    toc_entries = []
+    for i in range(1, min(6, doc.page_count)):
+        for line in doc[i].get_text().split("\n"):
+            m = TOC_LINE_RE.match(line.strip())
+            if m:
+                toc_entries.append((int(m.group(1)), m.group(2).strip(), int(m.group(3))))
+
+    match = next((e for e in toc_entries if FORMULA_CHAPTER_NAME_RE.search(e[1])), None)
+    if match:
+        chapter_num, _, start_page = match
+        next_entry = next((e for e in toc_entries if e[0] == chapter_num + 1), None)
+        end_page = next_entry[2] if next_entry else doc.page_count + 1
+        return start_page, end_page
+
+    for i in range(1, min(6, doc.page_count)):
+        lines = doc[i].get_text().split("\n")
+        for idx, line in enumerate(lines):
+            label = line.strip().rstrip("\t").strip()
+            # A top-level chapter's own dot-leader line also contains
+            # these words sometimes (already handled above) -- excluding
+            # any line with a run of dots keeps this sub-entry pass from
+            # double-matching that same line a second time.
+            if not FORMULA_SUBENTRY_RE.search(label) or ".." in label or idx + 1 >= len(lines):
+                continue
+            nxt = lines[idx + 1].strip()
+            if not nxt.isdigit():
+                continue
+            start_page = int(nxt)
+            for j in range(idx + 2, len(lines) - 1):
+                lbl2 = lines[j].strip().rstrip("\t").strip()
+                pg2 = lines[j + 1].strip()
+                if lbl2 and pg2.isdigit() and not re.match(r"^\d", lbl2):
+                    return start_page, int(pg2)
+            # Last sub-entry in its chapter (Chemistry's "Data section")
+            # -- fall back to the next TOP-LEVEL chapter's own start
+            # page, the same boundary find_subject_content_range() uses.
+            later_chapters = [e[2] for e in toc_entries if e[2] > start_page]
+            end_page = min(later_chapters) if later_chapters else doc.page_count + 1
+            return start_page, end_page
+    return None
+
+
+def attach_formula_sheet_image(doc, images_dir, subject_rel_path):
+    """Crops the real formula/data-sheet page(s) found by
+    find_formula_sheet_range() into `_formula_sheet.png` -- a reference
+    appendix shown separately from the topic tree, not folded into any
+    one chapter's own image since it applies across the whole subject.
+    Returns None for the subjects with no such page (most IGCSEs and
+    several A Levels -- Business, Computer Science, English, Law,
+    Literature checked live)."""
+    rng = find_formula_sheet_range(doc)
+    if rng is None:
+        return None
+    start_page_1idx, end_page_1idx = rng
+    start_page = start_page_1idx - 1
+    end_page = (end_page_1idx - 2) if end_page_1idx else (doc.page_count - 1)
+    if end_page < start_page:
+        end_page = start_page
+    image = _crop_window_image(doc, start_page, HEADER_MARGIN_PT, end_page, None)
+    if image is None:
+        return None
+    rel_path = f"{subject_rel_path}/_formula_sheet.png"
+    abs_path = os.path.join(images_dir, subject_rel_path, "_formula_sheet.png")
+    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+    image.save(abs_path, "PNG")
+    return rel_path
+
+
 def build_outline(lines, doc=None, section_end_idx=None, images_dir=None, subject_rel_path=None):
     """Groups the classified lines into a flat, depth-tagged outline: each
     heading (possibly split across consecutive bold lines -- e.g. a bare

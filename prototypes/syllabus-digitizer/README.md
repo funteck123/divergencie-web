@@ -156,6 +156,27 @@ also vector-drawn, so a leaf topic with one of these now gets a crisp
 image of the actual typeset expression instead of relying on its
 (lossy/scrambled, per the limitation below) text extraction.
 
+### Formula/data sheet (A Level only, when present)
+
+5 of the 13 A Level subjects (Mathematics, Further Mathematics,
+Physics, Biology, Chemistry) print a real formula/data-sheet appendix
+-- checked live, the other 8 (Business, Computer Science, English x2,
+Information Technology, Law, Literature) have none. Two different real
+TOC shapes across those 5, both read off the Contents page the same
+way "Subject content" and "Content overview" already are, never
+guessed: Mathematics/Further Mathematics print it as its own top-level
+chapter ("5  List of formulae and statistical tables (MF19) .... 43",
+a single dot-leader line); Physics/Biology/Chemistry print it as a
+sub-entry of their own "Additional information" chapter ("Data and
+formulae\t" / "58" as two separate lines, same shape as "Content
+overview"'s own sub-entry). `find_formula_sheet_range()` tries the
+top-level-chapter shape first, falling back to the sub-entry shape
+using each subject's own label for it ("Data and formulae", "Data
+section", "Mathematical formulae (A Level only)"). Shown in the client
+as a collapsed "View formula/data sheet" section below the topic tree,
+since it's a reference the whole subject shares rather than something
+that belongs to any one chapter.
+
 ## Known limitations (real, found testing against ~10 of the 44 subjects)
 
 - **One genuine structural outlier**: Global Perspectives' syllabus has no
