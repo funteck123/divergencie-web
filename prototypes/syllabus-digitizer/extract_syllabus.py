@@ -75,6 +75,19 @@ GLYPH_BULLET_RE = re.compile(r'^[•\-–\x07]\s*')
 # sub-headings demoted to body/label text the same way), since a plain
 # "starts with the glyph" check only looks at character position 0.
 LEADING_CODE_RE = re.compile(r'^[A-Z]?\d{1,2}(?:\.\d{1,2}){0,3}\s*')
+# Only the true private-use glyph, never a plain dash/bullet character, is
+# checked AFTER stripping a leading code -- found live testing Chemistry's
+# ion notation: an anion's charge prints as a superscript run starting
+# with a digit and an en-dash ("2–", meaning a 2- charge), and PyMuPDF
+# sometimes puts that superscript on its own "line" object. Stripping the
+# leading "2" as if it were a numbered-marker code left a bare "–", which
+# the FULL glyph set (including dashes) then wrongly matched as a bullet
+# start, injecting a spurious break and losing the charge value entirely
+# ("CO3" / "•  , by reaction..." instead of "CO3 2–, by reaction..."). A
+# real decorative-glyph-after-a-stripped-code only ever uses \x07 (the
+# "10\t \x07Determine..." pattern), never a plain dash, so this narrower
+# check is safe for that case and closes off the false positive here.
+GLYPH_ONLY_RE = re.compile(r'^\x07\s*')
 
 
 def strip_decorative_glyph(text):
@@ -82,8 +95,8 @@ def strip_decorative_glyph(text):
     leading numeric code (bare or dotted) immediately before it. Returns
     the text unchanged if no glyph is found either way."""
     without_code = LEADING_CODE_RE.sub("", text, count=1)
-    if GLYPH_BULLET_RE.match(without_code):
-        return GLYPH_BULLET_RE.sub("", without_code, count=1)
+    if GLYPH_ONLY_RE.match(without_code):
+        return GLYPH_ONLY_RE.sub("", without_code, count=1)
     return text
 NOISE_PATTERNS = [
     re.compile(r'^www\.cambridgeinternational\.org', re.IGNORECASE),
@@ -242,7 +255,8 @@ def extract_lines(doc, start_idx, end_idx):
                     kind = "heading"
                 else:
                     kind = "body"
-                lines.append({"text": text, "kind": kind, "size": size})
+                first_span_size = round(spans[0].get("size", 0)) if spans else size
+                lines.append({"text": text, "kind": kind, "size": size, "first_span_size": first_span_size})
     return lines
 
 
@@ -337,13 +351,32 @@ def build_outline(lines):
             # sentence starting with a number (rare, but possible) isn't
             # silently mangled.
             without_code = LEADING_CODE_RE.sub("", text, count=1)
+            # A bare dash/en-dash with no digit in front of it is
+            # genuinely ambiguous between a real bullet and an anion's
+            # superscript charge sign printed on its own PyMuPDF "line"
+            # (e.g. nitrate's "NO3" then a separate "–, reduction..."
+            # line for the single-charge −) -- found live testing
+            # Chemistry. The charge notation is always set in a small
+            # subscript/superscript size (~7pt) versus this template's
+            # 10pt body text, which a real bullet character never is, so
+            # that's the tiebreaker here.
+            is_subscript_dash = text[:1] in "-–" and line["first_span_size"] > 0 and line["first_span_size"] < 9
             if line["kind"] == "label":
                 # A label line ("Core", "Focus points"...) can carry the
                 # same stray glyph a bullet or a numbered sub-heading can
                 # -- found live testing Religious Studies/Psychology.
                 content_parts.append(f"\n[{strip_decorative_glyph(text)}]\n")
-            elif GLYPH_BULLET_RE.match(without_code):
-                item_text = GLYPH_BULLET_RE.sub("", without_code, count=1)
+            elif not is_subscript_dash and (GLYPH_BULLET_RE.match(text) or GLYPH_ONLY_RE.match(without_code)):
+                # A leading code was actually stripped to get here only
+                # when `without_code` differs from `text` -- in that case
+                # only the real \x07 glyph counts (see GLYPH_ONLY_RE above);
+                # a line with no code to strip in the first place can still
+                # start directly with any real bullet character, checked
+                # against the ORIGINAL text so an ion charge like "2–"
+                # (only ever seen after a stripped code) can't qualify on
+                # its own.
+                stripped_once = without_code if without_code != text else text
+                item_text = GLYPH_BULLET_RE.sub("", stripped_once, count=1)
                 content_parts.append(f"\n• {item_text}")
             elif BARE_PAGE_NUMBER_RE.match(text):
                 # A numbered Core/Supplement item can print as a
