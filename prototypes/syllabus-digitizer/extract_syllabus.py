@@ -370,28 +370,52 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
     depth-1 section's window runs to the START OF THE NEXT depth-0-OR-1
     node -- each deliberately spanning over all of its own children's
     pages (that's the whole point of a section-level image: one overview
-    of everything under it)."""
+    of everything under it).
+
+    A SPURIOUS node -- no numeric code AND no extracted body text, the
+    known false-positive-heading limitation (a stray bold word/table-
+    header mid-page gets picked up as its own heading) -- gets no image
+    of its own and is skipped when computing where a window ENDS. Found
+    live testing A Level Information Technology: its flowchart/system-
+    flowchart/data-flow-diagram symbol legend is a pure diagram table
+    (shape column, no text at all in that column) whose row/column
+    labels ("Flowchart symbols", "Element", "Symbol", ...) are EIGHT
+    consecutive spurious depth-0 nodes on one page -- each one's window
+    used to end at the very next spurious node a few points below it,
+    so every one of the 8 cropped to a near-blank sliver 1-2 lines tall
+    and the actual symbol diagrams (the entire point of that page) never
+    appeared anywhere. Skipping spurious nodes when computing a window's
+    end lets the genuinely-titled chapter's own window keep extending
+    until it reaches the next REAL node, correctly sweeping up the whole
+    diagram table underneath it instead of stopping immediately."""
     last_page = (section_end_idx - 1) if section_end_idx else (doc.page_count - 1)
 
+    def is_substantial(node):
+        return bool(node.get("code")) or bool((node.get("content") or "").strip())
+
     def node_end(i):
-        if i + 1 < len(nodes):
-            return nodes[i + 1]["_page"], nodes[i + 1]["_y0"]
+        for j in range(i + 1, len(nodes)):
+            if is_substantial(nodes[j]):
+                return nodes[j]["_page"], nodes[j]["_y0"]
         return last_page, None
 
     def next_at_or_above_depth(i, max_depth):
         for j in range(i + 1, len(nodes)):
-            if nodes[j]["depth"] <= max_depth:
+            if nodes[j]["depth"] <= max_depth and is_substantial(nodes[j]):
                 return nodes[j]["_page"], nodes[j]["_y0"]
         return last_page, None
 
     current_chapter_folder = None
+    used_rel_paths = set()
     for i, node in enumerate(nodes):
         is_chapter = node["depth"] == 0
         is_leaf = (i + 1 >= len(nodes)) or (nodes[i + 1]["depth"] <= node["depth"])
         is_section1 = node["depth"] == 1 and not is_leaf
-        if is_chapter:
+        if is_chapter and is_substantial(node):
             current_chapter_folder = safe_filename(node["code"], node["title"])
         if not (is_chapter or is_section1 or is_leaf) or current_chapter_folder is None:
+            continue
+        if not is_substantial(node):
             continue
 
         start_page, start_y = node["_page"], node["_y0"]
@@ -405,8 +429,23 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
         if image is None:
             continue
 
-        file_name = safe_filename(node["code"], node["title"]) + ".png"
+        base_name = safe_filename(node["code"], node["title"])
+        file_name = base_name + ".png"
         rel_path = f"{subject_rel_path}/{current_chapter_folder}/{file_name}"
+        # Two distinct nodes can land on the identical folder+filename --
+        # found live testing A Level Information Technology: three
+        # separate spurious-but-substantial "Symbol" nodes (one per
+        # diagram-shape table: flowchart/system-flowchart/data-flow) all
+        # share that exact title with no code to disambiguate them, so
+        # without this check the second and third silently overwrote the
+        # first's real, distinct diagram content on disk. A numbered
+        # suffix keeps every one of them.
+        suffix = 2
+        while rel_path in used_rel_paths:
+            file_name = f"{base_name} ({suffix}).png"
+            rel_path = f"{subject_rel_path}/{current_chapter_folder}/{file_name}"
+            suffix += 1
+        used_rel_paths.add(rel_path)
         abs_path = os.path.join(images_dir, subject_rel_path, current_chapter_folder, file_name)
         os.makedirs(os.path.dirname(abs_path), exist_ok=True)
         image.save(abs_path, "PNG")

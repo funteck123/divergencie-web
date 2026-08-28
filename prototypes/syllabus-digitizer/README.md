@@ -171,7 +171,19 @@ image of the actual typeset expression instead of relying on its
   just gets its own outline row instead of sitting inside the surrounding
   paragraph) but not fully clean — not chased further, since a handful of
   odd rows per subject didn't seem worth more heuristic complexity for
-  what's meant to stay a simple browsing tool.
+  what's meant to stay a simple browsing tool. **Image cropping treats a
+  SPURIOUS instance of this (no code AND no extracted body text) as
+  transparent** — it gets no image of its own and is skipped when
+  computing where a real chapter/section/leaf's own window ends, so a
+  run of these back-to-back (found live: A Level Information
+  Technology's flowchart/system-flowchart/data-flow-diagram symbol
+  legend is 8 of them in a row on one page, since its "Element"/"Symbol"
+  column headers and shape-name labels have no body text under them,
+  only a diagram in the adjacent column) doesn't collapse the real
+  chapter's window down to a near-blank sliver and hide the actual
+  diagrams under it. A node that's merely SHORT (real code or real text,
+  just not much of it) still gets its own image as normal — only the
+  fully empty ones are skipped.
 - **A-Level Mathematics** groups its content by exam component ("Pure
   Mathematics 1", "Mechanics", "Statistics") using a running label at the
   same bold weight as the topic numbers — this can merge into an adjacent
