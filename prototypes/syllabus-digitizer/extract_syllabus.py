@@ -351,10 +351,12 @@ def _crop_window_image(doc, start_page, start_y, end_page, end_y):
 
 
 def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
-    """Crops and saves a real PNG for every CHAPTER (depth 0) and every
-    LEAF node (nothing nests under it) -- an intermediate sub-heading
-    that has its own children (e.g. "1.5 Forces", which "1.5.1"/"1.5.2"/
-    "1.5.3" nest under) does not get its own image, only the chapter it
+    """Crops and saves a real PNG for every CHAPTER (depth 0), every
+    depth-1 sub-heading (e.g. "2.1 Kinetic particle model of matter"),
+    and every LEAF node (nothing nests under it) -- an intermediate
+    sub-heading deeper than depth 1 that has its own children (e.g.
+    "1.5.2 Something" with further "1.5.2.1"/"1.5.2.2" nested under it)
+    does not get its own image, only the chapter/depth-1 section it
     belongs to and its actual leaves do. Saved as real files under
     `images_dir/subject_rel_path/<chapter folder>/<file>.png`, mirroring
     the tree as real nested folders (Level/Subject/Chapter/Topic) rather
@@ -362,11 +364,13 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
     that file's path relative to `images_dir`, for the server to serve
     directly and the client to build an <img src> from.
 
-    A node's own window runs from its heading to the START of whichever
+    A leaf's own window runs from its heading to the START of whichever
     node comes right after it in this flat list -- a chapter's window
-    runs to the START OF THE NEXT CHAPTER instead, deliberately spanning
-    over all of its own children's pages (that's the whole point of a
-    chapter-level image: one overview of everything under it)."""
+    runs to the START OF THE NEXT CHAPTER instead (depth <= 0), and a
+    depth-1 section's window runs to the START OF THE NEXT depth-0-OR-1
+    node -- each deliberately spanning over all of its own children's
+    pages (that's the whole point of a section-level image: one overview
+    of everything under it)."""
     last_page = (section_end_idx - 1) if section_end_idx else (doc.page_count - 1)
 
     def node_end(i):
@@ -374,9 +378,9 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
             return nodes[i + 1]["_page"], nodes[i + 1]["_y0"]
         return last_page, None
 
-    def chapter_end(i):
+    def next_at_or_above_depth(i, max_depth):
         for j in range(i + 1, len(nodes)):
-            if nodes[j]["depth"] == 0:
+            if nodes[j]["depth"] <= max_depth:
                 return nodes[j]["_page"], nodes[j]["_y0"]
         return last_page, None
 
@@ -384,13 +388,19 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
     for i, node in enumerate(nodes):
         is_chapter = node["depth"] == 0
         is_leaf = (i + 1 >= len(nodes)) or (nodes[i + 1]["depth"] <= node["depth"])
+        is_section1 = node["depth"] == 1 and not is_leaf
         if is_chapter:
             current_chapter_folder = safe_filename(node["code"], node["title"])
-        if not (is_chapter or is_leaf) or current_chapter_folder is None:
+        if not (is_chapter or is_section1 or is_leaf) or current_chapter_folder is None:
             continue
 
         start_page, start_y = node["_page"], node["_y0"]
-        end_page, end_y = chapter_end(i) if is_chapter else node_end(i)
+        if is_chapter:
+            end_page, end_y = next_at_or_above_depth(i, 0)
+        elif is_section1:
+            end_page, end_y = next_at_or_above_depth(i, 1)
+        else:
+            end_page, end_y = node_end(i)
         image = _crop_window_image(doc, start_page, start_y, end_page, end_y)
         if image is None:
             continue

@@ -82,16 +82,45 @@ def count_images(topics):
 
 
 def main():
-    # Rebuilt from scratch every run rather than patched in place -- a
-    # subject whose chapter titles changed (a newer syllabus cycle) would
-    # otherwise leave that chapter's old image folder behind under its
-    # stale name alongside the new one.
-    if os.path.isdir(IMAGES_DIR):
-        shutil.rmtree(IMAGES_DIR)
+    # Optional CLI filter for fast iteration on a handful of subjects
+    # (e.g. `python3 build_database.py physics,chemistry,mathematics,biology,first-language-english`)
+    # instead of waiting on a full ~44-subject rebuild after every code
+    # tweak. Merges into the existing database.json / images tree rather
+    # than wiping everything, so subjects outside the filter are left
+    # exactly as they were from the last full run.
+    only_filter = [s.strip() for s in sys.argv[1].split(",")] if len(sys.argv) > 1 else None
 
     filenames = sorted(f for f in os.listdir(PDFS_DIR) if f.endswith(".pdf"))
-    subjects = {}
-    errors = []
+    if only_filter:
+        filenames = [f for f in filenames if any(s in f for s in only_filter)]
+
+    if only_filter:
+        # Merge mode: keep everything already in database.json, only
+        # replace the filtered subjects' own entries and image folders.
+        subjects = {}
+        errors = []
+        if os.path.exists(OUT_PATH):
+            with open(OUT_PATH) as f:
+                existing = json.load(f)
+            subjects = existing.get("subjects", {})
+            errors = [e for e in existing.get("errors", []) if e["filename"] not in filenames]
+        for filename in filenames:
+            meta = parse_filename(filename)
+            level_folder = safe_filename(None, meta["level"])
+            subject_folder = safe_filename(None, meta["subject"])
+            subject_dir = os.path.join(IMAGES_DIR, level_folder, subject_folder)
+            if os.path.isdir(subject_dir):
+                shutil.rmtree(subject_dir)
+    else:
+        # Rebuilt from scratch every run rather than patched in place -- a
+        # subject whose chapter titles changed (a newer syllabus cycle)
+        # would otherwise leave that chapter's old image folder behind
+        # under its stale name alongside the new one.
+        if os.path.isdir(IMAGES_DIR):
+            shutil.rmtree(IMAGES_DIR)
+        subjects = {}
+        errors = []
+
     for filename in filenames:
         pdf_path = os.path.join(PDFS_DIR, filename)
         meta = parse_filename(filename)
