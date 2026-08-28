@@ -87,6 +87,21 @@ NUMBERED_ITEM_SEP_RE = re.compile('^\\d{1,2}[\t\u2002]')
 # construction (a new subject could use a different bold column header
 # this list doesn't know about); add to this set if another one turns up.
 BOLD_COLUMN_HEADER_LABELS = {"notes and examples", "learning outcomes"}
+# Cambridge's own inline-annotation convention: an aside ("Note: diagrams
+# are not required.", "Note: Candidates will not be required to answer
+# questions on the dissolution of a partnership...") prints its lead-in
+# word bold, same weight as a real heading. When the whole note fits on
+# one bold line, this was already harmless (a short, standalone spurious
+# node -- see the false-positive-heading limitation). Found live testing
+# Accounting: when the note runs onto a SECOND, non-bold line, the split
+# is far worse -- the first line becomes a heading title truncated mid-
+# sentence, and the rest is orphaned as that fake heading's own content,
+# scrambling a single sentence into a nonsense partial-sentence title
+# plus a dangling fragment. Treating it as plain body text instead (kind
+# "body", not "heading") lets it flow into the surrounding paragraph
+# exactly like non-bold text does, reconstructing the original sentence
+# whether it's one bold line or spans onto a second regular one.
+NOTE_ANNOTATION_RE = re.compile(r'^note:\s', re.IGNORECASE)
 # Only the true private-use glyph, never a plain dash/bullet character, is
 # checked AFTER stripping a leading code -- found live testing Chemistry's
 # ion notation: an anion's charge prints as a superscript run starting
@@ -238,6 +253,8 @@ def extract_lines(doc, start_idx, end_idx):
                     # weight for this one subject's table layout, so it's
                     # special-cased to a label regardless of font.
                     kind = "label"
+                elif NOTE_ANNOTATION_RE.match(text.strip()):
+                    kind = "body"
                 elif family_suffix == "Bd":
                     kind = "heading"
                 elif family_suffix == "Roman" and (
