@@ -50,9 +50,17 @@
   .topic-head .title { font-weight: 600; font-size: 0.92rem; flex: 1; }
   .topic-head .arrow { color: var(--muted); font-size: 0.75rem; transition: transform 0.15s; }
   .topic.open > .topic-head .arrow { transform: rotate(90deg); }
-  .topic-content { display: none; padding: 0 0.75rem 0.8rem 3.25rem; font-size: 0.85rem; line-height: 1.55; color: var(--charcoal); white-space: pre-wrap; }
+  .topic-content { display: none; padding: 0 0.75rem 0.9rem 3.25rem; font-size: 0.85rem; line-height: 1.5; color: var(--charcoal); }
   .topic.open > .topic-content { display: block; }
-  .topic-content .label-tag { color: var(--navy); font-weight: 700; }
+  .content-label { color: var(--navy); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 0.7rem 0 0.35rem; }
+  .content-label:first-child { margin-top: 0; }
+  .content-para { margin: 0 0 0.6rem; }
+  .content-para:last-child { margin-bottom: 0; }
+  .content-list { margin: 0 0 0.6rem; padding-left: 1.3rem; }
+  .content-list:last-child { margin-bottom: 0; }
+  .content-list li { margin-bottom: 0.35rem; }
+  .content-list li:last-child { margin-bottom: 0; }
+  .topic-empty { color: var(--muted); font-style: italic; margin: 0; }
 
   #rawToggle { font-size: 0.75rem; color: var(--sky); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
   #rawJson { display: none; margin-top: 1rem; background: var(--bg-soft); border-radius: 8px; padding: 0.75rem; font-size: 0.75rem; overflow-x: auto; max-height: 400px; }
@@ -134,8 +142,50 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+// The content string arrives already normalised by extract_syllabus.py
+// (server-side): every bullet line is "\n• <text>" (plain bullet,
+// space-separated -- decorative glyph already stripped) and every
+// lettered/numbered sub-part is "\n(a)\t<text>" (marker kept, it's real
+// content). So the only two markers to recognise here are "• " and a
+// lettered/roman-numeral/numbered prefix -- no need to re-derive the
+// server's own glyph/decimal-number edge cases on the client.
+const PLAIN_BULLET_RE = /^•\s*/;
+const LETTERED_MARKER_RE = /^(\(?[a-z]\)|\(?[ivx]+\)|\d{1,2}[.)](?!\d))\s*/;
+
+function parseContentBlocks(text) {
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  const blocks = [];
+  let currentList = null;
+  for (const line of lines) {
+    const labelMatch = line.match(/^\[(.+)\]$/);
+    if (labelMatch) {
+      currentList = null;
+      blocks.push({ type: "label", text: labelMatch[1] });
+      continue;
+    }
+    const plainMatch = line.match(PLAIN_BULLET_RE);
+    const letteredMatch = !plainMatch && line.match(LETTERED_MARKER_RE);
+    if (plainMatch || letteredMatch) {
+      const itemText = plainMatch ? line.slice(plainMatch[0].length) : line;
+      currentList ??= blocks[blocks.push({ type: "list", items: [] }) - 1];
+      currentList.items.push(itemText);
+    } else {
+      currentList = null;
+      blocks.push({ type: "para", text: line });
+    }
+  }
+  return blocks;
+}
+
 function renderTopicContent(text) {
-  return escapeHtml(text).replace(/\[([^\]]+)\]/g, '<span class="label-tag">$1</span>');
+  if (!text) return `<p class="topic-empty">(no content text under this heading)</p>`;
+  return parseContentBlocks(text)
+    .map((b) => {
+      if (b.type === "label") return `<div class="content-label">${escapeHtml(b.text)}</div>`;
+      if (b.type === "list") return `<ul class="content-list">${b.items.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>`;
+      return `<p class="content-para">${escapeHtml(b.text)}</p>`;
+    })
+    .join("");
 }
 
 function renderOutline(filename, data) {
@@ -164,7 +214,7 @@ function renderOutline(filename, data) {
           <span class="code">${t.code || ""}</span>
           <span class="title">${escapeHtml(t.title)}</span>
         </div>
-        <div class="topic-content">${renderTopicContent(t.content || "(no content text under this heading)")}</div>
+        <div class="topic-content">${renderTopicContent(t.content)}</div>
       </div>`;
     }
   }

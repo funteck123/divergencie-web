@@ -47,12 +47,44 @@ TOC_LINE_RE = re.compile(r'^(\d+)\.?\s+(.+?)\s*\.{2,}\s*(\d+)\s*$')
 # library) silently fell through to code=None/depth=0, flattening their
 # entire outline with no error or warning.
 HEADING_CODE_RE = re.compile(r'^([A-Z]?\d+(?:\.\d+){0,3})\.?\s*(.*)$')
+BARE_CODE_RE = re.compile(r'^[A-Z]?\d+(?:\.\d+){0,3}\.?$')
 HEADING_SIZE_THRESHOLD = 13
-# \x07 and  are the two private-use bullet glyphs Cambridge's own
-# Wingdings-based bullet font extracts as (never a plain "•") -- found live
-# testing across several subjects; without these, every bullet point in a
-# subject's content gets silently space-joined into one run-on line.
-BULLET_START_RE = re.compile(r'^([•\-–\x07]|\(?[a-z]\)|\(?[ivx]+\)|\d{1,2}[\.\)])\s*')
+# A lettered/numbered sub-part marker is real content (identifies which
+# sub-part this is), unlike a plain bullet glyph -- kept visible rather
+# than normalised away. The "(?!\d)" on the numbered form is load-bearing:
+# without it, a decimal value printed on its own line (e.g. "9.8 m/s2", a
+# real physical constant, not a list item) gets misread as marker "9."
+# plus item text "8 m/s2" -- found live testing Physics' free-fall
+# acceleration value.
+LETTERED_MARKER_RE = re.compile(r'^(\(?[a-z]\)|\(?[ivx]+\)|\d{1,2}[\.\)](?!\d))\s*')
+# \x07 is the private-use bullet glyph Cambridge's own Wingdings-based
+# bullet font extracts as (never a plain bullet character) -- found live
+# testing across several subjects; without recognising it, every bullet
+# point in a subject's content gets silently space-joined into one
+# run-on line.
+GLYPH_BULLET_RE = re.compile(r'^[•\-–\x07]\s*')
+# Cambridge sometimes prints a numbered marker (10 and above) as a bare
+# number immediately followed, in the SAME text run, by its decorative
+# bullet glyph -- e.g. "10\t \x07Determine..." -- rather than as two
+# clean separate lines the way markers 1-9 usually appear -- also seen with
+# a full dotted code ("1.1.1\t \x07The purpose and nature...") rather than
+# just a bare number. Stripping this prefix before checking for a glyph is
+# what catches both cases; found live testing Physics' Supplement section
+# (items 10-13 glued into the previous bullet's text with the raw glyph
+# embedded mid-sentence) and Business Studies/Psychology (whole dotted
+# sub-headings demoted to body/label text the same way), since a plain
+# "starts with the glyph" check only looks at character position 0.
+LEADING_CODE_RE = re.compile(r'^[A-Z]?\d{1,2}(?:\.\d{1,2}){0,3}\s*')
+
+
+def strip_decorative_glyph(text):
+    """Strips a leading decorative bullet glyph, tolerating an optional
+    leading numeric code (bare or dotted) immediately before it. Returns
+    the text unchanged if no glyph is found either way."""
+    without_code = LEADING_CODE_RE.sub("", text, count=1)
+    if GLYPH_BULLET_RE.match(without_code):
+        return GLYPH_BULLET_RE.sub("", without_code, count=1)
+    return text
 NOISE_PATTERNS = [
     re.compile(r'^www\.cambridgeinternational\.org', re.IGNORECASE),
     re.compile(r'^Back to contents page$', re.IGNORECASE),
@@ -147,30 +179,48 @@ def build_outline(lines):
         i += 1
 
     while i < n:
-        heading_parts = []
         heading_size = lines[i]["size"]
-        while i < n and lines[i]["kind"] == "heading" and lines[i]["size"] == heading_size:
+        heading_parts = [lines[i]["text"]]
+        i += 1
+        # Only keep absorbing more same-size bold lines into this ONE
+        # heading if the first line was a bare code by itself ("1", "1.3",
+        # "B2") with no title yet -- that's the one real "split across two
+        # lines" case (Physics prints "1" alone, then "Motion, forces and
+        # energy" on the next line). Anything else -- a line that's already
+        # a complete title, coded or not (e.g. Chemistry's bare "Group 2"
+        # chapter label, or Co-ordinated Science's complete "B2  Cells") --
+        # is already a whole heading on its own and must NOT absorb
+        # whatever bold line happens to follow it, even at the same size:
+        # found live testing that a naive "keep merging until complete"
+        # rule silently fused three unrelated headings ("Group 2" + "10.1"
+        # + the real glyph-prefixed title) into one garbled node.
+        first_line_is_bare_code = BARE_CODE_RE.match(heading_parts[0]) is not None
+        while first_line_is_bare_code and i < n and lines[i]["kind"] == "heading" and lines[i]["size"] == heading_size:
             heading_parts.append(lines[i]["text"])
             i += 1
-            # Stop extending this group as soon as it already forms a
-            # complete "code + title" heading -- a genuinely split heading
-            # (a bare code alone on its own line, e.g. Physics' "1", with
-            # the title following on the next line) has an EMPTY title at
-            # this point and should keep absorbing lines, but Co-ordinated/
-            # Combined Science print each heading complete on one line
-            # ("B2\tCells") immediately followed by the next one ("B2.1\t
-            # Cell structure") at the SAME bold size -- without this check
-            # those two full, unrelated headings silently merged into one
-            # garbled node ("B2 Cells B2.1 Cell structure"), losing B2.1 as
-            # its own entry entirely. Found live testing that subject.
             candidate = " ".join(heading_parts).strip()
             candidate_match = HEADING_CODE_RE.match(candidate)
             if candidate_match and candidate_match.group(1) and candidate_match.group(2).strip():
                 break
         heading_text = " ".join(heading_parts).strip()
+        # Some headings in the large-light-weight style (see
+        # HEADING_SIZE_THRESHOLD above) print a decorative bullet glyph
+        # in place of a real number -- found live testing History, whose
+        # individual essay-question headings ("Was the Treaty of
+        # Versailles fair?") carry a leading glyph with no numeric code
+        # behind it at all. Strip it here, the same way GLYPH_BULLET_RE
+        # strips it from body content, so it doesn't end up baked into
+        # the displayed title text.
+        heading_text = GLYPH_BULLET_RE.sub("", heading_text, count=1).strip()
         m = HEADING_CODE_RE.match(heading_text)
         if m and m.group(1):
             code, title = m.group(1), m.group(2).strip()
+            # The glyph can also land right after the code rather than at
+            # the very start of heading_text (e.g. "10.1 \x07Similarities
+            # and trends...") -- the leading strip above only catches a
+            # glyph at position 0, so it's checked again here on whatever
+            # text follows the code itself.
+            title = GLYPH_BULLET_RE.sub("", title, count=1).strip()
             depth = code.count(".")
         else:
             code, title, depth = None, heading_text, 0
@@ -178,20 +228,36 @@ def build_outline(lines):
         content_parts = []
         while i < n and lines[i]["kind"] != "heading":
             line = lines[i]
+            text = line["text"]
+            # Strip a leading bare/dotted code (e.g. "10 ", "1.1.1\t")
+            # before checking for a glyph -- catches the merged "10\t
+            # \x07Determine..." case (see LEADING_CODE_RE above) without
+            # treating every plain numbered marker as a candidate; if
+            # what's left doesn't actually start with a glyph, the
+            # original unstripped text is used below so a genuine
+            # sentence starting with a number (rare, but possible) isn't
+            # silently mangled.
+            without_code = LEADING_CODE_RE.sub("", text, count=1)
             if line["kind"] == "label":
-                content_parts.append(f"\n[{line['text']}]\n")
-            elif BULLET_START_RE.match(line["text"]):
-                # Normalise Cambridge's private-use bullet glyph (renders as
-                # a stray telephone/wingding icon in a browser with no font
-                # override) to a plain bullet -- only that one glyph, never
-                # the lettered/numbered markers ((a), (i), "1)"), which are
-                # real content, not decoration.
-                text = line["text"]
-                if text.startswith("\x07"):
-                    text = "•" + text[1:]
-                content_parts.append(f"\n{text}")
+                # A label line ("Core", "Focus points"...) can carry the
+                # same stray glyph a bullet or a numbered sub-heading can
+                # -- found live testing Religious Studies/Psychology.
+                content_parts.append(f"\n[{strip_decorative_glyph(text)}]\n")
+            elif GLYPH_BULLET_RE.match(without_code):
+                item_text = GLYPH_BULLET_RE.sub("", without_code, count=1)
+                content_parts.append(f"\n• {item_text}")
+            elif (lettered_match := LETTERED_MARKER_RE.match(text)):
+                # A lettered sub-part often has its own decorative glyph
+                # sitting between the marker and the real sentence --
+                # "(a)\t \x07speed increases..." -- found live testing
+                # Physics; strip it the same way a plain bullet line does,
+                # while keeping the "(a)" marker itself since it's real
+                # content, not decoration.
+                marker = text[: lettered_match.end()]
+                rest = GLYPH_BULLET_RE.sub("", text[lettered_match.end() :], count=1)
+                content_parts.append(f"\n{marker}{rest}")
             else:
-                content_parts.append(f" {line['text']}")
+                content_parts.append(f" {strip_decorative_glyph(text)}")
             i += 1
         content = "".join(content_parts).strip()
 
