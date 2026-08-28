@@ -88,13 +88,16 @@ def strip_decorative_glyph(text):
 NOISE_PATTERNS = [
     re.compile(r'^www\.cambridgeinternational\.org', re.IGNORECASE),
     re.compile(r'^Back to contents page$', re.IGNORECASE),
-    # "Syllabus for examination in 2026" (older-template subjects like
-    # Islamiyat, Pakistan Studies) vs. "syllabus for exams in 2027"
-    # (newer template) -- found live testing Islamiyat: the older phrasing
-    # wasn't covered ("exams?" doesn't match "examination"), so its own
-    # running-header text leaked through as a fake "[Cambridge IGCSE
-    # Islamiyat 0493. Syllabus for examination in ...]" label.
-    re.compile(r'syllabus for (exams?|examination) in \d{4}', re.IGNORECASE),
+    # Three real running-header phrasings for the same boilerplate,
+    # found live across different subjects: "syllabus for 2026, 2027 and
+    # 2028" (no exam/examination word at all -- Chemistry, Physics),
+    # "syllabus for exams in 2027" (newer template), "Syllabus for
+    # examination in 2026" (older template -- Islamiyat, Pakistan
+    # Studies). Each fix here caught the previous phrasing but missed
+    # the others, letting that specific header leak through as a fake
+    # "[Cambridge IGCSE ... Subject content]" label each time -- the
+    # "exams?/examination" word is now optional so all three match.
+    re.compile(r'syllabus for (?:(?:exams?|examination)\s+in\s+)?\d{4}', re.IGNORECASE),
     # A bare italic "continued" at the bottom of a page is a decorative
     # hint that the current topic carries onto the next page -- not real
     # body text. Found live testing Physics: it was getting glued onto
