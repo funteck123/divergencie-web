@@ -88,9 +88,18 @@ def strip_decorative_glyph(text):
 NOISE_PATTERNS = [
     re.compile(r'^www\.cambridgeinternational\.org', re.IGNORECASE),
     re.compile(r'^Back to contents page$', re.IGNORECASE),
-    re.compile(r'^\d+$'),  # bare page-number line
     re.compile(r'syllabus for (exams? in )?\d{4}', re.IGNORECASE),
 ]
+# A bare page-number footer is ALWAYS light-weight ("-Lt") in this
+# template, never bold -- kept as its own check, gated on font, rather
+# than folded into NOISE_PATTERNS above. Found live testing Physics: a
+# real bare-digit CHAPTER code ("1", printed on its own line just before
+# its title, e.g. "Motion, forces and energy") is visually identical text
+# to a page-number footer but IS bold -- treating both as noise
+# unconditionally was silently discarding every top-level chapter's own
+# number, leaving every chapter title with code=None instead of its real
+# code.
+BARE_PAGE_NUMBER_RE = re.compile(r'^\d+$')
 
 
 def is_noise(text):
@@ -145,6 +154,8 @@ def extract_lines(doc, start_idx, end_idx):
                     continue
                 font = spans[0].get("font", "") if spans else ""
                 size = round(max((s.get("size", 0) for s in spans), default=0))
+                if BARE_PAGE_NUMBER_RE.match(text) and "Bd" not in font:
+                    continue
                 if "Bd" in font:
                     kind = "heading"
                 elif "Roman" in font:
@@ -156,6 +167,20 @@ def extract_lines(doc, start_idx, end_idx):
                     # noticeably larger size (14-18pt vs. the usual 10pt
                     # body) -- without this, its whole outline came out as
                     # a single empty chapter node.
+                    kind = "heading"
+                elif "Md" in font and HEADING_CODE_RE.match(text) and HEADING_CODE_RE.match(text).group(2).strip():
+                    # Third real heading style found live testing Physics/
+                    # Chemistry/Biology: a THIRD-level sub-heading ("1.7.2
+                    # Work") prints in a "medium" weight, neither bold nor
+                    # the large-light style above -- without this, every
+                    # depth-2 sub-heading in these subjects silently
+                    # flattened into its depth-1 parent's body content
+                    # instead of becoming its own nested node. Gated on
+                    # actually matching a numbered-code heading pattern
+                    # (not just the font) because "Md" is NOT a reliable
+                    # heading signal on its own -- English 0500 uses the
+                    # same weight for hyperlinks in its boilerplate text,
+                    # which would otherwise get misread as headings too.
                     kind = "heading"
                 else:
                     kind = "body"
@@ -261,29 +286,85 @@ def build_outline(lines):
             i += 1
         content = "".join(content_parts).strip()
 
-        nodes.append({"code": code, "depth": depth, "title": title, "content": content})
+        nodes.append({"code": code, "depth": depth, "title": title, "content": content, "size": heading_size})
 
-    return _merge_empty_heading_runs(_merge_continued(nodes))
+    nodes = _merge_empty_heading_runs(_merge_continued(nodes))
+    _infer_uncoded_depth(nodes)
+    for node in nodes:
+        del node["size"]
+    return nodes
+
+
+def _infer_uncoded_depth(nodes):
+    """A code-less heading defaults to depth 0, which is right for a real
+    top-level divider (e.g. History's "Core content: Option A") but wrong
+    for a recurring in-line label like Mathematics' "Notes and examples"
+    -- printed at the SAME font size as the numbered heading it always
+    immediately follows, it's a trailing annotation on that heading, not a
+    new top-level section, and needs to nest one level under it. Found
+    live testing Mathematics: every single "Notes and examples" (150+ of
+    them) was popping all the way back out to the document root instead
+    of nesting under the numbered sub-heading it actually belongs to.
+
+    Distinguishes the two cases by comparing font size against whatever
+    node came immediately before: a code-less heading at the SAME size as
+    a real coded heading right before it is treated as that heading's
+    child; a code-less heading that's LARGER, or that follows another
+    code-less heading, keeps its default depth (0) -- a genuinely bigger
+    divider, or a heading whose true nesting this tool has no reliable
+    signal for, is left alone rather than guessed at further."""
+    for i in range(1, len(nodes)):
+        node = nodes[i]
+        prev = nodes[i - 1]
+        if node["code"] is None and prev["code"] is not None and node["size"] <= prev["size"]:
+            node["depth"] = prev["depth"] + 1
 
 
 def _merge_continued(nodes):
     """A heading that gets split across a page break reprints on the new
     page as '<same code>  <same title> continued' -- a real, common
     Cambridge PDF layout quirk, not a new topic. Fold it back into the
-    node it continues rather than showing a duplicate entry."""
+    node it continues rather than showing a duplicate entry. Two real
+    formats for the same thing: "Forces continued" (Physics) and "Number
+    (continued)" (Mathematics, parenthesised) -- checked for the trailing
+    word "continued" with any surrounding punctuation stripped, not an
+    exact suffix match, or the Mathematics form silently failed to merge
+    at all (a bare literal-suffix check for "continued" doesn't match a
+    string ending in "continued)").
+
+    Searches backward for the nearest node with the same code, not just
+    the immediately preceding one -- once depth-2 sub-headings (see the
+    "Md" heading style above) are recognised as their own nodes, one or
+    more of them can sit between a heading and its "continued" reprint
+    (e.g. "1.5 Forces" / "1.5.1 Effects of forces" / "1.5 Forces
+    continued"), so the immediate-predecessor check missed the merge and
+    left a confusing duplicate sibling that later sub-headings wrongly
+    nested under instead of the original."""
     merged = []
     for node in nodes:
-        prev = merged[-1] if merged else None
-        if (
-            prev
-            and node["code"]
-            and node["code"] == prev["code"]
-            and node["title"].lower().rstrip().endswith("continued")
-        ):
+        prev = None
+        title_end = re.sub(r'[^a-z]+$', '', node["title"].lower())
+        if node["code"] and title_end.endswith("continued"):
+            prev = next((m for m in reversed(merged) if m["code"] == node["code"]), None)
+        if prev:
             prev["content"] = f"{prev['content']} {node['content']}".strip()
         else:
             merged.append(node)
     return merged
+
+
+# A genuine table-cell header ("Instruction", "Opcode", "Text type") is
+# always short -- real chapter/section titles this could otherwise
+# collide with ("Core subject content", "AS Level subject content",
+# "Physical chemistry") are consistently longer. This length gate is
+# load-bearing: an earlier version of this merge fired on ANY run of
+# code-less, content-less headings regardless of title length, and ended
+# up silently crushing genuine, distinct chapter titles across a dozen+
+# subjects into garbled combined nodes ("AS Level subject content /
+# Physical chemistry / Atomic structure" was three real, separate
+# headings) -- caught only by manually cross-checking Physics/Chemistry/
+# Biology/Maths/English page-by-page against their source PDFs.
+MAX_TABLE_CELL_TITLE_LEN = 15
 
 
 def _merge_empty_heading_runs(nodes):
@@ -295,19 +376,17 @@ def _merge_empty_heading_runs(nodes):
     of its own, so a run of 2+ of these gets collapsed into one combined
     node instead of cluttering the outline with several pointless empty
     entries."""
+    def is_table_cell(n):
+        return n["code"] is None and not n["content"] and len(n["title"]) <= MAX_TABLE_CELL_TITLE_LEN
+
     merged = []
     i = 0
     while i < len(nodes):
         node = nodes[i]
-        if node["code"] is None and not node["content"]:
+        if is_table_cell(node):
             run = [node]
             j = i + 1
-            while (
-                j < len(nodes)
-                and nodes[j]["code"] is None
-                and not nodes[j]["content"]
-                and nodes[j]["depth"] == node["depth"]
-            ):
+            while j < len(nodes) and nodes[j]["depth"] == node["depth"] and is_table_cell(nodes[j]):
                 run.append(nodes[j])
                 j += 1
             if len(run) >= 2:
@@ -316,6 +395,7 @@ def _merge_empty_heading_runs(nodes):
                     "depth": node["depth"],
                     "title": " / ".join(n["title"] for n in run),
                     "content": "",
+                    "size": node["size"],
                 })
                 i = j
                 continue
