@@ -58,7 +58,11 @@
   .topic.open > .topic-content { display: block; }
   .topic-children { margin-top: 0.6rem; }
   .topic-children:empty { display: none; }
-  .topic-diagram { display: block; max-width: 100%; height: auto; margin: 0.7rem 0; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; background: #fff; }
+  .topic-image { display: block; max-width: 100%; height: auto; margin: 0.4rem 0 0.7rem; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; background: #fff; }
+  .text-fallback { margin-top: 0.5rem; }
+  .text-fallback summary { cursor: pointer; font-size: 0.78rem; color: var(--sky); user-select: none; }
+  .text-fallback summary:hover { text-decoration: underline; }
+  .text-fallback[open] summary { margin-bottom: 0.6rem; }
   .content-label { color: var(--navy); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 0.7rem 0 0.35rem; }
   .content-label:first-child { margin-top: 0; }
   .content-para { margin: 0 0 0.6rem; }
@@ -79,7 +83,7 @@
   <span class="badge">Prototype</span>
   <div>
     <h1>Syllabus Digitizer</h1>
-    <p>DivergenCIE — browse the official Cambridge subject-content outline of any collected syllabus booklet</p>
+    <p>DivergenCIE — browse the official Cambridge subject-content pages of any collected syllabus booklet, cropped image-by-topic</p>
   </div>
 </header>
 
@@ -212,20 +216,24 @@ function renderTopicNodes(nodes) {
     .map((t) => {
       const hasChildren = t.children && t.children.length > 0;
       const children = hasChildren ? renderTopicNodes(t.children) : "";
-      // A pure parent (a chapter title with no text of its own, just
-      // subtopics beneath it) shouldn't show the "no content" placeholder
-      // -- that's only meaningful for an actual leaf with nothing in it.
+      // The real page crop is the primary display now -- a chapter or a
+      // leaf topic (see extract_syllabus.py's attach_images) gets a real
+      // PNG of that exact page region, served straight from disk under
+      // /images/. An intermediate sub-heading with children of its own
+      // (e.g. "1.5 Forces", which "1.5.1"/"1.5.2" nest under) has no
+      // image of its own by design, so it falls through to showing its
+      // parsed text instead, same as before.
+      const image = t.image
+        ? `<img class="topic-image" src="/images/${t.image.split("/").map(encodeURIComponent).join("/")}" alt="${escapeHtml(t.title)}" loading="lazy" />`
+        : "";
+      // Parsed text stays as a fallback/searchable layer underneath the
+      // image, collapsed by default so the crop is what a reader sees
+      // first -- not shown at all for a pure parent with no text of its
+      // own (that placeholder is only meaningful for an actual leaf).
       const body = t.content ? renderTopicContent(t.content) : hasChildren ? "" : renderTopicContent(t.content);
-      // A cropped diagram (a chemical structure, a number line, a
-      // flowchart symbol) that the source PDF draws as vector line-art
-      // rather than real text -- extract_syllabus.py finds these by
-      // spotting real diagram content (diagonal lines/curves, not just a
-      // table's straight borders) between one topic and the next, and
-      // crops that region as a PNG. Shown after the text content, since
-      // it's supplementary to what's already readable as text.
-      const diagrams = (t.diagrams || [])
-        .map((src) => `<img class="topic-diagram" src="${src}" alt="Diagram for ${escapeHtml(t.title)}" loading="lazy" />`)
-        .join("");
+      const textFallback = body
+        ? `<details class="text-fallback"><summary>View extracted text</summary>${body}</details>`
+        : "";
       return `<div class="topic" data-depth="${t.depth}">
         <div class="topic-head">
           <span class="arrow">▶</span>
@@ -233,8 +241,8 @@ function renderTopicNodes(nodes) {
           <span class="title">${escapeHtml(t.title)}</span>
         </div>
         <div class="topic-content">
-          ${body}
-          ${diagrams}
+          ${image}
+          ${textFallback}
           ${children ? `<div class="topic-children">${children}</div>` : ""}
         </div>
       </div>`;

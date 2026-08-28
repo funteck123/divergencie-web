@@ -1,10 +1,10 @@
 # Syllabus digitizer
 
 Standalone prototype: turns any Cambridge syllabus booklet PDF collected in
-[`../syllabus-library/`](../syllabus-library/) into a browsable topic
-outline, with real diagrams (chemical structures, number lines, flowchart
-symbols, equations) cropped out and shown inline alongside the text. Not
-part of the main app's build.
+[`../syllabus-library/`](../syllabus-library/) into a browsable topic tree
+of real cropped page images — one per chapter and one per leaf topic —
+with the original extracted text kept as a collapsed fallback underneath
+each image. Not part of the main app's build.
 
 ## Run it
 
@@ -71,40 +71,65 @@ Syllabus content") depending on the syllabus's own production era.
 `build_database.py` runs this extraction once for every PDF in
 `../syllabus-library/pdfs/` and writes the combined result to
 `data/syllabus-digitizer/database.json` -- gitignored, rebuilt on demand,
-never hand-edited.
+never hand-edited. It also wipes and regenerates
+`data/syllabus-digitizer/images/` from scratch on every run (see "Image
+cropping" below) -- rebuilding rather than patching in place avoids
+leaving a chapter's old image folder behind under a stale name after a
+syllabus cycle renames it.
 
 `server.mjs` lists the PDFs in `../syllabus-library/pdfs/`, serves each
 subject from the pre-built database (falling back to a cached live parse
-for anything not in it yet), and serves a static `index.html` that renders
-the result as a collapsible outline with a raw-JSON toggle.
+for anything not in it yet), serves the cropped PNGs from
+`data/syllabus-digitizer/images/` under `/images/*`, and serves a static
+`index.html` that renders the result as a collapsible tree with a
+raw-JSON toggle.
 
-### Diagram cropping
+### Image cropping (primary content format)
 
-Every diagram in this template (chemical structures, number lines,
-flowchart symbols, geometric figures) is vector line-art, not an embedded
-raster image -- checked `page.get_images()` live, none exist anywhere in
-the 44-subject library. `attach_diagrams()` in `extract_syllabus.py`
-scans the page(s) between one topic's heading and the next for real
-diagram content and, if found, crops that region as a base64 PNG on the
-topic's own `diagrams` field.
+Text extraction alone loses too much: vector line-art (chemical
+structures, number lines, flowchart symbols, geometric figures --
+confirmed via `page.get_images()` that this template embeds zero raster
+images anywhere) disappears entirely, and even plain text has real,
+uncorrectable ordering bugs on 2D-typeset notation (see Known
+limitations). So instead of extracting text and separately trying to
+detect and crop diagrams, `attach_images()` in `extract_syllabus.py` now
+crops the syllabus's own actual page content directly, as PNGs, and uses
+that as the primary way every topic is shown. Extracted text is still
+kept alongside each image, collapsed under a "View extracted text"
+toggle, as a searchable fallback.
 
-"Real diagram content" is deliberately conservative: a window needs at
-least `MIN_DIAGRAM_PATHS` (6) stroke-type path segments, AND at least one
-of them has to be a curve or a diagonal line (an angled bond, a circle) --
-a plain rectangular table border/grid never has either, which is what
-keeps an ordinary bordered table (found live in Pakistan Studies, whose
-two-column "Focus points" / "Specified content" boxes cleared the path
-count alone) from being wrongly cropped as a diagram. One union bounding
-box is taken per topic window rather than clustering individual shapes
-into separate diagrams -- clustering fragmented a single real diagram
-into dozens of tiny slivers on parallel-line patterns (a stereochemistry
-wedge bond's hatching); scoping to one topic's own content window already
-keeps unrelated diagrams out of the same crop in the normal case.
+**Which nodes get an image.** Only two levels of the tree: every
+**chapter** (a depth-0 heading, e.g. "2 Thermal physics") and every
+**leaf topic** (a node with no children, e.g. "2.1.1 States of matter").
+An intermediate sub-heading that has its own children (e.g. "1.5 Forces",
+which nests "1.5.1"/"1.5.2"/"1.5.3" under it) does not get its own image
+-- its content is already fully covered by its children's images, and
+by its own chapter's whole-chapter overview image.
 
-Bonus found live: complex math notation (square roots, fractions) is also
-vector-drawn, so a topic with one of these gets a crisp image of the
-actual typeset expression alongside its (still lossy/scrambled, per the
-limitation above) text extraction.
+**What each image contains.** A leaf topic's image spans from its own
+heading down to the start of the next node in the syllabus (whatever
+that next node's level), same window logic the (now-removed) diagram
+detector used to use. A chapter's image spans from its own heading all
+the way down to the start of the *next chapter* -- i.e. it deliberately
+includes everything under it, as one long overview image of the entire
+chapter, potentially stitched from many pages. Page crops exclude the
+running header/footer margins and are rendered at `IMAGE_ZOOM = 2.0` via
+PyMuPDF's `get_pixmap(clip=...)`; when a window spans more than one PDF
+page, the per-page crops are stitched into one tall image top-to-bottom
+with PIL.
+
+**Where images live.** Real nested folders on disk, mirroring the tree:
+`data/syllabus-digitizer/images/{Level}/{Subject}/{Chapter}/{file}.png`
+-- e.g. `IGCSE/Physics/2 Thermal physics/2.1.1 States of matter.png`.
+Folder and file names are the node's own "code + title", sanitized by
+`safe_filename()` (invalid filesystem characters stripped, truncated to
+80 chars). Gitignored like the rest of `data/`, regenerated by
+`build_database.py`, never hand-edited.
+
+Bonus found live: complex math notation (square roots, fractions) is
+also vector-drawn, so a leaf topic with one of these now gets a crisp
+image of the actual typeset expression instead of relying on its
+(lossy/scrambled, per the limitation below) text extraction.
 
 ## Known limitations (real, found testing against ~10 of the 44 subjects)
 
@@ -222,6 +247,34 @@ Verified clean: path traversal (both API and static-file routes, several
 encodings), a real 44-subject click-through in a headless browser with
 zero JS errors, and XSS via extracted PDF content (all rendered text is
 escaped; the one unescaped field is regex-constrained to digits/dots/letters).
+
+## Image-first pivot, 2026-08-28
+
+Switched the primary content format from extracted text (with cropped
+diagrams as a bonus) to real cropped page images as the main way every
+chapter and leaf topic is shown, with extracted text demoted to a
+collapsed fallback -- see "Image cropping" above for the full mechanics.
+Reasoning: text extraction has real, uncorrectable limitations on this
+template (all vector line-art is invisible to it, and 2D-typeset math/
+chemistry notation can extract in scrambled reading order) that a crop of
+the syllabus's own actual page pixels sidesteps entirely.
+
+`/images/*` in `server.mjs` serves the generated PNGs straight off disk
+with the same `path.relative`-based traversal-boundary check as the
+static-file route, plus a long-lived immutable cache header (justified
+since filenames are stable per subject and the whole `images/` directory
+is wiped and regenerated on every `build_database.py` run, not patched in
+place). Verified the new route serves a real PNG (`curl` + `file`) and
+re-ran the full 44-subject Playwright click-through after wiring the UI
+up to it: zero JS errors, and the composite screenshots checked below
+confirm the images actually render inline as intended, not just that the
+route returns 200.
+
+Re-ran the same 5-subject page-by-page completeness check used in the
+2026-08-28 manual review pass after this change: all 5 IGCSE PCMBE
+subjects (Physics, Chemistry, Mathematics, Biology, First Language
+English) still pass cleanly, confirming the underlying text-extraction
+pipeline (unchanged by this pivot) has no regression.
 
 ## Scope note
 

@@ -32,6 +32,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.join(__dirname, "..", "..");
 const PDFS_DIR = path.join(__dirname, "..", "syllabus-library", "pdfs");
 const DATABASE_PATH = path.join(REPO_ROOT, "data", "syllabus-digitizer", "database.json");
+const IMAGES_DIR = path.join(REPO_ROOT, "data", "syllabus-digitizer", "images");
 
 const PORT = process.env.PORT || 5177;
 
@@ -153,6 +154,32 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/images/")) {
+    // Real PNG files on disk under data/syllabus-digitizer/images/, one
+    // real nested folder per Level/Subject/Chapter -- see
+    // extract_syllabus.py's attach_images(). Same path-boundary check as
+    // the static file server below, since this path segment also comes
+    // straight from the URL.
+    const relImagePath = decodeURIComponent(req.url.slice("/images/".length));
+    const imagePath = path.join(IMAGES_DIR, relImagePath);
+    const relCheck = path.relative(IMAGES_DIR, imagePath);
+    if (relCheck.startsWith("..") || path.isAbsolute(relCheck)) {
+      res.writeHead(403);
+      res.end("Forbidden");
+      return;
+    }
+    fs.readFile(imagePath, (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end("Not found");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+      res.end(data);
+    });
     return;
   }
 
