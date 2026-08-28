@@ -2,7 +2,9 @@
 
 Standalone prototype: turns any Cambridge syllabus booklet PDF collected in
 [`../syllabus-library/`](../syllabus-library/) into a browsable topic
-outline. Not part of the main app's build.
+outline, with real diagrams (chemical structures, number lines, flowchart
+symbols, equations) cropped out and shown inline alongside the text. Not
+part of the main app's build.
 
 ## Run it
 
@@ -75,6 +77,34 @@ never hand-edited.
 subject from the pre-built database (falling back to a cached live parse
 for anything not in it yet), and serves a static `index.html` that renders
 the result as a collapsible outline with a raw-JSON toggle.
+
+### Diagram cropping
+
+Every diagram in this template (chemical structures, number lines,
+flowchart symbols, geometric figures) is vector line-art, not an embedded
+raster image -- checked `page.get_images()` live, none exist anywhere in
+the 44-subject library. `attach_diagrams()` in `extract_syllabus.py`
+scans the page(s) between one topic's heading and the next for real
+diagram content and, if found, crops that region as a base64 PNG on the
+topic's own `diagrams` field.
+
+"Real diagram content" is deliberately conservative: a window needs at
+least `MIN_DIAGRAM_PATHS` (6) stroke-type path segments, AND at least one
+of them has to be a curve or a diagonal line (an angled bond, a circle) --
+a plain rectangular table border/grid never has either, which is what
+keeps an ordinary bordered table (found live in Pakistan Studies, whose
+two-column "Focus points" / "Specified content" boxes cleared the path
+count alone) from being wrongly cropped as a diagram. One union bounding
+box is taken per topic window rather than clustering individual shapes
+into separate diagrams -- clustering fragmented a single real diagram
+into dozens of tiny slivers on parallel-line patterns (a stereochemistry
+wedge bond's hatching); scoping to one topic's own content window already
+keeps unrelated diagrams out of the same crop in the normal case.
+
+Bonus found live: complex math notation (square roots, fractions) is also
+vector-drawn, so a topic with one of these gets a crisp image of the
+actual typeset expression alongside its (still lossy/scrambled, per the
+limitation above) text extraction.
 
 ## Known limitations (real, found testing against ~10 of the 44 subjects)
 
