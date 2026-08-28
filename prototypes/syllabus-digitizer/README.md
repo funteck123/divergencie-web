@@ -101,6 +101,65 @@ the result as a collapsible outline with a raw-JSON toggle.
   before the first numbered heading in the section is intentionally
   dropped, and content lines are reflowed (joined/newlined by a bullet
   heuristic) rather than preserving the PDF's exact line breaks.
+- **Complex 2D math/chemistry notation loses internal order, not just
+  formatting.** A fraction, root, exponent, or nuclide symbol (e.g.
+  "¹²₆C") is typeset as multiple overlapping text runs positioned in 2D,
+  and PyMuPDF's text extraction returns them in an order that doesn't
+  always match reading order — so beyond just losing the fraction bar or
+  superscript styling (expected), the surrounding numbers can come out
+  visibly scrambled (e.g. "estimate 41.3 / (9.79 × 0.765)" extracting as
+  "9 79 0 765 41 3", or "¹²₆C" extracting as "6 12C"). Found live
+  reviewing Mathematics and Chemistry page-by-page against the source
+  PDF. No general fix attempted — this is a real limitation of text-layer
+  extraction on 2D-typeset notation, not a heuristic this tool's own
+  logic gets wrong.
+
+## Manual page-by-page visual review, 2026-08-28
+
+Full page-by-page comparison of every sampled page (half of each
+subject's Subject-content chapter, ~10 pages per composite image) against
+the digitized JSON for all 5 IGCSE PCMBE subjects (Physics, Chemistry,
+Mathematics, Biology, First Language English), plus a diligence pass on a
+further set of previously-unsampled pages per subject to check the fixes
+generalize. This is genuine visual inspection of rendered PDF pages next
+to the extracted output, not just automated text-completeness checks (see
+the Red-teamed section below for why that distinction matters — one bug
+found this way was invisible to every automated check that had already
+run). Fixed 10 more real bugs beyond the red-team pass, in commits
+`85ee6a4` through `d346a7f`:
+
+- **The most serious bug found in this entire project**: Mathematics (and
+  separately, A-Level Biology) prints a two-column table's right-hand
+  header ("Notes and examples" / "Learning outcomes") in bold — the same
+  weight as a real heading. Every single topic in both subjects showed up
+  completely empty when expanded, with its ENTIRE real content silently
+  misattributed to a generic child node instead. The automated text-
+  completeness check couldn't catch this because it flattens the tree
+  before comparing — the text was present, just filed under the wrong
+  parent. Only found by actually expanding a topic in the rendered UI.
+- A third heading font style (`-Md`, medium weight) wasn't recognized at
+  all — every depth-2 sub-heading using it was silently flattened into
+  its parent's body text.
+- Bare chapter-number lines were being discarded by a font-weight-based
+  noise filter, giving every top-level chapter `code: null`. Replaced
+  with the real signal: a page-number footer sits in the last ~50pt of
+  the page; a chapter code doesn't.
+- A "Roman" font-family substring check also matched `TimesNewRomanPSMT`
+  (used for Greek letters mid-sentence), wrapping real content in fake
+  `[...]` labels.
+- Chemistry's entire numbered-item convention (bare digits, no
+  punctuation, no glyph) produced zero bullets across the whole subject —
+  one giant run-on paragraph per topic.
+- Chemical ion charges (`CO₃²⁻`) and Mathematics' en-space-separated
+  numbered items were each independently misread as bullet breaks or
+  silently glued text, using two different real separator/notation
+  conventions neither existing check accounted for.
+- Three different real running-header boilerplate phrasings leaked
+  through as fake labels before all three were found and fixed.
+
+Every fix was re-verified against the same 5-subject page-by-page
+completeness check, a title-traceability reverse-check, a stray-glyph
+sweep, and a 44-subject full click-through before committing.
 
 ## Red-teamed 2026-08-28
 
