@@ -183,7 +183,19 @@ image of the actual typeset expression instead of relying on its
   chapter's window down to a near-blank sliver and hide the actual
   diagrams under it. A node that's merely SHORT (real code or real text,
   just not much of it) still gets its own image as normal — only the
-  fully empty ones are skipped.
+  fully empty ones are skipped. **A bare code alone doesn't count as
+  real either** — found live via a 440-image random-sample review (10
+  images × all 44 subjects): IGCSE Computer Science's Boolean-logic
+  truth table prints its "0"/"1" cell values bold on their own line,
+  which the heading parser's own code pattern happily accepts as a
+  valid single-digit code, and two consecutive such lines even get
+  paired into one fake node (code="0", title="1"). A real heading always
+  has descriptive text beyond its bare code ("1 Introduction", not "1"
+  paired with another bare digit) -- checking that the title itself
+  isn't ALSO just another bare-code-shaped token is what tells the two
+  apart, so the whole truth table (all 8 rows) now shows up correctly
+  under the chapter's own image instead of vanishing behind a dozen
+  near-blank spurious "chapters".
 - **A-Level Mathematics** groups its content by exam component ("Pure
   Mathematics 1", "Mechanics", "Statistics") using a running label at the
   same bold weight as the topic numbers — this can merge into an adjacent

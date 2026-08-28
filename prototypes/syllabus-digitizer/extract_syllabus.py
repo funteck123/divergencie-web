@@ -391,7 +391,26 @@ def attach_images(doc, nodes, section_end_idx, images_dir, subject_rel_path):
     last_page = (section_end_idx - 1) if section_end_idx else (doc.page_count - 1)
 
     def is_substantial(node):
-        return bool(node.get("code")) or bool((node.get("content") or "").strip())
+        # A code alone isn't enough -- found live testing IGCSE Computer
+        # Science: a Boolean-logic truth table's own "0"/"1" cell values
+        # print bold on their own line, which BARE_CODE_RE happily
+        # accepts as a valid heading code (a single digit). Worse, two
+        # consecutive bare-digit lines ("0" then "1") get paired up by
+        # the heading parser into ONE fake node with code="0", title="1"
+        # -- title != code, but title is JUST ANOTHER bare code-like
+        # token, not real descriptive text, so a naive "title differs
+        # from code" check still wrongly called these substantial. A
+        # REAL heading always has actual descriptive text beyond its
+        # code ("1 Introduction", not "1" paired with another bare "0"
+        # or "1") -- checking the title itself isn't ALSO bare-code-
+        # shaped is what actually distinguishes the two. A node with
+        # real body content is substantial either way, regardless of
+        # what its code/title look like.
+        code = (node.get("code") or "").strip()
+        title = (node.get("title") or "").strip()
+        title_is_bare_code = bool(title) and bool(BARE_CODE_RE.match(title))
+        has_real_title = bool(code) and bool(title) and not title_is_bare_code
+        return has_real_title or bool((node.get("content") or "").strip())
 
     def node_end(i):
         for j in range(i + 1, len(nodes)):
