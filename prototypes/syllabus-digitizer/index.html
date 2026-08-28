@@ -39,19 +39,25 @@
   #error { background: #fdecea; border: 1px solid var(--coral); color: #a33025; padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; white-space: pre-wrap; }
   #status { text-align: center; color: var(--muted); padding: 3rem 1rem; font-size: 0.9rem; }
 
+  /* Real parent/child nesting now (see renderTopicNodes) -- depth only
+     picks the border color for a quick visual "how deep am I" cue, it no
+     longer has to fake indentation with a margin, since a child .topic is
+     an actual descendant of its parent's .topic-content. */
   .topic { border-left: 3px solid var(--border); margin-bottom: 0.4rem; }
   .topic[data-depth="0"] { border-left-color: var(--navy); }
-  .topic[data-depth="1"] { border-left-color: var(--sky); margin-left: 1rem; }
-  .topic[data-depth="2"] { border-left-color: var(--gold); margin-left: 2rem; }
-  .topic[data-depth="3"] { border-left-color: var(--coral); margin-left: 3rem; }
+  .topic[data-depth="1"] { border-left-color: var(--sky); }
+  .topic[data-depth="2"] { border-left-color: var(--gold); }
+  .topic[data-depth="3"] { border-left-color: var(--coral); }
   .topic-head { display: flex; gap: 0.5rem; align-items: baseline; cursor: pointer; padding: 0.5rem 0.75rem; user-select: none; }
   .topic-head:hover { background: var(--bg-soft); }
   .topic-head .code { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); font-size: 0.85rem; min-width: 2.5rem; }
   .topic-head .title { font-weight: 600; font-size: 0.92rem; flex: 1; }
   .topic-head .arrow { color: var(--muted); font-size: 0.75rem; transition: transform 0.15s; }
   .topic.open > .topic-head .arrow { transform: rotate(90deg); }
-  .topic-content { display: none; padding: 0 0.75rem 0.9rem 3.25rem; font-size: 0.85rem; line-height: 1.5; color: var(--charcoal); }
+  .topic-content { display: none; padding: 0 0.75rem 0.9rem 1.9rem; font-size: 0.85rem; line-height: 1.5; color: var(--charcoal); }
   .topic.open > .topic-content { display: block; }
+  .topic-children { margin-top: 0.6rem; }
+  .topic-children:empty { display: none; }
   .content-label { color: var(--navy); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 0.7rem 0 0.35rem; }
   .content-label:first-child { margin-top: 0; }
   .content-para { margin: 0 0 0.6rem; }
@@ -188,6 +194,34 @@ function renderTopicContent(text) {
     .join("");
 }
 
+// Real nesting: each node's children render as an actual DOM subtree
+// inside it, not as a sibling flagged with a depth number for CSS margin
+// to fake -- "a proper db", per the ask that started this. depth is still
+// used for the border-color rotation, purely cosmetic.
+function renderTopicNodes(nodes) {
+  return nodes
+    .map((t) => {
+      const hasChildren = t.children && t.children.length > 0;
+      const children = hasChildren ? renderTopicNodes(t.children) : "";
+      // A pure parent (a chapter title with no text of its own, just
+      // subtopics beneath it) shouldn't show the "no content" placeholder
+      // -- that's only meaningful for an actual leaf with nothing in it.
+      const body = t.content ? renderTopicContent(t.content) : hasChildren ? "" : renderTopicContent(t.content);
+      return `<div class="topic" data-depth="${t.depth}">
+        <div class="topic-head">
+          <span class="arrow">▶</span>
+          <span class="code">${t.code || ""}</span>
+          <span class="title">${escapeHtml(t.title)}</span>
+        </div>
+        <div class="topic-content">
+          ${body}
+          ${children ? `<div class="topic-children">${children}</div>` : ""}
+        </div>
+      </div>`;
+    })
+    .join("");
+}
+
 function renderOutline(filename, data) {
   const meta = syllabi.find((s) => s.filename === filename) || {};
   const content = document.getElementById("content");
@@ -204,19 +238,11 @@ function renderOutline(filename, data) {
     html += `<div id="warning">This subject has no chapter literally titled "Subject content" -- showing chapter 3 as a best guess instead. Check it looks right.</div>`;
   }
 
-  if (!data.topics || data.topics.length === 0) {
+  const tree = data.tree || data.topics; // fall back for any pre-tree cached response
+  if (!tree || tree.length === 0) {
     html += `<div id="status">No topic headings detected in this booklet.</div>`;
   } else {
-    for (const t of data.topics) {
-      html += `<div class="topic" data-depth="${t.depth}">
-        <div class="topic-head">
-          <span class="arrow">▶</span>
-          <span class="code">${t.code || ""}</span>
-          <span class="title">${escapeHtml(t.title)}</span>
-        </div>
-        <div class="topic-content">${renderTopicContent(t.content)}</div>
-      </div>`;
-    }
+    html += renderTopicNodes(tree);
   }
 
   html += `<pre id="rawJson">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;

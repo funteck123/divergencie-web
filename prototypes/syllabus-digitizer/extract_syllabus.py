@@ -263,7 +263,7 @@ def build_outline(lines):
 
         nodes.append({"code": code, "depth": depth, "title": title, "content": content})
 
-    return _merge_continued(nodes)
+    return _merge_empty_heading_runs(_merge_continued(nodes))
 
 
 def _merge_continued(nodes):
@@ -283,6 +283,44 @@ def _merge_continued(nodes):
             prev["content"] = f"{prev['content']} {node['content']}".strip()
         else:
             merged.append(node)
+    return merged
+
+
+def _merge_empty_heading_runs(nodes):
+    """A table's column-header row prints as several short, consecutive
+    bold cells with no code and nothing between them -- e.g. "Instruction"
+    / "Opcode" / "Operand" / "Explanation" from an instruction-set table,
+    found live in A-Level Computer Science. Each header word satisfies the
+    heading heuristic (bold, own line) but carries no code and no content
+    of its own, so a run of 2+ of these gets collapsed into one combined
+    node instead of cluttering the outline with several pointless empty
+    entries."""
+    merged = []
+    i = 0
+    while i < len(nodes):
+        node = nodes[i]
+        if node["code"] is None and not node["content"]:
+            run = [node]
+            j = i + 1
+            while (
+                j < len(nodes)
+                and nodes[j]["code"] is None
+                and not nodes[j]["content"]
+                and nodes[j]["depth"] == node["depth"]
+            ):
+                run.append(nodes[j])
+                j += 1
+            if len(run) >= 2:
+                merged.append({
+                    "code": None,
+                    "depth": node["depth"],
+                    "title": " / ".join(n["title"] for n in run),
+                    "content": "",
+                })
+                i = j
+                continue
+        merged.append(node)
+        i += 1
     return merged
 
 
@@ -306,7 +344,29 @@ def main():
 
     lines = extract_lines(doc, start_idx, end_idx)
     result["topics"] = build_outline(lines)
+    result["tree"] = build_tree(result["topics"])
     print(json.dumps(result))
+
+
+def build_tree(nodes):
+    """Converts the flat, depth-tagged node list into a real parent/child
+    tree -- "a proper db", not a flat list the UI has to re-derive nesting
+    from via CSS margins on a depth number. A node becomes the child of
+    the most recent node at a strictly lower depth; anything at depth 0 (or
+    whose parent chain runs out, e.g. an unlabeled intro node before the
+    first real depth jump) lands at the top level. Depths aren't assumed
+    to increase by exactly 1 -- Cambridge's own numbering has real gaps
+    (e.g. a depth-0 chapter title with no depth-1 code before its first
+    depth-1 child), so this walks a stack rather than indexing by depth."""
+    root = []
+    stack = []  # list of (depth, children_list), outermost first
+    for node in nodes:
+        tree_node = dict(node, children=[])
+        while stack and stack[-1][0] >= tree_node["depth"]:
+            stack.pop()
+        (stack[-1][1] if stack else root).append(tree_node)
+        stack.append((tree_node["depth"], tree_node["children"]))
+    return root
 
 
 if __name__ == "__main__":

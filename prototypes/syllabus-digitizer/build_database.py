@@ -13,7 +13,7 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from extract_syllabus import find_subject_content_range, extract_lines, build_outline
+from extract_syllabus import find_subject_content_range, extract_lines, build_outline, build_tree
 import fitz
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -63,6 +63,7 @@ def extract_one(pdf_path):
     result["sectionPageRange"] = [start_idx + 1, end_idx]
     lines = extract_lines(doc, start_idx, end_idx)
     result["topics"] = build_outline(lines)
+    result["tree"] = build_tree(result["topics"])
     return result
 
 
