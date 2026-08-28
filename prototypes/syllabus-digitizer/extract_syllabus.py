@@ -546,28 +546,52 @@ def attach_overview_image(doc, images_dir, subject_rel_path):
 
 
 FORMULA_CHAPTER_NAME_RE = re.compile(r'list of formulae|formulae and statistical tables', re.IGNORECASE)
-FORMULA_SUBENTRY_RE = re.compile(r'formula|data section|data and formulae', re.IGNORECASE)
+FORMULA_SUBENTRY_RE = re.compile(r'formula|data section|data and formulae|periodic table', re.IGNORECASE)
+
+
+def _parse_toc_subentries(doc):
+    """Every two-line sub-entry pair on the Contents page(s), in document
+    order -- the same shape find_content_overview_range() reads for
+    "Content overview" ("label\t" then a bare page number as a SEPARATE
+    line, unlike a top-level chapter's own single dot-leader line)."""
+    entries = []
+    for i in range(1, min(6, doc.page_count)):
+        lines = doc[i].get_text().split("\n")
+        j = 0
+        while j < len(lines) - 1:
+            label = lines[j].strip().rstrip("\t").strip()
+            nxt = lines[j + 1].strip()
+            if label and ".." not in label and nxt.isdigit() and not re.match(r"^\d", label):
+                entries.append((label, int(nxt)))
+                j += 2
+            else:
+                j += 1
+    return entries
 
 
 def find_formula_sheet_range(doc):
     """Locates a syllabus's own real formula/data-sheet page(s) -- found
-    live across the 13 A Level subjects in this template family in two
+    live across 9 of the 44 subjects in this template family, in two
     different shapes: A Level and Further Mathematics print it as its
     OWN top-level chapter ("5  List of formulae and statistical tables
     (MF19) .... 43", the same single dot-leader-line format as "Subject
-    content" itself), while Physics/Biology/Chemistry print it as a
-    SUB-ENTRY of their "6 Additional information" chapter ("Data and
+    content" itself); Physics/Biology/Chemistry (A Level) and Chemistry/
+    Co-ordinated Sciences/Combined Science (IGCSE, "The Periodic Table
+    of Elements") print it as a SUB-ENTRY of a later chapter ("Data and
     formulae\t" / "58" as two separate lines, the same shape
     find_content_overview_range() already reads for "Content overview").
-    Neither format is guessed at by content -- every subject checked
-    live prints one of these two exact TOC shapes for whichever label it
-    uses ("List of formulae...", "Data and formulae", "Mathematical
-    formulae (A Level only)", "Data section"), so matching the shared
-    keyword ("formula"/"data section") against either shape is reading
-    the boundary off the document, not inferring it. Returns
-    (start_page, end_page) as 1-indexed printed pages, end exclusive, or
-    None for the subjects with no such page at all (Business, Computer
-    Science, English, Law, Literature -- checked live)."""
+    IGCSE Mathematics prints TWO separate one-page sub-entries back to
+    back ("List of formulas -- Core" then "-- Extended") -- found live
+    testing after the first version of this only grabbed the first of
+    the two and silently dropped the Extended paper's formula page, this
+    spans from the FIRST matching sub-entry to whatever follows the LAST
+    one, not just the very next entry after the first match. Neither
+    format is guessed at by content -- every subject checked live prints
+    one of these two exact TOC shapes for whichever label it uses, so
+    matching the shared keyword against either shape is reading the
+    boundary off the document, not inferring it. Returns (start_page,
+    end_page) as 1-indexed printed pages, end exclusive, or None for the
+    35 subjects with no such page at all."""
     toc_entries = []
     for i in range(1, min(6, doc.page_count)):
         for line in doc[i].get_text().split("\n"):
@@ -582,32 +606,20 @@ def find_formula_sheet_range(doc):
         end_page = next_entry[2] if next_entry else doc.page_count + 1
         return start_page, end_page
 
-    for i in range(1, min(6, doc.page_count)):
-        lines = doc[i].get_text().split("\n")
-        for idx, line in enumerate(lines):
-            label = line.strip().rstrip("\t").strip()
-            # A top-level chapter's own dot-leader line also contains
-            # these words sometimes (already handled above) -- excluding
-            # any line with a run of dots keeps this sub-entry pass from
-            # double-matching that same line a second time.
-            if not FORMULA_SUBENTRY_RE.search(label) or ".." in label or idx + 1 >= len(lines):
-                continue
-            nxt = lines[idx + 1].strip()
-            if not nxt.isdigit():
-                continue
-            start_page = int(nxt)
-            for j in range(idx + 2, len(lines) - 1):
-                lbl2 = lines[j].strip().rstrip("\t").strip()
-                pg2 = lines[j + 1].strip()
-                if lbl2 and pg2.isdigit() and not re.match(r"^\d", lbl2):
-                    return start_page, int(pg2)
-            # Last sub-entry in its chapter (Chemistry's "Data section")
-            # -- fall back to the next TOP-LEVEL chapter's own start
-            # page, the same boundary find_subject_content_range() uses.
-            later_chapters = [e[2] for e in toc_entries if e[2] > start_page]
-            end_page = min(later_chapters) if later_chapters else doc.page_count + 1
-            return start_page, end_page
-    return None
+    subentries = _parse_toc_subentries(doc)
+    match_indices = [idx for idx, (label, _) in enumerate(subentries) if FORMULA_SUBENTRY_RE.search(label)]
+    if not match_indices:
+        return None
+    start_page = subentries[match_indices[0]][1]
+    last_idx = match_indices[-1]
+    if last_idx + 1 < len(subentries):
+        return start_page, subentries[last_idx + 1][1]
+    # Last sub-entry on the whole Contents page (Chemistry's "Data
+    # section") -- fall back to the next TOP-LEVEL chapter's own start
+    # page, the same boundary find_subject_content_range() itself uses.
+    later_chapters = [e[2] for e in toc_entries if e[2] > start_page]
+    end_page = min(later_chapters) if later_chapters else doc.page_count + 1
+    return start_page, end_page
 
 
 def attach_formula_sheet_image(doc, images_dir, subject_rel_path):
