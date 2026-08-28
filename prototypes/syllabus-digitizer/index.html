@@ -173,8 +173,16 @@ function parseContentBlocks(text) {
     const letteredMatch = !plainMatch && line.match(LETTERED_MARKER_RE);
     if (plainMatch || letteredMatch) {
       const itemText = plainMatch ? line.slice(plainMatch[0].length) : line;
-      currentList ??= blocks[blocks.push({ type: "list", items: [] }) - 1];
-      currentList.items.push(itemText);
+      // A bullet can come out empty when its real content was a math
+      // expression rendered through glyphs this extractor can't decode
+      // (equations, exponents) -- an empty bullet point is just visual
+      // clutter, so it's dropped here rather than rendered as a blank
+      // <li>. The underlying math-notation loss itself is a known,
+      // disclosed limitation (see README), not something fixed by this.
+      if (itemText.trim()) {
+        currentList ??= blocks[blocks.push({ type: "list", items: [] }) - 1];
+        currentList.items.push(itemText);
+      }
     } else {
       currentList = null;
       blocks.push({ type: "para", text: line });

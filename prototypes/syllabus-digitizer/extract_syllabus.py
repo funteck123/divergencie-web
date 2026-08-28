@@ -158,12 +158,24 @@ def find_subject_content_range(doc):
 def extract_lines(doc, start_idx, end_idx):
     lines = []
     for page_num in range(start_idx, min(end_idx, doc.page_count)):
-        d = doc[page_num].get_text("dict")
+        page = doc[page_num]
+        footer_zone_y = page.rect.height - 50
+        d = page.get_text("dict")
         for block in d.get("blocks", []):
             for line in block.get("lines", []):
                 spans = line.get("spans", [])
                 text = "".join(s.get("text", "") for s in spans).strip()
                 if not text or is_noise(text):
+                    continue
+                # A real page-number footer sits in the last ~50pt of the
+                # page -- found live testing Chemistry: a font-weight
+                # proxy for "is this noise" (used before this) wrongly
+                # discarded genuine bare-digit numbered Core/Supplement
+                # items ("1", "2", own line, light weight, printed
+                # throughout the body) since they're visually identical to
+                # a page number by font/size alone. Position on the page
+                # is the real, reliable signal a font check can't give.
+                if BARE_PAGE_NUMBER_RE.match(text) and line.get("bbox", (0, 0, 0, 0))[1] > footer_zone_y:
                     continue
                 font = spans[0].get("font", "") if spans else ""
                 size = round(max((s.get("size", 0) for s in spans), default=0))
@@ -179,8 +191,6 @@ def extract_lines(doc, start_idx, end_idx):
                 # is scoped to this template's own font family specifically
                 # to close off that whole class of collision.
                 family_suffix = font.rsplit("-", 1)[-1] if font.startswith("HelveticaNeueLTW1G") else None
-                if BARE_PAGE_NUMBER_RE.match(text) and family_suffix != "Bd":
-                    continue
                 if family_suffix == "Bd":
                     kind = "heading"
                 elif family_suffix == "Roman" and (
@@ -332,6 +342,31 @@ def build_outline(lines):
             elif GLYPH_BULLET_RE.match(without_code):
                 item_text = GLYPH_BULLET_RE.sub("", without_code, count=1)
                 content_parts.append(f"\n• {item_text}")
+            elif BARE_PAGE_NUMBER_RE.match(text):
+                # A numbered Core/Supplement item can print as a
+                # completely bare number with no trailing punctuation at
+                # all ("1", alone on its own line, sentence following on
+                # the next line) -- found live testing Chemistry. Unlike
+                # Physics (whose items 1-9 use a decorative glyph and 10+
+                # pair a bare number with that glyph), Chemistry's items
+                # are ALL bare numbers with nothing else, so
+                # LETTERED_MARKER_RE's punctuation requirement never
+                # matched and every single item silently glued into one
+                # giant run-on paragraph with no bullets at all.
+                #
+                # But when the NEXT line already starts with the glyph
+                # bullet itself, this bare number is a redundant shadow
+                # duplicate at the same position rather than a real
+                # standalone marker -- found live testing Physics, whose
+                # \x07-glyph items ALSO print an invisible bare-number
+                # copy immediately before the glyph line, at the exact
+                # same y-coordinate. Without this check every one of those
+                # became its own empty bullet right before the real one.
+                next_line = lines[i + 1] if i + 1 < n else None
+                if next_line and next_line["kind"] == "body" and GLYPH_BULLET_RE.match(next_line["text"]):
+                    pass
+                else:
+                    content_parts.append("\n• ")
             elif (lettered_match := LETTERED_MARKER_RE.match(text)):
                 # A lettered sub-part often has its own decorative glyph
                 # sitting between the marker and the real sentence --
