@@ -88,7 +88,20 @@ def strip_decorative_glyph(text):
 NOISE_PATTERNS = [
     re.compile(r'^www\.cambridgeinternational\.org', re.IGNORECASE),
     re.compile(r'^Back to contents page$', re.IGNORECASE),
-    re.compile(r'syllabus for (exams? in )?\d{4}', re.IGNORECASE),
+    # "Syllabus for examination in 2026" (older-template subjects like
+    # Islamiyat, Pakistan Studies) vs. "syllabus for exams in 2027"
+    # (newer template) -- found live testing Islamiyat: the older phrasing
+    # wasn't covered ("exams?" doesn't match "examination"), so its own
+    # running-header text leaked through as a fake "[Cambridge IGCSE
+    # Islamiyat 0493. Syllabus for examination in ...]" label.
+    re.compile(r'syllabus for (exams?|examination) in \d{4}', re.IGNORECASE),
+    # A bare italic "continued" at the bottom of a page is a decorative
+    # hint that the current topic carries onto the next page -- not real
+    # body text. Found live testing Physics: it was getting glued onto
+    # whatever bullet content came right before it ("...is not required)
+    # continued"), since nothing distinguished it from an ordinary body
+    # line. No genuine sentence is just this one word alone on its line.
+    re.compile(r'^continued$', re.IGNORECASE),
 ]
 # A bare page-number footer is ALWAYS light-weight ("-Lt") in this
 # template, never bold -- kept as its own check, gated on font, rather
@@ -154,13 +167,45 @@ def extract_lines(doc, start_idx, end_idx):
                     continue
                 font = spans[0].get("font", "") if spans else ""
                 size = round(max((s.get("size", 0) for s in spans), default=0))
-                if BARE_PAGE_NUMBER_RE.match(text) and "Bd" not in font:
+                # Math/Greek symbols mid-sentence ("γ-emissions", "β-decay")
+                # switch to a completely different font family (e.g.
+                # "TimesNewRomanPSMT") for just that run -- found live
+                # testing Physics: a plain substring check for "Roman"
+                # (meant to catch this template's OWN "HelveticaNeueLTW1G-
+                # Roman" label weight) also matches "TimesNewRomanPSMT",
+                # wrongly classifying a mid-sentence Greek-letter run as a
+                # section label and wrapping it in "[...]" as if it were
+                # "[Core]"/"[Supplement]". Every real classification below
+                # is scoped to this template's own font family specifically
+                # to close off that whole class of collision.
+                family_suffix = font.rsplit("-", 1)[-1] if font.startswith("HelveticaNeueLTW1G") else None
+                if BARE_PAGE_NUMBER_RE.match(text) and family_suffix != "Bd":
                     continue
-                if "Bd" in font:
+                if family_suffix == "Bd":
                     kind = "heading"
-                elif "Roman" in font:
+                elif family_suffix == "Roman" and (
+                    BARE_CODE_RE.match(text)
+                    or (HEADING_CODE_RE.match(text) and HEADING_CODE_RE.match(text).group(2).strip())
+                ):
+                    # Fourth real heading style found live testing A-Level
+                    # Business: its depth-2 sub-headings print in the SAME
+                    # "-Roman" weight normally used for genuine labels like
+                    # "Core"/"Supplement" -- without this, every one of
+                    # these sub-headings was wrapped as a fake "[1.2.1
+                    # Economic sectors]" label instead of becoming its own
+                    # real heading node. Also accepts a BARE Roman code
+                    # with no title yet ("1.1.1" alone, title "The nature
+                    # of business activity" on the next line) -- some of
+                    # these split across two lines exactly like the "Bd"
+                    # chapter-title case, and without this both the bare
+                    # code AND its title were separately wrapped as two
+                    # nonsense one-word "labels" instead of merging into
+                    # one heading the same way build_outline's existing
+                    # merge logic already handles for bold headings.
+                    kind = "heading"
+                elif family_suffix == "Roman":
                     kind = "label"
-                elif "Lt" in font and size >= HEADING_SIZE_THRESHOLD:
+                elif family_suffix and "Lt" in family_suffix and size >= HEADING_SIZE_THRESHOLD:
                     # Real second heading style found live (Islamiyat,
                     # among others): that subject's headings are the same
                     # light weight as body text, distinguished only by a
@@ -168,7 +213,7 @@ def extract_lines(doc, start_idx, end_idx):
                     # body) -- without this, its whole outline came out as
                     # a single empty chapter node.
                     kind = "heading"
-                elif "Md" in font and HEADING_CODE_RE.match(text) and HEADING_CODE_RE.match(text).group(2).strip():
+                elif family_suffix == "Md" and HEADING_CODE_RE.match(text) and HEADING_CODE_RE.match(text).group(2).strip():
                     # Third real heading style found live testing Physics/
                     # Chemistry/Biology: a THIRD-level sub-heading ("1.7.2
                     # Work") prints in a "medium" weight, neither bold nor
@@ -227,6 +272,22 @@ def build_outline(lines):
             candidate_match = HEADING_CODE_RE.match(candidate)
             if candidate_match and candidate_match.group(1) and candidate_match.group(2).strip():
                 break
+        # A bare code can still be titleless here if its title line prints
+        # in the "-Roman" label weight rather than "heading" kind -- found
+        # live testing A-Level Business: "1.1.1" (Roman, bare code) is
+        # immediately followed by "The nature of business activity"
+        # (Roman, no code), which the per-line classifier has no way to
+        # tell apart from a real label like "Core" without this context.
+        # Absorbing the very next line as the title here, only when the
+        # heading would otherwise be left empty, catches this without
+        # needing the line classifier to guess ahead.
+        if first_line_is_bare_code:
+            joined = " ".join(heading_parts).strip()
+            m_so_far = HEADING_CODE_RE.match(joined)
+            still_titleless = not (m_so_far and m_so_far.group(2).strip())
+            if still_titleless and i < n and lines[i]["kind"] == "label" and lines[i]["size"] == heading_size:
+                heading_parts.append(lines[i]["text"])
+                i += 1
         heading_text = " ".join(heading_parts).strip()
         # Some headings in the large-light-weight style (see
         # HEADING_SIZE_THRESHOLD above) print a decorative bullet glyph
@@ -306,18 +367,29 @@ def _infer_uncoded_depth(nodes):
     them) was popping all the way back out to the document root instead
     of nesting under the numbered sub-heading it actually belongs to.
 
-    Distinguishes the two cases by comparing font size against whatever
-    node came immediately before: a code-less heading at the SAME size as
-    a real coded heading right before it is treated as that heading's
-    child; a code-less heading that's LARGER, or that follows another
-    code-less heading, keeps its default depth (0) -- a genuinely bigger
-    divider, or a heading whose true nesting this tool has no reliable
-    signal for, is left alone rather than guessed at further."""
+    Distinguishes cases by comparing font size against whatever node came
+    immediately before: a code-less heading at the SAME size as a real
+    coded heading right before it is treated as that heading's child. A
+    code-less heading at the SAME size as the PRECEDING code-less one is
+    treated as its sibling (same depth) rather than reset to 0 -- found
+    live testing English's "Reading" / "Writing" / "Speaking and
+    Listening" skill sections: "Reading" correctly nested under "Subject
+    content" (its predecessor is coded), but "Writing" and "Speaking and
+    Listening" each follow another CODE-LESS heading, so without this
+    they fell back to depth 0 and popped out to the document root instead
+    of sitting alongside "Reading" as its sibling. Anything larger, or a
+    heading whose true nesting has no reliable signal either way, keeps
+    its default depth (0) -- a genuinely bigger divider is left alone
+    rather than guessed at further."""
     for i in range(1, len(nodes)):
         node = nodes[i]
         prev = nodes[i - 1]
-        if node["code"] is None and prev["code"] is not None and node["size"] <= prev["size"]:
+        if node["code"] is not None or node["size"] > prev["size"]:
+            continue
+        if prev["code"] is not None:
             node["depth"] = prev["depth"] + 1
+        elif prev["size"] == node["size"]:
+            node["depth"] = prev["depth"]
 
 
 def _merge_continued(nodes):
