@@ -423,11 +423,22 @@ function exportTaggedTopics(meta) {
     </section>`;
   }).join("");
 
+  // Full timestamp, not just a date -- and the exporting student's own
+  // local timezone spelled out explicitly (IANA name), not assumed, since
+  // whoever opens this file later has no other way to know when "now" was
+  // relative to them.
+  const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const exportedAt = `${new Intl.DateTimeFormat(undefined, { dateStyle: "full", timeStyle: "long" }).format(new Date())} (${tzName})`;
+
   const html = `<!doctype html>
 <html><head><meta charset="utf-8" /><title>${escapeHtml(subjectLabel)} — tagged topics</title>
 <style>
-  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f4; color: #1a1a1a; margin: 0; padding: 2.5rem 1.5rem; }
-  main { max-width: 720px; margin: 0 auto; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f4; color: #1a1a1a; margin: 0; padding: 0 0 2.5rem; }
+  .dc-header { background: #1a3c5e; padding: 1.1rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 4px solid #e8a832; }
+  .dc-wordmark { color: white; font-weight: 800; font-size: 1.05rem; letter-spacing: 0.01em; }
+  .dc-wordmark .accent { color: #e8a832; }
+  .dc-header .dc-tool { color: #cfe0f0; font-size: 0.78rem; border-left: 1px solid rgba(255,255,255,0.25); padding-left: 0.6rem; }
+  main { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 0; }
   h1 { color: #1a3c5e; font-size: 1.4rem; margin: 0 0 0.2rem; }
   .subtitle { color: #666; font-size: 0.85rem; margin-bottom: 2rem; }
   section { background: white; border-left: 6px solid var(--c); border-radius: 0 10px 10px 0; padding: 1.1rem 1.4rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
@@ -438,9 +449,14 @@ function exportTaggedTopics(meta) {
   .tcode { font-weight: 700; color: #1a3c5e; font-variant-numeric: tabular-nums; }
   .empty { color: #666; font-style: italic; }
 </style></head>
-<body><main>
+<body>
+<div class="dc-header">
+  <span class="dc-wordmark">Divergen<span class="accent">CIE</span></span>
+  <span class="dc-tool">Syllabus Digitizer</span>
+</div>
+<main>
   <h1>${escapeHtml(subjectLabel)}</h1>
-  <div class="subtitle">Tagged topics · exported ${new Date().toLocaleDateString()}</div>
+  <div class="subtitle">Tagged topics · exported ${escapeHtml(exportedAt)}</div>
   ${sections || `<p class="empty">No topics tagged yet -- tick a topic in the outline first.</p>`}
 </main></body></html>`;
 
