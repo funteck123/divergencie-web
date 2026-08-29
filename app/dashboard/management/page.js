@@ -398,8 +398,7 @@ function Applications() {
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder="Search applicant name…" />
       {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-      <div className="overflow-x-auto">
+      <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
       <table>
         <thead>
           <tr>
@@ -469,7 +468,6 @@ function Applications() {
           )}
         </tbody>
       </table>
-      </div>
       </div>
     </div>
   );
@@ -810,8 +808,7 @@ function Pipeline() {
         {/* TKT-0134: same maxHeight+overflowY cap as Enrollments (TKT-0114)
             — Pipeline tables grow unbounded with real bookings and were
             called out by name as needing this. */}
-        <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-        <div className="overflow-x-auto">
+        <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
         <table>
           <thead>
             <tr>
@@ -869,7 +866,6 @@ function Pipeline() {
           </tbody>
         </table>
         </div>
-        </div>
       </div>
 
       <div className="card">
@@ -883,8 +879,7 @@ function Pipeline() {
           statusOptions={INTERVIEW_STATUS_FILTER_LABEL}
         />
         {/* TKT-0134: same cap as Trial Pipeline above. */}
-        <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-        <div className="overflow-x-auto">
+        <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
         <table>
           <thead>
             <tr>
@@ -979,14 +974,12 @@ function Pipeline() {
           </tbody>
         </table>
         </div>
-        </div>
       </div>
 
       <div className="card">
         <h2 className="font-semibold mb-4">Pending Requests</h2>
         {/* TKT-0134: same cap as the two Pipeline tables above. */}
-        <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-        <div className="overflow-x-auto">
+        <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
         <table>
           <thead>
             <tr>
@@ -1042,7 +1035,6 @@ function Pipeline() {
             )}
           </tbody>
         </table>
-        </div>
         </div>
       </div>
     </div>
@@ -1610,8 +1602,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
           tab's Students/Teachers/Staff/etc groups and the Pending
           Trial/Interview Accounts tables), so this one change covers all
           of them. */}
-      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-      <div style={{ overflowX: "auto" }}>
+      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto", overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
@@ -1727,7 +1718,6 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
             )}
           </tbody>
         </table>
-      </div>
       </div>
     </div>
   );
@@ -3645,8 +3635,7 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete, busyServiceI
     <div className="card">
       <h2 className="font-semibold mb-4">{groupName} Services</h2>
       {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-      <div style={{ overflowX: "auto" }}>
+      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto", overflowX: "auto" }}>
         <table style={{ width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
@@ -3677,7 +3666,6 @@ function ServiceGroupTable({ groupName, services, onEdit, onDelete, busyServiceI
           </thead>
           <tbody>{body}</tbody>
         </table>
-      </div>
       </div>
     </div>
   );
@@ -3899,8 +3887,7 @@ function SchedulePool() {
           <h2 className="font-semibold mb-4">Attendance Conflicts ({conflictItems.length})</h2>
           <BillingFilterBar search={conflictsSearch} onSearch={setConflictsSearch} searchPlaceholder="Search service or instructor…" />
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-          <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-          <div className="overflow-x-auto">
+          <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
           <table>
             <thead>
               <tr>
@@ -3943,7 +3930,6 @@ function SchedulePool() {
             </tbody>
           </table>
           </div>
-          </div>
         </div>
       )}
       {/* TKT-0029: previously a pending reschedule request was only ever
@@ -3959,8 +3945,7 @@ function SchedulePool() {
           <h2 className="font-semibold mb-4">Pending Reschedule Requests ({rescheduleRequests.length})</h2>
           <BillingFilterBar search={rescheduleSearch} onSearch={setRescheduleSearch} searchPlaceholder="Search service or requester…" />
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-          <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-          <div className="overflow-x-auto">
+          <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
           <table>
             <thead>
               <tr>
@@ -4005,7 +3990,6 @@ function SchedulePool() {
               )}
             </tbody>
           </table>
-          </div>
           </div>
         </div>
       )}
@@ -4091,8 +4075,7 @@ function SchedulePool() {
           <>
           <BillingFilterBar search={openPoolSearch} onSearch={setOpenPoolSearch} searchPlaceholder="Search service or instructor…" />
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-          <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-          <div className="overflow-x-auto">
+          <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
           <table>
             <thead>
               <tr>
@@ -4124,7 +4107,6 @@ function SchedulePool() {
               )}
             </tbody>
           </table>
-          </div>
           </div>
           </>
         )}
@@ -4196,8 +4178,7 @@ function SchedulePool() {
         ) : (
           <>
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-          <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-          <div className="overflow-x-auto">
+          <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
           <table>
             <thead>
               <tr>
@@ -4266,7 +4247,6 @@ function SchedulePool() {
               )}
             </tbody>
           </table>
-          </div>
           </div>
           </>
         )}
@@ -4768,8 +4748,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
             no hint there was more below -- className="scroll-fade" adds a
             soft bottom gradient (see globals.css) so a cut-off row reads as
             "scroll for more," not as broken rendering. */}
-        <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-          <div className="overflow-x-auto">
+        <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
             <table>
               <thead>
                 <tr>
@@ -4805,7 +4784,6 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                 )}
               </tbody>
             </table>
-          </div>
         </div>
       </div>
     </div>
@@ -5755,8 +5733,7 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
       )}
       {rows.length === 0 && <p style={{ color: "var(--muted)" }}>None generated yet.</p>}
       {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-      <div className="overflow-x-auto">
+      <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
       <table className="billing-table">
         <thead>
           <tr>
@@ -5813,7 +5790,6 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
           );
         })}
       </table>
-      </div>
       </div>
     </>
   );
@@ -6286,8 +6262,7 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
             {STAFF_ROLE_LABEL[role]}
           </h3>
           {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
-          <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-          <div className="overflow-x-auto">
+          <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
           <table className="billing-table">
             <thead>
               <tr>
@@ -6344,7 +6319,6 @@ function PaycheckBillingTable({ rows, nameOf, roleOf, services, onPatch, onPatch
               );
             })}
           </table>
-          </div>
           </div>
         </div>
       ))}
@@ -6729,8 +6703,7 @@ function Tickets() {
       {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline —
           unlike Audit Log below, Tickets has no server-side pagination and
           genuinely grows unbounded. */}
-      <div className="scroll-fade" style={{ maxHeight: 480, overflowY: "auto" }}>
-      <div className="overflow-x-auto">
+      <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
         <table className="w-full text-sm">
           <thead>
             <tr>
@@ -6754,7 +6727,6 @@ function Tickets() {
             )}
           </tbody>
         </table>
-      </div>
       </div>
     </div>
   );
