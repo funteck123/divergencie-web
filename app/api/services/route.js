@@ -96,6 +96,12 @@ async function toStoredBatches(db, batches) {
   return Promise.all(batches.map(async (b) => ({
     BatchID: b.batchId || (await nextId(db, "BATCH")),
     BatchName: b.batchName,
+    // The date this Batch's weekly classes actually started (or should
+    // start) -- ensureScheduleGenerated (lib/scheduleGen.js) always
+    // generates every session from here through one month out, so this is
+    // what actually controls how far back a newly-restructured Occurrence
+    // backfills. See TKT-0155/0156.
+    StartDate: b.startDate || "",
     OccuranceList: await toStoredOccurrences(db, b.occurrences),
     Rates: await toStoredRates(db, b.rates),
   })));
