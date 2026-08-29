@@ -80,6 +80,17 @@
 
   #rawToggle { font-size: 0.75rem; color: var(--sky); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
   #rawJson { display: none; margin-top: 1rem; background: var(--bg-soft); border-radius: 8px; padding: 0.75rem; font-size: 0.75rem; overflow-x: auto; max-height: 400px; }
+
+  /* Tag checkboxes: sit right in the (collapsed) topic-head row so a topic
+     can be tagged without opening it. Multi-select -- a topic can genuinely
+     be both "doubt" and "critical" at once, so these are independent
+     checkboxes, not a single-choice status. */
+  .tag-row { display: flex; gap: 0.35rem; margin-left: auto; flex-shrink: 0; }
+  .tag-chip { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1.5px solid var(--tag-color); color: var(--tag-color); background: white; cursor: pointer; user-select: none; white-space: nowrap; }
+  .tag-chip input { margin: 0; accent-color: var(--tag-color); cursor: pointer; }
+  .tag-chip.checked { background: var(--tag-color); color: white; }
+  #exportBtn { font-size: 0.75rem; color: var(--navy); cursor: pointer; background: none; border: 1.5px solid var(--navy); border-radius: 6px; padding: 0.3rem 0.7rem; font-weight: 700; }
+  #exportBtn:hover { background: var(--bg-soft); }
 </style>
 </head>
 <body>
@@ -102,6 +113,48 @@
 <script>
 let syllabi = [];
 let activeFilename = null;
+let activeTree = null;
+
+// ---- Topic tags: Completed / Revise / Doubt / Practice / Critical ----
+// Stored per-subject (keyed by filename) per-node in localStorage, entirely
+// client-side -- this is a static prototype with no backend for this
+// feature, and tags are a per-browser study aid, not shared data.
+// Literal hex, not var(--good) etc: these values also get baked into the
+// exported HTML file (exportTaggedTopics), which is a standalone document
+// with no <style>:root defining those tokens -- a var() reference resolves
+// fine here in the main app's own page but silently falls through to
+// nothing in the export, so every color would just vanish there.
+const TAG_OPTIONS = [
+  { key: "completed", label: "Completed", color: "#1f9d55" },
+  { key: "revise", label: "Revise", color: "#4a9fd4" },
+  { key: "doubt", label: "Doubt", color: "#e8a832" },
+  { key: "practice", label: "Practice", color: "#7c5cbf" },
+  { key: "critical", label: "Critical", color: "#e05a4e" },
+];
+const TAGS_STORAGE_KEY = "syllabusDigitizerTags";
+
+function loadAllTags() {
+  try {
+    return JSON.parse(localStorage.getItem(TAGS_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+function saveAllTags(all) {
+  localStorage.setItem(TAGS_STORAGE_KEY, JSON.stringify(all));
+}
+function getNodeTags(filename, nodeKey) {
+  return (loadAllTags()[filename] || {})[nodeKey] || {};
+}
+function setNodeTag(filename, nodeKey, tagKey, checked) {
+  const all = loadAllTags();
+  all[filename] ??= {};
+  all[filename][nodeKey] ??= {};
+  if (checked) all[filename][nodeKey][tagKey] = true;
+  else delete all[filename][nodeKey][tagKey];
+  if (Object.keys(all[filename][nodeKey]).length === 0) delete all[filename][nodeKey];
+  saveAllTags(all);
+}
 
 async function loadSidebar() {
   const res = await fetch("/api/syllabi");
@@ -216,11 +269,16 @@ function renderTopicContent(text) {
 // inside it, not as a sibling flagged with a depth number for CSS margin
 // to fake -- "a proper db", per the ask that started this. depth is still
 // used for the border-color rotation, purely cosmetic.
-function renderTopicNodes(nodes) {
+// path is this node's position in the tree (e.g. "0.2.1") -- stable across
+// re-renders of the same subject since the extracted tree's order never
+// changes, so it doubles as the tag storage key without needing every
+// topic to have a unique code/title of its own.
+function renderTopicNodes(nodes, path = "") {
   return nodes
-    .map((t) => {
+    .map((t, i) => {
+      const nodeKey = path ? `${path}.${i}` : `${i}`;
       const hasChildren = t.children && t.children.length > 0;
-      const children = hasChildren ? renderTopicNodes(t.children) : "";
+      const children = hasChildren ? renderTopicNodes(t.children, nodeKey) : "";
       // The real page crop is the primary display now -- a chapter or a
       // leaf topic (see extract_syllabus.py's attach_images) gets a real
       // PNG of that exact page region, served straight from disk under
@@ -239,11 +297,19 @@ function renderTopicNodes(nodes) {
       const textFallback = body
         ? `<details class="text-fallback"><summary>View extracted text</summary>${body}</details>`
         : "";
+      const nodeTags = getNodeTags(activeFilename, nodeKey);
+      const tagChips = TAG_OPTIONS.map((opt) => {
+        const checked = !!nodeTags[opt.key];
+        return `<label class="tag-chip${checked ? " checked" : ""}" style="--tag-color:${opt.color}" data-nodekey="${nodeKey}" data-tag="${opt.key}">
+          <input type="checkbox" ${checked ? "checked" : ""} />${opt.label}
+        </label>`;
+      }).join("");
       return `<div class="topic" data-depth="${t.depth}">
         <div class="topic-head">
           <span class="arrow">▶</span>
           <span class="code">${t.code || ""}</span>
           <span class="title">${escapeHtml(t.title)}</span>
+          <div class="tag-row">${tagChips}</div>
         </div>
         <div class="topic-content">
           ${image}
@@ -264,7 +330,10 @@ function renderOutline(filename, data) {
       <h2>${meta.subject || filename}</h2>
       <div class="sub">${meta.level || ""} · ${meta.code || ""} · exams ${meta.cycle || ""} · ${data.pageCount} pages</div>
     </div>
-    <button id="rawToggle">view raw JSON</button>
+    <div style="display:flex; gap:0.6rem; align-items:center;">
+      <button id="exportBtn">Export tagged topics</button>
+      <button id="rawToggle">view raw JSON</button>
+    </div>
   </div>`;
 
   if (data.sectionGuessed) {
@@ -279,6 +348,7 @@ function renderOutline(filename, data) {
   }
 
   const tree = data.tree || data.topics; // fall back for any pre-tree cached response
+  activeTree = tree || [];
   if (!tree || tree.length === 0) {
     html += `<div id="status">No topic headings detected in this booklet.</div>`;
   } else {
@@ -299,10 +369,90 @@ function renderOutline(filename, data) {
   content.querySelectorAll(".topic-head").forEach((head) => {
     head.addEventListener("click", () => head.parentElement.classList.toggle("open"));
   });
+  content.querySelectorAll(".tag-chip").forEach((chip) => {
+    // A chip lives inside .topic-head, which itself expands/collapses the
+    // topic on click -- without stopping propagation, ticking a tag would
+    // also toggle the topic open/closed every time.
+    chip.addEventListener("click", (e) => e.stopPropagation());
+    // Clicking a <label> dispatches a click on the label AND a forwarded
+    // click on its associated <input>, both bubbling to the same listener
+    // -- binding the toggle logic to "click" fired it twice per real click
+    // and cancelled itself out. "change" on the input fires exactly once
+    // per actual state change, and the browser's own native label/input
+    // association already flips checkbox.checked correctly for us.
+    const checkbox = chip.querySelector("input");
+    checkbox.addEventListener("change", () => {
+      chip.classList.toggle("checked", checkbox.checked);
+      setNodeTag(activeFilename, chip.dataset.nodekey, chip.dataset.tag, checkbox.checked);
+    });
+  });
   document.getElementById("rawToggle").addEventListener("click", () => {
     const el = document.getElementById("rawJson");
     el.style.display = el.style.display === "block" ? "none" : "block";
   });
+  document.getElementById("exportBtn").addEventListener("click", () => exportTaggedTopics(meta));
+}
+
+// Flattens the current tree, attaches each node's stored tags (by the same
+// path-based key used to render its chips), and groups by tag into a
+// single self-contained, color-coded HTML report -- one topic can appear
+// under more than one heading since tags aren't mutually exclusive.
+function flattenTaggedTopics(nodes, filename, path, out) {
+  nodes.forEach((t, i) => {
+    const nodeKey = path ? `${path}.${i}` : `${i}`;
+    const tags = getNodeTags(filename, nodeKey);
+    if (Object.keys(tags).length > 0) out.push({ code: t.code, title: t.title, tags });
+    if (t.children && t.children.length) flattenTaggedTopics(t.children, filename, nodeKey, out);
+  });
+  return out;
+}
+
+function exportTaggedTopics(meta) {
+  const flat = flattenTaggedTopics(activeTree, activeFilename, "", []);
+  const subjectLabel = `${meta.subject || activeFilename}${meta.code ? ` (${meta.code})` : ""}`;
+
+  const sections = TAG_OPTIONS.map((opt) => {
+    const matches = flat.filter((t) => t.tags[opt.key]);
+    if (matches.length === 0) return "";
+    const items = matches
+      .map((t) => `<li>${t.code ? `<span class="tcode">${escapeHtml(t.code)}</span> ` : ""}${escapeHtml(t.title)}</li>`)
+      .join("");
+    return `<section style="--c:${opt.color}">
+      <h2>${opt.label} <span class="count">${matches.length}</span></h2>
+      <ul>${items}</ul>
+    </section>`;
+  }).join("");
+
+  const html = `<!doctype html>
+<html><head><meta charset="utf-8" /><title>${escapeHtml(subjectLabel)} — tagged topics</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f4; color: #1a1a1a; margin: 0; padding: 2.5rem 1.5rem; }
+  main { max-width: 720px; margin: 0 auto; }
+  h1 { color: #1a3c5e; font-size: 1.4rem; margin: 0 0 0.2rem; }
+  .subtitle { color: #666; font-size: 0.85rem; margin-bottom: 2rem; }
+  section { background: white; border-left: 6px solid var(--c); border-radius: 0 10px 10px 0; padding: 1.1rem 1.4rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  section h2 { margin: 0 0 0.6rem; font-size: 1.05rem; color: var(--c); display: flex; align-items: center; gap: 0.5rem; }
+  section .count { background: var(--c); color: white; font-size: 0.7rem; font-weight: 700; border-radius: 999px; padding: 0.1rem 0.55rem; }
+  section ul { margin: 0; padding-left: 1.2rem; }
+  section li { margin-bottom: 0.4rem; font-size: 0.9rem; }
+  .tcode { font-weight: 700; color: #1a3c5e; font-variant-numeric: tabular-nums; }
+  .empty { color: #666; font-style: italic; }
+</style></head>
+<body><main>
+  <h1>${escapeHtml(subjectLabel)}</h1>
+  <div class="subtitle">Tagged topics · exported ${new Date().toLocaleDateString()}</div>
+  ${sections || `<p class="empty">No topics tagged yet -- tick a topic in the outline first.</p>`}
+</main></body></html>`;
+
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${(meta.subject || activeFilename).replace(/[^a-z0-9]+/gi, "-")}-tagged-topics.html`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 loadSidebar();
