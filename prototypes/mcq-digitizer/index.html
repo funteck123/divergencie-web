@@ -41,6 +41,10 @@
   .option-row:hover { border-color: var(--sky); }
   .option-row input { flex-shrink: 0; }
   .option-row .opt-label { font-weight: 700; color: var(--charcoal); width: 1.2rem; }
+  .timer-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+  .timer-display { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.1rem; color: var(--navy); background: var(--bg-soft); border-radius: 6px; padding: 0.35rem 0.7rem; }
+  .timer-btn { padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--navy); background: white; color: var(--navy); font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+  .timer-btn:hover { background: var(--bg-soft); }
   .score-banner { background: var(--navy); color: white; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
   .score-banner .big { font-size: 2rem; font-weight: 800; color: var(--gold); }
   .score-banner .label { font-size: 0.8rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -109,6 +113,10 @@
     <div class="card">
       <h2>Answer the quiz</h2>
       <p class="hint" id="digitizeCount"></p>
+      <div class="timer-row">
+        <span class="timer-display" id="timerDisplay">00:00</span>
+        <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
+      </div>
     </div>
     <div id="quizItems"></div>
     <button class="primary-btn" id="submitQuizBtn">Submit quiz</button>
@@ -143,6 +151,48 @@ function showStage(n) {
   document.getElementById(`stage${n}`).classList.add("active");
 }
 
+// ---- Timer: a plain stopwatch (not a countdown) tracking how long the
+// student has spent on the paper -- auto-starts the moment a paper opens
+// (applyDigitizeResult), pauses itself once the quiz is submitted (no
+// point ticking on a finished paper), and resets on "Digitize another
+// paper" so it doesn't carry over between attempts.
+let timerSeconds = 0;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTimer(totalSeconds) {
+  const m = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const s = String(totalSeconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+function renderTimer() {
+  document.getElementById("timerDisplay").textContent = formatTimer(timerSeconds);
+}
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  document.getElementById("timerToggleBtn").textContent = "Pause";
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    renderTimer();
+  }, 1000);
+}
+function pauseTimer() {
+  timerRunning = false;
+  document.getElementById("timerToggleBtn").textContent = "Resume";
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+function resetTimer() {
+  pauseTimer();
+  timerSeconds = 0;
+  renderTimer();
+}
+document.getElementById("timerToggleBtn").addEventListener("click", () => {
+  if (timerRunning) pauseTimer();
+  else startTimer();
+});
+
 function applyDigitizeResult(data) {
   quiz = data.questions;
   const ambiguousCount = data.ambiguousAnswerKey?.length || 0;
@@ -152,6 +202,8 @@ function applyDigitizeResult(data) {
   document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
   renderQuiz();
   showStage(2);
+  resetTimer();
+  startTimer();
 }
 
 document.getElementById("showUploadLink").addEventListener("click", (e) => {
@@ -363,6 +415,7 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
     </div>
   `).join("");
 
+  pauseTimer();
   showStage(3);
 });
 
@@ -370,6 +423,7 @@ document.getElementById("restartBtn").addEventListener("click", () => {
   quiz = [];
   document.getElementById("qpPdf").value = "";
   document.getElementById("msPdf").value = "";
+  resetTimer();
   showStage(0);
 });
 </script>

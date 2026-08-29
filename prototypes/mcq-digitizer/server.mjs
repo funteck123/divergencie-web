@@ -47,7 +47,7 @@ import { promisify } from "util";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.PORT || 5177;
+const PORT = process.env.PORT || 5178;
 const REPO_ROOT = path.join(__dirname, "..", "..");
 const DRIVE_MAP_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "drive-map", "drive-map.json");
 const ANSWER_CACHE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "answer-cache", "cache.json");
