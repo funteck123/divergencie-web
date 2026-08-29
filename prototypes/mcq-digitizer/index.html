@@ -45,6 +45,13 @@
   .timer-display { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.1rem; color: var(--navy); background: var(--bg-soft); border-radius: 6px; padding: 0.35rem 0.7rem; }
   .timer-btn { padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--navy); background: white; color: var(--navy); font-weight: 700; font-size: 0.85rem; cursor: pointer; }
   .timer-btn:hover { background: var(--bg-soft); }
+  .mode-btn { margin-bottom: 0.6rem; }
+  .mode-btn:last-child { margin-bottom: 0; }
+  .tab-row { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
+  .tab-btn { padding: 0.35rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--border); background: white; color: var(--charcoal); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .tab-btn.active { border-color: var(--navy); background: var(--navy); color: white; }
+  .answer-panel { font-size: 0.9rem; }
+  .answer-panel .answer-letter { display: inline-block; font-weight: 800; color: var(--good); font-size: 1.1rem; margin-left: 0.3rem; }
   .score-banner { background: var(--navy); color: white; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
   .score-banner .big { font-size: 2rem; font-weight: 800; color: var(--gold); }
   .score-banner .label { font-size: 0.8rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -110,16 +117,24 @@
   </div>
 
   <div id="stage2" class="stage">
-    <div class="card">
-      <h2>Answer the quiz</h2>
+    <div class="card" id="modeSelectCard">
+      <h2>How do you want to use this paper?</h2>
       <p class="hint" id="digitizeCount"></p>
+      <button class="primary-btn mode-btn" id="startPracticeBtn">Practice mode — browse questions &amp; answers freely, no timer</button>
+      <button class="primary-btn mode-btn" id="startTestBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
+    </div>
+
+    <div class="card" id="testHeader" style="display:none;">
+      <h2>Answer the quiz</h2>
       <div class="timer-row">
         <span class="timer-display" id="timerDisplay">00:00</span>
         <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
       </div>
     </div>
+
     <div id="quizItems"></div>
-    <button class="primary-btn" id="submitQuizBtn">Submit quiz</button>
+    <button class="primary-btn" id="submitQuizBtn" style="display:none;">Submit quiz</button>
+    <button class="primary-btn" id="finishPracticeBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Done practicing</button>
   </div>
 
   <div id="stage3" class="stage">
@@ -193,18 +208,47 @@ document.getElementById("timerToggleBtn").addEventListener("click", () => {
   else startTimer();
 });
 
+// ---- Mode: Practice (self-check, no timer/grading) vs Test (timed, one
+// submit, graded) -- chosen once per paper, right after digitizing and
+// before question 1 is shown, and locked in for the rest of that attempt
+// (only "Digitize another paper" / "Done practicing" resets it).
+let quizMode = null; // "practice" | "test"
+
 function applyDigitizeResult(data) {
   quiz = data.questions;
+  quizMode = null;
   const ambiguousCount = data.ambiguousAnswerKey?.length || 0;
   const unmatchedNote = ambiguousCount
     ? ` ${ambiguousCount} question${ambiguousCount === 1 ? "" : "s"} couldn't be graded automatically -- the mark scheme's explanation didn't narrow to exactly one answer letter for them (shown, but excluded from scoring).`
     : "";
   document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
-  renderQuiz();
+  document.getElementById("modeSelectCard").style.display = "block";
+  document.getElementById("testHeader").style.display = "none";
+  document.getElementById("submitQuizBtn").style.display = "none";
+  document.getElementById("finishPracticeBtn").style.display = "none";
+  document.getElementById("quizItems").innerHTML = "";
+  resetTimer();
   showStage(2);
+}
+
+document.getElementById("startPracticeBtn").addEventListener("click", () => {
+  quizMode = "practice";
+  document.getElementById("modeSelectCard").style.display = "none";
+  document.getElementById("finishPracticeBtn").style.display = "block";
+  renderQuiz();
+});
+document.getElementById("startTestBtn").addEventListener("click", () => {
+  quizMode = "test";
+  document.getElementById("modeSelectCard").style.display = "none";
+  document.getElementById("testHeader").style.display = "block";
+  document.getElementById("submitQuizBtn").style.display = "block";
+  renderQuiz();
   resetTimer();
   startTimer();
-}
+});
+document.getElementById("finishPracticeBtn").addEventListener("click", () => {
+  resetToLibrary();
+});
 
 document.getElementById("showUploadLink").addEventListener("click", (e) => {
   e.preventDefault();
@@ -359,23 +403,42 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
   }
 });
 
+function questionPanelHtml(q) {
+  return `
+    <img class="qimg" src="${q.image}" alt="Question ${escapeHtml(q.questionNumber)}" />
+    ${!q.correctAnswer ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
+    <div class="letter-row">
+      ${q.optionLetters.map((letter) => `
+        <label class="letter-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-letter="${escapeHtml(letter)}">
+          <input type="radio" name="q${escapeHtml(q.questionNumber)}" value="${escapeHtml(letter)}" />
+          ${escapeHtml(letter)}
+        </label>
+      `).join("")}
+    </div>
+  `;
+}
+
 function renderQuiz() {
   const container = document.getElementById("quizItems");
+  const practice = quizMode === "practice";
   container.innerHTML = quiz.map((q) => `
     <div class="mcq-item">
       <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
-      <img class="qimg" src="${q.image}" alt="Question ${escapeHtml(q.questionNumber)}" />
-      ${!q.correctAnswer ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
-      <div class="letter-row">
-        ${q.optionLetters.map((letter) => `
-          <label class="letter-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-letter="${escapeHtml(letter)}">
-            <input type="radio" name="q${escapeHtml(q.questionNumber)}" value="${escapeHtml(letter)}" />
-            ${escapeHtml(letter)}
-          </label>
-        `).join("")}
-      </div>
+      ${practice ? `
+        <div class="tab-row">
+          <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
+          <button type="button" class="tab-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="answer">Answer</button>
+        </div>
+        <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">${questionPanelHtml(q)}</div>
+        <div class="tab-panel answer-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="answer" style="display:none;">
+          ${q.correctAnswer
+            ? `Correct answer: <span class="answer-letter">${escapeHtml(q.correctAnswer)}</span>`
+            : `<div class="ungradable-note">No clear-cut answer was found in the mark scheme for this question.</div>`}
+        </div>
+      ` : questionPanelHtml(q)}
     </div>
   `).join("");
+
   container.querySelectorAll(".letter-btn input").forEach((input) => {
     input.addEventListener("change", () => {
       const name = input.name;
@@ -383,6 +446,19 @@ function renderQuiz() {
       input.closest(".letter-btn").classList.add("selected");
     });
   });
+
+  if (practice) {
+    container.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qnum = btn.dataset.qnum;
+        const tab = btn.dataset.tab;
+        container.querySelectorAll(`.tab-btn[data-qnum="${CSS.escape(qnum)}"]`).forEach((b) => b.classList.toggle("active", b === btn));
+        container.querySelectorAll(`.tab-panel[data-qnum="${CSS.escape(qnum)}"]`).forEach((p) => {
+          p.style.display = p.dataset.panel === tab ? "block" : "none";
+        });
+      });
+    });
+  }
 }
 
 document.getElementById("submitQuizBtn").addEventListener("click", () => {
@@ -419,13 +495,15 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
   showStage(3);
 });
 
-document.getElementById("restartBtn").addEventListener("click", () => {
+function resetToLibrary() {
   quiz = [];
+  quizMode = null;
   document.getElementById("qpPdf").value = "";
   document.getElementById("msPdf").value = "";
   resetTimer();
   showStage(0);
-});
+}
+document.getElementById("restartBtn").addEventListener("click", resetToLibrary);
 </script>
 </body>
 </html>
