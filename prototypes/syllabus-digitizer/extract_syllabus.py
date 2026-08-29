@@ -546,7 +546,11 @@ def attach_overview_image(doc, images_dir, subject_rel_path):
 
 
 FORMULA_CHAPTER_NAME_RE = re.compile(r'list of formulae|formulae and statistical tables', re.IGNORECASE)
-FORMULA_SUBENTRY_RE = re.compile(r'formula|data section|data and formulae|periodic table', re.IGNORECASE)
+FORMULA_SUBENTRY_RE = re.compile(
+    r'formula|data section|data and formulae|periodic table'
+    r'|electrical symbols|circuit symbols|symbols and units',
+    re.IGNORECASE,
+)
 
 
 def _parse_toc_subentries(doc):
