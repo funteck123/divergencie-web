@@ -102,9 +102,23 @@ async function toStoredBatches(db, batches) {
     // what actually controls how far back a newly-restructured Occurrence
     // backfills. See TKT-0155/0156.
     StartDate: b.startDate || "",
+    // When set, generation never produces a session past this date (e.g. a
+    // term/cohort ending) -- falls back to Service.EndDate, then the usual
+    // one-month-out horizon, whichever is earliest.
+    EndDate: b.endDate || "",
     OccuranceList: await toStoredOccurrences(db, b.occurrences),
     Rates: await toStoredRates(db, b.rates),
   })));
+}
+
+// Service-level Start/End are optional overall bounds (e.g. "this course
+// runs Jan-Jun") -- they apply to every Group, not just cohort services,
+// since they're plain metadata rather than a cohort-specific concept.
+// ensureScheduleGenerated treats a Batch's own StartDate/EndDate as more
+// specific and falls back to these only when the Batch doesn't set its own.
+function applyServiceDateFields(service, body) {
+  service.StartDate = (body.startDate || "").trim();
+  service.EndDate = (body.endDate || "").trim();
 }
 
 async function toStoredComponents(db, components) {
@@ -281,6 +295,7 @@ export async function POST(req) {
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
   applyAdmissionsFields(service, body, type);
+  applyServiceDateFields(service, body);
   service.Links = await toStoredLinks(db, body.links);
   stampFullNames(service);
   db.services.push(service);
@@ -347,6 +362,7 @@ export async function PATCH(req) {
   applyCohortServiceFields(service, body, group);
   applyStudentLinkFields(service, body, group);
   applyAdmissionsFields(service, body, type);
+  applyServiceDateFields(service, body);
   service.Links = await toStoredLinks(db, body.links);
   stampFullNames(service);
 
