@@ -14,7 +14,10 @@ import { api, setCurrentUser, roleHomePath } from "@/lib/client";
 // the field/label/input-type changed from Email to Username and the
 // submit handler calls dcp1-app's own /api/login instead of signIn().
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+  // TKT-0157: defaults to visible now (not hidden) -- the toggle stays for
+  // anyone who prefers to mask it on a shared screen, it just no longer
+  // starts that way.
+  const [showPassword, setShowPassword] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { api } from "@/lib/client";
 
 // Service-based: apply per enrolled Service (a recording/syllabus/etc. is
 // specific to that class). User-based: apply once to the account overall,
@@ -8,16 +10,18 @@ import Link from "next/link";
 // (see app/api/services/route.js's applyStudentLinkFields) — passed through
 // to the placeholder page as a query param so it can show an "Access"
 // button straight to that URL, alongside the in-app feature's own "Coming
-// soon" note.
+// soon" note. `toggleKey` matches a key in RESOURCE_FEATURE_KEYS
+// (app/api/resource-toggles/route.js) -- a feature whose toggle is off is
+// filtered out entirely below, not just visually disabled.
 const SERVICE_FEATURES = [
-  { slug: "recordings", label: "Recordings", linkField: "RecordingsLink" },
-  { slug: "syllabus", label: "Syllabus", linkField: "SyllabusLink" },
-  { slug: "worksheets", label: "Worksheets", linkField: "WorksheetsLink" },
-  { slug: "gcr", label: "Google Classroom", linkField: "GCRLink" },
+  { slug: "recordings", label: "Recordings", linkField: "RecordingsLink", toggleKey: "recordings" },
+  { slug: "syllabus", label: "Syllabus", linkField: "SyllabusLink", toggleKey: "syllabus" },
+  { slug: "worksheets", label: "Worksheets", linkField: "WorksheetsLink", toggleKey: "worksheets" },
+  { slug: "gcr", label: "Google Classroom", linkField: "GCRLink", toggleKey: "gcr" },
 ];
 const USER_FEATURES = [
-  { slug: "timesheet", label: "Timesheet" },
-  { slug: "progress-tracker", label: "Progress Tracker" },
+  { slug: "timesheet", label: "Timesheet", toggleKey: "timesheet" },
+  { slug: "progress-tracker", label: "Progress Tracker", toggleKey: "progressTracker" },
 ];
 // Straight external redirects to the syllabus-digitizer/mcq-digitizer
 // prototypes' own Cloudflare quick tunnels -- no Supabase/DB involvement
@@ -32,12 +36,26 @@ const EXTERNAL_TOOLS = [
 // all this needs) — same list each dashboard already builds for its "My
 // Enrollments" table.
 export default function ResourcesSection({ services, showExternalTools = false }) {
+  // Toggles default all-on except Recordings (matches the API's own
+  // default) while the fetch is in flight, so the section doesn't flash
+  // "everything hidden" for a moment on every load.
+  const [toggles, setToggles] = useState({ recordings: false, syllabus: true, worksheets: true, gcr: true, timesheet: true, progressTracker: true });
+
+  useEffect(() => {
+    api("/api/resource-toggles")
+      .then((res) => setToggles(res.toggles))
+      .catch(() => {}); // a failed fetch just keeps the all-on-except-recordings default above
+  }, []);
+
+  const visibleUserFeatures = USER_FEATURES.filter((f) => toggles[f.toggleKey]);
+  const visibleServiceFeatures = SERVICE_FEATURES.filter((f) => toggles[f.toggleKey]);
+
   return (
     <div className="card">
       <h2 className="font-semibold mb-4">Resources</h2>
 
       <div className="flex gap-2 flex-wrap mb-4">
-        {USER_FEATURES.map((f) => (
+        {visibleUserFeatures.map((f) => (
           <Link key={f.slug} className="btn-ghost" href={`/dashboard/resources/${f.slug}`}>
             {f.label}
           </Link>
@@ -57,7 +75,7 @@ export default function ResourcesSection({ services, showExternalTools = false }
             <div key={s.ServiceID} className="p-3 rounded" style={{ background: "var(--panel-2)" }}>
               <div className="font-medium mb-2">{s.Name}</div>
               <div className="flex gap-2 flex-wrap">
-                {SERVICE_FEATURES.map((f) => {
+                {visibleServiceFeatures.map((f) => {
                   const externalLink = s[f.linkField] || "";
                   const params = new URLSearchParams({ serviceId: s.ServiceID, serviceName: s.Name });
                   if (externalLink) params.set("link", externalLink);

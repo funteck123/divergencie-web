@@ -6992,6 +6992,75 @@ function AuditLog() {
   );
 }
 
+// TKT-0160: a global on/off switch per Student-portal Resources feature
+// (components/ResourcesSection.jsx reads these via GET /api/resource-
+// toggles) — Recordings defaults off pending a real recordings digitizer,
+// everything else defaults on. Lives on the Guides tab since it's the same
+// kind of thing: admin-managed, gates what content a portal shows.
+const RESOURCE_TOGGLE_LABELS = {
+  recordings: "Recordings",
+  syllabus: "Syllabus",
+  worksheets: "Worksheets",
+  gcr: "Google Classroom",
+  timesheet: "Timesheet",
+  progressTracker: "Progress Tracker",
+};
+
+function ResourceToggles() {
+  const [toggles, setToggles] = useState(null);
+  const [error, setError] = useState("");
+  const [busyKey, setBusyKey] = useState(null);
+
+  useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
+    api("/api/resource-toggles").then((res) => setToggles(res.toggles));
+  }, []);
+
+  async function flip(key, value) {
+    setError("");
+    setBusyKey(key);
+    try {
+      const { toggles } = await api("/api/resource-toggles", { method: "PATCH", body: JSON.stringify({ [key]: value }) });
+      setToggles(toggles);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusyKey(null);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-1">Student Resources Tools</h2>
+      <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
+        Turn any Resources button on/off for every student at once, without a code change.
+      </p>
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      {!toggles ? (
+        <p style={{ color: "var(--muted)" }}>Loading…</p>
+      ) : (
+        <div className="flex gap-2 flex-wrap">
+          {Object.entries(RESOURCE_TOGGLE_LABELS).map(([key, label]) => (
+            <label
+              key={key}
+              className="flex items-center gap-2 px-3 py-2 rounded border cursor-pointer"
+              style={{ borderColor: "var(--border)", opacity: busyKey === key ? 0.6 : 1 }}
+            >
+              <input
+                type="checkbox"
+                checked={!!toggles[key]}
+                disabled={busyKey === key}
+                onChange={(e) => flip(key, e.target.checked)}
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Static named-link buttons shown on portal dashboards (see
 // components/GuidesSection.jsx) — Management points each one at any URL
 // and ticks which portal(s) it should appear on. GUIDE_AUDIENCES (see
@@ -7045,6 +7114,8 @@ function Guides() {
   return (
     <div className="space-y-6">
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+
+      <ResourceToggles />
 
       <div className="card">
         <h2 className="font-semibold mb-4">Add a Guide</h2>
