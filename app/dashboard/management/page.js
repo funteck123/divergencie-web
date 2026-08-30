@@ -1779,6 +1779,28 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [gcrSent, setGcrSent] = useState(Boolean(user.GCRSent));
   const [scheduleSent, setScheduleSent] = useState(Boolean(user.ScheduleSent));
   const [saving, setSaving] = useState(false);
+  const [generatingTimesheet, setGeneratingTimesheet] = useState(false);
+  const [timesheetGenError, setTimesheetGenError] = useState("");
+
+  // TKT-0158: duplicates the real Drive template and fills in whatever this
+  // form already knows (Name/Batch/Currency/Course) -- only fills the input
+  // client-side, does not save the account. Admin still reviews and clicks
+  // the form's own Save afterward, same as typing a link in by hand.
+  async function generateTimesheet() {
+    setTimesheetGenError("");
+    setGeneratingTimesheet(true);
+    try {
+      const result = await api("/api/timesheet-automator", {
+        method: "POST",
+        body: JSON.stringify({ name, batch, currency, course }),
+      });
+      setTimesheetUrl(result.url);
+    } catch (e) {
+      setTimesheetGenError(e.message);
+    } finally {
+      setGeneratingTimesheet(false);
+    }
+  }
 
   const students = users.filter((u) => u.UserType === "Student");
 
@@ -2017,7 +2039,13 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Timesheet URL
             </label>
-            <input className="field" value={timesheetUrl} onChange={(e) => setTimesheetUrl(e.target.value)} />
+            <div className="flex gap-2">
+              <input className="field" style={{ flex: 1 }} value={timesheetUrl} onChange={(e) => setTimesheetUrl(e.target.value)} />
+              <button type="button" className="btn-ghost" onClick={generateTimesheet} disabled={generatingTimesheet} style={{ whiteSpace: "nowrap" }}>
+                {generatingTimesheet ? "Generating…" : "Generate Timesheet URL"}
+              </button>
+            </div>
+            {timesheetGenError && <p className="text-sm mt-1" style={{ color: "var(--bad)" }}>{timesheetGenError}</p>}
           </div>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
