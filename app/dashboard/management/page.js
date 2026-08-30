@@ -1852,7 +1852,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3 p-3" style={{ background: "var(--panel-2)", borderRadius: 8 }}>
+    <form onSubmit={submit} className="space-y-3 p-3" style={{ background: "var(--panel-2)", borderRadius: 8, maxWidth: 640 }}>
       <div>
         <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
           Name
@@ -2040,7 +2040,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
               Timesheet URL
             </label>
             <div className="flex gap-2">
-              <input className="field" style={{ flex: 1 }} value={timesheetUrl} onChange={(e) => setTimesheetUrl(e.target.value)} />
+              <input className="field" style={{ flex: 1, minWidth: 0 }} value={timesheetUrl} onChange={(e) => setTimesheetUrl(e.target.value)} />
               <button type="button" className="btn-ghost" onClick={generateTimesheet} disabled={generatingTimesheet} style={{ whiteSpace: "nowrap" }}>
                 {generatingTimesheet ? "Generating…" : "Generate Timesheet URL"}
               </button>
