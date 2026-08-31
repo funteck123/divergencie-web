@@ -28,6 +28,18 @@ planning/keys.md
 
 # Compiled scratch artifacts
 scratch/*.cjs
+
+# Claude Code local tooling/session config -- never shared, machine-local
+.agents/
+.claude/
+
+# NPC actor-simulation runtime state/logs/credentials -- generated at run
+# time (per-persona state snapshots, session credentials, log files), not
+# source. The actual engine/actions/personas code under lib/npc/ and
+# lib/npc-browser/ IS tracked.
+lib/npc/state/
+lib/npc-browser/state/
+lib/npc-browser/logs/
 scratch/*.mjs
 
 # Secrets / planning sensitive files
