@@ -5,21 +5,21 @@ import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "I went from a B to an A* in Economics in three months. The teachers here don't just explain — they show you exactly how examiners mark, and then they hold you to that standard every session.",
+    quote: "I went from a B to an A* in Economics in three months. The teachers here don't just explain. They show you exactly how examiners mark, and then they hold you to that standard every session.",
     name: "Aisha M.",
     detail: "A Level Economics · Cambridge · Malaysia",
     initials: "AM",
     badge: "A* Achieved",
   },
   {
-    quote: "My predicted grade for Maths was a C. DivergenCIE's structured past paper system completely changed how I approached exam questions. I sat my IGCSE and walked out knowing I'd nailed it — and I had.",
+    quote: "My predicted grade for Maths was a C. DivergenCIE's structured past paper system completely changed how I approached exam questions. I sat my IGCSE and walked out knowing I'd nailed it, and I had.",
     name: "Rohan K.",
     detail: "IGCSE Mathematics · Cambridge · India",
     initials: "RK",
     badge: "A* Achieved",
   },
   {
-    quote: "I was applying to LSE and needed top A Level grades. The sessions were intense — in the best way. My teacher had been through the same process and knew exactly what I needed. Got my offer.",
+    quote: "I was applying to LSE and needed top A Level grades. The sessions were intense, in the best way. My teacher had been through the same process and knew exactly what I needed. Got my offer.",
     name: "Sara B.",
     detail: "A Level Business · Cambridge · Saudi Arabia",
     initials: "SB",

@@ -19,24 +19,24 @@ const TYPE_META: Record<string, Omit<CardData, "subjects">> = {
   CAMBRIDGE: {
     icon: <BookOpen size={32} />,
     title: "Cambridge\nIGCSE & A Level",
-    desc: "Taught by Cambridge Country & World Toppers and certified examiners. We don't just teach the syllabus — we teach you how to think like the examiner.",
+    desc: "Taught by Cambridge Country & World Toppers and certified examiners. We don't just teach the syllabus. We teach you how to think like the examiner.",
     popular: true,
   },
   CAIE: {
     icon: <BookOpen size={32} />,
     title: "Cambridge\nIGCSE & A Level",
-    desc: "Taught by Cambridge Country & World Toppers and certified examiners. We don't just teach the syllabus — we teach you how to think like the examiner.",
+    desc: "Taught by Cambridge Country & World Toppers and certified examiners. We don't just teach the syllabus. We teach you how to think like the examiner.",
     popular: true,
   },
   AP: {
     icon: <GraduationCap size={32} />,
     title: "AP · IB · SAT\n& ACT Prep",
-    desc: "CollegeBoard-certified coaching built for students targeting top US universities. Strategy, content, and timed practice — from first session to test day.",
+    desc: "CollegeBoard-certified coaching built for students targeting top US universities. Strategy, content, and timed practice, from first session to test day.",
   },
   IB: {
     icon: <GraduationCap size={32} />,
     title: "IB Programme\nCoaching",
-    desc: "Rigorous IB HL/SL coaching for every subject. Internal assessments, extended essays, and exam strategy — we cover it all.",
+    desc: "Rigorous IB HL/SL coaching for every subject. Internal assessments, extended essays, and exam strategy. We cover it all.",
   },
   SAT: {
     icon: <GraduationCap size={32} />,
@@ -46,7 +46,7 @@ const TYPE_META: Record<string, Omit<CardData, "subjects">> = {
   IELTS: {
     icon: <Mic size={32} />,
     title: "IELTS & TOEFL\nMastery",
-    desc: "Band 8+ and 110+ score coaching. Every section, every skill — Reading, Writing, Listening, Speaking. Real exam conditions. Real results.",
+    desc: "Band 8+ and 110+ score coaching. Every section, every skill: Reading, Writing, Listening, Speaking. Real exam conditions. Real results.",
   },
   TOEFL: {
     icon: <Mic size={32} />,
@@ -64,20 +64,20 @@ const STATIC_FALLBACK: CardData[] = [
   {
     icon: <BookOpen size={32} />,
     title: "Cambridge\nIGCSE & A Level",
-    desc: "Taught by Cambridge Country & World Toppers and certified examiners. We don't just teach the syllabus — we teach you how to think like the examiner.",
+    desc: "Taught by Cambridge Country & World Toppers and certified examiners. We don't just teach the syllabus. We teach you how to think like the examiner.",
     subjects: ["Mathematics", "Physics", "Chemistry", "Biology", "Economics", "English", "+ more"],
     popular: true,
   },
   {
     icon: <GraduationCap size={32} />,
     title: "AP · IB · SAT\n& ACT Prep",
-    desc: "CollegeBoard-certified coaching built for students targeting top US universities. Strategy, content, and timed practice — from first session to test day.",
+    desc: "CollegeBoard-certified coaching built for students targeting top US universities. Strategy, content, and timed practice, from first session to test day.",
     subjects: ["AP Calculus", "AP Physics", "AP Chemistry", "SAT Math", "ACT Science", "IB HL/SL"],
   },
   {
     icon: <Mic size={32} />,
     title: "IELTS & TOEFL\nMastery",
-    desc: "Band 8+ and 110+ score coaching. Every section, every skill — Reading, Writing, Listening, Speaking. Real exam conditions. Real results.",
+    desc: "Band 8+ and 110+ score coaching. Every section, every skill: Reading, Writing, Listening, Speaking. Real exam conditions. Real results.",
     subjects: ["Academic IELTS", "General IELTS", "TOEFL iBT", "Speaking Drills", "Writing Tasks"],
   },
 ];

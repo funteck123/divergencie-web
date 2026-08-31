@@ -69,7 +69,7 @@ const tiers = [
       { text: "Predicted papers (exclusive)", included: true },
       { text: "Dedicated subject specialist", included: true }
     ],
-    scholarshipLabel: "We are looking for talented students — scholarships available",
+    scholarshipLabel: "We are looking for talented students, scholarships available",
     button: "ENQUIRE NOW",
     accent: "var(--navy)"
   }
@@ -88,8 +88,8 @@ const paymentMethods = [
 ];
 
 const faqs = [
-  { q: "Is there a free trial session?", a: "Yes — we offer a free 30-minute diagnostic session for all new students." },
-  { q: "When do I pay — before or after sessions?", a: "Payment is collected monthly in advance at the start of each billing cycle." },
+  { q: "Is there a free trial session?", a: "Yes, we offer a free 30-minute diagnostic session for all new students." },
+  { q: "When do I pay: before or after sessions?", a: "Payment is collected monthly in advance at the start of each billing cycle." },
   { q: "Can I switch tiers mid-way through?", a: "Yes. You can upgrade or downgrade your tier at the end of any billing month." },
   { q: "What happens if I miss a session?", a: "Life happens. Missed sessions can be rescheduled with at least 12 hours' notice." },
 ];

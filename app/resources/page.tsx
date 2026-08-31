@@ -16,7 +16,7 @@ const materials = [
   {
     title: "Yearly Past Paper Books",
     label: "Free",
-    desc: "Complete yearly past paper compilations for IGCSE and A Level — all variants included.",
+    desc: "Complete yearly past paper compilations for IGCSE and A Level, all variants included.",
     subjects: ["IGCSE", "A Level"],
     icon: <Book />,
     cta: "Request via WhatsApp",

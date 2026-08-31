@@ -33,7 +33,7 @@ export default function Partners() {
               </div>
             </div>
             <p className="text-sm font-medium text-[var(--text-muted)] leading-relaxed mb-8">
-              The world&apos;s largest provider of international education programmes. Our coaches are certified Cambridge examiners — they don&apos;t just teach the syllabus, they helped write the mark schemes.
+              The world&apos;s largest provider of international education programmes. Our coaches are certified Cambridge examiners. They don&apos;t just teach the syllabus, they helped write the mark schemes.
             </p>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-[var(--bg-secondary)] dark:bg-white/5 text-[10px] font-bold text-[var(--navy)] dark:text-white uppercase tracking-wider">
               <ShieldCheck size={12} className="text-[var(--gold)]" />
@@ -73,7 +73,7 @@ export default function Partners() {
               </div>
             </div>
             <p className="text-sm font-medium text-[var(--text-muted)] leading-relaxed mb-8">
-              Every live session runs on enterprise-grade tools — Zoom for class, Google Classroom for materials, Microsoft Whiteboard for real-time problem solving. No dodgy third-party apps.
+              Every live session runs on enterprise-grade tools: Zoom for class, Google Classroom for materials, Microsoft Whiteboard for real-time problem solving. No dodgy third-party apps.
             </p>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-none bg-[var(--bg-secondary)] dark:bg-white/5 text-[10px] font-bold text-[var(--navy)] dark:text-white uppercase tracking-wider">
               <Zap size={12} className="text-[var(--gold)]" />

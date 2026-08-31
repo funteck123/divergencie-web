@@ -39,7 +39,7 @@ export default function AboutPage() {
             <span className="text-[var(--gold)]">FOR TOPPERS.</span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-white/80 font-medium">
-            DivergenCIE was founded on one belief: every student has the potential to reach the top — they just need the right system, mentors, and community.
+            DivergenCIE was founded on one belief: every student has the potential to reach the top. They just need the right system, mentors, and community.
           </p>
         </div>
       </section>
@@ -74,7 +74,7 @@ export default function AboutPage() {
                 From One Student&apos;s <span className="text-[var(--gold)]">Frustration</span> to a Global Movement
               </h2>
               <div className="space-y-6 text-[var(--text-muted)] text-lg leading-relaxed">
-                <p>DivergenCIE was born out of frustration — a Cambridge student who struggled to find quality, personalised coaching. Tutors were either too expensive, too generic, or disconnected from the actual exam system.</p>
+                <p>DivergenCIE was born out of frustration: a Cambridge student who struggled to find quality, personalised coaching. Tutors were either too expensive, too generic, or disconnected from the actual exam system.</p>
                 <p>We built something different. A platform designed by exam-takers, for exam-takers. Every method, every resource, every teacher is chosen with one goal: <span className="text-[var(--navy)] dark:text-white font-black">get our students to the top of the world leaderboard.</span></p>
               </div>
               <div className="grid grid-cols-3 gap-8 pt-8">

@@ -116,7 +116,7 @@ export default function ServicesPage() {
             <span className="text-[var(--gold)]">One Partner.</span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-white/80 font-medium mb-12">
-            From IGCSE to university applications — we coach the full academic journey for students worldwide.
+            From IGCSE to university applications. We coach the full academic journey for students worldwide.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             {["IB Specialists", "World Toppers"].map((b, i) => (
@@ -199,7 +199,7 @@ export default function ServicesPage() {
               <div className="space-y-6">
                 {[
                   "A*-focused curriculum mapped to exam mark schemes.",
-                  "Live Zoom sessions with MS Whiteboard — recorded forever.",
+                  "Live Zoom sessions with MS Whiteboard, recorded forever.",
                   "24/7 Portal access for resources and progress tracking."
                 ].map((p, i) => (
                   <div key={i} className="flex items-start gap-4">

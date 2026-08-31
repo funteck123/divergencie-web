@@ -41,7 +41,7 @@ export default function AboutSection() {
             </h2>
             <p className="text-sm font-black tracking-[0.15em] text-[var(--text-muted)] uppercase mb-12 max-w-md leading-relaxed">
               WE DON&apos;T BELIEVE IN COOKIE-CUTTER APPLICATIONS. WE FIND WHAT MAKES
-              YOU GENUINELY DIFFERENT — AND BUILD A STRATEGY AROUND IT.
+              YOU GENUINELY DIFFERENT, AND BUILD A STRATEGY AROUND IT.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-8 mb-12">

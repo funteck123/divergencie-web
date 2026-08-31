@@ -25,7 +25,7 @@ function AdmissionsForm() {
   const COUNTRIES = ["United Kingdom","Malaysia","United Arab Emirates","Bangladesh","United States","Singapore","Pakistan","Other"];
 
   const STEPS = [
-    { n: 1, title: "Apply Below", desc: "Fill out the short form — takes 2 minutes." },
+    { n: 1, title: "Apply Below", desc: "Fill out the short form. Takes 2 minutes." },
     { n: 2, title: "Consultation Call", desc: "Our team contacts you within 24 hours to discuss your goals." },
     { n: 3, title: "Trial Session", desc: "Join a complimentary session with your assigned tutor." },
     { n: 4, title: "Enrol", desc: "Choose your package and start your journey to A*." },
@@ -135,7 +135,7 @@ function AdmissionsForm() {
 
 export default function AdmissionsPage() {
   const STEPS = [
-    { n: 1, title: "Apply Below", desc: "Fill out the short form — takes 2 minutes." },
+    { n: 1, title: "Apply Below", desc: "Fill out the short form. Takes 2 minutes." },
     { n: 2, title: "Consultation Call", desc: "Our team contacts you within 24 hours to discuss your goals." },
     { n: 3, title: "Trial Session", desc: "Join a complimentary session with your assigned tutor." },
     { n: 4, title: "Enrol", desc: "Choose your package and start your journey to A*." },
