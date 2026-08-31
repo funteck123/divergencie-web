@@ -7,6 +7,7 @@ import AboutSection from "@/components/AboutSection";
 import ServicesGrid from "@/components/ServicesGrid";
 import AcademicResults from "@/components/AcademicResults";
 import Partners from "@/components/Partners";
+import Press from "@/components/Press";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 
@@ -22,9 +23,7 @@ export default function Home() {
       <ServicesGrid />
       <AcademicResults />
       <Partners />
-      {/* TKT-0179: Press hidden -- its logos (Guardian Education, BBC
-          Learning, etc.) are fabricated, no real coverage exists yet.
-          Component kept intact for when there's real press to list. */}
+      <Press />
       <Testimonials />
       <Footer />
     </main>
