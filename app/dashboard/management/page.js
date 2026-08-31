@@ -500,6 +500,68 @@ function Applications() {
   );
 }
 
+// Real WhatsApp trial-reminder script Management sends by hand today --
+// TKT (this session): draft it automatically instead of retyping it per
+// student. Zoom details are DivergenCIE's one standing classroom link,
+// same for every trial/class (per the message's own "will be the same
+// for all your classes" line), not looked up per-service.
+const TRIAL_ZOOM_BLOCK = `DivergenCIE Coaching Classroom (Official)
+
+Join Zoom Meeting
+https://us05web.zoom.us/j/82245071438?pwd=cv7NwRqIZyP4axAhsbRvvFfpcBja3S.1
+
+
+Meeting ID: 822 4507 1438
+Passcode: a000000000
+---
+
+Join by Skype for Business
+https://us05web.zoom.us/skype/82245071438
+
+Note: If there is any technical problem with the meeting, please inform us within 5 minutes. You can try using the meeting ID.`;
+
+// Timezone labels read naturally as adjectives in this message ("Indian
+// Time", not "India Time") -- lib/timezones.js's timezoneLabel() returns
+// the noun form used everywhere else in the app, so this is a
+// message-local override, not a change to that shared helper.
+const TZ_ADJECTIVE = { India: "Indian", UK: "British", Saudi: "Saudi", Pakistan: "Pakistani", UAE: "UAE" };
+
+function formatTrialTime(time24) {
+  const [h, m] = time24.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+function formatTrialDuration(hours) {
+  if (hours < 1) return `${Math.round(hours * 60)} Minutes`;
+  return `${hours} Hour${hours === 1 ? "" : "s"}`;
+}
+
+function buildTrialMessage({ studentName, serviceName, slot }) {
+  const date = new Date(`${slot.Date}T00:00:00`);
+  const weekday = date.toLocaleDateString("en-GB", { weekday: "long" });
+  const fullDate = date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const timeStr = formatTrialTime(slot.Time);
+  const tzNoun = slot.Timezone ? timezoneLabel(slot.Timezone) : "";
+  const tzWord = tzNoun ? `${TZ_ADJECTIVE[tzNoun] || tzNoun} Time` : "";
+  const durationStr = formatTrialDuration(slot.Duration);
+
+  return `Hello ${studentName} ✨
+
+I hope you're doing great. We are hoping to see you in the classes on the following day and time:
+
+*${serviceName} Trial Class*
+Day: ${weekday}, ${fullDate}
+Time: ${timeStr}${tzWord ? ` ${tzWord}` : ""}
+Duration: ${durationStr}
+
+*The meeting link will be the same for all your classes.*
+
+
+${TRIAL_ZOOM_BLOCK}`;
+}
+
 /* ---------------- Pipeline ---------------- */
 function Pipeline() {
   const [trialItems, setTrialItems] = useState([]);
@@ -517,6 +579,14 @@ function Pipeline() {
   const [busyTrialIds, setBusyTrialIds] = useState(new Set());
   const [busyAccountIds, setBusyAccountIds] = useState(new Set());
   const [busyRequestIds, setBusyRequestIds] = useState(new Set());
+  const [copiedTrialId, setCopiedTrialId] = useState("");
+
+  async function copyTrialMessage(trial, slot) {
+    const message = buildTrialMessage({ studentName: trial._name, serviceName: trial._service, slot });
+    await navigator.clipboard.writeText(message);
+    setCopiedTrialId(trial.TrialID);
+    setTimeout(() => setCopiedTrialId((id) => (id === trial.TrialID ? "" : id)), 2000);
+  }
 
   async function load() {
     const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlotIds, scheduleItems }, { leads }] = await Promise.all([
@@ -847,6 +917,7 @@ function Pipeline() {
               <SortableTh label="Progress" sortKeyName="Status" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <SortableTh label="Scheduled" sortKeyName="_scheduledAt" sortKey={trialSort.sortKey} sortDir={trialSort.sortDir} onSort={trialSort.toggleSort} />
               <th>Instructor</th>
+              <th>Message</th>
               <th>Feedback</th>
               <th></th>
               <th>Invoice</th>
@@ -868,6 +939,15 @@ function Pipeline() {
                   </td>
                   <td style={{ color: "var(--muted)" }}>{slot ? `${formatDate(slot.Date)} at ${slot.Time}` : "—"}</td>
                   <td style={{ color: "var(--muted)" }}>{slot ? slot.Facilitator || "no instructor set" : "—"}</td>
+                  <td>
+                    {slot ? (
+                      <button className="btn-ghost" onClick={() => copyTrialMessage(t, slot)}>
+                        {copiedTrialId === t.TrialID ? "Copied ✓" : "Copy Trial Message"}
+                      </button>
+                    ) : (
+                      <span style={{ color: "var(--muted)" }}>—</span>
+                    )}
+                  </td>
                   <td style={{ color: "var(--muted)" }}>{t.Feedback || "—"}</td>
                   <td>
                     {t.Status === "FeedbackSubmitted" && !t.ServiceAdded && (
@@ -891,7 +971,7 @@ function Pipeline() {
               );
             })}
             {trialRows.length === 0 && (
-              <tr><td colSpan={9} style={{ color: "var(--muted)" }}>{trialItems.length === 0 ? "No trial bookings yet." : "No matches."}</td></tr>
+              <tr><td colSpan={10} style={{ color: "var(--muted)" }}>{trialItems.length === 0 ? "No trial bookings yet." : "No matches."}</td></tr>
             )}
           </tbody>
         </table>
