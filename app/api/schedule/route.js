@@ -92,14 +92,25 @@ export async function POST(req) {
 // happens). Original Date/Time are never touched — RescheduledDate/Time are
 // a separate pair of fields so the original slot stays the historical
 // record (attendance, invoices, etc. all still key off the original).
-// body: { scheduleId, rescheduledDate, rescheduledTime } — either passed as
-// "" clears an existing reschedule.
+// body: { scheduleId, rescheduledDate, rescheduledTime, duration? } — either
+// reschedule field passed as "" clears an existing reschedule. `duration`
+// is a real gap this route had no way to correct before: hours, same field
+// the create path (POST above) validates, added specifically because a
+// mistyped Duration (e.g. "30" meant as minutes, not hours) had no fix path
+// at all short of deleting and recreating the whole schedule item.
 export async function PATCH(req) {
   const { error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { scheduleId, rescheduledDate, rescheduledTime } = await req.json();
+  const { scheduleId, rescheduledDate, rescheduledTime, duration } = await req.json();
   if (!scheduleId) return NextResponse.json({ error: "scheduleId is required." }, { status: 400 });
+
+  if (duration !== undefined) {
+    const n = Number(duration);
+    if (!Number.isFinite(n) || n <= 0) {
+      return NextResponse.json({ error: "duration must be a positive number." }, { status: 400 });
+    }
+  }
 
   const db = await readDB();
   const item = db.scheduleItems.find((s) => s.ScheduleID === scheduleId);
@@ -107,6 +118,7 @@ export async function PATCH(req) {
 
   if (rescheduledDate !== undefined) item.RescheduledDate = rescheduledDate;
   if (rescheduledTime !== undefined) item.RescheduledTime = rescheduledTime;
+  if (duration !== undefined) item.Duration = Number(duration);
   await writeDB(db, ["scheduleItems"]);
 
   return NextResponse.json({ scheduleItem: item });
