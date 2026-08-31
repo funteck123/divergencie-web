@@ -1919,6 +1919,8 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
     }
     if (user.UserType === "Staff") {
       fields.department = department;
+    }
+    if (["Staff", "Teacher"].includes(user.UserType)) {
       fields.workFolderUrl = workFolderUrl;
       fields.timesheetUrl = timesheetUrl;
     }
@@ -2060,7 +2062,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         </p>
       )}
 
-      {user.UserType === "Staff" && (
+      {["Staff", "Teacher"].includes(user.UserType) && (
         <>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>

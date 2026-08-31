@@ -132,8 +132,11 @@ function applyCurrency(user, currency) {
 // TimesheetURL is the same field name Student uses for its own Timesheet
 // (applyStudentExtras owns that case) since the two UserType buckets never
 // overlap.
+// TKT-0208: Teacher gets the same Work Folder/Timesheet fields Staff
+// already had -- these were previously Staff-only, silently dropped for
+// every other UserType including Teacher.
 function applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl } = {}) {
-  if (userType === "Staff") {
+  if (["Staff", "Teacher"].includes(userType)) {
     if (workFolderUrl !== undefined) user.WorkFolderURL = workFolderUrl || "";
     if (timesheetUrl !== undefined) user.TimesheetURL = timesheetUrl || "";
   } else {
