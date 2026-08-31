@@ -6,11 +6,14 @@ blank — plan real numbers before filling in and applying.
 | Ticket | Location | Faulty text | Replacement |
 | :--- | :--- | :--- | :--- |
 | TKT-0164 | `components/Hero.tsx` (homepage hero stat strip) | "98%" / "FIRST CHOICE PLACEMENT", "40+" / "COUNTRIES REPRESENTED" | |
-| TKT-0164 | `components/AboutSection.tsx` | "98%" / "First choice placement", "40+" / "Countries represented" | |
+| TKT-0164 | `components/AboutSection.tsx` | ~~"98%" / "First choice placement", "40+" / "Countries represented"~~ | **Already removed** — deleted entirely (not replaced) in commit 1abdc01, as part of the "ARE YOU?" card fix for TKT-0172/0173. |
 | TKT-0164 | `components/GlobalReach.tsx` | "STUDENTS FROM 40+ COUNTRIES. ONE STANDARD: EXCEPTIONAL." | |
 | TKT-0165 | `components/AcademicResults.tsx` ("OUR RESULTS" section, `resultsData`) | Mathematics 96%, Physics 92%, Chemistry 89%, Economics 94%, English Language 88%, IELTS 91% (Band 7.5+) — all A*–A, tagline "REAL STUDENTS. REAL A*S. NO AIRBRUSHING." | |
 | TKT-0166 | `components/Stats.tsx` (`allStats`, under "MAKE UNIVERSITIES AN OFFER") | "70+" Students placed at Top 10 UK universities, "40+" Countries, "98%" first choice, "10+" Years of admissions expertise | |
 | TKT-0168 | `components/GlobalReach.tsx` | Same "40+ COUNTRIES" line as above — also the source of the "goes global" numbers ticket refers to | |
+| TKT-0176 | `components/AcademicResults.tsx` — same file/section as TKT-0165, same `resultsData` numbers | See TKT-0165 row above — this is the same content, not a separate location | |
+| TKT-0177 | `components/AcademicResults.tsx` lines 66–77 | "Students placed at" label + hardcoded university list (Oxford, Cambridge, LSE, Imperial, UCL, Durham, Warwick, Edinburgh, King's College, St Andrews) + "30+ more" badge — implies real placement outcomes with no real data behind it | |
+| TKT-0181 | `app/about/page.tsx` lines 80–93 | "500+" Students, "40+" A* Cohorts, "6" Countries | |
 
 Not yet located: the specific "DivergenCIE goes global" heading text itself
 — `GlobalReach.tsx` has the "STUDENTS FROM 40+ COUNTRIES" line but no
