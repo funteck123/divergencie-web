@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { readDB, writeDB, nextId } from "@/lib/db";
+import { readDB, writeDB } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
-import { generatePassword, hashPassword } from "@/lib/passwords";
+import { approveRegForm } from "@/lib/regFormApproval";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -17,28 +17,6 @@ export async function GET(req) {
   });
   return NextResponse.json({ regForms });
 }
-
-function makeUsername(name, db) {
-  const base = name.toLowerCase().replace(/[^a-z0-9]/g, "");
-  let candidate = base;
-  let n = 1;
-  while (db.credentials.some((c) => c.Username === candidate)) {
-    n += 1;
-    candidate = `${base}${n}`;
-  }
-  return candidate;
-}
-
-// RequestedType -> the pending UserType/ID prefix it creates on approval.
-// Each Interview track produces its own distinct pending account so it
-// converts to the right final type later (see CONVERT_MAP in
-// api/convert/route.js) — mirrors ID_PREFIX in api/users/route.js.
-const REQUEST_TYPE_MAP = {
-  Trial: { userType: "TrialAcc", prefix: "TRL" },
-  TeacherInterview: { userType: "TeacherInterviewAcc", prefix: "TIN" },
-  StaffInterview: { userType: "StaffInterviewAcc", prefix: "SIN" },
-  AmbassadorInterview: { userType: "AmbassadorInterviewAcc", prefix: "AIN" },
-};
 
 // action: "approve" | "reject"
 export async function PATCH(req) {
@@ -61,36 +39,15 @@ export async function PATCH(req) {
   }
 
   if (action === "approve") {
-    const mapping = REQUEST_TYPE_MAP[form.RequestedType];
-    if (!mapping) {
-      return NextResponse.json({ error: `Unknown RequestedType "${form.RequestedType}".` }, { status: 400 });
+    let result;
+    try {
+      result = await approveRegForm(db, form);
+    } catch (e) {
+      return NextResponse.json({ error: e.message }, { status: 400 });
     }
-    const { userType, prefix } = mapping;
-    const userId = await nextId(db, prefix);
-
-    // TKT-0123: the applicant's Email was captured on the original
-    // registration form but never carried over to the real account,
-    // silently dropped at approval time. Auto-extracted as a starting
-    // default here; the candidate can still edit it via their own
-    // Personal Info section (see app/api/interview-profile/route.js).
-    const user = {
-      UserID: userId,
-      UserType: userType,
-      Name: form.Name,
-      Status: "Active",
-      Currency: "INR",
-      ...(form.Email ? { Email: form.Email } : {}),
-    };
-    const username = makeUsername(form.Name, db);
-    const password = generatePassword();
-    db.users.push(user);
-    db.credentials.push({ UserID: userId, Username: username, Password: hashPassword(password) });
-
-    form.Status = "Approved";
-    form.CreatedUserID = userId;
     await writeDB(db, ["regForms", "users", "credentials"]);
 
-    return NextResponse.json({ regForm: form, user, credentials: { username, password } });
+    return NextResponse.json({ regForm: form, user: result.user, credentials: result.credentials });
   }
 
   return NextResponse.json({ error: "action must be approve or reject." }, { status: 400 });

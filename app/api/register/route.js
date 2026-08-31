@@ -5,6 +5,8 @@ import { requireManagement } from "@/lib/authz";
 import { checkRegisterRateLimit } from "@/lib/rateLimit";
 import { getOAuthAccessToken } from "@/lib/googleAuth";
 import { uploadFile, extractDriveFolderId } from "@/lib/googleDrive";
+import { approveRegForm } from "@/lib/regFormApproval";
+import { sendEmail } from "@/lib/googleMail";
 
 const MAX_RESUME_BYTES = 10 * 1024 * 1024; // 10MB
 
@@ -80,6 +82,42 @@ export async function POST(req) {
     SubmittedAt: new Date().toISOString(),
   };
   db.regForms.push(regForm);
+
+  // TKT-0203: if Management has turned auto-approval on, skip the manual
+  // review step entirely -- create the real account immediately and email
+  // the login straight to the applicant. A failure here (bad RequestedType,
+  // email send) must never lose the submission itself; the RegForm is
+  // already staged above, so on any error it just falls back to sitting
+  // Pending for manual review, same as the auto-approve-off path.
+  const autoApproveRow = (db.resourceToggles || []).find((r) => r.ID === "REGISTRATION_SETTINGS");
+  if (autoApproveRow?.autoApprove) {
+    try {
+      const { credentials } = await approveRegForm(db, regForm);
+      await writeDB(db, ["regForms", "users", "credentials"]);
+      try {
+        await sendEmail({
+          to: email,
+          subject: "Your DivergenCIE login",
+          text: [
+            `Hi ${name},`,
+            ``,
+            `Your application has been approved. Here are your login details:`,
+            ``,
+            `Username: ${credentials.username}`,
+            `Password: ${credentials.password}`,
+            ``,
+            `Log in at https://www.divergencie.co.uk/login`,
+          ].join("\n"),
+        });
+      } catch (e) {
+        console.error("register: auto-approve credential email failed", e);
+      }
+      return NextResponse.json({ regForm });
+    } catch (e) {
+      console.error("register: auto-approve failed, leaving Pending for manual review", e);
+    }
+  }
+
   await writeDB(db, ["regForms"]);
 
   return NextResponse.json({ regForm });

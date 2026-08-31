@@ -355,13 +355,34 @@ function Applications() {
   const [error, setError] = useState("");
   const [busyIds, setBusyIds] = useState(new Set());
   const [search, setSearch] = useState("");
+  const [autoApprove, setAutoApprove] = useState(false);
+  const [savingAutoApprove, setSavingAutoApprove] = useState(false);
   const searchLower = search.trim().toLowerCase();
   const filtered = regForms.filter((r) => !searchLower || r.Name.toLowerCase().includes(searchLower));
   const { sorted, sortKey, sortDir, toggleSort } = useSort(filtered, "RegFormID");
 
+  // TKT-0203: when on, a new application skips manual review entirely --
+  // an account is created immediately and login credentials are emailed
+  // straight to the applicant.
+  async function toggleAutoApprove() {
+    setSavingAutoApprove(true);
+    try {
+      const res = await api("/api/register-settings", {
+        method: "PATCH",
+        body: JSON.stringify({ autoApprove: !autoApprove }),
+      });
+      setAutoApprove(res.autoApprove);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSavingAutoApprove(false);
+    }
+  }
+
   async function load() {
-    const { regForms } = await api("/api/regforms");
+    const [{ regForms }, settings] = await Promise.all([api("/api/regforms"), api("/api/register-settings")]);
     setRegForms(regForms);
+    setAutoApprove(settings.autoApprove);
   }
   useEffect(() => {
   // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
@@ -394,7 +415,13 @@ function Applications() {
 
   return (
     <div className="card">
-      <h2 className="font-semibold mb-4">RegForm Applications</h2>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 className="font-semibold">RegForm Applications</h2>
+        <label className="flex items-center gap-2 text-sm" style={{ color: "var(--muted)" }}>
+          <input type="checkbox" checked={autoApprove} disabled={savingAutoApprove} onChange={toggleAutoApprove} />
+          Auto-approve new applications (emails login to applicant immediately)
+        </label>
+      </div>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder="Search applicant name…" />
       {/* TKT-0134: same maxHeight+overflowY cap as Enrollments/Pipeline. */}
