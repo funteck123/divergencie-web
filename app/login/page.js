@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { ArrowLeft, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { api, setCurrentUser, roleHomePath } from "@/lib/client";
 
@@ -14,10 +14,6 @@ import { api, setCurrentUser, roleHomePath } from "@/lib/client";
 // the field/label/input-type changed from Email to Username and the
 // submit handler calls dcp1-app's own /api/login instead of signIn().
 export default function LoginPage() {
-  // TKT-0157: defaults to visible now (not hidden) -- the toggle stays for
-  // anyone who prefers to mask it on a shared screen, it just no longer
-  // starts that way.
-  const [showPassword, setShowPassword] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -125,23 +121,15 @@ export default function LoginPage() {
                 <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Password</label>
                 <a href="mailto:divergenCIE@outlook.com" title="Forgot Password" className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)]">Forgot?</a>
               </div>
-              <div className="relative">
-                <input
-                  required
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full p-4 pr-12 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+              {/* TKT-0157: never masked -- always plaintext, no toggle. */}
+              <input
+                required
+                type="text"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="your-password"
+                className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors"
+              />
             </div>
 
             <div className="flex items-center gap-3 py-2">
