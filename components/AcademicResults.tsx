@@ -1,7 +1,5 @@
 "use client";
 
-import { Landmark, Plus } from "lucide-react";
-
 const resultsData = [
   { subject: "Mathematics", percent: 96, label: "A*–A" },
   { subject: "Physics", percent: 92, label: "A*–A" },
@@ -9,19 +7,6 @@ const resultsData = [
   { subject: "Economics", percent: 94, label: "A*–A" },
   { subject: "English Language", percent: 88, label: "A*–A" },
   { subject: "IELTS", percent: 91, label: "Band 7.5+" },
-];
-
-const unis = [
-  "University of Oxford",
-  "University of Cambridge",
-  "LSE",
-  "Imperial College London",
-  "UCL",
-  "Durham University",
-  "University of Warwick",
-  "University of Edinburgh",
-  "King's College London",
-  "University of St Andrews",
 ];
 
 export default function AcademicResults() {
@@ -59,22 +44,6 @@ export default function AcademicResults() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-xs font-black text-[var(--text-muted)] uppercase tracking-[0.3em] mb-8 text-center md:text-left">Students placed at</p>
-          <div className="flex flex-wrap gap-4">
-            {unis.map((uni, idx) => (
-              <div key={idx} className="flex items-center gap-3 px-6 py-4 rounded-none bg-[var(--bg-secondary)] dark:bg-white/5 border border-[var(--border-subtle)] hover:border-[var(--navy)] hover:shadow-[6px_6px_0px_var(--navy)] transition-all">
-                <Landmark size={18} className="text-[var(--gold)]" />
-                <span className="text-sm font-bold text-[var(--navy)] dark:text-white tracking-wide">{uni}</span>
-              </div>
-            ))}
-            <div className="flex items-center gap-3 px-6 py-4 rounded-none bg-[var(--gold-light-bg)] dark:bg-[var(--gold)]/20 border border-[var(--gold)] text-[var(--gold)] hover:shadow-[6px_6px_0px_var(--gold)] transition-all">
-              <Plus size={18} />
-              <span className="text-sm font-black uppercase tracking-widest">30+ more</span>
-            </div>
           </div>
         </div>
       </div>
