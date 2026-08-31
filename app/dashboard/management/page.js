@@ -477,6 +477,7 @@ function Applications() {
 function Pipeline() {
   const [trialItems, setTrialItems] = useState([]);
   const [interviewItems, setInterviewItems] = useState([]);
+  const [leads, setLeads] = useState([]);
   const [users, setUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [invoices, setInvoices] = useState([]);
@@ -491,18 +492,20 @@ function Pipeline() {
   const [busyRequestIds, setBusyRequestIds] = useState(new Set());
 
   async function load() {
-    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlotIds, scheduleItems }] = await Promise.all([
+    const [{ users }, { services }, { invoices }, { pendingTrials, pendingInterviews }, { openPoolSlotIds, scheduleItems }, { leads }] = await Promise.all([
       api("/api/users"),
       api("/api/services"),
       api("/api/invoices"),
       api("/api/schedule/requests"),
       api("/api/schedule"),
+      api("/api/leads"),
     ]);
     setUsers(users);
     setServices(services);
     setInvoices(invoices);
     setPendingTrials(pendingTrials);
     setPendingInterviews(pendingInterviews);
+    setLeads(leads);
     // /api/schedule now sends open-pool IDs only (not full duplicate
     // objects, see its own comment) — reconstitute from scheduleItems,
     // which we already have in full.
@@ -970,6 +973,45 @@ function Pipeline() {
             })}
             {interviewRows.length === 0 && (
               <tr><td colSpan={9} style={{ color: "var(--muted)" }}>{interviewItems.length === 0 ? "No interview bookings yet." : "No matches."}</td></tr>
+            )}
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      {/* TKT-0169: website contact-form submissions -- read-only, no
+          approve/convert workflow like Trial/Interview since a lead isn't
+          an account, just an inquiry someone reviews and follows up on
+          manually (by email/WhatsApp). */}
+      <div className="card">
+        <h2 className="font-semibold mb-4">Inquiries</h2>
+        <div className="scroll-fade overflow-x-auto" style={{ maxHeight: 480, overflowY: "auto" }}>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>WhatsApp</th>
+              <th>Country</th>
+              <th>Notes</th>
+              <th>Received</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...leads].reverse().map((l) => (
+              <tr key={l.LeadID}>
+                <td>{l.Name}</td>
+                <td>{l.Email}</td>
+                <td style={{ color: "var(--muted)" }}>{l.WhatsAppNumber || "—"}</td>
+                <td style={{ color: "var(--muted)" }}>{l.Country || "—"}</td>
+                <td style={{ color: "var(--muted)" }}>
+                  <span className="subject-truncate" title={l.Notes}>{l.Notes || "—"}</span>
+                </td>
+                <td style={{ color: "var(--muted)" }}>{formatDate(l.CreatedAt)}</td>
+              </tr>
+            ))}
+            {leads.length === 0 && (
+              <tr><td colSpan={6} style={{ color: "var(--muted)" }}>No inquiries yet.</td></tr>
             )}
           </tbody>
         </table>

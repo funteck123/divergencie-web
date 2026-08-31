@@ -17,12 +17,16 @@ export default function ContactPage() {
     const fname = formData.get("fname") as string;
     const lname = formData.get("lname") as string;
     const email = formData.get("email") as string;
+    const whatsapp = formData.get("whatsapp") as string;
+    const country = formData.get("country") as string;
     const subject = formData.get("subject") as string;
     const message = formData.get("message") as string;
 
     const res = await createLead({
       name: `${fname} ${lname}`,
       email: email,
+      whatsapp: whatsapp,
+      country: country,
       notes: `[Subject: ${subject}] ${message}`,
       source: "Website Contact Form"
     });
@@ -115,6 +119,24 @@ export default function ContactPage() {
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Email Address</label>
                       <input name="email" required type="email" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors" />
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">WhatsApp Number</label>
+                        <input name="whatsapp" type="tel" placeholder="+44 7000 000000" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Country</label>
+                        <select name="country" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors appearance-none">
+                          <option value="" className="bg-white dark:bg-[var(--bg-primary)]">Where are you located?</option>
+                          <option value="United Kingdom" className="bg-white dark:bg-[var(--bg-primary)]">United Kingdom</option>
+                          <option value="Malaysia" className="bg-white dark:bg-[var(--bg-primary)]">Malaysia</option>
+                          <option value="India" className="bg-white dark:bg-[var(--bg-primary)]">India</option>
+                          <option value="Saudi Arabia" className="bg-white dark:bg-[var(--bg-primary)]">Saudi Arabia</option>
+                          <option value="Pakistan" className="bg-white dark:bg-[var(--bg-primary)]">Pakistan</option>
+                          <option value="Other" className="bg-white dark:bg-[var(--bg-primary)]">Other</option>
+                        </select>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Subject</label>
