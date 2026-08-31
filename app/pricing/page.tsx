@@ -15,6 +15,9 @@ const PRICING_DATA: Record<string, any> = {
   USD: { symbol: "$", t1: "150", t2: "220", t3: "350" }
 };
 
+// TKT-0190: price tier shown as relative $ signs, not an actual number.
+const DOLLAR_SIGNS: Record<string, string> = { t1: "$", t2: "$$", t3: "$$$" };
+
 const tiers = [
   {
     id: "t1",
@@ -25,7 +28,7 @@ const tiers = [
     features: [
       { text: "2 × 1-hr live sessions/week", included: true },
       { text: "Past paper access (topical + yearly)", included: true },
-      { text: "WhatsApp doubt resolution (48hr)", included: true },
+      { text: "doubt resolution (48hr)", included: true },
       { text: "Monthly progress report", included: true },
       { text: "Access to student portal", included: true }
     ],
@@ -42,7 +45,7 @@ const tiers = [
       { text: "3 × 1-hr live sessions/week", included: true },
       { text: "Session recordings in student portal", included: true },
       { text: "Past paper access (topical + yearly)", included: true },
-      { text: "WhatsApp doubt resolution (24hr)", included: true },
+      { text: "doubt resolution (24hr)", included: true },
       { text: "Monthly progress report", included: true },
       { text: "Access to student portal", included: true },
       { text: "A* Progress Tracker", included: true },
@@ -141,8 +144,7 @@ export default function PricingPage() {
                 <p className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest mb-10 leading-relaxed">{tier.desc}</p>
                 
                 <div className="mb-4 flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-[var(--text-muted)]">{currency.symbol}</span>
-                  <span className="text-6xl font-black text-[var(--navy)] dark:text-white">{(currency.data as any)[tier.id]}</span>
+                  <span className="text-6xl font-black text-[var(--navy)] dark:text-white">{DOLLAR_SIGNS[tier.id]}</span>
                   <span className="text-xs font-black text-[var(--text-muted)] ml-2">/MONTH</span>
                 </div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-12 border-b border-[var(--border-subtle)] pb-8 leading-loose">{tier.period}</p>
@@ -177,7 +179,10 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Payment Methods */}
+      {/* Payment Methods -- TKT-0192: hidden by commenting out, not deleted,
+          per explicit user instruction ("hide it for now, disable with
+          comment"). */}
+      {/*
       <section className="py-24 bg-[var(--bg-secondary)] dark:bg-white/5">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-16">
@@ -197,6 +202,7 @@ export default function PricingPage() {
           </div>
         </div>
       </section>
+      */}
 
       <Footer />
     </main>
