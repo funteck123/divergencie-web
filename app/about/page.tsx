@@ -151,7 +151,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Toppers strip */}
+      {/* Toppers strip -- TKT-0183: hidden, not deleted, per explicit user
+          instruction ("disable for now... not delete but removed by
+          hiding"). Re-enable by uncommenting when there's real data. */}
+      {/*
       <section className="py-20 bg-[var(--navy)] text-white overflow-hidden">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-black mb-12 text-center uppercase tracking-widest">
@@ -170,6 +173,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      */}
 
       <Footer />
     </main>

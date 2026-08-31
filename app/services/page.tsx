@@ -13,10 +13,8 @@ const services = [
     title: "IGCSE Coaching",
     desc: "Grades 9–10 preparation for Cambridge IGCSE. Structured sessions, past paper drills, and A* strategy for every major subject group.",
     subjects: ["Mathematics", "Sciences", "English", "Economics", "+ more"],
-    badge: "Cambridge Authorised",
     icon: <BookOpen />,
     accent: "var(--navy)",
-    footerLabel: "Cambridge Authorised Centre"
   },
   {
     id: "a-level",
@@ -35,10 +33,8 @@ const services = [
     title: "AP Coaching",
     desc: "Advanced Placement exam preparation for US college admissions. Score 4–5 strategy, FRQ practice, and CollegeBoard-aligned curriculum.",
     subjects: ["AP Calculus", "AP Physics", "AP Chemistry", "AP Statistics", "+ more"],
-    badge: "CollegeBoard Partner",
     icon: <Zap />,
     accent: "#1a5bbf",
-    footerLabel: "CollegeBoard Partner"
   },
   {
     id: "ib",
@@ -123,7 +119,7 @@ export default function ServicesPage() {
             From IGCSE to university applications — we coach the full academic journey for students worldwide.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            {["Cambridge Authorised", "CollegeBoard Partner", "IB Specialists", "World Toppers"].map((b, i) => (
+            {["IB Specialists", "World Toppers"].map((b, i) => (
               <span key={i} className="px-6 py-2 bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest">{b}</span>
             ))}
           </div>
@@ -164,7 +160,9 @@ export default function ServicesPage() {
                   <div className="w-14 h-14 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-center text-[var(--gold)] group-hover:bg-[var(--gold)] group-hover:text-white transition-colors">
                     {s.icon}
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-[var(--bg-secondary)] dark:bg-white/5 border border-[var(--border-subtle)]">{s.badge}</span>
+                  {s.badge && (
+                    <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-[var(--bg-secondary)] dark:bg-white/5 border border-[var(--border-subtle)]">{s.badge}</span>
+                  )}
                 </div>
                 <h3 className="text-2xl font-black text-[var(--navy)] dark:text-white uppercase mb-4">{s.title}</h3>
                 <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-8 flex-grow">{s.desc}</p>
@@ -177,7 +175,9 @@ export default function ServicesPage() {
                   href={`/services/${s.id}`}
                   className="pt-8 border-t border-[var(--border-subtle)] flex justify-between items-center group/link"
                 >
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)]">{s.footerLabel}</span>
+                  {s.footerLabel ? (
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)]">{s.footerLabel}</span>
+                  ) : <span />}
                   <div className="w-10 h-10 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-center group-hover/link:bg-[var(--navy)] group-hover/link:text-white transition-all">
                     <ArrowRight size={18} />
                   </div>

@@ -12,7 +12,6 @@ const SERVICE_DATA: Record<string, any> = {
     fullTitle: "IGCSE Coaching",
     headline: "IGCSE Coaching that Produces World Toppers",
     sub: "Grades 9–11 preparation for Cambridge IGCSE. Structured sessions, past paper drills, and A* strategy for every major subject group.",
-    badge: "Cambridge Authorised",
     icon: <BookOpen />,
     stats: [
       { val: "40+", lbl: "Toppers" },
@@ -50,7 +49,6 @@ const SERVICE_DATA: Record<string, any> = {
     fullTitle: "AP Exam Coaching",
     headline: "Advanced Placement Score 5 Strategy",
     sub: "Preparation for CollegeBoard AP exams. Personalised coaching for US college credit and admissions.",
-    badge: "CollegeBoard Partner",
     icon: <Zap />,
     stats: [
       { val: "10+", lbl: "AP Subjects" },

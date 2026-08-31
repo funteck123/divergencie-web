@@ -14,6 +14,9 @@ blank — plan real numbers before filling in and applying.
 | TKT-0176 | `components/AcademicResults.tsx` — same file/section as TKT-0165, same `resultsData` numbers | See TKT-0165 row above — this is the same content, not a separate location | |
 | TKT-0177 | `components/AcademicResults.tsx` lines 66–77 | "Students placed at" label + hardcoded university list (Oxford, Cambridge, LSE, Imperial, UCL, Durham, Warwick, Edinburgh, King's College, St Andrews) + "30+ more" badge — implies real placement outcomes with no real data behind it | |
 | TKT-0181 | `app/about/page.tsx` lines 80–93 | "500+" Students, "40+" A* Cohorts, "6" Countries | |
+| TKT-0174 | Site-wide, not one file — `components/Hero.tsx` ("OXFORD & CAMBRIDGE-COACHED"), `components/Stats.tsx` ("MAKE UNIVERSITIES AN OFFER"), `components/AcademicResults.tsx` (university placement list) all frame the site around elite-university admissions rather than mentoring/classes | Needs a content direction decision first (what the new framing should say), not just a number swap — larger than the other rows here. | |
+| TKT-0180 | `components/Testimonials.tsx` (`testimonials` array) | 3 fabricated testimonials with fake names/quotes/badges: "Aisha M." (A* Achieved), "Rohan K." (A* Achieved), "Sara B." (LSE Offer) | |
+| TKT-0182 | `app/about/page.tsx` (`teachers` array near top of file) | Fabricated teacher bios — e.g. "Aisha Rahman", "Sarah Al-Amin" with invented quals | **BLOCKER — needs real teacher names/roles/subjects/quals/photos from user before this can be edited.** Flagged, not started. |
 
 Not yet located: the specific "DivergenCIE goes global" heading text itself
 — `GlobalReach.tsx` has the "STUDENTS FROM 40+ COUNTRIES" line but no
