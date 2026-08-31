@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ShieldCheck } from "lucide-react";
 
 function Counter({ value, duration = 2000 }: { value: string; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -107,20 +106,6 @@ export default function Stats() {
                 </p>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Accreditation */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-16 text-xs font-black uppercase tracking-[0.2em]">
-          <span className="text-[var(--text-muted)]">CERTIFIED BY</span>
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={14} className="text-[var(--gold)]" />
-            <span className="text-black dark:text-white">Cambridge Assessment International Education</span>
-          </div>
-          <span className="hidden md:block text-[var(--gold)]">•</span>
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={14} className="text-[var(--gold)]" />
-            <span className="text-black dark:text-white">CollegeBoard</span>
           </div>
         </div>
       </div>

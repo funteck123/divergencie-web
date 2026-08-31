@@ -2,18 +2,9 @@
 
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { MessageSquare, Mail, Camera, Link as LinkIcon, MapPin, Send, ShieldCheck, Globe } from "lucide-react";
+import { MessageSquare, Mail, Camera, Link as LinkIcon, MapPin, Send, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { createLead } from "@/lib/actions/leads";
-
-const regionalContacts = [
-  { flag: "🇬🇧", country: "United Kingdom", info: "UK Students", method: "A Level, IGCSE, SAT prep. Payment via Stripe or Wise.", tz: "GMT/BST" },
-  { flag: "🇲🇾", country: "Malaysia", info: "MY Students", method: "IGCSE, A Level, IB coaching. Payment via FPX or DuitNow.", tz: "MYT (UTC+8)" },
-  { flag: "🇮🇳", country: "India", info: "IN Students", method: "All subjects. Payment via Razorpay or UPI.", tz: "IST (UTC+5:30)" },
-  { flag: "🇸🇦", country: "Saudi Arabia", info: "KSA Students", method: "IGCSE, A Level, IB. Payment via Al Rajhi or Mada.", tz: "AST (UTC+3)" },
-  { flag: "🇵🇰", country: "Pakistan", info: "PK Students", method: "IGCSE, A Level, IELTS. Payment via EasyPaisa or JazzCash.", tz: "PKT (UTC+5)" },
-  { flag: "🌐", country: "International", info: "Global", method: "Payment via Wise or PayPal. Scheduled to your timezone.", tz: "Your Timezone" }
-];
 
 export default function ContactPage() {
   const [formState, setFormState] = useState("idle");
@@ -92,7 +83,7 @@ export default function ContactPage() {
 
               <div className="p-8 bg-[var(--bg-secondary)] dark:bg-white/5 border-l-4 border-[var(--gold)]">
                 <p className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)] mb-2">Office Hours</p>
-                <p className="text-sm font-bold text-[var(--navy)] dark:text-white uppercase tracking-widest">Mon–Sat, 9am–9pm IST</p>
+                <p className="text-sm font-bold text-[var(--navy)] dark:text-white uppercase tracking-widest">Mon–Sat, 9am–6pm IST</p>
               </div>
             </div>
 
@@ -151,31 +142,6 @@ export default function ContactPage() {
                 )}
               </form>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Regional Grid */}
-      <section className="py-24 bg-[var(--bg-secondary)] dark:bg-white/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-[var(--navy)] dark:text-white uppercase tracking-wider">Global Operations</h2>
-            <p className="text-[var(--text-muted)] mt-4">We operate in 5+ timezones with localised support.</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {regionalContacts.map((r, i) => (
-              <div key={i} className="p-8 bg-white dark:bg-[var(--bg-primary)] border border-[var(--border-subtle)] hover:border-[var(--navy)] transition-colors group">
-                <div className="text-4xl mb-6">{r.flag}</div>
-                <h4 className="text-lg font-black text-[var(--navy)] dark:text-white uppercase mb-1">{r.country}</h4>
-                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)] mb-4">{r.info}</p>
-                <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-6">{r.method}</p>
-                <div className="pt-6 border-t border-[var(--border-subtle)] flex justify-between items-center">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
-                    <Globe size={12} /> {r.tz}
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
