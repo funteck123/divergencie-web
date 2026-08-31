@@ -3101,9 +3101,9 @@ function Services() {
               </label>
               {flatRates.map((r, ri) => (
                 <div key={ri} className="flex gap-2 items-end">
-                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                  <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Currency
-                    <select className="field" style={{ maxWidth: 130, display: "block" }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
+                    <select className="field" style={{ width: 80, display: "block" }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
                       {CURRENCIES_FULL.map((cur) => (
                         <option key={cur.code} value={cur.code}>
                           {cur.code}
@@ -3120,9 +3120,9 @@ function Services() {
                     value={r.description}
                     onChange={(e) => updateFlatRate(ri, "description", e.target.value)}
                   />
-                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                  <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Billing type
-                    <select className="field" style={{ maxWidth: 110, display: "block" }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
+                    <select className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
                       {BILLING_TYPES.map((t) => (
                         <option key={t} value={t}>
                           {t}
@@ -3146,9 +3146,9 @@ function Services() {
               </label>
               {flatOccurrences.map((o, oi) => (
                 <div key={oi} className="flex gap-2 items-end">
-                  <label className="text-xs" style={{ color: "var(--muted)" }}>
+                  <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Day
-                    <select className="field" style={{ display: "block" }} value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
+                    <select className="field" style={{ width: 130, display: "block" }} value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
                       {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
                         <option key={d}>{d}</option>
                       ))}
@@ -3248,9 +3248,9 @@ function Services() {
                         </label>
                         {b.rates.map((r, ri) => (
                           <div key={ri} className="flex gap-2 items-end">
-                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                            <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Currency
-                              <select className="field" style={{ maxWidth: 130, display: "block" }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
+                              <select className="field" style={{ width: 80, display: "block" }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
                                 {CURRENCIES_FULL.map((cur) => (
                                   <option key={cur.code} value={cur.code}>
                                     {cur.code}
@@ -3267,9 +3267,9 @@ function Services() {
                               value={r.description}
                               onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
                             />
-                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                            <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Billing type
-                              <select className="field" style={{ maxWidth: 110, display: "block" }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
+                              <select className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
                                 {BILLING_TYPES.map((t) => (
                                   <option key={t} value={t}>
                                     {t}
@@ -3277,7 +3277,7 @@ function Services() {
                                 ))}
                               </select>
                             </label>
-                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                            <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Restrict to
                               <select className="field" style={{ width: 160, display: "block" }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
                                 <option value="">Any of the above</option>
@@ -3306,9 +3306,9 @@ function Services() {
                         </label>
                         {b.occurrences.map((o, oi) => (
                           <div key={oi} className="flex gap-2 items-end">
-                            <label className="text-xs" style={{ color: "var(--muted)" }}>
+                            <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Day
-                              <select className="field" style={{ display: "block" }} value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
+                              <select className="field" style={{ width: 130, display: "block" }} value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
                                 {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
                                   <option key={d}>{d}</option>
                                 ))}
