@@ -16,12 +16,12 @@ const FEATURE_LABELS = {
 };
 
 // Reachable from Student/Teacher/Staff/Ambassador's own Resources section —
-// the in-app version of each feature is still "Coming soon", but if
-// Management has set a real link for this Service (RecordingsLink/
-// SyllabusLink/WorksheetsLink/GCRLink), an "Access <Feature>" button opens
-// it directly in a new tab. Reached via serviceId/serviceName/link query
-// params for the service-based features; user-based ones (Timesheet/
-// Progress Tracker) have no service context.
+// the in-app version of each feature is still "Coming soon", but if a real
+// link exists, an "Access <Feature>" button opens it directly in a new tab.
+// Reached via serviceId/serviceName/link query params for the service-based
+// features (RecordingsLink/SyllabusLink/WorksheetsLink/GCRLink); the
+// user-based ones (Timesheet/Progress Tracker) pass just `link`, sourced
+// from the account's own TimesheetURL/ProgressTrackerURL.
 export default function ResourceFeaturePage() {
   return (
     <DashboardShell allowedType={["Student", "Teacher", "Staff", "Ambassador"]}>

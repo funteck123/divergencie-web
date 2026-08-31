@@ -189,7 +189,7 @@ function Body({ user }) {
         </div>
       </div>
 
-      <ResourcesSection services={enrolledServices} />
+      <ResourcesSection services={enrolledServices} user={data.user} />
       <GuidesSection guides={data.guides} />
 
       <div className="card">

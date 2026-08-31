@@ -20,8 +20,8 @@ const SERVICE_FEATURES = [
   { slug: "gcr", label: "Google Classroom", linkField: "GCRLink", toggleKey: "gcr" },
 ];
 const USER_FEATURES = [
-  { slug: "timesheet", label: "Timesheet", toggleKey: "timesheet" },
-  { slug: "progress-tracker", label: "Progress Tracker", toggleKey: "progressTracker" },
+  { slug: "timesheet", label: "Timesheet", toggleKey: "timesheet", linkField: "TimesheetURL" },
+  { slug: "progress-tracker", label: "Progress Tracker", toggleKey: "progressTracker", linkField: "ProgressTrackerURL" },
 ];
 // Straight external redirects to the syllabus-digitizer/mcq-digitizer
 // prototypes' own Cloudflare quick tunnels -- no Supabase/DB involvement
@@ -35,7 +35,7 @@ const EXTERNAL_TOOLS = [
 // `services` should be the enrolled Service objects (ServiceID + Name are
 // all this needs) — same list each dashboard already builds for its "My
 // Enrollments" table.
-export default function ResourcesSection({ services, showExternalTools = false }) {
+export default function ResourcesSection({ services, user, showExternalTools = false }) {
   // Toggles default all-on except Recordings (matches the API's own
   // default) while the fetch is in flight, so the section doesn't flash
   // "everything hidden" for a moment on every load.
@@ -55,11 +55,15 @@ export default function ResourcesSection({ services, showExternalTools = false }
       <h2 className="font-semibold mb-4">Resources</h2>
 
       <div className="flex gap-2 flex-wrap mb-4">
-        {visibleUserFeatures.map((f) => (
-          <Link key={f.slug} className="btn-ghost" href={`/dashboard/resources/${f.slug}`}>
-            {f.label}
-          </Link>
-        ))}
+        {visibleUserFeatures.map((f) => {
+          const externalLink = user?.[f.linkField] || "";
+          const params = externalLink ? `?${new URLSearchParams({ link: externalLink }).toString()}` : "";
+          return (
+            <Link key={f.slug} className="btn-ghost" href={`/dashboard/resources/${f.slug}${params}`}>
+              {f.label}
+            </Link>
+          );
+        })}
         {showExternalTools && EXTERNAL_TOOLS.map((f) => (
           <a key={f.label} className="btn-ghost" href={f.url} target="_blank" rel="noopener noreferrer">
             {f.label}

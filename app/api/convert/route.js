@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireManagement } from "@/lib/authz";
 import { generatePassword, hashPassword } from "@/lib/passwords";
+import { createTimesheet } from "@/lib/timesheetAutomator";
+import { createProgressTracker } from "@/lib/progressTrackerAutomator";
 
 function makeUsername(name, db) {
   const base = name.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -128,6 +130,24 @@ export async function POST(req) {
   if (newType === "Student") {
     for (const invoice of db.invoices) {
       if (invoice.StudentID === accountId) invoice.StudentID = newUserId;
+    }
+    // TKT-0207: auto-generate both real Drive files at conversion time
+    // instead of requiring Management to click "Generate" on the Edit
+    // Account form afterward. Best-effort -- a Drive/Sheets hiccup must
+    // never block a real student's conversion; on failure the URL just
+    // stays blank, same as before this ticket, and Management can still
+    // use the manual "Generate" button.
+    try {
+      const ts = await createTimesheet({ name: newUser.Name, batch: newUser.Batch || "", accountId: newUserId });
+      newUser.TimesheetURL = ts.url;
+    } catch (e) {
+      console.error("convert: auto Timesheet generation failed", e);
+    }
+    try {
+      const pt = await createProgressTracker({ name: newUser.Name, batch: newUser.Batch || "", accountId: newUserId });
+      newUser.ProgressTrackerURL = pt.url;
+    } catch (e) {
+      console.error("convert: auto Progress Tracker generation failed", e);
     }
   }
 

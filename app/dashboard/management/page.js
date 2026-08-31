@@ -1782,6 +1782,9 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [generatingTimesheet, setGeneratingTimesheet] = useState(false);
   const [timesheetGenError, setTimesheetGenError] = useState("");
   const [timesheetGenNote, setTimesheetGenNote] = useState("");
+  const [generatingProgressTracker, setGeneratingProgressTracker] = useState(false);
+  const [progressTrackerGenError, setProgressTrackerGenError] = useState("");
+  const [progressTrackerGenNote, setProgressTrackerGenNote] = useState("");
 
   // TKT-0158: duplicates the real Drive template and fills in whatever this
   // form already knows (Name/Batch/Currency/Course) -- only fills the input
@@ -1807,6 +1810,25 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       setTimesheetGenError(e.message);
     } finally {
       setGeneratingTimesheet(false);
+    }
+  }
+
+  // Mirrors generateTimesheet above -- same idempotent-by-accountId pattern.
+  async function generateProgressTracker() {
+    setProgressTrackerGenError("");
+    setProgressTrackerGenNote("");
+    setGeneratingProgressTracker(true);
+    try {
+      const result = await api("/api/progress-tracker-automator", {
+        method: "POST",
+        body: JSON.stringify({ name, batch, accountId: user.UserID }),
+      });
+      setProgressTrackerUrl(result.url);
+      if (result.alreadyExisted) setProgressTrackerGenNote("This account already had a Progress Tracker — reused the existing one instead of creating a new one.");
+    } catch (e) {
+      setProgressTrackerGenError(e.message);
+    } finally {
+      setGeneratingProgressTracker(false);
     }
   }
 
@@ -2060,11 +2082,19 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
               Progress Tracker URL
             </label>
-            <input
-              className="field"
-              value={progressTrackerUrl}
-              onChange={(e) => setProgressTrackerUrl(e.target.value)}
-            />
+            <div className="flex gap-2">
+              <input
+                className="field"
+                style={{ flex: 1, minWidth: 0 }}
+                value={progressTrackerUrl}
+                onChange={(e) => setProgressTrackerUrl(e.target.value)}
+              />
+              <button type="button" className="btn-ghost" onClick={generateProgressTracker} disabled={generatingProgressTracker} style={{ whiteSpace: "nowrap" }}>
+                {generatingProgressTracker ? "Generating…" : "Generate Progress Tracker URL"}
+              </button>
+            </div>
+            {progressTrackerGenError && <p className="text-sm mt-1" style={{ color: "var(--bad)" }}>{progressTrackerGenError}</p>}
+            {progressTrackerGenNote && <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>{progressTrackerGenNote}</p>}
           </div>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>

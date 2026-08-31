@@ -208,7 +208,7 @@ function Body({ user }) {
         </div>
       </div>
 
-      <ResourcesSection services={enrolledServices} showExternalTools />
+      <ResourcesSection services={enrolledServices} user={data.user} showExternalTools />
       <GuidesSection guides={data.guides} />
 
       <div className="card">

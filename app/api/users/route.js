@@ -5,6 +5,8 @@ import { requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/accountTypes";
 import { generatePassword, hashPassword } from "@/lib/passwords";
+import { createTimesheet } from "@/lib/timesheetAutomator";
+import { createProgressTracker } from "@/lib/progressTrackerAutomator";
 
 // Re-exported for existing importers (e.g. api/paychecks/pdf/route.js),
 // lib/accountTypes.js is the single source of truth now, shared with the
@@ -243,6 +245,29 @@ export async function POST(req) {
   applyCurrency(user, currency);
   applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, userType, body);
+
+  // TKT-0207: auto-generate both real Drive files for a directly-created
+  // Student, same as the conversion path in api/convert/route.js. A caller
+  // that already passed timesheetUrl (applyStaffExtras/applyStudentExtras
+  // above) keeps that value -- this only fills in what's still missing.
+  if (userType === "Student") {
+    if (!user.TimesheetURL) {
+      try {
+        const ts = await createTimesheet({ name: user.Name, batch: user.Batch || "", accountId: userId });
+        user.TimesheetURL = ts.url;
+      } catch (e) {
+        console.error("users POST: auto Timesheet generation failed", e);
+      }
+    }
+    if (!user.ProgressTrackerURL) {
+      try {
+        const pt = await createProgressTracker({ name: user.Name, batch: user.Batch || "", accountId: userId });
+        user.ProgressTrackerURL = pt.url;
+      } catch (e) {
+        console.error("users POST: auto Progress Tracker generation failed", e);
+      }
+    }
+  }
 
   const username = makeUsername(name, db);
   const password = generatePassword();
