@@ -1,0 +1,10 @@
+{
+  "name": "exam-grader-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone prototype: grades a student exam script against a QP+mark scheme via a vision LLM through OpenRouter. Not part of the main app's build.",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

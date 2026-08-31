@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Exam Grader — Prototype</title>
+<style>
+  :root {
+    --navy: #1a3c5e;
+    --gold: #e8a832;
+    --sky: #4a9fd4;
+    --coral: #e05a4e;
+    --charcoal: #5c5248;
+    --bg: #ffffff;
+    --bg-soft: #f4f4f4;
+    --border: #d7dee8;
+    --text: #1a1a1a;
+    --muted: #666666;
+    --good: #1f9d55;
+    --partial: #b8860b;
+    --bad: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-soft);
+    color: var(--text);
+    margin: 0;
+    padding: 2rem 1rem 5rem;
+  }
+  header {
+    max-width: 960px;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  header .badge {
+    background: var(--navy);
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  header h1 { font-size: 1.4rem; margin: 0; color: var(--navy); }
+  header p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.85rem; }
+
+  main { max-width: 960px; margin: 0 auto; }
+
+  .card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .card h2 {
+    font-size: 1rem;
+    color: var(--navy);
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h2 .step {
+    background: var(--gold);
+    color: var(--navy);
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--charcoal); margin: 0.6rem 0 0.3rem; }
+  textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    resize: vertical;
+  }
+  input[type="file"] { font-size: 0.82rem; }
+  .thumb { max-width: 160px; max-height: 100px; border-radius: 6px; border: 1px solid var(--border); margin-top: 0.4rem; display: block; }
+  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+  .grade-btn {
+    display: block;
+    width: 100%;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.85rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .grade-btn:hover { background: #234e78; }
+  .grade-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  #status { text-align: center; color: var(--muted); margin: 1rem 0; font-size: 0.9rem; }
+  #error { background: #fdecea; border: 1px solid var(--bad); color: var(--bad); padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; white-space: pre-wrap; display: none; }
+
+  #results { display: none; }
+  .score-banner {
+    background: var(--navy);
+    color: white;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+  .score-banner .big { font-size: 2rem; font-weight: 800; color: var(--gold); }
+  .score-banner .label { font-size: 0.8rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
+  .score-banner.mismatch { background: var(--bad); }
+  .score-banner.mismatch .big { color: white; }
+  .mismatch-remark { background: #fdecea; border: 1px solid var(--bad); border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.25rem; }
+  .mismatch-remark strong { color: var(--bad); }
+
+  .question-block { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; }
+  .question-header {
+    background: var(--bg-soft);
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 0.9rem;
+  }
+  .question-marks { font-variant-numeric: tabular-nums; color: var(--charcoal); font-weight: 700; }
+  .line-item { padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); font-size: 0.85rem; }
+  .line-item .student-text { font-style: italic; color: var(--charcoal); margin-bottom: 0.25rem; }
+  .verdict-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    margin-bottom: 0.3rem;
+  }
+  .verdict-correct { background: rgba(31,157,85,0.12); color: var(--good); }
+  .verdict-partial { background: rgba(184,134,11,0.12); color: var(--partial); }
+  .verdict-incorrect { background: rgba(192,57,43,0.12); color: var(--bad); }
+  .verdict-note { background: rgba(74,159,212,0.12); color: var(--sky); }
+  .correction { background: #fff8e7; border-left: 3px solid var(--gold); padding: 0.4rem 0.6rem; margin-top: 0.3rem; font-size: 0.8rem; }
+  .question-feedback { padding: 0.7rem 0.9rem; background: var(--bg-soft); font-size: 0.85rem; color: var(--charcoal); border-top: 1px solid var(--border); }
+
+  .overall-feedback { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.9rem; line-height: 1.5; }
+
+  .export-row { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+  .export-row button {
+    flex: 1;
+    background: white;
+    border: 1.5px solid var(--navy);
+    color: var(--navy);
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .export-row button:hover { background: var(--navy); color: white; }
+
+  /* Print/PDF-branded view: hidden on screen, shown only when printing */
+  #printReport { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    #printReport, #printReport * { visibility: visible; }
+    #printReport { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">Prototype</span>
+  <div>
+    <h1>Exam Grader</h1>
+    <p>DivergenCIE — auto marks, corrections &amp; feedback from a Question Paper + Mark Scheme + Student Script</p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2><span class="step">1</span> Question Paper</h2>
+    <label>Paste text</label>
+    <textarea id="qpText" placeholder="Paste the question paper text…"></textarea>
+    <label>Or upload an image</label>
+    <input type="file" id="qpImage" accept="image/*" />
+    <img class="thumb" id="qpThumb" style="display:none" />
+  </div>
+
+  <div class="card">
+    <h2><span class="step">2</span> Mark Scheme <span style="font-weight:400; color:var(--muted); font-size:0.75rem;">(optional)</span></h2>
+    <label>Paste text</label>
+    <textarea id="msText" placeholder="Paste the mark scheme text… leave empty to auto-generate one from the Question Paper"></textarea>
+    <label>Or upload an image</label>
+    <input type="file" id="msImage" accept="image/*" />
+    <img class="thumb" id="msThumb" style="display:none" />
+    <p class="hint">Leave this blank to use <strong>Generate-MS mode</strong>: a mark scheme will be inferred from the Question Paper alone before grading. This is a real inferred scheme, not the official one — mark allocations for "show that"/working-based questions especially may not exactly match a real published scheme.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="step">3</span> Student Script</h2>
+    <label>Paste text</label>
+    <textarea id="scriptText" placeholder="Paste the student's typed answers…"></textarea>
+    <label>Or upload an image (handwriting, diagrams, photos of a script)</label>
+    <input type="file" id="scriptImage" accept="image/*" />
+    <img class="thumb" id="scriptThumb" style="display:none" />
+    <p class="hint">At least one of text or image is required for the Student Script.</p>
+  </div>
+
+  <button class="grade-btn" id="gradeBtn">Grade this script</button>
+  <div id="status"></div>
+  <div id="error"></div>
+
+  <div id="results">
+    <div id="generatedMsNotice" style="display:none; background:#fff8e7; border:1px solid var(--gold); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.82rem;">
+      <strong>⚠ No mark scheme was provided.</strong> The mark scheme below was inferred from the Question Paper alone — it is not the official scheme, treat marks awarded as an estimate.
+      <details style="margin-top:0.4rem;"><summary style="cursor:pointer; font-weight:600;">Show generated mark scheme</summary><pre id="generatedMsText" style="white-space:pre-wrap; font-size:0.78rem; margin-top:0.4rem;"></pre></details>
+    </div>
+    <div id="mismatchRemark" class="mismatch-remark" style="display:none;">
+      <strong>⚠ Not the same work.</strong> <span id="mismatchRemarkText"></span>
+    </div>
+    <div class="score-banner" id="scoreBanner">
+      <div>
+        <div class="label" id="scoreLabel">Total score</div>
+        <div class="big" id="scoreText">—</div>
+      </div>
+    </div>
+    <div id="questionsContainer"></div>
+    <h2 style="color:var(--navy); font-size:1rem;" id="overallFeedbackHeading">Overall feedback</h2>
+    <div class="overall-feedback" id="overallFeedback"></div>
+
+    <div class="export-row no-print">
+      <button id="downloadMdBtn">Download as Markdown</button>
+      <button id="printPdfBtn">Print / Save as branded PDF</button>
+    </div>
+  </div>
+</main>
+
+<!-- Print-only branded report, built fresh from the same result data -->
+<div id="printReport"></div>
+
+<script>
+let lastResult = null;
+let lastImages = {};
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function wireImageInput(inputId, thumbId, key) {
+  document.getElementById(inputId).addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const base64 = await toBase64(file);
+    lastImages[key] = { imageBase64: base64, imageMediaType: file.type };
+    const thumb = document.getElementById(thumbId);
+    thumb.src = `data:${file.type};base64,${base64}`;
+    thumb.style.display = "block";
+  });
+}
+wireImageInput("qpImage", "qpThumb", "qp");
+wireImageInput("msImage", "msThumb", "ms");
+wireImageInput("scriptImage", "scriptThumb", "script");
+
+function buildInput(key, textId) {
+  const text = document.getElementById(textId).value;
+  const img = lastImages[key];
+  return { text, ...(img || {}) };
+}
+
+const verdictLabel = { correct: "Correct", partial: "Partial credit", incorrect: "Incorrect", note: "Note" };
+
+function renderResults(result) {
+  lastResult = result;
+  document.getElementById("scoreText").textContent = `${result.totalMarks} / ${result.maxMarks}`;
+
+  const isMismatch = result.scriptMatchesQuestionPaper === false;
+  const remarkEl = document.getElementById("mismatchRemark");
+  const bannerEl = document.getElementById("scoreBanner");
+  const scoreLabelEl = document.getElementById("scoreLabel");
+  if (isMismatch) {
+    document.getElementById("mismatchRemarkText").textContent = result.mismatchRemark || "The script doesn't correspond to this question paper.";
+    remarkEl.style.display = "block";
+    bannerEl.classList.add("mismatch");
+    scoreLabelEl.textContent = "Score (not the same work)";
+  } else {
+    remarkEl.style.display = "none";
+    bannerEl.classList.remove("mismatch");
+    scoreLabelEl.textContent = "Total score";
+  }
+
+  const noticeEl = document.getElementById("generatedMsNotice");
+  if (result.markSchemeWasGenerated) {
+    document.getElementById("generatedMsText").textContent = result.generatedMarkSchemeText || "";
+    noticeEl.style.display = "block";
+  } else {
+    noticeEl.style.display = "none";
+  }
+  const container = document.getElementById("questionsContainer");
+  container.innerHTML = "";
+  for (const q of result.questions) {
+    const block = document.createElement("div");
+    block.className = "question-block";
+    const lines = q.lineByLine.map((l) => `
+      <div class="line-item">
+        <span class="verdict-tag verdict-${l.verdict}">${verdictLabel[l.verdict] || l.verdict}</span>
+        <div class="student-text">"${escapeHtml(l.studentText)}"</div>
+        <div>${escapeHtml(l.feedback)}</div>
+        ${l.correction ? `<div class="correction"><strong>Correction:</strong> ${escapeHtml(l.correction)}</div>` : ""}
+      </div>
+    `).join("");
+    block.innerHTML = `
+      <div class="question-header">
+        <span>Question ${escapeHtml(q.questionNumber)}</span>
+        <span class="question-marks">${q.marksAwarded} / ${q.marksAvailable}</span>
+      </div>
+      ${lines}
+      <div class="question-feedback">${escapeHtml(q.questionFeedback)}</div>
+    `;
+    container.appendChild(block);
+  }
+  document.getElementById("overallFeedback").textContent = result.overallFeedback;
+  document.getElementById("results").style.display = "block";
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+document.getElementById("gradeBtn").addEventListener("click", async () => {
+  const errorEl = document.getElementById("error");
+  const statusEl = document.getElementById("status");
+  errorEl.style.display = "none";
+  document.getElementById("results").style.display = "none";
+
+  const scriptInput = buildInput("script", "scriptText");
+  if (!scriptInput.text?.trim() && !scriptInput.imageBase64) {
+    errorEl.textContent = "Student Script needs at least pasted text or an uploaded image.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  const btn = document.getElementById("gradeBtn");
+  btn.disabled = true;
+  statusEl.textContent = "Grading… this calls a vision LLM and may take 15-30 seconds.";
+
+  try {
+    const res = await fetch("/api/grade", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        qp: buildInput("qp", "qpText"),
+        ms: buildInput("ms", "msText"),
+        script: scriptInput,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    renderResults(data);
+    statusEl.textContent = "";
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = "block";
+    statusEl.textContent = "";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById("downloadMdBtn").addEventListener("click", () => {
+  if (!lastResult) return;
+  const r = lastResult;
+  let md = `# Exam Grading Report\n\n**Score: ${r.totalMarks} / ${r.maxMarks}**\n\n`;
+  if (r.scriptMatchesQuestionPaper === false) {
+    md += `> ⚠ **Not the same work.** ${r.mismatchRemark || "The script doesn't correspond to this question paper."}\n\n`;
+  }
+  if (r.markSchemeWasGenerated) {
+    md += `> ⚠ No mark scheme was provided — this one was inferred from the Question Paper alone, not the official scheme.\n\n<details><summary>Generated mark scheme</summary>\n\n\`\`\`\n${r.generatedMarkSchemeText || ""}\n\`\`\`\n</details>\n\n`;
+  }
+  for (const q of r.questions) {
+    md += `## Question ${q.questionNumber} — ${q.marksAwarded} / ${q.marksAvailable}\n\n`;
+    for (const l of q.lineByLine) {
+      md += `- **[${verdictLabel[l.verdict] || l.verdict}]** "${l.studentText}"\n  - ${l.feedback}\n`;
+      if (l.correction) md += `  - Correction: ${l.correction}\n`;
+    }
+    md += `\n${q.questionFeedback}\n\n`;
+  }
+  md += `## Overall feedback\n\n${r.overallFeedback}\n`;
+
+  const blob = new Blob([md], { type: "text/markdown" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "exam-grading-report.md";
+  a.click();
+});
+
+document.getElementById("printPdfBtn").addEventListener("click", () => {
+  if (!lastResult) return;
+  const r = lastResult;
+  let html = `
+    <div style="font-family:-apple-system,sans-serif; padding:2rem; color:#1a1a1a;">
+      <div style="background:#1a3c5e; color:white; padding:1.5rem; border-radius:8px; margin-bottom:1.5rem;">
+        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:#e8a832; font-weight:700;">DivergenCIE — Exam Grading Report</div>
+        <div style="font-size:2rem; font-weight:800; margin-top:0.4rem;">${r.totalMarks} / ${r.maxMarks} marks</div>
+      </div>
+      ${r.scriptMatchesQuestionPaper === false ? `<div style="background:#fdecea; border:1px solid #c0392b; border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.85rem;"><strong style="color:#c0392b;">Not the same work.</strong> ${escapeHtml(r.mismatchRemark || "The script doesn't correspond to this question paper.")}</div>` : ""}
+      ${r.markSchemeWasGenerated ? `<div style="background:#fff8e7; border:1px solid #e8a832; border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; font-size:0.8rem;"><strong>No mark scheme was provided</strong> — marks are estimated from a scheme inferred from the Question Paper alone, not the official one.</div>` : ""}
+  `;
+  for (const q of r.questions) {
+    html += `<div style="border:1px solid #d7dee8; border-radius:8px; margin-bottom:1rem; page-break-inside:avoid;">
+      <div style="background:#f4f4f4; padding:0.6rem 0.9rem; font-weight:700; color:#1a3c5e; display:flex; justify-content:space-between;">
+        <span>Question ${escapeHtml(q.questionNumber)}</span><span>${q.marksAwarded} / ${q.marksAvailable}</span>
+      </div>`;
+    for (const l of q.lineByLine) {
+      html += `<div style="padding:0.6rem 0.9rem; border-top:1px solid #d7dee8; font-size:0.85rem;">
+        <div style="font-style:italic; color:#5c5248;">"${escapeHtml(l.studentText)}"</div>
+        <div>${escapeHtml(l.feedback)}</div>
+        ${l.correction ? `<div style="background:#fff8e7; border-left:3px solid #e8a832; padding:0.4rem 0.6rem; margin-top:0.3rem;"><strong>Correction:</strong> ${escapeHtml(l.correction)}</div>` : ""}
+      </div>`;
+    }
+    html += `<div style="padding:0.7rem 0.9rem; background:#f4f4f4; border-top:1px solid #d7dee8; font-size:0.85rem;">${escapeHtml(q.questionFeedback)}</div></div>`;
+  }
+  html += `<h3 style="color:#1a3c5e;">Overall feedback</h3><p>${escapeHtml(r.overallFeedback)}</p></div>`;
+  document.getElementById("printReport").innerHTML = html;
+  window.print();
+});
+</script>
+</body>
+</html>

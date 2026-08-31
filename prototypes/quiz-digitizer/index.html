@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Quiz Digitizer — Prototype</title>
+<style>
+  :root {
+    --navy: #1a3c5e; --gold: #e8a832; --sky: #4a9fd4; --coral: #e05a4e; --charcoal: #5c5248;
+    --bg: #ffffff; --bg-soft: #f4f4f4; --border: #d7dee8; --text: #1a1a1a; --muted: #666666;
+    --good: #1f9d55; --partial: #b8860b; --bad: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg-soft); color: var(--text); margin: 0; padding: 2rem 1rem 5rem; }
+  header { max-width: 800px; margin: 0 auto 2rem; display: flex; align-items: center; gap: 0.75rem; }
+  header .badge { background: var(--navy); color: white; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em; padding: 0.25rem 0.6rem; border-radius: 999px; text-transform: uppercase; }
+  header h1 { font-size: 1.4rem; margin: 0; color: var(--navy); }
+  header p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.85rem; }
+  main { max-width: 800px; margin: 0 auto; }
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  .card h2 { font-size: 1rem; color: var(--navy); margin: 0 0 0.75rem; }
+  label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--charcoal); margin: 0.6rem 0 0.3rem; }
+  textarea, input[type="text"] { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem; font-family: inherit; font-size: 0.85rem; }
+  textarea { min-height: 70px; resize: vertical; }
+  input[type="file"] { font-size: 0.82rem; }
+  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .primary-btn { display: block; width: 100%; background: var(--navy); color: white; border: none; border-radius: 8px; padding: 0.85rem; font-size: 1rem; font-weight: 700; cursor: pointer; }
+  .primary-btn:hover { background: #234e78; }
+  .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  #status { text-align: center; color: var(--muted); margin: 1rem 0; font-size: 0.9rem; }
+  #error { background: #fdecea; border: 1px solid var(--bad); color: var(--bad); padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; white-space: pre-wrap; display: none; }
+  .stage { display: none; }
+  .stage.active { display: block; }
+  .quiz-item { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+  .quiz-item .qnum { font-weight: 700; color: var(--navy); font-size: 0.95rem; }
+  .quiz-item .qmarks { float: right; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  .quiz-item .qmarks.inferred::after { content: " (est.)"; font-style: italic; }
+  .quiz-item .qtext { margin: 0.5rem 0 0.6rem; font-size: 0.9rem; }
+  .score-banner { background: var(--navy); color: white; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+  .score-banner .big { font-size: 2rem; font-weight: 800; color: var(--gold); }
+  .score-banner .label { font-size: 0.8rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
+  .result-item { border-left: 4px solid var(--border); padding: 0.7rem 1rem; margin-bottom: 0.8rem; border-radius: 0 8px 8px 0; }
+  .result-item.correct { border-left-color: var(--good); background: rgba(31,157,85,0.06); }
+  .result-item.partial { border-left-color: var(--partial); background: rgba(184,134,11,0.06); }
+  .result-item.incorrect, .result-item.unanswered { border-left-color: var(--bad); background: rgba(192,57,43,0.06); }
+  .result-item .rq { font-weight: 700; color: var(--navy); }
+  .result-item .rmarks { float: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .result-item .your-answer { font-style: italic; color: var(--charcoal); margin: 0.3rem 0; }
+  .result-item .correction { background: #fff8e7; border-left: 3px solid var(--gold); padding: 0.4rem 0.6rem; margin-top: 0.3rem; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">Prototype</span>
+  <div>
+    <h1>Quiz Digitizer</h1>
+    <p>DivergenCIE — turn any question paper PDF into an interactive, auto-graded quiz</p>
+  </div>
+</header>
+
+<main>
+  <!-- STAGE 1: upload -->
+  <div id="stage1" class="stage active">
+    <div class="card">
+      <h2>1. Upload a Question Paper (PDF)</h2>
+      <input type="file" id="qpPdf" accept="application/pdf" />
+      <p class="hint">Any layout, any numbering style — questions and their boundaries are found by reading the actual page, not a fixed template.</p>
+    </div>
+    <div class="card">
+      <h2>2. Mark Scheme <span style="font-weight:400; color:var(--muted); font-size:0.75rem;">(optional)</span></h2>
+      <label>Paste text</label>
+      <textarea id="msText" placeholder="Paste the mark scheme… leave blank to grade using the model's own subject knowledge"></textarea>
+      <label>Or upload an image</label>
+      <input type="file" id="msImage" accept="image/*" />
+    </div>
+    <button class="primary-btn" id="digitizeBtn">Digitize this paper</button>
+    <div id="status1"></div>
+    <div id="error1" class="hint" style="display:none; color:var(--bad); background:#fdecea; border:1px solid var(--bad); border-radius:8px; padding:0.75rem;"></div>
+  </div>
+
+  <!-- STAGE 2: take quiz -->
+  <div id="stage2" class="stage">
+    <div class="card">
+      <h2>Answer the quiz</h2>
+      <p class="hint" id="digitizeCount"></p>
+    </div>
+    <div id="quizItems"></div>
+    <button class="primary-btn" id="submitQuizBtn">Submit quiz</button>
+    <div id="status2"></div>
+    <div id="error2" class="hint" style="display:none; color:var(--bad); background:#fdecea; border:1px solid var(--bad); border-radius:8px; padding:0.75rem;"></div>
+  </div>
+
+  <!-- STAGE 3: results -->
+  <div id="stage3" class="stage">
+    <div class="score-banner">
+      <div class="label">Total score</div>
+      <div class="big" id="scoreText">—</div>
+    </div>
+    <div id="resultsContainer"></div>
+    <h2 style="color:var(--navy); font-size:1rem;">Overall feedback</h2>
+    <p id="overallFeedback"></p>
+    <button class="primary-btn" id="restartBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Digitize another paper</button>
+  </div>
+</main>
+
+<script>
+let digitizedQuestions = [];
+let msInput = {};
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function showStage(n) {
+  document.querySelectorAll(".stage").forEach((el) => el.classList.remove("active"));
+  document.getElementById(`stage${n}`).classList.add("active");
+}
+
+document.getElementById("msImage").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  msInput.imageBase64 = await fileToBase64(file);
+  msInput.imageMediaType = file.type;
+});
+
+document.getElementById("digitizeBtn").addEventListener("click", async () => {
+  const errorEl = document.getElementById("error1");
+  const statusEl = document.getElementById("status1");
+  errorEl.style.display = "none";
+  const pdfFile = document.getElementById("qpPdf").files[0];
+  if (!pdfFile) {
+    errorEl.textContent = "Choose a PDF first.";
+    errorEl.style.display = "block";
+    return;
+  }
+  msInput.text = document.getElementById("msText").value;
+
+  const btn = document.getElementById("digitizeBtn");
+  btn.disabled = true;
+  statusEl.textContent = "Reading the PDF and finding questions… this can take 20-40 seconds for a multi-page paper.";
+  try {
+    const pdfBase64 = await fileToBase64(pdfFile);
+    const res = await fetch("/api/digitize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pdfBase64 }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    digitizedQuestions = data.questions;
+    renderQuiz();
+    showStage(2);
+    statusEl.textContent = "";
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = "block";
+    statusEl.textContent = "";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function renderQuiz() {
+  document.getElementById("digitizeCount").textContent = `Found ${digitizedQuestions.length} question${digitizedQuestions.length === 1 ? "" : "s"}.`;
+  const container = document.getElementById("quizItems");
+  container.innerHTML = digitizedQuestions.map((q) => `
+    <div class="quiz-item">
+      <span class="qmarks ${q.marksInferred ? "inferred" : ""}">${q.marksAvailable} mark${q.marksAvailable === 1 ? "" : "s"}</span>
+      <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
+      <div class="qtext">${escapeHtml(q.questionText)}</div>
+      <textarea data-qnum="${escapeHtml(q.questionNumber)}" placeholder="Your answer…"></textarea>
+    </div>
+  `).join("");
+}
+
+document.getElementById("submitQuizBtn").addEventListener("click", async () => {
+  const errorEl = document.getElementById("error2");
+  const statusEl = document.getElementById("status2");
+  errorEl.style.display = "none";
+
+  const answers = {};
+  document.querySelectorAll("#quizItems textarea").forEach((el) => {
+    answers[el.dataset.qnum] = el.value;
+  });
+
+  const btn = document.getElementById("submitQuizBtn");
+  btn.disabled = true;
+  statusEl.textContent = "Grading…";
+  try {
+    const res = await fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ questions: digitizedQuestions, ms: msInput, answers }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    renderResults(data);
+    showStage(3);
+    statusEl.textContent = "";
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = "block";
+    statusEl.textContent = "";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function renderResults(result) {
+  document.getElementById("scoreText").textContent = `${result.totalMarks} / ${result.maxMarks}`;
+  document.getElementById("overallFeedback").textContent = result.overallFeedback;
+  const container = document.getElementById("resultsContainer");
+  container.innerHTML = result.results.map((r) => `
+    <div class="result-item ${r.verdict}">
+      <span class="rmarks">${r.marksAwarded} / ${r.marksAvailable}</span>
+      <span class="rq">Question ${escapeHtml(r.questionNumber)} — ${r.verdict}</span>
+      <div class="your-answer">Your answer: "${escapeHtml(r.studentAnswer)}"</div>
+      <div>${escapeHtml(r.feedback)}</div>
+      ${r.verdict !== "correct" ? `<div class="correction"><strong>Correct answer:</strong> ${escapeHtml(r.correctAnswer)}</div>` : ""}
+    </div>
+  `).join("");
+}
+
+document.getElementById("restartBtn").addEventListener("click", () => {
+  digitizedQuestions = [];
+  msInput = {};
+  document.getElementById("qpPdf").value = "";
+  document.getElementById("msText").value = "";
+  document.getElementById("msImage").value = "";
+  showStage(1);
+});
+</script>
+</body>
+</html>
