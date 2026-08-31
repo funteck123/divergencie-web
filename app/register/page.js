@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/client";
 
 const REQUESTED_TYPE_LABEL = {
@@ -10,10 +11,17 @@ const REQUESTED_TYPE_LABEL = {
   AmbassadorInterview: "ambassador interview",
 };
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const presetType = searchParams.get("requestedType");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [requestedType, setRequestedType] = useState("Trial");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [whyDivergenCIE, setWhyDivergenCIE] = useState("");
+  const [resume, setResume] = useState(null);
+  const [requestedType, setRequestedType] = useState(
+    REQUESTED_TYPE_LABEL[presetType] ? presetType : "Trial"
+  );
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,10 +31,14 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
     try {
-      await api("/api/register", {
-        method: "POST",
-        body: JSON.stringify({ name, email, requestedType }),
-      });
+      const formData = new FormData();
+      formData.set("name", name);
+      formData.set("email", email);
+      formData.set("whatsappNumber", whatsappNumber);
+      formData.set("whyDivergenCIE", whyDivergenCIE);
+      formData.set("requestedType", requestedType);
+      if (resume) formData.set("resume", resume);
+      await api("/api/register", { method: "POST", body: formData });
       setSubmitted(true);
     } catch (err) {
       setError(err.message);
@@ -71,13 +83,48 @@ export default function RegisterPage() {
           </div>
           <div>
             <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>
-              Email (optional)
+              Email
             </label>
             <input
               type="email"
               className="field"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>
+              WhatsApp number
+            </label>
+            <input
+              type="tel"
+              className="field"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>
+              Why DivergenCIE? (optional)
+            </label>
+            <textarea
+              className="field"
+              rows={3}
+              value={whyDivergenCIE}
+              onChange={(e) => setWhyDivergenCIE(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>
+              Resume (optional)
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              className="field"
+              onChange={(e) => setResume(e.target.files?.[0] || null)}
             />
           </div>
           <div>
@@ -114,5 +161,13 @@ export default function RegisterPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }

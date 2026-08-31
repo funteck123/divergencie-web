@@ -2,12 +2,14 @@
 
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { Briefcase, Users, Star, GraduationCap, ArrowRight, ShieldCheck, Zap, Globe, Heart } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { Briefcase, Users, Star, GraduationCap, ArrowRight, Zap, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
 
 type JobPosting = { id: string; role: string; dept: string; description: string };
 
 const STATIC_FALLBACK: JobPosting[] = [
+  { id: "teacher", role: "Teacher", dept: "Academic Department", description: "Deliver live 1-on-1 and small-group sessions for IGCSE, A Level, AP, or IB students. Mark past papers, track progress, and coach toward A*." },
   { id: "ta", role: "Teaching Assistant (TA)", dept: "Academic Department", description: "Support our lead tutors in delivering sessions. Mark past papers, prepare resources, and run doubt-resolution slots." },
   { id: "sm", role: "Social Media Manager (SM)", dept: "Marketing Department", description: "Own our Instagram and LinkedIn presence. Create Reels, carousels, and stories that convert students into achievers." },
   { id: "hr", role: "HR & People Coordinator", dept: "HR Department", description: "Manage tutor onboarding, contracts, and scheduling. Help build a culture where every team member performs." },
@@ -38,9 +40,6 @@ function RoleSkeleton() {
 export default function CareersPage() {
   const [jobs, setJobs] = useState<JobPosting[]>([]);
   const [loading, setLoading] = useState(true);
-  const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [errorMsg, setErrorMsg] = useState("");
-  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     fetch("/api/jobs")
@@ -51,39 +50,6 @@ export default function CareersPage() {
       .catch(() => setJobs(STATIC_FALLBACK))
       .finally(() => setLoading(false));
   }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setFormState("submitting");
-    setErrorMsg("");
-
-    const fd = new FormData(e.currentTarget);
-    const body = {
-      name: `${fd.get("firstName")} ${fd.get("lastName")}`.trim(),
-      email: fd.get("email") as string,
-      phone: fd.get("phone") as string,
-      country: "",
-      role: fd.get("role") as string,
-      message: fd.get("message") as string,
-    };
-
-    try {
-      const res = await fetch("/api/careers/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? "Submission failed");
-      }
-      setFormState("success");
-      formRef.current?.reset();
-    } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-      setFormState("error");
-    }
-  };
 
   return (
     <main className="bg-white dark:bg-[var(--bg-primary)]">
@@ -102,7 +68,7 @@ export default function CareersPage() {
       <section className="py-12 border-b border-[var(--border-subtle)]">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-4">
-            {["Fully Remote", "Results Obsessed", "Fast Growth", "Merit Based Pay", "Global Team", "Cambridge Authorised"].map((v, i) => (
+            {["Fully Remote", "Results Obsessed", "Fast Growth", "Merit Based Pay", "Global Team"].map((v, i) => (
               <div key={i} className="px-6 py-2 bg-[var(--bg-secondary)] dark:bg-white/5 border border-[var(--border-subtle)] text-[10px] font-black uppercase tracking-widest">{v}</div>
             ))}
           </div>
@@ -123,10 +89,10 @@ export default function CareersPage() {
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--gold)] mb-2">{job.dept}</p>
                   <h3 className="text-xl font-black text-[var(--navy)] dark:text-white uppercase mb-6">{job.role}</h3>
                   <p className="text-sm text-[var(--text-muted)] leading-relaxed flex-grow mb-8">{job.description}</p>
-                  <a href="#apply" className="text-[10px] font-black uppercase tracking-widest text-[var(--navy)] dark:text-white pt-8 border-t border-[var(--border-subtle)] flex justify-between items-center group/link">
+                  <Link href="/register?requestedType=StaffInterview" className="text-[10px] font-black uppercase tracking-widest text-[var(--navy)] dark:text-white pt-8 border-t border-[var(--border-subtle)] flex justify-between items-center group/link">
                     <span>Apply Now</span>
                     <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                  </a>
+                  </Link>
                 </div>
               ))}
           </div>
@@ -159,77 +125,26 @@ export default function CareersPage() {
               <Star className="text-[var(--gold)] w-12 h-12 mb-8" />
               <h3 className="text-3xl font-black mb-4 uppercase">Join The Elite</h3>
               <p className="text-white/60 mb-8 leading-relaxed">We select only 2 ambassadors per region. If you&apos;re a topper with influence, we want to hear from you.</p>
-              <a href="#apply" className="inline-block py-4 px-10 bg-[var(--gold)] text-black text-xs font-black uppercase tracking-widest hover:bg-white transition-colors">Apply Today</a>
+              <Link href="/register?requestedType=AmbassadorInterview" className="inline-block py-4 px-10 bg-[var(--gold)] text-black text-xs font-black uppercase tracking-widest hover:bg-white transition-colors">Apply Today</Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Application Form */}
-      <section id="apply" className="py-24">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-[var(--navy)] dark:text-white uppercase tracking-wider">Start Your Journey</h2>
-            <p className="text-[var(--text-muted)] mt-4">Fill in the details below. We reply via WhatsApp within 48 hours.</p>
-          </div>
-
-          <form ref={formRef} onSubmit={handleSubmit} className="p-12 border border-[var(--border-subtle)] bg-white dark:bg-[var(--bg-primary)]">
-            {formState === "success" ? (
-              <div className="text-center py-12">
-                <div className="w-20 h-20 bg-[var(--gold-light-bg)] dark:bg-white/5 flex items-center justify-center mx-auto mb-6">
-                  <ShieldCheck size={40} className="text-[var(--gold)]" />
-                </div>
-                <h3 className="text-2xl font-black text-[var(--navy)] dark:text-white uppercase mb-4">Application Received</h3>
-                <p className="text-[var(--text-muted)] mb-8">Our team will review your profile and reach out via WhatsApp shortly.</p>
-                <button type="button" onClick={() => setFormState("idle")} className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)] border-b-2 border-[var(--gold)] pb-1">Submit Another</button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">First Name</label>
-                    <input required name="firstName" type="text" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Last Name</label>
-                    <input required name="lastName" type="text" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Email Address</label>
-                  <input required name="email" type="email" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">WhatsApp Number</label>
-                  <input required name="phone" type="tel" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Role Applying For</label>
-                  <select required name="role" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors appearance-none">
-                    <option value="" className="bg-white dark:bg-[var(--bg-primary)]">Select Role...</option>
-                    {jobs.map((j) => (
-                      <option key={j.id} value={j.role} className="bg-white dark:bg-[var(--bg-primary)]">{j.role}</option>
-                    ))}
-                    <option value="Ambassador Programme" className="bg-white dark:bg-[var(--bg-primary)]">Ambassador Programme</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Why DivergenCIE?</label>
-                  <textarea required name="message" rows={4} className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors resize-none"></textarea>
-                </div>
-                {formState === "error" && (
-                  <p className="text-red-500 text-sm font-bold">{errorMsg}</p>
-                )}
-                <button
-                  type="submit"
-                  disabled={formState === "submitting"}
-                  className="w-full py-5 bg-[var(--navy)] text-white text-xs font-black uppercase tracking-widest hover:bg-[var(--gold)] hover:text-black transition-all disabled:opacity-50"
-                >
-                  {formState === "submitting" ? "Processing..." : "Submit Application"}
-                </button>
-              </div>
-            )}
-          </form>
+      {/* Application CTA -- TKT-0198: the old inline form (which posted to
+          a route that didn't exist, /api/careers/apply -- a real dead end)
+          is gone. Every "Apply" link on this page now goes straight to the
+          real registration portal instead. */}
+      <section className="py-24">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <h2 className="text-4xl font-black text-[var(--navy)] dark:text-white uppercase tracking-wider mb-4">Start Your Journey</h2>
+          <p className="text-[var(--text-muted)] mb-12">Pick a role above, or apply directly below. We reply via WhatsApp within 48 hours.</p>
+          <Link
+            href="/register?requestedType=StaffInterview"
+            className="inline-flex items-center gap-3 py-5 px-12 bg-[var(--navy)] text-white text-xs font-black uppercase tracking-widest hover:bg-[var(--gold)] hover:text-black transition-all"
+          >
+            Apply Now <ArrowRight size={14} />
+          </Link>
         </div>
       </section>
 

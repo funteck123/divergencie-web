@@ -40,7 +40,25 @@ const DIFFS = [
   { id: 'worldtopper', name: 'World Topper', col: '#e05a4e', sub: 'Top 0.1% Globally' }
 ];
 
+// TKT-0194: disabled per explicit user instruction ("disable fully with
+// comment"). Block-commenting the whole component below is unsafe -- its
+// JSX has several {/* ... */} comments whose "*/" would prematurely close
+// an outer block comment. Instead: the real component is kept intact but
+// unexported (MockPageDisabled), and this stub is the live default export.
+// To re-enable: swap which function is named "MockPage" and exported.
 export default function MockPage() {
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-white dark:bg-[var(--bg-primary)] text-center px-4">
+      <div>
+        <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">FREE MOCK</p>
+        <h1 className="text-3xl md:text-5xl font-black text-[var(--navy)] dark:text-white mb-4 uppercase">Temporarily Unavailable</h1>
+        <p className="text-[var(--text-muted)] max-w-md mx-auto">We&apos;re updating this tool. In the meantime, book a free consultation instead.</p>
+      </div>
+    </main>
+  );
+}
+
+function MockPageDisabled() {
   const [view, setView] = useState<"landing" | "exam" | "results">("landing");
   const [config, setConfig] = useState({ subject: "", level: "", diff: "" });
   
