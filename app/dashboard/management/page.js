@@ -1781,6 +1781,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [saving, setSaving] = useState(false);
   const [generatingTimesheet, setGeneratingTimesheet] = useState(false);
   const [timesheetGenError, setTimesheetGenError] = useState("");
+  const [timesheetGenNote, setTimesheetGenNote] = useState("");
 
   // TKT-0158: duplicates the real Drive template and fills in whatever this
   // form already knows (Name/Batch/Currency/Course) -- only fills the input
@@ -1788,13 +1789,20 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   // the form's own Save afterward, same as typing a link in by hand.
   async function generateTimesheet() {
     setTimesheetGenError("");
+    setTimesheetGenNote("");
     setGeneratingTimesheet(true);
     try {
+      // accountId lets the automator recognize this exact account already
+      // has a real Timesheet (stamped as hidden Drive metadata on the file
+      // itself, not read from this form) and hand back that same file
+      // instead of creating a duplicate -- e.g. a second click, or Generate
+      // clicked again after Cancel without Saving the first result.
       const result = await api("/api/timesheet-automator", {
         method: "POST",
-        body: JSON.stringify({ name, batch, currency, course }),
+        body: JSON.stringify({ name, batch, currency, course, accountId: user.UserID }),
       });
       setTimesheetUrl(result.url);
+      if (result.alreadyExisted) setTimesheetGenNote("This account already had a Timesheet — reused the existing one instead of creating a new one.");
     } catch (e) {
       setTimesheetGenError(e.message);
     } finally {
@@ -2046,6 +2054,7 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
               </button>
             </div>
             {timesheetGenError && <p className="text-sm mt-1" style={{ color: "var(--bad)" }}>{timesheetGenError}</p>}
+            {timesheetGenNote && <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>{timesheetGenNote}</p>}
           </div>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
