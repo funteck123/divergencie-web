@@ -117,9 +117,9 @@ export default function PricingPage() {
       <section className="pt-48 pb-24 bg-[var(--navy)] text-white text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--gold)_0%,transparent_70%)]"></div>
         <div className="container mx-auto px-4 relative z-10">
-          <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-6">INVEST IN EXCELLENCE</p>
-          <h1 className="text-6xl md:text-8xl font-black mb-8 uppercase">Simple, <span className="text-[var(--gold)]">Transparent.</span></h1>
-          <p className="max-w-2xl mx-auto text-lg text-white/80 font-medium">No hidden fees. Localised payment options. World-class results.</p>
+          <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-6">SERIOUS COACHING, WITHOUT THE PREMIUM MARKUP</p>
+          <h1 className="text-6xl md:text-8xl font-black mb-8 uppercase">Simple, <span className="text-[var(--gold)]">Affordable.</span></h1>
+          <p className="max-w-2xl mx-auto text-lg text-white/80 font-medium">No hidden fees. Pricing built to be accessible, not exclusive. World-class results.</p>
         </div>
       </section>
 
