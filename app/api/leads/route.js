@@ -4,7 +4,7 @@ import { requireManagement } from "@/lib/authz";
 import { sendEmail } from "@/lib/googleMail";
 
 // TKT-0169: who gets notified the moment a real inquiry comes in.
-const LEAD_NOTIFICATION_RECIPIENTS = ["atika@dyeagency.co.uk", "team@divergencie.co.uk"];
+const LEAD_NOTIFICATION_RECIPIENTS = ["atiqa@dyeagency.co.uk", "team@divergencie.co.uk"];
 
 // Public-facing lead creation (marketing site contact form) — no auth
 // required, mirrors v6's src/lib/actions/leads.ts createLead() but backed
