@@ -403,10 +403,11 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
   }
 });
 
-function questionPanelHtml(q) {
+function questionPanelHtml(q, showOptions = true) {
   return `
     <img class="qimg" src="${q.image}" alt="Question ${escapeHtml(q.questionNumber)}" />
-    ${!q.correctAnswer ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
+    ${!q.correctAnswer && showOptions ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
+    ${showOptions ? `
     <div class="letter-row">
       ${q.optionLetters.map((letter) => `
         <label class="letter-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-letter="${escapeHtml(letter)}">
@@ -415,6 +416,7 @@ function questionPanelHtml(q) {
         </label>
       `).join("")}
     </div>
+    ` : ""}
   `;
 }
 
@@ -429,7 +431,7 @@ function renderQuiz() {
           <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
           <button type="button" class="tab-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="answer">Answer</button>
         </div>
-        <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">${questionPanelHtml(q)}</div>
+        <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">${questionPanelHtml(q, false)}</div>
         <div class="tab-panel answer-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="answer" style="display:none;">
           ${q.correctAnswer
             ? `Correct answer: <span class="answer-letter">${escapeHtml(q.correctAnswer)}</span>`
