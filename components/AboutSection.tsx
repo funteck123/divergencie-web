@@ -75,7 +75,7 @@ export default function AboutSection() {
             <div className="absolute top-2 left-2 w-full h-full bg-[var(--navy)]/10 rounded-none -rotate-3 border border-[var(--border-subtle)]"></div>
             
             {/* Main Card */}
-            <div className="relative w-full h-full bg-white dark:bg-[var(--bg-secondary)] rounded-none p-10 md:p-14 shadow-2xl border border-[var(--border-subtle)] flex flex-col justify-between">
+            <div className="relative w-full h-full bg-white dark:bg-[var(--bg-secondary)] rounded-none p-10 md:p-14 shadow-2xl border border-[var(--border-subtle)] flex flex-col">
               <div>
                 <p className="text-[var(--gold)] font-black tracking-widest uppercase text-xs mb-6">Your profile</p>
                 <p className="text-3xl md:text-4xl font-black text-[var(--navy)] dark:text-white leading-tight">
@@ -83,32 +83,18 @@ export default function AboutSection() {
                 </p>
               </div>
 
-              <div className="space-y-8">
-                <div className="flex flex-wrap gap-2">
-                  {["Ambitious", "Curious", "Under-advised", "DivergenCIE material"].map((tag, idx) => (
-                    <span 
-                      key={idx} 
-                      className={`px-4 py-2 rounded-none text-xs font-black tracking-wider uppercase ${tag === "DivergenCIE material" ? 'bg-[var(--gold)] text-white' : 'bg-[var(--bg-secondary)] dark:bg-white/5 text-[var(--text-muted)]'}`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 pt-8 border-t border-[var(--border-subtle)]">
-                  <div>
-                    <p className="text-2xl font-black text-[var(--navy)] dark:text-white">98%</p>
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest leading-tight">First choice<br />placement</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-black text-[var(--navy)] dark:text-white">40+</p>
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest leading-tight">Countries<br />represented</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-black text-[var(--navy)] dark:text-white">0x</p>
-                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest leading-tight">Recycled<br />essays</p>
-                  </div>
-                </div>
+              {/* TKT-0172: was justify-between-driven (variable gap based on
+                  leftover card height); now a fixed, doubled gap above the
+                  tags relative to the quote above them. */}
+              <div className="flex flex-wrap gap-2 mt-16">
+                {["Ambitious", "Curious", "Under-advised", "DivergenCIE material"].map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className={`px-4 py-2 rounded-none text-xs font-black tracking-wider uppercase ${tag === "DivergenCIE material" ? 'bg-[var(--gold)] text-white' : 'bg-[var(--bg-secondary)] dark:bg-white/5 text-[var(--text-muted)]'}`}
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
