@@ -1,16 +1,15 @@
 "use client";
 
-import { Newspaper, Radio, Globe } from "lucide-react";
+import { Newspaper, Radio } from "lucide-react";
 
+// TKT-0179: replaced fabricated logos with real outlets, confirmed via
+// web search (2026-09-01) to actually cover Cambridge Outstanding
+// Learner Award / world-topper / country-topper results -- the same
+// category of achievement DivergenCIE students' results fall under.
 const pressLogos = [
-  { name: "The Guardian Education", icon: <Newspaper size={20} /> },
-  { name: "Times Higher Education", icon: <Newspaper size={20} /> },
-  { name: "BBC Learning", icon: <Radio size={20} /> },
-  { name: "The Independent", icon: <Newspaper size={20} /> },
-  { name: "The Telegraph Education", icon: <Newspaper size={20} /> },
-  { name: "EdSurge", icon: <Globe size={20} /> },
-  { name: "Tes Magazine", icon: <Globe size={20} /> },
-  { name: "Varsity", icon: <Globe size={20} /> },
+  { name: "Saudi Gazette", icon: <Newspaper size={20} /> },
+  { name: "ANI News", icon: <Radio size={20} /> },
+  { name: "The Tribune (India)", icon: <Newspaper size={20} /> },
 ];
 
 export default function Press() {
@@ -19,13 +18,13 @@ export default function Press() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">
-            THE PAPARAZZI
+            THE RECOGNITION
           </p>
           <h2 className="text-5xl sm:text-7xl md:text-9xl font-black text-[var(--navy)] dark:text-white leading-[0.85] mb-6">
-            THEY&apos;RE<br /><span className="text-[var(--gold)]">WATCHING.</span>
+            REAL RESULTS,<br /><span className="text-[var(--gold)]">REAL COVERAGE.</span>
           </h2>
           <p className="text-sm font-black tracking-[0.2em] text-[var(--text-muted)] uppercase">
-            EDUCATION COVERAGE & THOUGHT LEADERSHIP.
+            Outlets that cover Cambridge world & country topper results.
           </p>
         </div>
 
@@ -46,7 +45,7 @@ export default function Press() {
         </div>
 
         <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest italic opacity-50">
-          * Press coverage in progress. Logos shown indicate target media publications.
+          * These outlets cover Cambridge topper achievements, not DivergenCIE specifically.
         </p>
       </div>
     </section>
