@@ -28,8 +28,8 @@ const USER_FEATURES = [
 // yet, just a link. Only work while that prototype's tunnel is actually
 // running; a dead tunnel means a broken link until it's restarted.
 const EXTERNAL_TOOLS = [
-  { label: "Syllabus Viewer", url: "https://thus-tuner-elegant-position.trycloudflare.com" },
-  { label: "Question Solver", url: "https://durham-sofa-usd-traveling.trycloudflare.com" },
+  { label: "Syllabus Viewer", url: "https://configurations-determines-finest-discovered.trycloudflare.com" },
+  { label: "Question Solver", url: "https://concord-jewel-miami-courses.trycloudflare.com" },
 ];
 
 // `services` should be the enrolled Service objects (ServiceID + Name are
