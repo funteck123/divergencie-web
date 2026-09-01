@@ -2,13 +2,18 @@
 
 import { Landmark, Plus } from "lucide-react";
 
+// Real IGCSE results (study/results/2023-03-igcse-maanvi-mittal.md),
+// March 2023 series. Percentage Uniform Mark shown as the percent value;
+// all 8 subjects graded A*(a*).
 const resultsData = [
-  { subject: "Mathematics", percent: 96, label: "A*–A" },
-  { subject: "Physics", percent: 92, label: "A*–A" },
-  { subject: "Chemistry", percent: 89, label: "A*–A" },
-  { subject: "Economics", percent: 94, label: "A*–A" },
-  { subject: "English Language", percent: 88, label: "A*–A" },
-  { subject: "IELTS", percent: 91, label: "Band 7.5+" },
+  { subject: "Mathematics", percent: 93, label: "A*" },
+  { subject: "Physics", percent: 95, label: "A*" },
+  { subject: "Chemistry", percent: 93, label: "A*" },
+  // { subject: "Hindi (2nd Language)", percent: 93, label: "A*" },
+  { subject: "Biology", percent: 92, label: "A*" },
+  { subject: "ICT", percent: 91, label: "A*" },
+  { subject: "English", percent: 91, label: "A*" },
+  { subject: "Environmental Management", percent: 91, label: "A*" },
 ];
 
 const unis = [
@@ -37,7 +42,7 @@ export default function AcademicResults() {
               OUR<br /><span className="text-[var(--gold)]">RESULTS.</span>
             </h2>
             <p className="text-sm font-black tracking-[0.2em] text-[var(--text-muted)] uppercase">
-              2025–26 COHORT. REAL STUDENTS. REAL A*S. NO AIRBRUSHING.
+              Since 2022: Real A*s, Talented Students
             </p>
           </div>
 
@@ -62,6 +67,9 @@ export default function AcademicResults() {
           </div>
         </div>
 
+        {/* TKT-0177: "Students placed at" hidden -- no real placement data
+            to back this list. Kept, not deleted, for if that changes. */}
+        {/*
         <div>
           <p className="text-xs font-black text-[var(--text-muted)] uppercase tracking-[0.3em] mb-8 text-center md:text-left">Students placed at</p>
           <div className="flex flex-wrap gap-4">
@@ -77,6 +85,7 @@ export default function AcademicResults() {
             </div>
           </div>
         </div>
+        */}
       </div>
     </section>
   );
