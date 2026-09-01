@@ -28,7 +28,7 @@ export default function GlobalReach() {
             DIVERGENCIE<br />GOES <span className="text-[var(--gold)]">GLOBAL.</span>
           </h2>
           <p className="text-sm font-black tracking-[0.2em] text-[var(--text-muted)] uppercase">
-            STUDENTS FROM 40+ COUNTRIES. ONE STANDARD: EXCEPTIONAL.
+            STUDENTS FROM 20+ COUNTRIES. ONE STANDARD: EXCEPTIONAL.
           </p>
         </div>
 

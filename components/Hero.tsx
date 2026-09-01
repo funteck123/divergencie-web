@@ -35,7 +35,9 @@ export default function Hero() {
           </span>
         </h1>
 
-        {/* Subheading */}
+        {/* Subheading -- reverted to original; softening this is TKT-0174's
+            scope (site-wide framing), not TKT-0164's (the 98%/40+ stats
+            only). Keeping this fix scoped to exactly what was asked. */}
         <p className="max-w-3xl text-sm md:text-base text-white font-black tracking-[0.2em] uppercase mb-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
           OXFORD & CAMBRIDGE-COACHED
         </p>
@@ -66,14 +68,17 @@ export default function Hero() {
         <div className="w-0.5 h-24 bg-[var(--gold)]"></div>
       </div>
 
-      {/* Stats Floating - Hidden on mobile as per mockup usually, or keeping it but styled */}
+      {/* TKT-0164: "98% First Choice Placement" and "40+ Countries" were
+          both unverifiable -- replaced with real, user-confirmed numbers
+          (2026-09-01): a genuine grade-improvement rate, and the real
+          country count (21 confirmed, using a conservative round 20+). */}
       <div className="hidden lg:flex absolute right-12 top-1/2 -translate-y-1/2 flex-col gap-4">
         <div className="bg-black/20 backdrop-blur-md border border-white/20 p-6 rounded-xl w-48">
           <p className="text-4xl font-black text-white mb-1">98%</p>
-          <p className="text-[10px] font-black text-white/60 tracking-widest uppercase leading-tight">FIRST CHOICE PLACEMENT</p>
+          <p className="text-[10px] font-black text-white/60 tracking-widest uppercase leading-tight">GRADE IMPROVEMENT RATE</p>
         </div>
         <div className="bg-black/20 backdrop-blur-md border border-white/20 p-6 rounded-xl w-48">
-          <p className="text-4xl font-black text-white mb-1">40+</p>
+          <p className="text-4xl font-black text-white mb-1">20+</p>
           <p className="text-[10px] font-black text-white/60 tracking-widest uppercase leading-tight">COUNTRIES REPRESENTED</p>
         </div>
       </div>
