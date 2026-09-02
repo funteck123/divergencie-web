@@ -379,6 +379,35 @@ question's gold border + live summary text, and a submitted attempt's
 history row showing a real non-zero time-taken value alongside its real
 paper title/chapter/timestamp.
 
+### Practice sessions now log too (2026-09-02)
+
+Previously "Done practicing" just discarded the session -- nothing was
+recorded. Practice has no grading by design, so a new nullable `mode`
+column (`data/tmp/migration_mcq_practice_mode.sql`, run, confirmed live;
+also drops `score`'s NOT NULL constraint) distinguishes practice rows
+(`score: null`) from graded test rows.
+
+Ranking impact, deliberately asymmetric:
+- **Overall** (volume) now counts practice sessions too -- "how much has
+  this account practiced" is a real activity signal regardless of
+  grading.
+- **Subject/Chapter/Paper** (avg%/total correct) explicitly EXCLUDE
+  practice rows -- there's no "correct" to count, and treating a null
+  score as 0 would make a practice session look like a failed test.
+
+History table gained a "Mode" column (Test/Practice); Score/% show "—"
+for practice rows. The progress chart also excludes practice rows
+entirely (same reasoning: `null / totalQuestions` coerces to 0 in JS,
+which would plot every practice session as a misleading 0% point) --
+the chart is graded-attempts-only, the history table shows both.
+
+Verified end-to-end: a curl-level test confirmed Overall counts both a
+practice and a test attempt while Subject/Chapter correctly show only
+the test attempt; a full Playwright pass through "Done practicing"
+confirmed the real UI POSTs correctly (button shows "Saving…", history
+row shows "Practice" / "—" / "—" / a real non-zero time, and it's
+reflected in the Overall leaderboard).
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
