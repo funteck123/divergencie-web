@@ -85,13 +85,13 @@
   /* 5-column shape (Paper/Chapter/Score/%/When), overriding the 4-column
      leaderboard rules above via the compound .lb-table.history-table
      selector's higher specificity. */
-  .lb-table.history-table th:nth-child(1), .lb-table.history-table td:nth-child(1) { width: 28%; white-space: normal; }
-  .lb-table.history-table th:nth-child(2), .lb-table.history-table td:nth-child(2) { width: 10%; }
-  .lb-table.history-table th:nth-child(3), .lb-table.history-table td:nth-child(3) { width: 9%; }
-  .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 11%; }
-  .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 7%; }
-  .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 13%; }
-  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 22%; }
+  .lb-table.history-table th:nth-child(1), .lb-table.history-table td:nth-child(1) { width: 22%; white-space: normal; }
+  .lb-table.history-table th:nth-child(2), .lb-table.history-table td:nth-child(2) { width: 8%; }
+  .lb-table.history-table th:nth-child(3), .lb-table.history-table td:nth-child(3) { width: 20%; white-space: normal; }
+  .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 9%; }
+  .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 6%; }
+  .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 12%; }
+  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 23%; }
   /* 5-column shape (#/Student/Attempts/Unique papers/Unique questions),
      overriding the base 4-column leaderboard rules. */
   .lb-table.volume-table th:nth-child(1), .lb-table.volume-table td:nth-child(1) { width: 2.5rem; }
@@ -482,6 +482,35 @@ function chapterOf(title) {
   return null;
 }
 
+// Chapter NAME extraction (not just the number) -- for readability, e.g.
+// "1.1 Length & Time" instead of a bare "1.1" on charts/dropdowns/tables.
+// Same two-pattern-family split as chapterOf, verified against all 196
+// real papers (2026-09-02): 196/196 matched. A Levels Chemistry titles
+// have no natural word-casing (underscore-joined slug), so that branch
+// title-cases each underscore-separated word; every other subject already
+// has real title-cased words in the source filename, used as-is.
+const CHAPTER_NAME_PATTERNS = [
+  { re: /Ch\d+(?:\.\d+)?\s+(.+?)\s*\(MCQ\)/i, clean: (s) => s.trim() },
+  { re: /^\d+(?:\.\d+)?-(.+?)-_ial-cie-chemistry$/i, clean: (s) => s.replace(/_+/g, " ").trim().replace(/\b\w/g, (c) => c.toUpperCase()) },
+];
+function chapterNameOf(title) {
+  for (const { re, clean } of CHAPTER_NAME_PATTERNS) {
+    const m = re.exec(title || "");
+    if (m) return clean(m[1]);
+  }
+  return null;
+}
+// subject -> chapter number -> chapter name, built once loadLibrary()
+// resolves (see loadLibrary itself). Falls back to the bare chapter
+// number anywhere a name isn't known (e.g. a title matching neither
+// CHAPTER_NAME_PATTERNS).
+let chapterNameByKey = {};
+function chapterLabel(subject, chapter) {
+  if (!chapter) return "—"; // em dash, matches this file's existing "no chapter" placeholder
+  const name = chapterNameByKey[`${subject}::${chapter}`];
+  return name ? `${chapter} ${name}` : chapter;
+}
+
 async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
@@ -491,7 +520,16 @@ async function loadLibrary() {
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     library = data;
     paperTitleById = {};
-    Object.values(library).forEach((subjects) => Object.values(subjects).forEach((categories) => Object.values(categories).forEach((papers) => papers.forEach((p) => { paperTitleById[p.qpId] = p.title; }))));
+    chapterNameByKey = {};
+    Object.entries(library).forEach(([board, subjects]) => Object.entries(subjects).forEach(([subject, categories]) => Object.values(categories).forEach((papers) => papers.forEach((p) => {
+      paperTitleById[p.qpId] = p.title;
+      const fullSubject = `${board} ${subject}`;
+      const chNum = chapterOf(p.title);
+      const chName = chapterNameOf(p.title);
+      if (chNum && chName && !chapterNameByKey[`${fullSubject}::${chNum}`]) {
+        chapterNameByKey[`${fullSubject}::${chNum}`] = chName;
+      }
+    }))));
     statusEl.style.display = "none";
     document.getElementById("libraryPicker").style.display = "block";
     populateBoards();
@@ -1024,8 +1062,8 @@ function renderLeaderboardScope() {
   }
 }
 
-function populateSelect(select, options, placeholder) {
-  select.innerHTML = `<option value="">${placeholder}</option>` + options.map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
+function populateSelect(select, options, placeholder, labelFn) {
+  select.innerHTML = `<option value="">${placeholder}</option>` + options.map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(labelFn ? labelFn(o) : o)}</option>`).join("");
 }
 
 function onLeaderboardSubjectChange() {
@@ -1033,7 +1071,7 @@ function onLeaderboardSubjectChange() {
   const chapterSelect = document.getElementById("lbChapterSelect");
   const paperSelect = document.getElementById("lbPaperSelect");
   if (subject) {
-    populateSelect(chapterSelect, Object.keys(leaderboardData.byChapter[subject] || {}), "All chapters");
+    populateSelect(chapterSelect, Object.keys(leaderboardData.byChapter[subject] || {}), "All chapters", (ch) => chapterLabel(subject, ch));
     chapterSelect.disabled = false;
   } else {
     chapterSelect.innerHTML = `<option value="">All chapters</option>`;
@@ -1077,7 +1115,7 @@ function renderHistoryTable(mine) {
     return `<tr>
       <td>${escapeHtml(paperTitleById[a.paper_id] || a.paper_id)}</td>
       <td>${isPractice ? "Practice" : "Test"}</td>
-      <td>${escapeHtml(a.chapter || "—")}</td>
+      <td>${escapeHtml(chapterLabel(a.subject, a.chapter))}</td>
       <td>${scoreCell}</td>
       <td>${pctCell}</td>
       <td>${escapeHtml(timeTaken)}</td>
@@ -1111,7 +1149,7 @@ function onProgressSubjectChange() {
   const chapterSelect = document.getElementById("progressChapterSelect");
   if (subject) {
     const chapters = [...new Set(myAttempts.filter((a) => a.subject === subject).map((a) => a.chapter).filter(Boolean))];
-    populateSelect(chapterSelect, chapters, "All chapters");
+    populateSelect(chapterSelect, chapters, "All chapters", (ch) => chapterLabel(subject, ch));
     chapterSelect.disabled = false;
   } else {
     chapterSelect.innerHTML = `<option value="">All chapters</option>`;
@@ -1124,10 +1162,29 @@ function onProgressSubjectChange() {
 // approach as the progress-over-time chart. Personal only (this
 // account's own mistake counts, not a cross-student comparison -- see
 // scores.mjs's own comment on why this isn't a leaderboard).
-function drawMistakeBarChart(canvas, chapterCounts) {
+// Character-count truncation isn't reliable here: a rotated, right-aligned
+// label's actual pixel width is what determines whether it runs off the
+// canvas or into its neighbor, and that varies with the font (some
+// letters are much wider than others). Measures real width and shortens
+// until it fits -- found necessary by actually rendering a real long
+// chapter name ("1.5 F-ma & Resultant Forces") and seeing its *front*
+// silently clipped off the canvas edge, not a clean ellipsis.
+function truncateToWidth(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let s = text;
+  while (s.length > 1 && ctx.measureText(s + "…").width > maxWidth) {
+    s = s.slice(0, -1);
+  }
+  return s + "…";
+}
+
+function drawMistakeBarChart(canvas, subject, chapterCounts) {
   const ctx = canvas.getContext("2d");
   const W = canvas.width, H = canvas.height;
-  const padL = 30, padB = 34, padT = 10, padR = 10;
+  // Chapter NAMES (not just numbers) are long -- rotated labels need real
+  // room underneath, always (not just past some chapter-count threshold),
+  // and each one is truncated so it can't overlap its neighbor.
+  const padL = 30, padB = 70, padT = 10, padR = 10;
   ctx.clearRect(0, 0, W, H);
 
   const chapters = Object.keys(chapterCounts).sort((a, b) => {
@@ -1163,10 +1220,25 @@ function drawMistakeBarChart(canvas, chapterCounts) {
     ctx.textAlign = "center";
     ctx.fillText(String(count), x + barW / 2, y - 3);
     ctx.save();
-    ctx.translate(x + barW / 2, padT + plotH + 12);
-    ctx.rotate(chapters.length > 6 ? -Math.PI / 4 : 0);
-    ctx.textAlign = chapters.length > 6 ? "right" : "center";
-    ctx.fillText(chapter, 0, 0);
+    const anchorX = x + barW / 2;
+    ctx.translate(anchorX, padT + plotH + 12);
+    ctx.rotate(-Math.PI / 4);
+    ctx.textAlign = "right";
+    ctx.font = "10px sans-serif";
+    // Right-aligned text rotated -45deg extends toward smaller x AND larger
+    // y from the anchor (its front end is the farthest point in both
+    // directions) -- capped on three things: the canvas's own left edge (a
+    // small anchorX, for an early bar), the canvas's own bottom edge (the
+    // vertical drop of a long label can exceed padB even when its
+    // unrotated width looks fine -- found by actually rendering "1.5 F-ma
+    // & Resultant Forces" and seeing its front clipped off the BOTTOM, not
+    // the left, because only the x-cap existed here before), and a flat
+    // 120px ceiling so short labels don't sprawl. Whichever is smallest wins.
+    const anchorY = padT + plotH + 12;
+    const maxWidthFromX = anchorX - 4;
+    const maxWidthFromY = (H - anchorY - 4) / Math.sin(Math.PI / 4);
+    const maxWidth = Math.min(120, maxWidthFromX, maxWidthFromY);
+    ctx.fillText(truncateToWidth(ctx, chapterLabel(subject, chapter), maxWidth), 0, 0);
     ctx.restore();
   });
   ctx.textAlign = "left";
@@ -1191,16 +1263,16 @@ async function loadAndRenderMistakeCharts() {
       label.textContent = subject;
       const canvas = document.createElement("canvas");
       canvas.width = 700;
-      canvas.height = 220;
+      canvas.height = 260;
       canvas.style.width = "100%";
-      canvas.style.height = "220px";
+      canvas.style.height = "260px";
       canvas.style.background = "white";
       canvas.style.border = "1px solid var(--border)";
       canvas.style.borderRadius = "8px";
       wrapper.appendChild(label);
       wrapper.appendChild(canvas);
       container.appendChild(wrapper);
-      drawMistakeBarChart(canvas, chart[subject]);
+      drawMistakeBarChart(canvas, subject, chart[subject]);
     });
   } catch (e) {
     emptyNote.style.display = "block";
