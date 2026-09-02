@@ -341,6 +341,44 @@ drill-down (Subject select → populates Chapter select → populates Paper
 select for MCQ), and the Overall/volume-vs-scoped/accuracy view switch all
 confirmed rendering correctly with real attempts/completions.
 
+### Attempt/completion history, time-taken, practice-mode timer, flag-for-review (2026-09-02)
+
+- **Attempt history table (MCQ)**: every logged attempt was already stored
+  server-side but nothing rendered it as a literal list -- new "Attempt
+  history" card on the progress page: paper title, chapter, score, %,
+  time taken, and exact timestamp, most recent first, respecting the same
+  Subject/Chapter filters as the chart above it.
+- **Completion history table (syllabus)**: same idea -- topic, subject,
+  chapter, and timestamp for every "Completed" tag ever set, most recent
+  first.
+- **Time taken**: new nullable `time_taken_seconds` column on
+  `mcq_attempts` (`data/tmp/migration_mcq_time_taken.sql`, migration run,
+  confirmed live). Captured from the client's existing stopwatch
+  (`timerSeconds`) at the moment of submit -- no new timer logic needed,
+  just reading a value that already existed and had never been sent
+  anywhere.
+- **Practice-mode stopwatch**: Practice mode previously had no timer at
+  all (explicitly "no timer" in its own button copy and code comments).
+  Now runs the exact same stopwatch as Test mode -- same start/pause/
+  resume, same header card, just relabeled "Practice" instead of "Answer
+  the quiz". Button copy corrected (dropped the now-false "no timer"
+  claim, now says "no grading" instead, which is still true).
+- **Flag-for-review checkbox (Test mode only)**: this tool already renders
+  every question on one scrollable page rather than a one-at-a-time
+  navigator, so "move ahead and return" already worked by scrolling --
+  the checkbox's actual job is making flagged questions easy to *find*
+  again. Checking it highlights that question (gold border) and adds it
+  to a live "🚩 Flagged for review: Q3, Q7" summary above the question
+  list, each a click-to-scroll link. Purely a self-review aid: flags are
+  never sent to the server, never affect grading, and don't block
+  submission.
+
+All four verified end-to-end via Playwright against real Supabase data:
+practice-mode timer visibly ticking with the "Practice" header, a flagged
+question's gold border + live summary text, and a submitted attempt's
+history row showing a real non-zero time-taken value alongside its real
+paper title/chapter/timestamp.
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
