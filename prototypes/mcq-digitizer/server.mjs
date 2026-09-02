@@ -519,13 +519,13 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     try {
-      const { accountId, accountName, subject, chapter, paperId, score, totalQuestions } = body;
+      const { accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds } = body;
       if (!accountId || !subject || !paperId || score == null || totalQuestions == null) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "accountId, subject, paperId, score, and totalQuestions are required." }));
         return;
       }
-      const attempt = await recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions });
+      const attempt = await recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds });
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ attempt }));
     } catch (e) {

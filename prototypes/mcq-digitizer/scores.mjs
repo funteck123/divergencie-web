@@ -43,9 +43,12 @@ function requireClient() {
 
 export class InvalidAttemptError extends Error {}
 
-export async function recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions }) {
+export async function recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds }) {
   if (!Number.isInteger(score) || !Number.isInteger(totalQuestions) || totalQuestions <= 0 || score < 0 || score > totalQuestions) {
     throw new InvalidAttemptError("score and totalQuestions must be integers, with 0 <= score <= totalQuestions and totalQuestions > 0.");
+  }
+  if (timeTakenSeconds != null && (!Number.isInteger(timeTakenSeconds) || timeTakenSeconds < 0)) {
+    throw new InvalidAttemptError("timeTakenSeconds must be a non-negative integer when provided.");
   }
   const c = requireClient();
   const { data, error } = await c
@@ -58,6 +61,7 @@ export async function recordAttempt({ accountId, accountName, subject, chapter, 
       paper_id: paperId,
       score,
       total_questions: totalQuestions,
+      time_taken_seconds: timeTakenSeconds ?? null,
     })
     .select()
     .single();
@@ -69,7 +73,7 @@ export async function getProgressForAccount(accountId) {
   const c = requireClient();
   const { data, error } = await c
     .from(TABLE)
-    .select("subject, chapter, paper_id, score, total_questions, submitted_at")
+    .select("subject, chapter, paper_id, score, total_questions, time_taken_seconds, submitted_at")
     .eq("account_id", accountId)
     .order("submitted_at", { ascending: true });
   if (error) throw new Error(`Could not load progress: ${error.message}`);
