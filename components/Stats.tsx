@@ -51,7 +51,7 @@ const allStats = [
   { value: "0x", label: "Recycled essays.\nEver.", highlight: "Ever." },
   { value: "0%", label: "Generic advice.\nZero tolerance.", highlight: "Zero tolerance." },
   { value: "100%", label: "Bespoke strategy,\nevery student." },
-  { value: "1st", label: "Cambridge & CollegeBoard\ncertified coaches.", gold: true },
+  { value: "1st", label: "Country & World Topper\ncertified coaches.", gold: true },
 ];
 
 export default function Stats() {
