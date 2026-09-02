@@ -9,13 +9,28 @@ import Image from "next/image";
 // Recruits sheet for real subject lists. No photos -- a generic person
 // icon per user instruction, not a stock photo standing in for someone.
 const teachers = [
-  { name: "Mohammad Shahid Akhtar", role: "Cambridge Curriculum Teacher", subject: "Founding Teacher" },
+  { name: "Mohammad Shahid Akhtar", role: "Cambridge Curriculum Teacher", subject: "A Level Computer Science · Math · Physics · Chemistry · English" },
   { name: "Muhammad Ahmar Noman", role: "Cambridge Curriculum Teacher", subject: "IGCSE Physics · Math · Biology" },
   { name: "Aurneela Ghosh Riddhi", role: "Cambridge Curriculum Teacher", subject: "AS Business" },
   { name: "Syed Muhammad Murtaza", role: "Cambridge Curriculum Teacher", subject: "IGCSE Physics · English · Math · Chemistry" },
   { name: "Harem Mir", role: "Cambridge Curriculum Teacher", subject: "Biology (IB, AP, O/A Level, IGCSE) · English · History" },
   { name: "Syed Arqam", role: "Cambridge Curriculum Teacher", subject: "A-Level Biology · IGCSE Math, Chemistry, ICT, Physics, Biology" },
   { name: "Chirag Kar", role: "Cambridge Curriculum Teacher", subject: "A-Level Math" },
+  { name: "Khadija Amatullah", role: "Cambridge Curriculum Teacher", subject: "IGCSE Chemistry" },
+  { name: "Menahil Khalid", role: "Cambridge Curriculum Teacher", subject: "IGCSE Biology · IGCSE English" },
+  { name: "Rabia Nayyar Butt", role: "Cambridge Curriculum Teacher", subject: "IGCSE Biology · IGCSE Chemistry" },
+];
+
+// TKT-0182 follow-up: real DC operations/marketing/finance team, minimal
+// info per user instruction -- name and department only, no fabricated
+// bio/qual text. "Alex" (Finance) is not in either data/DC Database
+// 2026_Cleaned_2026-06-12.xlsx or the live app database -- flagged to the
+// user, who confirmed keeping it as given.
+const dcTeam = [
+  { name: "Atiqa Fatima", department: "Operations" },
+  { name: "Aleena Usman", department: "Operations" },
+  { name: "Mahrukh Altaf", department: "Marketing" },
+  { name: "Alex", department: "Finance" },
 ];
 
 const toppers = [
@@ -146,6 +161,28 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <p className="text-sm font-bold text-[var(--navy)] dark:text-white">{t.subject}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* DC Team -- operations/marketing/finance, minimal info per user
+          instruction (name + department only). */}
+      <section className="py-24 bg-[var(--bg-secondary)] dark:bg-white/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">BEHIND THE SCENES</p>
+            <h2 className="text-5xl font-black text-[var(--navy)] dark:text-white uppercase">DC Team</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {dcTeam.map((m, idx) => (
+              <div key={idx} className="p-8 bg-white dark:bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-center text-[var(--gold)]">
+                  <UserRound size={32} />
+                </div>
+                <h4 className="font-black text-[var(--navy)] dark:text-white uppercase tracking-wider">{m.name}</h4>
+                <p className="text-[10px] font-black text-[var(--gold)] uppercase tracking-widest">{m.department}</p>
               </div>
             ))}
           </div>
