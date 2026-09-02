@@ -23,13 +23,17 @@ const USER_FEATURES = [
   { slug: "timesheet", label: "Timesheet", toggleKey: "timesheet", linkField: "TimesheetURL" },
   { slug: "progress-tracker", label: "Progress Tracker", toggleKey: "progressTracker", linkField: "ProgressTrackerURL" },
 ];
-// Straight external redirects to the syllabus-digitizer/mcq-digitizer
-// prototypes' own Cloudflare quick tunnels -- no Supabase/DB involvement
-// yet, just a link. Only work while that prototype's tunnel is actually
-// running; a dead tunnel means a broken link until it's restarted.
+// Straight external redirect to the syllabus-digitizer prototype's own
+// Cloudflare quick tunnel -- no Supabase/DB involvement yet, just a link.
+// Only works while that prototype's tunnel is actually running; a dead
+// tunnel means a broken link until it's restarted. mcq-digitizer USED to
+// be here too (as a bare external "Question Solver" link) until it was
+// properly merged into the main app (see
+// planning/mcq-digitizer-integration-plan.md's "Option B") -- that one is
+// now rendered separately below as an internal link, not from this list,
+// since it needs the logged-in student's own account/name to build its URL.
 const EXTERNAL_TOOLS = [
   { label: "Syllabus Viewer", url: "https://configurations-determines-finest-discovered.trycloudflare.com" },
-  { label: "Question Solver", url: "https://concord-jewel-miami-courses.trycloudflare.com" },
 ];
 
 // `services` should be the enrolled Service objects (ServiceID + Name are
@@ -69,6 +73,16 @@ export default function ResourcesSection({ services, user, showExternalTools = f
             {f.label}
           </a>
         ))}
+        {showExternalTools && user && (
+          <a
+            className="btn-ghost"
+            href={`/mcq-digitizer/index.html?${new URLSearchParams({ account: user.UserID, name: user.Name }).toString()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Question Solver
+          </a>
+        )}
       </div>
 
       {(services || []).length === 0 ? (
