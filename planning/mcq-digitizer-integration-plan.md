@@ -422,6 +422,58 @@ signal from "how much of the library have they covered." Verified via
 curl (3 attempts, 2 of them the same paper retaken -> attempts: 3,
 uniquePapers: 2, uniqueQuestions: 25, not 35) and the real UI.
 
+### Mistake tracker + third mode: "Mistakes Mode" (2026-09-02)
+
+New per-question mistake tracking, separate from `mcq_attempts` (which only
+ever recorded per-paper aggregate score, never per-question detail).
+New table `mcq_mistakes` (`data/tmp/migration_mcq_mistakes.sql`, run,
+confirmed live): **append-only** — one row per wrong-answer INSTANCE,
+never deleted or overwritten, so the chapter-wise mistake chart can count
+total historical mistake volume even after a question is later fixed
+(confirmed with the user: "mistake counts not unique mistakes," "keep full
+history forever"). A separate mutable `resolved` boolean flips true on a
+question's prior unresolved row(s) once answered correctly again — that's
+what drives the "practice only current mistakes" queue shrinking, without
+touching the historical count.
+
+**"Mistake" means answered-incorrectly only** — an unanswered/unmatched
+question isn't a mistake (confirmed with the user), same filter
+(`verdict === "correct" || "incorrect"`) as `gradable`'s own definition.
+
+**Mistake tracker chart**: one bar chart per subject, one bar per chapter,
+personal to the viewer's own account (not a leaderboard — a per-account
+mistake count shouldn't default to cross-student-comparable). Vanilla
+canvas bar chart, coral bars (`#e05a4e`) to read visually distinct from
+the gold progress-chart lines.
+
+**Third mode, named "Mistakes Mode"** (parallel to "Practice mode"/"Test
+mode"): a new stage0 entry point that skips the normal library
+picker/mode-select flow entirely — fetches the account's unresolved
+mistakes across every paper/chapter/subject, groups by paper, fetches each
+paper fresh via a new cache-only `GET /api/paper?qpId=..` endpoint
+(mistakes only ever store `paper_id`, never `msId`, so the live-fallback
+digitize path isn't available — a paper not in the cached
+`full-library/database.json` simply can't be replayed, a 404 not a
+crash), filters to just the missed question numbers, and merges
+potentially-multiple-origin questions into one combined quiz. Answering a
+question correctly here resolves it the same way a Test-mode retake
+would; **a Mistakes Mode pass is never recorded as a new `mcq_attempts`
+row** — it isn't a scored "attempt" for the leaderboard/history, only a
+resolve-or-relog pass against the mistake log.
+
+**Real bug found and fixed during Playwright verification, not the
+feature's own code**: forcing Playwright's `.check({force:true})` directly
+on the hidden `<input type="radio">` (the letter-selector inputs are
+`display:none`, a styled `<label>` shows instead) does NOT register as
+checked to the grading code's `:checked` query -- produces an "Unanswered"
+verdict for every question regardless of intent. This silently broke
+mistake-recording verification (0 mistakes logged despite real 0/16
+scores) until the test was fixed to click the visible `.letter-btn` label
+instead. Real gotcha for any future Playwright test against this
+prototype's quiz UI -- see
+`study/agent-notes/mcq-syllabus-tracking/22-playwright-first-picks-wrong-hidden-element.md`
+for the sibling Playwright gotcha from earlier the same session.
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
