@@ -289,6 +289,58 @@ before this is trusted, same discipline as everything else this session.
 - Navigation: still nothing links students to `/mcq-digitizer/index.html`
   from inside the main app's own dashboards — placement not decided.
 
+### Leaderboard/progress architecture, finalized (2026-09-02)
+
+Four tiers for MCQ, three for syllabus (no "paper" concept there) --
+broadest to narrowest:
+
+| Tier | MCQ | Syllabus | Ranking |
+|---|---|---|---|
+| Overall | all subjects | all subjects | **Volume only** (attempts/questions answered, or topics completed) |
+| Subject | e.g. "IGCSE Physics" | e.g. "Accounting" | avg% + total correct (MCQ) / topics completed (syllabus) |
+| Chapter | e.g. "1.1" | e.g. "0" (top-level node) | same as Subject, scoped narrower |
+| Paper | one specific worksheet | n/a | same as Subject, narrowest |
+
+Design decision, not just an added tier: **Overall deliberately excludes
+avg%** for MCQ -- ranking accuracy across different-difficulty subjects
+isn't a fair comparison (a student who did 2 hard A-Level Chemistry
+papers at 40% would rank below one who did 50 easy IGCSE papers at 90%,
+which isn't "who's better," just an artifact of which papers they took).
+Accuracy comparisons only ever appear once a subject/chapter/paper scope
+makes them apples-to-apples by construction. A subject/chapter tier is
+inherently already scoped to accounts with activity there -- no separate
+enrollment-filtering needed for fairness at that tier, though the earlier
+security gap on GET /api/mcq/progress?account=X (any session can read any
+account's data) still applies equally at every tier and is still deferred.
+
+Personal progress charts (both tools) also filter by Subject and Chapter
+(Subject dropdown populates Chapter dropdown from that account's own
+completed chapters) -- "account-wide history of subject-wise history,"
+per the request that prompted this design pass.
+
+**Chapter derivation differs by tool, verified against real live data:**
+- Syllabus: free -- node_key is a dot-path ("0", "0.1", "0.1.2"...) built
+  by the outline renderer; its first segment IS the chapter. No schema
+  change needed.
+- MCQ: NOT free -- paperId is an opaque Google Drive file ID with no
+  chapter info in it at all. Chapter lives in the paper's *title*, which
+  the client already has from the library listing. Checked all 196 real
+  papers in the live library (2026-09-02): 100% parse via exactly two
+  regexes -- `Ch(\d+(?:\.\d+)?)` for every subject except A Levels
+  Chemistry, which instead uses a bare leading `1.1-topic-name` with no
+  "Ch" prefix (a real, confirmed naming inconsistency between subjects).
+  Client computes chapter once at fetch-and-digitize time and sends it
+  explicitly in the attempt POST; a title matching neither pattern stores
+  `null` rather than guessing (excluded from chapter-scoped views, not a
+  crash). New nullable `chapter` column + index added via
+  `data/tmp/migration_mcq_chapter.sql` (migration run, confirmed live).
+
+All four/three tiers verified end-to-end via Playwright for both tools
+against real Supabase data (not just curl) -- chart filtering, leaderboard
+drill-down (Subject select → populates Chapter select → populates Paper
+select for MCQ), and the Overall/volume-vs-scoped/accuracy view switch all
+confirmed rendering correctly with real attempts/completions.
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
