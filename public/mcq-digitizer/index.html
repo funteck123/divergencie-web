@@ -92,6 +92,13 @@
   .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 7%; }
   .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 13%; }
   .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 22%; }
+  /* 5-column shape (#/Student/Attempts/Unique papers/Unique questions),
+     overriding the base 4-column leaderboard rules. */
+  .lb-table.volume-table th:nth-child(1), .lb-table.volume-table td:nth-child(1) { width: 2.5rem; }
+  .lb-table.volume-table th:nth-child(2), .lb-table.volume-table td:nth-child(2) { width: 35%; }
+  .lb-table.volume-table th:nth-child(3), .lb-table.volume-table td:nth-child(3) { width: 20%; }
+  .lb-table.volume-table th:nth-child(4), .lb-table.volume-table td:nth-child(4) { width: 20%; }
+  .lb-table.volume-table th:nth-child(5), .lb-table.volume-table td:nth-child(5) { width: 22.5%; }
   .lb-table th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
   .lb-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--bg-soft); }
   .lb-table tr.me { background: rgba(232,168,50,0.15); font-weight: 700; }
@@ -220,8 +227,8 @@
       </div>
 
       <div id="lbOverallView">
-        <div class="lb-section-title">By volume (attempts &middot; questions answered)</div>
-        <table class="lb-table" id="lbVolumeTable"><thead><tr><th>#</th><th>Student</th><th>Attempts</th><th>Questions answered</th></tr></thead><tbody></tbody></table>
+        <div class="lb-section-title">By volume (unique papers &middot; unique questions -- retaking the same paper doesn't inflate this)</div>
+        <table class="lb-table volume-table" id="lbVolumeTable"><thead><tr><th>#</th><th>Student</th><th>Attempts</th><th>Unique papers</th><th>Unique questions</th></tr></thead><tbody></tbody></table>
       </div>
       <div id="lbScopedView" style="display:none;">
         <div class="lb-section-title">By average score</div>
@@ -855,9 +862,9 @@ function renderLeaderboardScope() {
     const tbody = document.querySelector("#lbVolumeTable tbody");
     tbody.innerHTML = (leaderboardData.overall || []).slice(0, 10).map((e, i) => `
       <tr class="${e.accountId === accountId ? "me" : ""}">
-        <td>${i + 1}</td><td>${escapeHtml(e.name)}</td><td>${e.attempts}</td><td>${e.totalQuestions}</td>
+        <td>${i + 1}</td><td>${escapeHtml(e.name)}</td><td>${e.attempts}</td><td>${e.uniquePapers}</td><td>${e.uniqueQuestions}</td>
       </tr>
-    `).join("") || `<tr><td colspan="4" class="hint">No attempts yet.</td></tr>`;
+    `).join("") || `<tr><td colspan="5" class="hint">No attempts yet.</td></tr>`;
   }
 }
 

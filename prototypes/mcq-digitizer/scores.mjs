@@ -141,22 +141,36 @@ function rank(rows) {
   };
 }
 
-// Volume only (total attempts / total questions answered) -- deliberately
-// no avg% at this tier, see rank()'s own comment above for why. Unlike
-// rank(), this DOES include practice-mode rows -- "how much has this
-// account practiced" is a real, meaningful activity signal whether or
-// not any given session was graded.
+// Volume only -- deliberately no avg% at this tier, see rank()'s own
+// comment above for why. Unlike rank(), this DOES include practice-mode
+// rows -- "how much has this account practiced" is a real, meaningful
+// activity signal whether or not any given session was graded.
+//
+// uniqueQuestions/uniquePapers count each paper ONCE per account no
+// matter how many times it was retaken -- retaking the same 10-question
+// paper 3 times previously inflated this to 30, which rewarded repetition
+// over actual breadth of coverage. `attempts` is kept separate and
+// UNCHANGED (every attempt, repeats included) since "how many times has
+// this account practiced" is still a real, distinct signal from "how much
+// of the library have they covered."
 function rankByVolume(rows) {
   const byAccount = new Map();
+  const seenPapersByAccount = new Map();
   for (const row of rows) {
     if (!byAccount.has(row.account_id)) {
-      byAccount.set(row.account_id, { accountId: row.account_id, name: displayName(row.account_id, row.account_name), attempts: 0, totalQuestions: 0 });
+      byAccount.set(row.account_id, { accountId: row.account_id, name: displayName(row.account_id, row.account_name), attempts: 0, uniquePapers: 0, uniqueQuestions: 0 });
+      seenPapersByAccount.set(row.account_id, new Set());
     }
     const entry = byAccount.get(row.account_id);
+    const seenPapers = seenPapersByAccount.get(row.account_id);
     entry.attempts += 1;
-    entry.totalQuestions += row.total_questions;
+    if (!seenPapers.has(row.paper_id)) {
+      seenPapers.add(row.paper_id);
+      entry.uniquePapers += 1;
+      entry.uniqueQuestions += row.total_questions;
+    }
   }
-  return [...byAccount.values()].sort((a, b) => b.totalQuestions - a.totalQuestions);
+  return [...byAccount.values()].sort((a, b) => b.uniqueQuestions - a.uniqueQuestions);
 }
 
 function groupBy(rows, keyFn) {
