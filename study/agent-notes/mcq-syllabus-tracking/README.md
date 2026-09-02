@@ -1,6 +1,6 @@
 # MCQ/syllabus score-and-completion tracking — atomic notes
 
-28 atomic notes from the session that built score/progress/leaderboard
+29 atomic notes from the session that built score/progress/leaderboard
 tracking for `prototypes/mcq-digitizer/` and `prototypes/syllabus-digitizer/`
 (2026-09-02) — each MCQ attempt and each syllabus "Completed" tag now
 persists to its own Supabase table, with a 4-tier (3-tier for syllabus)
@@ -49,6 +49,7 @@ building it, not a replacement for that plan doc.
 - [26-verify-with-a-live-build-and-monitor-not-a-guess.md](26-verify-with-a-live-build-and-monitor-not-a-guess.md) — real build/restart discipline, and a Monitor-tool false-alarm gotcha.
 - [27-atomic-commits-per-tool-not-one-giant-commit.md](27-atomic-commits-per-tool-not-one-giant-commit.md) — why the history is ~15 commits, not one.
 - [28-forcing-hidden-radio-inputs-doesnt-register.md](28-forcing-hidden-radio-inputs-doesnt-register.md) — `.check({force:true})` on a hidden radio doesn't count as an answer to the app's own grading code.
+- [29-rotated-canvas-labels-clip-on-two-axes-not-one.md](29-rotated-canvas-labels-clip-on-two-axes-not-one.md) — a `-45deg` label's width-cap fix only covered the x-axis; its vertical drop clipped it off the canvas bottom instead.
 
 ## Common thread
 
