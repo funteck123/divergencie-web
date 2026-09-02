@@ -223,7 +223,10 @@
     </div>
     <div class="card">
       <h2>Mistake tracker</h2>
-      <p class="hint">One chart per subject, one bar per chapter — total mistakes ever made there (every wrong answer counts, even ones you've since fixed — this is history, not your current weak spots).</p>
+      <p class="hint">One bar per chapter — total mistakes ever made there (every wrong answer counts, even ones you've since fixed — this is history, not your current weak spots).</p>
+      <div class="scope-row">
+        <label>Subject <select id="mistakeSubjectSelect"><option value="">All subjects</option></select></label>
+      </div>
       <div id="mistakeChartsContainer"></div>
       <p class="hint" id="mistakeChartsEmpty" style="display:none;">No mistakes recorded yet.</p>
     </div>
@@ -1244,36 +1247,45 @@ function drawMistakeBarChart(canvas, subject, chapterCounts) {
   ctx.textAlign = "left";
 }
 
-async function loadAndRenderMistakeCharts() {
+let mistakeChartData = {};
+
+function renderMistakeCharts() {
   const container = document.getElementById("mistakeChartsContainer");
   const emptyNote = document.getElementById("mistakeChartsEmpty");
   container.innerHTML = "";
+  const selected = document.getElementById("mistakeSubjectSelect").value;
+  const subjects = selected ? [selected] : Object.keys(mistakeChartData);
+  emptyNote.style.display = subjects.length ? "none" : "block";
+  subjects.forEach((subject) => {
+    const wrapper = document.createElement("div");
+    wrapper.style.marginBottom = "1.25rem";
+    const label = document.createElement("div");
+    label.className = "lb-section-title";
+    label.textContent = subject;
+    const canvas = document.createElement("canvas");
+    canvas.width = 700;
+    canvas.height = 260;
+    canvas.style.width = "100%";
+    canvas.style.height = "260px";
+    canvas.style.background = "white";
+    canvas.style.border = "1px solid var(--border)";
+    canvas.style.borderRadius = "8px";
+    wrapper.appendChild(label);
+    wrapper.appendChild(canvas);
+    container.appendChild(wrapper);
+    drawMistakeBarChart(canvas, subject, mistakeChartData[subject]);
+  });
+}
+
+async function loadAndRenderMistakeCharts() {
+  const emptyNote = document.getElementById("mistakeChartsEmpty");
   try {
     const res = await fetch(`/api/mcq/mistakes/chart?account=${encodeURIComponent(accountId)}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    const chart = data.chart || {};
-    const subjects = Object.keys(chart);
-    emptyNote.style.display = subjects.length ? "none" : "block";
-    subjects.forEach((subject) => {
-      const wrapper = document.createElement("div");
-      wrapper.style.marginBottom = "1.25rem";
-      const label = document.createElement("div");
-      label.className = "lb-section-title";
-      label.textContent = subject;
-      const canvas = document.createElement("canvas");
-      canvas.width = 700;
-      canvas.height = 260;
-      canvas.style.width = "100%";
-      canvas.style.height = "260px";
-      canvas.style.background = "white";
-      canvas.style.border = "1px solid var(--border)";
-      canvas.style.borderRadius = "8px";
-      wrapper.appendChild(label);
-      wrapper.appendChild(canvas);
-      container.appendChild(wrapper);
-      drawMistakeBarChart(canvas, subject, chart[subject]);
-    });
+    mistakeChartData = data.chart || {};
+    populateSelect(document.getElementById("mistakeSubjectSelect"), Object.keys(mistakeChartData), "All subjects");
+    renderMistakeCharts();
   } catch (e) {
     emptyNote.style.display = "block";
     emptyNote.textContent = `Couldn't load mistake data (${e.message}).`;
@@ -1331,6 +1343,7 @@ document.getElementById("progressChapterSelect").addEventListener("change", rend
 document.getElementById("lbSubjectSelect").addEventListener("change", onLeaderboardSubjectChange);
 document.getElementById("lbChapterSelect").addEventListener("change", onLeaderboardChapterChange);
 document.getElementById("lbPaperSelect").addEventListener("change", renderLeaderboardScope);
+document.getElementById("mistakeSubjectSelect").addEventListener("change", renderMistakeCharts);
 </script>
 </body>
 </html>
