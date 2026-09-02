@@ -27,9 +27,9 @@ const teachers = [
 // 2026_Cleaned_2026-06-12.xlsx or the live app database -- flagged to the
 // user, who confirmed keeping it as given.
 const dcTeam = [
-  { name: "Atiqa Fatima", department: "Operations" },
-  { name: "Aleena Usman", department: "Operations" },
-  { name: "Mahrukh Altaf", department: "Marketing" },
+  { name: "Atiqa F.", department: "Operations" },
+  { name: "Aleena U.", department: "Operations" },
+  { name: "Mahrukh A.", department: "Marketing" },
   { name: "Alex", department: "Finance" },
 ];
 
