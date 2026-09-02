@@ -7279,6 +7279,61 @@ function ResourceToggles() {
   );
 }
 
+// mcq-digitizer's extraction service (prototypes/mcq-digitizer/server.mjs)
+// runs on an always-on machine behind a Cloudflare tunnel whose URL changes
+// on restart -- app/api/mcq/[...path]/route.js reads whatever's saved here
+// live, on every proxied request, so updating it here is the one place
+// needed to propagate a new tunnel URL everywhere.
+function McqExtractionUrlConfig() {
+  const [url, setUrl] = useState("");
+  const [saved, setSaved] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState happens after an await inside load(), not synchronously; standard mount-time data-fetch pattern.
+    api("/api/mcq-config").then((res) => { setUrl(res.url || ""); setSaved(res.url || ""); });
+  }, []);
+
+  async function save() {
+    setError("");
+    setBusy(true);
+    try {
+      const res = await api("/api/mcq-config", { method: "PATCH", body: JSON.stringify({ url }) });
+      setUrl(res.url);
+      setSaved(res.url);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2 className="font-semibold mb-1">MCQ Digitizer Extraction Service</h2>
+      <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
+        Current Cloudflare tunnel URL for the extraction service. Update this whenever the tunnel restarts —
+        every student request routes through this one value, no redeploy needed.
+      </p>
+      {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          className="field"
+          style={{ flex: 1 }}
+          placeholder="https://random-words.trycloudflare.com"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+        <button className="btn" disabled={busy || url === saved} onClick={save}>
+          {busy ? "Saving…" : "Save"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // Static named-link buttons shown on portal dashboards (see
 // components/GuidesSection.jsx) — Management points each one at any URL
 // and ticks which portal(s) it should appear on. GUIDE_AUDIENCES (see
@@ -7334,6 +7389,8 @@ function Guides() {
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
 
       <ResourceToggles />
+
+      <McqExtractionUrlConfig />
 
       <div className="card">
         <h2 className="font-semibold mb-4">Add a Guide</h2>

@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>MCQ Digitizer — Prototype</title>
+<style>
+  :root {
+    --navy: #1a3c5e; --gold: #e8a832; --sky: #4a9fd4; --coral: #e05a4e; --charcoal: #5c5248;
+    --bg: #ffffff; --bg-soft: #f4f4f4; --border: #d7dee8; --text: #1a1a1a; --muted: #666666;
+    --good: #1f9d55; --bad: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg-soft); color: var(--text); margin: 0; padding: 2rem 1rem 5rem; }
+  header { max-width: 800px; margin: 0 auto 2rem; display: flex; align-items: center; gap: 0.75rem; }
+  header .badge { background: var(--navy); color: white; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em; padding: 0.25rem 0.6rem; border-radius: 999px; text-transform: uppercase; }
+  header h1 { font-size: 1.4rem; margin: 0; color: var(--navy); }
+  header p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.85rem; }
+  main { max-width: 800px; margin: 0 auto; }
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  .card h2 { font-size: 1rem; color: var(--navy); margin: 0 0 0.75rem; }
+  label.field-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--charcoal); margin: 0.6rem 0 0.3rem; }
+  input[type="file"] { font-size: 0.82rem; }
+  .hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .primary-btn { display: block; width: 100%; background: var(--navy); color: white; border: none; border-radius: 8px; padding: 0.85rem; font-size: 1rem; font-weight: 700; cursor: pointer; }
+  .primary-btn:hover { background: #234e78; }
+  .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  #status { text-align: center; color: var(--muted); margin: 1rem 0; font-size: 0.9rem; }
+  #error { background: #fdecea; border: 1px solid var(--bad); color: var(--bad); padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.85rem; white-space: pre-wrap; display: none; }
+  .stage { display: none; }
+  .stage.active { display: block; }
+  .mcq-item { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+  .mcq-item .qnum { font-weight: 700; color: var(--navy); font-size: 0.95rem; }
+  .mcq-item .qtext { margin: 0.5rem 0 0.75rem; font-size: 0.9rem; }
+  .mcq-item .qimg { max-width: 100%; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.75rem; display: block; }
+  .mcq-item .ungradable-note { font-size: 0.75rem; color: var(--coral); background: #fdecea; border-radius: 6px; padding: 0.5rem 0.7rem; margin-bottom: 0.6rem; }
+  .letter-row { display: flex; gap: 0.5rem; }
+  .letter-btn { flex: 1; text-align: center; padding: 0.6rem 0; border: 1.5px solid var(--border); border-radius: 6px; font-weight: 700; cursor: pointer; background: white; }
+  .letter-btn input { display: none; }
+  .letter-btn.selected { border-color: var(--navy); background: var(--navy); color: white; }
+  .option-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.4rem; cursor: pointer; }
+  .option-row:hover { border-color: var(--sky); }
+  .option-row input { flex-shrink: 0; }
+  .option-row .opt-label { font-weight: 700; color: var(--charcoal); width: 1.2rem; }
+  .timer-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+  .timer-display { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1.1rem; color: var(--navy); background: var(--bg-soft); border-radius: 6px; padding: 0.35rem 0.7rem; }
+  .timer-btn { padding: 0.4rem 0.9rem; border-radius: 6px; border: 1.5px solid var(--navy); background: white; color: var(--navy); font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+  .timer-btn:hover { background: var(--bg-soft); }
+  .mode-btn { margin-bottom: 0.6rem; }
+  .mode-btn:last-child { margin-bottom: 0; }
+  .tab-row { display: flex; gap: 0.4rem; margin-bottom: 0.75rem; }
+  .tab-btn { padding: 0.35rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--border); background: white; color: var(--charcoal); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .tab-btn.active { border-color: var(--navy); background: var(--navy); color: white; }
+  .answer-panel { font-size: 0.9rem; }
+  .answer-panel .answer-letter { display: inline-block; font-weight: 800; color: var(--good); font-size: 1.1rem; margin-left: 0.3rem; }
+  .score-banner { background: var(--navy); color: white; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+  .score-banner .big { font-size: 2rem; font-weight: 800; color: var(--gold); }
+  .score-banner .label { font-size: 0.8rem; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.04em; }
+  .result-item { border-left: 4px solid var(--border); padding: 0.7rem 1rem; margin-bottom: 0.8rem; border-radius: 0 8px 8px 0; font-size: 0.88rem; }
+  .result-item.correct { border-left-color: var(--good); background: rgba(31,157,85,0.06); }
+  .result-item.incorrect { border-left-color: var(--bad); background: rgba(192,57,43,0.06); }
+  .result-item.unanswered { border-left-color: var(--muted); background: rgba(102,102,102,0.06); }
+  .result-item .rq { font-weight: 700; color: var(--navy); }
+  .result-item .rverdict { float: right; font-weight: 700; }
+  .result-item .rverdict.correct { color: var(--good); }
+  .result-item .rverdict.incorrect, .result-item .rverdict.unanswered { color: var(--bad); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="badge">Prototype</span>
+  <div>
+    <h1>MCQ Digitizer</h1>
+    <p>DivergenCIE — question paper + mark scheme → instant multiple-choice quiz. No LLM, anywhere.</p>
+  </div>
+</header>
+
+<main>
+  <div id="stage0" class="stage active">
+    <div class="card">
+      <h2>Choose a paper from the library</h2>
+      <p class="hint" id="libraryStatus">Loading library...</p>
+      <div id="libraryPicker" style="display:none;">
+        <label class="field-label">Board</label>
+        <select id="pickBoard"></select>
+        <label class="field-label">Subject</label>
+        <select id="pickSubject"></select>
+        <label class="field-label">Category</label>
+        <select id="pickCategory"></select>
+        <label class="field-label">Paper</label>
+        <select id="pickPaper"></select>
+        <p class="hint" id="pickPaperNote"></p>
+        <button class="primary-btn" id="fetchAndDigitizeBtn" style="margin-top:0.75rem;">Fetch this paper and start</button>
+      </div>
+      <div id="libraryError" class="hint" style="display:none; color:var(--bad); background:#fdecea; border:1px solid var(--bad); border-radius:8px; padding:0.75rem;"></div>
+    </div>
+    <p class="hint" style="text-align:center;">
+      <a href="#" id="showUploadLink">Or upload your own QP + MS PDFs instead</a>
+    </p>
+  </div>
+
+  <div id="stage1" class="stage">
+    <p class="hint"><a href="#" id="backToLibraryLink">&larr; Back to library</a></p>
+    <div class="card">
+      <h2>1. Question Paper (PDF)</h2>
+      <input type="file" id="qpPdf" accept="application/pdf" />
+      <p class="hint">Numbered questions with lettered options (A/B/C/D), any layout.</p>
+    </div>
+    <div class="card">
+      <h2>2. Mark Scheme / Answer Key (PDF)</h2>
+      <input type="file" id="msPdf" accept="application/pdf" />
+      <p class="hint">Both files are required — this tool doesn't infer an answer key, it reads the real one.</p>
+    </div>
+    <button class="primary-btn" id="digitizeBtn">Digitize this paper</button>
+    <div id="status1"></div>
+    <div id="error1" class="hint" style="display:none; color:var(--bad); background:#fdecea; border:1px solid var(--bad); border-radius:8px; padding:0.75rem;"></div>
+  </div>
+
+  <div id="stage2" class="stage">
+    <div class="card" id="modeSelectCard">
+      <h2>How do you want to use this paper?</h2>
+      <p class="hint" id="digitizeCount"></p>
+      <button class="primary-btn mode-btn" id="startPracticeBtn">Practice mode — browse questions &amp; answers freely, no timer</button>
+      <button class="primary-btn mode-btn" id="startTestBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
+    </div>
+
+    <div class="card" id="testHeader" style="display:none;">
+      <h2>Answer the quiz</h2>
+      <div class="timer-row">
+        <span class="timer-display" id="timerDisplay">00:00</span>
+        <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
+      </div>
+    </div>
+
+    <div id="quizItems"></div>
+    <button class="primary-btn" id="submitQuizBtn" style="display:none;">Submit quiz</button>
+    <button class="primary-btn" id="finishPracticeBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Done practicing</button>
+  </div>
+
+  <div id="stage3" class="stage">
+    <div class="score-banner">
+      <div class="label">Score</div>
+      <div class="big" id="scoreText">—</div>
+    </div>
+    <div id="resultsContainer"></div>
+    <button class="primary-btn" id="restartBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Digitize another paper</button>
+  </div>
+</main>
+
+<script>
+let quiz = [];
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function showStage(n) {
+  document.querySelectorAll(".stage").forEach((el) => el.classList.remove("active"));
+  document.getElementById(`stage${n}`).classList.add("active");
+}
+
+// ---- Timer: a plain stopwatch (not a countdown) tracking how long the
+// student has spent on the paper -- auto-starts the moment a paper opens
+// (applyDigitizeResult), pauses itself once the quiz is submitted (no
+// point ticking on a finished paper), and resets on "Digitize another
+// paper" so it doesn't carry over between attempts.
+let timerSeconds = 0;
+let timerInterval = null;
+let timerRunning = false;
+
+function formatTimer(totalSeconds) {
+  const m = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+  const s = String(totalSeconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+function renderTimer() {
+  document.getElementById("timerDisplay").textContent = formatTimer(timerSeconds);
+}
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  document.getElementById("timerToggleBtn").textContent = "Pause";
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    renderTimer();
+  }, 1000);
+}
+function pauseTimer() {
+  timerRunning = false;
+  document.getElementById("timerToggleBtn").textContent = "Resume";
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+function resetTimer() {
+  pauseTimer();
+  timerSeconds = 0;
+  renderTimer();
+}
+document.getElementById("timerToggleBtn").addEventListener("click", () => {
+  if (timerRunning) pauseTimer();
+  else startTimer();
+});
+
+// ---- Mode: Practice (self-check, no timer/grading) vs Test (timed, one
+// submit, graded) -- chosen once per paper, right after digitizing and
+// before question 1 is shown, and locked in for the rest of that attempt
+// (only "Digitize another paper" / "Done practicing" resets it).
+let quizMode = null; // "practice" | "test"
+
+function applyDigitizeResult(data) {
+  quiz = data.questions;
+  quizMode = null;
+  const ambiguousCount = data.ambiguousAnswerKey?.length || 0;
+  const unmatchedNote = ambiguousCount
+    ? ` ${ambiguousCount} question${ambiguousCount === 1 ? "" : "s"} couldn't be graded automatically -- the mark scheme's explanation didn't narrow to exactly one answer letter for them (shown, but excluded from scoring).`
+    : "";
+  document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
+  document.getElementById("modeSelectCard").style.display = "block";
+  document.getElementById("testHeader").style.display = "none";
+  document.getElementById("submitQuizBtn").style.display = "none";
+  document.getElementById("finishPracticeBtn").style.display = "none";
+  document.getElementById("quizItems").innerHTML = "";
+  resetTimer();
+  showStage(2);
+}
+
+document.getElementById("startPracticeBtn").addEventListener("click", () => {
+  quizMode = "practice";
+  document.getElementById("modeSelectCard").style.display = "none";
+  document.getElementById("finishPracticeBtn").style.display = "block";
+  renderQuiz();
+});
+document.getElementById("startTestBtn").addEventListener("click", () => {
+  quizMode = "test";
+  document.getElementById("modeSelectCard").style.display = "none";
+  document.getElementById("testHeader").style.display = "block";
+  document.getElementById("submitQuizBtn").style.display = "block";
+  renderQuiz();
+  resetTimer();
+  startTimer();
+});
+document.getElementById("finishPracticeBtn").addEventListener("click", () => {
+  resetToLibrary();
+});
+
+document.getElementById("showUploadLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  showStage(1);
+});
+document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  showStage(0);
+});
+
+// ---- Library picker ----
+let library = null;
+
+async function loadLibrary() {
+  const statusEl = document.getElementById("libraryStatus");
+  const errorEl = document.getElementById("libraryError");
+  try {
+    const res = await fetch("/api/mcq/library");
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    library = data;
+    statusEl.style.display = "none";
+    document.getElementById("libraryPicker").style.display = "block";
+    populateBoards();
+  } catch (e) {
+    statusEl.style.display = "none";
+    errorEl.textContent = `Library unavailable: ${e.message}`;
+    errorEl.style.display = "block";
+  }
+}
+
+function fillSelect(select, items) {
+  select.innerHTML = items.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+}
+
+function populateBoards() {
+  fillSelect(document.getElementById("pickBoard"), Object.keys(library));
+  populateSubjects();
+}
+function populateSubjects() {
+  const board = document.getElementById("pickBoard").value;
+  fillSelect(document.getElementById("pickSubject"), Object.keys(library[board] || {}));
+  populateCategories();
+}
+function populateCategories() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  fillSelect(document.getElementById("pickCategory"), Object.keys((library[board] || {})[subject] || {}));
+  populatePapers();
+}
+function populatePapers() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const category = document.getElementById("pickCategory").value;
+  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const paperSelect = document.getElementById("pickPaper");
+  paperSelect.innerHTML = papers.map((p, i) => `<option value="${i}">${escapeHtml(p.title)}${p.msId ? "" : " (no mark scheme found)"}</option>`).join("");
+  updatePaperNote();
+}
+function updatePaperNote() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const category = document.getElementById("pickCategory").value;
+  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const idx = Number(document.getElementById("pickPaper").value);
+  const paper = papers[idx];
+  const note = document.getElementById("pickPaperNote");
+  const btn = document.getElementById("fetchAndDigitizeBtn");
+  if (paper && !paper.msId) {
+    note.textContent = "No matching mark scheme was found in the library for this paper -- it can't be auto-graded.";
+    btn.disabled = true;
+  } else {
+    note.textContent = "";
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("pickBoard").addEventListener("change", populateSubjects);
+document.getElementById("pickSubject").addEventListener("change", populateCategories);
+document.getElementById("pickCategory").addEventListener("change", populatePapers);
+document.getElementById("pickPaper").addEventListener("change", updatePaperNote);
+
+document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async () => {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const category = document.getElementById("pickCategory").value;
+  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const idx = Number(document.getElementById("pickPaper").value);
+  const paper = papers[idx];
+  if (!paper || !paper.msId) return;
+
+  const btn = document.getElementById("fetchAndDigitizeBtn");
+  const statusEl = document.getElementById("libraryStatus");
+  const errorEl = document.getElementById("libraryError");
+  errorEl.style.display = "none";
+  btn.disabled = true;
+  statusEl.style.display = "block";
+  statusEl.textContent = `Fetching "${paper.title}" and digitizing...`;
+  try {
+    const res = await fetch("/api/mcq/fetch-and-digitize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    applyDigitizeResult(data);
+    statusEl.style.display = "none";
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = "block";
+    statusEl.style.display = "none";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+loadLibrary();
+
+document.getElementById("digitizeBtn").addEventListener("click", async () => {
+  const errorEl = document.getElementById("error1");
+  const statusEl = document.getElementById("status1");
+  errorEl.style.display = "none";
+  const qpFile = document.getElementById("qpPdf").files[0];
+  const msFile = document.getElementById("msPdf").files[0];
+  if (!qpFile || !msFile) {
+    errorEl.textContent = "Both a Question Paper and a Mark Scheme PDF are required.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  const btn = document.getElementById("digitizeBtn");
+  btn.disabled = true;
+  statusEl.textContent = "Reading both PDFs and matching questions to answers…";
+  try {
+    const [qpBase64, msBase64] = await Promise.all([fileToBase64(qpFile), fileToBase64(msFile)]);
+    const res = await fetch("/api/mcq/digitize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ qpBase64, msBase64 }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    applyDigitizeResult(data);
+    statusEl.textContent = "";
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = "block";
+    statusEl.textContent = "";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+function questionPanelHtml(q, showOptions = true) {
+  return `
+    <img class="qimg" src="${q.image}" alt="Question ${escapeHtml(q.questionNumber)}" />
+    ${!q.correctAnswer && showOptions ? `<div class="ungradable-note">This question's mark scheme wasn't clear-cut enough to auto-grade -- answer it if you like, but it won't count toward your score.</div>` : ""}
+    ${showOptions ? `
+    <div class="letter-row">
+      ${q.optionLetters.map((letter) => `
+        <label class="letter-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-letter="${escapeHtml(letter)}">
+          <input type="radio" name="q${escapeHtml(q.questionNumber)}" value="${escapeHtml(letter)}" />
+          ${escapeHtml(letter)}
+        </label>
+      `).join("")}
+    </div>
+    ` : ""}
+  `;
+}
+
+function renderQuiz() {
+  const container = document.getElementById("quizItems");
+  const practice = quizMode === "practice";
+  container.innerHTML = quiz.map((q) => `
+    <div class="mcq-item">
+      <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
+      ${practice ? `
+        <div class="tab-row">
+          <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
+          <button type="button" class="tab-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="answer">Answer</button>
+        </div>
+        <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">${questionPanelHtml(q, false)}</div>
+        <div class="tab-panel answer-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="answer" style="display:none;">
+          ${q.correctAnswer
+            ? `Correct answer: <span class="answer-letter">${escapeHtml(q.correctAnswer)}</span>`
+            : `<div class="ungradable-note">No clear-cut answer was found in the mark scheme for this question.</div>`}
+        </div>
+      ` : questionPanelHtml(q)}
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".letter-btn input").forEach((input) => {
+    input.addEventListener("change", () => {
+      const name = input.name;
+      container.querySelectorAll(`.letter-btn[data-qnum="${CSS.escape(name.slice(1))}"]`).forEach((btn) => btn.classList.remove("selected"));
+      input.closest(".letter-btn").classList.add("selected");
+    });
+  });
+
+  if (practice) {
+    container.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qnum = btn.dataset.qnum;
+        const tab = btn.dataset.tab;
+        container.querySelectorAll(`.tab-btn[data-qnum="${CSS.escape(qnum)}"]`).forEach((b) => b.classList.toggle("active", b === btn));
+        container.querySelectorAll(`.tab-panel[data-qnum="${CSS.escape(qnum)}"]`).forEach((p) => {
+          p.style.display = p.dataset.panel === tab ? "block" : "none";
+        });
+      });
+    });
+  }
+}
+
+document.getElementById("submitQuizBtn").addEventListener("click", () => {
+  // Grading is entirely local, instant, no network call -- no LLM
+  // anywhere in this tool, comparing a selected letter to correctAnswer
+  // is the whole job.
+  let correctCount = 0;
+  const results = quiz.map((q) => {
+    const selected = document.querySelector(`input[name="q${CSS.escape(q.questionNumber)}"]:checked`);
+    const studentAnswer = selected ? selected.value : null;
+    let verdict;
+    if (!q.correctAnswer) verdict = "unmatched"; // mark scheme had no answer for this question
+    else if (!studentAnswer) verdict = "unanswered";
+    else if (studentAnswer === q.correctAnswer) verdict = "correct";
+    else verdict = "incorrect";
+    if (verdict === "correct") correctCount++;
+    return { ...q, studentAnswer, verdict };
+  });
+
+  const gradable = quiz.filter((q) => q.correctAnswer).length;
+  document.getElementById("scoreText").textContent = `${correctCount} / ${gradable}`;
+
+  const container = document.getElementById("resultsContainer");
+  container.innerHTML = results.map((r) => `
+    <div class="result-item ${r.verdict === "correct" ? "correct" : r.verdict === "incorrect" ? "incorrect" : "unanswered"}">
+      <span class="rverdict ${r.verdict === "correct" ? "correct" : "incorrect"}">${r.verdict === "correct" ? "Correct" : r.verdict === "incorrect" ? "Incorrect" : r.verdict === "unanswered" ? "Unanswered" : "Not auto-gradable"}</span>
+      <span class="rq">Question ${escapeHtml(r.questionNumber)}</span>
+      <div>Your answer: ${r.studentAnswer ? escapeHtml(r.studentAnswer) : "(none selected)"}</div>
+      ${r.verdict !== "correct" && r.correctAnswer ? `<div style="margin-top:0.3rem;"><strong>Correct answer:</strong> ${escapeHtml(r.correctAnswer)}</div>` : ""}
+    </div>
+  `).join("");
+
+  pauseTimer();
+  showStage(3);
+});
+
+function resetToLibrary() {
+  quiz = [];
+  quizMode = null;
+  document.getElementById("qpPdf").value = "";
+  document.getElementById("msPdf").value = "";
+  resetTimer();
+  showStage(0);
+}
+document.getElementById("restartBtn").addEventListener("click", resetToLibrary);
+</script>
+</body>
+</html>

@@ -203,6 +203,68 @@ student their link includes both. The tool never calls the main app; if
 `name` is missing, fall back to showing the raw `account` id rather than
 failing.
 
+## Main-app merge — "Option B" (locked 2026-09-02)
+
+Extraction (`prototypes/mcq-digitizer/server.mjs`, `extract_mcq.py`) stays on
+this always-on machine — most papers are pre-extracted PNGs served straight
+from disk, only manual uploads and the ~10 uncached papers still shell out to
+live `python3`/PyMuPDF, which can't run on a Vercel Node function. Everything
+else (student-facing UI, auth, enrollment-based subject scoping, leaderboard)
+moves into the main Next.js app. Reachability: kept the existing ephemeral
+Cloudflare quick-tunnel (no named-tunnel login needed) but centralized —
+Management updates the current URL in one place (`mcqconfig` table via the
+Management dashboard), every proxied request reads it live, no redeploy.
+
+### Built so far
+
+- `data/tmp/migration_mcq_attempts_and_config.sql` — **pending manual
+  approval**, blocked by the auto-mode classifier (production schema
+  change). Adds `mcq_attempts` (scores.mjs's table) and `mcqconfig` (the
+  URL store), both queried directly by their own client, not through
+  `lib/db-supabase.js`'s COLLECTIONS/`read_full_db()` aggregate.
+- `lib/mcqConfig.js` — `getMcqExtractionUrl()` / `setMcqExtractionUrl()`.
+- `app/api/mcq-config/route.js` — GET (any session) / PATCH (Management).
+- `app/api/mcq/[...path]/route.js` — server-to-server proxy to the
+  extraction service. GET `/api/mcq/library` is filtered to the session's
+  enrolled subjects (Board+SubjectName match against `db.enrollments`/
+  `db.services`) for everyone except Management, who see the full library.
+- `app/dashboard/management/page.js` — new "MCQ Digitizer Extraction
+  Service" card (Guides tab) to set/update the URL.
+- `public/mcq-digitizer/index.html` — copy of the prototype client, its 3
+  `fetch()` calls repointed from `/api/*` to `/api/mcq/*` (same-origin,
+  proxied). No other changes — grading is still 100% client-side.
+- Both `next build` passes confirmed clean (no type/route errors).
+
+### Known gap — flagged, not silently claimed as solved
+
+Subject-enrollment filtering is only applied to the **library listing**
+(`GET /api/mcq/library`). Every other proxied endpoint (`fetch-and-digitize`,
+`digitize`, `attempts`, `progress`, `leaderboard`) is a plain pass-through
+with **no server-side check** that a requested `qpId`/`msId` actually belongs
+to a subject the caller is enrolled in — a student who already has a
+qpId/msId from elsewhere (e.g. shared by a classmate) could still fetch it
+directly. Hiding it from the picker is not the same as enforcing it. Real
+enforcement needs the same subject-match applied to the specific paper being
+requested before proxying `fetch-and-digitize`, not yet built.
+
+The Board+SubjectName string-matching itself is also unverified against real
+live enrollment/service data (normalized case/hyphen/whitespace, but never
+spot-checked against what's actually in production) — needs a real check
+before this is trusted, same discipline as everything else this session.
+
+### Not yet built
+
+- Running the migration (blocked, needs manual approval).
+- Score-tracking client UI (progress chart, overlay, leaderboard view) —
+  scores.mjs/the four endpoints exist server-side, nothing calls them from
+  `index.html` yet.
+- Syllabus-digitizer's equivalent (topic-completion tracking, confirmed
+  scope from earlier, not started).
+- Real enforcement gap above.
+- Navigation: nothing links students to `/mcq-digitizer/index.html` yet —
+  placement (dashboard tab vs standalone link) not decided since it moved
+  out of the "keep independent" plan this was originally scoped under.
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
