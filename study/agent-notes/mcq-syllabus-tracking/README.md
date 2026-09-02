@@ -1,6 +1,6 @@
 # MCQ/syllabus score-and-completion tracking — atomic notes
 
-27 atomic notes from the session that built score/progress/leaderboard
+28 atomic notes from the session that built score/progress/leaderboard
 tracking for `prototypes/mcq-digitizer/` and `prototypes/syllabus-digitizer/`
 (2026-09-02) — each MCQ attempt and each syllabus "Completed" tag now
 persists to its own Supabase table, with a 4-tier (3-tier for syllabus)
@@ -48,6 +48,7 @@ building it, not a replacement for that plan doc.
 - [25-not-every-real-request-has-a-ticket.md](25-not-every-real-request-has-a-ticket.md) — this whole feature has zero tickets filed.
 - [26-verify-with-a-live-build-and-monitor-not-a-guess.md](26-verify-with-a-live-build-and-monitor-not-a-guess.md) — real build/restart discipline, and a Monitor-tool false-alarm gotcha.
 - [27-atomic-commits-per-tool-not-one-giant-commit.md](27-atomic-commits-per-tool-not-one-giant-commit.md) — why the history is ~15 commits, not one.
+- [28-forcing-hidden-radio-inputs-doesnt-register.md](28-forcing-hidden-radio-inputs-doesnt-register.md) — `.check({force:true})` on a hidden radio doesn't count as an answer to the app's own grading code.
 
 ## Common thread
 
