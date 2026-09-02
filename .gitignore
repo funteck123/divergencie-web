@@ -95,7 +95,19 @@ builds
 # study/ is a working scratch area (agent notes, reference screenshots,
 # now Google Drive links to real course materials) -- not meant to be
 # public repo content.
-/study/
+#
+# Exception: study/agent-notes/mcq-syllabus-tracking/ has no PII/real
+# student data (unlike study/dc-feedbacks/, study/results/) and the user
+# asked for it to survive across machines/clones. A directory-level
+# ignore (a bare `/study/`) stops git from even descending to check a
+# negated pattern for a path inside it, so the exclusion has to be
+# un-nested one level at a time (`/study/*`, not `/study/`) down to the
+# one directory being un-ignored -- a bare `!/study/agent-notes/mcq-syllabus-tracking/`
+# appended after `/study/` does NOT work, confirmed via `git check-ignore -v`.
+/study/*
+!/study/agent-notes/
+/study/agent-notes/*
+!/study/agent-notes/mcq-syllabus-tracking/
 
 # Python bytecode cache -- shows up wherever a prototype's .py script
 # gets run (mcq-digitizer, quiz-digitizer).
