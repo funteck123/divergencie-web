@@ -252,18 +252,42 @@ live enrollment/service data (normalized case/hyphen/whitespace, but never
 spot-checked against what's actually in production) — needs a real check
 before this is trusted, same discipline as everything else this session.
 
-### Not yet built
+### Completeness pass (2026-09-02) — client UI + syllabus-digitizer built
 
-- Running the migration (blocked, needs manual approval).
-- Score-tracking client UI (progress chart, overlay, leaderboard view) —
-  scores.mjs/the four endpoints exist server-side, nothing calls them from
-  `index.html` yet.
-- Syllabus-digitizer's equivalent (topic-completion tracking, confirmed
-  scope from earlier, not started).
-- Real enforcement gap above.
-- Navigation: nothing links students to `/mcq-digitizer/index.html` yet —
-  placement (dashboard tab vs standalone link) not decided since it moved
-  out of the "keep independent" plan this was originally scoped under.
+- Migration ran successfully; `mcq_attempts`/`mcqconfig` confirmed live.
+- MCQ client UI built into `public/mcq-digitizer/index.html`: after a
+  Test-mode submit, the attempt POSTs to `/api/mcq/attempts` (only for
+  library-sourced papers — manual uploads have no stable `paperId` and are
+  never tracked). New "View my progress & the leaderboard" view: a vanilla-
+  canvas cumulative score-% chart (own line highlighted, every other
+  account faint behind it) plus two ranked tables (avg%, total correct),
+  Overall + a tab per paper (readable title, cross-referenced from the
+  already-loaded library data, not the raw Drive file ID). Verified
+  end-to-end via Playwright against the real tunnel + real Supabase table
+  — digitized a real paper, submitted, confirmed the attempt saved and
+  the progress/leaderboard view rendered correctly with real data.
+- Syllabus-digitizer's equivalent built the same way: its existing
+  "Completed" tag chip (previously localStorage-only) now also POSTs to
+  a new `prototypes/syllabus-digitizer/progress.mjs` module / new
+  `syllabus_completions` Supabase table (migration run, confirmed live)
+  when accountId is present, and unmarking deletes the row. New
+  header link → same chart-+ single-ranking-table pattern (no "avg
+  score" concept here since there's no grading, just topics-completed
+  count, overall + per subject). Verified end-to-end the same way.
+- Two real pre-existing bugs found and fixed while wiring this up: (1)
+  both prototypes' own static-file routers never stripped the query
+  string, so `/?account=X` 404'd instead of serving `index.html` — fixed
+  in both `server.mjs` files. (2) the mcq proxy's `fetch()` calls had no
+  try/catch, so an unreachable tunnel threw instead of returning a clean
+  503 — fixed, plus added score-bounds validation (`InvalidAttemptError`)
+  to `scores.mjs`.
+- Still open, explicitly deferred to a separate discussion per user
+  request: the two HIGH security findings from the swe-skill audit
+  (POST /api/mcq/attempts doesn't verify the caller owns the accountId
+  it's posting; GET /api/mcq/progress?account=X lets any session read any
+  account's history) — not fixed yet, on purpose.
+- Navigation: still nothing links students to `/mcq-digitizer/index.html`
+  from inside the main app's own dashboards — placement not decided.
 
 ## Not yet decided (explicitly out of this doc until answered above)
 
