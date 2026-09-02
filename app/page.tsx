@@ -6,7 +6,6 @@ import GlobalReach from "@/components/GlobalReach";
 import AboutSection from "@/components/AboutSection";
 import ServicesGrid from "@/components/ServicesGrid";
 import AcademicResults from "@/components/AcademicResults";
-import Partners from "@/components/Partners";
 import Press from "@/components/Press";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
@@ -22,7 +21,6 @@ export default function Home() {
       <AboutSection />
       <ServicesGrid />
       <AcademicResults />
-      <Partners />
       <Press />
       <Testimonials />
       <Footer />
