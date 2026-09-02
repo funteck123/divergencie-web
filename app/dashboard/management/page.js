@@ -2,11 +2,12 @@
 
 import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import DashboardShell from "@/components/DashboardShell";
 import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import SessionAttendance from "@/components/SessionAttendance";
-import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient, todayDateStr } from "@/lib/client";
+import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient, todayDateStr, setCurrentUser, setImpersonatorInfo, roleHomePath, getCurrentUser } from "@/lib/client";
 import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
@@ -99,6 +100,17 @@ function ConfirmButton({ label, confirmText, confirmLabel = "Yes, delete", busyL
 
 function Body() {
   const [tab, setTab] = useState("Applications");
+  // Lifted out of Applications/Pipeline/Accounts themselves: those three
+  // are conditionally mounted below (tab === X && <X/>), so switching tabs
+  // away and back used to fully remount them, wiping their local `issued`
+  // state -- an admin who'd just reset a password (or created/converted/
+  // approved an account) and switched tabs to double-check something lost
+  // the one-time plaintext credentials, and had to reset again just to
+  // re-see a password they'd already generated. Living here instead
+  // survives tab switches for the rest of the page session.
+  const [issuedApplications, setIssuedApplications] = useState({});
+  const [issuedPipeline, setIssuedPipeline] = useState({});
+  const [issuedAccounts, setIssuedAccounts] = useState({});
   return (
     <div>
       {/* Mobile UI fix: this used to be flex-wrap, which on a narrow phone
@@ -139,9 +151,9 @@ function Body() {
           }}
         />
       </div>
-      {tab === "Applications" && <Applications />}
-      {tab === "Pipeline" && <Pipeline />}
-      {tab === "Accounts" && <Accounts />}
+      {tab === "Applications" && <Applications issued={issuedApplications} setIssued={setIssuedApplications} />}
+      {tab === "Pipeline" && <Pipeline issued={issuedPipeline} setIssued={setIssuedPipeline} />}
+      {tab === "Accounts" && <Accounts issued={issuedAccounts} setIssued={setIssuedAccounts} />}
       {tab === "Services" && <Services />}
       {tab === "Schedule" && <SchedulePool />}
       {tab === "Enrollments" && <Enrollments />}
@@ -349,9 +361,8 @@ function interviewRowMatchesStatusFilter(i, statusFilter) {
 }
 
 /* ---------------- Applications ---------------- */
-function Applications() {
+function Applications({ issued, setIssued }) {
   const [regForms, setRegForms] = useState([]);
-  const [issued, setIssued] = useState({}); // regFormId -> {username,password}
   const [error, setError] = useState("");
   const [busyIds, setBusyIds] = useState(new Set());
   const [search, setSearch] = useState("");
@@ -563,14 +574,13 @@ ${TRIAL_ZOOM_BLOCK}`;
 }
 
 /* ---------------- Pipeline ---------------- */
-function Pipeline() {
+function Pipeline({ issued, setIssued }) {
   const [trialItems, setTrialItems] = useState([]);
   const [interviewItems, setInterviewItems] = useState([]);
   const [leads, setLeads] = useState([]);
   const [users, setUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [invoices, setInvoices] = useState([]);
-  const [issued, setIssued] = useState({});
   const [pendingTrials, setPendingTrials] = useState([]);
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [openPoolSlots, setOpenPoolSlots] = useState([]);
@@ -1422,10 +1432,11 @@ function OfferSentControls({ item, onSave, onUnsend }) {
 }
 
 /* ---------------- Accounts ---------------- */
-function Accounts() {
+function Accounts({ issued, setIssued }) {
+  const router = useRouter();
   const [users, setUsers] = useState([]);
-  const [issued, setIssued] = useState({});
   const [error, setError] = useState("");
+  const [busyImpersonateIds, setBusyImpersonateIds] = useState(new Set());
   const [editingId, setEditingId] = useState(null);
   const [busyAccountIds, setBusyAccountIds] = useState(new Set());
   const [busySaveIds, setBusySaveIds] = useState(new Set());
@@ -1546,6 +1557,35 @@ function Accounts() {
     }
   }
 
+  // "Log in as" -- the alternative to "reset password to view credentials"
+  // (see saveEdit's TKT-0125/0137 comments above): lets Management see/use
+  // an account exactly as that user would, without ever learning or
+  // resetting their real password. Server enforces Management-can't-target-
+  // Management (see app/api/impersonate/route.js); the admin's own account
+  // is remembered via the impersonatorUserId session claim so the "Stop
+  // impersonating" banner (DashboardShell) can hand control straight back.
+  async function impersonate(userId) {
+    setError("");
+    setBusyImpersonateIds((prev) => new Set(prev).add(userId));
+    try {
+      const { user: targetUser, impersonatorUserId } = await api("/api/impersonate", {
+        method: "POST",
+        body: JSON.stringify({ userId }),
+      });
+      const admin = getCurrentUser();
+      setCurrentUser(targetUser);
+      setImpersonatorInfo({ userId: impersonatorUserId, name: admin?.Name || impersonatorUserId });
+      router.push(roleHomePath(targetUser.UserType));
+    } catch (e) {
+      setError(e.message);
+      setBusyImpersonateIds((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    }
+  }
+
   const studentUsers = users.filter((u) => u.UserType === "Student");
   const teacherUsers = users.filter((u) => u.UserType === "Teacher");
   const otherStaffUsers = users.filter((u) => u.UserType === "Staff");
@@ -1559,7 +1599,7 @@ function Accounts() {
     return studentIds.map((id) => users.find((u) => u.UserID === id)?.Name || id).join(", ");
   }
 
-  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, busyAccountIds, busySaveIds, convertEligible };
+  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, busyAccountIds, busySaveIds, convertEligible, impersonate, busyImpersonateIds };
 
   return (
     <div className="space-y-6">
@@ -1721,7 +1761,7 @@ function Accounts() {
 // attributes (Course+Batch vs Batch vs Role+Department vs just Type), so
 // each passes its own `columns` def instead of one table trying to show
 // every possible field for every account type.
-function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds, convertEligible }) {
+function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds, convertEligible, impersonate, busyImpersonateIds }) {
   const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
   const [search, setSearch] = useState("");
   const searchLower = search.trim().toLowerCase();
@@ -1833,6 +1873,16 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                         onClick={() => saveEdit(u.UserID, { status: u.Status === "Active" ? "Inactive" : "Active" })}
                       >
                         {busySaveIds?.has(u.UserID) ? "Working…" : u.Status === "Active" ? "Deactivate" : "Activate"}
+                      </button>
+                    )}
+                    {u.Username && !u.ConvertedToUserID && u.UserType !== "Management" && (
+                      <button
+                        className="btn-ghost"
+                        disabled={busyImpersonateIds?.has(u.UserID)}
+                        onClick={() => impersonate(u.UserID)}
+                        title="View/use this account exactly as they would, without seeing or resetting their password"
+                      >
+                        {busyImpersonateIds?.has(u.UserID) ? "Logging in…" : "Log in as"}
                       </button>
                     )}
                     {u.Username && !u.ConvertedToUserID && (

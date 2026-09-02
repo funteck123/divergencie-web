@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getCurrentUser, logout, api } from "@/lib/client";
+import { getCurrentUser, setCurrentUser, getImpersonatorInfo, setImpersonatorInfo, logout, api, roleHomePath } from "@/lib/client";
 
 // Generic "raise an issue" ticket — sender info is always the logged-in
 // session (never freeform), so this is the same form/logic for every
@@ -95,6 +95,8 @@ function ReportIssueButton() {
 export default function DashboardShell({ allowedType, children }) {
   const router = useRouter();
   const [user, setUser] = useState(undefined); // undefined = checking, null = none
+  const [impersonator, setImpersonator] = useState(null);
+  const [stopping, setStopping] = useState(false);
 
   useEffect(() => {
     const u = getCurrentUser();
@@ -103,8 +105,27 @@ export default function DashboardShell({ allowedType, children }) {
       router.replace("/login");
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount-time read of localStorage/router-guard state, not a derived-from-props value.
     setUser(u);
+    setImpersonator(getImpersonatorInfo());
   }, [allowedType, router]);
+
+  // Hands the session back to the real Management account that started the
+  // impersonation (see app/api/impersonate/route.js's DELETE) -- the server
+  // reads who that was off the current session cookie itself, never a
+  // client-sent value, so this can't be used to escalate to anyone else.
+  async function stopImpersonating() {
+    setStopping(true);
+    try {
+      const { user: adminUser } = await api("/api/impersonate", { method: "DELETE" });
+      setCurrentUser(adminUser);
+      setImpersonatorInfo(null);
+      router.push(roleHomePath(adminUser.UserType));
+    } catch (e) {
+      setStopping(false);
+      alert(`Couldn't stop impersonating: ${e.message}`);
+    }
+  }
 
   if (user === undefined) {
     return (
@@ -117,6 +138,24 @@ export default function DashboardShell({ allowedType, children }) {
 
   return (
     <main className="min-h-screen">
+      {impersonator && (
+        <div
+          className="flex items-center justify-between px-6 py-2 text-sm"
+          style={{ background: "#92400e", color: "white" }}
+        >
+          <span>
+            Viewing as <strong>{user.Name}</strong> ({user.UserType}) — logged in by {impersonator.name}, not this account&apos;s own password.
+          </span>
+          <button
+            className="btn-ghost"
+            style={{ color: "white", borderColor: "white" }}
+            disabled={stopping}
+            onClick={stopImpersonating}
+          >
+            {stopping ? "Returning…" : "Stop impersonating"}
+          </button>
+        </div>
+      )}
       <header
         className="flex items-center justify-between px-6 py-4"
         style={{ borderBottom: "1px solid var(--border)" }}

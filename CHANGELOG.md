@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [Unreleased]
+
+### Features
+
+* **accounts:** Management can "Log in as" a Student/Teacher/Staff/Parent/Ambassador account without ever seeing or resetting their password, via a short-lived impersonation session with a visible "Stop impersonating" banner and full audit logging. Replaces a proposed change to make stored passwords reversible/viewable again, which would have reopened the plaintext-password-leak incident scrypt hashing was introduced to fix.
+
 ## [0.2.0](https://github.com/funteck123/divergencie-web/compare/v0.1.1...v0.2.0) (2026-08-27)
 
 ### ⚠ BREAKING CHANGES
