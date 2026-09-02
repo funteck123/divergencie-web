@@ -474,6 +474,25 @@ prototype's quiz UI -- see
 `study/agent-notes/mcq-syllabus-tracking/22-playwright-first-picks-wrong-hidden-element.md`
 for the sibling Playwright gotcha from earlier the same session.
 
+**Chapter-name readability pass**: chapter dropdowns, the attempt-history
+table, and the mistake-tracker chart above all showed bare chapter numbers
+("1.1") with no indication of what the chapter actually covers. Added
+`chapterNameOf()` (two regex patterns, matching the existing
+`chapterOf()`/`CHAPTER_PATTERNS` split, verified against all 196 real live
+paper titles before trusting it — 0 unmatched) and a `chapterLabel(subject,
+chapter)` helper wired into every chapter-facing surface.
+
+The bar chart's rotated axis labels needed a second real fix on top of
+that: a first pass (`truncateToWidth`, capping only the label's horizontal
+width against the canvas's left edge) still let a long chapter name's
+front get silently clipped — not off the *left* edge as assumed, but off
+the canvas's own *bottom* edge, because a `-45deg`-rotated label also
+grows downward, and that vertical growth wasn't bounded by `padB`. Found
+by actually rendering "1.5 F-ma & Resultant Forces" and looking at the
+screenshot, not by re-reading the code. Fixed by capping the label's
+measured width against whichever of the horizontal or vertical room
+available is smaller, not just the horizontal one.
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
