@@ -19,6 +19,12 @@
   @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
   .lb-table tr.me { background: rgba(232,168,50,0.15); font-weight: 700; }
   .lb-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--bg-soft); }
+  .lb-table th { text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .history-table { table-layout: fixed; }
+  .history-table th:nth-child(1), .history-table td:nth-child(1) { width: 40%; white-space: normal; }
+  .history-table th:nth-child(2), .history-table td:nth-child(2) { width: 25%; }
+  .history-table th:nth-child(3), .history-table td:nth-child(3) { width: 10%; }
+  .history-table th:nth-child(4), .history-table td:nth-child(4) { width: 25%; }
   .tab-btn { padding: 0.35rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--border); background: white; color: var(--charcoal); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
   .tab-btn.active { border-color: var(--navy); background: var(--navy); color: white; }
   .scope-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.8rem; color: var(--charcoal); }
@@ -128,6 +134,14 @@
     </div>
     <canvas id="progressChart" width="1000" height="260" style="width:100%; height:260px; background:white; border:1px solid var(--border); border-radius:8px;"></canvas>
     <p class="hint" id="progressEmptyNote" style="display:none;">No topics marked Completed yet.</p>
+  </div>
+  <div class="panel" style="padding:1.25rem; margin-bottom:1.25rem;">
+    <h2 style="margin:0 0 0.4rem; color:var(--navy); font-size:1rem;">Completion history</h2>
+    <p class="hint" style="margin:0 0 0.75rem;">Every topic you've marked Completed, most recent first — respects the Subject/Chapter filter above.</p>
+    <table class="lb-table history-table" id="historyTable" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+      <thead><tr><th>Topic</th><th>Subject</th><th>Chapter</th><th>When</th></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
   <div class="panel" style="padding:1.25rem;">
     <h2 style="margin:0 0 0.6rem; color:var(--navy); font-size:1rem;">Leaderboard — topics completed</h2>
@@ -640,6 +654,21 @@ function onLeaderboardSubjectChange() {
   renderLeaderboardScope();
 }
 
+function renderHistoryTable(mine) {
+  const tbody = document.querySelector("#historyTable tbody");
+  // myCompletions is chronological ascending (server orders by
+  // completed_at asc, for the chart) -- reverse for a history log.
+  const rows = [...mine].reverse();
+  tbody.innerHTML = rows.map((c) => `
+    <tr>
+      <td>${escapeHtml(c.node_label || c.node_key)}</td>
+      <td>${escapeHtml(subjectLabel(c.subject))}</td>
+      <td>${escapeHtml(chapterOf(c.node_key) || "—")}</td>
+      <td>${c.completed_at ? escapeHtml(new Date(c.completed_at).toLocaleString()) : ""}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="4" class="hint">No topics completed yet.</td></tr>`;
+}
+
 function renderFilteredProgressChart() {
   const subject = document.getElementById("progressSubjectSelect").value;
   const chapter = document.getElementById("progressChapterSelect").value;
@@ -652,6 +681,7 @@ function renderFilteredProgressChart() {
   });
   document.getElementById("progressEmptyNote").style.display = mine.length ? "none" : "block";
   drawProgressChart(mine, allByAccount);
+  renderHistoryTable(mine);
 }
 
 function onProgressSubjectChange() {
