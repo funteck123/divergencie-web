@@ -1,16 +1,21 @@
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { ShieldCheck, Award, Globe, Zap, Users, GraduationCap, Star, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Award, Globe, Zap, Users, GraduationCap, Star, CheckCircle2, UserRound } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
+// TKT-0182: real active teachers, from data/DC Database 2026_Cleaned_2026-06-12.xlsx
+// (Team sheet, Status=Active, Type=teacher) cross-referenced against the
+// Recruits sheet for real subject lists. No photos -- a generic person
+// icon per user instruction, not a stock photo standing in for someone.
 const teachers = [
-  { name: "Aisha Rahman", role: "A Level Specialist", subject: "Mathematics · Further Maths", qual: "Cambridge Mathematics graduate · 8 yrs experience · 40+ A* students", avatar: "A" },
-  { name: "Kiran Mehta", role: "AP & IGCSE", subject: "Physics · AP Physics", qual: "IIT Delhi · MSc Physics · Former Cambridge examiner · AP 5s lead", avatar: "K" },
-  { name: "Sarah Al-Amin", role: "IELTS Lead", subject: "English Language · IELTS", qual: "Oxford English Literature · IELTS Band 9 · 200+ students coached", avatar: "S" },
-  { name: "Reza Hussain", role: "Sciences Lead", subject: "Chemistry · Biology", qual: "UCL Biochemistry · 6 yrs A Level Chemistry · World Topper mentor", avatar: "R" },
-  { name: "Tariq Osman", role: "IB & A Level", subject: "Economics · Business", qual: "LSE Economics · Cambridge A Level Economics specialist · IB Econ", avatar: "T" },
-  { name: "Priya Nair", role: "SAT Specialist", subject: "SAT · ACT · College Prep", qual: "SAT 1580 · 5 yrs prep · Students admitted to Cornell, NYU, UCL", avatar: "P" },
+  { name: "Mohammad Shahid Akhtar", role: "Cambridge Curriculum Teacher", subject: "Founding Teacher" },
+  { name: "Muhammad Ahmar Noman", role: "Cambridge Curriculum Teacher", subject: "IGCSE Physics · Math · Biology" },
+  { name: "Aurneela Ghosh Riddhi", role: "Cambridge Curriculum Teacher", subject: "AS Business" },
+  { name: "Syed Muhammad Murtaza", role: "Cambridge Curriculum Teacher", subject: "IGCSE Physics · English · Math · Chemistry" },
+  { name: "Harem Mir", role: "Cambridge Curriculum Teacher", subject: "Biology (IB, AP, O/A Level, IGCSE) · English · History" },
+  { name: "Syed Arqam", role: "Cambridge Curriculum Teacher", subject: "A-Level Biology · IGCSE Math, Chemistry, ICT, Physics, Biology" },
+  { name: "Chirag Kar", role: "Cambridge Curriculum Teacher", subject: "A-Level Math" },
 ];
 
 const toppers = [
@@ -132,19 +137,15 @@ export default function AboutPage() {
             {teachers.map((t, idx) => (
               <div key={idx} className="p-8 border border-[var(--border-subtle)] hover:border-[var(--navy)] hover:shadow-[10px_10px_0px_var(--navy)] transition-all group">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-center text-2xl font-black text-[var(--gold)] group-hover:bg-[var(--gold)] group-hover:text-white transition-colors">
-                    {t.avatar}
+                  <div className="w-16 h-16 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-center text-[var(--gold)] group-hover:bg-[var(--gold)] group-hover:text-white transition-colors">
+                    <UserRound size={32} />
                   </div>
                   <div>
                     <h4 className="font-black text-[var(--navy)] dark:text-white uppercase tracking-wider">{t.name}</h4>
                     <p className="text-[10px] font-black text-[var(--gold)] uppercase tracking-widest">{t.role}</p>
                   </div>
                 </div>
-                <p className="text-sm font-bold text-[var(--navy)] dark:text-white mb-4">{t.subject}</p>
-                <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-6">{t.qual}</p>
-                <div className="inline-block px-3 py-1 bg-[var(--bg-secondary)] dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-[var(--navy)] dark:text-white">
-                  Subject Lead
-                </div>
+                <p className="text-sm font-bold text-[var(--navy)] dark:text-white">{t.subject}</p>
               </div>
             ))}
           </div>
