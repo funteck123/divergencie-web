@@ -408,6 +408,20 @@ confirmed the real UI POSTs correctly (button shows "Saving…", history
 row shows "Practice" / "—" / "—" / a real non-zero time, and it's
 reflected in the Overall leaderboard).
 
+### "By volume" is unique papers/questions, not raw attempts×questions (2026-09-02)
+
+`rankByVolume()` originally summed `total_questions` across every row,
+so retaking the same 10-question paper 3 times inflated the Overall
+leaderboard to 30 "questions answered" instead of 10 -- rewarding
+repetition over actual breadth of coverage. Fixed: `uniquePapers` and
+`uniqueQuestions` now count each `paper_id` once per account no matter
+how many times it's retaken, tracked via a per-account `Set`. `attempts`
+is kept separate and unchanged (every attempt, repeats included) since
+"how many times has this account practiced" is still a real, distinct
+signal from "how much of the library have they covered." Verified via
+curl (3 attempts, 2 of them the same paper retaken -> attempts: 3,
+uniquePapers: 2, uniqueQuestions: 25, not 35) and the real UI.
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
