@@ -66,7 +66,15 @@ export async function GET(req, { params }) {
   const subPath = path.join("/");
   const search = new URL(req.url).search;
 
-  const upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`);
+  let upstream;
+  try {
+    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`);
+  } catch (e) {
+    // The whole reason this URL needs re-configuring after every restart
+    // is that the tunnel is unstable -- an unreachable tunnel must not
+    // surface as an unhandled exception/raw 500.
+    return NextResponse.json({ error: `Extraction service unreachable: ${e.message}` }, { status: 503 });
+  }
   const body = await upstream.json().catch(() => null);
   if (body === null) {
     return NextResponse.json({ error: "Extraction service returned an invalid response." }, { status: 502 });
@@ -97,11 +105,16 @@ export async function POST(req, { params }) {
   const subPath = path.join("/");
   const bodyText = await req.text();
 
-  const upstream = await fetch(`${extractionUrl}/api/${subPath}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: bodyText,
-  });
+  let upstream;
+  try {
+    upstream = await fetch(`${extractionUrl}/api/${subPath}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: bodyText,
+    });
+  } catch (e) {
+    return NextResponse.json({ error: `Extraction service unreachable: ${e.message}` }, { status: 503 });
+  }
   const body = await upstream.json().catch(() => null);
   if (body === null) {
     return NextResponse.json({ error: "Extraction service returned an invalid response." }, { status: 502 });

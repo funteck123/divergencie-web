@@ -51,7 +51,7 @@ import os from "os";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError } from "./scores.mjs";
+import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError } from "./scores.mjs";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -529,7 +529,8 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ attempt }));
     } catch (e) {
-      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      const status = e instanceof InvalidAttemptError ? 400 : e instanceof ScoresUnavailableError ? 503 : 500;
+      res.writeHead(status, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;
@@ -578,7 +579,11 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const filePath = req.url === "/" ? "index.html" : req.url.slice(1);
+  // Same class of bug found and fixed in syllabus-digitizer/server.mjs:
+  // never stripped the query string, so "/?account=X" 404'd instead of
+  // resolving to index.html.
+  const urlPath = req.url.split("?")[0];
+  const filePath = urlPath === "/" ? "index.html" : urlPath.slice(1);
   const fullPath = path.join(__dirname, filePath);
   if (!fullPath.startsWith(__dirname)) {
     res.writeHead(403);

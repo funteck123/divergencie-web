@@ -41,7 +41,12 @@ function requireClient() {
   return c;
 }
 
+export class InvalidAttemptError extends Error {}
+
 export async function recordAttempt({ accountId, accountName, subject, paperId, score, totalQuestions }) {
+  if (!Number.isInteger(score) || !Number.isInteger(totalQuestions) || totalQuestions <= 0 || score < 0 || score > totalQuestions) {
+    throw new InvalidAttemptError("score and totalQuestions must be integers, with 0 <= score <= totalQuestions and totalQuestions > 0.");
+  }
   const c = requireClient();
   const { data, error } = await c
     .from(TABLE)

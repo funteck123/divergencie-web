@@ -63,6 +63,14 @@
   .result-item .rverdict { float: right; font-weight: 700; }
   .result-item .rverdict.correct { color: var(--good); }
   .result-item .rverdict.incorrect, .result-item .rverdict.unanswered { color: var(--bad); }
+  .progress-link { display: block; text-align: center; margin: 0.75rem 0; font-size: 0.85rem; }
+  #progressChart { width: 100%; height: 260px; display: block; background: white; border: 1px solid var(--border); border-radius: 8px; }
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 1rem; }
+  .lb-table th { text-align: left; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
+  .lb-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--bg-soft); }
+  .lb-table tr.me { background: rgba(232,168,50,0.15); font-weight: 700; }
+  .lb-section-title { font-size: 0.8rem; font-weight: 700; color: var(--navy); margin: 0.9rem 0 0.4rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .lb-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -96,6 +104,9 @@
     </div>
     <p class="hint" style="text-align:center;">
       <a href="#" id="showUploadLink">Or upload your own QP + MS PDFs instead</a>
+    </p>
+    <p class="progress-link" id="progressLinkRow" style="display:none;">
+      <a href="#" id="showProgressLink">View my progress &amp; the leaderboard</a>
     </p>
   </div>
 
@@ -143,12 +154,50 @@
       <div class="big" id="scoreText">—</div>
     </div>
     <div id="resultsContainer"></div>
+    <p class="hint" id="attemptSaveStatus"></p>
     <button class="primary-btn" id="restartBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Digitize another paper</button>
+    <p class="progress-link" id="progressLinkRow3" style="display:none;">
+      <a href="#" id="showProgressLink3">View my progress &amp; the leaderboard</a>
+    </p>
+  </div>
+
+  <div id="stage4" class="stage">
+    <p class="hint"><a href="#" id="backFromProgressLink">&larr; Back to library</a></p>
+    <div class="card">
+      <h2>Your progress over time</h2>
+      <p class="hint">Your score % per attempt, in order. Every other student's trend is shown faint in the background for context.</p>
+      <canvas id="progressChart" width="700" height="260"></canvas>
+      <p class="hint" id="progressEmptyNote" style="display:none;">No attempts recorded yet — take a Test-mode quiz from the library to start tracking.</p>
+    </div>
+    <div class="card">
+      <h2>Leaderboard</h2>
+      <div class="lb-tabs" id="lbPaperTabs"></div>
+      <div class="lb-section-title">By average score</div>
+      <table class="lb-table" id="lbAvgTable"><thead><tr><th>#</th><th>Student</th><th>Avg %</th><th>Attempts</th></tr></thead><tbody></tbody></table>
+      <div class="lb-section-title">By total correct</div>
+      <table class="lb-table" id="lbTotalTable"><thead><tr><th>#</th><th>Student</th><th>Total correct</th><th>Attempts</th></tr></thead><tbody></tbody></table>
+    </div>
   </div>
 </main>
 
 <script>
 let quiz = [];
+
+// Score tracking (planning/mcq-digitizer-integration-plan.md) -- no login
+// in this tool, so the account travels as ?account=<id>&name=<display
+// name> on the link a student is given. Missing account -> tracking
+// simply doesn't happen, the quiz tool itself still works standalone.
+const urlParams = new URLSearchParams(window.location.search);
+const accountId = urlParams.get("account");
+const accountName = urlParams.get("name");
+// Set only for a library-sourced paper (has a stable qpId) -- a manual
+// PDF upload has no stable paper identity to track against, so it's
+// deliberately never scored into the leaderboard.
+let currentAttemptMeta = null;
+
+if (accountId) {
+  document.getElementById("progressLinkRow").style.display = "block";
+}
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -261,6 +310,7 @@ document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
 
 // ---- Library picker ----
 let library = null;
+let paperTitleById = {}; // qpId -> readable title, built once loadLibrary() resolves
 
 async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
@@ -270,6 +320,8 @@ async function loadLibrary() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     library = data;
+    paperTitleById = {};
+    Object.values(library).forEach((subjects) => Object.values(subjects).forEach((categories) => Object.values(categories).forEach((papers) => papers.forEach((p) => { paperTitleById[p.qpId] = p.title; }))));
     statusEl.style.display = "none";
     document.getElementById("libraryPicker").style.display = "block";
     populateBoards();
@@ -355,6 +407,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    currentAttemptMeta = { subject: `${board} ${subject}`, paperId: paper.qpId };
     applyDigitizeResult(data);
     statusEl.style.display = "none";
   } catch (e) {
@@ -392,6 +445,7 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    currentAttemptMeta = null; // manual upload has no stable paperId -- never tracked
     applyDigitizeResult(data);
     statusEl.textContent = "";
   } catch (e) {
@@ -495,17 +549,184 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
 
   pauseTimer();
   showStage(3);
+
+  const saveStatusEl = document.getElementById("attemptSaveStatus");
+  const progressLinkRow3 = document.getElementById("progressLinkRow3");
+  if (accountId && currentAttemptMeta && gradable > 0) {
+    saveStatusEl.textContent = "Saving your score…";
+    fetch("/api/mcq/attempts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        accountId, accountName,
+        subject: currentAttemptMeta.subject,
+        paperId: currentAttemptMeta.paperId,
+        score: correctCount,
+        totalQuestions: gradable,
+      }),
+    }).then(async (r) => {
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+      saveStatusEl.textContent = "Score saved to your progress history.";
+      progressLinkRow3.style.display = "block";
+    }).catch((e) => {
+      // Non-fatal -- the quiz result the student already sees on screen is
+      // unaffected either way, only their tracked history/leaderboard entry
+      // is missing this one attempt.
+      saveStatusEl.textContent = `Couldn't save this score to your progress history (${e.message}).`;
+    });
+  } else if (!accountId) {
+    saveStatusEl.textContent = "";
+  } else if (!currentAttemptMeta) {
+    saveStatusEl.textContent = "Manually uploaded papers aren't tracked in your progress history.";
+  }
 });
 
 function resetToLibrary() {
   quiz = [];
   quizMode = null;
+  currentAttemptMeta = null;
   document.getElementById("qpPdf").value = "";
   document.getElementById("msPdf").value = "";
   resetTimer();
   showStage(0);
 }
 document.getElementById("restartBtn").addEventListener("click", resetToLibrary);
+
+// ---- Progress chart + leaderboard -----------------------------------
+// Vanilla canvas, no charting library -- matches this prototype's
+// no-framework/no-dependency philosophy. X axis is attempt order (1st,
+// 2nd, 3rd...) per account, not real time, so accounts with different
+// attempt counts/timestamps still overlay meaningfully as trend lines.
+function pctOf(a) { return a.total_questions > 0 ? (a.score / a.total_questions) * 100 : 0; }
+
+function drawProgressChart(mine, allByAccount) {
+  const canvas = document.getElementById("progressChart");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const padL = 36, padB = 24, padT = 12, padR = 12;
+  ctx.clearRect(0, 0, W, H);
+
+  const maxAttempts = Math.max(1, ...Object.values(allByAccount).map((a) => a.length), mine.length);
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const xAt = (i) => padL + (maxAttempts <= 1 ? 0 : (i / (maxAttempts - 1)) * plotW);
+  const yAt = (pct) => padT + plotH - (pct / 100) * plotH;
+
+  // Axes
+  ctx.strokeStyle = "#d7dee8";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH);
+  ctx.stroke();
+  ctx.fillStyle = "#666666";
+  ctx.font = "10px sans-serif";
+  [0, 50, 100].forEach((pct) => {
+    const y = yAt(pct);
+    ctx.fillText(`${pct}%`, 4, y + 3);
+    ctx.strokeStyle = "#f0f0f0";
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+  });
+
+  function drawLine(attempts, color, width) {
+    if (!attempts.length) return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    attempts.forEach((a, i) => {
+      const x = xAt(i), y = yAt(pctOf(a));
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    attempts.forEach((a, i) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(xAt(i), yAt(pctOf(a)), width + 1, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // Every other account, faint, behind
+  Object.entries(allByAccount).forEach(([id, attempts]) => {
+    if (id === accountId) return;
+    drawLine(attempts, "rgba(102,102,102,0.25)", 1.5);
+  });
+  // The viewer's own line, on top, highlighted
+  drawLine(mine, "#e8a832", 3);
+}
+
+function renderLeaderboardTable(tableId, entries) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = entries.slice(0, 10).map((e, i) => `
+    <tr class="${e.accountId === accountId ? "me" : ""}">
+      <td>${i + 1}</td>
+      <td>${escapeHtml(e.name)}</td>
+      <td>${tableId === "lbAvgTable" ? e.avgPercent + "%" : e.totalCorrect}</td>
+      <td>${e.attempts}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="4" class="hint">No attempts yet.</td></tr>`;
+}
+
+let leaderboardData = null;
+function renderLeaderboardScope(paperId) {
+  const scope = paperId ? leaderboardData.byPaper[paperId] : leaderboardData.overall;
+  if (!scope) return;
+  renderLeaderboardTable("lbAvgTable", scope.byAvgPercent);
+  renderLeaderboardTable("lbTotalTable", scope.byTotalCorrect);
+}
+
+async function loadAndRenderProgress() {
+  const emptyNote = document.getElementById("progressEmptyNote");
+  try {
+    const [progressRes, allRes, lbRes] = await Promise.all([
+      fetch(`/api/mcq/progress?account=${encodeURIComponent(accountId)}`),
+      fetch("/api/mcq/progress/all"),
+      fetch("/api/mcq/leaderboard"),
+    ]);
+    const progressData = await progressRes.json();
+    const allData = await allRes.json();
+    leaderboardData = await lbRes.json();
+    if (!progressRes.ok || !allRes.ok || !lbRes.ok) {
+      throw new Error(progressData.error || allData.error || leaderboardData.error || "Failed to load progress data.");
+    }
+
+    const mine = progressData.attempts || [];
+    emptyNote.style.display = mine.length ? "none" : "block";
+
+    const allByAccount = {};
+    (allData.attempts || []).forEach((a) => {
+      allByAccount[a.account_id] = allByAccount[a.account_id] || [];
+      allByAccount[a.account_id].push(a);
+    });
+    drawProgressChart(mine, allByAccount);
+
+    // Per-paper tabs -- "Overall" plus one tab per paper that has any
+    // recorded attempt at all (not just the viewer's own).
+    const paperIds = Object.keys(leaderboardData.byPaper || {});
+    const tabsEl = document.getElementById("lbPaperTabs");
+    tabsEl.innerHTML = [`<button class="tab-btn active" data-paper="">Overall</button>`]
+      .concat(paperIds.map((pid) => `<button class="tab-btn" data-paper="${escapeHtml(pid)}">${escapeHtml(paperTitleById[pid] || pid)}</button>`))
+      .join("");
+    tabsEl.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        tabsEl.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderLeaderboardScope(btn.dataset.paper || null);
+      });
+    });
+    renderLeaderboardScope(null);
+  } catch (e) {
+    emptyNote.style.display = "block";
+    emptyNote.textContent = `Couldn't load progress/leaderboard data (${e.message}).`;
+  }
+}
+
+function showProgress() {
+  showStage(4);
+  loadAndRenderProgress();
+}
+document.getElementById("showProgressLink").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
+document.getElementById("showProgressLink3").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
+document.getElementById("backFromProgressLink").addEventListener("click", (e) => { e.preventDefault(); showStage(0); });
 </script>
 </body>
 </html>
