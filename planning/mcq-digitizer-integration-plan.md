@@ -1,8 +1,40 @@
-# MCQ digitizer: score tracking + full app integration — plan (draft, unanswered)
+# MCQ digitizer: score tracking + full app integration — plan
 
-Status: **not started, awaiting answers below.** Nothing in this doc is approved for
-build yet — captured verbatim from the 2026-09-02 request so we don't re-derive it,
-plus the current-state research needed to ask the right questions.
+Status: **decisions locked below (2026-09-02), build not yet approved.** Captured
+verbatim from the 2026-09-02 request so we don't re-derive it, plus the
+current-state research that shaped the questions, plus the answers.
+
+## Decisions (final, as of 2026-09-02)
+
+- **Sequencing**: build score tracking now, on the existing tunnel setup, kept
+  as independent of the main Next.js app as possible. No auth/dashboard
+  integration yet — that's a separate, later migration (section 5/6 below,
+  unchanged, still not started).
+- **Storage**: a new Supabase table + bucket, written to directly from
+  `prototypes/mcq-digitizer/server.mjs` with its own Supabase client (same
+  project/credentials the main app uses, via `.env`, but no dependency on any
+  Next.js route or `lib/db-supabase.js` collection code). Rationale: this
+  server has already had its process killed and restarted once this session
+  (the tunnel outage) — a local JSON file isn't durable enough for a scores
+  ledger, and building directly against Supabase avoids a second migration
+  when this later plugs into the main app.
+- **Account identity**: no login in the prototype. The account travels as a
+  URL param (e.g. `?account=STU-0006`) on the link a student is given/clicks.
+- **Leaderboard names**: first name + last initial (matches the DC Team
+  convention from this session, e.g. "Aisyah F.").
+- **Leaderboard "overall" score**: show **both** average % correct and total
+  questions answered correctly — two ranked lists, not a single blended
+  number.
+- **Progress overlay**: same chart as the student's own progress-history line
+  — every other student's trajectory drawn faint/grey behind it, the
+  viewer's own line highlighted on top.
+- **Placement**: inside the digitizer page itself (`index.html`), not the
+  main app's student dashboard — consistent with keeping this independent.
+- **Day-one scope**: same coverage the prototype already has (195 papers /
+  5775 questions — IGCSE + A-Level Physics/Chemistry/Biology; Math once
+  TKT-0151's separate digitizer exists, not blocking this).
+- **Backfill**: none — tracking starts clean from ship date, no attempt to
+  reconstruct history from anything already run through the tool.
 
 ## The request, as given
 
@@ -112,6 +144,67 @@ fastest; skip any you want me to default on.
 - Any target subjects/papers this needs to support on day one, or is "same
   coverage as the prototype has now" (195 papers / 5775 questions, IGCSE +
   A-Level Physics/Chemistry/Biology + Math per TKT-0151) the right scope?
+
+## Build plan (proposed, pending go-ahead)
+
+### Supabase schema
+
+New table `mcq_attempts` (own table, not part of `lib/db-supabase.js`'s
+JSONB-collection system — a plain relational table, queried directly):
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid, PK | |
+| account_id | text | value of the `?account=` URL param, verbatim |
+| subject | text | e.g. "IGCSE Physics" |
+| paper_id | text | matches the `qpId`/paper identifier already in `database.json` |
+| score | integer | questions correct |
+| total_questions | integer | questions in that paper |
+| submitted_at | timestamptz | default now() |
+
+No new Storage bucket needed yet — crop images already live under
+`data/mcq-digitizer/full-library/` on this server's disk; only attempt/score
+rows are new. Row-level security: server writes with the service-role key
+only (same trust model as `lib/storage.js`), no public anon access.
+
+### Server changes (`prototypes/mcq-digitizer/server.mjs`)
+
+- New Supabase client, own module, reading `V7_SUPABASE_URL` /
+  `V7_SUPABASE_SERVICE_ROLE_KEY` from `.env` directly (no import from `lib/`,
+  keeping the "independent of the main app" boundary literal).
+- `POST /api/attempts` — record one graded attempt: `{account, subject,
+  paperId, score, totalQuestions}`. Grading itself stays client-side, unchanged
+  — this just logs the result after the fact.
+- `GET /api/progress?account=...` — that account's attempt history, for the
+  personal progress-history chart.
+- `GET /api/progress/all` — every account's attempt history (account id +
+  score + timestamp only, no other PII), for the background overlay.
+- `GET /api/leaderboard` — both rankings (avg % and total correct), overall
+  and broken out per paper.
+
+### Client changes (`prototypes/mcq-digitizer/index.html`)
+
+- Read `?account=` from the URL on load; if absent, tracking/graphs/leaderboard
+  simply don't render (grading still works standalone, unaffected).
+- On grading a quiz, POST the result to `/api/attempts`.
+- New "My Progress" view: line chart, this account's score % per attempt over
+  time, chart library TBD (likely a small dependency-free canvas chart to
+  match the "no framework" philosophy of this prototype, or Chart.js via a
+  plain `<script>` tag — open to either).
+- Overlay: same chart, every other account's line rendered faint/grey behind.
+- "Leaderboard" view: two tables (avg %, total correct) — overall, and a
+  per-paper breakdown, first-name-plus-initial formatting matching the DC Team
+  convention (needs a name lookup — see open question below).
+
+### One thing this build plan can't resolve on its own
+
+The `?account=` param is a raw ID (e.g. `STU-0006`), not a display name.
+"First name + last initial" formatting needs an actual name to format — do we
+look that up live against the main app's `/api/users` (a real dependency on
+the main app, contradicting "as independent as possible"), or does the link
+a student is given already carry their name as a second param (e.g.
+`?account=STU-0006&name=Faraz`), so the tool never needs to call the main
+app at all?
 
 ## Not yet decided (explicitly out of this doc until answered above)
 
