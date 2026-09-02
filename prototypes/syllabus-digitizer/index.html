@@ -21,6 +21,8 @@
   .lb-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--bg-soft); }
   .tab-btn { padding: 0.35rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--border); background: white; color: var(--charcoal); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
   .tab-btn.active { border-color: var(--navy); background: var(--navy); color: white; }
+  .scope-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.8rem; color: var(--charcoal); }
+  .scope-row select { margin-left: 0.4rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; }
 
   .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
 
@@ -120,12 +122,20 @@
   <div class="panel" style="padding:1.25rem; margin-bottom:1.25rem;">
     <h2 style="margin:0 0 0.4rem; color:var(--navy); font-size:1rem;">Topics completed over time</h2>
     <p class="hint" style="margin:0 0 0.75rem;">Your cumulative "Completed" topics, in order marked. Every other student's trend is shown faint in the background for context.</p>
+    <div class="scope-row">
+      <label>Subject <select id="progressSubjectSelect"><option value="">All subjects</option></select></label>
+      <label>Chapter <select id="progressChapterSelect" disabled><option value="">All chapters</option></select></label>
+    </div>
     <canvas id="progressChart" width="1000" height="260" style="width:100%; height:260px; background:white; border:1px solid var(--border); border-radius:8px;"></canvas>
     <p class="hint" id="progressEmptyNote" style="display:none;">No topics marked Completed yet.</p>
   </div>
   <div class="panel" style="padding:1.25rem;">
     <h2 style="margin:0 0 0.6rem; color:var(--navy); font-size:1rem;">Leaderboard — topics completed</h2>
-    <div id="lbSubjectTabs" style="display:flex; gap:0.4rem; margin-bottom:0.6rem; flex-wrap:wrap;"></div>
+    <p class="hint">"Overall" spans every subject; pick a subject to narrow to its chapters.</p>
+    <div class="scope-row">
+      <label>Subject <select id="lbSubjectSelect"><option value="">Overall (all subjects)</option></select></label>
+      <label>Chapter <select id="lbChapterSelect" disabled><option value="">All chapters</option></select></label>
+    </div>
     <table class="lb-table" id="lbTable" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
       <thead><tr><th style="text-align:left; padding:0.3rem 0.5rem; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">#</th><th style="text-align:left; padding:0.3rem 0.5rem; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">Student</th><th style="text-align:left; padding:0.3rem 0.5rem; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">Topics completed</th></tr></thead>
       <tbody></tbody>
@@ -577,7 +587,21 @@ function drawProgressChart(mine, allByAccount) {
   drawLine(mine, "#e8a832", 3);
 }
 
+// Three tiers -- Overall / Subject / Chapter -- see
+// planning/mcq-digitizer-integration-plan.md's architecture writeup.
+// "Chapter" here is the first segment of node_key (see progress.mjs's own
+// chapterOf()) -- free, no title-parsing needed the way MCQ required.
 let leaderboardData = null;
+let myCompletions = [];
+let allCompletionsFlat = [];
+
+function subjectLabel(filename) {
+  return (syllabi.find((x) => x.filename === filename) || {}).subject || filename;
+}
+function chapterOf(nodeKey) {
+  return String(nodeKey || "").split(".")[0] || null;
+}
+
 function renderLeaderboardTable(entries) {
   const tbody = document.querySelector("#lbTable tbody");
   tbody.innerHTML = entries.slice(0, 10).map((e, i) => `
@@ -588,9 +612,60 @@ function renderLeaderboardTable(entries) {
     </tr>
   `).join("") || `<tr><td colspan="3" class="hint">No topics completed yet.</td></tr>`;
 }
-function renderLeaderboardScope(subject) {
-  const scope = subject ? leaderboardData.bySubject[subject] : leaderboardData.overall;
+
+function renderLeaderboardScope() {
+  const subject = document.getElementById("lbSubjectSelect").value;
+  const chapter = document.getElementById("lbChapterSelect").value;
+  let scope;
+  if (subject && chapter) scope = leaderboardData.byChapter[subject]?.[chapter];
+  else if (subject) scope = leaderboardData.bySubject[subject];
+  else scope = leaderboardData.overall;
   renderLeaderboardTable(scope || []);
+}
+
+function populateSelect(select, options, placeholder, labelFn) {
+  select.innerHTML = `<option value="">${placeholder}</option>` + options.map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(labelFn ? labelFn(o) : o)}</option>`).join("");
+}
+
+function onLeaderboardSubjectChange() {
+  const subject = document.getElementById("lbSubjectSelect").value;
+  const chapterSelect = document.getElementById("lbChapterSelect");
+  if (subject) {
+    populateSelect(chapterSelect, Object.keys(leaderboardData.byChapter[subject] || {}), "All chapters");
+    chapterSelect.disabled = false;
+  } else {
+    chapterSelect.innerHTML = `<option value="">All chapters</option>`;
+    chapterSelect.disabled = true;
+  }
+  renderLeaderboardScope();
+}
+
+function renderFilteredProgressChart() {
+  const subject = document.getElementById("progressSubjectSelect").value;
+  const chapter = document.getElementById("progressChapterSelect").value;
+  const matches = (c) => (!subject || c.subject === subject) && (!chapter || chapterOf(c.node_key) === chapter);
+  const mine = myCompletions.filter(matches);
+  const allByAccount = {};
+  allCompletionsFlat.filter(matches).forEach((c) => {
+    allByAccount[c.account_id] = allByAccount[c.account_id] || [];
+    allByAccount[c.account_id].push(c);
+  });
+  document.getElementById("progressEmptyNote").style.display = mine.length ? "none" : "block";
+  drawProgressChart(mine, allByAccount);
+}
+
+function onProgressSubjectChange() {
+  const subject = document.getElementById("progressSubjectSelect").value;
+  const chapterSelect = document.getElementById("progressChapterSelect");
+  if (subject) {
+    const chapters = [...new Set(myCompletions.filter((c) => c.subject === subject).map((c) => chapterOf(c.node_key)).filter(Boolean))];
+    populateSelect(chapterSelect, chapters, "All chapters");
+    chapterSelect.disabled = false;
+  } else {
+    chapterSelect.innerHTML = `<option value="">All chapters</option>`;
+    chapterSelect.disabled = true;
+  }
+  renderFilteredProgressChart();
 }
 
 async function loadAndRenderProgress() {
@@ -608,34 +683,27 @@ async function loadAndRenderProgress() {
       throw new Error(progressData.error || allData.error || leaderboardData.error || "Failed to load progress data.");
     }
 
-    const mine = progressData.completions || [];
-    emptyNote.style.display = mine.length ? "none" : "block";
+    myCompletions = progressData.completions || [];
+    allCompletionsFlat = allData.completions || [];
 
-    const allByAccount = {};
-    (allData.completions || []).forEach((c) => {
-      allByAccount[c.account_id] = allByAccount[c.account_id] || [];
-      allByAccount[c.account_id].push(c);
-    });
-    drawProgressChart(mine, allByAccount);
+    populateSelect(document.getElementById("progressSubjectSelect"), [...new Set(myCompletions.map((c) => c.subject))], "All subjects", subjectLabel);
+    document.getElementById("progressChapterSelect").innerHTML = `<option value="">All chapters</option>`;
+    document.getElementById("progressChapterSelect").disabled = true;
+    renderFilteredProgressChart();
 
-    const subjects = Object.keys(leaderboardData.bySubject || {});
-    const tabsEl = document.getElementById("lbSubjectTabs");
-    tabsEl.innerHTML = [`<button class="tab-btn active" data-subject="">Overall</button>`]
-      .concat(subjects.map((s) => `<button class="tab-btn" data-subject="${escapeHtml(s)}">${escapeHtml((syllabi.find((x) => x.filename === s) || {}).subject || s)}</button>`))
-      .join("");
-    tabsEl.querySelectorAll(".tab-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        tabsEl.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderLeaderboardScope(btn.dataset.subject || null);
-      });
-    });
-    renderLeaderboardScope(null);
+    populateSelect(document.getElementById("lbSubjectSelect"), Object.keys(leaderboardData.bySubject || {}), "Overall (all subjects)", subjectLabel);
+    document.getElementById("lbChapterSelect").innerHTML = `<option value="">All chapters</option>`;
+    document.getElementById("lbChapterSelect").disabled = true;
+    renderLeaderboardScope();
   } catch (e) {
     emptyNote.style.display = "block";
     emptyNote.textContent = `Couldn't load progress/leaderboard data (${e.message}).`;
   }
 }
+document.getElementById("progressSubjectSelect").addEventListener("change", onProgressSubjectChange);
+document.getElementById("progressChapterSelect").addEventListener("change", renderFilteredProgressChart);
+document.getElementById("lbSubjectSelect").addEventListener("change", onLeaderboardSubjectChange);
+document.getElementById("lbChapterSelect").addEventListener("change", renderLeaderboardScope);
 
 document.getElementById("showProgressLink").addEventListener("click", (e) => {
   e.preventDefault();

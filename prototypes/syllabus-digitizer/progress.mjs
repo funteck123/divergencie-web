@@ -94,34 +94,59 @@ function displayName(accountId, accountName) {
 
 // Ranked by total distinct topics completed -- there's no "average score"
 // concept here (no grading), so unlike MCQ this is a single ranking, not
-// two. Computed both overall and per subject, same "same way" shape.
+// two, at every tier. Three tiers -- overall / subject / chapter -- see
+// planning/mcq-digitizer-integration-plan.md's architecture writeup.
+// "Chapter" is free here, unlike MCQ: node_key is a dot-path
+// ("0", "0.1", "0.1.2", ...) built by index.html's renderTopicNodes, so
+// its first segment IS the top-level chapter node -- no title-parsing
+// needed the way MCQ's opaque Drive-file paperId required.
+function rank(rows) {
+  const byAccount = new Map();
+  for (const row of rows) {
+    if (!byAccount.has(row.account_id)) {
+      byAccount.set(row.account_id, { accountId: row.account_id, name: displayName(row.account_id, row.account_name), topicsCompleted: 0 });
+    }
+    byAccount.get(row.account_id).topicsCompleted += 1;
+  }
+  return [...byAccount.values()].sort((a, b) => b.topicsCompleted - a.topicsCompleted);
+}
+
+function groupBy(rows, keyFn) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = keyFn(row);
+    if (key == null) continue;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(row);
+  }
+  return groups;
+}
+
+function chapterOf(nodeKey) {
+  return String(nodeKey || "").split(".")[0] || null;
+}
+
 export async function getLeaderboard() {
   const c = requireClient();
   const { data, error } = await c.from(TABLE).select("account_id, account_name, subject, node_key");
   if (error) throw new Error(`Could not load leaderboard: ${error.message}`);
 
-  function rank(rows) {
-    const byAccount = new Map();
-    for (const row of rows) {
-      if (!byAccount.has(row.account_id)) {
-        byAccount.set(row.account_id, { accountId: row.account_id, name: displayName(row.account_id, row.account_name), topicsCompleted: 0 });
-      }
-      byAccount.get(row.account_id).topicsCompleted += 1;
-    }
-    return [...byAccount.values()].sort((a, b) => b.topicsCompleted - a.topicsCompleted);
-  }
-
   const overall = rank(data);
 
   const bySubject = {};
-  const rowsBySubject = new Map();
-  for (const row of data) {
-    if (!rowsBySubject.has(row.subject)) rowsBySubject.set(row.subject, []);
-    rowsBySubject.get(row.subject).push(row);
-  }
-  for (const [subject, rows] of rowsBySubject) {
+  for (const [subject, rows] of groupBy(data, (r) => r.subject)) {
     bySubject[subject] = rank(rows);
   }
 
-  return { overall, bySubject };
+  const byChapter = {};
+  for (const [subject, subjectRows] of groupBy(data, (r) => r.subject)) {
+    const chapterGroups = groupBy(subjectRows, (r) => chapterOf(r.node_key));
+    if (chapterGroups.size === 0) continue;
+    byChapter[subject] = {};
+    for (const [chapter, rows] of chapterGroups) {
+      byChapter[subject][chapter] = rank(rows);
+    }
+  }
+
+  return { overall, bySubject, byChapter };
 }
