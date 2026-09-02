@@ -143,6 +143,10 @@
     <p class="progress-link" id="progressLinkRow" style="display:none;">
       <a href="#" id="showProgressLink">View my progress &amp; the leaderboard</a>
     </p>
+    <p class="progress-link" id="mistakesLinkRow" style="display:none;">
+      <a href="#" id="startMistakesLink">Mistakes Mode — practice only what you've gotten wrong</a>
+    </p>
+    <p class="hint" id="mistakesStatus" style="display:none; text-align:center;"></p>
   </div>
 
   <div id="stage1" class="stage">
@@ -218,6 +222,12 @@
       </table>
     </div>
     <div class="card">
+      <h2>Mistake tracker</h2>
+      <p class="hint">One chart per subject, one bar per chapter — total mistakes ever made there (every wrong answer counts, even ones you've since fixed — this is history, not your current weak spots).</p>
+      <div id="mistakeChartsContainer"></div>
+      <p class="hint" id="mistakeChartsEmpty" style="display:none;">No mistakes recorded yet.</p>
+    </div>
+    <div class="card">
       <h2>Leaderboard</h2>
       <p class="hint">"Overall" is volume only (attempts/questions answered) -- comparing accuracy across different subjects isn't a fair comparison, so avg% only ever appears once you pick a subject, chapter, or paper below.</p>
       <div class="scope-row">
@@ -257,6 +267,7 @@ let currentAttemptMeta = null;
 
 if (accountId) {
   document.getElementById("progressLinkRow").style.display = "block";
+  document.getElementById("mistakesLinkRow").style.display = "block";
 }
 
 function escapeHtml(s) {
@@ -379,6 +390,71 @@ document.getElementById("showUploadLink").addEventListener("click", (e) => {
   e.preventDefault();
   showStage(1);
 });
+
+// ---- Mistakes Mode -- the third mode, built from the account's own
+// history rather than one just-picked paper. Skips the library
+// board/subject/category/paper picker and the mode-select screen
+// entirely: it goes straight from the stage0 link to an assembled quiz,
+// possibly merging questions from several different papers/chapters/
+// subjects in one sitting (whatever's currently unresolved -- see
+// scores.mjs's own comment on the append-only/resolved-flag design).
+async function startMistakesMode() {
+  if (!accountId) return;
+  const statusEl = document.getElementById("mistakesStatus");
+  statusEl.style.display = "block";
+  statusEl.textContent = "Loading your mistakes…";
+  try {
+    const res = await fetch(`/api/mcq/mistakes?account=${encodeURIComponent(accountId)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const mistakes = data.mistakes || [];
+    if (mistakes.length === 0) {
+      statusEl.textContent = "No mistakes to practice right now — nice work.";
+      return;
+    }
+
+    const byPaper = new Map();
+    mistakes.forEach((m) => {
+      if (!byPaper.has(m.paperId)) byPaper.set(m.paperId, { subject: m.subject, chapter: m.chapter, questionNumbers: new Set() });
+      byPaper.get(m.paperId).questionNumbers.add(String(m.questionNumber));
+    });
+
+    const merged = [];
+    for (const [paperId, info] of byPaper) {
+      const pRes = await fetch(`/api/mcq/paper?qpId=${encodeURIComponent(paperId)}`);
+      if (!pRes.ok) continue; // not in the cached library database -- can't replay it, see server.mjs's own comment on /api/paper
+      const pData = await pRes.json();
+      pData.questions
+        .filter((q) => info.questionNumbers.has(String(q.questionNumber)))
+        .forEach((q) => merged.push({ ...q, _origin: { paperId, subject: info.subject, chapter: info.chapter } }));
+    }
+
+    if (merged.length === 0) {
+      statusEl.textContent = "Your mistakes couldn't be reloaded right now (their source papers aren't cached) — try again later.";
+      return;
+    }
+
+    statusEl.style.display = "none";
+    quiz = merged;
+    quizMode = "mistakes";
+    currentAttemptMeta = null; // multi-origin quiz -- never one trackable attempt, see the submit handler's own "mistakes" branch
+    document.getElementById("digitizeCount").textContent = `${merged.length} previously-missed question${merged.length === 1 ? "" : "s"}.`;
+    document.getElementById("modeSelectCard").style.display = "none";
+    document.getElementById("testHeader").style.display = "block";
+    document.getElementById("quizHeaderTitle").textContent = "Mistakes Mode";
+    document.getElementById("submitQuizBtn").style.display = "block";
+    document.getElementById("finishPracticeBtn").style.display = "none";
+    document.getElementById("flaggedSummary").style.display = "none";
+    document.getElementById("quizItems").innerHTML = "";
+    renderQuiz();
+    resetTimer();
+    startTimer();
+    showStage(2);
+  } catch (e) {
+    statusEl.textContent = `Couldn't load your mistakes (${e.message}).`;
+  }
+}
+document.getElementById("startMistakesLink").addEventListener("click", (e) => { e.preventDefault(); startMistakesMode(); });
 document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
   e.preventDefault();
   showStage(0);
@@ -714,9 +790,50 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
 
   const saveStatusEl = document.getElementById("attemptSaveStatus");
   const progressLinkRow3 = document.getElementById("progressLinkRow3");
-  if (accountId && currentAttemptMeta && gradable > 0) {
+
+  // Mistake tracking: only questions with a definite verdict count --
+  // "wrong answers only," confirmed with the user -- unanswered/unmatched
+  // questions are excluded from both the mistake log and the resolve-on-fix
+  // check, matching gradable's own definition above.
+  function mistakeResults(items) {
+    return items
+      .filter((r) => r.verdict === "correct" || r.verdict === "incorrect")
+      .map((r) => ({ questionNumber: r.questionNumber, correct: r.verdict === "correct" }));
+  }
+  function postMistakes({ subject, chapter, paperId, items }) {
+    const mr = mistakeResults(items);
+    if (!accountId || mr.length === 0) return Promise.resolve();
+    return fetch("/api/mcq/mistakes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accountId, accountName, subject, chapter, paperId, results: mr }),
+    }).catch(() => {}); // non-fatal, same reasoning as postAttempt's own save
+
+  }
+
+  if (quizMode === "mistakes") {
+    // Multiple origin papers/chapters/subjects possibly merged into one
+    // quiz (see startMistakesMode) -- group results back by where each
+    // question actually came from before posting, and never record a
+    // normal mcq_attempts row: a mistakes-practice pass isn't a scored
+    // "attempt" for the leaderboard/history, only a resolve-or-relog
+    // pass against the mistake log itself.
+    const byOrigin = new Map();
+    results.forEach((r) => {
+      const key = `${r._origin.paperId}`;
+      if (!byOrigin.has(key)) byOrigin.set(key, { ...r._origin, items: [] });
+      byOrigin.get(key).items.push(r);
+    });
+    saveStatusEl.textContent = accountId ? "Saving your results…" : "";
+    Promise.all([...byOrigin.values()].map((group) => postMistakes(group))).then(() => {
+      if (accountId) saveStatusEl.textContent = "Results saved -- fixed questions won't show up here again.";
+    });
+  } else if (accountId && currentAttemptMeta && gradable > 0) {
     saveStatusEl.textContent = "Saving your score…";
-    postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable }).then(() => {
+    Promise.all([
+      postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable }),
+      postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: results }),
+    ]).then(() => {
       saveStatusEl.textContent = "Score saved to your progress history.";
       progressLinkRow3.style.display = "block";
     }).catch((e) => {
@@ -738,6 +855,7 @@ function resetToLibrary() {
   currentAttemptMeta = null;
   document.getElementById("qpPdf").value = "";
   document.getElementById("msPdf").value = "";
+  document.getElementById("mistakesStatus").style.display = "none";
   resetTimer();
   showStage(0);
 }
@@ -1002,6 +1120,94 @@ function onProgressSubjectChange() {
   renderFilteredProgressChart();
 }
 
+// One bar chart per subject, one bar per chapter -- vanilla canvas, same
+// approach as the progress-over-time chart. Personal only (this
+// account's own mistake counts, not a cross-student comparison -- see
+// scores.mjs's own comment on why this isn't a leaderboard).
+function drawMistakeBarChart(canvas, chapterCounts) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const padL = 30, padB = 34, padT = 10, padR = 10;
+  ctx.clearRect(0, 0, W, H);
+
+  const chapters = Object.keys(chapterCounts).sort((a, b) => {
+    const na = parseFloat(a), nb = parseFloat(b);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return a.localeCompare(b);
+  });
+  const maxCount = Math.max(1, ...chapters.map((c) => chapterCounts[c]));
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const barGap = 8;
+  const barW = Math.max(4, plotW / chapters.length - barGap);
+
+  ctx.strokeStyle = "#d7dee8";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH);
+  ctx.stroke();
+  ctx.fillStyle = "#666666";
+  ctx.font = "10px sans-serif";
+  ctx.fillText("0", 4, padT + plotH + 3);
+  ctx.fillText(String(maxCount), 4, padT + 8);
+
+  chapters.forEach((chapter, i) => {
+    const count = chapterCounts[chapter];
+    const barH = (count / maxCount) * plotH;
+    const x = padL + i * (barW + barGap) + barGap / 2;
+    const y = padT + plotH - barH;
+    ctx.fillStyle = "#e05a4e"; // coral -- distinct from the gold progress-chart lines, reads as "mistakes" not "progress"
+    ctx.fillRect(x, y, barW, barH);
+    ctx.fillStyle = "#1a1a1a";
+    ctx.font = "10px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(String(count), x + barW / 2, y - 3);
+    ctx.save();
+    ctx.translate(x + barW / 2, padT + plotH + 12);
+    ctx.rotate(chapters.length > 6 ? -Math.PI / 4 : 0);
+    ctx.textAlign = chapters.length > 6 ? "right" : "center";
+    ctx.fillText(chapter, 0, 0);
+    ctx.restore();
+  });
+  ctx.textAlign = "left";
+}
+
+async function loadAndRenderMistakeCharts() {
+  const container = document.getElementById("mistakeChartsContainer");
+  const emptyNote = document.getElementById("mistakeChartsEmpty");
+  container.innerHTML = "";
+  try {
+    const res = await fetch(`/api/mcq/mistakes/chart?account=${encodeURIComponent(accountId)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const chart = data.chart || {};
+    const subjects = Object.keys(chart);
+    emptyNote.style.display = subjects.length ? "none" : "block";
+    subjects.forEach((subject) => {
+      const wrapper = document.createElement("div");
+      wrapper.style.marginBottom = "1.25rem";
+      const label = document.createElement("div");
+      label.className = "lb-section-title";
+      label.textContent = subject;
+      const canvas = document.createElement("canvas");
+      canvas.width = 700;
+      canvas.height = 220;
+      canvas.style.width = "100%";
+      canvas.style.height = "220px";
+      canvas.style.background = "white";
+      canvas.style.border = "1px solid var(--border)";
+      canvas.style.borderRadius = "8px";
+      wrapper.appendChild(label);
+      wrapper.appendChild(canvas);
+      container.appendChild(wrapper);
+      drawMistakeBarChart(canvas, chart[subject]);
+    });
+  } catch (e) {
+    emptyNote.style.display = "block";
+    emptyNote.textContent = `Couldn't load mistake data (${e.message}).`;
+  }
+}
+
 async function loadAndRenderProgress() {
   const emptyNote = document.getElementById("progressEmptyNote");
   try {
@@ -1016,6 +1222,8 @@ async function loadAndRenderProgress() {
     if (!progressRes.ok || !allRes.ok || !lbRes.ok) {
       throw new Error(progressData.error || allData.error || leaderboardData.error || "Failed to load progress data.");
     }
+
+    loadAndRenderMistakeCharts();
 
     myAttempts = progressData.attempts || [];
     allAttemptsFlat = allData.attempts || [];

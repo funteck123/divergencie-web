@@ -18,6 +18,7 @@ const REPO_ROOT = path.join(__dirname, "..", "..");
 dotenv.config({ path: path.join(REPO_ROOT, ".env.local") });
 
 const TABLE = "mcq_attempts";
+const MISTAKES_TABLE = "mcq_mistakes";
 
 let client = null;
 function getClient() {
@@ -223,4 +224,127 @@ export async function getLeaderboard() {
   }
 
   return { overall, bySubject, byChapter, byPaper };
+}
+
+// ---- Mistake tracking (per-question, not per-paper) --------------------
+// Deliberately a separate concern from mcq_attempts (per-paper aggregate
+// score) -- this needs per-QUESTION correctness, which the client already
+// computes locally for grading but never sent to the server before this
+// feature. Append-only: a wrong answer always INSERTs a new row, never
+// overwrites or deletes one -- confirmed with the user that the
+// chapter-wise mistake chart must count every mistake INSTANCE ever made
+// ("mistake counts not unique mistakes," "keep full history forever"),
+// not a deduplicated "how many distinct questions have you ever missed."
+// `resolved` is a separate, mutable flag on top of that same history: it
+// flips true on a question's prior unresolved row(s) once answered
+// correctly again, which is what drives the "practice only current
+// mistakes" queue shrinking -- the historical count is never affected by
+// resolution.
+//
+// Personal only, not a leaderboard -- a per-account mistake count is
+// exactly the kind of thing that shouldn't be cross-student-comparable by
+// default (unlike the existing avg%/volume leaderboards, which were an
+// explicit, separate design decision).
+export class InvalidMistakeResultsError extends Error {}
+
+// results: [{ questionNumber, correct: boolean }] -- only questions with a
+// definite verdict (correct or incorrect); the caller must exclude
+// "unanswered"/"unmatched" questions before calling this, since those
+// aren't mistakes in the sense this feature means (confirmed with the
+// user: "wrong answers only").
+export async function recordQuestionResults({ accountId, accountName, subject, chapter, paperId, results }) {
+  if (!Array.isArray(results) || results.length === 0) {
+    throw new InvalidMistakeResultsError("results must be a non-empty array of {questionNumber, correct}.");
+  }
+  for (const r of results) {
+    if (r.questionNumber == null || typeof r.correct !== "boolean") {
+      throw new InvalidMistakeResultsError("each result needs a questionNumber and a boolean correct flag.");
+    }
+  }
+  const c = requireClient();
+
+  const wrong = results.filter((r) => !r.correct);
+  const right = results.filter((r) => r.correct);
+
+  if (wrong.length > 0) {
+    const { error } = await c.from(MISTAKES_TABLE).insert(
+      wrong.map((r) => ({
+        account_id: accountId,
+        account_name: accountName || null,
+        subject,
+        chapter: chapter || null,
+        paper_id: paperId,
+        question_number: String(r.questionNumber),
+      }))
+    );
+    if (error) throw new Error(`Could not record mistakes: ${error.message}`);
+  }
+
+  // Resolve any prior unresolved mistake on a question just answered
+  // correctly -- one UPDATE per question rather than a single IN(...)
+  // query, since each needs its own question_number match; the list is
+  // always small (one paper's worth of questions).
+  for (const r of right) {
+    const { error } = await c
+      .from(MISTAKES_TABLE)
+      .update({ resolved: true })
+      .match({ account_id: accountId, paper_id: paperId, question_number: String(r.questionNumber), resolved: false });
+    if (error) throw new Error(`Could not resolve mistake: ${error.message}`);
+  }
+}
+
+// One bar chart per subject, one bar per chapter -- total mistake
+// INSTANCES (not deduplicated by question, not filtered by resolved),
+// personal to this account only.
+export async function getMistakeChartData(accountId) {
+  const c = requireClient();
+  const { data, error } = await c
+    .from(MISTAKES_TABLE)
+    .select("subject, chapter")
+    .eq("account_id", accountId);
+  if (error) throw new Error(`Could not load mistake chart data: ${error.message}`);
+
+  const bySubject = {};
+  for (const row of data) {
+    const chapter = row.chapter || "Unknown chapter";
+    bySubject[row.subject] = bySubject[row.subject] || {};
+    bySubject[row.subject][chapter] = (bySubject[row.subject][chapter] || 0) + 1;
+  }
+  return bySubject;
+}
+
+// Currently-unresolved mistakes, grouped by paper -- what Mistakes Mode
+// actually practices. Optionally scoped to one subject. Each question
+// appears once (grouped), with how many times it's been missed and when
+// it was last missed, even though the underlying rows are per-instance.
+export async function getUnresolvedMistakes(accountId, subject) {
+  const c = requireClient();
+  let query = c
+    .from(MISTAKES_TABLE)
+    .select("subject, chapter, paper_id, question_number, missed_at")
+    .eq("account_id", accountId)
+    .eq("resolved", false)
+    .order("missed_at", { ascending: true });
+  if (subject) query = query.eq("subject", subject);
+  const { data, error } = await query;
+  if (error) throw new Error(`Could not load mistakes: ${error.message}`);
+
+  const byQuestion = new Map();
+  for (const row of data) {
+    const key = `${row.paper_id}::${row.question_number}`;
+    if (!byQuestion.has(key)) {
+      byQuestion.set(key, {
+        subject: row.subject,
+        chapter: row.chapter,
+        paperId: row.paper_id,
+        questionNumber: row.question_number,
+        timesMissed: 0,
+        lastMissedAt: row.missed_at,
+      });
+    }
+    const entry = byQuestion.get(key);
+    entry.timesMissed += 1;
+    if (row.missed_at > entry.lastMissedAt) entry.lastMissedAt = row.missed_at;
+  }
+  return [...byQuestion.values()];
 }

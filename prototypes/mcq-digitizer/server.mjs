@@ -37,6 +37,26 @@
 //                                     account id/name).
 //   GET  /api/leaderboard         -- avg% and total-correct rankings,
 //                                     overall and per paper.
+//   POST /api/mistakes            -- log per-question right/wrong results
+//                                     for one paper attempt (see
+//                                     scores.mjs's recordQuestionResults).
+//                                     Separate from /api/attempts: this
+//                                     also gets called from Mistakes Mode
+//                                     itself, which doesn't create a new
+//                                     mcq_attempts row.
+//   GET  /api/mistakes?account=..[&subject=..] -- that account's currently
+//                                     unresolved mistakes (what Mistakes
+//                                     Mode practices), one entry per
+//                                     question.
+//   GET  /api/mistakes/chart?account=.. -- total mistake INSTANCES per
+//                                     subject/chapter, personal to that
+//                                     account (not a leaderboard).
+//   GET  /api/paper?qpId=..       -- one full paper's questions from the
+//                                     cached full-library database, by
+//                                     qpId alone (no msId) -- used by
+//                                     Mistakes Mode to re-render a specific
+//                                     previously-missed question without
+//                                     re-running fetch-and-digitize.
 //
 // Grading itself happens entirely client-side in index.html: since
 // there's no LLM involved, there's no reason to round-trip to the server
@@ -51,7 +71,7 @@ import os from "os";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError } from "./scores.mjs";
+import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError, recordQuestionResults, getMistakeChartData, getUnresolvedMistakes, InvalidMistakeResultsError } from "./scores.mjs";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -577,6 +597,100 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify(leaderboard));
     } catch (e) {
       res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // Mistake tracking -- per-question, separate concern from the per-paper
+  // /api/attempts above. See scores.mjs's own header comment on this
+  // section for the append-only/resolved-flag design.
+  if (req.method === "POST" && req.url === "/api/mistakes") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      const { accountId, accountName, subject, chapter, paperId, results } = body;
+      if (!accountId || !subject || !paperId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "accountId, subject, and paperId are required." }));
+        return;
+      }
+      await recordQuestionResults({ accountId, accountName, subject, chapter, paperId, results });
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true }));
+    } catch (e) {
+      const status = e instanceof InvalidMistakeResultsError ? 400 : e instanceof ScoresUnavailableError ? 503 : 500;
+      res.writeHead(status, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/mistakes/chart")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const accountId = url.searchParams.get("account");
+      if (!accountId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "account query param is required." }));
+        return;
+      }
+      const chart = await getMistakeChartData(accountId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ chart }));
+    } catch (e) {
+      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/mistakes")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const accountId = url.searchParams.get("account");
+      const subject = url.searchParams.get("subject") || undefined;
+      if (!accountId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "account query param is required." }));
+        return;
+      }
+      const mistakes = await getUnresolvedMistakes(accountId, subject);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ mistakes }));
+    } catch (e) {
+      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // Cache-only paper lookup by qpId alone (no msId) -- Mistakes Mode
+  // never has an msId for a stored mistake (only paper_id/qpId is
+  // recorded), so it can't call fetch-and-digitize's live-fallback path.
+  // A paper not yet in the cached database.json (the ~10 real
+  // download/pairing failures documented in full-library/failures.json)
+  // simply can't be replayed via Mistakes Mode -- a 404, not a crash.
+  if (req.method === "GET" && req.url.startsWith("/api/paper")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const qpId = url.searchParams.get("qpId");
+      if (!qpId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "qpId query param is required." }));
+        return;
+      }
+      const db = loadDatabase();
+      const entry = db && db.find((p) => p.qpId === qpId);
+      if (!entry) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Paper not found in the cached library database." }));
+        return;
+      }
+      const result = digitizeFromDatabaseEntry(entry);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;
