@@ -26,6 +26,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { markTopicCompleted, unmarkTopicCompleted, getProgressForAccount, getAllProgress, getLeaderboard, ProgressUnavailableError } from "./progress.mjs";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -130,6 +131,15 @@ async function getSyllabus(filename) {
   return extractSyllabusLive(filename);
 }
 
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (chunk) => { data += chunk; });
+    req.on("end", () => resolve(data));
+    req.on("error", reject);
+  });
+}
+
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json" };
 
 const server = http.createServer(async (req, res) => {
@@ -183,7 +193,82 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const filePath = req.url === "/" ? "index.html" : req.url.slice(1);
+  // Topic-completion tracking (progress.mjs) -- mirrors mcq-digitizer's
+  // score-tracking endpoints. No accountId means no tracking for that
+  // session, not an error -- this tool must keep working standalone for
+  // anyone without a link param.
+  if (req.method === "POST" && req.url === "/api/topic-complete") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      const { accountId, accountName, subject, nodeKey, nodeLabel, completed } = body;
+      if (!accountId || !subject || !nodeKey) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "accountId, subject, and nodeKey are required." }));
+        return;
+      }
+      if (completed === false) {
+        await unmarkTopicCompleted({ accountId, subject, nodeKey });
+      } else {
+        await markTopicCompleted({ accountId, accountName, subject, nodeKey, nodeLabel });
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true }));
+    } catch (e) {
+      res.writeHead(e instanceof ProgressUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/progress/all")) {
+    try {
+      const completions = await getAllProgress();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ completions }));
+    } catch (e) {
+      res.writeHead(e instanceof ProgressUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/progress")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const accountId = url.searchParams.get("account");
+      if (!accountId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "account query param is required." }));
+        return;
+      }
+      const completions = await getProgressForAccount(accountId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ completions }));
+    } catch (e) {
+      res.writeHead(e instanceof ProgressUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url === "/api/leaderboard") {
+    try {
+      const leaderboard = await getLeaderboard();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(leaderboard));
+    } catch (e) {
+      res.writeHead(e instanceof ProgressUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // Pre-existing bug found while adding ?account=/&name= tracking params:
+  // this never stripped the query string, so "/?account=X" resolved to
+  // the literal filename "?account=X" instead of index.html -- a 404 on
+  // the very root path anyone with a tracking link would land on.
+  const urlPath = req.url.split("?")[0];
+  const filePath = urlPath === "/" ? "index.html" : urlPath.slice(1);
   const fullPath = path.join(__dirname, filePath);
   // path.relative + checking for a leading ".." is the real directory-
   // boundary check -- a plain fullPath.startsWith(__dirname) string

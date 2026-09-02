@@ -17,6 +17,10 @@
 
   main { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; gap: 1.25rem; align-items: start; }
   @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+  .lb-table tr.me { background: rgba(232,168,50,0.15); font-weight: 700; }
+  .lb-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--bg-soft); }
+  .tab-btn { padding: 0.35rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--border); background: white; color: var(--charcoal); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .tab-btn.active { border-color: var(--navy); background: var(--navy); color: white; }
 
   .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
 
@@ -97,10 +101,11 @@
 
 <header>
   <span class="badge">Prototype</span>
-  <div>
+  <div style="flex:1;">
     <h1>Syllabus Digitizer</h1>
     <p>DivergenCIE — browse the official Cambridge subject-content pages of any collected syllabus booklet, cropped image-by-topic</p>
   </div>
+  <a href="#" id="showProgressLink" style="display:none; font-size:0.85rem; white-space:nowrap;">My progress &amp; leaderboard</a>
 </header>
 
 <main>
@@ -110,10 +115,41 @@
   </div>
 </main>
 
+<main id="progressView" style="display:none; grid-template-columns: 1fr; max-width: 1100px; margin: 0 auto;">
+  <p class="hint" style="margin:0 0 0.75rem;"><a href="#" id="backFromProgressLink">&larr; Back to syllabus</a></p>
+  <div class="panel" style="padding:1.25rem; margin-bottom:1.25rem;">
+    <h2 style="margin:0 0 0.4rem; color:var(--navy); font-size:1rem;">Topics completed over time</h2>
+    <p class="hint" style="margin:0 0 0.75rem;">Your cumulative "Completed" topics, in order marked. Every other student's trend is shown faint in the background for context.</p>
+    <canvas id="progressChart" width="1000" height="260" style="width:100%; height:260px; background:white; border:1px solid var(--border); border-radius:8px;"></canvas>
+    <p class="hint" id="progressEmptyNote" style="display:none;">No topics marked Completed yet.</p>
+  </div>
+  <div class="panel" style="padding:1.25rem;">
+    <h2 style="margin:0 0 0.6rem; color:var(--navy); font-size:1rem;">Leaderboard — topics completed</h2>
+    <div id="lbSubjectTabs" style="display:flex; gap:0.4rem; margin-bottom:0.6rem; flex-wrap:wrap;"></div>
+    <table class="lb-table" id="lbTable" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+      <thead><tr><th style="text-align:left; padding:0.3rem 0.5rem; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">#</th><th style="text-align:left; padding:0.3rem 0.5rem; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">Student</th><th style="text-align:left; padding:0.3rem 0.5rem; border-bottom:1px solid var(--border); color:var(--muted); font-size:0.7rem; text-transform:uppercase;">Topics completed</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</main>
+
 <script>
 let syllabi = [];
 let activeFilename = null;
 let activeTree = null;
+
+// Topic-completion tracking (planning/mcq-digitizer-integration-plan.md's
+// "same way" instruction extended to syllabus-digitizer) -- no login here
+// either, account travels as ?account=<id>&name=<display name>. The
+// existing "Completed" tag chip (below) already IS the tracked signal;
+// this just makes it durable/shared server-side instead of living only in
+// this one browser's localStorage.
+const urlParams = new URLSearchParams(window.location.search);
+const accountId = urlParams.get("account");
+const accountName = urlParams.get("name");
+if (accountId) {
+  document.getElementById("showProgressLink").style.display = "inline";
+}
 
 // ---- Topic tags: Completed / Revise / Doubt / Practice / Critical ----
 // Stored per-subject (keyed by filename) per-node in localStorage, entirely
@@ -384,6 +420,22 @@ function renderOutline(filename, data) {
     checkbox.addEventListener("change", () => {
       chip.classList.toggle("checked", checkbox.checked);
       setNodeTag(activeFilename, chip.dataset.nodekey, chip.dataset.tag, checkbox.checked);
+      // Only the "Completed" tag is tracked server-side -- Revise/Doubt/
+      // Practice/Critical stay purely local study aids, same as before.
+      if (chip.dataset.tag === "completed" && accountId) {
+        const titleEl = chip.closest(".topic-head")?.querySelector(".title");
+        fetch("/api/topic-complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            accountId, accountName,
+            subject: activeFilename,
+            nodeKey: chip.dataset.nodekey,
+            nodeLabel: titleEl ? titleEl.textContent : "",
+            completed: checkbox.checked,
+          }),
+        }).catch(() => {}); // non-fatal -- the local tag state (already saved above) is what the UI itself reflects
+      }
     });
   });
   document.getElementById("rawToggle").addEventListener("click", () => {
@@ -472,6 +524,130 @@ function exportTaggedTopics(meta) {
 }
 
 loadSidebar();
+
+// ---- Progress chart + leaderboard ------------------------------------
+// Vanilla canvas, no charting library -- same approach and reasoning as
+// mcq-digitizer's own progress chart. X axis is completion order (1st
+// topic completed, 2nd, ...) per account, not real time.
+function drawProgressChart(mine, allByAccount) {
+  const canvas = document.getElementById("progressChart");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const padL = 30, padB = 20, padT = 12, padR = 12;
+  ctx.clearRect(0, 0, W, H);
+
+  const maxCount = Math.max(1, mine.length, ...Object.values(allByAccount).map((a) => a.length));
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const xAt = (i) => padL + (maxCount <= 1 ? 0 : (i / (maxCount - 1)) * plotW);
+  const yAt = (count) => padT + plotH - (count / maxCount) * plotH;
+
+  ctx.strokeStyle = "#d7dee8";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH);
+  ctx.stroke();
+  ctx.fillStyle = "#666666";
+  ctx.font = "10px sans-serif";
+  ctx.fillText("0", 4, yAt(0) + 3);
+  ctx.fillText(String(maxCount), 4, yAt(maxCount) + 3);
+
+  function drawLine(items, color, width) {
+    if (!items.length) return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    items.forEach((_, i) => {
+      const x = xAt(i), y = yAt(i + 1);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    items.forEach((_, i) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(xAt(i), yAt(i + 1), width + 1, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  Object.entries(allByAccount).forEach(([id, items]) => {
+    if (id === accountId) return;
+    drawLine(items, "rgba(102,102,102,0.25)", 1.5);
+  });
+  drawLine(mine, "#e8a832", 3);
+}
+
+let leaderboardData = null;
+function renderLeaderboardTable(entries) {
+  const tbody = document.querySelector("#lbTable tbody");
+  tbody.innerHTML = entries.slice(0, 10).map((e, i) => `
+    <tr class="${e.accountId === accountId ? "me" : ""}">
+      <td>${i + 1}</td>
+      <td>${escapeHtml(e.name)}</td>
+      <td>${e.topicsCompleted}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="3" class="hint">No topics completed yet.</td></tr>`;
+}
+function renderLeaderboardScope(subject) {
+  const scope = subject ? leaderboardData.bySubject[subject] : leaderboardData.overall;
+  renderLeaderboardTable(scope || []);
+}
+
+async function loadAndRenderProgress() {
+  const emptyNote = document.getElementById("progressEmptyNote");
+  try {
+    const [progressRes, allRes, lbRes] = await Promise.all([
+      fetch(`/api/progress?account=${encodeURIComponent(accountId)}`),
+      fetch("/api/progress/all"),
+      fetch("/api/leaderboard"),
+    ]);
+    const progressData = await progressRes.json();
+    const allData = await allRes.json();
+    leaderboardData = await lbRes.json();
+    if (!progressRes.ok || !allRes.ok || !lbRes.ok) {
+      throw new Error(progressData.error || allData.error || leaderboardData.error || "Failed to load progress data.");
+    }
+
+    const mine = progressData.completions || [];
+    emptyNote.style.display = mine.length ? "none" : "block";
+
+    const allByAccount = {};
+    (allData.completions || []).forEach((c) => {
+      allByAccount[c.account_id] = allByAccount[c.account_id] || [];
+      allByAccount[c.account_id].push(c);
+    });
+    drawProgressChart(mine, allByAccount);
+
+    const subjects = Object.keys(leaderboardData.bySubject || {});
+    const tabsEl = document.getElementById("lbSubjectTabs");
+    tabsEl.innerHTML = [`<button class="tab-btn active" data-subject="">Overall</button>`]
+      .concat(subjects.map((s) => `<button class="tab-btn" data-subject="${escapeHtml(s)}">${escapeHtml((syllabi.find((x) => x.filename === s) || {}).subject || s)}</button>`))
+      .join("");
+    tabsEl.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        tabsEl.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderLeaderboardScope(btn.dataset.subject || null);
+      });
+    });
+    renderLeaderboardScope(null);
+  } catch (e) {
+    emptyNote.style.display = "block";
+    emptyNote.textContent = `Couldn't load progress/leaderboard data (${e.message}).`;
+  }
+}
+
+document.getElementById("showProgressLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  document.querySelector("main").style.display = "none"; // the sidebar+content grid
+  document.getElementById("progressView").style.display = "grid";
+  loadAndRenderProgress();
+});
+document.getElementById("backFromProgressLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  document.getElementById("progressView").style.display = "none";
+  document.querySelector("main").style.display = "grid";
+});
 </script>
 </body>
 </html>
