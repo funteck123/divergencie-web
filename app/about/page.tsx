@@ -79,15 +79,15 @@ export default function AboutPage() {
               </div>
               <div className="grid grid-cols-3 gap-8 pt-8">
                 <div>
-                  <p className="text-3xl font-black text-[var(--navy)] dark:text-white">500+</p>
+                  <p className="text-3xl font-black text-[var(--navy)] dark:text-white">300+</p>
                   <p className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)]">Students</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-[var(--navy)] dark:text-white">40+</p>
+                  <p className="text-3xl font-black text-[var(--navy)] dark:text-white">20+</p>
                   <p className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)]">A* Cohorts</p>
                 </div>
                 <div>
-                  <p className="text-3xl font-black text-[var(--navy)] dark:text-white">6</p>
+                  <p className="text-3xl font-black text-[var(--navy)] dark:text-white">20+</p>
                   <p className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)]">Countries</p>
                 </div>
               </div>
