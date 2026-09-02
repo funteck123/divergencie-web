@@ -43,9 +43,20 @@ function requireClient() {
 
 export class InvalidAttemptError extends Error {}
 
-export async function recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds }) {
-  if (!Number.isInteger(score) || !Number.isInteger(totalQuestions) || totalQuestions <= 0 || score < 0 || score > totalQuestions) {
-    throw new InvalidAttemptError("score and totalQuestions must be integers, with 0 <= score <= totalQuestions and totalQuestions > 0.");
+export async function recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds, mode }) {
+  const attemptMode = mode === "practice" ? "practice" : "test";
+  if (!Number.isInteger(totalQuestions) || totalQuestions <= 0) {
+    throw new InvalidAttemptError("totalQuestions must be a positive integer.");
+  }
+  // Practice mode has no grading (see server.mjs's own header comment) --
+  // score is always null for it, regardless of what's passed. Test mode
+  // keeps the original strict bounds check.
+  let storedScore = null;
+  if (attemptMode === "test") {
+    if (!Number.isInteger(score) || score < 0 || score > totalQuestions) {
+      throw new InvalidAttemptError("score must be an integer with 0 <= score <= totalQuestions for a Test-mode attempt.");
+    }
+    storedScore = score;
   }
   if (timeTakenSeconds != null && (!Number.isInteger(timeTakenSeconds) || timeTakenSeconds < 0)) {
     throw new InvalidAttemptError("timeTakenSeconds must be a non-negative integer when provided.");
@@ -59,9 +70,10 @@ export async function recordAttempt({ accountId, accountName, subject, chapter, 
       subject,
       chapter: chapter || null,
       paper_id: paperId,
-      score,
+      score: storedScore,
       total_questions: totalQuestions,
       time_taken_seconds: timeTakenSeconds ?? null,
+      mode: attemptMode,
     })
     .select()
     .single();
@@ -73,7 +85,7 @@ export async function getProgressForAccount(accountId) {
   const c = requireClient();
   const { data, error } = await c
     .from(TABLE)
-    .select("subject, chapter, paper_id, score, total_questions, time_taken_seconds, submitted_at")
+    .select("subject, chapter, paper_id, score, total_questions, time_taken_seconds, mode, submitted_at")
     .eq("account_id", accountId)
     .order("submitted_at", { ascending: true });
   if (error) throw new Error(`Could not load progress: ${error.message}`);
@@ -86,7 +98,7 @@ export async function getAllProgress() {
   const c = requireClient();
   const { data, error } = await c
     .from(TABLE)
-    .select("account_id, account_name, subject, chapter, paper_id, score, total_questions, submitted_at")
+    .select("account_id, account_name, subject, chapter, paper_id, score, total_questions, mode, submitted_at")
     .order("submitted_at", { ascending: true });
   if (error) throw new Error(`Could not load progress: ${error.message}`);
   return data;
@@ -103,9 +115,14 @@ function displayName(accountId, accountName) {
 // difficulty isn't a fair "who's better" signal, which is exactly why
 // the top-level "overall" tier below deliberately does NOT use this and
 // exposes volume only.
+//
+// Practice-mode rows (score === null, un-graded by design) are excluded
+// here entirely -- there is no "correct" to count, and treating a null
+// as 0 would make a practice session look like a failed test attempt.
 function rank(rows) {
   const byAccount = new Map();
   for (const row of rows) {
+    if (row.mode === "practice" || row.score == null) continue;
     if (!byAccount.has(row.account_id)) {
       byAccount.set(row.account_id, { accountId: row.account_id, name: displayName(row.account_id, row.account_name), totalCorrect: 0, totalQuestions: 0, attempts: 0 });
     }
@@ -125,7 +142,10 @@ function rank(rows) {
 }
 
 // Volume only (total attempts / total questions answered) -- deliberately
-// no avg% at this tier, see rank()'s own comment above for why.
+// no avg% at this tier, see rank()'s own comment above for why. Unlike
+// rank(), this DOES include practice-mode rows -- "how much has this
+// account practiced" is a real, meaningful activity signal whether or
+// not any given session was graded.
 function rankByVolume(rows) {
   const byAccount = new Map();
   for (const row of rows) {
@@ -163,7 +183,7 @@ export async function getLeaderboard() {
   const c = requireClient();
   const { data, error } = await c
     .from(TABLE)
-    .select("account_id, account_name, subject, chapter, paper_id, score, total_questions");
+    .select("account_id, account_name, subject, chapter, paper_id, score, total_questions, mode");
   if (error) throw new Error(`Could not load leaderboard: ${error.message}`);
 
   const overall = rankByVolume(data);

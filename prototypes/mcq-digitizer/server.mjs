@@ -519,13 +519,16 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     try {
-      const { accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds } = body;
-      if (!accountId || !subject || !paperId || score == null || totalQuestions == null) {
+      const { accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds, mode } = body;
+      // Practice-mode submissions are ungraded by design (see this
+      // file's own header comment) -- score is only required for a
+      // Test-mode attempt; recordAttempt() re-validates the bounds.
+      if (!accountId || !subject || !paperId || totalQuestions == null || (mode !== "practice" && score == null)) {
         res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "accountId, subject, paperId, score, and totalQuestions are required." }));
+        res.end(JSON.stringify({ error: "accountId, subject, paperId, and totalQuestions are required (score is also required unless mode is \"practice\")." }));
         return;
       }
-      const attempt = await recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds });
+      const attempt = await recordAttempt({ accountId, accountName, subject, chapter, paperId, score, totalQuestions, timeTakenSeconds, mode });
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ attempt }));
     } catch (e) {

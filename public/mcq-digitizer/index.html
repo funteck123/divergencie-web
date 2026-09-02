@@ -75,7 +75,9 @@
      position in each stacked table even though they're meant to read as
      one aligned block. */
   .lb-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 1rem; }
-  .lb-table th, .lb-table td { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-table th, .lb-table td { text-align: left; overflow: hidden; text-overflow: ellipsis; }
+  .lb-table td { white-space: nowrap; }
+  .lb-table th { white-space: normal; word-break: break-word; }
   .lb-table th:nth-child(1), .lb-table td:nth-child(1) { width: 2.5rem; }
   .lb-table th:nth-child(2), .lb-table td:nth-child(2) { width: 45%; }
   .lb-table th:nth-child(3), .lb-table td:nth-child(3) { width: 27.5%; }
@@ -83,12 +85,13 @@
   /* 5-column shape (Paper/Chapter/Score/%/When), overriding the 4-column
      leaderboard rules above via the compound .lb-table.history-table
      selector's higher specificity. */
-  .lb-table.history-table th:nth-child(1), .lb-table.history-table td:nth-child(1) { width: 32%; white-space: normal; }
+  .lb-table.history-table th:nth-child(1), .lb-table.history-table td:nth-child(1) { width: 28%; white-space: normal; }
   .lb-table.history-table th:nth-child(2), .lb-table.history-table td:nth-child(2) { width: 10%; }
-  .lb-table.history-table th:nth-child(3), .lb-table.history-table td:nth-child(3) { width: 12%; }
-  .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 8%; }
-  .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 15%; }
-  .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 23%; }
+  .lb-table.history-table th:nth-child(3), .lb-table.history-table td:nth-child(3) { width: 9%; }
+  .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 11%; }
+  .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 7%; }
+  .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 13%; }
+  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 22%; }
   .lb-table th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
   .lb-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--bg-soft); }
   .lb-table tr.me { background: rgba(232,168,50,0.15); font-weight: 700; }
@@ -203,7 +206,7 @@
       <h2>Attempt history</h2>
       <p class="hint">Every attempt you've made, most recent first — respects the Subject/Chapter filter above.</p>
       <table class="lb-table history-table" id="historyTable">
-        <thead><tr><th>Paper</th><th>Chapter</th><th>Score</th><th>%</th><th>Time taken</th><th>When</th></tr></thead>
+        <thead><tr><th>Paper</th><th>Mode</th><th>Chapter</th><th>Score</th><th>%</th><th>Time taken</th><th>When</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -352,7 +355,17 @@ document.getElementById("startTestBtn").addEventListener("click", () => {
   startTimer();
 });
 document.getElementById("finishPracticeBtn").addEventListener("click", () => {
-  resetToLibrary();
+  const btn = document.getElementById("finishPracticeBtn");
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  postAttempt({ mode: "practice", totalQuestions: quiz.length })
+    .catch(() => {}) // non-fatal, same reasoning as the Test-mode save
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      resetToLibrary();
+    });
 });
 
 document.getElementById("showUploadLink").addEventListener("click", (e) => {
@@ -633,6 +646,32 @@ function renderFlaggedSummary() {
   });
 }
 
+// Shared by both Test-mode submit and Practice-mode "Done practicing" --
+// only library-sourced papers are tracked (currentAttemptMeta is null for
+// a manual upload, which has no stable paperId). Practice attempts omit
+// `score` entirely (ungraded by design); the server only requires it for
+// mode: "test".
+function postAttempt({ mode, score, totalQuestions }) {
+  if (!accountId || !currentAttemptMeta) return Promise.resolve(null);
+  const body = {
+    accountId, accountName,
+    subject: currentAttemptMeta.subject,
+    chapter: currentAttemptMeta.chapter,
+    paperId: currentAttemptMeta.paperId,
+    totalQuestions,
+    timeTakenSeconds: timerSeconds,
+    mode,
+  };
+  if (mode === "test") body.score = score;
+  return fetch("/api/mcq/attempts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).then(async (r) => {
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+  });
+}
+
 document.getElementById("submitQuizBtn").addEventListener("click", () => {
   // Grading is entirely local, instant, no network call -- no LLM
   // anywhere in this tool, comparing a selected letter to correctAnswer
@@ -670,20 +709,7 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
   const progressLinkRow3 = document.getElementById("progressLinkRow3");
   if (accountId && currentAttemptMeta && gradable > 0) {
     saveStatusEl.textContent = "Saving your score…";
-    fetch("/api/mcq/attempts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        accountId, accountName,
-        subject: currentAttemptMeta.subject,
-        chapter: currentAttemptMeta.chapter,
-        paperId: currentAttemptMeta.paperId,
-        score: correctCount,
-        totalQuestions: gradable,
-        timeTakenSeconds: timerSeconds,
-      }),
-    }).then(async (r) => {
-      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+    postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable }).then(() => {
       saveStatusEl.textContent = "Score saved to your progress history.";
       progressLinkRow3.style.display = "block";
     }).catch((e) => {
@@ -880,14 +906,17 @@ function renderHistoryTable(mine) {
   // reading), a plain reverse copy is all a history log needs.
   const rows = [...mine].reverse();
   tbody.innerHTML = rows.map((a) => {
-    const pct = a.total_questions > 0 ? Math.round((a.score / a.total_questions) * 1000) / 10 : 0;
     const when = a.submitted_at ? new Date(a.submitted_at).toLocaleString() : "";
     const timeTaken = a.time_taken_seconds != null ? formatTimer(a.time_taken_seconds) : "—";
+    const isPractice = a.mode === "practice" || a.score == null;
+    const scoreCell = isPractice ? "—" : `${a.score} / ${a.total_questions}`;
+    const pctCell = isPractice ? "—" : `${Math.round((a.score / a.total_questions) * 1000) / 10}%`;
     return `<tr>
       <td>${escapeHtml(paperTitleById[a.paper_id] || a.paper_id)}</td>
+      <td>${isPractice ? "Practice" : "Test"}</td>
       <td>${escapeHtml(a.chapter || "—")}</td>
-      <td>${a.score} / ${a.total_questions}</td>
-      <td>${pct}%</td>
+      <td>${scoreCell}</td>
+      <td>${pctCell}</td>
       <td>${escapeHtml(timeTaken)}</td>
       <td>${escapeHtml(when)}</td>
     </tr>`;
@@ -898,15 +927,20 @@ function renderFilteredProgressChart() {
   const subject = document.getElementById("progressSubjectSelect").value;
   const chapter = document.getElementById("progressChapterSelect").value;
   const matches = (a) => (!subject || a.subject === subject) && (!chapter || a.chapter === chapter);
-  const mine = myAttempts.filter(matches);
+  const mineAll = myAttempts.filter(matches);
+  // The score-% chart only ever makes sense for graded (Test-mode)
+  // attempts -- a practice session's score is null, and null/N coerces
+  // to 0 in JS, which would plot every practice session as a misleading
+  // "failed" 0% point. The history table below still shows both modes.
+  const mineGraded = mineAll.filter((a) => a.mode !== "practice" && a.score != null);
   const allByAccount = {};
-  allAttemptsFlat.filter(matches).forEach((a) => {
+  allAttemptsFlat.filter(matches).filter((a) => a.mode !== "practice" && a.score != null).forEach((a) => {
     allByAccount[a.account_id] = allByAccount[a.account_id] || [];
     allByAccount[a.account_id].push(a);
   });
-  document.getElementById("progressEmptyNote").style.display = mine.length ? "none" : "block";
-  drawProgressChart(mine, allByAccount);
-  renderHistoryTable(mine);
+  document.getElementById("progressEmptyNote").style.display = mineGraded.length ? "none" : "block";
+  drawProgressChart(mineGraded, allByAccount);
+  renderHistoryTable(mineAll);
 }
 
 function onProgressSubjectChange() {
