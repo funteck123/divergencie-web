@@ -23,14 +23,20 @@ const teachers = [
 
 // TKT-0182 follow-up: real DC operations/marketing/finance team, minimal
 // info per user instruction -- name and department only, no fabricated
-// bio/qual text. "Alex" (Finance) is not in either data/DC Database
-// 2026_Cleaned_2026-06-12.xlsx or the live app database -- flagged to the
-// user, who confirmed keeping it as given.
+// bio/qual text. Atiqa is the only current member; everyone else is
+// former per user instruction. "Alex" (Finance) and "Mubashir A."
+// (Marketing) are not in either data/DC Database 2026_Cleaned_2026-06-12.xlsx
+// or the live app database -- flagged to the user; Alex was confirmed kept
+// as given, Mubashir added as current per explicit instruction.
+// Aisyah F. matches Team sheet "Aisyah Noor Fatihah" (STU012, Marketing,
+// Inactive) -- listed former.
 const dcTeam = [
-  { name: "Atiqa F.", department: "Operations" },
-  { name: "Aleena U.", department: "Operations" },
-  { name: "Mahrukh A.", department: "Marketing" },
-  { name: "Alex", department: "Finance" },
+  { name: "Atiqa F.", department: "Operations", former: false },
+  { name: "Aleena U.", department: "Operations", former: true },
+  { name: "Mahrukh A.", department: "Marketing", former: true },
+  { name: "Alex", department: "Finance", former: true },
+  { name: "Aisyah F.", department: "Marketing", former: true },
+  { name: "Mubashir A.", department: "Marketing", former: false },
 ];
 
 const toppers = [
@@ -175,7 +181,7 @@ export default function AboutPage() {
             <p className="text-[var(--gold)] font-black tracking-[0.3em] uppercase text-xs mb-4">BEHIND THE SCENES</p>
             <h2 className="text-5xl font-black text-[var(--navy)] dark:text-white uppercase">DC Team</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             {dcTeam.map((m, idx) => (
               <div key={idx} className="p-8 bg-white dark:bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-center">
                 <div className="w-16 h-16 mx-auto mb-4 bg-[var(--bg-secondary)] dark:bg-white/5 flex items-center justify-center text-[var(--gold)]">
@@ -183,6 +189,9 @@ export default function AboutPage() {
                 </div>
                 <h4 className="font-black text-[var(--navy)] dark:text-white uppercase tracking-wider">{m.name}</h4>
                 <p className="text-[10px] font-black text-[var(--gold)] uppercase tracking-widest">{m.department}</p>
+                {m.former && (
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-1">Former</p>
+                )}
               </div>
             ))}
           </div>
