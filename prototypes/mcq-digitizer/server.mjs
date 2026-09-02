@@ -30,6 +30,13 @@
 //                                     HTTPS GET, not Drive API access)
 //                                     and digitizing them the same way as
 //                                     a manual upload.
+//   POST /api/attempts            -- log one graded attempt (see scores.mjs).
+//   GET  /api/progress?account=.. -- one account's attempt history.
+//   GET  /api/progress/all        -- every account's attempts (for the
+//                                     background overlay -- no PII beyond
+//                                     account id/name).
+//   GET  /api/leaderboard         -- avg% and total-correct rankings,
+//                                     overall and per paper.
 //
 // Grading itself happens entirely client-side in index.html: since
 // there's no LLM involved, there's no reason to round-trip to the server
@@ -44,6 +51,7 @@ import os from "os";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError } from "./scores.mjs";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -486,6 +494,85 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify(result));
     } catch (e) {
       res.writeHead(e instanceof InvalidPdfError ? 400 : 502, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // Score tracking -- planning/mcq-digitizer-integration-plan.md. Grading
+  // stays entirely client-side (see file header); these endpoints only log
+  // a result after the fact and read it back for the progress/leaderboard
+  // views. No accountId means no tracking for that session, not an error --
+  // the tool must keep working standalone for anyone without a link param.
+  if (req.method === "POST" && req.url === "/api/attempts") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch (e) {
+      if (e instanceof PayloadTooLargeError) {
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: e.message }));
+      } else {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Request body must be valid JSON." }));
+      }
+      return;
+    }
+    try {
+      const { accountId, accountName, subject, paperId, score, totalQuestions } = body;
+      if (!accountId || !subject || !paperId || score == null || totalQuestions == null) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "accountId, subject, paperId, score, and totalQuestions are required." }));
+        return;
+      }
+      const attempt = await recordAttempt({ accountId, accountName, subject, paperId, score, totalQuestions });
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ attempt }));
+    } catch (e) {
+      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/progress/all")) {
+    try {
+      const attempts = await getAllProgress();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ attempts }));
+    } catch (e) {
+      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/progress")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const accountId = url.searchParams.get("account");
+      if (!accountId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "account query param is required." }));
+        return;
+      }
+      const attempts = await getProgressForAccount(accountId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ attempts }));
+    } catch (e) {
+      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === "GET" && req.url === "/api/leaderboard") {
+    try {
+      const leaderboard = await getLeaderboard();
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(leaderboard));
+    } catch (e) {
+      res.writeHead(e instanceof ScoresUnavailableError ? 503 : 500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;
