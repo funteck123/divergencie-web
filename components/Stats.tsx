@@ -47,7 +47,7 @@ const allStats = [
   { value: "70+", label: "Students mentored for\nplacement at Top 10 UK universities" },
   { value: "20+", label: "Countries our\nstudents come from" },
   { value: "98%", label: "Grade Improvement\nRate" },
-  { value: "10+", label: "Years of mentoring\nexpertise" },
+  { value: "4+", label: "Years of mentoring\nexpertise" },
   { value: "0x", label: "Recycled essays.\nEver.", highlight: "Ever." },
   { value: "0%", label: "Generic advice.\nZero tolerance.", highlight: "Zero tolerance." },
   { value: "100%", label: "Bespoke strategy,\nevery student." },

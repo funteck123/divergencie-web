@@ -213,10 +213,10 @@ export default function ServicesPage() {
             </div>
             <div className="grid grid-cols-2 gap-6">
               {[
-                { val: "98%", label: "First Choice Placement" },
+                { val: "98%", label: "Grade Improvement Rate" },
                 { val: "100%", label: "Bespoke Strategy" },
-                { val: "40+", label: "Countries Reached" },
-                { val: "10+", label: "Years Expertise" }
+                { val: "20+", label: "Countries Reached" },
+                { val: "4+", label: "Years of Mentoring Expertise" }
               ].map((s, i) => (
                 <div key={i} className="p-8 border border-white/10 bg-white/5">
                   <p className="text-5xl font-black text-[var(--gold)] mb-2">{s.val}</p>
