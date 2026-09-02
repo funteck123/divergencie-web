@@ -71,6 +71,8 @@
   .lb-table tr.me { background: rgba(232,168,50,0.15); font-weight: 700; }
   .lb-section-title { font-size: 0.8rem; font-weight: 700; color: var(--navy); margin: 0.9rem 0 0.4rem; text-transform: uppercase; letter-spacing: 0.03em; }
   .lb-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+  .scope-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.8rem; color: var(--charcoal); }
+  .scope-row select { margin-left: 0.4rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; }
 </style>
 </head>
 <body>
@@ -166,16 +168,32 @@
     <div class="card">
       <h2>Your progress over time</h2>
       <p class="hint">Your score % per attempt, in order. Every other student's trend is shown faint in the background for context.</p>
+      <div class="scope-row">
+        <label>Subject <select id="progressSubjectSelect"><option value="">All subjects</option></select></label>
+        <label>Chapter <select id="progressChapterSelect" disabled><option value="">All chapters</option></select></label>
+      </div>
       <canvas id="progressChart" width="700" height="260"></canvas>
       <p class="hint" id="progressEmptyNote" style="display:none;">No attempts recorded yet — take a Test-mode quiz from the library to start tracking.</p>
     </div>
     <div class="card">
       <h2>Leaderboard</h2>
-      <div class="lb-tabs" id="lbPaperTabs"></div>
-      <div class="lb-section-title">By average score</div>
-      <table class="lb-table" id="lbAvgTable"><thead><tr><th>#</th><th>Student</th><th>Avg %</th><th>Attempts</th></tr></thead><tbody></tbody></table>
-      <div class="lb-section-title">By total correct</div>
-      <table class="lb-table" id="lbTotalTable"><thead><tr><th>#</th><th>Student</th><th>Total correct</th><th>Attempts</th></tr></thead><tbody></tbody></table>
+      <p class="hint">"Overall" is volume only (attempts/questions answered) -- comparing accuracy across different subjects isn't a fair comparison, so avg% only ever appears once you pick a subject, chapter, or paper below.</p>
+      <div class="scope-row">
+        <label>Subject <select id="lbSubjectSelect"><option value="">Overall (all subjects)</option></select></label>
+        <label>Chapter <select id="lbChapterSelect" disabled><option value="">All chapters</option></select></label>
+        <label>Paper <select id="lbPaperSelect" disabled><option value="">All papers</option></select></label>
+      </div>
+
+      <div id="lbOverallView">
+        <div class="lb-section-title">By volume (attempts &middot; questions answered)</div>
+        <table class="lb-table" id="lbVolumeTable"><thead><tr><th>#</th><th>Student</th><th>Attempts</th><th>Questions answered</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div id="lbScopedView" style="display:none;">
+        <div class="lb-section-title">By average score</div>
+        <table class="lb-table" id="lbAvgTable"><thead><tr><th>#</th><th>Student</th><th>Avg %</th><th>Attempts</th></tr></thead><tbody></tbody></table>
+        <div class="lb-section-title">By total correct</div>
+        <table class="lb-table" id="lbTotalTable"><thead><tr><th>#</th><th>Student</th><th>Total correct</th><th>Attempts</th></tr></thead><tbody></tbody></table>
+      </div>
     </div>
   </div>
 </main>
@@ -312,6 +330,24 @@ document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
 let library = null;
 let paperTitleById = {}; // qpId -> readable title, built once loadLibrary() resolves
 
+// Chapter extraction -- verified against the real, live library (196/196
+// papers, 2026-09-02): every subject titles its papers "...Ch1.1..."
+// EXCEPT A Levels Chemistry, which instead leads with a bare
+// "1.1-topic-name..." with no "Ch" prefix at all (a real, confirmed
+// upstream naming inconsistency between subjects, not a typo). Two
+// patterns, tried in order; a title matching neither returns null rather
+// than guessing, and that attempt is simply excluded from every
+// chapter-scoped leaderboard/progress view (chapter is nullable -- see
+// data/tmp/migration_mcq_chapter.sql).
+const CHAPTER_PATTERNS = [/Ch(\d+(?:\.\d+)?)/i, /^(\d+(?:\.\d+)?)[-\s]/];
+function chapterOf(title) {
+  for (const pat of CHAPTER_PATTERNS) {
+    const m = pat.exec(title || "");
+    if (m) return m[1];
+  }
+  return null;
+}
+
 async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
@@ -407,7 +443,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-    currentAttemptMeta = { subject: `${board} ${subject}`, paperId: paper.qpId };
+    currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterOf(paper.title), paperId: paper.qpId };
     applyDigitizeResult(data);
     statusEl.style.display = "none";
   } catch (e) {
@@ -560,6 +596,7 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
       body: JSON.stringify({
         accountId, accountName,
         subject: currentAttemptMeta.subject,
+        chapter: currentAttemptMeta.chapter,
         paperId: currentAttemptMeta.paperId,
         score: correctCount,
         totalQuestions: gradable,
@@ -597,6 +634,19 @@ document.getElementById("restartBtn").addEventListener("click", resetToLibrary);
 // no-framework/no-dependency philosophy. X axis is attempt order (1st,
 // 2nd, 3rd...) per account, not real time, so accounts with different
 // attempt counts/timestamps still overlay meaningfully as trend lines.
+//
+// Architecture (planning/mcq-digitizer-integration-plan.md): four tiers,
+// broadest to narrowest -- Overall (volume only, cross-subject accuracy
+// isn't a fair comparison) -> Subject -> Chapter -> Paper (avg% + total
+// correct, each a fair apples-to-apples comparison by construction). The
+// personal progress chart gets the same Subject/Chapter filtering (not
+// Paper -- a single paper only ever has one attempt's worth of signal per
+// sitting, not a trend).
+let myAttempts = [];
+let allAttemptsFlat = [];
+let leaderboardData = null;
+let paperInfoByPaperId = {}; // paperId -> {subject, chapter} -- for the Paper dropdown's subject+chapter scoping, since leaderboardData.byPaper is a flat map with no subject/chapter of its own
+
 function pctOf(a) { return a.total_questions > 0 ? (a.score / a.total_questions) * 100 : 0; }
 
 function drawProgressChart(mine, allByAccount) {
@@ -654,24 +704,120 @@ function drawProgressChart(mine, allByAccount) {
   drawLine(mine, "#e8a832", 3);
 }
 
-function renderLeaderboardTable(tableId, entries) {
+function renderRankTable(tableId, entries, valueKey, suffix) {
   const tbody = document.querySelector(`#${tableId} tbody`);
   tbody.innerHTML = entries.slice(0, 10).map((e, i) => `
     <tr class="${e.accountId === accountId ? "me" : ""}">
       <td>${i + 1}</td>
       <td>${escapeHtml(e.name)}</td>
-      <td>${tableId === "lbAvgTable" ? e.avgPercent + "%" : e.totalCorrect}</td>
+      <td>${e[valueKey]}${suffix || ""}</td>
       <td>${e.attempts}</td>
     </tr>
   `).join("") || `<tr><td colspan="4" class="hint">No attempts yet.</td></tr>`;
 }
 
-let leaderboardData = null;
-function renderLeaderboardScope(paperId) {
-  const scope = paperId ? leaderboardData.byPaper[paperId] : leaderboardData.overall;
-  if (!scope) return;
-  renderLeaderboardTable("lbAvgTable", scope.byAvgPercent);
-  renderLeaderboardTable("lbTotalTable", scope.byTotalCorrect);
+function renderLeaderboardScope() {
+  const subject = document.getElementById("lbSubjectSelect").value;
+  const chapter = document.getElementById("lbChapterSelect").value;
+  const paperId = document.getElementById("lbPaperSelect").value;
+
+  const overallView = document.getElementById("lbOverallView");
+  const scopedView = document.getElementById("lbScopedView");
+
+  if (paperId) {
+    scopedView.style.display = "block";
+    overallView.style.display = "none";
+    const scope = leaderboardData.byPaper[paperId];
+    renderRankTable("lbAvgTable", scope?.byAvgPercent || [], "avgPercent", "%");
+    renderRankTable("lbTotalTable", scope?.byTotalCorrect || [], "totalCorrect");
+  } else if (chapter) {
+    scopedView.style.display = "block";
+    overallView.style.display = "none";
+    const scope = leaderboardData.byChapter[subject]?.[chapter];
+    renderRankTable("lbAvgTable", scope?.byAvgPercent || [], "avgPercent", "%");
+    renderRankTable("lbTotalTable", scope?.byTotalCorrect || [], "totalCorrect");
+  } else if (subject) {
+    scopedView.style.display = "block";
+    overallView.style.display = "none";
+    const scope = leaderboardData.bySubject[subject];
+    renderRankTable("lbAvgTable", scope?.byAvgPercent || [], "avgPercent", "%");
+    renderRankTable("lbTotalTable", scope?.byTotalCorrect || [], "totalCorrect");
+  } else {
+    overallView.style.display = "block";
+    scopedView.style.display = "none";
+    const tbody = document.querySelector("#lbVolumeTable tbody");
+    tbody.innerHTML = (leaderboardData.overall || []).slice(0, 10).map((e, i) => `
+      <tr class="${e.accountId === accountId ? "me" : ""}">
+        <td>${i + 1}</td><td>${escapeHtml(e.name)}</td><td>${e.attempts}</td><td>${e.totalQuestions}</td>
+      </tr>
+    `).join("") || `<tr><td colspan="4" class="hint">No attempts yet.</td></tr>`;
+  }
+}
+
+function populateSelect(select, options, placeholder) {
+  select.innerHTML = `<option value="">${placeholder}</option>` + options.map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join("");
+}
+
+function onLeaderboardSubjectChange() {
+  const subject = document.getElementById("lbSubjectSelect").value;
+  const chapterSelect = document.getElementById("lbChapterSelect");
+  const paperSelect = document.getElementById("lbPaperSelect");
+  if (subject) {
+    populateSelect(chapterSelect, Object.keys(leaderboardData.byChapter[subject] || {}), "All chapters");
+    chapterSelect.disabled = false;
+  } else {
+    chapterSelect.innerHTML = `<option value="">All chapters</option>`;
+    chapterSelect.disabled = true;
+  }
+  paperSelect.innerHTML = `<option value="">All papers</option>`;
+  paperSelect.disabled = true;
+  renderLeaderboardScope();
+}
+
+function onLeaderboardChapterChange() {
+  const subject = document.getElementById("lbSubjectSelect").value;
+  const chapter = document.getElementById("lbChapterSelect").value;
+  const paperSelect = document.getElementById("lbPaperSelect");
+  if (subject && chapter) {
+    const paperIds = Object.keys(leaderboardData.byPaper).filter((pid) => {
+      const info = paperInfoByPaperId[pid];
+      return info && info.subject === subject && info.chapter === chapter;
+    });
+    paperSelect.innerHTML = `<option value="">All papers</option>` + paperIds.map((pid) => `<option value="${escapeHtml(pid)}">${escapeHtml(paperTitleById[pid] || pid)}</option>`).join("");
+    paperSelect.disabled = false;
+  } else {
+    paperSelect.innerHTML = `<option value="">All papers</option>`;
+    paperSelect.disabled = true;
+  }
+  renderLeaderboardScope();
+}
+
+function renderFilteredProgressChart() {
+  const subject = document.getElementById("progressSubjectSelect").value;
+  const chapter = document.getElementById("progressChapterSelect").value;
+  const matches = (a) => (!subject || a.subject === subject) && (!chapter || a.chapter === chapter);
+  const mine = myAttempts.filter(matches);
+  const allByAccount = {};
+  allAttemptsFlat.filter(matches).forEach((a) => {
+    allByAccount[a.account_id] = allByAccount[a.account_id] || [];
+    allByAccount[a.account_id].push(a);
+  });
+  document.getElementById("progressEmptyNote").style.display = mine.length ? "none" : "block";
+  drawProgressChart(mine, allByAccount);
+}
+
+function onProgressSubjectChange() {
+  const subject = document.getElementById("progressSubjectSelect").value;
+  const chapterSelect = document.getElementById("progressChapterSelect");
+  if (subject) {
+    const chapters = [...new Set(myAttempts.filter((a) => a.subject === subject).map((a) => a.chapter).filter(Boolean))];
+    populateSelect(chapterSelect, chapters, "All chapters");
+    chapterSelect.disabled = false;
+  } else {
+    chapterSelect.innerHTML = `<option value="">All chapters</option>`;
+    chapterSelect.disabled = true;
+  }
+  renderFilteredProgressChart();
 }
 
 async function loadAndRenderProgress() {
@@ -689,31 +835,22 @@ async function loadAndRenderProgress() {
       throw new Error(progressData.error || allData.error || leaderboardData.error || "Failed to load progress data.");
     }
 
-    const mine = progressData.attempts || [];
-    emptyNote.style.display = mine.length ? "none" : "block";
+    myAttempts = progressData.attempts || [];
+    allAttemptsFlat = allData.attempts || [];
+    paperInfoByPaperId = {};
+    allAttemptsFlat.forEach((a) => { paperInfoByPaperId[a.paper_id] = { subject: a.subject, chapter: a.chapter }; });
 
-    const allByAccount = {};
-    (allData.attempts || []).forEach((a) => {
-      allByAccount[a.account_id] = allByAccount[a.account_id] || [];
-      allByAccount[a.account_id].push(a);
-    });
-    drawProgressChart(mine, allByAccount);
+    populateSelect(document.getElementById("progressSubjectSelect"), [...new Set(myAttempts.map((a) => a.subject))], "All subjects");
+    document.getElementById("progressChapterSelect").innerHTML = `<option value="">All chapters</option>`;
+    document.getElementById("progressChapterSelect").disabled = true;
+    renderFilteredProgressChart();
 
-    // Per-paper tabs -- "Overall" plus one tab per paper that has any
-    // recorded attempt at all (not just the viewer's own).
-    const paperIds = Object.keys(leaderboardData.byPaper || {});
-    const tabsEl = document.getElementById("lbPaperTabs");
-    tabsEl.innerHTML = [`<button class="tab-btn active" data-paper="">Overall</button>`]
-      .concat(paperIds.map((pid) => `<button class="tab-btn" data-paper="${escapeHtml(pid)}">${escapeHtml(paperTitleById[pid] || pid)}</button>`))
-      .join("");
-    tabsEl.querySelectorAll(".tab-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        tabsEl.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderLeaderboardScope(btn.dataset.paper || null);
-      });
-    });
-    renderLeaderboardScope(null);
+    populateSelect(document.getElementById("lbSubjectSelect"), Object.keys(leaderboardData.bySubject || {}), "Overall (all subjects)");
+    document.getElementById("lbChapterSelect").innerHTML = `<option value="">All chapters</option>`;
+    document.getElementById("lbChapterSelect").disabled = true;
+    document.getElementById("lbPaperSelect").innerHTML = `<option value="">All papers</option>`;
+    document.getElementById("lbPaperSelect").disabled = true;
+    renderLeaderboardScope();
   } catch (e) {
     emptyNote.style.display = "block";
     emptyNote.textContent = `Couldn't load progress/leaderboard data (${e.message}).`;
@@ -727,6 +864,11 @@ function showProgress() {
 document.getElementById("showProgressLink").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
 document.getElementById("showProgressLink3").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
 document.getElementById("backFromProgressLink").addEventListener("click", (e) => { e.preventDefault(); showStage(0); });
+document.getElementById("progressSubjectSelect").addEventListener("change", onProgressSubjectChange);
+document.getElementById("progressChapterSelect").addEventListener("change", renderFilteredProgressChart);
+document.getElementById("lbSubjectSelect").addEventListener("change", onLeaderboardSubjectChange);
+document.getElementById("lbChapterSelect").addEventListener("change", onLeaderboardChapterChange);
+document.getElementById("lbPaperSelect").addEventListener("change", renderLeaderboardScope);
 </script>
 </body>
 </html>
