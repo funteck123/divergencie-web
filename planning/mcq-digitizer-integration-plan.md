@@ -196,15 +196,12 @@ only (same trust model as `lib/storage.js`), no public anon access.
   per-paper breakdown, first-name-plus-initial formatting matching the DC Team
   convention (needs a name lookup — see open question below).
 
-### One thing this build plan can't resolve on its own
+### Name source — resolved
 
-The `?account=` param is a raw ID (e.g. `STU-0006`), not a display name.
-"First name + last initial" formatting needs an actual name to format — do we
-look that up live against the main app's `/api/users` (a real dependency on
-the main app, contradicting "as independent as possible"), or does the link
-a student is given already carry their name as a second param (e.g.
-`?account=STU-0006&name=Faraz`), so the tool never needs to call the main
-app at all?
+Link format is `?account=STU-0006&name=Faraz` — whoever generates/sends a
+student their link includes both. The tool never calls the main app; if
+`name` is missing, fall back to showing the raw `account` id rather than
+failing.
 
 ## Not yet decided (explicitly out of this doc until answered above)
 
