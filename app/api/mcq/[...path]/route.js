@@ -12,17 +12,36 @@ import { getMcqExtractionUrl } from "@/lib/mcqConfig";
 //
 // SCOPING NOTE (deliberately incomplete, flagged rather than overclaimed):
 // only GET /api/mcq/library is currently filtered to the session's own
-// enrolled subjects (via Board+SubjectName string match against the
-// upstream board/subject keys -- normalized case/hyphen/whitespace, but
-// NOT yet verified against real live data). Every other proxied path
-// (fetch-and-digitize, digitize, attempts, progress, leaderboard) is a
-// plain pass-through with NO server-side enforcement that the requested
-// paper actually belongs to an enrolled subject -- a student who already
-// knows a qpId/msId from elsewhere could still fetch it. Real enforcement
-// there needs the same subject-matching applied to the requested paper
-// before proxying, not just hiding it from the picker UI. Not yet built.
+// enrolled subjects. Every other proxied path (fetch-and-digitize,
+// digitize, attempts, progress, leaderboard) is a plain pass-through with
+// NO server-side enforcement that the requested paper actually belongs to
+// an enrolled subject -- a student who already knows a qpId/msId from
+// elsewhere could still fetch it. Real enforcement there needs the same
+// subject-matching applied to the requested paper before proxying, not
+// just hiding it from the picker UI. Not yet built.
+//
+// TKT-0231: this used to key off Service.Board, which is literally the
+// string "Cambridge" on every real Service -- the upstream library's own
+// board keys are "IGCSE"/"A Levels", so "cambridge physics" never matched
+// "igcse physics" under any normalization, and the filter silently
+// returned an EMPTY library for every non-Management student regardless
+// of real enrollment. Service.Course already holds "IGCSE"/"A-Level",
+// matching the library's naming almost exactly -- BOARD_ALIASES below
+// covers the one real gap (plural "A Levels"). SUBJECT_ALIASES covers the
+// one confirmed subject-name mismatch (ICT). Both confirmed against the
+// real live library (GET /api/mcq/library as Management) and real live
+// Service records, not assumed.
+const BOARD_ALIASES = { "a-level": "a levels", "a level": "a levels" };
+const SUBJECT_ALIASES = { "information & communication technology": "ict" };
+
 function normalizeSubjectKey(s) {
   return String(s || "").toLowerCase().replace(/[\s-]+/g, " ").trim();
+}
+
+function subjectMatchKey(course, subjectName) {
+  const boardKey = normalizeSubjectKey(course);
+  const subjectKey = normalizeSubjectKey(subjectName);
+  return `${BOARD_ALIASES[boardKey] || boardKey} ${SUBJECT_ALIASES[subjectKey] || subjectKey}`;
 }
 
 async function enrolledSubjectKeys(userId) {
@@ -33,8 +52,8 @@ async function enrolledSubjectKeys(userId) {
   const keys = new Set();
   for (const service of db.services || []) {
     if (!activeServiceIds.has(service.ServiceID)) continue;
-    if (service.Board && service.SubjectName) {
-      keys.add(normalizeSubjectKey(`${service.Board} ${service.SubjectName}`));
+    if (service.Course && service.SubjectName) {
+      keys.add(subjectMatchKey(service.Course, service.SubjectName));
     }
   }
   return keys;
@@ -44,7 +63,7 @@ function filterLibraryByEnrollment(library, allowedKeys) {
   const filtered = {};
   for (const [board, subjects] of Object.entries(library)) {
     for (const [subject] of Object.entries(subjects)) {
-      const key = normalizeSubjectKey(`${board} ${subject}`);
+      const key = subjectMatchKey(board, subject);
       if (!allowedKeys.has(key)) continue;
       filtered[board] = filtered[board] || {};
       filtered[board][subject] = subjects[subject];
