@@ -13,10 +13,14 @@ import { api } from "@/lib/client";
 // soon" note. `toggleKey` matches a key in RESOURCE_FEATURE_KEYS
 // (app/api/resource-toggles/route.js) -- a feature whose toggle is off is
 // filtered out entirely below, not just visually disabled.
+// TKT-0215: Syllabus and Worksheets buttons removed per user direction --
+// that content is now covered by the Syllabus Viewer and Question Solver
+// tools (EXTERNAL_TOOLS below) instead of a per-service manually-set link.
+// Management's admin UI for setting SyllabusLink/WorksheetsLink and their
+// on/off toggles are left as-is (not asked to remove those), just no
+// longer rendered here.
 const SERVICE_FEATURES = [
   { slug: "recordings", label: "Recordings", linkField: "RecordingsLink", toggleKey: "recordings" },
-  { slug: "syllabus", label: "Syllabus", linkField: "SyllabusLink", toggleKey: "syllabus" },
-  { slug: "worksheets", label: "Worksheets", linkField: "WorksheetsLink", toggleKey: "worksheets" },
   { slug: "gcr", label: "Google Classroom", linkField: "GCRLink", toggleKey: "gcr" },
 ];
 const USER_FEATURES = [

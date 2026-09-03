@@ -96,10 +96,9 @@ export default function Stats() {
                 }`}>
                   {stat.label.split('\n').map((line, i) => (
                     <span key={i}>
-                      {line}
-                      {stat.highlight && line.includes(stat.highlight) ? (
-                        <span className="block text-[var(--gold)]">{stat.highlight}</span>
-                      ) : null}
+                      <span className={stat.highlight && line === stat.highlight ? "text-[var(--gold)]" : undefined}>
+                        {line}
+                      </span>
                       {i === 0 && <br />}
                     </span>
                   ))}
