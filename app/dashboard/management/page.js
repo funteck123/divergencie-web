@@ -6909,6 +6909,7 @@ function Tickets() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [showClosed, setShowClosed] = useState(false);
+  const [showOnHold, setShowOnHold] = useState(false);
   const [search, setSearch] = useState("");
 
   async function load() {
@@ -6931,9 +6932,9 @@ function Tickets() {
     return u ? `${u.Name} (${u.UserType})` : id;
   }
 
-  async function setTicketState(ticketId, action, closeMessage) {
+  async function setTicketState(ticketId, action, extra) {
     try {
-      const { ticket } = await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action, closeMessage }) });
+      const { ticket } = await api("/api/tickets", { method: "PATCH", body: JSON.stringify({ ticketId, action, ...extra }) });
       setTickets((prev) => prev.map((t) => (t.TicketID === ticket.TicketID ? ticket : t)));
     } catch (e) {
       setError(e.message);
@@ -6953,18 +6954,33 @@ function Tickets() {
   const searchLower = search.trim().toLowerCase();
   const visible = tickets
     .filter((t) => showClosed || !t.ClosedAt)
+    // TKT-0216: On Hold tickets are hidden by default (the whole point --
+    // set aside without cluttering the open list) but a closed ticket that
+    // happens to still carry OnHold from before it was closed shouldn't be
+    // hidden by this filter too, only the still-open ones.
+    .filter((t) => showOnHold || t.ClosedAt || !t.OnHold)
     .filter((t) => !searchLower || nameOf(t.SenderUserID).toLowerCase().includes(searchLower) || t.Message.toLowerCase().includes(searchLower))
     .sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
-  const openCount = tickets.filter((t) => !t.ClosedAt).length;
+  const openCount = tickets.filter((t) => !t.ClosedAt && !t.OnHold).length;
+  const onHoldCount = tickets.filter((t) => !t.ClosedAt && t.OnHold).length;
 
   return (
     <div className="card space-y-4">
       <div className="flex justify-between items-center flex-wrap gap-2">
-        <h2 className="font-semibold">Tickets {openCount > 0 && <span className="badge badge-pending">{openCount} open</span>}</h2>
-        <label className="text-sm flex items-center gap-2" style={{ color: "var(--muted)" }}>
-          <input type="checkbox" checked={showClosed} onChange={(e) => setShowClosed(e.target.checked)} />
-          Show closed
-        </label>
+        <h2 className="font-semibold">
+          Tickets {openCount > 0 && <span className="badge badge-pending">{openCount} open</span>}
+          {onHoldCount > 0 && <span className="badge" style={{ background: "rgba(148,163,184,0.15)", color: "var(--muted)" }}>{onHoldCount} on hold</span>}
+        </h2>
+        <div className="flex gap-4">
+          <label className="text-sm flex items-center gap-2" style={{ color: "var(--muted)" }}>
+            <input type="checkbox" checked={showOnHold} onChange={(e) => setShowOnHold(e.target.checked)} />
+            Show on hold
+          </label>
+          <label className="text-sm flex items-center gap-2" style={{ color: "var(--muted)" }}>
+            <input type="checkbox" checked={showClosed} onChange={(e) => setShowClosed(e.target.checked)} />
+            Show closed
+          </label>
+        </div>
       </div>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
       <BillingFilterBar search={search} onSearch={setSearch} searchPlaceholder="Search sender or message…" />
@@ -7017,12 +7033,44 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
   const [closeSaving, setCloseSaving] = useState(false);
   const [reopening, setReopening] = useState(false);
 
+  // On Hold (TKT-0216) -- separate from close/reopen: still open, just not
+  // currently actionable. Same inline-form convention as Close's resolution
+  // note, prompting for an optional reason.
+  const [holding, setHolding] = useState(false);
+  const [holdDraft, setHoldDraft] = useState(t.OnHoldReason || "");
+  const [holdSaving, setHoldSaving] = useState(false);
+  const [unholding, setUnholding] = useState(false);
+
   async function reopen() {
     setReopening(true);
     try {
       await onSetState(t.TicketID, "reopen");
     } finally {
       setReopening(false);
+    }
+  }
+
+  function startHold() {
+    setHoldDraft(t.OnHoldReason || "");
+    setHolding(true);
+  }
+
+  async function confirmHold() {
+    setHoldSaving(true);
+    try {
+      await onSetState(t.TicketID, "hold", { holdReason: holdDraft });
+      setHolding(false);
+    } finally {
+      setHoldSaving(false);
+    }
+  }
+
+  async function unhold() {
+    setUnholding(true);
+    try {
+      await onSetState(t.TicketID, "unhold");
+    } finally {
+      setUnholding(false);
     }
   }
 
@@ -7057,7 +7105,7 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
   async function confirmClose() {
     setCloseSaving(true);
     try {
-      await onSetState(t.TicketID, "close", closeDraft);
+      await onSetState(t.TicketID, "close", { closeMessage: closeDraft });
       setClosing(false);
     } finally {
       setCloseSaving(false);
@@ -7066,7 +7114,21 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
 
   return (
     <tr>
-      <td style={{ whiteSpace: "nowrap" }}>{t.TicketID}</td>
+      <td style={{ whiteSpace: "nowrap" }}>
+        {t.TicketID}
+        {t.OnHold && !t.ClosedAt && (
+          <div style={{ marginTop: 4 }}>
+            <div className="badge" style={{ background: "rgba(148,163,184,0.15)", color: "var(--muted)" }}>
+              On hold
+            </div>
+            {t.OnHoldReason && (
+              <div className="text-sm" style={{ color: "var(--muted)", whiteSpace: "pre-wrap", maxWidth: 160 }}>
+                {t.OnHoldReason}
+              </div>
+            )}
+          </div>
+        )}
+      </td>
       <td>{nameOf(t.SenderUserID)}</td>
       <td style={{ maxWidth: 320 }}>
         {editing ? (
@@ -7132,13 +7194,38 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
               </button>
             </div>
           </div>
+        ) : holding ? (
+          <div className="space-y-1" style={{ minWidth: 200 }}>
+            <textarea
+              className="field"
+              style={{ width: "100%", minHeight: 50 }}
+              placeholder="Why is this on hold? (optional)…"
+              value={holdDraft}
+              onChange={(e) => setHoldDraft(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <button className="btn" type="button" disabled={holdSaving} onClick={confirmHold}>
+                {holdSaving ? "Saving…" : "Confirm Hold"}
+              </button>
+              <button className="btn-ghost" type="button" onClick={() => setHolding(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         ) : (
           <>
             {!editing && (
               <button className="btn-ghost" onClick={startEdit}>Edit</button>
             )}
             {!t.ClosedAt ? (
-              <button className="btn-ghost" onClick={startClose}>Close</button>
+              <>
+                <button className="btn-ghost" onClick={startClose}>Close</button>
+                {t.OnHold ? (
+                  <button className="btn-ghost" disabled={unholding} onClick={unhold}>{unholding ? "Resuming…" : "Resume"}</button>
+                ) : (
+                  <button className="btn-ghost" onClick={startHold}>Hold</button>
+                )}
+              </>
             ) : (
               <>
                 <button className="btn-ghost" onClick={startClose}>{t.CloseMessage ? "Edit note" : "Add note"}</button>

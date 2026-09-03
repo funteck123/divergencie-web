@@ -38,6 +38,12 @@ export async function POST(req) {
     ClosedAt: "",
     ClosedBy: "",
     CloseMessage: "",
+    // TKT-0216: "On Hold" -- a ticket that's still open but not currently
+    // actionable (waiting on a bigger dependency, or deferred by choice).
+    // Separate from Closed/Reopened on purpose: closing implies done,
+    // On Hold means "not done, just not being worked right now."
+    OnHold: false,
+    OnHoldReason: "",
   };
   db.tickets = db.tickets || [];
   db.tickets.push(ticket);
@@ -46,7 +52,7 @@ export async function POST(req) {
   return NextResponse.json({ ticket });
 }
 
-// body: { ticketId, action?: "close" | "reopen" | "edit", message?, attachmentUrl?, closeMessage? }
+// body: { ticketId, action?: "close" | "reopen" | "edit" | "hold" | "unhold", message?, attachmentUrl?, closeMessage?, holdReason? }
 // action defaults to "close" (unchanged behavior for existing callers).
 // close/reopen are idempotent: closing an already-closed ticket or
 // reopening an already-open one just returns it unchanged rather than
@@ -58,15 +64,16 @@ export async function POST(req) {
 // of `message`) so a caller can never accidentally close/reopen a ticket
 // as an unwanted side effect of an edit request, or vice versa — allowed
 // on a closed ticket too (fixing a typo shouldn't require reopening it
-// first).
+// first). "hold"/"unhold" (TKT-0216) are independent of open/closed --
+// On Hold just means "not currently actionable," not "done."
 export async function PATCH(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { ticketId, action, message, attachmentUrl, closeMessage } = await req.json();
+  const { ticketId, action, message, attachmentUrl, closeMessage, holdReason } = await req.json();
   if (!ticketId) return NextResponse.json({ error: "ticketId is required." }, { status: 400 });
-  if (action !== undefined && !["close", "reopen", "edit"].includes(action)) {
-    return NextResponse.json({ error: "action must be close, reopen, or edit." }, { status: 400 });
+  if (action !== undefined && !["close", "reopen", "edit", "hold", "unhold"].includes(action)) {
+    return NextResponse.json({ error: "action must be close, reopen, edit, hold, or unhold." }, { status: 400 });
   }
 
   const db = await readDB();
@@ -106,6 +113,16 @@ export async function PATCH(req) {
     ticket.CloseMessage = "";
     await writeDB(db, ["tickets"]);
     await logAudit({ actorUserId: session.userId, action: "reopen", entityType: "Ticket", entityId: ticket.TicketID, summary: `Reopened ticket ${ticket.TicketID}` });
+  } else if (action === "hold") {
+    ticket.OnHold = true;
+    ticket.OnHoldReason = (holdReason || "").trim();
+    await writeDB(db, ["tickets"]);
+    await logAudit({ actorUserId: session.userId, action: "hold", entityType: "Ticket", entityId: ticket.TicketID, summary: `Put ticket ${ticket.TicketID} on hold${ticket.OnHoldReason ? `: ${ticket.OnHoldReason}` : ""}` });
+  } else if (action === "unhold") {
+    ticket.OnHold = false;
+    ticket.OnHoldReason = "";
+    await writeDB(db, ["tickets"]);
+    await logAudit({ actorUserId: session.userId, action: "unhold", entityType: "Ticket", entityId: ticket.TicketID, summary: `Took ticket ${ticket.TicketID} off hold` });
   }
 
   return NextResponse.json({ ticket });
