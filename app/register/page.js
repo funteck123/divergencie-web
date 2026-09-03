@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/client";
+import { COUNTRY_CODE_GROUPS, DEFAULT_COUNTRY_DIAL } from "@/lib/countryCodes";
 
 const REQUESTED_TYPE_LABEL = {
   Trial: "trial",
@@ -16,6 +17,7 @@ function RegisterForm() {
   const presetType = searchParams.get("requestedType");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [countryDial, setCountryDial] = useState(DEFAULT_COUNTRY_DIAL);
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whyDivergenCIE, setWhyDivergenCIE] = useState("");
   const [resume, setResume] = useState(null);
@@ -34,7 +36,7 @@ function RegisterForm() {
       const formData = new FormData();
       formData.set("name", name);
       formData.set("email", email);
-      formData.set("whatsappNumber", whatsappNumber);
+      formData.set("whatsappNumber", `${countryDial} ${whatsappNumber}`.trim());
       formData.set("whyDivergenCIE", whyDivergenCIE);
       formData.set("requestedType", requestedType);
       if (resume) formData.set("resume", resume);
@@ -97,13 +99,34 @@ function RegisterForm() {
             <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>
               WhatsApp number
             </label>
-            <input
-              type="tel"
-              className="field"
-              value={whatsappNumber}
-              onChange={(e) => setWhatsappNumber(e.target.value)}
-              required
-            />
+            <div className="flex gap-2">
+              <select
+                className="field"
+                style={{ flex: "0 0 auto", width: "auto" }}
+                value={countryDial}
+                onChange={(e) => setCountryDial(e.target.value)}
+                aria-label="Country code"
+              >
+                {COUNTRY_CODE_GROUPS.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map((c) => (
+                      <option key={`${group.label}-${c.name}`} value={c.dial}>
+                        {c.dial} {c.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <input
+                type="tel"
+                className="field"
+                style={{ flex: 1 }}
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value)}
+                placeholder="Number without country code"
+                required
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm mb-1" style={{ color: "var(--muted)" }}>
