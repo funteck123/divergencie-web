@@ -44,10 +44,26 @@ function subjectMatchKey(course, subjectName) {
   return `${BOARD_ALIASES[boardKey] || boardKey} ${SUBJECT_ALIASES[subjectKey] || subjectKey}`;
 }
 
+// TKT-0233: enrolledSubjectKeys() never checked enrollment dates at all --
+// an ENDED enrollment kept showing its subject forever. Confirmed live and
+// currently reproducible: a real Teacher (TCH-0002) whose enrollment ended
+// 2026-09-01 still saw that subject 3 days later. Day-level (today must
+// fall within [StartDate, EndDate]), not lib/billing.js's
+// isEnrollmentActiveForMonth -- that's month-granularity for billing's own
+// coarser needs (an enrollment ending on the 1st of a month still counts
+// as active for that whole month there), which would have been too
+// lenient for "should this show up right now."
+function isEnrollmentActiveToday(enrollment) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (enrollment.StartDate && enrollment.StartDate > today) return false;
+  if (enrollment.EndDate && enrollment.EndDate < today) return false;
+  return true;
+}
+
 async function enrolledSubjectKeys(userId) {
   const db = await readDB();
   const activeServiceIds = new Set(
-    (db.enrollments || []).filter((e) => e.UserID === userId).map((e) => e.ServiceID)
+    (db.enrollments || []).filter((e) => e.UserID === userId && isEnrollmentActiveToday(e)).map((e) => e.ServiceID)
   );
   const keys = new Set();
   for (const service of db.services || []) {
