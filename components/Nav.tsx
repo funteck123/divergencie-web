@@ -28,7 +28,6 @@ export default function Nav() {
     { name: "RESULTS", href: "/#results" },
     { name: "SERVICES", href: "/services" },
     { name: "PRICING", href: "/pricing" },
-    { name: "FREE MOCK", href: "/mock" },
     { name: "CAREERS", href: "/careers" },
     { name: "CONTACT", href: "/contact" },
   ];
