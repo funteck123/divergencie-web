@@ -72,7 +72,7 @@ const tiers = [
       { text: "Predicted papers (exclusive)", included: true },
       { text: "Dedicated subject specialist", included: true }
     ],
-    scholarshipLabel: "We are looking for talented students, scholarships available",
+    scholarshipLabel: "We are looking for talented students, scholarships available at DC",
     button: "ENQUIRE NOW",
     accent: "var(--navy)"
   }

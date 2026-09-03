@@ -3,17 +3,42 @@
 import { Globe } from "lucide-react";
 import Link from "next/link";
 
+// TKT-0221: the 21 real countries DivergenCIE has students in (user-
+// confirmed 2026-09-01, cross-checked against live account data -- see
+// planning/content-sweep-intermediate-plan.md's "Countries with real
+// students" section for the full provenance). UK doubles as the HQ marker
+// since it's both a real client country and where DivergenCIE is based --
+// not a duplicate, one dot covers both facts.
 const locations = [
-  { name: "London HQ", x: 428, y: 72, hq: true },
-  { name: "Dubai", x: 572, y: 142 },
-  { name: "Singapore", x: 718, y: 188 },
-  { name: "Lagos", x: 452, y: 218 },
-  { name: "New York", x: 185, y: 118 },
-  { name: "Mumbai", x: 617, y: 168 },
-  { name: "Nairobi", x: 518, y: 248 },
-  { name: "Sydney", x: 820, y: 340 },
-  { name: "Toronto", x: 168, y: 105 },
-  { name: "Hong Kong", x: 738, y: 148 },
+  { name: "UK", x: 428, y: 72, hq: true },
+  { name: "US", x: 175, y: 110 },
+  { name: "Cayman Islands", x: 165, y: 245 },
+  { name: "Egypt", x: 475, y: 135 },
+  { name: "Sudan", x: 480, y: 185 },
+  { name: "Nigeria", x: 430, y: 235 },
+  { name: "Tanzania", x: 500, y: 270 },
+  { name: "South Africa", x: 460, y: 335 },
+  { name: "Seychelles", x: 555, y: 290 },
+  // This cluster (Middle East through Southeast Asia) is where 11 of the
+  // 21 real countries sit close together -- spread wider than their real
+  // geography to keep each label readable rather than colliding into an
+  // unreadable smear, found by actually rendering a first attempt and
+  // looking at it (Saudi Arabia/UAE/Qatar and Sri Lanka/Singapore
+  // overlapped into unreadable text). A plain-text list below the map is
+  // the reliable, always-readable source for the full 21; this cluster's
+  // exact pixel spacing is a readability compromise, not a geography claim.
+  { name: "Turkey", x: 545, y: 85 },
+  { name: "Saudi Arabia", x: 560, y: 170 },
+  { name: "Qatar", x: 605, y: 215 },
+  { name: "UAE", x: 650, y: 165 },
+  { name: "Pakistan", x: 700, y: 130 },
+  { name: "India", x: 730, y: 180 },
+  { name: "Bangladesh", x: 790, y: 150 },
+  { name: "Sri Lanka", x: 760, y: 225 },
+  { name: "Malaysia", x: 830, y: 185 },
+  { name: "Singapore", x: 800, y: 235 },
+  { name: "Indonesia", x: 860, y: 255 },
+  { name: "Australia", x: 800, y: 335 },
 ];
 
 export default function GlobalReach() {
@@ -28,7 +53,7 @@ export default function GlobalReach() {
             DIVERGENCIE<br />GOES <span className="text-[var(--gold)]">GLOBAL.</span>
           </h2>
           <p className="text-sm font-black tracking-[0.2em] text-[var(--text-muted)] uppercase">
-            STUDENTS FROM 20+ COUNTRIES. ONE STANDARD: EXCEPTIONAL.
+            STUDENTS FROM 21 COUNTRIES. ONE STANDARD: EXCEPTIONAL.
           </p>
         </div>
 
@@ -79,6 +104,22 @@ export default function GlobalReach() {
               </g>
             ))}
           </svg>
+        </div>
+
+        {/* Plain-text list -- the map's dot labels get genuinely crowded in
+            the Middle East/South-Southeast Asia cluster (11 of the 21
+            countries sit close together there), so this list is the
+            reliably readable enumeration of all 21, independent of how
+            legible any single map label is at a given screen size. */}
+        <div className="max-w-3xl mx-auto mb-16 flex flex-wrap justify-center gap-2">
+          {locations.map((loc) => (
+            <span
+              key={loc.name}
+              className="px-3 py-1.5 rounded-none bg-white dark:bg-white/5 border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider"
+            >
+              {loc.name}
+            </span>
+          ))}
         </div>
 
         <div className="flex flex-col items-center">

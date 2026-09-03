@@ -119,7 +119,7 @@ export default function ServicesPage() {
             From IGCSE to university applications. We coach the full academic journey for students worldwide.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            {["IB Specialists", "World Toppers"].map((b, i) => (
+            {["IB Specialists", "Country Toppers"].map((b, i) => (
               <span key={i} className="px-6 py-2 bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest">{b}</span>
             ))}
           </div>
