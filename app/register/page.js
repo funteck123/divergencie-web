@@ -196,7 +196,7 @@ function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <label className={LABEL_CLASS}>Resume (optional)</label>
+              <label className={LABEL_CLASS}>Resume</label>
               <input
                 type="file"
                 accept=".pdf,.doc,.docx"
