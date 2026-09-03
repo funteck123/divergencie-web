@@ -31,7 +31,7 @@ const TYPE_META: Record<string, Omit<CardData, "subjects">> = {
   AP: {
     icon: <GraduationCap size={32} />,
     title: "AP · IB · SAT\n& ACT Prep",
-    desc: "CollegeBoard-certified coaching built for students targeting top US universities. Strategy, content, and timed practice, from first session to test day.",
+    desc: "AP, IB, and SAT coaching built for students targeting top US universities. Strategy, content, and timed practice, from first session to test day.",
   },
   IB: {
     icon: <GraduationCap size={32} />,
@@ -71,7 +71,7 @@ const STATIC_FALLBACK: CardData[] = [
   {
     icon: <GraduationCap size={32} />,
     title: "AP · IB · SAT\n& ACT Prep",
-    desc: "CollegeBoard-certified coaching built for students targeting top US universities. Strategy, content, and timed practice, from first session to test day.",
+    desc: "AP, IB, and SAT coaching built for students targeting top US universities. Strategy, content, and timed practice, from first session to test day.",
     subjects: ["AP Calculus", "AP Physics", "AP Chemistry", "SAT Math", "ACT Science", "IB HL/SL"],
   },
   {
