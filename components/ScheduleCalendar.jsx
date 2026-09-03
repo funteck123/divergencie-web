@@ -284,15 +284,31 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
   );
 }
 
+// TKT-0230: no guard against a double-click (or double-submit via Enter+
+// click) firing two POST /api/attendance calls for the same record before
+// the first one's response comes back. The backend correctly accepts the
+// first and rejects the second (atomic insert_attendance_if_new), but that
+// rejection still surfaced as a scary "already logged" error even though
+// the user's real attendance HAD been recorded by the first request --
+// reproduced live via a real user report (Faraz, STU-0005). `submitting`
+// disables the button for the duration of the request, closing the window
+// entirely rather than trying to make the error message less alarming.
 export function MiniAttendanceForm({ defaultHrs, onSubmit }) {
   const [status, setStatus] = useState("Present");
   const [hrs, setHrs] = useState(defaultHrs);
+  const [submitting, setSubmitting] = useState(false);
   return (
     <form
       className="space-y-1"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        onSubmit(status, hrs);
+        if (submitting) return;
+        setSubmitting(true);
+        try {
+          await onSubmit(status, hrs);
+        } finally {
+          setSubmitting(false);
+        }
       }}
     >
       <label style={{ fontSize: "0.7rem", color: "var(--muted)", display: "block" }}>
@@ -315,8 +331,8 @@ export function MiniAttendanceForm({ defaultHrs, onSubmit }) {
             onChange={(e) => setHrs(e.target.value)}
           />
         </label>
-        <button className="btn-ghost" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }} type="submit">
-          Log
+        <button className="btn-ghost" style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem" }} type="submit" disabled={submitting}>
+          {submitting ? "Logging…" : "Log"}
         </button>
       </div>
     </form>

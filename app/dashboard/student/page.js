@@ -53,8 +53,19 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // TKT-0230: two records can legitimately coexist for the same session
+  // (this account's own self-log, and a co-enrolled Teacher/Student's
+  // separate perspective on the same subject -- TKT-0037's by-design
+  // dual-perspective history). Picking whichever .find() happened to
+  // return first showed the OTHER person's perspective in this compact
+  // badge, reading as "my attendance is already logged" when it might not
+  // reflect this account's own submission at all. Prefer the self-authored
+  // record; fall back to any other record only if this account hasn't
+  // logged one yet, so an existing other-authored log still shows before
+  // that happens (matches TKT-0035's "student never logs" billing intent).
   function attendanceFor(scheduleId) {
-    return data.attendanceItems.find((a) => a.ScheduleItemID === scheduleId);
+    const records = data.attendanceItems.filter((a) => a.ScheduleItemID === scheduleId);
+    return records.find((a) => a.LoggedBy === user.UserID) || records[0];
   }
 
   async function logAttendance(scheduleItemId, status, loggedDuration) {

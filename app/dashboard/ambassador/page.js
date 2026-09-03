@@ -39,8 +39,12 @@ function Body({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // TKT-0230: see app/dashboard/student/page.js's matching comment --
+  // prefer the self-authored record over an arbitrary co-enrolled party's
+  // own perspective, for this compact badge.
   function attendanceFor(scheduleId) {
-    return data.attendanceItems.find((a) => a.ScheduleItemID === scheduleId);
+    const records = data.attendanceItems.filter((a) => a.ScheduleItemID === scheduleId);
+    return records.find((a) => a.LoggedBy === user.UserID) || records[0];
   }
 
   async function logAttendance(scheduleItemId, status, loggedDuration) {
