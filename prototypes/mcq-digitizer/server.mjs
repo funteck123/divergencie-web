@@ -72,6 +72,7 @@ import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
 import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError, recordQuestionResults, getMistakeChartData, getUnresolvedMistakes, InvalidMistakeResultsError } from "./scores.mjs";
+import { SUBJECT_COMPONENTS } from "./subjectComponents.mjs";
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -403,10 +404,28 @@ function buildLibrary() {
   const raw = JSON.parse(fs.readFileSync(DRIVE_MAP_PATH, "utf8"));
 
   const boards = {};
+
+  // Seed every subject's FULL real component skeleton first -- every real
+  // Cambridge component always appears, even with zero content, so a
+  // subject never looks incomplete just because nothing's been digitized
+  // for a given paper yet. Explicit user direction: an empty component
+  // bucket is the correct default to show, not something to hide -- real
+  // topic-wise content gets added per component over time. See
+  // subjectComponents.mjs for the full research/citations.
+  for (const key of Object.keys(SUBJECT_COMPONENTS)) {
+    const [board, subject] = key.split("|");
+    boards[board] = boards[board] || {};
+    boards[board][subject] = {};
+    for (const component of SUBJECT_COMPONENTS[key].components) {
+      boards[board][subject][component] = [];
+    }
+  }
+
   for (const [board, subjects] of Object.entries(raw)) {
-    boards[board] = {};
+    boards[board] = boards[board] || {};
     for (const [subject, categories] of Object.entries(subjects)) {
-      boards[board][subject] = {};
+      boards[board][subject] = boards[board][subject] || {};
+      const known = SUBJECT_COMPONENTS[`${board}|${subject}`];
       for (const [category, files] of Object.entries(categories)) {
         const qpList = files.QP || files.qp || [];
         const msList = files.MS || files.ms || [];
@@ -419,7 +438,22 @@ function buildLibrary() {
             msId: ms ? ms.id : null, msName: ms ? ms.name : null,
           };
         });
-        boards[board][subject][category] = papers;
+        // Real crawled "MCQ" folder content gets remapped to whichever
+        // real Cambridge component it actually corresponds to (e.g. IGCSE
+        // sciences -> Paper 2 Extended, A-Level sciences -> Paper 1 AS) --
+        // confirmed per-subject against the real syllabus, not a uniform
+        // rule (IGCSE Economics' real MCQ paper is Paper 1, not Paper 2).
+        // A category this map doesn't recognize (a subject not yet
+        // researched, or a genuinely new raw folder name) keeps its own
+        // raw name unchanged rather than being silently dropped -- UNLESS
+        // it's an empty, unmapped "MCQ" leftover (a subject confirmed to
+        // have no real MCQ paper at all, e.g. ESL/ICT/First Language
+        // English/Computer Science), in which case it's just a phantom
+        // bucket alongside that subject's real components and is skipped
+        // rather than shown as a fake extra "component."
+        if (category === "MCQ" && !known?.mcqComponent && papers.length === 0 && known) continue;
+        const targetKey = category === "MCQ" && known?.mcqComponent ? known.mcqComponent : category;
+        boards[board][subject][targetKey] = papers;
       }
     }
   }

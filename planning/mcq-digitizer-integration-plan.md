@@ -493,6 +493,81 @@ screenshot, not by re-reading the code. Fixed by capping the label's
 measured width against whichever of the horizontal or vertical room
 available is smaller, not just the horizontal one.
 
+## Category renamed to Component, real per-subject paper structure (TKT-0235)
+
+The picker's third level ("Category," always literally "MCQ" for every
+subject that had any content at all) is now "Component," populated with
+each subject's real Cambridge assessment structure -- Paper 1, Paper 2,
+etc. -- for 20 subjects (10 IGCSE, 10 A-Level), not just whatever folder
+name happened to exist on Drive.
+
+**Research method**: every component list was hand-verified against the
+real syllabus PDFs (`prototypes/syllabus-library/pdfs/`), reading each
+subject's actual "Assessment overview" section with PyMuPDF -- never
+guessed from general Cambridge knowledge, even though the general
+shape (Core/Extended for IGCSE sciences, AS/A2 staging for A-Level) is
+well-known. This caught real, confirmed exceptions a uniform rule would
+have gotten wrong:
+
+- IGCSE Physics/Chemistry/Biology: identical 6-component structure
+  (Paper 1/2 MCQ Core/Extended, Paper 3/4 Theory Core/Extended, Paper
+  5/6 Practical, either).
+- IGCSE Mathematics: **no MCQ component at all** -- Paper 1/3 Core
+  (non-calc/calc), Paper 2/4 Extended (non-calc/calc). This was already
+  suspected from TKT-0151's Google Drive folder check ("Worksheets
+  organized by exam paper, not MCQ") but never formally confirmed
+  against the syllabus itself until now.
+- IGCSE Economics: MCQ is **Paper 1**, not Paper 2 -- breaks the
+  sciences' own pattern.
+- A-Level Physics/Chemistry/Biology: MCQ is **Paper 1** (AS Level), not
+  Paper 2 -- A-Level uses AS/A2 staging, not Core/Extended, so the
+  IGCSE "MCQ = Extended = Paper 2" rule does not carry over.
+- A-Level Economics: **two** separate MCQ papers (Paper 1 AS, Paper 3
+  A-Level) -- the only subject researched with more than one.
+- A-Level English General Paper: **AS Level only** -- no full A-Level
+  tier exists for this subject at all.
+- A-Level Mathematics: 6 components (Pure 1/2/3, Mechanics, Probability
+  & Statistics 1/2) -- the full "three routes" structure (Pure-only,
+  Mechanics-route, Stats-route) confirmed by reading to the actual end
+  of the syllabus's Structure section, after an initial extraction pass
+  cut off mid-page and had to be redone rather than guessing the rest.
+
+Full per-subject component list lives in
+`prototypes/mcq-digitizer/subjectComponents.mjs`, with citations back to
+this research in its own header comment.
+
+**Implementation**: `buildLibrary()` in `prototypes/mcq-digitizer/
+server.mjs` now seeds every subject's FULL real component list first
+(as empty buckets), then overlays whatever real Drive-crawled content
+exists onto the correct specific component -- e.g. IGCSE Physics'
+existing 41 real MCQ worksheets land under "Paper 2: Multiple Choice
+(Extended)", not a generic "MCQ" bucket. A subject with real content
+under an unmapped/unresearched raw category name keeps that name
+unchanged (never silently dropped); an empty, unmapped "MCQ" leftover
+(ESL/ICT/First Language English/Computer Science, none of which have a
+real MCQ paper) is dropped as a phantom bucket rather than shown as a
+fake extra component.
+
+**Explicit user direction, not an oversight**: every component shows up
+even with zero digitized content yet -- an empty bucket is the correct
+default (e.g. IGCSE Physics Paper 1/3/4/5/6 all show as real, empty,
+selectable options right now), not something to hide. Topic-wise
+content gets added per component over time.
+
+Verified live: ran the actual `buildLibrary()` output through the real
+Cloudflare tunnel after restarting the backing `node server.mjs`
+process (a separate, independent `cloudflared` process just forwards to
+whatever's listening on that port, so the tunnel URL itself didn't
+change) -- confirmed IGCSE Physics/Chemistry/Biology and A-Level
+Physics/Chemistry's real content landed on the correct component, all
+20 subjects appear with their full real structure, and the client
+(`public/mcq-digitizer/index.html`)'s picker renders "Component" (not
+"Category") and correctly shows 0 papers for an empty component like
+Paper 1 Core -- tested by serving the real client file locally and
+intercepting its `/api/mcq/library` call with the real verified JSON,
+rather than touching the shared production tunnel config (which would
+have caused a real outage for live users during testing).
+
 ## Not yet decided (explicitly out of this doc until answered above)
 
 - Exact DB schema for attempts/scores.
