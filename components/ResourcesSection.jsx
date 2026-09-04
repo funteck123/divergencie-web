@@ -27,18 +27,19 @@ const USER_FEATURES = [
   { slug: "timesheet", label: "Timesheet", toggleKey: "timesheet", linkField: "TimesheetURL" },
   { slug: "progress-tracker", label: "Progress Tracker", toggleKey: "progressTracker", linkField: "ProgressTrackerURL" },
 ];
-// Straight external redirect to the syllabus-digitizer prototype's own
-// Cloudflare quick tunnel -- no Supabase/DB involvement yet, just a link.
-// Only works while that prototype's tunnel is actually running; a dead
-// tunnel means a broken link until it's restarted. mcq-digitizer USED to
-// be here too (as a bare external "Question Solver" link) until it was
-// properly merged into the main app (see
-// planning/mcq-digitizer-integration-plan.md's "Option B") -- that one is
-// now rendered separately below as an internal link, not from this list,
-// since it needs the logged-in student's own account/name to build its URL.
-const EXTERNAL_TOOLS = [
-  { label: "Syllabus Viewer", url: "https://configurations-determines-finest-discovered.trycloudflare.com" },
-];
+// TKT-0236: "Syllabus Viewer" used to be a bare URL with no account/name
+// query params -- its own client has a "My progress & leaderboard" link
+// that starts display:none and only shows once ?account=<id>&name=<name>
+// is present (confirmed live: the feature works fully, students just
+// never saw the door to it). Moved out of the flat EXTERNAL_TOOLS list
+// into its own account-aware link below, same fix already applied to
+// Question Solver in TKT-0228. Straight external redirect to the
+// syllabus-digitizer prototype's own Cloudflare quick tunnel -- no
+// Supabase/DB involvement, just a link; only works while that prototype's
+// tunnel is actually running, a dead tunnel means a broken link until it's
+// restarted. Unlike mcq-digitizer, this one was never merged into the main
+// app (see planning/mcq-digitizer-integration-plan.md's "Option B").
+const SYLLABUS_VIEWER_URL = "https://configurations-determines-finest-discovered.trycloudflare.com";
 
 // `services` should be the enrolled Service objects (ServiceID + Name are
 // all this needs) — same list each dashboard already builds for its "My
@@ -72,11 +73,16 @@ export default function ResourcesSection({ services, user, showExternalTools = f
             </Link>
           );
         })}
-        {showExternalTools && EXTERNAL_TOOLS.map((f) => (
-          <a key={f.label} className="btn-ghost" href={f.url} target="_blank" rel="noopener noreferrer">
-            {f.label}
+        {showExternalTools && user && (
+          <a
+            className="btn-ghost"
+            href={`${SYLLABUS_VIEWER_URL}?${new URLSearchParams({ account: user.UserID, name: user.Name }).toString()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Syllabus Viewer
           </a>
-        ))}
+        )}
         {showExternalTools && user && (
           <a
             className="btn-ghost"
