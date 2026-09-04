@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file. See [commit
 
 * **accounts:** Management can "Log in as" a Student/Teacher/Staff/Parent/Ambassador account without ever seeing or resetting their password, via a short-lived impersonation session with a visible "Stop impersonating" banner and full audit logging. Replaces a proposed change to make stored passwords reversible/viewable again, which would have reopened the plaintext-password-leak incident scrypt hashing was introduced to fix.
 
+### Bug Fixes
+
+* **resources:** Syllabus Viewer link now carries `?account=&name=` like Question Solver already did, so its own "My progress & leaderboard" feature is actually reachable instead of permanently hidden behind a `display:none` link nobody could unlock.
+
 ## [0.2.0](https://github.com/funteck123/divergencie-web/compare/v0.1.1...v0.2.0) (2026-08-27)
 
 ### ⚠ BREAKING CHANGES
