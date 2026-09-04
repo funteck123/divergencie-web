@@ -85,8 +85,8 @@
         <select id="pickBoard"></select>
         <label class="field-label">Subject</label>
         <select id="pickSubject"></select>
-        <label class="field-label">Category</label>
-        <select id="pickCategory"></select>
+        <label class="field-label">Component</label>
+        <select id="pickComponent"></select>
         <label class="field-label">Paper</label>
         <select id="pickPaper"></select>
         <p class="hint" id="pickPaperNote"></p>
@@ -291,19 +291,19 @@ function populateBoards() {
 function populateSubjects() {
   const board = document.getElementById("pickBoard").value;
   fillSelect(document.getElementById("pickSubject"), Object.keys(library[board] || {}));
-  populateCategories();
+  populateComponents();
 }
-function populateCategories() {
+function populateComponents() {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
-  fillSelect(document.getElementById("pickCategory"), Object.keys((library[board] || {})[subject] || {}));
+  fillSelect(document.getElementById("pickComponent"), Object.keys((library[board] || {})[subject] || {}));
   populatePapers();
 }
 function populatePapers() {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
-  const category = document.getElementById("pickCategory").value;
-  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const component = document.getElementById("pickComponent").value;
+  const papers = (((library[board] || {})[subject] || {})[component] || []);
   const paperSelect = document.getElementById("pickPaper");
   paperSelect.innerHTML = papers.map((p, i) => `<option value="${i}">${escapeHtml(p.title)}${p.msId ? "" : " (no mark scheme found)"}</option>`).join("");
   updatePaperNote();
@@ -311,8 +311,8 @@ function populatePapers() {
 function updatePaperNote() {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
-  const category = document.getElementById("pickCategory").value;
-  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const component = document.getElementById("pickComponent").value;
+  const papers = (((library[board] || {})[subject] || {})[component] || []);
   const idx = Number(document.getElementById("pickPaper").value);
   const paper = papers[idx];
   const note = document.getElementById("pickPaperNote");
@@ -327,15 +327,15 @@ function updatePaperNote() {
 }
 
 document.getElementById("pickBoard").addEventListener("change", populateSubjects);
-document.getElementById("pickSubject").addEventListener("change", populateCategories);
-document.getElementById("pickCategory").addEventListener("change", populatePapers);
+document.getElementById("pickSubject").addEventListener("change", populateComponents);
+document.getElementById("pickComponent").addEventListener("change", populatePapers);
 document.getElementById("pickPaper").addEventListener("change", updatePaperNote);
 
 document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async () => {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
-  const category = document.getElementById("pickCategory").value;
-  const papers = (((library[board] || {})[subject] || {})[category] || []);
+  const component = document.getElementById("pickComponent").value;
+  const papers = (((library[board] || {})[subject] || {})[component] || []);
   const idx = Number(document.getElementById("pickPaper").value);
   const paper = papers[idx];
   if (!paper || !paper.msId) return;

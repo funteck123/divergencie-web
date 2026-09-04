@@ -27,7 +27,7 @@ No API key, no `.env`, no OpenRouter dependency, no image-recognition dependency
 
 ## Library mode: browse instead of upload
 
-The default screen is a picker (Board → Subject → Category → Paper) built from a
+The default screen is a picker (Board → Subject → Component → Paper) built from a
 pre-built local JSON map of DivergenCIE's own Drive
 (`data/mcq-digitizer/drive-map/drive-map.json`, gitignored, built by a one-time crawl --
 see `study/agent-notes/08-dc-course-materials-drive-structure.md` and `09-...method.md`).
