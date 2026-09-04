@@ -251,6 +251,31 @@
       </div>
     </div>
   </div>
+
+  <div id="stage5" class="stage">
+    <p class="hint"><a href="#" id="backFromStructuredLink">&larr; Back to library</a></p>
+    <div class="card">
+      <h2 id="structuredTitle">Structured paper</h2>
+      <p class="hint">This component has no multiple-choice options for auto-digitizing -- open the real Question Paper and Mark Scheme below instead.</p>
+      <p style="margin-top:0.75rem;">
+        <a class="primary-btn" id="structuredQpLink" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block; text-decoration:none; text-align:center;">Open Question Paper</a>
+        &nbsp;
+        <a class="primary-btn" id="structuredMsLink" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block; text-decoration:none; text-align:center; background:white; color:var(--navy); border:1.5px solid var(--navy);">Open Mark Scheme</a>
+      </p>
+    </div>
+    <div class="card">
+      <h2>Get graded</h2>
+      <p class="hint">Work the paper, then type your full answer below. An AI examiner marks it against the real mark scheme and gives you a score -- not human-verified, treat it as a strong estimate, not an official result.</p>
+      <textarea id="structuredAnswerInput" rows="10" style="width:100%; box-sizing:border-box; padding:0.6rem; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:0.9rem;" placeholder="Type your working and final answers here..."></textarea>
+      <button class="primary-btn" id="structuredSubmitBtn" style="margin-top:0.75rem;">Submit for grading</button>
+      <p class="hint" id="structuredGradingStatus"></p>
+      <div id="structuredResult" class="score-banner" style="display:none; margin-top:0.75rem;">
+        <div class="label">Score</div>
+        <div class="big" id="structuredScoreText">—</div>
+        <p class="hint" id="structuredRemark" style="margin-top:0.5rem;"></p>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -466,6 +491,22 @@ document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
 // ---- Library picker ----
 let library = null;
 let paperTitleById = {}; // qpId -> readable title, built once loadLibrary() resolves
+// board -> subject -> mcqComponent name (or null if the subject has no
+// real MCQ paper at all, e.g. Mathematics) -- from GET /api/mcq/subject-meta,
+// loaded alongside the library. Any component that isn't this exact
+// string is "structured": no A/B/C/D options exist to auto-digitize, so
+// it gets the QP/MS-viewer + free-text-grading flow (stage5) instead of
+// the normal digitize/quiz flow.
+let subjectMeta = {};
+function isStructuredComponent(board, subject, component) {
+  const subjectEntry = subjectMeta[board]?.[subject];
+  // No meta for this subject at all (subject-meta fetch failed, or a
+  // subject this map doesn't recognize) -- fall back to the existing
+  // MCQ digitize flow rather than silently routing everyone into the
+  // structured flow just because metadata didn't load.
+  if (!subjectEntry) return false;
+  return component !== subjectEntry.mcqComponent;
+}
 
 // Chapter extraction -- verified against the real, live library (196/196
 // papers, 2026-09-02): every subject titles its papers "...Ch1.1..."
@@ -518,9 +559,18 @@ async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
   try {
-    const res = await fetch("/api/mcq/library");
+    const [res, metaRes] = await Promise.all([
+      fetch("/api/mcq/library"),
+      fetch("/api/mcq/subject-meta"),
+    ]);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    // subject-meta is a nice-to-have (only decides which UI a component
+    // gets) -- a failure here shouldn't block the whole library from
+    // loading, every component just falls back to the existing MCQ flow
+    // (isStructuredComponent returns false when subjectMeta has nothing
+    // for that board/subject).
+    subjectMeta = metaRes.ok ? await metaRes.json().catch(() => ({})) : {};
     library = data;
     paperTitleById = {};
     chapterNameByKey = {};
@@ -603,6 +653,11 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
   const paper = papers[idx];
   if (!paper || !paper.msId) return;
 
+  if (isStructuredComponent(board, subject, component)) {
+    openStructuredPaper(paper);
+    return;
+  }
+
   const btn = document.getElementById("fetchAndDigitizeBtn");
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
@@ -625,6 +680,58 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     errorEl.textContent = e.message;
     errorEl.style.display = "block";
     statusEl.style.display = "none";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// ---- Structured (non-MCQ) papers: no digitize/quiz step at all -- just
+// open the real QP/MS (practice, per explicit direction: "In practice
+// mode only qp and ms") and offer free-text AI grading against the real
+// mark scheme (see gradeStructuredAnswer in server.mjs for the guardrail
+// this depends on).
+let currentStructuredPaper = null;
+function openStructuredPaper(paper) {
+  currentStructuredPaper = paper;
+  document.getElementById("structuredTitle").textContent = paper.title;
+  document.getElementById("structuredQpLink").href = `https://drive.google.com/file/d/${paper.qpId}/view`;
+  document.getElementById("structuredMsLink").href = `https://drive.google.com/file/d/${paper.msId}/view`;
+  document.getElementById("structuredAnswerInput").value = "";
+  document.getElementById("structuredGradingStatus").textContent = "";
+  document.getElementById("structuredResult").style.display = "none";
+  showStage(5);
+}
+document.getElementById("backFromStructuredLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  showStage(0);
+});
+document.getElementById("structuredSubmitBtn").addEventListener("click", async () => {
+  const answer = document.getElementById("structuredAnswerInput").value.trim();
+  const statusEl = document.getElementById("structuredGradingStatus");
+  const resultEl = document.getElementById("structuredResult");
+  if (!answer) {
+    statusEl.textContent = "Type an answer before submitting.";
+    return;
+  }
+  if (!currentStructuredPaper) return;
+  const btn = document.getElementById("structuredSubmitBtn");
+  btn.disabled = true;
+  resultEl.style.display = "none";
+  statusEl.textContent = "Grading -- this can take a few seconds...";
+  try {
+    const res = await fetch("/api/mcq/grade-structured", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ qpId: currentStructuredPaper.qpId, msId: currentStructuredPaper.msId, studentAnswer: answer }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    statusEl.textContent = "";
+    document.getElementById("structuredScoreText").textContent = `${data.marksAwarded} / ${data.marksAvailable}`;
+    document.getElementById("structuredRemark").textContent = data.remark || "";
+    resultEl.style.display = "block";
+  } catch (e) {
+    statusEl.textContent = `Grading failed: ${e.message}`;
   } finally {
     btn.disabled = false;
   }
