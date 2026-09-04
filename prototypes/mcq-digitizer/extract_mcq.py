@@ -60,7 +60,18 @@ QUESTION_NUM_RE = re.compile(r'^(\d{1,2})[\.\)]\s*(?!\d)(.*)$')
 # requires option letters nearby afterward (see the validation pass
 # there) as a second layer, but the character class here is doing real
 # work too, not just belt-and-suspenders.
-QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(].*)$')
+# Greek letters included alongside A-Z/( -- confirmed real, TKT-0238: a
+# genuine question stem can start with one ("11 β-carotene is
+# responsible for..."), which the plain A-Z class rejected outright,
+# dropping the whole question (its own real A-D options were later in
+# its own scope, never even reached because this line never registered
+# as a candidate start at all). Common exam Greek letters (α-particle,
+# β-decay, γ-ray, Δ for a change in quantity) are real, not
+# a hypothetical -- the ranges below cover the full Greek alphabet rather
+# than an enumerated subset, since any of them is equally plausible at
+# the start of a real stem and there's no safe way to predict which
+# subset a future real paper will use.
+QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(Α-Ωα-ω].*)$')
 # The same bare form, but for the rarer real case where the content
 # starts with a digit ("32 0.200 mol of a hydrocarbon..."). Kept
 # separate from QUESTION_BARE_RE and gated much harder in
@@ -484,16 +495,56 @@ def _is_stacked_notation(lines, idx, max_gap=16):
     not one stacked a line-height above), and its "next real sentence"
     happened to fall right after it in position-sorted order purely by
     y-coordinate coincidence -- splitting one real Section B question in
-    two, one half missing its own numbered statements entirely."""
+    two, one half missing its own numbered statements entirely.
+
+    Also requires the two digits to sit at nearly the same X position
+    (within `x_tolerance`) -- confirmed real and necessary, TKT-0238: a
+    genuine question's own bare "4" sat within `max_gap` of an unrelated
+    "10" from a frequency-ratio value two columns over in the same
+    stem's own diagram (x0 105+ points apart, nothing like a real
+    vertically-stacked isotope pair), which the y-gap-and-size check
+    alone couldn't tell apart from real stacking -- silently dropping
+    that whole real question. A genuine mass-number-over-atomic-number
+    stack is vertically ALIGNED by definition; two coincidentally nearby
+    but horizontally distant digits never are.
+
+    That X-position requirement, on its own, undercounted a different
+    real case (also TKT-0238): a genuine question's own real heading
+    number ("26") landed inside a tight cluster of SEVERAL scattered
+    bare 1-2 digit diagram point-labels (a flower diagram's own "1",
+    "2", "3" part-labels plus a coincidental duplicate "27"/"28" from
+    the diagram, all within a few y-points of each other but at very
+    different X positions -- CAIE IGCSE Biology "Ch16 Reproduction"
+    Q26) -- neither a real vertical stack (only one sibling, x0-close)
+    nor safely ignorable by the tightened check above (multiple
+    siblings, x0-scattered). A real stack has exactly one aligned
+    sibling; a real diagram-label cluster has several scattered ones --
+    two different real shapes, so both are checked: close-Y+close-X
+    with even a single sibling (the stack case), OR close-Y with ANY
+    x0 but at least `cluster_min_siblings` siblings scanned in EITHER
+    direction (the cluster case, since a diagram's own labels can
+    appear before or after the real heading in position order, unlike
+    a stack's sibling which is always directly above)."""
     cur = lines[idx]
-    for j in range(max(0, idx - 5), idx):
-        other = lines[j]
-        if other["page"] != cur["page"]:
-            continue
-        gap = cur["y0"] - other["y0"]
-        if 0 < gap <= max_gap and re.match(r'^\d{1,2}$', other["text"]) and abs(other["size"] - cur["size"]) < 1:
-            return True
-    return False
+
+    def is_sibling(other):
+        return (
+            other["page"] == cur["page"]
+            and re.match(r'^\d{1,2}$', other["text"])
+            and abs(other["size"] - cur["size"]) < 1
+            and abs(other["y0"] - cur["y0"]) <= max_gap
+            and other is not cur
+        )
+
+    nearby = [
+        l for l in lines[max(0, idx - 5): idx + 6]
+        if is_sibling(l)
+    ]
+    if not nearby:
+        return False
+    if any(abs(o["x0"] - cur["x0"]) < 20 for o in nearby):
+        return True
+    return len(nearby) >= 2
 
 
 def _page_image_ranges(doc):
@@ -517,6 +568,32 @@ def _has_nearby_image(page_images, page, y0, y_window=600):
         y0 - 50 <= top < y0 + y_window
         for top, _bot in page_images.get(page, [])
     )
+
+
+# CAIE's "Statements 1, 2 and 3 are about X... Which statements are
+# correct?" multiple-completion format sometimes prints its own real A-D
+# combination options per question (unlike A-Level's fixed-key Section B,
+# which states the key once for the whole section and never repeats
+# options per question) -- confirmed real on an IGCSE paper (CAIE IGCSE
+# Chemistry "Ch11 Macromolecules" Q1), directly contradicting
+# _has_statement_markers' own documented "IGCSE papers never use it, full
+# stop" exclusion (TKT-0238). That exclusion is based on a real, broader
+# false-positive sweep (9 confirmed hits across 8 IGCSE papers) and stays
+# in place rather than being loosened generally -- too much regression
+# risk against work already tuned against real data this session doesn't
+# have back in hand to re-verify. Instead: this is a much narrower,
+# separate signal that's true only by an explicit, standard CAIE textual
+# template ("Statements" as its own word, naming 1, 2 and 3 by digit) --
+# not a structural coincidence a diagram label or stem enumeration could
+# ever produce. Checked ONLY against the anchor line's own extended stem,
+# never a broad lookahead, so it can't itself become a new false-positive
+# class the way a lookahead-based heuristic already has twice in this
+# file's history.
+STATEMENT_PREAMBLE_RE = re.compile(r"\bstatements?\b.*\b1\b.*\b2\b.*\b3\b", re.IGNORECASE)
+
+
+def _has_explicit_statement_preamble(stem_text):
+    return bool(STATEMENT_PREAMBLE_RE.search(stem_text or ""))
 
 
 def _has_statement_markers(nearby, min_count=2, is_igcse=False):
@@ -765,10 +842,15 @@ def find_question_starts(lines, doc=None):
         if not m:
             m = QUESTION_NUM_RE.match(line["text"])
         if m:
+            _via_preamble = _has_explicit_statement_preamble(m.group(2))
             starts.append({
                 "number": m.group(1), "inlineText": (m.group(2) or "").strip(),
                 "page": line["page"], "y0": line["y0"],
-                "isStatementFormat": _has_statement_markers(lines[idx + 1: idx + 55], is_igcse=is_igcse),
+                "isStatementFormat": (
+                    _has_statement_markers(lines[idx + 1: idx + 55], is_igcse=is_igcse)
+                    or _via_preamble
+                ),
+                "viaExplicitPreamble": _via_preamble,
             })
             continue
         # The bare "N text" form (no punctuation at all) is real but
@@ -844,12 +926,14 @@ def find_question_starts(lines, doc=None):
                 # regression from using the unbounded one: a short
                 # statement question's 30-line lookahead reached past
                 # its own end into the NEXT question's real options.
-                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse)
+                via_preamble = _has_explicit_statement_preamble(extended_stem)
+                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse) or via_preamble
                 if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": content,
                         "page": line["page"], "y0": line["y0"],
                         "isStatementFormat": is_statement,
+                        "viaExplicitPreamble": via_preamble,
                     })
                 else:
                     quasi.append({"page": line["page"], "y0": line["y0"]})
@@ -883,12 +967,14 @@ def find_question_starts(lines, doc=None):
                 # regression from using the unbounded one: a short
                 # statement question's 30-line lookahead reached past
                 # its own end into the NEXT question's real options.
-                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse)
+                via_preamble = _has_explicit_statement_preamble(extended)
+                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse) or via_preamble
                 if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": content.strip(),
                         "page": line["page"], "y0": line["y0"],
                         "isStatementFormat": is_statement,
+                        "viaExplicitPreamble": via_preamble,
                     })
                 else:
                     quasi.append({"page": line["page"], "y0": line["y0"]})
@@ -964,15 +1050,95 @@ def find_question_starts(lines, doc=None):
                 # regression from using the unbounded one: a short
                 # statement question's 30-line lookahead reached past
                 # its own end into the NEXT question's real options.
-                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse)
+                via_preamble = any(_has_explicit_statement_preamble(c["text"]) for c in candidates)
+                is_statement = _has_statement_markers(nearby, is_igcse=is_igcse) or via_preamble
                 if has_options or has_image or is_statement:
                     starts.append({
                         "number": m.group(1), "inlineText": "",
                         "page": line["page"], "y0": line["y0"],
                         "isStatementFormat": is_statement,
+                        "viaExplicitPreamble": via_preamble,
                     })
                 else:
                     quasi.append({"page": line["page"], "y0": line["y0"]})
+
+    # A statement-format question's own "1"/"2"/"3" continuation markers
+    # (each numbered statement is a real, complete sentence in its own
+    # right -- "1 They are different solid forms of the same element.")
+    # can independently satisfy the bare-alone-digit branch's own
+    # promotion check above (a lone "1"/"2"/"3" followed by a real
+    # sentence-shaped next line): confirmed real, CAIE IGCSE Chemistry
+    # "Ch11 Macromolecules" Q1 -- its own "1", "2", "3" statement markers
+    # each got promoted all the way to a full START (not just `quasi`,
+    # which the sibling comment below already accounts for), truncating
+    # Q1's own crop after its intro sentence and letting the REAL Q2 and
+    # Q3 bleed into what should have been Q1's own remaining content.
+    # Same scoping logic as the quasi-pruning right below (scan forward
+    # from a confirmed statement-format start to wherever a REAL heading
+    # -- not another "1"/"2"/"3" -- resumes): any OTHER start whose own
+    # number is "1", "2", or "3" and whose position falls strictly inside
+    # that range is this exact noise, not a new question, and is dropped
+    # before the LIS below ever sees it (dropping it after, like the
+    # quasi-only version of this fix, is too late -- the LIS has already
+    # run by then).
+    statement_noise_pos = set()
+    for s in starts:
+        if not s.get("isStatementFormat"):
+            continue
+        start_pos = (s["page"], s["y0"])
+        idx = next(i for i, l in enumerate(lines) if (l["page"], l["y0"]) == start_pos)
+        # A statement-format start recognized ONLY via the explicit
+        # "Statements 1, 2 and 3 are..." preamble (never via the general,
+        # deep-in-paper _has_statement_markers signal) can be this
+        # question's own literal FIRST question -- confirmed real, CAIE
+        # IGCSE Chemistry "Ch11 Macromolecules" Q1 -- where a REAL Q2 and
+        # Q3 genuinely follow with those exact real numbers. The general
+        # path's "scan until a non-1/2/3 heading" is unsafe to reuse here
+        # for that reason: it can't tell this question's OWN "2"/"3"
+        # markers apart from the next real Q2/Q3, since both look
+        # identical (bare "2"/"3" followed by sentence-shaped text). The
+        # preamble itself already states the exact count though ("1, 2
+        # AND 3" -- always exactly 3 statements, never more) -- so cap
+        # the noise window at exactly 2 further markers (this question's
+        # own remaining "2" and "3") instead of scanning indefinitely.
+        # The general, already-verified path (a real Section-B question
+        # deep in an A-Level paper, where 1/2/3 are never real question
+        # numbers at that point -- see _has_statement_markers' own
+        # docstring) keeps its original unbounded scan unchanged.
+        if s.get("viaExplicitPreamble"):
+            # Cap at 3, not 2 -- confirmed real: EVERY statement gets its
+            # own trailing digit marker, including statement "1" itself
+            # ("1 They are different solid forms..."), which is a
+            # separate, coincidental "1" from this anchor QUESTION's own
+            # number (also, confusingly, "1" here since this happens to
+            # be the paper's first question) -- three statement markers
+            # (1, 2, 3) exist regardless of what number the anchor
+            # question itself carries.
+            noise_candidates = sorted(
+                (other for other in starts if other is not s and other["number"] in ("1", "2", "3")
+                 and start_pos < (other["page"], other["y0"])),
+                key=lambda o: (o["page"], o["y0"]),
+            )[:3]
+            statement_noise_pos |= {(o["page"], o["y0"]) for o in noise_candidates}
+            continue
+        end_pos = None
+        for l in lines[idx + 1:]:
+            m_next = (
+                QUESTION_KEYWORD_RE.match(l["text"])
+                or QUESTION_NUM_RE.match(l["text"])
+                or QUESTION_BARE_RE.match(l["text"])
+                or QUESTION_BARE_DIGIT_RE.match(l["text"])
+                or QUESTION_BARE_ALONE_RE.match(l["text"])
+            )
+            if m_next and m_next.group(1) not in ("1", "2", "3"):
+                end_pos = (l["page"], l["y0"])
+                break
+        statement_noise_pos |= {
+            (other["page"], other["y0"]) for other in starts
+            if other is not s and other["number"] in ("1", "2", "3")
+            and start_pos < (other["page"], other["y0"]) < (end_pos or (10 ** 9, 0))
+        }
+    starts = [s for s in starts if (s["page"], s["y0"]) not in statement_noise_pos]
 
     # Real papers number their questions strictly increasingly (1, 2,
     # 3...). Confirmed a real false-positive class from the bare-number
@@ -1049,6 +1215,54 @@ def find_question_starts(lines, doc=None):
         seq_idx.append(i)
         i = prev[i]
     seq_idx.reverse()
+    # A start the LIS above rejects (a real, option-bearing question whose
+    # own captured "number" breaks strict increase -- confirmed real: a
+    # leftover page-number-like token from the source PDF's own original
+    # pagination glued onto a real question's first line, e.g. "34 A wire
+    # PQ is made of..." six pages after the real Q34, and a duplicate/
+    # out-of-sequence number reused from a different source paper this
+    # worksheet was compiled from) used to just vanish -- not a question,
+    # not even a boundary marker. That left the PRECEDING real question's
+    # own crop with no idea where its content actually ends, so it ran
+    # straight through this rejected question's entire real content
+    # (confirmed real and, across the whole corpus, the dominant cause of
+    # a question going fully missing from a digitized paper: 11 of 195
+    # papers, 16 questions, all traced to exactly this mechanism -- TKT-0238).
+    # Demoting it to a `quasi` boundary marker (same mechanism already
+    # used for a real-but-unparseable question format elsewhere in this
+    # function) fixes the crop bleed without inventing a fake question
+    # number for content this function has already decided it can't
+    # trust the printed number of.
+    # NOT every LIS-rejected candidate is a genuine swallowed question --
+    # confirmed real regression from demoting all of them unconditionally:
+    # a bare diagram scale label ("40" on a measuring cylinder's own
+    # printed scale, CAIE IGCSE Physics "Ch1.1 Length & Time" Q9)
+    # independently matches the same bare-alone-digit promotion path
+    # (followed by a real sentence -- here, that question's OWN "What is
+    # the volume of the water?" prompt line, not a new question), gets
+    # rejected by the LIS same as a genuine misnumbered question would,
+    # but demoting THIS one to a quasi boundary wrongly truncated Q9's
+    # own crop before its own real A-D options -- a full-corpus dry run
+    # surfaced height changes in 122 papers, the overwhelming majority of
+    # which were this exact false-positive class, not real fixes.
+    # The distinguishing signal: a genuinely swallowed question sits
+    # between two KEPT numbers that are NOT consecutive (a real gap --
+    # e.g. kept ...45, 47... with the rejected "34"/wire-PQ content
+    # between them, corresponding to the missing 46). A rejected
+    # candidate sitting between two consecutive kept numbers (9 and 10,
+    # no gap) has nowhere real to belong -- demoting it can only ever
+    # cut into one of those two real, already-correctly-bounded
+    # questions, never recover a missing one.
+    kept = sorted(seq_idx)
+    kept_nums = [int(starts[k]["number"]) for k in kept]
+    kept_set = set(seq_idx)
+    for i, s in enumerate(starts):
+        if i in kept_set:
+            continue
+        prev_num = next((n for k, n in zip(reversed(kept), reversed(kept_nums)) if k < i), None)
+        next_num = next((n for k, n in zip(kept, kept_nums) if k > i), None)
+        if prev_num is not None and next_num is not None and next_num - prev_num > 1:
+            quasi.append({"page": s["page"], "y0": s["y0"]})
     return [starts[i] for i in seq_idx], quasi
 
 
@@ -1063,13 +1277,37 @@ def _next_heading_pos(lines, idx):
     real nearby evidence (option letters, an image) so it can never bleed
     into a LATER, unrelated question's own content, mirroring the same
     scoping principle _has_statement_markers already applies for its own
-    internal boundary-scoped option search."""
+    internal boundary-scoped option search.
+
+    A bare-alone digit specifically needs the same subscript-size guard
+    the main loop's own bare-alone-digit branch already applies (line
+    size >= 9, matching the confirmed-real 7pt-subscript-vs-11pt-heading
+    gap documented there) -- confirmed real and serious without it: a
+    molecular-formula subscript ("H2(g)" rendering its "2" onto its own
+    7pt line) matched here first and stopped the scoped search WAY
+    short, so a real question's own option-letters-in-block check never
+    reached its actual real A-D options -- TKT-0238, the paper "8.2
+    Enthalpy Change & Hess's Law" Q8 bleeding into the whole of Q9.
+    QUESTION_BARE_RE/QUESTION_BARE_DIGIT_RE also need the same content-
+    length floor the main loop's own branches for these patterns already
+    require (roughly 20 chars) before trusting them as a real heading --
+    confirmed real, same paper: a unit value ("1 Gm", gigametres) matches
+    QUESTION_BARE_RE's shape (digit, space, capital letter) just as
+    easily as a real question does, and unlike the main loop's own
+    promotion path, this function had no length check at all -- it
+    stopped the scoped search at "1 Gm" instead of the real heading much
+    further down, so a real question's own A-D options (also further
+    down) were never found either, silently dropping the whole question."""
     for l in lines[idx + 1:]:
         t = l["text"]
+        if QUESTION_BARE_ALONE_RE.match(t) and l["size"] < 9:
+            continue
+        m_bare = QUESTION_BARE_RE.match(t) or QUESTION_BARE_DIGIT_RE.match(t)
+        if m_bare and len((m_bare.group(2) or "").strip()) < 15:
+            continue
         if (
             QUESTION_KEYWORD_RE.match(t) or QUESTION_NUM_RE.match(t)
-            or QUESTION_BARE_RE.match(t) or QUESTION_BARE_DIGIT_RE.match(t)
-            or QUESTION_BARE_ALONE_RE.match(t)
+            or m_bare or QUESTION_BARE_ALONE_RE.match(t)
         ):
             return (l["page"], l["y0"])
     return (10 ** 9, 0)
@@ -1468,8 +1706,15 @@ def parse_qp(pdf_path):
         # key table (see render_statement_key_image) is attached
         # directly to this question's own image, and its options are
         # always the full A-D set since no per-question text ever
-        # encodes them.
-        if s.get("isStatementFormat"):
+        # encodes them. NOT true for the explicit-preamble variant
+        # ("Statements 1, 2 and 3 are..." -- confirmed real on IGCSE,
+        # TKT-0238): that one prints its own real, per-question A-D
+        # combination table directly on the page (e.g. "A 1 only  B 3
+        # only  C 1 and 3  D 2 and 3"), which is now correctly part of
+        # this crop once its own boundary is fixed -- stitching the
+        # generic fixed key on top would bury/replace that real,
+        # question-specific table with the wrong, unrelated one.
+        if s.get("isStatementFormat") and not s.get("viaExplicitPreamble"):
             image_bytes = stitch_images_vertically([image_bytes, render_statement_key_image()])
             letters = {"A", "B", "C", "D"}
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
