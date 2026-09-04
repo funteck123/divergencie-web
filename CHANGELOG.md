@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 * **accounts:** Management can "Log in as" a Student/Teacher/Staff/Parent/Ambassador account without ever seeing or resetting their password, via a short-lived impersonation session with a visible "Stop impersonating" banner and full audit logging. Replaces a proposed change to make stored passwords reversible/viewable again, which would have reopened the plaintext-password-leak incident scrypt hashing was introduced to fix.
 
+* **mcq-digitizer:** Mathematics (and any other subject with no real MCQ paper) can now be practiced and graded in the Question Solver. Practice mode opens the real Question Paper/Mark Scheme directly; grading takes a free-typed answer and scores it against the real mark scheme via a guardrailed AI-examiner prompt (immune to answer text that tries to instruct it to award marks it hasn't earned).
+
 ### Bug Fixes
 
 * **resources:** Syllabus Viewer link now carries `?account=&name=` like Question Solver already did, so its own "My progress & leaderboard" feature is actually reachable instead of permanently hidden behind a `display:none` link nobody could unlock.
