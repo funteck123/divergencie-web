@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 * **resources:** Syllabus Viewer link now carries `?account=&name=` like Question Solver already did, so its own "My progress & leaderboard" feature is actually reachable instead of permanently hidden behind a `display:none` link nobody could unlock.
 
+* **mcq-digitizer:** fixed two per-question splitter bugs found by auditing all 391 Mathematics Paper 2/Paper 4 worksheets for atomicity. (1) Some mark schemes carry a duplicate "Question N" heading at the exact same position as the real one, mislabeled one number too high -- the browser's `find()` silently paired every even-numbered question with a near-blank duplicate crop instead of its real mark scheme. (2) Some multi-page questions repeat their own "Question N" heading on the continuation page, which the splitter mistook for a second question, splitting one question into two. Also fixed a font-encoding variant (`\x03` used as inter-word spacing instead of a real space) that made 4 worksheets fail to split at all. All 391 papers now split atomically, verified by a full-corpus recheck.
+
 ## [0.2.0](https://github.com/funteck123/divergencie-web/compare/v0.1.1...v0.2.0) (2026-08-27)
 
 ### ⚠ BREAKING CHANGES

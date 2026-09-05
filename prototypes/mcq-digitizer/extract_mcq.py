@@ -1995,15 +1995,44 @@ QUESTION_LABEL_DESPACED_RE = re.compile(r'^question(\d{1,2})$', re.IGNORECASE)
 
 
 def _despace(text):
-    return re.sub(r'\s+', '', text or '')
+    # Some savemyexams-template PDFs use \x03 (not a real space) as their
+    # inter-word glyph in heading text -- e.g. "Question\x031" -- so
+    # stripping \s alone leaves the digit glued to a stray control char
+    # and the heading regex never matches. Strip anything that isn't a
+    # letter or digit, a strict superset of \s, so both corruption styles
+    # despace to the same "question1".
+    return re.sub(r'[^A-Za-z0-9]+', '', text or '')
 
 
 def find_labeled_question_starts(lines):
-    starts = []
+    raw = []
     for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
         m = QUESTION_LABEL_DESPACED_RE.match(_despace(l["text"]))
         if m:
-            starts.append({"number": m.group(1), "page": l["page"], "y0": l["y0"]})
+            raw.append({"number": m.group(1), "page": l["page"], "y0": l["y0"]})
+
+    # Two confirmed real-world artifacts in these savemyexams-template
+    # PDFs, both caught via a full-corpus audit (checked the actual
+    # rendered crops, not just the counts): (1) some MS pages carry a
+    # second "Question" heading at the EXACT same (page, y0) as the real
+    # one, labeled one number too high -- a ~10pt-tall duplicate text run
+    # that renders as a near-blank sliver. (2) some QP questions that
+    # span a page break repeat their own "Question N" heading verbatim at
+    # the top of the continuation page, which would otherwise look like a
+    # second, empty start for the same question. Both would silently
+    # shift find()'s pairing (the browser always takes the first array
+    # match) onto the wrong crop for every question after the artifact.
+    starts = []
+    for s in raw:
+        if starts:
+            prev = starts[-1]
+            if prev["page"] == s["page"] and prev["y0"] == s["y0"]:
+                if int(s["number"]) < int(prev["number"]):
+                    starts[-1] = s
+                continue
+            if prev["number"] == s["number"]:
+                continue
+        starts.append(s)
     return starts
 
 
