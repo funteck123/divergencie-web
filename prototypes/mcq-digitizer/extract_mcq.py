@@ -2129,7 +2129,120 @@ def parse_structured(pdf_path):
     return blocks
 
 
+def find_bare_number_question_starts(lines):
+    """IGCSE/A-Level Physics/Chemistry/Biology Theory papers (2026-09-05
+    survey) use a completely different QP template from Math's "Question
+    N": each question starts with a BARE 1-2 digit number, bold or not,
+    at a left-margin x0 -- but a real paper's own diagrams/graphs are
+    FULL of other bare digits (axis tick labels, table values) at every
+    x-position including that same margin, so position/boldness alone
+    both produce false positives on real papers (confirmed: one real
+    worksheet had a bold-only false-negative on Question 1, another had
+    axis labels landing inside x0<100 alongside real headings). The one
+    signal that held clean across 15 real samples spanning all three
+    subjects: real question numbers are the only candidates that form a
+    STRICT 1,2,3,4,5... sequence in reading order -- a diagram value or a
+    numbered sub-list inside an answer ("1. ... 2. ... 3. ...") never
+    lines up as the exact next integer right when expected, so a greedy
+    "accept only if it equals the running count + 1" walk silently
+    absorbs every false positive without ever needing to consult
+    position or boldness at all."""
+    candidates = []
+    for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
+        if l["page"] == 0:
+            continue  # page 0 is always this corpus's own cover/metadata sheet
+        text = l["text"].strip()
+        if re.match(r'^\d{1,2}$', text) and l["x0"] < 100:
+            candidates.append({"number": int(text), "page": l["page"], "y0": l["y0"]})
+
+    starts = []
+    expected = 1
+    for c in candidates:
+        if c["number"] == expected:
+            starts.append({"number": str(c["number"]), "page": c["page"], "y0": c["y0"]})
+            expected += 1
+    return starts
+
+
+# Two confirmed real phrasings for a Theory mark scheme's per-question
+# total (2026-09-05 survey, 6 real MS samples): "[Total: N]" / "[TotalN]"
+# (no space) and "TOTAL = [N]". Unlike the QP side, these MS files do NOT
+# reliably restate a bare question number at all -- real content is
+# scattered mark-code annotations ("B1", "C1") at arbitrary positions, so
+# there is no equivalent "find the start of question N" signal here.
+# Instead each TOTAL marker marks the END of one question's block; the
+# Nth marker in reading order is assumed to be question N's own total
+# (paired with the QP side by ORDER, not by any number match -- there
+# isn't one to match against). A mark scheme with zero markers, or whose
+# marker count doesn't match the QP's own question count, still returns
+# whatever was found -- the caller is expected to flag the mismatch
+# rather than this function guessing its way around it.
+_MS_TOTAL_MARKER_RE = re.compile(r'\[\s*Total\s*:?\s*(\d+)\s*\]|TOTAL\s*=\s*\[\s*(\d+)\s*\]', re.IGNORECASE)
+
+
+def find_ms_total_markers(lines):
+    markers = []
+    for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
+        m = _MS_TOTAL_MARKER_RE.search(l["text"])
+        if m:
+            marks = int(m.group(1) or m.group(2))
+            markers.append({"page": l["page"], "y0": l["y0"], "marks": marks})
+    return markers
+
+
+def parse_theory_qp(pdf_path):
+    """QP side of a Theory paper -- bare-number headings, cropped exactly
+    like parse_structured's blocks."""
+    doc = fitz.open(pdf_path)
+    lines = extract_lines(doc)
+    starts = find_bare_number_question_starts(lines)
+    blocks = []
+    for i, s in enumerate(starts):
+        if i + 1 < len(starts):
+            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
+        else:
+            end_page, end_y = doc.page_count - 1, None
+        image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
+        image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
+        blocks.append({"questionNumber": s["number"], "image": image_b64})
+    doc.close()
+    return blocks
+
+
+def parse_theory_ms(pdf_path):
+    """MS side of a Theory paper -- delimited by [Total: N] / TOTAL = [N]
+    markers (see find_ms_total_markers), paired to the QP's questions by
+    ORDER (1st block -> Q1, 2nd -> Q2, ...) since there is no per-question
+    number to match against here, unlike Math's MS side."""
+    doc = fitz.open(pdf_path)
+    lines = extract_lines(doc)
+    markers = find_ms_total_markers(lines)
+    blocks = []
+    prev_page, prev_y = 0, 0
+    for i, m in enumerate(markers):
+        # Some of these MS files mix landscape pages (height ~595pt) in
+        # with the portrait cover page (~842pt) -- a marker sitting near
+        # the bottom of a landscape page pushed y0+20 PAST that page's
+        # own height, corrupting the next block's start position (a real
+        # crash: "Invalid bandwriter header dimensions"). Clamp to the
+        # actual page height rather than assuming a fixed page size.
+        end_y = min(m["y0"] + 20, doc[m["page"]].rect.height)
+        image_bytes = render_question_image(doc, prev_page, prev_y, m["page"], end_y)
+        image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
+        blocks.append({"questionNumber": str(i + 1), "image": image_b64, "marks": m["marks"]})
+        prev_page, prev_y = m["page"], end_y
+    doc.close()
+    return blocks
+
+
 def main():
+    if len(sys.argv) == 4 and sys.argv[1] == "--theory":
+        qp_path, ms_path = sys.argv[2], sys.argv[3]
+        print(json.dumps({
+            "questions": parse_theory_qp(qp_path),
+            "answers": parse_theory_ms(ms_path),
+        }))
+        return
     if len(sys.argv) == 4 and sys.argv[1] == "--structured":
         qp_path, ms_path = sys.argv[2], sys.argv[3]
         print(json.dumps({
