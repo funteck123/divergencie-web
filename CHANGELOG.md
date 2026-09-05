@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [commit
 
 * **accounts:** Management can "Log in as" a Student/Teacher/Staff/Parent/Ambassador account without ever seeing or resetting their password, via a short-lived impersonation session with a visible "Stop impersonating" banner and full audit logging. Replaces a proposed change to make stored passwords reversible/viewable again, which would have reopened the plaintext-password-leak incident scrypt hashing was introduced to fix.
 
-* **mcq-digitizer:** Mathematics (and any other subject with no real MCQ paper) can now be practiced and graded in the Question Solver. Practice mode opens the real Question Paper/Mark Scheme directly; grading takes a free-typed answer and scores it against the real mark scheme via a guardrailed AI-examiner prompt (immune to answer text that tries to instruct it to award marks it hasn't earned).
+* **mcq-digitizer:** Mathematics (and any other subject with no real MCQ paper) can now be practiced question by question in the Question Solver, EXACT MCQ style: Question 1's real content, then that same question's real mark-scheme working on request, then Question 2, and so on through the whole paper -- alongside the existing full Question Paper/Mark Scheme links. "Test mode" (auto-grading) is a visible "coming soon" placeholder for now; an earlier whole-worksheet free-text AI-grading approach is disabled pending a real per-question redesign.
 
 ### Bug Fixes
 
