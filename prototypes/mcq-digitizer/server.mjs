@@ -268,6 +268,38 @@ Respond with ONLY a single JSON object, no markdown code fences, no commentary b
   "remark": "<one short sentence, examiner-style, on what was right or wrong>"
 }`;
 
+// Global concurrency cap across EVERY student's grading requests, not
+// per-session -- per explicit direction 2026-09-05: with per-question
+// submission (a paper-wide "Submit quiz" used to fire one request per
+// question via Promise.all, up to a dozen+ at once from a SINGLE
+// student), a handful of students submitting around the same time could
+// easily burst well past what the free OpenRouter router can sustain.
+// A simple FIFO queue gating how many gradeStructuredQuestion calls are
+// actually in flight at once (10, matching "10 max students submitting
+// one question at a time") smooths that out for everyone hitting this
+// one process, with no per-user bookkeeping needed.
+const MAX_CONCURRENT_GRADING = 10;
+let activeGradingCount = 0;
+const gradingQueue = [];
+function runGradingQueued(fn) {
+  return new Promise((resolve, reject) => {
+    const task = async () => {
+      activeGradingCount++;
+      try {
+        resolve(await fn());
+      } catch (e) {
+        reject(e);
+      } finally {
+        activeGradingCount--;
+        const next = gradingQueue.shift();
+        if (next) next();
+      }
+    };
+    if (activeGradingCount < MAX_CONCURRENT_GRADING) task();
+    else gradingQueue.push(task);
+  });
+}
+
 async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer) {
   const db = loadStructuredDatabase();
   const entry = db && db.find((p) => p.qpId === qpId && p.msId === msId);
@@ -348,6 +380,13 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
     } catch (e) {
       lastError = e;
       parsed = undefined;
+      // A real, observed failure mode under sustained concurrent load
+      // (confirmed via 15 truly-simultaneous requests: 4 of the 10 that
+      // actually reached OpenRouter at once still 502'd), not just a bad
+      // random model routing -- retrying instantly re-hits the same
+      // capacity window. A short, growing backoff gives it a moment to
+      // clear before trying again.
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
     }
   }
   if (lastError) throw lastError;
@@ -1011,7 +1050,9 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "qpId, msId, and questionNumber are required." }));
         return;
       }
-      const result = await gradeStructuredQuestion(body.qpId, body.msId, String(body.questionNumber), String(body.studentAnswer || ""));
+      const result = await runGradingQueued(() =>
+        gradeStructuredQuestion(body.qpId, body.msId, String(body.questionNumber), String(body.studentAnswer || ""))
+      );
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {

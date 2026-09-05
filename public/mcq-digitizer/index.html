@@ -42,6 +42,11 @@
   .letter-btn.selected { border-color: var(--navy); background: var(--navy); color: white; }
   .structured-answer-box { width: 100%; min-height: 8rem; padding: 0.6rem 0.75rem; border: 1.5px solid var(--border); border-radius: 6px; font: inherit; font-size: 0.9rem; resize: vertical; box-sizing: border-box; }
   .structured-answer-box:focus { outline: none; border-color: var(--navy); }
+  .structured-submit-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.6rem; }
+  .structured-submit-status.submitted { color: var(--good); font-weight: 600; }
+  .structured-submit-status.stale { color: var(--gold); font-weight: 600; }
+  .structured-submit-status.grading { color: var(--muted); }
+  .structured-submit-status.error { color: var(--bad); font-weight: 600; }
   .option-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.4rem; cursor: pointer; }
   .option-row:hover { border-color: var(--sky); }
   .option-row input { flex-shrink: 0; }
@@ -709,6 +714,53 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
 let currentStructuredPaper = null;
 let structuredItems = []; // [{ questionNumber, qImage, msImage }]
 
+// Test-mode grading state: per-question submit (not one grade-everything
+// burst at Submit quiz), each one queued server-side, so a paper's worth
+// of questions doesn't all hit OpenRouter in the same instant -- per
+// explicit direction 2026-09-05 ("10 max students submitting one q at a
+// time"). Graded silently: no score is shown until the final results
+// screen, exactly like MCQ's own Test mode never reveals anything mid-
+// quiz either. A question can still be edited and resubmitted after a
+// first submit -- editing after a submit marks it stale (a changed
+// answer with no matching grade yet), not un-submitted.
+let structuredGraded = {}; // questionNumber -> grading result
+let structuredSubmittedText = {}; // questionNumber -> the text that result was graded from
+
+async function submitStructuredAnswer(questionNumber) {
+  const container = document.getElementById("structuredItems");
+  const textarea = container.querySelector(`.structured-answer-box[data-qnum="${CSS.escape(questionNumber)}"]`);
+  const btn = container.querySelector(`.structured-submit-answer-btn[data-qnum="${CSS.escape(questionNumber)}"]`);
+  const statusEl = container.querySelector(`.structured-submit-status[data-qnum="${CSS.escape(questionNumber)}"]`);
+  const studentAnswer = textarea.value.trim();
+
+  btn.disabled = true;
+  statusEl.className = "hint structured-submit-status grading";
+  statusEl.textContent = "Grading…";
+  try {
+    const res = await fetch("/api/mcq/grade-structured-question", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        qpId: currentStructuredPaper.qpId,
+        msId: currentStructuredPaper.msId,
+        questionNumber,
+        studentAnswer,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    structuredGraded[questionNumber] = { questionNumber, ...data };
+    structuredSubmittedText[questionNumber] = studentAnswer;
+    statusEl.className = "hint structured-submit-status submitted";
+    statusEl.textContent = "Submitted ✓ — you can still edit and resubmit";
+  } catch (e) {
+    statusEl.className = "hint structured-submit-status error";
+    statusEl.textContent = `Couldn't submit: ${e.message} — try again`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 let structuredTimerSeconds = 0;
 let structuredTimerInterval = null;
 let structuredTimerRunning = false;
@@ -750,6 +802,10 @@ function renderStructuredItems(mode) {
       ${testMode ? `
         <img class="qimg" src="${q.qImage}" alt="Question ${escapeHtml(q.questionNumber)}" />
         <textarea class="structured-answer-box" data-qnum="${escapeHtml(q.questionNumber)}" placeholder="Write your full working here, step by step..."></textarea>
+        <div class="structured-submit-row" data-qnum="${escapeHtml(q.questionNumber)}">
+          <button type="button" class="primary-btn structured-submit-answer-btn" data-qnum="${escapeHtml(q.questionNumber)}" style="width:auto; padding:0.5rem 1.2rem;">Submit answer</button>
+          <span class="hint structured-submit-status" data-qnum="${escapeHtml(q.questionNumber)}">Not submitted yet</span>
+        </div>
       ` : `
         <div class="tab-row">
           <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
@@ -776,6 +832,27 @@ function renderStructuredItems(mode) {
         container.querySelectorAll(`.tab-panel[data-qnum="${CSS.escape(qnum)}"]`).forEach((p) => {
           p.style.display = p.dataset.panel === tab ? "block" : "none";
         });
+      });
+    });
+  } else {
+    structuredGraded = {};
+    structuredSubmittedText = {};
+    container.querySelectorAll(".structured-submit-answer-btn").forEach((btn) => {
+      btn.addEventListener("click", () => submitStructuredAnswer(btn.dataset.qnum));
+    });
+    container.querySelectorAll(".structured-answer-box").forEach((textarea) => {
+      textarea.addEventListener("input", () => {
+        const qnum = textarea.dataset.qnum;
+        const statusEl = container.querySelector(`.structured-submit-status[data-qnum="${CSS.escape(qnum)}"]`);
+        const wasSubmitted = qnum in structuredSubmittedText;
+        const changedSinceSubmit = wasSubmitted && textarea.value.trim() !== structuredSubmittedText[qnum];
+        if (changedSinceSubmit) {
+          statusEl.className = "hint structured-submit-status stale";
+          statusEl.textContent = "Answer changed since last submit — submit again";
+        } else if (!wasSubmitted) {
+          statusEl.className = "hint structured-submit-status";
+          statusEl.textContent = "Not submitted yet";
+        }
       });
     });
   }
@@ -880,34 +957,30 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
   const btn = document.getElementById("structuredSubmitTestBtn");
   const statusEl = document.getElementById("structuredGradingStatus");
   btn.disabled = true;
-  statusEl.style.display = "block";
-  statusEl.textContent = `Grading ${structuredItems.length} question${structuredItems.length === 1 ? "" : "s"} -- this can take a little while...`;
 
+  // Most questions were already graded silently as the student submitted
+  // each one along the way (see submitStructuredAnswer) -- this only
+  // needs to mop up whatever's missing or gone stale (edited after its
+  // last submit) since finishing, not re-grade the whole paper in one
+  // burst.
   const container = document.getElementById("structuredItems");
-  const graded = await Promise.all(structuredItems.map(async (q) => {
+  const stragglers = structuredItems.filter((q) => {
     const textarea = container.querySelector(`.structured-answer-box[data-qnum="${CSS.escape(q.questionNumber)}"]`);
-    const studentAnswer = textarea ? textarea.value.trim() : "";
-    try {
-      const res = await fetch("/api/mcq/grade-structured-question", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          qpId: currentStructuredPaper.qpId,
-          msId: currentStructuredPaper.msId,
-          questionNumber: q.questionNumber,
-          studentAnswer,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-      return { questionNumber: q.questionNumber, ...data };
-    } catch (e) {
-      return { questionNumber: q.questionNumber, ungradable: true, reason: `Grading failed: ${e.message}` };
-    }
-  }));
+    const currentText = textarea ? textarea.value.trim() : "";
+    const alreadyGraded = q.questionNumber in structuredGraded;
+    const matchesLastSubmit = structuredSubmittedText[q.questionNumber] === currentText;
+    return !alreadyGraded || !matchesLastSubmit;
+  });
 
+  if (stragglers.length > 0) {
+    statusEl.style.display = "block";
+    statusEl.textContent = `Grading ${stragglers.length} remaining question${stragglers.length === 1 ? "" : "s"} -- this can take a little while...`;
+    await Promise.all(stragglers.map((q) => submitStructuredAnswer(q.questionNumber)));
+  }
   statusEl.style.display = "none";
   btn.disabled = false;
+
+  const graded = structuredItems.map((q) => structuredGraded[q.questionNumber] || { questionNumber: q.questionNumber, ungradable: true, reason: "Grading failed -- no result available." });
 
   const gradable = graded.filter((g) => !g.ungradable);
   const correctCount = gradable.filter((g) => g.marksAwarded === g.marksAvailable && g.marksAvailable > 0).length;
