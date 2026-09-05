@@ -1253,17 +1253,101 @@ def find_question_starts(lines, doc=None):
     # no gap) has nowhere real to belong -- demoting it can only ever
     # cut into one of those two real, already-correctly-bounded
     # questions, never recover a missing one.
+    #
+    # Recovery, not just exclusion: when a bracket's missing-number COUNT
+    # exactly matches the number of real rejected candidates found inside
+    # it, position order is enough to know which candidate is which
+    # missing question -- confirmed real and safe, TKT-0238 follow-up: a
+    # gap of exactly one slot with exactly one candidate (e.g. kept
+    # ...45, 47..., one real candidate between them) is unambiguous
+    # regardless of what wrong number that candidate itself captured (a
+    # stray leftover page-number token, never trustworthy on its own --
+    # see the comment above this block). This is never a guess about
+    # WHETHER real content exists there (has_options/has_image/
+    # is_statement already proved that before the candidate ever reached
+    # `starts`) -- only about which of the few known-missing numbers it
+    # is, which position order settles exactly.
+    #
+    # Two safety nets keep this from ever mis-assigning:
+    # (1) candidates within 50pt of an earlier one already claimed for
+    # THIS SAME bracket are dropped as noise before counting -- confirmed
+    # real: a coincidental bare "2" (part of a "2ρ" material-resistivity
+    # label in the same diagram) sat right after a genuine rejected
+    # question in the same bracket, and counting it as a second real
+    # candidate would have wrongly refused to recover the one genuine one.
+    # (2) if the deduped candidate count still doesn't exactly match the
+    # slot count (more candidates than slots, fewer, or none at all -- a
+    # real, separate, still-unsolved case: TKT-0238's "42 Radon..." on
+    # CAIE A Level Physics "Ch11 Particle Physics" Worksheet 1 never
+    # became a candidate at ALL, a distinct _stem_with_continuation
+    # false-stop on a chemical-symbol-led sentence, not something this
+    # block can recover), every candidate in that bracket falls back to
+    # the plain boundary-only quasi marker, same as before -- never a
+    # fabricated number when the evidence doesn't cleanly support one.
     kept = sorted(seq_idx)
     kept_nums = [int(starts[k]["number"]) for k in kept]
     kept_set = set(seq_idx)
+    brackets = {}
+    gap_candidate_idx = set()
     for i, s in enumerate(starts):
         if i in kept_set:
             continue
         prev_num = next((n for k, n in zip(reversed(kept), reversed(kept_nums)) if k < i), None)
         next_num = next((n for k, n in zip(kept, kept_nums) if k > i), None)
         if prev_num is not None and next_num is not None and next_num - prev_num > 1:
-            quasi.append({"page": s["page"], "y0": s["y0"]})
-    return [starts[i] for i in seq_idx], quasi
+            # Only a candidate that actually sits in a real gap (kept
+            # numbers on both sides are NOT consecutive) is even a
+            # candidate for quasi/recovery at all -- confirmed real and
+            # serious regression without this distinction, a full-corpus
+            # dry run: rewriting this block for recovery support (below)
+            # accidentally made the FINAL loop add every non-kept start
+            # to quasi unconditionally, including ones that never had a
+            # real gap in the first place (kept numbers ARE consecutive,
+            # e.g. a diagram scale label "40" sitting between real,
+            # consecutive kept "9" and "10") -- these must stay
+            # completely inert, exactly as they were before either fix,
+            # not become a boundary of any kind.
+            gap_candidate_idx.add(i)
+            brackets.setdefault((prev_num, next_num), []).append((i, s))
+
+    recovered = []
+    handled_idx = set()
+    for (prev_num, next_num), candidates in brackets.items():
+        candidates.sort(key=lambda pair: (pair[1]["page"], pair[1]["y0"]))
+        deduped = []
+        deduped_away = []
+        for i, s in candidates:
+            if deduped and s["page"] == deduped[-1][1]["page"] and s["y0"] - deduped[-1][1]["y0"] < 50:
+                deduped_away.append(i)
+                continue
+            deduped.append((i, s))
+        missing_slots = next_num - prev_num - 1
+        if len(deduped) == missing_slots:
+            for offset, (i, s) in enumerate(deduped):
+                recovered.append({**s, "number": str(prev_num + 1 + offset)})
+                handled_idx.add(i)
+            # A candidate deduped away as noise WITHIN a successfully
+            # recovered bracket (e.g. a coincidental "2ρ" material label
+            # sitting right after the real recovered question's own
+            # start) is noise, not a boundary -- confirmed real without
+            # this: it still ended up in `quasi` and truncated the
+            # recovered question's own crop down to a single line, even
+            # though it correctly wasn't counted as a second real
+            # question. Only exclude it here, inside a bracket that
+            # actually got recovered -- an unrecovered bracket's own
+            # candidates (ambiguous, not enough evidence) still fall
+            # through to quasi below exactly as before.
+            handled_idx.update(deduped_away)
+
+    for i in gap_candidate_idx:
+        if i in handled_idx:
+            continue
+        s = starts[i]
+        quasi.append({"page": s["page"], "y0": s["y0"]})
+
+    result = [starts[i] for i in seq_idx] + recovered
+    result.sort(key=lambda s: (s["page"], s["y0"]))
+    return result, quasi
 
 
 def _pos(page, y0):
