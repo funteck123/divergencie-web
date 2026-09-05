@@ -627,7 +627,15 @@ function populateSubjects() {
 function populateComponents() {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
-  fillSelect(document.getElementById("pickComponent"), Object.keys((library[board] || {})[subject] || {}));
+  const components = (library[board] || {})[subject] || {};
+  // Temporarily hide a component with no papers at all -- per explicit
+  // direction 2026-09-05, most of SUBJECT_COMPONENTS' real components
+  // start as empty buckets (no content crawled/digitized yet), and
+  // showing them in the picker just lets a student select a paper list
+  // that's always empty. Not a permanent removal: a component reappears
+  // the moment the library actually has papers in it.
+  const nonEmpty = Object.keys(components).filter((c) => (components[c] || []).length > 0);
+  fillSelect(document.getElementById("pickComponent"), nonEmpty);
   populatePapers();
 }
 function populatePapers() {
