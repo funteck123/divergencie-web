@@ -101,6 +101,14 @@ const REPO_ROOT = path.join(__dirname, "..", "..");
 const DRIVE_MAP_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "drive-map", "drive-map.json");
 const ANSWER_CACHE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "answer-cache", "cache.json");
 const DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "full-library", "database.json");
+// Separate on-disk cache for structured (non-MCQ) papers -- own
+// directory, own database.json, never mixed with the MCQ full-library
+// cache above. Built by answer_resolver/build_structured_database.py,
+// same "pre-download, pre-parse, pre-crop once; serve from disk after"
+// idea as the MCQ cache, per explicit direction 2026-09-05 after the
+// structured flow was found re-downloading + re-parsing both PDFs from
+// Drive on every single paper open.
+const STRUCTURED_DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "structured-library", "database.json");
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than
 // the free vision router for structured-JSON output, and this grading
@@ -188,6 +196,58 @@ async function digitizeStructuredFromPaths(qpPath, msPath) {
     throw new Error("Failed to process the uploaded PDFs.");
   }
   return JSON.parse(stdout);
+}
+
+// Own cache, own file, deliberately never touching DATABASE_PATH (the
+// MCQ full-library cache) -- structured papers have a different record
+// shape (both a question AND an answer crop per number, no
+// optionLetters/correctAnswer) and are built by a separate script
+// (answer_resolver/build_structured_database.py), so keeping them apart
+// avoids one format quietly growing fields the other doesn't expect.
+let structuredDatabaseCache = null;
+let structuredDatabaseCacheMtime = 0;
+function loadStructuredDatabase() {
+  try {
+    const stat = fs.statSync(STRUCTURED_DATABASE_PATH);
+    if (structuredDatabaseCache && stat.mtimeMs === structuredDatabaseCacheMtime) return structuredDatabaseCache;
+    structuredDatabaseCache = JSON.parse(fs.readFileSync(STRUCTURED_DATABASE_PATH, "utf8"));
+    structuredDatabaseCacheMtime = stat.mtimeMs;
+    return structuredDatabaseCache;
+  } catch {
+    return null;
+  }
+}
+
+function structuredFromDatabaseEntry(entry) {
+  const readCrops = (list) =>
+    list.map((item) => ({
+      questionNumber: item.questionNumber,
+      image: "data:image/png;base64," + fs.readFileSync(path.join(REPO_ROOT, item.imagePath)).toString("base64"),
+    }));
+  return { questions: readCrops(entry.questions), answers: readCrops(entry.answers) };
+}
+
+// Cache-first, exactly like the MCQ path's digitizeFromDriveIds above --
+// only a paper NOT yet built by build_structured_database.py pays for a
+// live Drive download + PyMuPDF re-parse + re-render on every open.
+async function digitizeStructuredFromDriveIds(qpId, msId) {
+  const db = loadStructuredDatabase();
+  const dbEntry = db && db.find((p) => p.qpId === qpId && p.msId === msId);
+  if (dbEntry) {
+    return structuredFromDatabaseEntry(dbEntry);
+  }
+
+  const [qpBuf, msBuf] = await Promise.all([downloadDriveFile(qpId), downloadDriveFile(msId)]);
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-structured-"));
+  const qpPath = path.join(tmpDir, "qp.pdf");
+  const msPath = path.join(tmpDir, "ms.pdf");
+  fs.writeFileSync(qpPath, qpBuf);
+  fs.writeFileSync(msPath, msBuf);
+  try {
+    return await digitizeStructuredFromPaths(qpPath, msPath);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
 
 async function digitizeFromBase64(qpBase64, msBase64) {
@@ -779,18 +839,7 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Both qpId and msId are required." }));
         return;
       }
-      const [qpBuf, msBuf] = await Promise.all([downloadDriveFile(body.qpId), downloadDriveFile(body.msId)]);
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-structured-"));
-      const qpPath = path.join(tmpDir, "qp.pdf");
-      const msPath = path.join(tmpDir, "ms.pdf");
-      fs.writeFileSync(qpPath, qpBuf);
-      fs.writeFileSync(msPath, msBuf);
-      let result;
-      try {
-        result = await digitizeStructuredFromPaths(qpPath, msPath);
-      } finally {
-        fs.rmSync(tmpDir, { recursive: true, force: true });
-      }
+      const result = await digitizeStructuredFromDriveIds(body.qpId, body.msId);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {
