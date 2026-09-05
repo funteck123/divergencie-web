@@ -40,6 +40,8 @@
   .letter-btn { flex: 1; text-align: center; padding: 0.6rem 0; border: 1.5px solid var(--border); border-radius: 6px; font-weight: 700; cursor: pointer; background: white; }
   .letter-btn input { display: none; }
   .letter-btn.selected { border-color: var(--navy); background: var(--navy); color: white; }
+  .structured-answer-box { width: 100%; min-height: 8rem; padding: 0.6rem 0.75rem; border: 1.5px solid var(--border); border-radius: 6px; font: inherit; font-size: 0.9rem; resize: vertical; box-sizing: border-box; }
+  .structured-answer-box:focus { outline: none; border-color: var(--navy); }
   .option-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.4rem; cursor: pointer; }
   .option-row:hover { border-color: var(--sky); }
   .option-row input { flex-shrink: 0; }
@@ -259,7 +261,7 @@
       <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
       <p class="hint" id="structuredCount" style="display:none;"></p>
       <button class="primary-btn mode-btn" id="structuredStartPracticeBtn" style="display:none;">Practice mode — browse questions &amp; answers freely, no grading</button>
-      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);" disabled title="Coming soon">Test mode — coming soon</button>
+      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
       <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet.</p>
       <p class="hint" id="structuredErrorNote" style="display:none; color:var(--bad);"></p>
     </div>
@@ -273,7 +275,19 @@
     </div>
 
     <div id="structuredItems"></div>
+    <p class="hint" id="structuredGradingStatus" style="display:none;"></p>
+    <button class="primary-btn" id="structuredSubmitTestBtn" style="display:none;">Submit quiz</button>
     <button class="primary-btn" id="structuredFinishBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Done practicing</button>
+  </div>
+
+  <div id="stage6" class="stage">
+    <div class="score-banner">
+      <div class="label">Score</div>
+      <div class="big" id="structuredScoreText">—</div>
+    </div>
+    <p class="hint">A question only counts as correct if it scored full marks -- see the score shown on each one below for exactly how close a partial answer got.</p>
+    <div id="structuredResultsContainer"></div>
+    <button class="primary-btn" id="structuredRestartBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Back to library</button>
   </div>
 </main>
 
@@ -726,42 +740,53 @@ document.getElementById("structuredTimerToggleBtn").addEventListener("click", ()
   else startStructuredTimer();
 });
 
-function renderStructuredItems() {
+function renderStructuredItems(mode) {
   const container = document.getElementById("structuredItems");
+  const testMode = mode === "test";
+
   container.innerHTML = structuredItems.map((q) => `
     <div class="mcq-item" data-qnum="${escapeHtml(q.questionNumber)}">
       <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
-      <div class="tab-row">
-        <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
-        <button type="button" class="tab-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="answer">Answer</button>
-      </div>
-      <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">
+      ${testMode ? `
         <img class="qimg" src="${q.qImage}" alt="Question ${escapeHtml(q.questionNumber)}" />
-      </div>
-      <div class="tab-panel answer-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="answer" style="display:none;">
-        ${q.msImage
-          ? `<img class="qimg" src="${q.msImage}" alt="Mark scheme for question ${escapeHtml(q.questionNumber)}" />`
-          : `<div class="ungradable-note">No mark scheme was found for this question.</div>`}
-      </div>
+        <textarea class="structured-answer-box" data-qnum="${escapeHtml(q.questionNumber)}" placeholder="Write your full working here, step by step..."></textarea>
+      ` : `
+        <div class="tab-row">
+          <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
+          <button type="button" class="tab-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="answer">Answer</button>
+        </div>
+        <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">
+          <img class="qimg" src="${q.qImage}" alt="Question ${escapeHtml(q.questionNumber)}" />
+        </div>
+        <div class="tab-panel answer-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="answer" style="display:none;">
+          ${q.msImage
+            ? `<img class="qimg" src="${q.msImage}" alt="Mark scheme for question ${escapeHtml(q.questionNumber)}" />`
+            : `<div class="ungradable-note">No mark scheme was found for this question.</div>`}
+        </div>
+      `}
     </div>
   `).join("");
 
-  container.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const qnum = btn.dataset.qnum;
-      const tab = btn.dataset.tab;
-      container.querySelectorAll(`.tab-btn[data-qnum="${CSS.escape(qnum)}"]`).forEach((b) => b.classList.toggle("active", b === btn));
-      container.querySelectorAll(`.tab-panel[data-qnum="${CSS.escape(qnum)}"]`).forEach((p) => {
-        p.style.display = p.dataset.panel === tab ? "block" : "none";
+  if (!testMode) {
+    container.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qnum = btn.dataset.qnum;
+        const tab = btn.dataset.tab;
+        container.querySelectorAll(`.tab-btn[data-qnum="${CSS.escape(qnum)}"]`).forEach((b) => b.classList.toggle("active", b === btn));
+        container.querySelectorAll(`.tab-panel[data-qnum="${CSS.escape(qnum)}"]`).forEach((p) => {
+          p.style.display = p.dataset.panel === tab ? "block" : "none";
+        });
       });
     });
-  });
+  }
 }
 
 function resetStructuredToLibrary() {
   document.getElementById("structuredModeSelectCard").style.display = "block";
   document.getElementById("structuredTestHeader").style.display = "none";
   document.getElementById("structuredFinishBtn").style.display = "none";
+  document.getElementById("structuredSubmitTestBtn").style.display = "none";
+  document.getElementById("structuredGradingStatus").style.display = "none";
   document.getElementById("structuredItems").innerHTML = "";
   showStage(0);
 }
@@ -771,6 +796,8 @@ async function openStructuredPaper(paper) {
   document.getElementById("structuredModeSelectCard").style.display = "block";
   document.getElementById("structuredTestHeader").style.display = "none";
   document.getElementById("structuredFinishBtn").style.display = "none";
+  document.getElementById("structuredSubmitTestBtn").style.display = "none";
+  document.getElementById("structuredGradingStatus").style.display = "none";
   document.getElementById("structuredItems").innerHTML = "";
   document.getElementById("structuredCount").style.display = "none";
   document.getElementById("structuredStartPracticeBtn").style.display = "none";
@@ -821,16 +848,89 @@ document.getElementById("structuredStartPracticeBtn").addEventListener("click", 
   document.getElementById("structuredFinishBtn").style.display = "block";
   document.getElementById("structuredTestHeader").style.display = "block";
   document.getElementById("structuredHeaderTitle").textContent = "Practice";
-  renderStructuredItems();
+  renderStructuredItems("practice");
   resetStructuredTimer();
   startStructuredTimer();
 });
-// Test mode: disabled placeholder for now -- the button itself already
-// carries `disabled` in the markup, this listener is just defensive.
-document.getElementById("structuredStartTestBtn").addEventListener("click", (e) => {
-  e.preventDefault();
+document.getElementById("structuredStartTestBtn").addEventListener("click", () => {
+  document.getElementById("structuredModeSelectCard").style.display = "none";
+  document.getElementById("structuredTestHeader").style.display = "block";
+  document.getElementById("structuredHeaderTitle").textContent = "Answer the quiz";
+  document.getElementById("structuredSubmitTestBtn").style.display = "block";
+  renderStructuredItems("test");
+  resetStructuredTimer();
+  startStructuredTimer();
 });
 document.getElementById("structuredFinishBtn").addEventListener("click", () => {
+  resetStructuredTimer();
+  resetStructuredToLibrary();
+});
+
+// Test mode submit: grade every question's free-text working in
+// parallel against its own real mark scheme (see
+// gradeStructuredQuestion in server.mjs -- built entirely from the MS
+// side's text, never the QP side's, which has unrecoverable font
+// corruption). Pass/fail per explicit direction 2026-09-05: a question
+// only counts as "correct" toward the score if it earned FULL marks --
+// partial credit is shown on the result row but still counts as
+// incorrect, exactly like an MCQ question is either the right letter or
+// it isn't, no partial credit there either.
+document.getElementById("structuredSubmitTestBtn").addEventListener("click", async () => {
+  pauseStructuredTimer();
+  const btn = document.getElementById("structuredSubmitTestBtn");
+  const statusEl = document.getElementById("structuredGradingStatus");
+  btn.disabled = true;
+  statusEl.style.display = "block";
+  statusEl.textContent = `Grading ${structuredItems.length} question${structuredItems.length === 1 ? "" : "s"} -- this can take a little while...`;
+
+  const container = document.getElementById("structuredItems");
+  const graded = await Promise.all(structuredItems.map(async (q) => {
+    const textarea = container.querySelector(`.structured-answer-box[data-qnum="${CSS.escape(q.questionNumber)}"]`);
+    const studentAnswer = textarea ? textarea.value.trim() : "";
+    try {
+      const res = await fetch("/api/mcq/grade-structured-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          qpId: currentStructuredPaper.qpId,
+          msId: currentStructuredPaper.msId,
+          questionNumber: q.questionNumber,
+          studentAnswer,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return { questionNumber: q.questionNumber, ...data };
+    } catch (e) {
+      return { questionNumber: q.questionNumber, ungradable: true, reason: `Grading failed: ${e.message}` };
+    }
+  }));
+
+  statusEl.style.display = "none";
+  btn.disabled = false;
+
+  const gradable = graded.filter((g) => !g.ungradable);
+  const correctCount = gradable.filter((g) => g.marksAwarded === g.marksAvailable && g.marksAvailable > 0).length;
+  document.getElementById("structuredScoreText").textContent = `${correctCount} / ${gradable.length}`;
+
+  document.getElementById("structuredResultsContainer").innerHTML = graded.map((g) => {
+    const isCorrect = !g.ungradable && g.marksAwarded === g.marksAvailable && g.marksAvailable > 0;
+    const verdictClass = g.ungradable ? "unanswered" : (isCorrect ? "correct" : "incorrect");
+    const verdictLabel = g.ungradable ? "Not auto-gradable" : (isCorrect ? "Correct" : "Incorrect");
+    return `
+      <div class="result-item ${verdictClass}">
+        <span class="rq">Question ${escapeHtml(g.questionNumber)}</span>
+        <span class="rverdict ${isCorrect ? "correct" : "incorrect"}">${verdictLabel}</span>
+        ${g.ungradable
+          ? `<div class="ungradable-note">${escapeHtml(g.reason || "")}</div>`
+          : `<div style="margin-top:0.4rem;">Scored <strong>${g.marksAwarded} / ${g.marksAvailable}</strong>${g.remark ? ` — ${escapeHtml(g.remark)}` : ""}</div>`}
+      </div>
+    `;
+  }).join("");
+
+  showStage(6);
+});
+document.getElementById("structuredRestartBtn").addEventListener("click", () => {
   resetStructuredTimer();
   resetStructuredToLibrary();
 });

@@ -2036,11 +2036,75 @@ def find_labeled_question_starts(lines):
     return starts
 
 
+def extract_block_text(lines, page_start, y_start, page_end, y_end):
+    """Plain text of everything between two starts, in the same
+    (page, y0) reading order render_question_image crops visually --
+    used only for Test-mode grading prompts (the practice-mode crop
+    images don't need this at all, they're rendered straight from the
+    PDF page regardless of what the text layer says)."""
+    parts = []
+    for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
+        pos = (l["page"], l["y0"])
+        if pos < (page_start, y_start):
+            continue
+        if y_end is not None and (l["page"], l["y0"]) >= (page_end, y_end):
+            continue
+        if l["page"] > page_end:
+            continue
+        parts.append(l["text"])
+    return "\n".join(parts)
+
+
+# A small, deliberately generic set of common short English words --
+# NOT a dictionary or spellchecker, just a tripwire. Confirmed real bug
+# this catches: some savemyexams-template PDFs embed a font whose
+# encoding Caesar-shifts body text by 3 letters ("varies inversely"
+# extracts as "\\ YDULHV LQYHUVHO\\"), while the bold heading font in the
+# SAME document is unaffected -- so a block can extract a perfectly
+# matched "Question N" heading while its own body text is unusable
+# gibberish. Sending that gibberish to an LLM grading prompt would
+# silently produce a meaningless score instead of failing loudly.
+_COMMON_WORDS = {
+    "the", "a", "an", "of", "to", "is", "are", "and", "find", "value",
+    "calculate", "work", "out", "show", "that", "for", "each", "correct",
+    "nearest", "write", "give", "answer", "diagram", "shows", "when",
+}
+
+
+def _looks_garbled(text):
+    # A fourth, distinct corruption confirmed in this same corpus: some
+    # MS files' final-answer digits extract as Unicode "Mathematical
+    # Alphanumeric Symbols" codepoints (e.g. U+1D7CE) that do NOT
+    # correspond to their visually-rendered digit -- caught for real by
+    # sending a genuinely correct student answer through end-to-end and
+    # getting graded against a completely different number (a font
+    # remapped "0.394" to text that reads as "00.333333"). Unlike the
+    # Caesar-shift/glued-space variants, this leaves ordinary prose in
+    # the SAME block completely readable, so the common-word ratio check
+    # below never sees it -- exactly the failure mode that check alone
+    # missed. This block is never legitimately used by this corpus's
+    # real content (plain digits/letters throughout), so any character
+    # in it is treated as an unconditional corruption signal.
+    if any(0x1D400 <= ord(c) <= 0x1D7FF for c in text):
+        return True
+    words = re.findall(r"[A-Za-z]{2,}", text.lower())
+    if len(words) < 6:
+        return False  # too short a sample to judge either way -- don't flag
+    hits = sum(1 for w in words if w in _COMMON_WORDS)
+    return (hits / len(words)) < 0.08
+
+
 def parse_structured(pdf_path):
-    """One image per question/answer block, cropped exactly like a real
-    MCQ question (reuses render_question_image) but with no option-
-    letter detection or answer resolution at all -- this format doesn't
-    have either. Works for QP and MS alike; the caller decides which."""
+    """One image + one text block per question/answer block, cropped
+    exactly like a real MCQ question (reuses render_question_image) but
+    with no option-letter detection or answer resolution at all -- this
+    format doesn't have either. Works for QP and MS alike; the caller
+    decides which. `marks` is the sum of every [N] mark allocation found
+    in the block's own text (0 if none/unparseable); `corrupted` flags a
+    block whose text extraction is very likely unusable prose (see
+    _looks_garbled) -- the image is still fine either way, only the text
+    (used for Test-mode LLM grading, not practice-mode display) is
+    suspect."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     starts = find_labeled_question_starts(lines)
@@ -2052,7 +2116,15 @@ def parse_structured(pdf_path):
             end_page, end_y = doc.page_count - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
-        blocks.append({"questionNumber": s["number"], "image": image_b64})
+        text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
+        marks = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
+        blocks.append({
+            "questionNumber": s["number"],
+            "image": image_b64,
+            "text": text,
+            "marks": marks,
+            "corrupted": _looks_garbled(text),
+        })
     doc.close()
     return blocks
 

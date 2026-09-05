@@ -96,7 +96,16 @@ def download_pdf(file_id):
     return dest
 
 
-def save_crops(qp_id, prefix, blocks):
+def save_crops(qp_id, prefix, blocks, include_text):
+    # include_text=True for the MS side only -- its text is confirmed
+    # clean (restates the question, gives the full worked solution, and
+    # carries the real [N] mark allocation), unlike the QP side, whose
+    # embedded font has real, unfixable per-glyph advance-width
+    # corruption that makes its extracted text unusable prose (confirmed
+    # via a real word-boundary test, not assumed) -- see extract_mcq.py's
+    # parse_structured docstring. Test-mode grading is built entirely
+    # from the MS block's text for this reason; the QP side only ever
+    # needs its (correct, unaffected) rendered image.
     img_dir = os.path.join(IMAGES_DIR, qp_id)
     os.makedirs(img_dir, exist_ok=True)
     saved = []
@@ -105,7 +114,12 @@ def save_crops(qp_id, prefix, blocks):
         rel_path = f"data/mcq-digitizer/structured-library/images/{qp_id}/{prefix}{b['questionNumber']}.png"
         abs_path = os.path.join(REPO_ROOT, rel_path)
         open(abs_path, "wb").write(base64.b64decode(b64))
-        saved.append({"questionNumber": b["questionNumber"], "imagePath": rel_path})
+        entry = {"questionNumber": b["questionNumber"], "imagePath": rel_path}
+        if include_text:
+            entry["text"] = b["text"]
+            entry["marks"] = b["marks"]
+            entry["corrupted"] = b["corrupted"]
+        saved.append(entry)
     return saved
 
 
@@ -149,8 +163,8 @@ def main():
                 "title": p["title"],
                 "qpId": p["qpId"],
                 "msId": p["msId"],
-                "questions": save_crops(p["qpId"], "q", questions),
-                "answers": save_crops(p["qpId"], "a", answers),
+                "questions": save_crops(p["qpId"], "q", questions, include_text=False),
+                "answers": save_crops(p["qpId"], "a", answers, include_text=True),
             }
             db.append(record)
             by_key[key] = record
