@@ -1959,9 +1959,86 @@ def parse_ms(pdf_path):
     return answers, ambiguous
 
 
+# Structured (non-MCQ) papers -- e.g. Mathematics -- have no A-D options
+# for the machinery above to key off of, so this is deliberately a
+# SEPARATE, much simpler splitter, not a reuse of find_question_starts.
+# Real per-question navigation (practice mode: Q1's real paper, then its
+# real mark scheme, then Q2, ...), per explicit direction -- the earlier
+# whole-worksheet free-text-answer + AI-grading approach is disabled, see
+# the (commented, not deleted) block in server.mjs.
+#
+# Confirmed real, this session: the IGCSE Maths worksheet template
+# (savemyexams-sourced, the bulk of the real Math corpus -- 391 of the
+# papers crawled so far) prints an explicit "Question N" heading on both
+# the QP and the MS, in the SAME position/order on both sides -- a much
+# more reliable boundary signal than MCQ's bare "N" convention, once one
+# real wrinkle is worked around: this template's own embedded QP font
+# (not the MS's -- confirmed only on the QP side) renders text with a
+# stray space glued between EVERY character ("Q u esti o n \xa01" instead
+# of "Question 1"), so a normal regex against the raw extracted text
+# never matches at all. Despacing first (stripping ALL whitespace,
+# including the \xa0 this font also emits) before matching sidesteps the
+# corruption entirely -- safe here specifically because the only thing
+# ever matched is the fixed literal word "Question", not prose that
+# legitimately depends on its own spacing.
+#
+# The OTHER real Math template found this session (CAIE's own official
+# past-paper layout -- used by the smaller, separately-sourced A-Level
+# Pure Mathematics corpus) uses bare numbers with no "Question" prefix
+# at all, and its own real stem text can render ABOVE its question
+# number in y-order (a real, different layout quirk) -- confirmed NOT
+# handled by this splitter. find_labeled_question_starts returns an
+# empty list for that format rather than guessing, and the caller
+# (server.mjs) falls back to the plain whole-document QP/MS links in
+# that case, honestly, rather than showing a broken empty stepper.
+QUESTION_LABEL_DESPACED_RE = re.compile(r'^question(\d{1,2})$', re.IGNORECASE)
+
+
+def _despace(text):
+    return re.sub(r'\s+', '', text or '')
+
+
+def find_labeled_question_starts(lines):
+    starts = []
+    for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
+        m = QUESTION_LABEL_DESPACED_RE.match(_despace(l["text"]))
+        if m:
+            starts.append({"number": m.group(1), "page": l["page"], "y0": l["y0"]})
+    return starts
+
+
+def parse_structured(pdf_path):
+    """One image per question/answer block, cropped exactly like a real
+    MCQ question (reuses render_question_image) but with no option-
+    letter detection or answer resolution at all -- this format doesn't
+    have either. Works for QP and MS alike; the caller decides which."""
+    doc = fitz.open(pdf_path)
+    lines = extract_lines(doc)
+    starts = find_labeled_question_starts(lines)
+    blocks = []
+    for i, s in enumerate(starts):
+        if i + 1 < len(starts):
+            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
+        else:
+            end_page, end_y = doc.page_count - 1, None
+        image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
+        image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
+        blocks.append({"questionNumber": s["number"], "image": image_b64})
+    doc.close()
+    return blocks
+
+
 def main():
+    if len(sys.argv) == 4 and sys.argv[1] == "--structured":
+        qp_path, ms_path = sys.argv[2], sys.argv[3]
+        print(json.dumps({
+            "questions": parse_structured(qp_path),
+            "answers": parse_structured(ms_path),
+        }))
+        return
     if len(sys.argv) != 3:
         print("usage: extract_mcq.py <qp_pdf_path> <ms_pdf_path>", file=sys.stderr)
+        print("       extract_mcq.py --structured <qp_pdf_path> <ms_pdf_path>", file=sys.stderr)
         sys.exit(1)
     qp_path, ms_path = sys.argv[1], sys.argv[2]
     questions = parse_qp(qp_path)

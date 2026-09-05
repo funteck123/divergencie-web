@@ -164,6 +164,32 @@ async function digitizeFromPaths(qpPath, msPath) {
   return JSON.parse(stdout);
 }
 
+// Structured (non-MCQ) papers -- Mathematics, and any other subject with
+// no real MCQ paper -- get per-question crops (Question N's real QP
+// content, then Question N's real MS content) instead of the MCQ
+// digitize/quiz flow, which has nothing to key off of here (no A-D
+// options anywhere). Only works for the "Question N" heading template
+// (see extract_mcq.py's find_labeled_question_starts docstring for the
+// other real template found this session that ISN'T handled yet); an
+// empty `questions` array means the caller should fall back to the
+// plain whole-document QP/MS links.
+async function digitizeStructuredFromPaths(qpPath, msPath) {
+  let stdout;
+  try {
+    ({ stdout } = await execFileAsync(
+      "python3", [path.join(__dirname, "extract_mcq.py"), "--structured", qpPath, msPath],
+      { maxBuffer: 64 * 1024 * 1024 },
+    ));
+  } catch (e) {
+    const stderr = e.stderr || e.message || "";
+    if (stderr.includes("FileDataError") || stderr.includes("Failed to open file")) {
+      throw new InvalidPdfError("One or both uploaded files could not be read as a PDF.");
+    }
+    throw new Error("Failed to process the uploaded PDFs.");
+  }
+  return JSON.parse(stdout);
+}
+
 async function digitizeFromBase64(qpBase64, msBase64) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-"));
   const qpPath = path.join(tmpDir, "qp.pdf");
@@ -196,6 +222,15 @@ async function downloadDriveFile(fileId) {
   return buf;
 }
 
+// DISABLED 2026-09-05, per explicit direction: whole-worksheet free-text
+// AI grading replaced by real per-question QP/MS navigation (practice
+// mode -- see digitizeStructuredFromPaths above and the /api/subject-meta
+// consumer in index.html). Kept, not deleted, in case auto-grading comes
+// back later ("Test mode" is now a disabled "coming soon" placeholder in
+// the UI, not removed either). Nothing below this comment through
+// gradeStructuredAnswer's closing brace is called anymore -- the
+// /api/grade-structured route handler further down is commented out too.
+/*
 // Structured (non-MCQ) papers -- e.g. Mathematics -- have no A/B/C/D
 // options for extract_mcq.py's splitter to find, so they get a completely
 // separate, much simpler path: no question splitting at all, just the
@@ -306,6 +341,7 @@ async function gradeStructuredAnswer(qpId, msId, studentAnswer) {
   const marksAwarded = Math.min(marksAvailable, Math.max(0, Number(parsed.marksAwarded) || 0));
   return { marksAwarded, marksAvailable, remark: typeof parsed.remark === "string" ? parsed.remark : "" };
 }
+*/
 
 // Some real MS files (savemyexams-sourced) present their explanation as
 // a designed infographic image (colored callout boxes, a green
@@ -663,10 +699,10 @@ const server = http.createServer(async (req, res) => {
   // Tells the frontend which component of each subject is the real MCQ
   // paper (SUBJECT_COMPONENTS' mcqComponent) so it can pick the right UI:
   // the existing MCQ digitize/quiz flow for that one component, or the
-  // structured QP+MS-viewer + free-text-grading flow (see
-  // /api/grade-structured below) for every other component. `null` means
-  // this subject has no real MCQ paper at all (e.g. Mathematics) -- every
-  // component is structured.
+  // structured per-question QP/MS practice flow (see
+  // /api/digitize-structured below) for every other component. `null`
+  // means this subject has no real MCQ paper at all (e.g. Mathematics)
+  // -- every component is structured.
   if (req.method === "GET" && req.url === "/api/subject-meta") {
     const meta = {};
     for (const [key, entry] of Object.entries(SUBJECT_COMPONENTS)) {
@@ -679,10 +715,10 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Structured (non-MCQ) paper grading -- see gradeStructuredAnswer above
-  // for the full guardrail rationale. One free-text answer per whole
-  // worksheet, one score back; no question splitting, no client-side
-  // grading (unlike the MCQ flow, this genuinely needs the LLM call).
+  // DISABLED 2026-09-05, per explicit direction -- see the matching
+  // comment above gradeStructuredAnswer's own (also disabled) definition.
+  // Replaced by /api/digitize-structured below.
+  /*
   if (req.method === "POST" && req.url === "/api/grade-structured") {
     let body;
     try {
@@ -708,6 +744,57 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify(result));
     } catch (e) {
       res.writeHead(502, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+  */
+
+  // Structured (non-MCQ) paper practice mode: real per-question QP crop,
+  // then that same question's real MS crop -- Question 1, its own
+  // answer, Question 2, its own answer, and so on ("EXACT MCQ STYLE...
+  // QUESTION WISE", per explicit direction 2026-09-05, replacing the
+  // earlier whole-worksheet free-text-grading approach entirely). An
+  // empty `questions` array means this paper doesn't use the "Question
+  // N" heading template extract_mcq.py's splitter recognizes (see
+  // find_labeled_question_starts' docstring) -- the frontend falls back
+  // to the plain whole-document QP/MS links in that case.
+  if (req.method === "POST" && req.url === "/api/digitize-structured") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch (e) {
+      if (e instanceof PayloadTooLargeError) {
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: e.message }));
+      } else {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Request body must be valid JSON." }));
+      }
+      return;
+    }
+    try {
+      if (!body.qpId || !body.msId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Both qpId and msId are required." }));
+        return;
+      }
+      const [qpBuf, msBuf] = await Promise.all([downloadDriveFile(body.qpId), downloadDriveFile(body.msId)]);
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcq-digitizer-structured-"));
+      const qpPath = path.join(tmpDir, "qp.pdf");
+      const msPath = path.join(tmpDir, "ms.pdf");
+      fs.writeFileSync(qpPath, qpBuf);
+      fs.writeFileSync(msPath, msBuf);
+      let result;
+      try {
+        result = await digitizeStructuredFromPaths(qpPath, msPath);
+      } finally {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(e instanceof InvalidPdfError ? 400 : 502, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;

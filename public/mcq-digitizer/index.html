@@ -256,7 +256,7 @@
     <p class="hint"><a href="#" id="backFromStructuredLink">&larr; Back to library</a></p>
     <div class="card">
       <h2 id="structuredTitle">Structured paper</h2>
-      <p class="hint">This component has no multiple-choice options for auto-digitizing -- open the real Question Paper and Mark Scheme below instead.</p>
+      <p class="hint">Full documents, if you'd rather browse the whole paper at once.</p>
       <p style="margin-top:0.75rem;">
         <a class="primary-btn" id="structuredQpLink" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block; text-decoration:none; text-align:center;">Open Question Paper</a>
         &nbsp;
@@ -264,16 +264,23 @@
       </p>
     </div>
     <div class="card">
-      <h2>Get graded</h2>
-      <p class="hint">Work the paper, then type your full answer below. An AI examiner marks it against the real mark scheme and gives you a score -- not human-verified, treat it as a strong estimate, not an official result.</p>
-      <textarea id="structuredAnswerInput" rows="10" style="width:100%; box-sizing:border-box; padding:0.6rem; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:0.9rem;" placeholder="Type your working and final answers here..."></textarea>
-      <button class="primary-btn" id="structuredSubmitBtn" style="margin-top:0.75rem;">Submit for grading</button>
-      <p class="hint" id="structuredGradingStatus"></p>
-      <div id="structuredResult" class="score-banner" style="display:none; margin-top:0.75rem;">
-        <div class="label">Score</div>
-        <div class="big" id="structuredScoreText">—</div>
-        <p class="hint" id="structuredRemark" style="margin-top:0.5rem;"></p>
+      <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
+        <button class="primary-btn" id="structuredPracticeModeBtn" style="flex:1;">Practice mode</button>
+        <button class="primary-btn" id="structuredTestModeBtn" style="flex:1; background:#e5e5e5; color:#888; border:1px solid #ccc; cursor:not-allowed;" disabled title="Coming soon">Test mode (coming soon)</button>
       </div>
+      <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
+      <div id="structuredStepper" style="display:none;">
+        <p class="hint" id="structuredProgressLabel" style="font-weight:600; color:var(--navy);"></p>
+        <img id="structuredQpImage" style="max-width:100%; border:1px solid var(--border); border-radius:8px; display:block;" />
+        <button class="primary-btn" id="structuredShowMsBtn" style="margin-top:0.75rem; background:white; color:var(--navy); border:1.5px solid var(--navy);">Show Mark Scheme</button>
+        <img id="structuredMsImage" style="max-width:100%; border:1px solid var(--border); border-radius:8px; margin-top:0.75rem; display:none;" />
+        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+          <button class="primary-btn" id="structuredPrevBtn" style="flex:1; background:white; color:var(--navy); border:1.5px solid var(--navy);">&larr; Previous</button>
+          <button class="primary-btn" id="structuredNextBtn" style="flex:1;">Next &rarr;</button>
+        </div>
+      </div>
+      <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet -- use the Question Paper / Mark Scheme links above instead.</p>
+      <p class="hint" id="structuredErrorNote" style="display:none; color:var(--bad);"></p>
     </div>
   </div>
 </main>
@@ -685,26 +692,103 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
   }
 });
 
-// ---- Structured (non-MCQ) papers: no digitize/quiz step at all -- just
-// open the real QP/MS (practice, per explicit direction: "In practice
-// mode only qp and ms") and offer free-text AI grading against the real
-// mark scheme (see gradeStructuredAnswer in server.mjs for the guardrail
-// this depends on).
+// ---- Structured (non-MCQ) papers: real per-question practice, EXACT
+// MCQ style -- Question 1's own real QP crop, then (on request) that
+// same Question 1's own real MS crop, then Question 2, and so on
+// (/api/mcq/digitize-structured, see server.mjs). Test mode (auto-
+// grading) is a disabled "coming soon" placeholder for now, per
+// explicit direction 2026-09-05 -- the old whole-worksheet free-text-
+// grading flow is commented out below, not deleted, in case it comes
+// back.
 let currentStructuredPaper = null;
-function openStructuredPaper(paper) {
+let structuredQuestions = [];
+let structuredAnswers = [];
+let structuredIndex = 0;
+
+function renderStructuredStep() {
+  const q = structuredQuestions[structuredIndex];
+  const a = structuredAnswers.find((x) => x.questionNumber === q.questionNumber);
+  document.getElementById("structuredProgressLabel").textContent =
+    `Question ${q.questionNumber} (${structuredIndex + 1} of ${structuredQuestions.length})`;
+  document.getElementById("structuredQpImage").src = q.image;
+  const msImg = document.getElementById("structuredMsImage");
+  msImg.style.display = "none";
+  msImg.src = a ? a.image : "";
+  document.getElementById("structuredShowMsBtn").textContent = "Show Mark Scheme";
+  document.getElementById("structuredShowMsBtn").disabled = !a;
+  document.getElementById("structuredPrevBtn").disabled = structuredIndex === 0;
+  document.getElementById("structuredNextBtn").disabled = structuredIndex === structuredQuestions.length - 1;
+}
+
+async function openStructuredPaper(paper) {
   currentStructuredPaper = paper;
   document.getElementById("structuredTitle").textContent = paper.title;
   document.getElementById("structuredQpLink").href = `https://drive.google.com/file/d/${paper.qpId}/view`;
   document.getElementById("structuredMsLink").href = `https://drive.google.com/file/d/${paper.msId}/view`;
-  document.getElementById("structuredAnswerInput").value = "";
-  document.getElementById("structuredGradingStatus").textContent = "";
-  document.getElementById("structuredResult").style.display = "none";
+  document.getElementById("structuredStepper").style.display = "none";
+  document.getElementById("structuredNoSplitNote").style.display = "none";
+  document.getElementById("structuredErrorNote").style.display = "none";
+  const loadingEl = document.getElementById("structuredLoadingStatus");
+  loadingEl.style.display = "block";
+  loadingEl.textContent = "Loading questions...";
   showStage(5);
+  try {
+    const res = await fetch("/api/mcq/digitize-structured", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    structuredQuestions = data.questions || [];
+    structuredAnswers = data.answers || [];
+    loadingEl.style.display = "none";
+    if (structuredQuestions.length === 0) {
+      document.getElementById("structuredNoSplitNote").style.display = "block";
+      return;
+    }
+    structuredIndex = 0;
+    document.getElementById("structuredStepper").style.display = "block";
+    renderStructuredStep();
+  } catch (e) {
+    loadingEl.style.display = "none";
+    const errEl = document.getElementById("structuredErrorNote");
+    errEl.textContent = `Couldn't load questions: ${e.message}`;
+    errEl.style.display = "block";
+  }
 }
 document.getElementById("backFromStructuredLink").addEventListener("click", (e) => {
   e.preventDefault();
   showStage(0);
 });
+document.getElementById("structuredShowMsBtn").addEventListener("click", () => {
+  document.getElementById("structuredMsImage").style.display = "block";
+  document.getElementById("structuredShowMsBtn").textContent = "Mark Scheme shown above";
+});
+document.getElementById("structuredPrevBtn").addEventListener("click", () => {
+  if (structuredIndex > 0) {
+    structuredIndex -= 1;
+    renderStructuredStep();
+  }
+});
+document.getElementById("structuredNextBtn").addEventListener("click", () => {
+  if (structuredIndex < structuredQuestions.length - 1) {
+    structuredIndex += 1;
+    renderStructuredStep();
+  }
+});
+// Test mode: disabled placeholder for now -- the button itself already
+// carries `disabled` in the markup, this listener is just defensive.
+document.getElementById("structuredTestModeBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+});
+
+// DISABLED 2026-09-05, per explicit direction: whole-worksheet free-text
+// AI grading, replaced by the real per-question practice flow above.
+// Kept, not deleted, in case auto-grading comes back as a real "Test
+// mode" later. The server-side /api/grade-structured route and
+// gradeStructuredAnswer are also commented out (see server.mjs).
+/*
 document.getElementById("structuredSubmitBtn").addEventListener("click", async () => {
   const answer = document.getElementById("structuredAnswerInput").value.trim();
   const statusEl = document.getElementById("structuredGradingStatus");
@@ -736,6 +820,7 @@ document.getElementById("structuredSubmitBtn").addEventListener("click", async (
     btn.disabled = false;
   }
 });
+*/
 
 loadLibrary();
 
