@@ -254,34 +254,26 @@
 
   <div id="stage5" class="stage">
     <p class="hint"><a href="#" id="backFromStructuredLink">&larr; Back to library</a></p>
-    <div class="card">
-      <h2 id="structuredTitle">Structured paper</h2>
-      <p class="hint">Full documents, if you'd rather browse the whole paper at once.</p>
-      <p style="margin-top:0.75rem;">
-        <a class="primary-btn" id="structuredQpLink" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block; text-decoration:none; text-align:center;">Open Question Paper</a>
-        &nbsp;
-        <a class="primary-btn" id="structuredMsLink" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block; text-decoration:none; text-align:center; background:white; color:var(--navy); border:1.5px solid var(--navy);">Open Mark Scheme</a>
-      </p>
-    </div>
-    <div class="card">
-      <div style="display:flex; gap:0.5rem; margin-bottom:1rem;">
-        <button class="primary-btn" id="structuredPracticeModeBtn" style="flex:1;">Practice mode</button>
-        <button class="primary-btn" id="structuredTestModeBtn" style="flex:1; background:#e5e5e5; color:#888; border:1px solid #ccc; cursor:not-allowed;" disabled title="Coming soon">Test mode (coming soon)</button>
-      </div>
+    <div class="card" id="structuredModeSelectCard">
+      <h2 id="structuredTitle">How do you want to use this paper?</h2>
       <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
-      <div id="structuredStepper" style="display:none;">
-        <p class="hint" id="structuredProgressLabel" style="font-weight:600; color:var(--navy);"></p>
-        <img id="structuredQpImage" style="max-width:100%; border:1px solid var(--border); border-radius:8px; display:block;" />
-        <button class="primary-btn" id="structuredShowMsBtn" style="margin-top:0.75rem; background:white; color:var(--navy); border:1.5px solid var(--navy);">Show Mark Scheme</button>
-        <img id="structuredMsImage" style="max-width:100%; border:1px solid var(--border); border-radius:8px; margin-top:0.75rem; display:none;" />
-        <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-          <button class="primary-btn" id="structuredPrevBtn" style="flex:1; background:white; color:var(--navy); border:1.5px solid var(--navy);">&larr; Previous</button>
-          <button class="primary-btn" id="structuredNextBtn" style="flex:1;">Next &rarr;</button>
-        </div>
-      </div>
-      <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet -- use the Question Paper / Mark Scheme links above instead.</p>
+      <p class="hint" id="structuredCount" style="display:none;"></p>
+      <button class="primary-btn mode-btn" id="structuredStartPracticeBtn" style="display:none;">Practice mode — browse questions &amp; answers freely, no grading</button>
+      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);" disabled title="Coming soon">Test mode — coming soon</button>
+      <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet.</p>
       <p class="hint" id="structuredErrorNote" style="display:none; color:var(--bad);"></p>
     </div>
+
+    <div class="card" id="structuredTestHeader" style="display:none;">
+      <h2 id="structuredHeaderTitle">Practice</h2>
+      <div class="timer-row">
+        <span class="timer-display" id="structuredTimerDisplay">00:00</span>
+        <button class="timer-btn" id="structuredTimerToggleBtn" type="button">Pause</button>
+      </div>
+    </div>
+
+    <div id="structuredItems"></div>
+    <button class="primary-btn" id="structuredFinishBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Done practicing</button>
   </div>
 </main>
 
@@ -692,40 +684,97 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
   }
 });
 
-// ---- Structured (non-MCQ) papers: real per-question practice, EXACT
-// MCQ style -- Question 1's own real QP crop, then (on request) that
-// same Question 1's own real MS crop, then Question 2, and so on
-// (/api/mcq/digitize-structured, see server.mjs). Test mode (auto-
-// grading) is a disabled "coming soon" placeholder for now, per
-// explicit direction 2026-09-05 -- the old whole-worksheet free-text-
-// grading flow is commented out below, not deleted, in case it comes
-// back.
+// ---- Structured (non-MCQ) papers: same practice-mode UI/UX as the MCQ
+// quiz above (modeSelectCard -> testHeader -> one card per question with
+// a Question/Answer tab toggle), just fed image crops instead of quiz
+// options -- per explicit direction 2026-09-05, this must look and behave
+// like the MCQ flow, not a bespoke design. Test mode (auto-grading) stays
+// a disabled "coming soon" placeholder; the old whole-worksheet free-
+// text-grading flow is commented out below, not deleted, in case it
+// comes back (/api/mcq/digitize-structured, see server.mjs).
 let currentStructuredPaper = null;
-let structuredQuestions = [];
-let structuredAnswers = [];
-let structuredIndex = 0;
+let structuredItems = []; // [{ questionNumber, qImage, msImage }]
 
-function renderStructuredStep() {
-  const q = structuredQuestions[structuredIndex];
-  const a = structuredAnswers.find((x) => x.questionNumber === q.questionNumber);
-  document.getElementById("structuredProgressLabel").textContent =
-    `Question ${q.questionNumber} (${structuredIndex + 1} of ${structuredQuestions.length})`;
-  document.getElementById("structuredQpImage").src = q.image;
-  const msImg = document.getElementById("structuredMsImage");
-  msImg.style.display = "none";
-  msImg.src = a ? a.image : "";
-  document.getElementById("structuredShowMsBtn").textContent = "Show Mark Scheme";
-  document.getElementById("structuredShowMsBtn").disabled = !a;
-  document.getElementById("structuredPrevBtn").disabled = structuredIndex === 0;
-  document.getElementById("structuredNextBtn").disabled = structuredIndex === structuredQuestions.length - 1;
+let structuredTimerSeconds = 0;
+let structuredTimerInterval = null;
+let structuredTimerRunning = false;
+function renderStructuredTimer() {
+  document.getElementById("structuredTimerDisplay").textContent = formatTimer(structuredTimerSeconds);
+}
+function startStructuredTimer() {
+  if (structuredTimerRunning) return;
+  structuredTimerRunning = true;
+  document.getElementById("structuredTimerToggleBtn").textContent = "Pause";
+  structuredTimerInterval = setInterval(() => {
+    structuredTimerSeconds++;
+    renderStructuredTimer();
+  }, 1000);
+}
+function pauseStructuredTimer() {
+  structuredTimerRunning = false;
+  document.getElementById("structuredTimerToggleBtn").textContent = "Resume";
+  clearInterval(structuredTimerInterval);
+  structuredTimerInterval = null;
+}
+function resetStructuredTimer() {
+  pauseStructuredTimer();
+  structuredTimerSeconds = 0;
+  renderStructuredTimer();
+}
+document.getElementById("structuredTimerToggleBtn").addEventListener("click", () => {
+  if (structuredTimerRunning) pauseStructuredTimer();
+  else startStructuredTimer();
+});
+
+function renderStructuredItems() {
+  const container = document.getElementById("structuredItems");
+  container.innerHTML = structuredItems.map((q) => `
+    <div class="mcq-item" data-qnum="${escapeHtml(q.questionNumber)}">
+      <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
+      <div class="tab-row">
+        <button type="button" class="tab-btn active" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="question">Question</button>
+        <button type="button" class="tab-btn" data-qnum="${escapeHtml(q.questionNumber)}" data-tab="answer">Answer</button>
+      </div>
+      <div class="tab-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="question">
+        <img class="qimg" src="${q.qImage}" alt="Question ${escapeHtml(q.questionNumber)}" />
+      </div>
+      <div class="tab-panel answer-panel" data-qnum="${escapeHtml(q.questionNumber)}" data-panel="answer" style="display:none;">
+        ${q.msImage
+          ? `<img class="qimg" src="${q.msImage}" alt="Mark scheme for question ${escapeHtml(q.questionNumber)}" />`
+          : `<div class="ungradable-note">No mark scheme was found for this question.</div>`}
+      </div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const qnum = btn.dataset.qnum;
+      const tab = btn.dataset.tab;
+      container.querySelectorAll(`.tab-btn[data-qnum="${CSS.escape(qnum)}"]`).forEach((b) => b.classList.toggle("active", b === btn));
+      container.querySelectorAll(`.tab-panel[data-qnum="${CSS.escape(qnum)}"]`).forEach((p) => {
+        p.style.display = p.dataset.panel === tab ? "block" : "none";
+      });
+    });
+  });
+}
+
+function resetStructuredToLibrary() {
+  document.getElementById("structuredModeSelectCard").style.display = "block";
+  document.getElementById("structuredTestHeader").style.display = "none";
+  document.getElementById("structuredFinishBtn").style.display = "none";
+  document.getElementById("structuredItems").innerHTML = "";
+  showStage(0);
 }
 
 async function openStructuredPaper(paper) {
   currentStructuredPaper = paper;
-  document.getElementById("structuredTitle").textContent = paper.title;
-  document.getElementById("structuredQpLink").href = `https://drive.google.com/file/d/${paper.qpId}/view`;
-  document.getElementById("structuredMsLink").href = `https://drive.google.com/file/d/${paper.msId}/view`;
-  document.getElementById("structuredStepper").style.display = "none";
+  document.getElementById("structuredModeSelectCard").style.display = "block";
+  document.getElementById("structuredTestHeader").style.display = "none";
+  document.getElementById("structuredFinishBtn").style.display = "none";
+  document.getElementById("structuredItems").innerHTML = "";
+  document.getElementById("structuredCount").style.display = "none";
+  document.getElementById("structuredStartPracticeBtn").style.display = "none";
+  document.getElementById("structuredStartTestBtn").style.display = "none";
   document.getElementById("structuredNoSplitNote").style.display = "none";
   document.getElementById("structuredErrorNote").style.display = "none";
   const loadingEl = document.getElementById("structuredLoadingStatus");
@@ -740,16 +789,22 @@ async function openStructuredPaper(paper) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-    structuredQuestions = data.questions || [];
-    structuredAnswers = data.answers || [];
+    const questions = data.questions || [];
+    const answers = data.answers || [];
+    structuredItems = questions.map((q) => ({
+      questionNumber: q.questionNumber,
+      qImage: q.image,
+      msImage: answers.find((a) => a.questionNumber === q.questionNumber)?.image || null,
+    }));
     loadingEl.style.display = "none";
-    if (structuredQuestions.length === 0) {
+    if (structuredItems.length === 0) {
       document.getElementById("structuredNoSplitNote").style.display = "block";
       return;
     }
-    structuredIndex = 0;
-    document.getElementById("structuredStepper").style.display = "block";
-    renderStructuredStep();
+    document.getElementById("structuredCount").textContent = `Found ${structuredItems.length} question${structuredItems.length === 1 ? "" : "s"}.`;
+    document.getElementById("structuredCount").style.display = "block";
+    document.getElementById("structuredStartPracticeBtn").style.display = "block";
+    document.getElementById("structuredStartTestBtn").style.display = "block";
   } catch (e) {
     loadingEl.style.display = "none";
     const errEl = document.getElementById("structuredErrorNote");
@@ -761,26 +816,23 @@ document.getElementById("backFromStructuredLink").addEventListener("click", (e) 
   e.preventDefault();
   showStage(0);
 });
-document.getElementById("structuredShowMsBtn").addEventListener("click", () => {
-  document.getElementById("structuredMsImage").style.display = "block";
-  document.getElementById("structuredShowMsBtn").textContent = "Mark Scheme shown above";
-});
-document.getElementById("structuredPrevBtn").addEventListener("click", () => {
-  if (structuredIndex > 0) {
-    structuredIndex -= 1;
-    renderStructuredStep();
-  }
-});
-document.getElementById("structuredNextBtn").addEventListener("click", () => {
-  if (structuredIndex < structuredQuestions.length - 1) {
-    structuredIndex += 1;
-    renderStructuredStep();
-  }
+document.getElementById("structuredStartPracticeBtn").addEventListener("click", () => {
+  document.getElementById("structuredModeSelectCard").style.display = "none";
+  document.getElementById("structuredFinishBtn").style.display = "block";
+  document.getElementById("structuredTestHeader").style.display = "block";
+  document.getElementById("structuredHeaderTitle").textContent = "Practice";
+  renderStructuredItems();
+  resetStructuredTimer();
+  startStructuredTimer();
 });
 // Test mode: disabled placeholder for now -- the button itself already
 // carries `disabled` in the markup, this listener is just defensive.
-document.getElementById("structuredTestModeBtn").addEventListener("click", (e) => {
+document.getElementById("structuredStartTestBtn").addEventListener("click", (e) => {
   e.preventDefault();
+});
+document.getElementById("structuredFinishBtn").addEventListener("click", () => {
+  resetStructuredTimer();
+  resetStructuredToLibrary();
 });
 
 // DISABLED 2026-09-05, per explicit direction: whole-worksheet free-text
