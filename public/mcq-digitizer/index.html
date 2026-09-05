@@ -266,7 +266,7 @@
       <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
       <p class="hint" id="structuredCount" style="display:none;"></p>
       <button class="primary-btn mode-btn" id="structuredStartPracticeBtn" style="display:none;">Practice mode — browse questions &amp; answers freely, no grading</button>
-      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
+      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:#e5e5e5; color:#888; border:1px solid #ccc; cursor:not-allowed;" disabled title="Coming soon">Test mode — coming soon</button>
       <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet.</p>
       <p class="hint" id="structuredErrorNote" style="display:none; color:var(--bad);"></p>
     </div>
@@ -937,6 +937,19 @@ document.getElementById("structuredStartPracticeBtn").addEventListener("click", 
   resetStructuredTimer();
   startStructuredTimer();
 });
+// Test mode: disabled "coming soon" placeholder again, per explicit
+// direction 2026-09-06 -- the real flow below (per-question submit,
+// Gemini grading, results screen) is built and working, just not
+// exposed to students yet. Kept, not deleted: the button itself already
+// carries `disabled` in the markup, this listener is just defensive.
+document.getElementById("structuredStartTestBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+});
+document.getElementById("structuredFinishBtn").addEventListener("click", () => {
+  resetStructuredTimer();
+  resetStructuredToLibrary();
+});
+/*
 document.getElementById("structuredStartTestBtn").addEventListener("click", () => {
   document.getElementById("structuredModeSelectCard").style.display = "none";
   document.getElementById("structuredTestHeader").style.display = "block";
@@ -945,10 +958,6 @@ document.getElementById("structuredStartTestBtn").addEventListener("click", () =
   renderStructuredItems("test");
   resetStructuredTimer();
   startStructuredTimer();
-});
-document.getElementById("structuredFinishBtn").addEventListener("click", () => {
-  resetStructuredTimer();
-  resetStructuredToLibrary();
 });
 
 // Test mode submit: grade every question's free-text working in
@@ -1011,6 +1020,7 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
 
   showStage(6);
 });
+*/
 document.getElementById("structuredRestartBtn").addEventListener("click", () => {
   resetStructuredTimer();
   resetStructuredToLibrary();
