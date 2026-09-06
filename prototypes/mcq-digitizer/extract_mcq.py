@@ -2286,16 +2286,30 @@ def find_ms_heading_candidates(lines):
         if m:
             if l["x0"] >= 100:
                 # "next in reading order" isn't reliable here -- the raw
-                # PDF content stream can emit a same-line neighbor (e.g. a
-                # "[1]" marks bracket sharing this exact y0) BEFORE the
-                # "(a" sub-part marker that's what actually confirms this
-                # digit is a real heading, not a rubric-list item. Check
-                # any nearby line within a few points of y0, not strictly
-                # the next list entry.
+                # PDF content stream's emission order for same-line
+                # neighbors is inconsistent: confirmed real with a "[1]"
+                # marks bracket sharing this exact y0 emitted BEFORE the
+                # "(a" sub-part marker in one document, and "(a" itself
+                # emitted BEFORE its own heading digit in another. Check
+                # a window on BOTH sides of this candidate, not just
+                # forward, since which direction is a real signal varies
+                # per document.
+                # REVERTED a wider (100pt) forward window: it fixed one
+                # narrow real case (a heading opening into several lines
+                # of plain caption before its first "(a)") but caused
+                # much broader collateral damage confirmed real on a
+                # full-corpus rebuild -- Biology mark schemes are DENSE
+                # with parenthetical fragments, so a 100pt/10-line forward
+                # reach let many rubric-list noise digits coincidentally
+                # find SOME "(...)"-shaped text within range and get
+                # accepted as real headings (one paper's real 4 questions
+                # inflated to 11 candidates). A tight window producing a
+                # few false negatives is a better trade than a loose one
+                # producing many more false positives.
                 nearby = any(
                     o["page"] == l["page"] and abs(o["y0"] - l["y0"]) < 10
                     and _MS_SUBPART_RE.match(o["text"].strip())
-                    for o in ordered[idx + 1:idx + 5]
+                    for o in ordered[max(0, idx - 4):idx] + ordered[idx + 1:idx + 5]
                 )
                 if not nearby:
                     continue
@@ -2309,12 +2323,36 @@ def find_ms_heading_candidates(lines):
 
 
 def _monotonic_accept(candidates):
+    # A genuine, permanent source gap is real and confirmed (an MS whose
+    # question 5 mark scheme was simply never included -- a blank page
+    # where it should be, jumping straight from "4" content to "6"): a
+    # strict "must equal expected exactly" walk gets stuck at 4 forever
+    # once 5 never appears, silently losing every real later question too
+    # (6, 7, ...). Look ahead before rejecting a number greater than
+    # expected: if "expected" genuinely never occurs anywhere later in
+    # this candidate list either, the gap is real, not a still-pending
+    # match -- skip forward to this candidate instead of stalling.
+    remaining_numbers = [c["number"] for c in candidates]
     starts = []
     expected = 1
-    for c in candidates:
+    for i, c in enumerate(candidates):
         if c["number"] == expected:
             starts.append({"number": str(c["number"]), "page": c["page"], "y0": c["y0"]})
             expected += 1
+        elif c["number"] == expected + 1 and expected not in remaining_numbers[i:]:
+            # Confirmed real gaps (Math and this Chemistry corpus alike)
+            # are always exactly ONE missing question -- restricting the
+            # skip to a gap of 1 is what actually keeps this safe:
+            # confirmed real on a DIFFERENT document where a stray noise
+            # digit ("8") coincidentally appeared once near unrelated
+            # content, got correctly skipped as a false candidate, but
+            # then made "expected(8) not in remaining" true once real
+            # processing passed it -- without this == expected+1 guard,
+            # that let the walk leap to a much later, unrelated number
+            # (11) as if it were a real continuation, when the document's
+            # real content had simply ended at question 7.
+            starts.append({"number": str(c["number"]), "page": c["page"], "y0": c["y0"]})
+            expected = c["number"] + 1
     return starts
 
 
