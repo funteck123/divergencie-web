@@ -272,9 +272,27 @@ def extract_lines(doc):
                     continue
                 bold = any("bold" in s.get("font", "").lower() for s in spans)
                 bbox = line.get("bbox", [0, 0, 0, 0])
+                x0, y0, x1, y1 = bbox
+                if page.rotation != 0:
+                    # get_text("dict") returns bbox coordinates in the
+                    # PRE-rotation (raw mediabox) frame, not the rotated
+                    # frame page.rect describes -- confirmed real on a
+                    # rotation=270 Practical-paper MS where a heading's
+                    # raw x0 (74.8, "left margin") actually sits near the
+                    # visual RIGHT edge once rotation is applied, and a
+                    # raw y0 (777) exceeded the page's own rotated height
+                    # (595) entirely. Any position heuristic (x0<100 for
+                    # "left margin", y0 ordering for reading order) is
+                    # meaningless without correcting for this first.
+                    m = page.rotation_matrix
+                    corners = [fitz.Point(x0, y0) * m, fitz.Point(x1, y1) * m,
+                               fitz.Point(x0, y1) * m, fitz.Point(x1, y0) * m]
+                    xs = [p.x for p in corners]
+                    ys = [p.y for p in corners]
+                    x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
                 lines.append({
                     "text": text, "size": size, "bold": bold,
-                    "page": page_num, "y0": bbox[1], "y1": bbox[3], "x0": bbox[0],
+                    "page": page_num, "y0": y0, "y1": y1, "x0": x0,
                     # This document's own raw stream order -- kept
                     # because it's what actually preserves a wrapped
                     # paragraph's own line order correctly (confirmed
@@ -1640,22 +1658,49 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
     images = []
     if page_start == page_end:
         page = doc[page_start]
-        top = max(0, y_start - 4)
-        bottom = y_end - 4 if y_end is not None else page.rect.height
-        rect = fitz.Rect(0, top, page.rect.width, max(bottom, top + 10))
+        if page.rotation != 0:
+            # get_text()'s y/x coordinates come back in the PRE-rotation
+            # frame, but page.rect is already the ROTATED box -- confirmed
+            # real on a landscape (rotation=90) practical-paper MS page
+            # where a heading's own y0 (672) exceeded page.rect.height
+            # (612) entirely, collapsing the clip to zero height and
+            # crashing ("Invalid bandwriter header dimensions"). Cropping
+            # correctly needs the page's rotation matrix; rendering the
+            # full page instead is the safe fallback -- less tight, never
+            # wrong or crashing.
+            images.append(page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
+            return stitch_images_vertically(images)
+        # Some MS/QP files mix landscape pages (~595pt tall) with a
+        # portrait cover (~842pt), so a y-coordinate captured near one
+        # page's bottom edge isn't guaranteed to stay inside another
+        # page's own bounds once clipped -- confirmed real ("Invalid
+        # bandwriter header dimensions" crash) even on a same-page span.
+        # Clamp both edges to this page's actual height.
+        top = max(0, min(y_start - 4, page.rect.height))
+        bottom = (y_end - 4) if y_end is not None else page.rect.height
+        bottom = max(0, min(bottom, page.rect.height))
+        rect = fitz.Rect(0, top, page.rect.width, max(bottom, top + 10, 10))
         pix = page.get_pixmap(clip=rect, matrix=fitz.Matrix(2, 2))
         images.append(pix.tobytes("png"))
     else:
         first_page = doc[page_start]
-        rect1 = fitz.Rect(0, max(0, y_start - 4), first_page.rect.width, first_page.rect.height)
-        images.append(first_page.get_pixmap(clip=rect1, matrix=fitz.Matrix(2, 2)).tobytes("png"))
+        if first_page.rotation != 0:
+            images.append(first_page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
+        else:
+            top1 = max(0, min(y_start - 4, first_page.rect.height))
+            rect1 = fitz.Rect(0, top1, first_page.rect.width, first_page.rect.height)
+            images.append(first_page.get_pixmap(clip=rect1, matrix=fitz.Matrix(2, 2)).tobytes("png"))
         for mid in range(page_start + 1, page_end):
             mid_page = doc[mid]
             images.append(mid_page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
         if y_end is not None and y_end > 4:
             last_page = doc[page_end]
-            rect2 = fitz.Rect(0, 0, last_page.rect.width, y_end - 4)
-            images.append(last_page.get_pixmap(clip=rect2, matrix=fitz.Matrix(2, 2)).tobytes("png"))
+            if last_page.rotation != 0:
+                images.append(last_page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
+            else:
+                bottom2 = max(0, min(y_end - 4, last_page.rect.height))
+                rect2 = fitz.Rect(0, 0, last_page.rect.width, bottom2)
+                images.append(last_page.get_pixmap(clip=rect2, matrix=fitz.Matrix(2, 2)).tobytes("png"))
     return stitch_images_vertically(images)
 
 
@@ -2152,8 +2197,22 @@ def find_bare_number_question_starts(lines):
         if l["page"] == 0:
             continue  # page 0 is always this corpus's own cover/metadata sheet
         text = l["text"].strip()
-        if re.match(r'^\d{1,2}$', text) and l["x0"] < 100:
-            candidates.append({"number": int(text), "page": l["page"], "y0": l["y0"]})
+        # Usually the number sits alone on its own line. But when a question's
+        # first part starts immediately (no diagram/table pushing it down),
+        # some papers run "7 (a) For each of the following..." as ONE line --
+        # confirmed real on a Physics paper where this cost a whole missed
+        # question. Match either shape; the monotonic-sequence filter below
+        # is what actually keeps false positives out, not this regex.
+        m = re.match(r'^(\d{1,2})$', text) or re.match(r'^(\d{1,2})\s*\(a\)', text)
+        # 100 missed a real heading confirmed at x0=107 (A-Level Biology's
+        # own margin runs slightly wider than the vendor samples this
+        # threshold was first tuned on) -- 120 covers it. The monotonic
+        # sequence gate below, not this threshold, is what actually keeps
+        # false positives out (proven on 15 real samples), so widening
+        # this modestly is safe for the same reason it was safe on the MS
+        # side.
+        if m and l["x0"] < 120:
+            candidates.append({"number": int(m.group(1)), "page": l["page"], "y0": l["y0"]})
 
     starts = []
     expected = 1
@@ -2164,30 +2223,274 @@ def find_bare_number_question_starts(lines):
     return starts
 
 
-# Two confirmed real phrasings for a Theory mark scheme's per-question
-# total (2026-09-05 survey, 6 real MS samples): "[Total: N]" / "[TotalN]"
-# (no space) and "TOTAL = [N]". Unlike the QP side, these MS files do NOT
-# reliably restate a bare question number at all -- real content is
-# scattered mark-code annotations ("B1", "C1") at arbitrary positions, so
-# there is no equivalent "find the start of question N" signal here.
-# Instead each TOTAL marker marks the END of one question's block; the
-# Nth marker in reading order is assumed to be question N's own total
-# (paired with the QP side by ORDER, not by any number match -- there
-# isn't one to match against). A mark scheme with zero markers, or whose
-# marker count doesn't match the QP's own question count, still returns
-# whatever was found -- the caller is expected to flag the mismatch
-# rather than this function guessing its way around it.
-_MS_TOTAL_MARKER_RE = re.compile(r'\[\s*Total\s*:?\s*(\d+)\s*\]|TOTAL\s*=\s*\[\s*(\d+)\s*\]', re.IGNORECASE)
+# SUPERSEDED 2026-09-06: the original approach scanned for "[Total: N]" /
+# "TOTAL = [N]" phrasings on the theory that MS files "do NOT reliably
+# restate a bare question number." That assumption was wrong -- direct
+# inspection of the actual failing PDFs (Math P1, A-Level Physics, IGCSE
+# Chemistry Practical, all "Save My Exams" vendor MS files) showed every
+# one of them DOES restate a bare-number heading ("1", "2", ... at the
+# left margin) exactly like the QP side, and "[Total: N]"/"TOTAL = [N]"
+# barely occurs at all -- real files instead scatter a bare "[N]" after
+# EVERY sub-part, so summing those brackets within a block gives the
+# question's total. Reusing find_bare_number_question_starts (already
+# proven 15/15 on the QP side, and independently confirmed here to
+# correctly find 9/9, 7/7 and 4/4 real headings on three previously-0%
+# papers) replaces the marker search entirely.
 
 
-def find_ms_total_markers(lines):
-    markers = []
-    for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
-        m = _MS_TOTAL_MARKER_RE.search(l["text"])
+# A real MS vendor format confirmed distinct from the prose "bare-number
+# heading" shape above: a literal Question|Answer|Marks TABLE, where the
+# Question column holds per-PART labels ("1(a)", "1b)", "4(c)(i)") --
+# sometimes merged onto one line ("1(a)"), sometimes split across two
+# spans ("1" then "(a" as separate lines, same y-band, at a WIDER x0 than
+# the prose heading's <100 margin. Widening the position gate to catch
+# these is NOT safe on its own, though -- confirmed real: a Biology MS's
+# own mark-scheme rubric is a tightly-packed numbered bullet list ("1" /
+# "2" / ... / "9", one reason per line) sitting at x0=133, squarely in
+# that widened zone, and it happened to start right where the real
+# question sequence was expecting its next number, inflating one paper's
+# answer count from 6 real questions to 9 bogus ones. The signal that
+# actually separates the two: every real widened-zone heading confirmed
+# on real hybrid table/prose documents is immediately followed, in
+# reading order, by a lettered sub-part marker ("(a" or "(a)") -- a
+# rubric list item is followed by its own explanatory text instead. A
+# BARE lone digit (no attached letter) in the widened zone only counts as
+# a candidate if that next-line check passes; a digit merged with its own
+# letter on the same line ("1(a)") needs no such check, since the letter
+# is already proof enough.
+# A bare "(" alone (no "a" or ")") is a real, confirmed variant -- one
+# vendor's own font drops the "a)" glyphs from "(a)" on some pages (the
+# same class of font-rendering defect diagnosed earlier for "Question N"
+# headings), leaving only the opening paren extractable. Rejecting that
+# lone "(" cascaded into losing an ENTIRE document: real heading "1"
+# failed this check, so the monotonic walk's "expected" counter never
+# advanced past 1, silently discarding every later real heading too.
+_MS_SUBPART_RE = re.compile(r'^\(a?\)?', re.IGNORECASE)
+
+
+def find_ms_heading_candidates(lines):
+    """Every position-plausible 'this might start question N' candidate,
+    BEFORE the monotonic accept-if-next-expected-integer walk. Exposed
+    separately from find_ms_question_starts so an LLM verification pass
+    (see llm_verify_ms_headings) can judge the same raw candidates the
+    heuristic considered, rather than only what already survived it."""
+    ordered = sorted(lines, key=lambda l: (l["page"], l["y0"]))
+    candidates = []
+    for idx, l in enumerate(ordered):
+        if l["page"] == 0:
+            continue
+        text = l["text"].strip()
+        if l["x0"] >= 200:
+            continue
+        m = re.match(r'^(\d{1,2})$', text)
         if m:
-            marks = int(m.group(1) or m.group(2))
-            markers.append({"page": l["page"], "y0": l["y0"], "marks": marks})
-    return markers
+            if l["x0"] >= 100:
+                # "next in reading order" isn't reliable here -- the raw
+                # PDF content stream can emit a same-line neighbor (e.g. a
+                # "[1]" marks bracket sharing this exact y0) BEFORE the
+                # "(a" sub-part marker that's what actually confirms this
+                # digit is a real heading, not a rubric-list item. Check
+                # any nearby line within a few points of y0, not strictly
+                # the next list entry.
+                nearby = any(
+                    o["page"] == l["page"] and abs(o["y0"] - l["y0"]) < 10
+                    and _MS_SUBPART_RE.match(o["text"].strip())
+                    for o in ordered[idx + 1:idx + 5]
+                )
+                if not nearby:
+                    continue
+        elif len(text) <= 8:
+            m = re.match(r'^(\d{1,2})\s*\(?[a-zA-Z]\)?', text)
+        if m:
+            candidates.append({
+                "number": int(m.group(1)), "page": l["page"], "y0": l["y0"], "idx": idx,
+            })
+    return candidates, ordered
+
+
+def _monotonic_accept(candidates):
+    starts = []
+    expected = 1
+    for c in candidates:
+        if c["number"] == expected:
+            starts.append({"number": str(c["number"]), "page": c["page"], "y0": c["y0"]})
+            expected += 1
+    return starts
+
+
+def find_ms_question_starts(lines):
+    candidates, _ = find_ms_heading_candidates(lines)
+    return _monotonic_accept(candidates)
+
+
+def _has_ambiguous_cluster(starts, threshold=40):
+    """A rubric bullet list (real, confirmed: Biology mark schemes listing
+    several acceptable reasons as "1"/"2"/"3"...) sits at the same kind of
+    left margin as a real heading and can coincidentally continue the
+    monotonic sequence -- but its items pack in at ~12-13pt line spacing,
+    far tighter than the whitespace between two real questions. Flags a
+    paper as worth an LLM check rather than trusting the heuristic blind."""
+    for i in range(1, len(starts)):
+        a, b = starts[i - 1], starts[i]
+        if a["page"] == b["page"] and (b["y0"] - a["y0"]) < threshold:
+            return True
+    return False
+
+
+def llm_verify_ms_headings(candidates, ordered):
+    """Ask Gemini which raw candidates are real question-number headings
+    vs. rubric-list bullet items -- the one signal position/regex heuristics
+    can't reliably see (both shapes can share the same left margin and
+    both can coincidentally continue 1,2,3... in sequence). One call per
+    ambiguous document; each candidate gets a few lines of real
+    surrounding text so the model has the same context a human marker
+    would use to tell "start of question 4" from "reason 4 in this list".
+    Returns the same candidate dicts, filtered to the model's verdict --
+    falls back to returning candidates UNCHANGED (i.e. trust the
+    heuristic) only once every real provider/retry option is exhausted,
+    never blocks the pipeline."""
+    import os as _os, json as _json, re as _re, time as _time
+    import urllib.request as _ur, urllib.error as _ue
+
+    items = []
+    for i, c in enumerate(candidates):
+        idx = c["idx"]
+        before = " / ".join(o["text"].strip() for o in ordered[max(0, idx - 2):idx])
+        after = " / ".join(o["text"].strip() for o in ordered[idx + 1:idx + 4])
+        items.append(
+            f'{i}: number="{c["number"]}" | before="{before}" | AFTER="{after}"'
+        )
+    prompt = (
+        "You are looking at candidate lines from a Cambridge exam mark scheme "
+        "PDF, each a bare number that MIGHT be the start of a new numbered "
+        "question (like \"4 (a) State...\") or might instead be one bullet "
+        "item in a numbered list of acceptable answers/reasons inside some "
+        "OTHER question's mark scheme (like \"3 hydrogen bonds broken ;\"). "
+        "For each candidate below, decide which it is. A real question start "
+        "is normally followed by a lettered sub-part marker like \"(a)\" or by "
+        "substantial new question content; a list item is normally followed "
+        "by a short answer phrase ending in a semicolon or similar, often "
+        "packed tightly with neighboring list items.\n\n"
+        + "\n".join(items)
+        + "\n\nReply with ONLY a JSON array of the integer indices (the number "
+        "before each colon above) that are REAL question-start headings, "
+        "e.g. [0,2,5]. No other text."
+    )
+
+    def _extract_indices(text):
+        m = _re.search(r'\[[\d,\s]*\]', text)
+        if not m:
+            return None
+        return set(_json.loads(m.group(0)))
+
+    def _call_openrouter():
+        api_key = _os.environ.get("OPENROUTER_API_KEY")
+        if not api_key:
+            return None
+        model = _os.environ.get("OPENROUTER_TEXT_MODEL", "nvidia/nemotron-3-super-120b-a12b:free")
+        # Confirmed real: two identical calls on the same document
+        # returned different index sets (a correct [0,1,16,17] one run,
+        # an under-filtered [0,1] the next). temperature 0 doesn't
+        # guarantee bit-for-bit reproducibility on every provider, but
+        # cuts sampling variance on what's meant to be a judgment call,
+        # not creative writing.
+        body = _json.dumps({
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0,
+        }).encode("utf-8")
+        req = _ur.Request(
+            "https://openrouter.ai/api/v1/chat/completions",
+            data=body,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
+        )
+        with _ur.urlopen(req, timeout=30) as r:
+            resp = _json.load(r)
+        return resp["choices"][0]["message"]["content"]
+
+    def _make_gemini_caller(model_name):
+        def _call():
+            api_key = _os.environ.get("GEMINI_API_KEY")
+            if not api_key:
+                return None
+            body = _json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
+            url = (
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model_name}:generateContent?key={api_key}"
+            )
+            req = _ur.Request(url, data=body, headers={"Content-Type": "application/json"})
+            with _ur.urlopen(req, timeout=30) as r:
+                resp = _json.load(r)
+            return resp["candidates"][0]["content"]["parts"][0]["text"]
+        return _call
+
+    # Gemini's non-reasoning models return a clean, correct, single-line
+    # answer fast -- but its free tier is only 20 requests/DAY *per
+    # project per model* (confirmed real via the actual 429 body, not the
+    # 1500/day this codebase's own grading path assumed elsewhere), so a
+    # few dozen ambiguous documents can burn through one model's quota
+    # inside a single debugging session. Each Gemini model name is billed
+    # against its OWN separate quota bucket, so round-robining across
+    # several (flash, flash-lite, the newer 3.6-flash) multiplies the
+    # real daily ceiling instead of hitting the same wall three times.
+    # OpenRouter's free reasoning models are the LAST resort, not
+    # preferred, despite a nominally higher ceiling -- confirmed real:
+    # they write their entire chain-of-thought into the same token budget
+    # as the final answer and reliably hit finish_reason="length" with
+    # content=None on a real-sized prompt, even at max_tokens=16000.
+    providers = [
+        ("gemini-3.5-flash-lite", _make_gemini_caller("gemini-3.5-flash-lite")),
+        ("gemini-3.6-flash", _make_gemini_caller("gemini-3.6-flash")),
+        ("gemini-3.5-flash", _make_gemini_caller("gemini-3.5-flash")),
+        ("openrouter", _call_openrouter),
+    ]
+    def _get_one_verdict():
+        for provider, call in providers:
+            for attempt in range(3):
+                try:
+                    text = call()
+                    if text is None:
+                        break  # no key configured for this provider, try the next
+                    keep = _extract_indices(text)
+                    if keep is None:
+                        break
+                    return keep
+                except _ue.HTTPError as e:
+                    if e.code == 429 and attempt < 2:
+                        _time.sleep(8 * (attempt + 1))
+                        continue
+                    break
+                except Exception:
+                    break
+        return None
+
+    # A single verdict isn't trustworthy on its own -- confirmed real:
+    # the identical prompt against the identical document returned a
+    # correct 4-heading answer on one call and an under-filtered
+    # 2-heading answer on the next (LLM sampling variance, not a bug),
+    # and blindly trusting one-shot verdicts across many documents made
+    # OVERALL accuracy worse than not asking at all (a real regression:
+    # 97%->94% in one full-corpus run). Require two independent verdicts
+    # to agree exactly before overriding the heuristic; any disagreement,
+    # or fewer than two successful calls, means trust the heuristic
+    # instead -- silence (no correction) is the safe failure mode here,
+    # not a guess.
+    first = _get_one_verdict()
+    if first is None:
+        return candidates
+    second = _get_one_verdict()
+    if second is None or first != second:
+        return candidates
+    if not first:
+        # Confirmed real: the model can be CONSISTENTLY wrong, not just
+        # inconsistent -- both calls agreeing on an EMPTY set turned 7
+        # papers that had at least some answers (including papers that
+        # heuristic already matched exactly) into papers with NO answers
+        # shown at all in Practice mode. A worse-than-original count is
+        # recoverable; zero is not -- treat empty agreement as a failure
+        # to verify, not a real verdict.
+        return candidates
+    return [c for i, c in enumerate(candidates) if i in first]
 
 
 def parse_theory_qp(pdf_path):
@@ -2210,27 +2513,57 @@ def parse_theory_qp(pdf_path):
 
 
 def parse_theory_ms(pdf_path):
-    """MS side of a Theory paper -- delimited by [Total: N] / TOTAL = [N]
-    markers (see find_ms_total_markers), paired to the QP's questions by
-    ORDER (1st block -> Q1, 2nd -> Q2, ...) since there is no per-question
-    number to match against here, unlike Math's MS side."""
+    """MS side of a Theory paper -- delimited by find_ms_question_starts,
+    paired to the QP's questions BY NUMBER. Marks-per-question notation
+    varies by vendor section (bracketed "[N]" in prose, a bare standalone
+    digit in a table's own Marks column) so both are summed; a real block
+    only ever uses one convention, so this never double-counts."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    markers = find_ms_total_markers(lines)
+    candidates, ordered = find_ms_heading_candidates(lines)
+    starts = _monotonic_accept(candidates)
+    if _has_ambiguous_cluster(starts):
+        # The tight-cluster signature (see _has_ambiguous_cluster) means
+        # the heuristic alone can't tell a real heading from a rubric
+        # list item here -- ask the model, which has the semantic context
+        # (what follows each number reads like a new question vs. a list
+        # entry) that no position/regex rule can see.
+        confirmed = llm_verify_ms_headings(candidates, ordered)
+        llm_starts = _monotonic_accept(confirmed)
+        # Confirmed real: a non-empty confirmed set can still walk to a
+        # completely EMPTY starts list (e.g. it drops the very candidate
+        # that would have matched "expected=1", so the monotonic walk
+        # never advances at all) -- turning papers that had SOME answers,
+        # including some the heuristic already matched exactly, into
+        # papers with NONE shown in Practice mode. That check belongs
+        # here, against the same monotonic-walked shape parse_theory_ms
+        # actually uses, not against the raw candidate set inside
+        # llm_verify_ms_headings, which can't see this failure mode.
+        if llm_starts:
+            starts = llm_starts
     blocks = []
-    prev_page, prev_y = 0, 0
-    for i, m in enumerate(markers):
-        # Some of these MS files mix landscape pages (height ~595pt) in
-        # with the portrait cover page (~842pt) -- a marker sitting near
-        # the bottom of a landscape page pushed y0+20 PAST that page's
-        # own height, corrupting the next block's start position (a real
-        # crash: "Invalid bandwriter header dimensions"). Clamp to the
-        # actual page height rather than assuming a fixed page size.
-        end_y = min(m["y0"] + 20, doc[m["page"]].rect.height)
-        image_bytes = render_question_image(doc, prev_page, prev_y, m["page"], end_y)
+    for i, s in enumerate(starts):
+        if i + 1 < len(starts):
+            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
+        else:
+            end_page, end_y = doc.page_count - 1, None
+        image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
-        blocks.append({"questionNumber": str(i + 1), "image": image_b64, "marks": m["marks"]})
-        prev_page, prev_y = m["page"], end_y
+        text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
+        bracket_marks = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
+        bare_marks = sum(
+            int(l["text"].strip())
+            for l in lines
+            if re.match(r'^\d{1,2}$', l["text"].strip())
+            and l["x0"] > 500
+            and (l["page"] > s["page"] or (l["page"] == s["page"] and l["y0"] >= s["y0"]))
+            and (end_y is None or l["page"] < end_page or (l["page"] == end_page and l["y0"] < end_y))
+        )
+        blocks.append({
+            "questionNumber": s["number"],
+            "image": image_b64,
+            "marks": bracket_marks or bare_marks,
+        })
     doc.close()
     return blocks
 
