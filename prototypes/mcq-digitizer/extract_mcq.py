@@ -2201,9 +2201,21 @@ def find_bare_number_question_starts(lines):
         # first part starts immediately (no diagram/table pushing it down),
         # some papers run "7 (a) For each of the following..." as ONE line --
         # confirmed real on a Physics paper where this cost a whole missed
-        # question. Match either shape; the monotonic-sequence filter below
-        # is what actually keeps false positives out, not this regex.
-        m = re.match(r'^(\d{1,2})$', text) or re.match(r'^(\d{1,2})\s*\(a\)', text)
+        # question. A-Level Math has its own variant of the same problem:
+        # several real headings merge straight into a full sentence with NO
+        # lettered sub-part at all ("1       Functions f and g are defined
+        # by..."), confirmed real to silently zero out an entire paper's QP
+        # side (this shape recurs across many Math worksheets, each losing
+        # most or all of their real questions the same way). Reuses the
+        # QUESTION_BARE_RE shape already used elsewhere in this file for
+        # exactly this pattern. Match any shape; the monotonic-sequence
+        # filter below is what actually keeps false positives out, not
+        # this regex.
+        m = (
+            re.match(r'^(\d{1,2})$', text)
+            or re.match(r'^(\d{1,2})\s*\(a\)', text)
+            or re.match(r'^(\d{1,2})\s+[A-Z]', text)
+        )
         # 100 missed a real heading confirmed at x0=107 (A-Level Biology's
         # own margin runs slightly wider than the vendor samples this
         # threshold was first tuned on) -- 120 covers it. The monotonic
@@ -2214,13 +2226,14 @@ def find_bare_number_question_starts(lines):
         if m and l["x0"] < 120:
             candidates.append({"number": int(m.group(1)), "page": l["page"], "y0": l["y0"]})
 
-    starts = []
-    expected = 1
-    for c in candidates:
-        if c["number"] == expected:
-            starts.append({"number": str(c["number"]), "page": c["page"], "y0": c["y0"]})
-            expected += 1
-    return starts
+    # Confirmed real on several A-Level Math papers: a heading merges
+    # into a full sentence with no "(a)" marker at all ("2       The
+    # function f is defined by...") or sits at an unusual x0, so it never
+    # becomes a candidate here -- and a strict walk then rejects EVERY
+    # later real heading too, since none of them will ever equal an
+    # "expected" that's stuck one number behind forever. Reuses the same
+    # gap-of-1 tolerance already proven safe on the MS side.
+    return _monotonic_accept(candidates)
 
 
 # SUPERSEDED 2026-09-06: the original approach scanned for "[Total: N]" /
