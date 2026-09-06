@@ -1693,11 +1693,22 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
         for mid in range(page_start + 1, page_end):
             mid_page = doc[mid]
             images.append(mid_page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
-        if y_end is not None and y_end > 4:
+        # A real, confirmed bug: `range(page_start+1, page_end)` above
+        # never includes page_end itself, and this whole block used to
+        # only render page_end when y_end was a real number -- silently
+        # DROPPING page_end's own content from the crop IMAGE (though
+        # extract_block_text's own separate boundary logic still
+        # captured its text/marks correctly) any time the LAST question
+        # in a document spanned onto the document's own final page. Found
+        # by hand comparing a crop image against its own extracted marks
+        # not matching what was visibly shown. page_end must always be
+        # rendered here -- full page when y_end is None (this is the
+        # true end of the document), clipped otherwise.
+        if page_end > page_start:
             last_page = doc[page_end]
-            if last_page.rotation != 0:
+            if last_page.rotation != 0 or y_end is None:
                 images.append(last_page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
-            else:
+            elif y_end > 4:
                 bottom2 = max(0, min(y_end - 4, last_page.rect.height))
                 rect2 = fitz.Rect(0, 0, last_page.rect.width, bottom2)
                 images.append(last_page.get_pixmap(clip=rect2, matrix=fitz.Matrix(2, 2)).tobytes("png"))
