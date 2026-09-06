@@ -2601,6 +2601,14 @@ def parse_theory_ms(pdf_path):
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
+        # A vendor's own "[Total: N]" is authoritative when present -- confirmed
+        # real that some blocks carry ONLY this (individual sub-part marks shown
+        # as bare codes like "B1"/"C1", never bracketed), which the old bare
+        # `[N]` sum entirely missed, marking a real, correctly-paired answer as
+        # 0 marks. Checked first and used alone, never added to the bracket
+        # sum, so a block that also has per-part `[N]` brackets doesn't get
+        # double-counted against its own restated total.
+        total_match = re.search(r'\[\s*Total\s*:?\s*(\d+)\s*\]', text, re.IGNORECASE)
         bracket_marks = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
         bare_marks = sum(
             int(l["text"].strip())
@@ -2610,10 +2618,11 @@ def parse_theory_ms(pdf_path):
             and (l["page"] > s["page"] or (l["page"] == s["page"] and l["y0"] >= s["y0"]))
             and (end_y is None or l["page"] < end_page or (l["page"] == end_page and l["y0"] < end_y))
         )
+        marks = int(total_match.group(1)) if total_match else (bracket_marks or bare_marks)
         blocks.append({
             "questionNumber": s["number"],
             "image": image_b64,
-            "marks": bracket_marks or bare_marks,
+            "marks": marks,
         })
     doc.close()
     return blocks
