@@ -136,7 +136,14 @@
         <label class="field-label">Subject</label>
         <select id="pickSubject"></select>
         <label class="field-label">Component</label>
-        <select id="pickComponent"></select>
+        <div style="display:flex; gap:0.5rem; align-items:stretch;">
+          <select id="pickComponent" style="flex:1;"></select>
+          <!-- TKT-0246: Mistakes Mode moved here from a generic account-
+               wide home-screen link -- it now practices only the mistakes
+               belonging to papers in THIS component, not every subject the
+               student has ever answered a question in. -->
+          <button type="button" class="timer-btn" id="mistakesModeBtn" style="display:none; white-space:nowrap; padding:0 0.75rem;">Mistakes Mode</button>
+        </div>
         <label class="field-label">Paper</label>
         <select id="pickPaper"></select>
         <p class="hint" id="pickPaperNote"></p>
@@ -149,9 +156,6 @@
     </p>
     <p class="progress-link" id="progressLinkRow" style="display:none;">
       <a href="#" id="showProgressLink">View my progress &amp; the leaderboard</a>
-    </p>
-    <p class="progress-link" id="mistakesLinkRow" style="display:none;">
-      <a href="#" id="startMistakesLink">Mistakes Mode — practice only what you've gotten wrong</a>
     </p>
     <p class="hint" id="mistakesStatus" style="display:none; text-align:center;"></p>
   </div>
@@ -177,6 +181,7 @@
     <div class="card" id="modeSelectCard">
       <h2>How do you want to use this paper?</h2>
       <p class="hint" id="digitizeCount"></p>
+      <div id="pdfLinksMenu" style="margin-bottom:0.75rem;"></div>
       <button class="primary-btn mode-btn" id="startPracticeBtn">Practice mode — browse questions &amp; answers freely, no grading</button>
       <button class="primary-btn mode-btn" id="startTestBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
     </div>
@@ -187,6 +192,7 @@
         <span class="timer-display" id="timerDisplay">00:00</span>
         <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
       </div>
+      <div id="pdfLinksPractice" style="margin-top:0.6rem;"></div>
     </div>
 
     <div id="flaggedSummary" class="hint" style="display:none; margin-bottom:0.75rem;"></div>
@@ -265,6 +271,7 @@
       <h2 id="structuredTitle">How do you want to use this paper?</h2>
       <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
       <p class="hint" id="structuredCount" style="display:none;"></p>
+      <div id="structuredPdfLinksMenu" style="margin-bottom:0.75rem;"></div>
       <button class="primary-btn mode-btn" id="structuredStartPracticeBtn" style="display:none;">Practice mode — browse questions &amp; answers freely, no grading</button>
       <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
       <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet.</p>
@@ -277,6 +284,7 @@
         <span class="timer-display" id="structuredTimerDisplay">00:00</span>
         <button class="timer-btn" id="structuredTimerToggleBtn" type="button">Pause</button>
       </div>
+      <div id="structuredPdfLinksPractice" style="margin-top:0.6rem;"></div>
     </div>
 
     <div id="structuredItems"></div>
@@ -314,10 +322,28 @@ const accountName = urlParams.get("name");
 // PDF upload has no stable paper identity to track against, so it's
 // deliberately never scored into the leaderboard.
 let currentAttemptMeta = null;
+// TKT-0245: the MCQ-flow equivalent of currentStructuredPaper -- null for
+// a manual upload (no stable Drive fileId to download), set for a
+// library-sourced paper so the "View QP/MS PDF" links have something to
+// point at.
+let currentMcqPaper = null;
+
+// TKT-0245: "View QP PDF" / "View MS PDF" -- shown in the paper's mode-
+// select menu and in Practice mode, never in Test mode (exam integrity:
+// looking up the real mark scheme mid-quiz would defeat the point of a
+// graded attempt). Both link straight at this same-origin proxy endpoint,
+// which streams the real PDF as a download -- never a navigation to a
+// Google Drive view page a student may not even have access to.
+function pdfLinksHtml(qpId, msId, title) {
+  if (!qpId) return "";
+  const safeTitle = encodeURIComponent(title || "worksheet");
+  return `
+    <a class="hint" href="/api/mcq/pdf?fileId=${encodeURIComponent(qpId)}&filename=${safeTitle}%20QP" style="margin-right:1.2rem;">📄 View QP PDF</a>${msId ? `<a class="hint" href="/api/mcq/pdf?fileId=${encodeURIComponent(msId)}&filename=${safeTitle}%20MS">📄 View MS PDF</a>` : ""}
+  `;
+}
 
 if (accountId) {
   document.getElementById("progressLinkRow").style.display = "block";
-  document.getElementById("mistakesLinkRow").style.display = "block";
 }
 
 function escapeHtml(s) {
@@ -393,6 +419,8 @@ function applyDigitizeResult(data) {
     ? ` ${ambiguousCount} question${ambiguousCount === 1 ? "" : "s"} couldn't be graded automatically -- the mark scheme's explanation didn't narrow to exactly one answer letter for them (shown, but excluded from scoring).`
     : "";
   document.getElementById("digitizeCount").textContent = `Found ${quiz.length} question${quiz.length === 1 ? "" : "s"}.${unmatchedNote}`;
+  document.getElementById("pdfLinksMenu").innerHTML = currentMcqPaper ? pdfLinksHtml(currentMcqPaper.qpId, currentMcqPaper.msId, currentMcqPaper.title) : "";
+  document.getElementById("pdfLinksPractice").innerHTML = "";
   document.getElementById("modeSelectCard").style.display = "block";
   document.getElementById("testHeader").style.display = "none";
   document.getElementById("submitQuizBtn").style.display = "none";
@@ -408,6 +436,7 @@ document.getElementById("startPracticeBtn").addEventListener("click", () => {
   document.getElementById("finishPracticeBtn").style.display = "block";
   document.getElementById("testHeader").style.display = "block";
   document.getElementById("quizHeaderTitle").textContent = "Practice";
+  document.getElementById("pdfLinksPractice").innerHTML = currentMcqPaper ? pdfLinksHtml(currentMcqPaper.qpId, currentMcqPaper.msId, currentMcqPaper.title) : "";
   renderQuiz();
   resetTimer();
   startTimer();
@@ -418,6 +447,9 @@ document.getElementById("startTestBtn").addEventListener("click", () => {
   document.getElementById("testHeader").style.display = "block";
   document.getElementById("quizHeaderTitle").textContent = "Answer the quiz";
   document.getElementById("submitQuizBtn").style.display = "block";
+  // TKT-0245: never shown in Test mode -- looking up the real mark scheme
+  // mid-quiz would defeat the point of a graded attempt.
+  document.getElementById("pdfLinksPractice").innerHTML = "";
   renderQuiz();
   resetTimer();
   startTimer();
@@ -443,23 +475,35 @@ document.getElementById("showUploadLink").addEventListener("click", (e) => {
 
 // ---- Mistakes Mode -- the third mode, built from the account's own
 // history rather than one just-picked paper. Skips the library
-// board/subject/component/paper picker and the mode-select screen
-// entirely: it goes straight from the stage0 link to an assembled quiz,
-// possibly merging questions from several different papers/chapters/
-// subjects in one sitting (whatever's currently unresolved -- see
-// scores.mjs's own comment on the append-only/resolved-flag design).
+// board/subject/component picker (the same one used to pick a paper),
+// scoped to only the mistakes belonging to papers in that ONE component
+// (TKT-0246, moved here 2026-09-09 from a generic account-wide home-screen
+// link that mixed in every subject the student had ever answered a
+// question in). Still goes straight to an assembled quiz, possibly
+// merging questions from several different papers within that component
+// (whatever's currently unresolved -- see scores.mjs's own comment on the
+// append-only/resolved-flag design).
 async function startMistakesMode() {
   if (!accountId) return;
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const component = document.getElementById("pickComponent").value;
+  if (!board || !subject || !component) return;
+  const fullSubject = `${board} ${subject}`;
+  const componentPaperIds = new Set((((library[board] || {})[subject] || {})[component] || []).map((p) => p.qpId));
+
   const statusEl = document.getElementById("mistakesStatus");
   statusEl.style.display = "block";
-  statusEl.textContent = "Loading your mistakes…";
+  statusEl.textContent = `Loading your mistakes in ${component}…`;
   try {
-    const res = await fetch(`/api/mcq/mistakes?account=${encodeURIComponent(accountId)}`);
+    const res = await fetch(`/api/mcq/mistakes?account=${encodeURIComponent(accountId)}&subject=${encodeURIComponent(fullSubject)}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    const mistakes = data.mistakes || [];
+    // The backend only filters by subject (mistakes rows don't store
+    // component at all) -- narrow to this component's own papers here.
+    const mistakes = (data.mistakes || []).filter((m) => componentPaperIds.has(m.paperId));
     if (mistakes.length === 0) {
-      statusEl.textContent = "No mistakes to practice right now — nice work.";
+      statusEl.textContent = `No mistakes to practice in ${component} right now — nice work.`;
       return;
     }
 
@@ -488,7 +532,10 @@ async function startMistakesMode() {
     quiz = merged;
     quizMode = "mistakes";
     currentAttemptMeta = null; // multi-origin quiz -- never one trackable attempt, see the submit handler's own "mistakes" branch
+    currentMcqPaper = null; // multi-origin -- no single paper's PDF to link to
     document.getElementById("digitizeCount").textContent = `${merged.length} previously-missed question${merged.length === 1 ? "" : "s"}.`;
+    document.getElementById("pdfLinksMenu").innerHTML = "";
+    document.getElementById("pdfLinksPractice").innerHTML = "";
     document.getElementById("modeSelectCard").style.display = "none";
     document.getElementById("testHeader").style.display = "block";
     document.getElementById("quizHeaderTitle").textContent = "Mistakes Mode";
@@ -504,7 +551,7 @@ async function startMistakesMode() {
     statusEl.textContent = `Couldn't load your mistakes (${e.message}).`;
   }
 }
-document.getElementById("startMistakesLink").addEventListener("click", (e) => { e.preventDefault(); startMistakesMode(); });
+document.getElementById("mistakesModeBtn").addEventListener("click", startMistakesMode);
 document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
   e.preventDefault();
   showStage(0);
@@ -581,9 +628,14 @@ async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
   try {
-    const [res, metaRes] = await Promise.all([
+    const [res, metaRes, titlesRes] = await Promise.all([
       fetch("/api/mcq/library"),
       fetch("/api/mcq/subject-meta"),
+      // TKT-0244: an always-available (not enrollment-filtered) title map,
+      // only needed at all once an account is tracking history -- see
+      // GET /api/mcq/paper-titles's own header comment for why this must
+      // stay separate from the enrollment-scoped /library response below.
+      accountId ? fetch("/api/mcq/paper-titles") : Promise.resolve(null),
     ]);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
@@ -605,6 +657,15 @@ async function loadLibrary() {
         chapterNameByKey[`${fullSubject}::${chNum}`] = chName;
       }
     }))));
+    // Fill in any paper the enrollment-scoped library above doesn't (or no
+    // longer) show -- a past attempt must still show its real title, not a
+    // raw Drive file id, even after the subject falls outside enrollment.
+    if (titlesRes && titlesRes.ok) {
+      const allTitles = await titlesRes.json().catch(() => ({}));
+      for (const [qpId, title] of Object.entries(allTitles)) {
+        if (!(qpId in paperTitleById)) paperTitleById[qpId] = title;
+      }
+    }
     statusEl.style.display = "none";
     document.getElementById("libraryPicker").style.display = "block";
     populateBoards();
@@ -647,6 +708,11 @@ function populatePapers() {
   const subject = document.getElementById("pickSubject").value;
   const component = document.getElementById("pickComponent").value;
   const papers = (((library[board] || {})[subject] || {})[component] || []);
+  // TKT-0246: Mistakes Mode only makes sense once a real component with
+  // real papers is selected -- an empty component has nothing to have
+  // gotten wrong in the first place.
+  document.getElementById("mistakesModeBtn").style.display = accountId && papers.length > 0 ? "block" : "none";
+  document.getElementById("mistakesStatus").style.display = "none";
   const paperSelect = document.getElementById("pickPaper");
   paperSelect.innerHTML = papers.map((p, i) => `<option value="${i}">${escapeHtml(p.title)}${p.msId ? "" : " (no mark scheme found)"}</option>`).join("");
   updatePaperNote();
@@ -705,6 +771,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterOf(paper.title), paperId: paper.qpId };
+    currentMcqPaper = paper;
     applyDigitizeResult(data);
     statusEl.style.display = "none";
   } catch (e) {
@@ -898,6 +965,8 @@ async function openStructuredPaper(paper) {
   document.getElementById("structuredErrorNote").style.display = "none";
   document.getElementById("structuredAttemptSaveStatus").textContent = "";
   document.getElementById("structuredProgressLinkRow").style.display = "none";
+  document.getElementById("structuredPdfLinksMenu").innerHTML = "";
+  document.getElementById("structuredPdfLinksPractice").innerHTML = "";
   const loadingEl = document.getElementById("structuredLoadingStatus");
   loadingEl.style.display = "block";
   loadingEl.textContent = "Loading questions...";
@@ -924,6 +993,7 @@ async function openStructuredPaper(paper) {
     }
     document.getElementById("structuredCount").textContent = `Found ${structuredItems.length} question${structuredItems.length === 1 ? "" : "s"}.`;
     document.getElementById("structuredCount").style.display = "block";
+    document.getElementById("structuredPdfLinksMenu").innerHTML = pdfLinksHtml(currentStructuredPaper.qpId, currentStructuredPaper.msId, currentStructuredPaper.title);
     document.getElementById("structuredStartPracticeBtn").style.display = "block";
     document.getElementById("structuredStartTestBtn").style.display = "block";
   } catch (e) {
@@ -942,6 +1012,7 @@ document.getElementById("structuredStartPracticeBtn").addEventListener("click", 
   document.getElementById("structuredFinishBtn").style.display = "block";
   document.getElementById("structuredTestHeader").style.display = "block";
   document.getElementById("structuredHeaderTitle").textContent = "Practice";
+  document.getElementById("structuredPdfLinksPractice").innerHTML = pdfLinksHtml(currentStructuredPaper.qpId, currentStructuredPaper.msId, currentStructuredPaper.title);
   renderStructuredItems("practice");
   resetStructuredTimer();
   startStructuredTimer();
@@ -973,6 +1044,8 @@ document.getElementById("structuredStartTestBtn").addEventListener("click", () =
   document.getElementById("structuredTestHeader").style.display = "block";
   document.getElementById("structuredHeaderTitle").textContent = "Answer the quiz";
   document.getElementById("structuredSubmitTestBtn").style.display = "block";
+  // TKT-0245: never shown in Test mode -- see MCQ's own startTestBtn handler.
+  document.getElementById("structuredPdfLinksPractice").innerHTML = "";
   renderStructuredItems("test");
   resetStructuredTimer();
   startStructuredTimer();
@@ -1145,6 +1218,7 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     currentAttemptMeta = null; // manual upload has no stable paperId -- never tracked
+    currentMcqPaper = null; // no Drive fileId either -- nothing for "View PDF" to point at
     applyDigitizeResult(data);
     statusEl.textContent = "";
   } catch (e) {
@@ -1390,6 +1464,7 @@ function resetToLibrary() {
   quiz = [];
   quizMode = null;
   currentAttemptMeta = null;
+  currentMcqPaper = null;
   document.getElementById("qpPdf").value = "";
   document.getElementById("msPdf").value = "";
   document.getElementById("mistakesStatus").style.display = "none";

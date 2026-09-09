@@ -1032,6 +1032,44 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // TKT-0245: "View QP PDF" / "View MS PDF" -- streams the real PDF
+  // straight to the browser as a download, rather than sending the
+  // student to a Google Drive view page (a student's DivergenCIE account
+  // has no guarantee of Drive access to DivergenCIE's own source folder,
+  // and even when it works it's a jarring context switch away from the
+  // tool). Reuses downloadDriveFile, the exact same function
+  // fetch-and-digitize/digitize-structured already trust for this --
+  // no new download path, just a different thing done with the bytes
+  // once they arrive (streamed to the client instead of fed to
+  // extract_mcq.py). `filename` is caller-supplied display text only
+  // (e.g. the real worksheet title) -- stripped of anything but safe
+  // filename characters before going in a response header, and never
+  // used to choose what gets downloaded (fileId alone decides that).
+  if (req.method === "GET" && req.url.startsWith("/api/pdf")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const fileId = url.searchParams.get("fileId");
+      if (!fileId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "fileId query param is required." }));
+        return;
+      }
+      const rawName = url.searchParams.get("filename") || fileId;
+      const safeName = rawName.replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150) || fileId;
+      const buf = await downloadDriveFile(fileId);
+      res.writeHead(200, {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${safeName}.pdf"`,
+        "Content-Length": buf.length,
+      });
+      res.end(buf);
+    } catch (e) {
+      res.writeHead(502, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // Tells the frontend which component of each subject is the real MCQ
   // paper (SUBJECT_COMPONENTS' mcqComponent) so it can pick the right UI:
   // the existing MCQ digitize/quiz flow for that one component, or the

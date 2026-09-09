@@ -110,6 +110,24 @@ export async function GET(req, { params }) {
     // surface as an unhandled exception/raw 500.
     return NextResponse.json({ error: `Extraction service unreachable: ${e.message}` }, { status: 503 });
   }
+
+  // TKT-0245: "View QP PDF" / "View MS PDF" streams a raw PDF, not JSON --
+  // every other proxied GET response is parsed as JSON below, which would
+  // corrupt binary PDF bytes trying to round-trip them through JSON.parse.
+  if (subPath === "pdf") {
+    if (!upstream.ok) {
+      const errBody = await upstream.json().catch(() => ({ error: `Upstream returned ${upstream.status}.` }));
+      return NextResponse.json(errBody, { status: upstream.status });
+    }
+    return new NextResponse(upstream.body, {
+      status: upstream.status,
+      headers: {
+        "Content-Type": upstream.headers.get("content-type") || "application/pdf",
+        "Content-Disposition": upstream.headers.get("content-disposition") || "attachment",
+      },
+    });
+  }
+
   const body = await upstream.json().catch(() => null);
   if (body === null) {
     return NextResponse.json({ error: "Extraction service returned an invalid response." }, { status: 502 });
