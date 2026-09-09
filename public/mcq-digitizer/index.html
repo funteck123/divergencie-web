@@ -191,6 +191,7 @@
       <div class="timer-row">
         <span class="timer-display" id="timerDisplay">00:00</span>
         <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
+        <button class="timer-btn" id="cancelQuizBtn" type="button" style="margin-left:auto;">&larr; Cancel</button>
       </div>
       <div id="pdfLinksPractice" style="margin-top:0.6rem;"></div>
     </div>
@@ -283,6 +284,7 @@
       <div class="timer-row">
         <span class="timer-display" id="structuredTimerDisplay">00:00</span>
         <button class="timer-btn" id="structuredTimerToggleBtn" type="button">Pause</button>
+        <button class="timer-btn" id="structuredCancelQuizBtn" type="button" style="margin-left:auto;">&larr; Cancel</button>
       </div>
       <div id="structuredPdfLinksPractice" style="margin-top:0.6rem;"></div>
     </div>
@@ -402,6 +404,17 @@ function resetTimer() {
 document.getElementById("timerToggleBtn").addEventListener("click", () => {
   if (timerRunning) pauseTimer();
   else startTimer();
+});
+// Cancel: quits the active Practice/Test/Mistakes session without
+// recording anything -- distinct from "Done practicing" (which DOES
+// record a practice attempt) and from Submit (which grades and records a
+// Test attempt). Confirms first for Test/Mistakes mode, where cancelling
+// throws away in-progress answers; Practice mode has nothing to lose
+// (never graded), so it leaves immediately.
+document.getElementById("cancelQuizBtn").addEventListener("click", () => {
+  if ((quizMode === "test" || quizMode === "mistakes") && !confirm("Cancel this attempt? Your answers won't be saved.")) return;
+  pauseTimer();
+  resetToLibrary();
 });
 
 // ---- Mode: Practice (self-check, no grading/scoring) vs Test (one
@@ -871,6 +884,16 @@ function resetStructuredTimer() {
 document.getElementById("structuredTimerToggleBtn").addEventListener("click", () => {
   if (structuredTimerRunning) pauseStructuredTimer();
   else startStructuredTimer();
+});
+// Cancel: same semantics as MCQ's cancelQuizBtn -- quits without
+// recording anything. Structured mode has no separate mode variable;
+// structuredSubmitTestBtn is only ever shown in Test mode, so its
+// visibility doubles as the mode check.
+document.getElementById("structuredCancelQuizBtn").addEventListener("click", () => {
+  const isTestMode = document.getElementById("structuredSubmitTestBtn").style.display !== "none";
+  if (isTestMode && !confirm("Cancel this attempt? Your answers won't be saved.")) return;
+  pauseStructuredTimer();
+  resetStructuredToLibrary();
 });
 
 function renderStructuredItems(mode) {
