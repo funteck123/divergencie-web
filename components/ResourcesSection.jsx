@@ -39,7 +39,7 @@ const USER_FEATURES = [
 // tunnel is actually running, a dead tunnel means a broken link until it's
 // restarted. Unlike mcq-digitizer, this one was never merged into the main
 // app (see planning/mcq-digitizer-integration-plan.md's "Option B").
-const SYLLABUS_VIEWER_URL = "https://configurations-determines-finest-discovered.trycloudflare.com";
+const SYLLABUS_VIEWER_URL = "https://monroe-handling-reduce-diving.trycloudflare.com";
 
 // `services` should be the enrolled Service objects (ServiceID + Name are
 // all this needs) — same list each dashboard already builds for its "My
