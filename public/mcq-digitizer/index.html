@@ -266,7 +266,7 @@
       <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
       <p class="hint" id="structuredCount" style="display:none;"></p>
       <button class="primary-btn mode-btn" id="structuredStartPracticeBtn" style="display:none;">Practice mode — browse questions &amp; answers freely, no grading</button>
-      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:#e5e5e5; color:#888; border:1px solid #ccc; cursor:not-allowed;" disabled title="Coming soon">Test mode — coming soon</button>
+      <button class="primary-btn mode-btn" id="structuredStartTestBtn" style="display:none; background:white; color:var(--navy); border:1.5px solid var(--navy);">Test mode — timed, submit once, see your score</button>
       <p class="hint" id="structuredNoSplitNote" style="display:none;">Per-question view isn't available for this paper's format yet.</p>
       <p class="hint" id="structuredErrorNote" style="display:none; color:var(--bad);"></p>
     </div>
@@ -292,7 +292,11 @@
     </div>
     <p class="hint">A question only counts as correct if it scored full marks -- see the score shown on each one below for exactly how close a partial answer got.</p>
     <div id="structuredResultsContainer"></div>
+    <p class="hint" id="structuredAttemptSaveStatus"></p>
     <button class="primary-btn" id="structuredRestartBtn" style="background:white; color:var(--navy); border:1.5px solid var(--navy);">Back to library</button>
+    <p class="progress-link" id="structuredProgressLinkRow" style="display:none;">
+      <a href="#" id="showProgressLinkStructured">View my progress &amp; the leaderboard</a>
+    </p>
   </div>
 </main>
 
@@ -680,6 +684,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
   if (!paper || !paper.msId) return;
 
   if (isStructuredComponent(board, subject, component)) {
+    currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterOf(paper.title), paperId: paper.qpId };
     openStructuredPaper(paper);
     return;
   }
@@ -715,9 +720,10 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
 // quiz above (modeSelectCard -> testHeader -> one card per question with
 // a Question/Answer tab toggle), just fed image crops instead of quiz
 // options -- per explicit direction 2026-09-05, this must look and behave
-// like the MCQ flow, not a bespoke design. Test mode (auto-grading) stays
-// a disabled "coming soon" placeholder; the old whole-worksheet free-
-// text-grading flow is commented out below, not deleted, in case it
+// like the MCQ flow, not a bespoke design. Test mode (auto-grading) was
+// enabled 2026-09-08 (TKT-0242), exactly symmetrical to MCQ's own Test
+// mode; the old whole-worksheet free-text-grading flow that predates the
+// per-question approach is commented out below, not deleted, in case it
 // comes back (/api/mcq/digitize-structured, see server.mjs).
 let currentStructuredPaper = null;
 let structuredItems = []; // [{ questionNumber, qImage, msImage }]
@@ -867,6 +873,7 @@ function renderStructuredItems(mode) {
 }
 
 function resetStructuredToLibrary() {
+  currentAttemptMeta = null;
   document.getElementById("structuredModeSelectCard").style.display = "block";
   document.getElementById("structuredTestHeader").style.display = "none";
   document.getElementById("structuredFinishBtn").style.display = "none";
@@ -889,6 +896,8 @@ async function openStructuredPaper(paper) {
   document.getElementById("structuredStartTestBtn").style.display = "none";
   document.getElementById("structuredNoSplitNote").style.display = "none";
   document.getElementById("structuredErrorNote").style.display = "none";
+  document.getElementById("structuredAttemptSaveStatus").textContent = "";
+  document.getElementById("structuredProgressLinkRow").style.display = "none";
   const loadingEl = document.getElementById("structuredLoadingStatus");
   loadingEl.style.display = "block";
   loadingEl.textContent = "Loading questions...";
@@ -937,19 +946,28 @@ document.getElementById("structuredStartPracticeBtn").addEventListener("click", 
   resetStructuredTimer();
   startStructuredTimer();
 });
-// Test mode: disabled "coming soon" placeholder again, per explicit
-// direction 2026-09-06 -- the real flow below (per-question submit,
-// Gemini grading, results screen) is built and working, just not
-// exposed to students yet. Kept, not deleted: the button itself already
-// carries `disabled` in the markup, this listener is just defensive.
-document.getElementById("structuredStartTestBtn").addEventListener("click", (e) => {
-  e.preventDefault();
-});
 document.getElementById("structuredFinishBtn").addEventListener("click", () => {
-  resetStructuredTimer();
-  resetStructuredToLibrary();
+  const btn = document.getElementById("structuredFinishBtn");
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  postAttempt({ mode: "practice", totalQuestions: structuredItems.length })
+    .catch(() => {}) // non-fatal, same reasoning as MCQ's own practice save
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      resetStructuredTimer();
+      resetStructuredToLibrary();
+    });
 });
-/*
+
+// TKT-0242: Test mode for structured (Theory/Practical/Math) papers,
+// enabled 2026-09-08 per explicit direction to be "exactly symmetrical"
+// to MCQ's own Test mode -- same per-question submit + Gemini grading
+// flow that was already built and working, just not exposed to students
+// until now, plus the attempt/mistake tracking wiring MCQ's flow has that
+// this one previously lacked entirely (currentAttemptMeta was never set
+// for a structured paper before this ticket).
 document.getElementById("structuredStartTestBtn").addEventListener("click", () => {
   document.getElementById("structuredModeSelectCard").style.display = "none";
   document.getElementById("structuredTestHeader").style.display = "block";
@@ -979,11 +997,13 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
   // each one along the way (see submitStructuredAnswer) -- this only
   // needs to mop up whatever's missing or gone stale (edited after its
   // last submit) since finishing, not re-grade the whole paper in one
-  // burst.
+  // burst. A question left completely blank is never sent for grading at
+  // all here -- see the "only attempted" filter just below for why.
   const container = document.getElementById("structuredItems");
   const stragglers = structuredItems.filter((q) => {
     const textarea = container.querySelector(`.structured-answer-box[data-qnum="${CSS.escape(q.questionNumber)}"]`);
     const currentText = textarea ? textarea.value.trim() : "";
+    if (!currentText) return false;
     const alreadyGraded = q.questionNumber in structuredGraded;
     const matchesLastSubmit = structuredSubmittedText[q.questionNumber] === currentText;
     return !alreadyGraded || !matchesLastSubmit;
@@ -997,11 +1017,16 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
   statusEl.style.display = "none";
   btn.disabled = false;
 
-  const graded = structuredItems.map((q) => structuredGraded[q.questionNumber] || { questionNumber: q.questionNumber, ungradable: true, reason: "Grading failed -- no result available." });
+  // TKT-0243: only questions the student actually submitted an answer for
+  // count as "attempted" -- a question left blank is left out of the
+  // results/score entirely, not scored as wrong, and must not inflate the
+  // progress tracker/leaderboard's totalQuestions.
+  const attempted = structuredItems.filter((q) => q.questionNumber in structuredGraded);
+  const graded = attempted.map((q) => structuredGraded[q.questionNumber]);
 
   const gradable = graded.filter((g) => !g.ungradable);
   const correctCount = gradable.filter((g) => g.marksAwarded === g.marksAvailable && g.marksAvailable > 0).length;
-  document.getElementById("structuredScoreText").textContent = `${correctCount} / ${gradable.length}`;
+  document.getElementById("structuredScoreText").textContent = gradable.length > 0 ? `${correctCount} / ${gradable.length}` : "No questions attempted";
 
   document.getElementById("structuredResultsContainer").innerHTML = graded.map((g) => {
     const isCorrect = !g.ungradable && g.marksAwarded === g.marksAvailable && g.marksAvailable > 0;
@@ -1016,11 +1041,39 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
           : `<div style="margin-top:0.4rem;">Scored <strong>${g.marksAwarded} / ${g.marksAvailable}</strong>${g.remark ? ` — ${escapeHtml(g.remark)}` : ""}</div>`}
       </div>
     `;
-  }).join("");
+  }).join("") || `<p class="hint">You didn't submit an answer for any question.</p>`;
 
   showStage(6);
+
+  // Score tracking -- mirrors the MCQ Test-mode submit handler exactly
+  // (postAttempt/postMistakes), per explicit direction 2026-09-08 that
+  // structured Test mode be built "exactly symmetrical" to MCQ's.
+  const saveStatusEl = document.getElementById("structuredAttemptSaveStatus");
+  const progressLinkRow = document.getElementById("structuredProgressLinkRow");
+  const mistakeItems = gradable.map((g) => ({
+    questionNumber: g.questionNumber,
+    verdict: g.marksAwarded === g.marksAvailable && g.marksAvailable > 0 ? "correct" : "incorrect",
+  }));
+
+  if (accountId && currentAttemptMeta && gradable.length > 0) {
+    saveStatusEl.textContent = "Saving your score…";
+    Promise.all([
+      postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable.length }),
+      postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: mistakeItems }),
+    ]).then(() => {
+      saveStatusEl.textContent = "Score saved to your progress history.";
+      progressLinkRow.style.display = "block";
+    }).catch((e) => {
+      saveStatusEl.textContent = `Couldn't save this score to your progress history (${e.message}).`;
+    });
+  } else if (!accountId) {
+    saveStatusEl.textContent = "";
+  } else if (!currentAttemptMeta) {
+    saveStatusEl.textContent = "Manually uploaded papers aren't tracked in your progress history.";
+  } else {
+    saveStatusEl.textContent = "";
+  }
 });
-*/
 document.getElementById("structuredRestartBtn").addEventListener("click", () => {
   resetStructuredTimer();
   resetStructuredToLibrary();
@@ -1231,6 +1284,26 @@ function postAttempt({ mode, score, totalQuestions }) {
   });
 }
 
+// Mistake tracking: only questions with a definite verdict count -- "wrong
+// answers only," confirmed with the user -- unanswered/unmatched/
+// unattempted questions are excluded from both the mistake log and the
+// resolve-on-fix check. Shared by MCQ and structured Test mode alike
+// (TKT-0242) so both record mistakes identically, not two drifting copies.
+function mistakeResults(items) {
+  return items
+    .filter((r) => r.verdict === "correct" || r.verdict === "incorrect")
+    .map((r) => ({ questionNumber: r.questionNumber, correct: r.verdict === "correct" }));
+}
+function postMistakes({ subject, chapter, paperId, items }) {
+  const mr = mistakeResults(items);
+  if (!accountId || mr.length === 0) return Promise.resolve();
+  return fetch("/api/mcq/mistakes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ accountId, accountName, subject, chapter, paperId, results: mr }),
+  }).catch(() => {}); // non-fatal, same reasoning as postAttempt's own save
+}
+
 document.getElementById("submitQuizBtn").addEventListener("click", () => {
   // Grading is entirely local, instant, no network call -- no LLM
   // anywhere in this tool, comparing a selected letter to correctAnswer
@@ -1251,6 +1324,14 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
   const gradable = quiz.filter((q) => q.correctAnswer).length;
   document.getElementById("scoreText").textContent = `${correctCount} / ${gradable}`;
 
+  // TKT-0243: only questions the student actually answered count toward
+  // the progress tracker/leaderboard denominator -- an opened-but-skipped
+  // question must not inflate totalQuestions there, even though the
+  // on-screen score above still shows it against every gradable question
+  // in the paper (that's the honest "how much of this paper did you get
+  // right," a separate concern from "how many did you actually attempt").
+  const attemptedGradableCount = results.filter((r) => r.verdict === "correct" || r.verdict === "incorrect").length;
+
   const container = document.getElementById("resultsContainer");
   container.innerHTML = results.map((r) => `
     <div class="result-item ${r.verdict === "correct" ? "correct" : r.verdict === "incorrect" ? "incorrect" : "unanswered"}">
@@ -1266,26 +1347,6 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
 
   const saveStatusEl = document.getElementById("attemptSaveStatus");
   const progressLinkRow3 = document.getElementById("progressLinkRow3");
-
-  // Mistake tracking: only questions with a definite verdict count --
-  // "wrong answers only," confirmed with the user -- unanswered/unmatched
-  // questions are excluded from both the mistake log and the resolve-on-fix
-  // check, matching gradable's own definition above.
-  function mistakeResults(items) {
-    return items
-      .filter((r) => r.verdict === "correct" || r.verdict === "incorrect")
-      .map((r) => ({ questionNumber: r.questionNumber, correct: r.verdict === "correct" }));
-  }
-  function postMistakes({ subject, chapter, paperId, items }) {
-    const mr = mistakeResults(items);
-    if (!accountId || mr.length === 0) return Promise.resolve();
-    return fetch("/api/mcq/mistakes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accountId, accountName, subject, chapter, paperId, results: mr }),
-    }).catch(() => {}); // non-fatal, same reasoning as postAttempt's own save
-
-  }
 
   if (quizMode === "mistakes") {
     // Multiple origin papers/chapters/subjects possibly merged into one
@@ -1304,10 +1365,10 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
     Promise.all([...byOrigin.values()].map((group) => postMistakes(group))).then(() => {
       if (accountId) saveStatusEl.textContent = "Results saved -- fixed questions won't show up here again.";
     });
-  } else if (accountId && currentAttemptMeta && gradable > 0) {
+  } else if (accountId && currentAttemptMeta && attemptedGradableCount > 0) {
     saveStatusEl.textContent = "Saving your score…";
     Promise.all([
-      postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable }),
+      postAttempt({ mode: "test", score: correctCount, totalQuestions: attemptedGradableCount }),
       postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: results }),
     ]).then(() => {
       saveStatusEl.textContent = "Score saved to your progress history.";
@@ -1772,6 +1833,7 @@ function showProgress() {
 }
 document.getElementById("showProgressLink").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
 document.getElementById("showProgressLink3").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
+document.getElementById("showProgressLinkStructured").addEventListener("click", (e) => { e.preventDefault(); showProgress(); });
 document.getElementById("backFromProgressLink").addEventListener("click", (e) => { e.preventDefault(); showStage(0); });
 document.getElementById("progressSubjectSelect").addEventListener("change", onProgressSubjectChange);
 document.getElementById("progressChapterSelect").addEventListener("change", renderFilteredProgressChart);
