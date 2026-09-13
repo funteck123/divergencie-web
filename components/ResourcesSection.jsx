@@ -34,12 +34,17 @@ const USER_FEATURES = [
 // never saw the door to it). Moved out of the flat EXTERNAL_TOOLS list
 // into its own account-aware link below, same fix already applied to
 // Question Solver in TKT-0228. Straight external redirect to the
-// syllabus-digitizer prototype's own Cloudflare quick tunnel -- no
-// Supabase/DB involvement, just a link; only works while that prototype's
-// tunnel is actually running, a dead tunnel means a broken link until it's
-// restarted. Unlike mcq-digitizer, this one was never merged into the main
-// app (see planning/mcq-digitizer-integration-plan.md's "Option B").
-const SYLLABUS_VIEWER_URL = "https://dressing-api-accordingly-plot.trycloudflare.com";
+// syllabus-digitizer prototype's own Cloudflare quick tunnel.
+//
+// 2026-09-14: this URL used to be hardcoded right here, which meant every
+// tunnel restart needed a real code push + redeploy just to update one
+// link -- now fetched from GET /api/syllabus-config (Supabase-backed,
+// same pattern as mcq-digitizer's own extraction URL), so Management can
+// update it without a deploy. Still only works while that prototype's
+// tunnel is actually running; a dead tunnel means a broken link until
+// it's restarted, same as before. Unlike mcq-digitizer, this prototype
+// was never merged into the main app (see
+// planning/mcq-digitizer-integration-plan.md's "Option B").
 
 // `services` should be the enrolled Service objects (ServiceID + Name are
 // all this needs) — same list each dashboard already builds for its "My
@@ -49,12 +54,18 @@ export default function ResourcesSection({ services, user, showExternalTools = f
   // default) while the fetch is in flight, so the section doesn't flash
   // "everything hidden" for a moment on every load.
   const [toggles, setToggles] = useState({ recordings: false, syllabus: true, worksheets: true, gcr: true, timesheet: true, progressTracker: true });
+  const [syllabusViewerUrl, setSyllabusViewerUrl] = useState(null);
 
   useEffect(() => {
     api("/api/resource-toggles")
       .then((res) => setToggles(res.toggles))
       .catch(() => {}); // a failed fetch just keeps the all-on-except-recordings default above
-  }, []);
+    if (showExternalTools) {
+      api("/api/syllabus-config")
+        .then((res) => setSyllabusViewerUrl(res.url || null))
+        .catch(() => {}); // failed fetch just keeps the link hidden below, not a broken href
+    }
+  }, [showExternalTools]);
 
   const visibleUserFeatures = USER_FEATURES.filter((f) => toggles[f.toggleKey]);
   const visibleServiceFeatures = SERVICE_FEATURES.filter((f) => toggles[f.toggleKey]);
@@ -73,10 +84,10 @@ export default function ResourcesSection({ services, user, showExternalTools = f
             </Link>
           );
         })}
-        {showExternalTools && user && (
+        {showExternalTools && user && syllabusViewerUrl && (
           <a
             className="btn-ghost"
-            href={`${SYLLABUS_VIEWER_URL}?${new URLSearchParams({ account: user.UserID, name: user.Name }).toString()}`}
+            href={`${syllabusViewerUrl}?${new URLSearchParams({ account: user.UserID, name: user.Name }).toString()}`}
             target="_blank"
             rel="noopener noreferrer"
           >
