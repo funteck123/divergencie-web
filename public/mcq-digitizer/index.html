@@ -178,6 +178,7 @@
   </div>
 
   <div id="stage2" class="stage">
+    <p class="hint"><a href="#" id="backFromModeSelectLink">&larr; Back to library</a></p>
     <div class="card" id="modeSelectCard">
       <h2>How do you want to use this paper?</h2>
       <p class="hint" id="digitizeCount"></p>
@@ -568,6 +569,15 @@ document.getElementById("mistakesModeBtn").addEventListener("click", startMistak
 document.getElementById("backToLibraryLink").addEventListener("click", (e) => {
   e.preventDefault();
   showStage(0);
+});
+// TKT-0256: the MCQ mode-select screen ("How do you want to use this
+// paper?") had no way back to the library at all before a mode was
+// picked -- the structured-paper equivalent (stage5) already had this.
+// Uses resetToLibrary() (not a bare showStage(0)) so it also clears
+// currentAttemptMeta/currentMcqPaper, same as bailing out any other way.
+document.getElementById("backFromModeSelectLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  resetToLibrary();
 });
 
 // ---- Library picker ----
