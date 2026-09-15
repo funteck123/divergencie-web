@@ -101,7 +101,7 @@ export default function ResourcesSection({ services, user, showExternalTools = f
             target="_blank"
             rel="noopener noreferrer"
           >
-            Question Solver
+            DC Question Solver
           </a>
         )}
       </div>

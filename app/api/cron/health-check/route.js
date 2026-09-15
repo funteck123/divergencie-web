@@ -43,7 +43,7 @@ export async function GET(req) {
   const [mcqUrl, syllabusUrl] = await Promise.all([getMcqExtractionUrl(), getSyllabusViewerUrl()]);
 
   const results = await Promise.all([
-    checkService("Question Solver (mcq-digitizer)", mcqUrl, "/api/library"),
+    checkService("DC Question Solver", mcqUrl, "/api/library"),
     checkService("Syllabus Viewer (syllabus-digitizer)", syllabusUrl, "/"),
   ]);
 

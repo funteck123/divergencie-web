@@ -6941,7 +6941,7 @@ function ServiceUptimePanel() {
         <div>
           <h2 className="font-semibold">Prototype Service Status</h2>
           <p className="text-sm" style={{ color: "var(--muted)" }}>
-            Question Solver &amp; Syllabus Viewer — live check, not the daily automated alert.
+            DC Question Solver &amp; Syllabus Viewer — live check, not the daily automated alert.
           </p>
         </div>
         <button type="button" className="btn-ghost" onClick={checkNow} disabled={checking} style={{ whiteSpace: "nowrap" }}>
