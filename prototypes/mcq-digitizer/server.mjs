@@ -72,7 +72,7 @@ import zlib from "zlib";
 import { fileURLToPath } from "url";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError, recordQuestionResults, getMistakeChartData, getUnresolvedMistakes, InvalidMistakeResultsError } from "./scores.mjs";
+import { recordAttempt, getProgressForAccount, getAllProgress, getLeaderboard, ScoresUnavailableError, InvalidAttemptError, recordQuestionResults, getMistakeChartData, getUnresolvedMistakes, InvalidMistakeResultsError, getQuestionResponsesForAttempt } from "./scores.mjs";
 import { SUBJECT_COMPONENTS } from "./subjectComponents.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -1515,13 +1515,13 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "POST" && req.url === "/api/mistakes") {
     try {
       const body = JSON.parse(await readBody(req));
-      const { accountId, accountName, subject, chapter, paperId, results } = body;
+      const { accountId, accountName, subject, chapter, paperId, results, attemptId } = body;
       if (!accountId || !subject || !paperId) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "accountId, subject, and paperId are required." }));
         return;
       }
-      await recordQuestionResults({ accountId, accountName, subject, chapter, paperId, results });
+      await recordQuestionResults({ accountId, accountName, subject, chapter, paperId, results, attemptId });
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ ok: true }));
     } catch (e) {
@@ -1564,6 +1564,28 @@ const server = http.createServer(async (req, res) => {
       const mistakes = await getUnresolvedMistakes(accountId, subject);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ mistakes }));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // "View my answers" on a past attempt (Progress page's history table) --
+  // scoped to accountId + attemptId together, never attemptId alone.
+  if (req.method === "GET" && req.url.startsWith("/api/question-responses")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const accountId = url.searchParams.get("account");
+      const attemptId = url.searchParams.get("attemptId");
+      if (!accountId || !attemptId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "account and attemptId query params are required." }));
+        return;
+      }
+      const responses = await getQuestionResponsesForAttempt(accountId, attemptId);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ responses }));
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));

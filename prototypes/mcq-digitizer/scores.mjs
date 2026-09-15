@@ -95,7 +95,7 @@ export async function getProgressForAccount(accountId) {
   const c = requireClient();
   const { data, error } = await c
     .from(TABLE)
-    .select("subject, chapter, paper_id, score, total_questions, time_taken_seconds, mode, submitted_at")
+    .select("id, subject, chapter, paper_id, score, total_questions, time_taken_seconds, mode, submitted_at")
     .eq("account_id", accountId)
     .order("submitted_at", { ascending: true });
   if (error) throw new Error(`Could not load progress: ${error.message}`);
@@ -261,7 +261,7 @@ export class InvalidMistakeResultsError extends Error {}
 // "unanswered"/"unmatched" questions before calling this, since those
 // aren't mistakes in the sense this feature means (confirmed with the
 // user: "wrong answers only").
-export async function recordQuestionResults({ accountId, accountName, subject, chapter, paperId, results }) {
+export async function recordQuestionResults({ accountId, accountName, subject, chapter, paperId, results, attemptId }) {
   if (!Array.isArray(results) || results.length === 0) {
     throw new InvalidMistakeResultsError("results must be a non-empty array of {questionNumber, correct}.");
   }
@@ -302,10 +302,12 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
   }
 
   // Full per-question response record -- correct AND incorrect, unlike
-  // MISTAKES_TABLE above. Only results carrying the richer structured-
-  // grading fields (studentAnswer present) get a row here; a plain MCQ
-  // result ({questionNumber, correct}) has no answer text worth storing
-  // this way, so it's skipped rather than inserting a mostly-null row.
+  // MISTAKES_TABLE above. Gated on studentAnswer being present rather
+  // than assumed MCQ-vs-structured: MCQ's own results already always set
+  // studentAnswer (the selected letter, or null if left blank -- see the
+  // frontend's submit handler), so MCQ rows land here too, just with
+  // marks_awarded/marks_available/remark/line_feedback left null since
+  // those concepts don't apply to a lettered MCQ answer.
   const withAnswers = results.filter((r) => r.studentAnswer !== undefined);
   if (withAnswers.length > 0) {
     const { error } = await c.from(RESPONSES_TABLE).insert(
@@ -316,6 +318,7 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
         chapter: chapter || null,
         paper_id: paperId,
         question_number: String(r.questionNumber),
+        attempt_id: attemptId || null,
         student_answer: r.studentAnswer ?? null,
         marks_awarded: Number.isInteger(r.marksAwarded) ? r.marksAwarded : null,
         marks_available: Number.isInteger(r.marksAvailable) ? r.marksAvailable : null,
@@ -326,6 +329,22 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
     );
     if (error) throw new Error(`Could not record question responses: ${error.message}`);
   }
+}
+
+// Powers "view my answers" on a past attempt in the Progress page --
+// scoped to accountId + attemptId together (not attemptId alone) so one
+// account can never pull up another's saved answers by guessing/
+// incrementing an id.
+export async function getQuestionResponsesForAttempt(accountId, attemptId) {
+  const c = requireClient();
+  const { data, error } = await c
+    .from(RESPONSES_TABLE)
+    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, low_confidence")
+    .eq("account_id", accountId)
+    .eq("attempt_id", attemptId)
+    .order("question_number", { ascending: true });
+  if (error) throw new Error(`Could not load saved answers: ${error.message}`);
+  return data;
 }
 
 // One bar chart per subject, one bar per chapter -- total mistake

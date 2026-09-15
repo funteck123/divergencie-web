@@ -106,7 +106,11 @@
   .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 9%; }
   .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 6%; }
   .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 12%; }
-  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 23%; }
+  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 13%; }
+  .lb-table.history-table th:nth-child(8), .lb-table.history-table td:nth-child(8) { width: 10%; }
+  .answers-panel { background: rgba(0,0,0,0.02); }
+  .answers-panel .answer-verbatim-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.5rem; }
+  .answers-panel .answer-verbatim { white-space: pre-wrap; background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; margin-top: 0.25rem; font-size: 0.85rem; }
   /* 5-column shape (#/Student/Attempts/Unique papers/Unique questions),
      overriding the base 4-column leaderboard rules. */
   .lb-table.volume-table th:nth-child(1), .lb-table.volume-table td:nth-child(1) { width: 2.5rem; }
@@ -240,7 +244,7 @@
       <h2>Attempt history</h2>
       <p class="hint">Every attempt you've made, most recent first — respects the Subject/Chapter filter above.</p>
       <table class="lb-table history-table" id="historyTable">
-        <thead><tr><th>Paper</th><th>Mode</th><th>Chapter</th><th>Score</th><th>%</th><th>Time taken</th><th>When</th></tr></thead>
+        <thead><tr><th>Paper</th><th>Mode</th><th>Chapter</th><th>Score</th><th>%</th><th>Time taken</th><th>When</th><th>Answers</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -1198,10 +1202,12 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
 
   if (accountId && currentAttemptMeta && gradable.length > 0) {
     saveStatusEl.textContent = "Saving your score…";
-    Promise.all([
-      postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable.length }),
-      postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: mistakeItems }),
-    ]).then(() => {
+    // Sequenced (see the MCQ submit handler's identical comment) so the
+    // saved answers can be tied to this specific attempt.
+    postAttempt({ mode: "test", score: correctCount, totalQuestions: gradable.length })
+      .then((attemptId) =>
+        postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: mistakeItems, attemptId })
+      ).then(() => {
       saveStatusEl.textContent = "Score saved to your progress history.";
       progressLinkRow.style.display = "block";
     }).catch((e) => {
@@ -1422,7 +1428,13 @@ function postAttempt({ mode, score, totalQuestions }) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   }).then(async (r) => {
-    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+    // Lets postMistakes tag each saved response with which specific
+    // attempt it belongs to -- a student can retake the same paper many
+    // times, so "account + paper" alone can't tell one attempt's answers
+    // apart from another's when viewing history later.
+    return data.attempt ? data.attempt.id : null;
   });
 }
 
@@ -1450,13 +1462,13 @@ function mistakeResults(items) {
       return out;
     });
 }
-function postMistakes({ subject, chapter, paperId, items }) {
+function postMistakes({ subject, chapter, paperId, items, attemptId }) {
   const mr = mistakeResults(items);
   if (!accountId || mr.length === 0) return Promise.resolve();
   return fetch("/api/mcq/mistakes", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ accountId, accountName, subject, chapter, paperId, results: mr }),
+    body: JSON.stringify({ accountId, accountName, subject, chapter, paperId, results: mr, attemptId: attemptId || null }),
   }).catch(() => {}); // non-fatal, same reasoning as postAttempt's own save
 }
 
@@ -1523,10 +1535,14 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
     });
   } else if (accountId && currentAttemptMeta && attemptedGradableCount > 0) {
     saveStatusEl.textContent = "Saving your score…";
-    Promise.all([
-      postAttempt({ mode: "test", score: correctCount, totalQuestions: attemptedGradableCount }),
-      postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: results }),
-    ]).then(() => {
+    // Sequenced, not Promise.all: postMistakes needs the just-created
+    // attempt's own id so a student's saved answers can be tied back to
+    // THIS specific attempt (not just "this account + this paper," which
+    // can't tell two retakes of the same paper apart).
+    postAttempt({ mode: "test", score: correctCount, totalQuestions: attemptedGradableCount })
+      .then((attemptId) =>
+        postMistakes({ subject: currentAttemptMeta.subject, chapter: currentAttemptMeta.chapter, paperId: currentAttemptMeta.paperId, items: results, attemptId })
+      ).then(() => {
       saveStatusEl.textContent = "Score saved to your progress history.";
       progressLinkRow3.style.display = "block";
     }).catch((e) => {
@@ -1768,6 +1784,12 @@ function renderHistoryTable(mine) {
     const isPractice = a.mode === "practice" || a.score == null;
     const scoreCell = isPractice ? "—" : `${a.score} / ${a.total_questions}`;
     const pctCell = isPractice ? "—" : `${Math.round((a.score / a.total_questions) * 1000) / 10}%`;
+    // Practice mode never grades/saves per-question responses (see
+    // server.mjs's own header comment), so there's nothing to view there
+    // -- only a Test-mode attempt with a real id gets the link.
+    const answersCell = !isPractice && a.id
+      ? `<a href="#" class="view-answers-link" data-attempt-id="${escapeHtml(a.id)}">View</a>`
+      : "—";
     return `<tr>
       <td>${escapeHtml(paperTitleById[a.paper_id] || a.paper_id)}</td>
       <td>${isPractice ? "Practice" : "Test"}</td>
@@ -1776,9 +1798,70 @@ function renderHistoryTable(mine) {
       <td>${pctCell}</td>
       <td>${escapeHtml(timeTaken)}</td>
       <td>${escapeHtml(when)}</td>
+      <td>${answersCell}</td>
     </tr>`;
-  }).join("") || `<tr><td colspan="5" class="hint">No attempts yet.</td></tr>`;
+  }).join("") || `<tr><td colspan="8" class="hint">No attempts yet.</td></tr>`;
 }
+
+// Toggles an expanded row under the clicked attempt showing every saved
+// answer for it (verbatim text + line-by-line feedback for structured
+// Test mode, just the selected letter for MCQ -- getQuestionResponsesForAttempt
+// returns both shapes, marks/remark/lineFeedback simply null for MCQ).
+document.querySelector("#historyTable tbody").addEventListener("click", async (e) => {
+  const link = e.target.closest(".view-answers-link");
+  if (!link) return;
+  e.preventDefault();
+  const row = link.closest("tr");
+  const existing = row.nextElementSibling;
+  if (existing && existing.classList.contains("answers-panel-row")) {
+    existing.remove();
+    return;
+  }
+  // Only one panel open at a time -- avoids a long, confusing stack of
+  // expansions if a student clicks through several rows.
+  document.querySelectorAll(".answers-panel-row").forEach((el) => el.remove());
+  const attemptId = link.dataset.attemptId;
+  const panelRow = document.createElement("tr");
+  panelRow.className = "answers-panel-row";
+  panelRow.innerHTML = `<td colspan="8" class="answers-panel">Loading…</td>`;
+  row.after(panelRow);
+  try {
+    const res = await fetch(`/api/mcq/question-responses?account=${encodeURIComponent(accountId)}&attemptId=${encodeURIComponent(attemptId)}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const responses = data.responses || [];
+    if (responses.length === 0) {
+      panelRow.querySelector("td").textContent = "No saved answers for this attempt.";
+      return;
+    }
+    panelRow.querySelector("td").innerHTML = responses.map((r) => `
+      <div style="margin-bottom:0.8rem;">
+        <strong>Question ${escapeHtml(r.question_number)}</strong>
+        ${r.marks_awarded != null ? ` — ${r.marks_awarded} / ${r.marks_available}` : ""}
+        ${r.remark ? ` — ${escapeHtml(r.remark)}` : ""}
+        ${r.student_answer ? `
+          <div class="answer-verbatim-label">Your answer</div>
+          <div class="answer-verbatim">${escapeHtml(r.student_answer)}</div>
+        ` : ""}
+        ${Array.isArray(r.line_feedback) && r.line_feedback.length > 0 ? `
+          <div class="line-feedback">
+            ${r.line_feedback.map((lf) => `
+              <div class="line-feedback-step ${lf.correct ? "correct" : "incorrect"}">
+                <div>${escapeHtml(lf.step)}</div>
+                ${!lf.correct ? `
+                  <div class="lf-mistake">✗ ${escapeHtml(lf.mistake)}</div>
+                  <div class="lf-alternative">✓ Correct: ${escapeHtml(lf.correctAlternative)}</div>
+                ` : ""}
+              </div>
+            `).join("")}
+          </div>
+        ` : ""}
+      </div>
+    `).join("");
+  } catch (e2) {
+    panelRow.querySelector("td").textContent = `Couldn't load answers: ${e2.message}`;
+  }
+});
 
 function renderFilteredProgressChart() {
   const subject = document.getElementById("progressSubjectSelect").value;
