@@ -19,6 +19,15 @@ dotenv.config({ path: path.join(REPO_ROOT, ".env.local") });
 
 const TABLE = "mcq_attempts";
 const MISTAKES_TABLE = "mcq_mistakes";
+// Separate from MISTAKES_TABLE on purpose: mcq_mistakes only ever gets a
+// row for a WRONG answer (a later-correct answer just resolves it, never
+// inserts -- see recordQuestionResults below), so it can't hold a
+// complete record of what a student actually wrote. This table gets one
+// row per graded question response, correct or not, so the full
+// verbatim answer + line-by-line feedback survives past the one HTTP
+// response it's generated in (2026-09-16, migration run via the Supabase
+// Management API -- see data/tmp/migration_mcq_question_responses.sql).
+const RESPONSES_TABLE = "mcq_question_responses";
 
 let client = null;
 function getClient() {
@@ -290,6 +299,32 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
       .update({ resolved: true })
       .match({ account_id: accountId, paper_id: paperId, question_number: String(r.questionNumber), resolved: false });
     if (error) throw new Error(`Could not resolve mistake: ${error.message}`);
+  }
+
+  // Full per-question response record -- correct AND incorrect, unlike
+  // MISTAKES_TABLE above. Only results carrying the richer structured-
+  // grading fields (studentAnswer present) get a row here; a plain MCQ
+  // result ({questionNumber, correct}) has no answer text worth storing
+  // this way, so it's skipped rather than inserting a mostly-null row.
+  const withAnswers = results.filter((r) => r.studentAnswer !== undefined);
+  if (withAnswers.length > 0) {
+    const { error } = await c.from(RESPONSES_TABLE).insert(
+      withAnswers.map((r) => ({
+        account_id: accountId,
+        account_name: accountName || null,
+        subject,
+        chapter: chapter || null,
+        paper_id: paperId,
+        question_number: String(r.questionNumber),
+        student_answer: r.studentAnswer ?? null,
+        marks_awarded: Number.isInteger(r.marksAwarded) ? r.marksAwarded : null,
+        marks_available: Number.isInteger(r.marksAvailable) ? r.marksAvailable : null,
+        remark: r.remark || null,
+        line_feedback: Array.isArray(r.lineFeedback) ? r.lineFeedback : null,
+        low_confidence: Boolean(r.lowConfidence),
+      }))
+    );
+    if (error) throw new Error(`Could not record question responses: ${error.message}`);
   }
 }
 

@@ -1186,6 +1186,14 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
   const mistakeItems = gradable.map((g) => ({
     questionNumber: g.questionNumber,
     verdict: g.marksAwarded === g.marksAvailable && g.marksAvailable > 0 ? "correct" : "incorrect",
+    // Carries through to mcq_question_responses (every graded answer,
+    // not just wrong ones) -- see postMistakes/mistakeResults below.
+    studentAnswer: g.studentAnswerVerbatim,
+    marksAwarded: g.marksAwarded,
+    marksAvailable: g.marksAvailable,
+    remark: g.remark,
+    lineFeedback: g.lineFeedback,
+    lowConfidence: g.lowConfidence,
   }));
 
   if (accountId && currentAttemptMeta && gradable.length > 0) {
@@ -1426,7 +1434,21 @@ function postAttempt({ mode, score, totalQuestions }) {
 function mistakeResults(items) {
   return items
     .filter((r) => r.verdict === "correct" || r.verdict === "incorrect")
-    .map((r) => ({ questionNumber: r.questionNumber, correct: r.verdict === "correct" }));
+    .map((r) => {
+      const out = { questionNumber: r.questionNumber, correct: r.verdict === "correct" };
+      // Only structured Test-mode items carry these -- plain MCQ items
+      // don't, and studentAnswer's presence is exactly what the server
+      // uses to decide whether a question_responses row is worth saving.
+      if (r.studentAnswer !== undefined) {
+        out.studentAnswer = r.studentAnswer;
+        out.marksAwarded = r.marksAwarded;
+        out.marksAvailable = r.marksAvailable;
+        out.remark = r.remark;
+        out.lineFeedback = r.lineFeedback;
+        out.lowConfidence = r.lowConfidence;
+      }
+      return out;
+    });
 }
 function postMistakes({ subject, chapter, paperId, items }) {
   const mr = mistakeResults(items);
