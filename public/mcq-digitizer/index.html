@@ -73,6 +73,14 @@
   .result-item .rverdict { float: right; font-weight: 700; }
   .result-item .rverdict.correct { color: var(--good); }
   .result-item .rverdict.incorrect, .result-item .rverdict.unanswered { color: var(--bad); }
+  .answer-verbatim-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.6rem; }
+  .answer-verbatim { white-space: pre-wrap; background: rgba(0,0,0,0.03); border-radius: 6px; padding: 0.5rem 0.7rem; margin-top: 0.25rem; font-size: 0.85rem; }
+  .line-feedback { margin-top: 0.6rem; }
+  .line-feedback-step { border-left: 3px solid var(--border); padding: 0.35rem 0 0.35rem 0.6rem; margin-bottom: 0.4rem; font-size: 0.85rem; }
+  .line-feedback-step.correct { border-left-color: var(--good); }
+  .line-feedback-step.incorrect { border-left-color: var(--bad); }
+  .line-feedback-step .lf-mistake { color: var(--bad); margin-top: 0.2rem; }
+  .line-feedback-step .lf-alternative { color: var(--good); margin-top: 0.2rem; }
   .progress-link { display: block; text-align: center; margin: 0.75rem 0; font-size: 0.85rem; }
   #progressChart { width: 100%; height: 260px; display: block; background: white; border: 1px solid var(--border); border-radius: 8px; }
   /* table-layout: fixed + identical nth-child widths on every leaderboard
@@ -1144,7 +1152,26 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
         <span class="rverdict ${isCorrect ? "correct" : "incorrect"}">${verdictLabel}</span>
         ${g.ungradable
           ? `<div class="ungradable-note">${escapeHtml(g.reason || "")}</div>`
-          : `<div style="margin-top:0.4rem;">Scored <strong>${g.marksAwarded} / ${g.marksAvailable}</strong>${g.remark ? ` — ${escapeHtml(g.remark)}` : ""}</div>`}
+          : `
+            <div style="margin-top:0.4rem;">Scored <strong>${g.marksAwarded} / ${g.marksAvailable}</strong>${g.remark ? ` — ${escapeHtml(g.remark)}` : ""}</div>
+            ${g.studentAnswerVerbatim ? `
+              <div class="answer-verbatim-label">Your answer</div>
+              <div class="answer-verbatim">${escapeHtml(g.studentAnswerVerbatim)}</div>
+            ` : ""}
+            ${Array.isArray(g.lineFeedback) && g.lineFeedback.length > 0 ? `
+              <div class="line-feedback">
+                ${g.lineFeedback.map((lf) => `
+                  <div class="line-feedback-step ${lf.correct ? "correct" : "incorrect"}">
+                    <div>${escapeHtml(lf.step)}</div>
+                    ${!lf.correct ? `
+                      <div class="lf-mistake">✗ ${escapeHtml(lf.mistake)}</div>
+                      <div class="lf-alternative">✓ Correct: ${escapeHtml(lf.correctAlternative)}</div>
+                    ` : ""}
+                  </div>
+                `).join("")}
+              </div>
+            ` : ""}
+          `}
       </div>
     `;
   }).join("") || `<p class="hint">You didn't submit an answer for any question.</p>`;
