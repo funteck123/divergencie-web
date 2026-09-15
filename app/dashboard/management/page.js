@@ -159,7 +159,12 @@ function Body() {
       {tab === "Enrollments" && <Enrollments />}
       {tab === "Billing" && <Billing />}
       {tab === "Guides" && <Guides />}
-      {tab === "Tickets" && <Tickets />}
+      {tab === "Tickets" && (
+        <>
+          <ServiceUptimePanel />
+          <Tickets />
+        </>
+      )}
       {tab === "Audit Log" && <AuditLog />}
     </div>
   );
@@ -6897,6 +6902,66 @@ function PaycheckLineItemRow({ paycheckId, lineItem, index, serviceName, onPatch
         )}
       </td>
     </tr>
+  );
+}
+
+// On-demand version of the daily cron health-check (app/api/cron/health-
+// check/route.js) for a Management admin to run manually — see
+// app/api/admin/service-uptime/route.js, which reuses the same
+// checkService logic but skips the email alert / HEALTH_STATE mutation
+// so a manual click here can never trigger a false alert or corrupt the
+// cron's own down->up transition tracking. Rendered once at the top of
+// the Tickets tab (a global, non-per-account admin view), not per
+// account. Only checks live status; it cannot relaunch a dead service --
+// that requires the actual PC running the prototype servers to be on
+// (see the "Relaunch" note below), which this button can't guarantee.
+function ServiceUptimePanel() {
+  const [checking, setChecking] = useState(false);
+  const [results, setResults] = useState(null);
+  const [checkedAt, setCheckedAt] = useState(null);
+  const [error, setError] = useState("");
+
+  async function checkNow() {
+    setError("");
+    setChecking(true);
+    try {
+      const data = await api("/api/admin/service-uptime");
+      setResults(data.results);
+      setCheckedAt(data.checkedAt);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  return (
+    <div className="card space-y-2">
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <div>
+          <h2 className="font-semibold">Prototype Service Status</h2>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            Question Solver &amp; Syllabus Viewer — live check, not the daily automated alert.
+          </p>
+        </div>
+        <button type="button" className="btn-ghost" onClick={checkNow} disabled={checking} style={{ whiteSpace: "nowrap" }}>
+          {checking ? "Checking…" : "Check Uptime"}
+        </button>
+      </div>
+      {error && <p className="text-sm" style={{ color: "var(--bad)" }}>{error}</p>}
+      {results && (
+        <div className="space-y-1">
+          {results.map((r) => (
+            <div key={r.name} className="flex items-center gap-2 text-sm">
+              <span className={r.up ? "badge badge-good" : "badge badge-bad"}>{r.up ? "UP" : "DOWN"}</span>
+              <span>{r.name}</span>
+              {!r.up && r.reason && <span style={{ color: "var(--muted)" }}>— {r.reason}</span>}
+            </div>
+          ))}
+          <p className="text-xs" style={{ color: "var(--muted)" }}>Checked at {new Date(checkedAt).toLocaleString()}.</p>
+        </div>
+      )}
+    </div>
   );
 }
 
