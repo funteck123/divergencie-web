@@ -1459,6 +1459,7 @@ function mistakeResults(items) {
         out.lineFeedback = r.lineFeedback;
         out.lowConfidence = r.lowConfidence;
         out.flagged = r.flagged;
+        out.correctAnswer = r.correctAnswer;
       }
       return out;
     });
@@ -1853,6 +1854,9 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
         ${r.student_answer ? `
           <div class="answer-verbatim-label">Your answer</div>
           <div class="answer-verbatim">${escapeHtml(r.student_answer)}</div>
+        ` : ""}
+        ${r.correct_answer && r.correct_answer !== r.student_answer ? `
+          <div class="lf-alternative">✓ Correct answer: ${escapeHtml(r.correct_answer)}</div>
         ` : ""}
         ${Array.isArray(r.line_feedback) && r.line_feedback.length > 0 ? `
           <div class="line-feedback">

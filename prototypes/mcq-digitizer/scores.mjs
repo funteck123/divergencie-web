@@ -326,6 +326,11 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
         line_feedback: Array.isArray(r.lineFeedback) ? r.lineFeedback : null,
         low_confidence: Boolean(r.lowConfidence),
         flagged: Boolean(r.flagged),
+        // MCQ's own correction: line_feedback (structured Test mode) already
+        // carries a correctAlternative per wrong step, but a plain MCQ result
+        // never had anywhere to show what the actually-correct letter was --
+        // only the student's own selected one.
+        correct_answer: r.correctAnswer || null,
       }))
     );
     if (error) throw new Error(`Could not record question responses: ${error.message}`);
@@ -340,7 +345,7 @@ export async function getQuestionResponsesForAttempt(accountId, attemptId) {
   const c = requireClient();
   const { data, error } = await c
     .from(RESPONSES_TABLE)
-    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, low_confidence, flagged")
+    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, low_confidence, flagged, correct_answer")
     .eq("account_id", accountId)
     .eq("attempt_id", attemptId)
     .order("question_number", { ascending: true });
