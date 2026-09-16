@@ -51,7 +51,7 @@ export default function Nav() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex md:items-center md:gap-8 -translate-y-[1px]">
+        <div className="hidden lg:flex lg:items-center lg:gap-8 -translate-y-[1px]">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -66,7 +66,7 @@ export default function Nav() {
         </div>
 
         {/* Desktop Right */}
-        <div className="hidden md:flex md:items-center md:gap-4 translate-x-4">
+        <div className="hidden lg:flex lg:items-center lg:gap-4 translate-x-4">
           <button
             onClick={toggle}
             className={`p-2 rounded-full transition-colors ${
@@ -95,7 +95,7 @@ export default function Nav() {
         </div>
 
         {/* Mobile Hamburger */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div className="flex items-center gap-4 lg:hidden">
           <button
             onClick={toggle}
             className={`p-2 rounded-full transition-colors ${
@@ -120,11 +120,11 @@ export default function Nav() {
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 top-20 z-40 bg-black/40 md:hidden"
+            className="fixed inset-0 top-20 z-40 bg-black/40 lg:hidden"
             onClick={() => setIsOpen(false)}
           />
           {/* Drawer */}
-          <div className="absolute top-full left-0 right-0 z-50 md:hidden max-h-[80vh] overflow-y-auto border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-6 space-y-4 animate-in slide-in-from-top duration-300 shadow-xl">
+          <div className="absolute top-full left-0 right-0 z-50 lg:hidden max-h-[80vh] overflow-y-auto border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-6 space-y-4 animate-in slide-in-from-top duration-300 shadow-xl">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
