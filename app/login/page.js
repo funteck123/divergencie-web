@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { api, setCurrentUser, roleHomePath } from "@/lib/client";
+import { api, setCurrentUser, setImpersonatorInfo, roleHomePath } from "@/lib/client";
 
 // UI copied verbatim from v6's src/app/auth/login/page.tsx (same brand
 // tokens, same layout/markup), minus the Google sign-in button — adapted
@@ -31,6 +31,14 @@ export default function LoginPage() {
         body: JSON.stringify({ username: username.trim(), password }),
       });
       setCurrentUser(user);
+      // TKT-0248: a real password login is never an impersonated session --
+      // clear any stale impersonator flag left over from a previous
+      // impersonation on this browser that never went through the real
+      // "Stop impersonating" flow (closed tab, crash, session timeout).
+      // Without this, DashboardShell showed the "you're impersonating"
+      // banner on a genuinely fresh admin login just because localStorage
+      // still had last time's leftover flag.
+      setImpersonatorInfo(null);
       router.push(roleHomePath(user.UserType));
     } catch (err) {
       setError(err.message);
