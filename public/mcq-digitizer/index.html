@@ -1849,8 +1849,10 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
         ${r.marks_awarded != null ? ` — ${r.marks_awarded} / ${r.marks_available}` : ""}
         ${r.remark ? ` — ${escapeHtml(r.remark)}` : ""}
         ${r.flagged ? ` <span title="Flagged for review while answering">🚩 Flagged for review</span>` : ""}
-        <button type="button" class="timer-btn view-question-btn" data-paper-id="${escapeHtml(paperId)}" data-qnum="${escapeHtml(r.question_number)}" style="margin-left:0.5rem; padding:0.1rem 0.5rem; font-size:0.75rem;">View question</button>
-        <div class="question-image-slot" style="display:none; margin-top:0.4rem;"></div>
+        <button type="button" class="timer-btn view-question-btn" data-paper-id="${escapeHtml(paperId)}" data-qnum="${escapeHtml(r.question_number)}" data-kind="qp" style="margin-left:0.5rem; padding:0.1rem 0.5rem; font-size:0.75rem;">View QP</button>
+        <button type="button" class="timer-btn view-question-btn" data-paper-id="${escapeHtml(paperId)}" data-qnum="${escapeHtml(r.question_number)}" data-kind="ms" style="padding:0.1rem 0.5rem; font-size:0.75rem;">View MS</button>
+        <div class="question-image-slot" data-kind="qp" style="display:none; margin-top:0.4rem;"></div>
+        <div class="question-image-slot" data-kind="ms" style="display:none; margin-top:0.4rem;"></div>
         ${r.student_answer ? `
           <div class="answer-verbatim-label">Your answer</div>
           <div class="answer-verbatim">${escapeHtml(r.student_answer)}</div>
@@ -1886,7 +1888,8 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
   const btn = e.target.closest(".view-question-btn");
   if (!btn) return;
   e.preventDefault();
-  const slot = btn.nextElementSibling;
+  const kind = btn.dataset.kind;
+  const slot = btn.closest("div").querySelector(`.question-image-slot[data-kind="${kind}"]`);
   if (slot.dataset.loaded === "true") {
     slot.style.display = slot.style.display === "none" ? "block" : "none";
     return;
@@ -1895,13 +1898,13 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
   slot.textContent = "Loading…";
   btn.disabled = true;
   try {
-    const res = await fetch(`/api/mcq/question-image?paperId=${encodeURIComponent(btn.dataset.paperId)}&questionNumber=${encodeURIComponent(btn.dataset.qnum)}`);
+    const res = await fetch(`/api/mcq/question-image?paperId=${encodeURIComponent(btn.dataset.paperId)}&questionNumber=${encodeURIComponent(btn.dataset.qnum)}&kind=${kind}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    slot.innerHTML = `<img src="${data.image}" style="max-width:100%; border:1px solid var(--border); border-radius:6px;" alt="Question ${escapeHtml(btn.dataset.qnum)}" />`;
+    slot.innerHTML = `<img src="${data.image}" style="max-width:100%; border:1px solid var(--border); border-radius:6px;" alt="${kind === 'ms' ? 'Mark scheme' : 'Question'} ${escapeHtml(btn.dataset.qnum)}" />`;
     slot.dataset.loaded = "true";
   } catch (e2) {
-    slot.textContent = `Couldn't load question: ${e2.message}`;
+    slot.textContent = `Couldn't load ${kind === "ms" ? "mark scheme" : "question"}: ${e2.message}`;
   } finally {
     btn.disabled = false;
   }

@@ -1593,16 +1593,22 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Lets a student's saved answer history show the real question it was
-  // answering, not just the answer text -- looks the question crop up by
+  // Lets a student's saved answer history show the real QP and/or MS crop
+  // it was answering, not just the answer text -- looks the crop up by
   // paperId (qpId) + questionNumber in whichever database actually has it
   // (structured Test-mode papers and MCQ papers are two entirely separate
   // databases, see loadStructuredDatabase/loadDatabase's own comments).
+  // kind=qp (default) reads the question crop; kind=ms reads the real
+  // mark-scheme crop -- only structured papers have one (entry.answers).
+  // MCQ never extracted a separate MS image (correctAnswer is just a
+  // letter, checked in-app, not shown as its own crop) -- kind=ms on an
+  // MCQ paperId correctly 404s rather than falling back to the QP crop.
   if (req.method === "GET" && req.url.startsWith("/api/question-image")) {
     try {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const paperId = url.searchParams.get("paperId");
       const questionNumber = url.searchParams.get("questionNumber");
+      const kind = url.searchParams.get("kind") === "ms" ? "ms" : "qp";
       if (!paperId || !questionNumber) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "paperId and questionNumber query params are required." }));
@@ -1611,26 +1617,31 @@ const server = http.createServer(async (req, res) => {
 
       const structuredDb = loadStructuredDatabase();
       const structuredEntry = structuredDb && structuredDb.find((p) => p.qpId === paperId);
-      const structuredQuestion = structuredEntry && structuredEntry.questions.find((q) => q.questionNumber === questionNumber);
-      if (structuredQuestion) {
-        const b64 = fs.readFileSync(path.join(REPO_ROOT, structuredQuestion.imagePath)).toString("base64");
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ image: `data:${mimeTypeForImagePath(structuredQuestion.imagePath)};base64,${b64}` }));
-        return;
+      if (structuredEntry) {
+        const list = kind === "ms" ? structuredEntry.answers : structuredEntry.questions;
+        const item = list.find((q) => q.questionNumber === questionNumber);
+        if (item) {
+          const b64 = fs.readFileSync(path.join(REPO_ROOT, item.imagePath)).toString("base64");
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ image: `data:${mimeTypeForImagePath(item.imagePath)};base64,${b64}` }));
+          return;
+        }
       }
 
-      const mcqDb = loadDatabase();
-      const mcqEntry = mcqDb && mcqDb.find((p) => p.qpId === paperId);
-      const mcqQuestion = mcqEntry && mcqEntry.questions.find((q) => q.questionNumber === questionNumber);
-      if (mcqQuestion && mcqQuestion.imagePaths && mcqQuestion.imagePaths[0]) {
-        const b64 = fs.readFileSync(path.join(REPO_ROOT, mcqQuestion.imagePaths[0])).toString("base64");
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ image: `data:${mimeTypeForImagePath(mcqQuestion.imagePaths[0])};base64,${b64}` }));
-        return;
+      if (kind === "qp") {
+        const mcqDb = loadDatabase();
+        const mcqEntry = mcqDb && mcqDb.find((p) => p.qpId === paperId);
+        const mcqQuestion = mcqEntry && mcqEntry.questions.find((q) => q.questionNumber === questionNumber);
+        if (mcqQuestion && mcqQuestion.imagePaths && mcqQuestion.imagePaths[0]) {
+          const b64 = fs.readFileSync(path.join(REPO_ROOT, mcqQuestion.imagePaths[0])).toString("base64");
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ image: `data:${mimeTypeForImagePath(mcqQuestion.imagePaths[0])};base64,${b64}` }));
+          return;
+        }
       }
 
       res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Question not found in either database." }));
+      res.end(JSON.stringify({ error: kind === "ms" ? "No mark-scheme crop exists for this question (MCQ papers don't have one)." : "Question not found in either database." }));
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
