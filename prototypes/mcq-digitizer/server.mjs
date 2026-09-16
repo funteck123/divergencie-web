@@ -1593,6 +1593,51 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Lets a student's saved answer history show the real question it was
+  // answering, not just the answer text -- looks the question crop up by
+  // paperId (qpId) + questionNumber in whichever database actually has it
+  // (structured Test-mode papers and MCQ papers are two entirely separate
+  // databases, see loadStructuredDatabase/loadDatabase's own comments).
+  if (req.method === "GET" && req.url.startsWith("/api/question-image")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const paperId = url.searchParams.get("paperId");
+      const questionNumber = url.searchParams.get("questionNumber");
+      if (!paperId || !questionNumber) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "paperId and questionNumber query params are required." }));
+        return;
+      }
+
+      const structuredDb = loadStructuredDatabase();
+      const structuredEntry = structuredDb && structuredDb.find((p) => p.qpId === paperId);
+      const structuredQuestion = structuredEntry && structuredEntry.questions.find((q) => q.questionNumber === questionNumber);
+      if (structuredQuestion) {
+        const b64 = fs.readFileSync(path.join(REPO_ROOT, structuredQuestion.imagePath)).toString("base64");
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ image: `data:${mimeTypeForImagePath(structuredQuestion.imagePath)};base64,${b64}` }));
+        return;
+      }
+
+      const mcqDb = loadDatabase();
+      const mcqEntry = mcqDb && mcqDb.find((p) => p.qpId === paperId);
+      const mcqQuestion = mcqEntry && mcqEntry.questions.find((q) => q.questionNumber === questionNumber);
+      if (mcqQuestion && mcqQuestion.imagePaths && mcqQuestion.imagePaths[0]) {
+        const b64 = fs.readFileSync(path.join(REPO_ROOT, mcqQuestion.imagePaths[0])).toString("base64");
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ image: `data:${mimeTypeForImagePath(mcqQuestion.imagePaths[0])};base64,${b64}` }));
+        return;
+      }
+
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Question not found in either database." }));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // Cache-only paper lookup by qpId alone (no msId) -- Mistakes Mode
   // never has an msId for a stored mistake (only paper_id/qpId is
   // recorded), so it can't call fetch-and-digitize's live-fallback path.

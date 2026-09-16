@@ -325,6 +325,7 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
         remark: r.remark || null,
         line_feedback: Array.isArray(r.lineFeedback) ? r.lineFeedback : null,
         low_confidence: Boolean(r.lowConfidence),
+        flagged: Boolean(r.flagged),
       }))
     );
     if (error) throw new Error(`Could not record question responses: ${error.message}`);
@@ -339,7 +340,7 @@ export async function getQuestionResponsesForAttempt(accountId, attemptId) {
   const c = requireClient();
   const { data, error } = await c
     .from(RESPONSES_TABLE)
-    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, low_confidence")
+    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, low_confidence, flagged")
     .eq("account_id", accountId)
     .eq("attempt_id", attemptId)
     .order("question_number", { ascending: true });

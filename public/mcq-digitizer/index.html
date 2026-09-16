@@ -1448,8 +1448,8 @@ function mistakeResults(items) {
     .filter((r) => r.verdict === "correct" || r.verdict === "incorrect")
     .map((r) => {
       const out = { questionNumber: r.questionNumber, correct: r.verdict === "correct" };
-      // Only structured Test-mode items carry these -- plain MCQ items
-      // don't, and studentAnswer's presence is exactly what the server
+      // studentAnswer's presence (both MCQ -- the selected letter, or null
+      // -- and structured Test mode set it) is exactly what the server
       // uses to decide whether a question_responses row is worth saving.
       if (r.studentAnswer !== undefined) {
         out.studentAnswer = r.studentAnswer;
@@ -1458,6 +1458,7 @@ function mistakeResults(items) {
         out.remark = r.remark;
         out.lineFeedback = r.lineFeedback;
         out.lowConfidence = r.lowConfidence;
+        out.flagged = r.flagged;
       }
       return out;
     });
@@ -1486,7 +1487,13 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
     else if (studentAnswer === q.correctAnswer) verdict = "correct";
     else verdict = "incorrect";
     if (verdict === "correct") correctCount++;
-    return { ...q, studentAnswer, verdict };
+    // The flag-for-review checkbox was previously a pure client-side aid,
+    // never sent anywhere (see renderFlaggedSummary's own header comment)
+    // -- captured here so a student's history can later show which
+    // questions they'd marked as unsure, not just right/wrong.
+    const flagCheckbox = document.querySelector(`.flag-checkbox[data-qnum="${CSS.escape(q.questionNumber)}"]`);
+    const flagged = !!flagCheckbox?.checked;
+    return { ...q, studentAnswer, verdict, flagged };
   });
 
   const gradable = quiz.filter((q) => q.correctAnswer).length;
@@ -1788,7 +1795,7 @@ function renderHistoryTable(mine) {
     // server.mjs's own header comment), so there's nothing to view there
     // -- only a Test-mode attempt with a real id gets the link.
     const answersCell = !isPractice && a.id
-      ? `<a href="#" class="view-answers-link" data-attempt-id="${escapeHtml(a.id)}">View</a>`
+      ? `<a href="#" class="view-answers-link" data-attempt-id="${escapeHtml(a.id)}" data-paper-id="${escapeHtml(a.paper_id)}">View</a>`
       : "—";
     return `<tr>
       <td>${escapeHtml(paperTitleById[a.paper_id] || a.paper_id)}</td>
@@ -1821,6 +1828,7 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
   // expansions if a student clicks through several rows.
   document.querySelectorAll(".answers-panel-row").forEach((el) => el.remove());
   const attemptId = link.dataset.attemptId;
+  const paperId = link.dataset.paperId;
   const panelRow = document.createElement("tr");
   panelRow.className = "answers-panel-row";
   panelRow.innerHTML = `<td colspan="8" class="answers-panel">Loading…</td>`;
@@ -1839,6 +1847,9 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
         <strong>Question ${escapeHtml(r.question_number)}</strong>
         ${r.marks_awarded != null ? ` — ${r.marks_awarded} / ${r.marks_available}` : ""}
         ${r.remark ? ` — ${escapeHtml(r.remark)}` : ""}
+        ${r.flagged ? ` <span title="Flagged for review while answering">🚩 Flagged for review</span>` : ""}
+        <button type="button" class="timer-btn view-question-btn" data-paper-id="${escapeHtml(paperId)}" data-qnum="${escapeHtml(r.question_number)}" style="margin-left:0.5rem; padding:0.1rem 0.5rem; font-size:0.75rem;">View question</button>
+        <div class="question-image-slot" style="display:none; margin-top:0.4rem;"></div>
         ${r.student_answer ? `
           <div class="answer-verbatim-label">Your answer</div>
           <div class="answer-verbatim">${escapeHtml(r.student_answer)}</div>
@@ -1860,6 +1871,35 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
     `).join("");
   } catch (e2) {
     panelRow.querySelector("td").textContent = `Couldn't load answers: ${e2.message}`;
+  }
+});
+
+// "View question" is fetched on demand, not preloaded with the rest of the
+// panel -- a full Test-mode attempt's worth of question images would be a
+// lot of data to pull down just for a history check most students never
+// open, so each one only loads if actually asked for, once, then toggles.
+document.querySelector("#historyTable tbody").addEventListener("click", async (e) => {
+  const btn = e.target.closest(".view-question-btn");
+  if (!btn) return;
+  e.preventDefault();
+  const slot = btn.nextElementSibling;
+  if (slot.dataset.loaded === "true") {
+    slot.style.display = slot.style.display === "none" ? "block" : "none";
+    return;
+  }
+  slot.style.display = "block";
+  slot.textContent = "Loading…";
+  btn.disabled = true;
+  try {
+    const res = await fetch(`/api/mcq/question-image?paperId=${encodeURIComponent(btn.dataset.paperId)}&questionNumber=${encodeURIComponent(btn.dataset.qnum)}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    slot.innerHTML = `<img src="${data.image}" style="max-width:100%; border:1px solid var(--border); border-radius:6px;" alt="Question ${escapeHtml(btn.dataset.qnum)}" />`;
+    slot.dataset.loaded = "true";
+  } catch (e2) {
+    slot.textContent = `Couldn't load question: ${e2.message}`;
+  } finally {
+    btn.disabled = false;
   }
 });
 
