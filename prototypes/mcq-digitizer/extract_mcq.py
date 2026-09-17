@@ -2414,9 +2414,18 @@ def find_bare_number_question_starts(lines):
         # Safe to widen per this function's own docstring: the monotonic-
         # sequence filter below is the real false-positive guard, not this
         # regex.
+        # Opens with a bare "(" other than "(a)" (TKT-0251, 2026-09-18): a
+        # real IGCSE Maths question can open with a coordinate pair as its
+        # grammatical subject ("17 (p, q) is the image of..."), confirmed
+        # real on 0580/23 (Oct/Nov 2013) -- the existing "(a)" pattern only
+        # covers a lettered sub-part marker, not this. Silently dropped
+        # question 17 entirely before this (confirmed by comparing against
+        # the real MS, which found it fine on its own separate scanning
+        # path -- this file's QP and MS scanners aren't the same code, so
+        # one can miss a heading the other catches).
         m = (
             re.match(r'^(\d{1,2})$', text)
-            or re.match(r'^(\d{1,2})\s*\(a\)', text)
+            or re.match(r'^(\d{1,2})\s*\(', text)
             or re.match(r'^(\d{1,2})\s+[A-Za-z]', text)
         )
         # 100 missed a real heading confirmed at x0=107 (A-Level Biology's
