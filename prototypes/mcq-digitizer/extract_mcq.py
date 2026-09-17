@@ -1882,6 +1882,49 @@ def parse_qp(pdf_path):
     return questions
 
 
+def parse_ms_table(lines):
+    """Fast path for CAIE's OWN official MCQ mark-scheme table format --
+    e.g. a real IGCSE Physics 0625/22 MS: a "Question / Answer / Marks"
+    header, then one row per question, its three cells (number, letter,
+    marks) sharing the same y0 and appearing in that left-to-right order.
+    Confirmed real (TKT-0251, 2026-09-18): the custom topical-worksheet MS
+    format (elimination-style prose, what the rest of parse_ms is built
+    for) never appears in a real yearly CAIE mark scheme -- they use this
+    table instead, and the elimination parser below finds zero matches
+    against it (find_question_starts doesn't recognize a bare digit
+    immediately followed by a bare option letter as a question heading at
+    all, since a real worksheet MS never has marks-column digits sitting
+    right next to it).
+    Returns (answers, True) once the header is found at all -- even a
+    row that fails to parse should stay in this code path rather than
+    silently falling through to the elimination parser, which is built
+    for a document shape this one isn't. Returns (None, False) when no
+    such header exists, so the caller knows to try the other path."""
+    header_idx = None
+    for i in range(len(lines) - 2):
+        if (lines[i]["text"].strip() == "Question"
+                and lines[i + 1]["text"].strip() == "Answer"
+                and lines[i + 2]["text"].strip() == "Marks"):
+            header_idx = i + 3
+            break
+    if header_idx is None:
+        return None, False
+
+    answers = {}
+    i = header_idx
+    while i + 2 < len(lines):
+        a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
+        if re.match(r'^\d{1,2}$', a) and re.match(r'^[A-D]$', b) and re.match(r'^\d+$', c):
+            answers[a] = b
+            i += 3
+        else:
+            # Page-break noise (a repeated running header/footer like
+            # "0625/22" or "Page 2 of 3") -- skip one line at a time so a
+            # single stray line can't desync the whole rest of the table.
+            i += 1
+    return answers, True
+
+
 def parse_ms(pdf_path):
     """Returns (answers: {questionNumber: letter}, ambiguous: [questionNumber]).
     Tries the simple direct-answer format first (a bare letter right after
@@ -1892,6 +1935,12 @@ def parse_ms(pdf_path):
     `ambiguous` instead of a wrong answer."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
+
+    table_answers, is_table_format = parse_ms_table(lines)
+    if is_table_format:
+        doc.close()
+        return table_answers, []
+
     starts, _quasi = find_question_starts(lines, doc)
 
     answers = {}
