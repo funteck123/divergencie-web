@@ -364,6 +364,22 @@ if (accountId) {
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
+// question_number is stored as TEXT (server.mjs always does
+// String(r.questionNumber)) and can be a compound label like "1a"/"10b"
+// for structured papers, not just a bare integer -- a plain string sort
+// (or a DB ORDER BY on the raw text column, which is what the API used to
+// rely on) reads "1, 10, 11, 2, 20, 3..." on any paper past 9 questions
+// (TKT-0257). Sort by the leading numeric run first, then whatever
+// letters/text follow it, so "1, 1a, 1b, 2, ... 10, 11" comes out right.
+function naturalQuestionSort(a, b) {
+  const parse = (s) => {
+    const m = /^(\d+)(.*)$/.exec(String(s ?? ""));
+    return m ? [parseInt(m[1], 10), m[2]] : [Infinity, String(s ?? "")];
+  };
+  const [an, as] = parse(a);
+  const [bn, bs] = parse(b);
+  return an !== bn ? an - bn : as.localeCompare(bs);
+}
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -630,16 +646,44 @@ function chapterOf(title) {
   return null;
 }
 
+// Worksheet picker dropdown (TKT-0257 follow-up): papers arrive in
+// whatever order the Drive crawl happened to list them in -- close to
+// chapter order most of the time, but not guaranteed, and real data
+// proves it: A Levels Chemistry's crawl ends with "8.2", "22-alkenes",
+// and "29.1" tacked on out of sequence instead of sitting next to "8.1",
+// between "21"/"23", and next to "29.2" where they belong. Sort by
+// (chapter number, worksheet number, title) instead of trusting crawl
+// order -- same fix family as naturalQuestionSort above, applied to
+// paper titles instead of question numbers.
+const WORKSHEET_NUMBER_PATTERN = /Worksheet\s*(\d+)/i;
+function paperOrderKey(title) {
+  const ch = parseFloat(chapterOf(title));
+  const wsMatch = WORKSHEET_NUMBER_PATTERN.exec(title || "");
+  return [isNaN(ch) ? Infinity : ch, wsMatch ? parseInt(wsMatch[1], 10) : 0, title || ""];
+}
+function comparePapers(a, b) {
+  const [an, aw, at] = paperOrderKey(a.title);
+  const [bn, bw, bt] = paperOrderKey(b.title);
+  if (an !== bn) return an - bn;
+  if (aw !== bw) return aw - bw;
+  return at.localeCompare(bt);
+}
+
 // Chapter NAME extraction (not just the number) -- for readability, e.g.
 // "1.1 Length & Time" instead of a bare "1.1" on charts/dropdowns/tables.
-// Same two-pattern-family split as chapterOf, verified against all 196
-// real papers (2026-09-02): 196/196 matched. A Levels Chemistry titles
-// have no natural word-casing (underscore-joined slug), so that branch
-// title-cases each underscore-separated word; every other subject already
-// has real title-cased words in the source filename, used as-is.
+// Originally verified against all 196 full-library (MCQ) papers
+// (2026-09-02): 196/196 matched. The structured-library (Theory/Math, 874
+// papers, added 2026-09-06) uses a third title format this never covered
+// -- "ChN Topic Name (Paper X - Difficulty) Worksheet N" for Maths, "ChN
+// Topic Name (Theory) Worksheet N" for Physics/Chem/Bio -- so every
+// structured-library paper silently fell back to a bare chapter number
+// with no name (TKT-0258). The third pattern below covers all 874/874 of
+// those (checked 2026-09-17), and is tried last so it can never shadow
+// the two library formats above.
 const CHAPTER_NAME_PATTERNS = [
   { re: /Ch\d+(?:\.\d+)?\s+(.+?)\s*\(MCQ\)/i, clean: (s) => s.trim() },
   { re: /^\d+(?:\.\d+)?-(.+?)-_ial-cie-chemistry$/i, clean: (s) => s.replace(/_+/g, " ").trim().replace(/\b\w/g, (c) => c.toUpperCase()) },
+  { re: /Ch\d+(?:\.\d+)?\s+(.+?)\s*\([^)]*\)\s*Worksheet\b/i, clean: (s) => s.trim() },
 ];
 function chapterNameOf(title) {
   for (const { re, clean } of CHAPTER_NAME_PATTERNS) {
@@ -683,6 +727,13 @@ async function loadLibrary() {
     library = data;
     paperTitleById = {};
     chapterNameByKey = {};
+    // Sort each component's paper array in place, once, here -- every
+    // consumer (populatePapers, updatePaperNote, the actual quiz-start
+    // lookup) re-derives its own `papers` reference straight off `library`
+    // rather than sharing one sorted copy, so sorting the shared array
+    // itself is what keeps them all consistent (and keeps the <option
+    // value="i"> index -> papers[i] mapping valid everywhere).
+    Object.values(library).forEach((subjects) => Object.values(subjects).forEach((components) => Object.values(components).forEach((papers) => papers.sort(comparePapers))));
     Object.entries(library).forEach(([board, subjects]) => Object.entries(subjects).forEach(([subject, components]) => Object.values(components).forEach((papers) => papers.forEach((p) => {
       paperTitleById[p.qpId] = p.title;
       const fullSubject = `${board} ${subject}`;
@@ -1838,7 +1889,7 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
     const res = await fetch(`/api/mcq/question-responses?account=${encodeURIComponent(accountId)}&attemptId=${encodeURIComponent(attemptId)}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    const responses = data.responses || [];
+    const responses = (data.responses || []).sort((a, b) => naturalQuestionSort(a.question_number, b.question_number));
     if (responses.length === 0) {
       panelRow.querySelector("td").textContent = "No saved answers for this attempt.";
       return;
