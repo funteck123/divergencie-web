@@ -1913,7 +1913,12 @@ def parse_ms_table(lines):
     variant = None
     for i in range(len(lines) - 2):
         a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
-        if a == "Question" and b == "Answer" and c == "Marks":
+        # "Mark" vs "Marks" -- confirmed real, harmless label drift across
+        # years (e.g. IGCSE Physics 0625/22, October/November 2019 uses
+        # the singular "Mark"; other years use "Marks") that cost this
+        # paper its entire answer key (0/40 matched) before being widened
+        # to accept both.
+        if a == "Question" and b == "Answer" and c in ("Marks", "Mark"):
             header_idx, variant = i + 3, "answer_marks"
             break
         if a == "Question" and b == "Number" and c == "Key":
