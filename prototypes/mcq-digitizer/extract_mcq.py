@@ -71,7 +71,16 @@ QUESTION_NUM_RE = re.compile(r'^(\d{1,2})[\.\)]\s*(?!\d)(.*)$')
 # than an enumerated subset, since any of them is equally plausible at
 # the start of a real stem and there's no safe way to predict which
 # subset a future real paper will use.
-QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(Α-Ωα-ω].*)$')
+QUESTION_BARE_RE = re.compile(r'^(\d{1,2})\s+([A-Z(Α-Ωα-ω-].*)$')
+# - (Unicode Private Use Area) alongside the real Greek range
+# above -- confirmed real (TKT-0251, 2026-09-18): a real IGCSE Physics
+# yearly paper's own symbol font remaps Greek letters into the PUA instead
+# of proper Unicode Greek codepoints ("35 -particles, -particles
+# and -rays..." extracts with literal PUA chars, not real α/β/γ), the
+# same underlying phenomenon TKT-0238 already handled for correctly-
+# encoded Greek text, just a differently-broken font. Silently dropped
+# question 35 entirely before this -- confirmed by comparing extracted
+# question counts (39) against the paper's real total (40).
 # The same bare form, but for the rarer real case where the content
 # starts with a digit ("32 0.200 mol of a hydrocarbon..."). Kept
 # separate from QUESTION_BARE_RE and gated much harder in
