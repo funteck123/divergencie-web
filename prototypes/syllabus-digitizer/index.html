@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Syllabus Digitizer — Prototype</title>
+<title>Syllabus Digitizer: Prototype</title>
 <style>
   :root {
     --navy: #1a3c5e; --gold: #e8a832; --sky: #4a9fd4; --coral: #e05a4e; --charcoal: #5c5248;
@@ -111,7 +111,7 @@
   <span class="badge">Prototype</span>
   <div style="flex:1;">
     <h1>Syllabus Digitizer</h1>
-    <p>DivergenCIE — browse the official Cambridge subject-content pages of any collected syllabus booklet, cropped image-by-topic</p>
+    <p>DivergenCIE: browse the official Cambridge subject-content pages of any collected syllabus booklet, cropped image-by-topic</p>
   </div>
   <a href="#" id="showProgressLink" style="display:none; font-size:0.85rem; white-space:nowrap;">My progress &amp; leaderboard</a>
 </header>
@@ -137,17 +137,17 @@
   </div>
   <div class="panel" style="padding:1.25rem; margin-bottom:1.25rem;">
     <h2 style="margin:0 0 0.4rem; color:var(--navy); font-size:1rem;">Completion history</h2>
-    <p class="hint" style="margin:0 0 0.75rem;">Every topic you've marked Completed, most recent first — respects the Subject/Chapter filter above.</p>
+    <p class="hint" style="margin:0 0 0.75rem;">Every topic you've marked Completed, most recent first. Respects the Subject/Chapter filter above.</p>
     <table class="lb-table history-table" id="historyTable" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
       <thead><tr><th>Topic</th><th>Subject</th><th>Chapter</th><th>When</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
   <div class="panel" style="padding:1.25rem;">
-    <h2 style="margin:0 0 0.6rem; color:var(--navy); font-size:1rem;">Leaderboard — topics completed</h2>
+    <h2 style="margin:0 0 0.6rem; color:var(--navy); font-size:1rem;">Leaderboard</h2>
     <p class="hint">"Overall" spans every subject; pick a subject to narrow to its chapters.</p>
     <div class="scope-row">
-      <label>Subject <select id="lbSubjectSelect"><option value="">Overall (all subjects)</option></select></label>
+      <label>Subject <select id="lbSubjectSelect"><option value="">All subjects</option></select></label>
       <label>Chapter <select id="lbChapterSelect" disabled><option value="">All chapters</option></select></label>
     </div>
     <table class="lb-table" id="lbTable" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
@@ -315,7 +315,7 @@ function parseContentBlocks(text) {
 }
 
 function renderTopicContent(text) {
-  if (!text) return `<p class="topic-empty">(no content text under this heading)</p>`;
+  if (!text) return `<p class="topic-empty">No content text under this heading.</p>`;
   return parseContentBlocks(text)
     .map((b) => {
       if (b.type === "label") return `<div class="content-label">${escapeHtml(b.text)}</div>`;
@@ -507,7 +507,7 @@ function exportTaggedTopics(meta) {
   const exportedAt = `${new Intl.DateTimeFormat(undefined, { dateStyle: "full", timeStyle: "long" }).format(new Date())} (${tzName})`;
 
   const html = `<!doctype html>
-<html><head><meta charset="utf-8" /><title>${escapeHtml(subjectLabel)} — tagged topics</title>
+<html><head><meta charset="utf-8" /><title>${escapeHtml(subjectLabel)}: tagged topics</title>
 <style>
   body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: #f4f4f4; color: #1a1a1a; margin: 0; padding: 0 0 2.5rem; }
   .dc-header { background: #1a3c5e; padding: 1.1rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 4px solid #e8a832; }
