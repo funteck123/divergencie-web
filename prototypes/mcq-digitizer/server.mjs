@@ -124,13 +124,21 @@ const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearl
 // assumptions yet (see the plan file's Update 11) -- excluded from what's
 // served to the picker until that's fixed, rather than shipping a broken
 // grading experience.
+// TKT-0251: English's own real yearly component names ("Paper 2: Reading
+// and Writing (Extended)"/"Paper 4: Listening (Extended)") don't match
+// the topical library's own English structure at all (it uses a
+// completely different Paper 1/2/3 split with no Core/Extended tier and
+// different subject-matter-per-number -- confirmed via a live
+// GET /api/library, not assumed) -- the picker's topical-vs-yearly toggle
+// keys off matching component NAMES, so English's yearly papers, while
+// crawled and gradable, are never reachable from the picker until that
+// naming mismatch is reconciled. Deliberately left OUT of this set for
+// now rather than exposed through a toggle that would never appear.
 const YEARLY_READY_COMPONENTS = new Set([
-  "MCQ",
+  "Paper 2: Multiple Choice (Extended)",
   "Paper 4: Theory (Extended)",
   "Paper 2: Non-calculator (Extended)",
   "Paper 4: Calculator (Extended)",
-  "Paper 2: Reading and Writing (Extended)",
-  "Paper 4: Listening (Extended)",
 ]);
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than

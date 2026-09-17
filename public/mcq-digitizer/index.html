@@ -157,6 +157,24 @@
                student has ever answered a question in. -->
           <button type="button" class="timer-btn" id="mistakesModeBtn" style="display:none; white-space:nowrap; padding:0 0.75rem;">Mistakes Mode</button>
         </div>
+        <!-- TKT-0251: real yearly past papers, a second data source
+             alongside the topical worksheets above -- only shown when this
+             exact board/subject/component actually has yearly papers
+             ready (see YEARLY_READY_COMPONENTS in server.mjs). Year/
+             Session only appear once "Yearly past papers" is chosen. -->
+        <div id="pickPaperTypeRow" style="display:none;">
+          <label class="field-label">Paper Type</label>
+          <select id="pickPaperType">
+            <option value="topical">Topical worksheets</option>
+            <option value="yearly">Yearly past papers</option>
+          </select>
+        </div>
+        <div id="pickYearRow" style="display:none;">
+          <label class="field-label">Year</label>
+          <select id="pickYear"></select>
+          <label class="field-label">Session</label>
+          <select id="pickSession"></select>
+        </div>
         <label class="field-label">Paper</label>
         <select id="pickPaper"></select>
         <p class="hint" id="pickPaperNote"></p>
@@ -615,6 +633,12 @@ document.getElementById("backFromModeSelectLink").addEventListener("click", (e) 
 
 // ---- Library picker ----
 let library = null;
+// TKT-0251: real yearly past papers, same board->subject->component->
+// [papers] shape as `library` above, but keyed off a stable paperId
+// instead of a Drive qpId/msId pair (see server.mjs's YEARLY_LIBRARY_PATH
+// comment for why). {} (not null) so a lookup on a subject/component with
+// no yearly data just finds nothing, never throws.
+let yearlyLibrary = {};
 let paperTitleById = {}; // qpId -> readable title, built once loadLibrary() resolves
 // board -> subject -> mcqComponent name (or null if the subject has no
 // real MCQ paper at all, e.g. Mathematics) -- from GET /api/mcq/subject-meta,
@@ -712,7 +736,7 @@ async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
   try {
-    const [res, metaRes, titlesRes] = await Promise.all([
+    const [res, metaRes, titlesRes, yearlyRes] = await Promise.all([
       fetch("/api/mcq/library"),
       fetch("/api/mcq/subject-meta"),
       // TKT-0244: an always-available (not enrollment-filtered) title map,
@@ -720,9 +744,15 @@ async function loadLibrary() {
       // GET /api/mcq/paper-titles's own header comment for why this must
       // stay separate from the enrollment-scoped /library response below.
       accountId ? fetch("/api/mcq/paper-titles") : Promise.resolve(null),
+      // TKT-0251: real yearly past papers, a second library alongside the
+      // topical worksheets above -- a fetch failure here (service not yet
+      // restarted with the new endpoint, still mid-rollout) must not break
+      // the whole picker, same "nice to have" tolerance as subject-meta.
+      fetch("/api/mcq/yearly-library").catch(() => null),
     ]);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+    yearlyLibrary = (yearlyRes && yearlyRes.ok) ? await yearlyRes.json().catch(() => ({})) : {};
     // subject-meta is a nice-to-have (only decides which UI a component
     // gets) -- a failure here shouldn't block the whole library from
     // loading, every component just falls back to the existing MCQ flow
@@ -792,7 +822,61 @@ function populateComponents() {
   // the moment the library actually has papers in it.
   const nonEmpty = Object.keys(components).filter((c) => (components[c] || []).length > 0);
   fillSelect(document.getElementById("pickComponent"), nonEmpty);
-  populatePapers();
+  onComponentOrTypeChange();
+}
+
+// TKT-0251: right after Component, a paper can come from either the
+// topical worksheet library (existing) or the real yearly past-paper
+// library -- only offered when this exact board/subject/component
+// actually has yearly papers ready (see YEARLY_READY_COMPONENTS in
+// server.mjs; e.g. Practical isn't in yearlyLibrary at all yet).
+function currentYearlyPapers() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const component = document.getElementById("pickComponent").value;
+  return (((yearlyLibrary[board] || {})[subject] || {})[component] || []);
+}
+function onComponentOrTypeChange() {
+  const yearlyPapers = currentYearlyPapers();
+  const typeRow = document.getElementById("pickPaperTypeRow");
+  const typeSelect = document.getElementById("pickPaperType");
+  if (yearlyPapers.length === 0) {
+    typeRow.style.display = "none";
+    typeSelect.value = "topical";
+  } else {
+    typeRow.style.display = "block";
+  }
+  if (typeSelect.value === "yearly" && yearlyPapers.length > 0) {
+    document.getElementById("pickYearRow").style.display = "block";
+    populateYearlyYears();
+  } else {
+    document.getElementById("pickYearRow").style.display = "none";
+    populatePapers();
+  }
+}
+function populateYearlyYears() {
+  const papers = currentYearlyPapers();
+  const years = [...new Set(papers.map((p) => p.year))].sort((a, b) => b - a); // most recent first
+  fillSelect(document.getElementById("pickYear"), years.map(String));
+  populateYearlySessions();
+}
+function populateYearlySessions() {
+  const papers = currentYearlyPapers();
+  const year = Number(document.getElementById("pickYear").value);
+  const sessions = [...new Set(papers.filter((p) => p.year === year).map((p) => p.session))];
+  fillSelect(document.getElementById("pickSession"), sessions);
+  populateYearlyPapers();
+}
+function populateYearlyPapers() {
+  const papers = currentYearlyPapers();
+  const year = Number(document.getElementById("pickYear").value);
+  const session = document.getElementById("pickSession").value;
+  const matching = papers.filter((p) => p.year === year && p.session === session);
+  const paperSelect = document.getElementById("pickPaper");
+  paperSelect.innerHTML = matching.map((p) => `<option value="${escapeHtml(p.paperId)}">Paper ${escapeHtml(p.variant)}</option>`).join("");
+  document.getElementById("pickPaperNote").textContent = "";
+  document.getElementById("fetchAndDigitizeBtn").disabled = matching.length === 0;
+  document.getElementById("mistakesModeBtn").style.display = "none"; // TKT-0251: mistakes-mode data doesn't cover yearly papers yet
 }
 function populatePapers() {
   const board = document.getElementById("pickBoard").value;
@@ -809,6 +893,7 @@ function populatePapers() {
   updatePaperNote();
 }
 function updatePaperNote() {
+  if (document.getElementById("pickPaperType").value === "yearly") return; // yearly papers always have a real ms -- nothing to note
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
   const component = document.getElementById("pickComponent").value;
@@ -828,13 +913,58 @@ function updatePaperNote() {
 
 document.getElementById("pickBoard").addEventListener("change", populateSubjects);
 document.getElementById("pickSubject").addEventListener("change", populateComponents);
-document.getElementById("pickComponent").addEventListener("change", populatePapers);
+document.getElementById("pickComponent").addEventListener("change", onComponentOrTypeChange);
+document.getElementById("pickPaperType").addEventListener("change", onComponentOrTypeChange);
+document.getElementById("pickYear").addEventListener("change", populateYearlySessions);
+document.getElementById("pickSession").addEventListener("change", populateYearlyPapers);
 document.getElementById("pickPaper").addEventListener("change", updatePaperNote);
 
 document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async () => {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
   const component = document.getElementById("pickComponent").value;
+  const isYearly = document.getElementById("pickPaperType").value === "yearly";
+
+  if (isYearly) {
+    const paperId = document.getElementById("pickPaper").value;
+    const paper = currentYearlyPapers().find((p) => p.paperId === paperId);
+    if (!paper) return;
+
+    if (isStructuredComponent(board, subject, component)) {
+      currentAttemptMeta = { subject: `${board} ${subject}`, chapter: null, paperId: paper.paperId };
+      openStructuredPaper(paper);
+      return;
+    }
+
+    const btn = document.getElementById("fetchAndDigitizeBtn");
+    const statusEl = document.getElementById("libraryStatus");
+    const errorEl = document.getElementById("libraryError");
+    errorEl.style.display = "none";
+    btn.disabled = true;
+    statusEl.style.display = "block";
+    statusEl.textContent = `Fetching "${paper.title}" and digitizing...`;
+    try {
+      const res = await fetch("/api/mcq/yearly-digitize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paperId: paper.paperId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+      currentAttemptMeta = { subject: `${board} ${subject}`, chapter: null, paperId: paper.paperId };
+      currentMcqPaper = paper;
+      applyDigitizeResult(data);
+      statusEl.style.display = "none";
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.style.display = "block";
+      statusEl.style.display = "none";
+    } finally {
+      btn.disabled = false;
+    }
+    return;
+  }
+
   const papers = (((library[board] || {})[subject] || {})[component] || []);
   const idx = Number(document.getElementById("pickPaper").value);
   const paper = papers[idx];
@@ -1075,11 +1205,22 @@ async function openStructuredPaper(paper) {
   loadingEl.textContent = "Loading questions...";
   showStage(5);
   try {
-    const res = await fetch("/api/mcq/digitize-structured", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
-    });
+    // TKT-0251: a yearly paper (identified by paperId) digitizes via a
+    // different endpoint -- its qpPath/msPath are already local files, no
+    // Drive fileId to fetch/stream a PDF-view link for, so pdfLinksHtml is
+    // skipped for it below rather than pointed at a Drive id that doesn't
+    // exist.
+    const res = paper.paperId
+      ? await fetch("/api/mcq/yearly-digitize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paperId: paper.paperId }),
+        })
+      : await fetch("/api/mcq/digitize-structured", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
+        });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     const questions = data.questions || [];
@@ -1096,7 +1237,9 @@ async function openStructuredPaper(paper) {
     }
     document.getElementById("structuredCount").textContent = `Found ${structuredItems.length} question${structuredItems.length === 1 ? "" : "s"}.`;
     document.getElementById("structuredCount").style.display = "block";
-    document.getElementById("structuredPdfLinksMenu").innerHTML = pdfLinksHtml(currentStructuredPaper.qpId, currentStructuredPaper.msId, currentStructuredPaper.title);
+    document.getElementById("structuredPdfLinksMenu").innerHTML = currentStructuredPaper.paperId
+      ? ""
+      : pdfLinksHtml(currentStructuredPaper.qpId, currentStructuredPaper.msId, currentStructuredPaper.title);
     document.getElementById("structuredStartPracticeBtn").style.display = "block";
     document.getElementById("structuredStartTestBtn").style.display = "block";
     document.getElementById("structuredPracticeCaption").style.display = "block";

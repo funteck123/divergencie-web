@@ -22,7 +22,7 @@ import re
 import fitz
 
 EXPECTED_KEYWORDS = {
-    "MCQ": [r"Multiple\s*Choice.*Extended"],
+    "Paper 2: Multiple Choice (Extended)": [r"Multiple\s*Choice.*Extended"],
     "Paper 4: Theory (Extended)": [r"Theory.*Extended", r"Extended.*Theory"],
     "Paper 6: Alternative to Practical": [r"Alternative to Practical"],
     # Confirmed real (TKT-0251, 2026-09-18): Cambridge only started

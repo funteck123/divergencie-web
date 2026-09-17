@@ -27,8 +27,16 @@ const FILENAME_RE = /^(\d{4})_([smw])(\d{2})_(qp|ms)_(\d)(\d)\.pdf$/i;
 // matches the existing topical library's own scope -- see plan's
 // "Explicitly deferred" section, Core tier is a later decision, not
 // silently included here).
+// Component name must match the EXISTING topical library's own real
+// component keys exactly (confirmed via a live GET /api/library, not
+// assumed -- the topical library has since grown Core-tier components
+// too, "MCQ" alone is stale) so the two libraries' components line up and
+// the picker's "topical vs yearly" toggle can find yearly data for a
+// selected component at all. A mismatch here doesn't crash anything --
+// it just silently means the toggle never appears for that component,
+// which is exactly the bug this comment is here to prevent recurring.
 const SCIENCE_COMPONENT_BY_DIGIT = {
-  "2": "MCQ",
+  "2": "Paper 2: Multiple Choice (Extended)",
   "4": "Paper 4: Theory (Extended)",
   "6": "Paper 6: Alternative to Practical",
 };
