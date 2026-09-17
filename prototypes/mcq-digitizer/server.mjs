@@ -118,12 +118,12 @@ const STRUCTURED_DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "
 // download step at all -- see the yearly-digitize handler below.
 const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");
 // Components verified end-to-end (batch-tested against real papers,
-// 2026-09-18) -- MCQ and Theory only. "Paper 6: Alternative to Practical"
-// exists in the crawled data but its mark-scheme format (compound sub-
-// part labels like "1(a)(i)") doesn't match parse_structured's
-// assumptions yet (see the plan file's Update 11) -- excluded from what's
-// served to the picker until that's fixed, rather than shipping a broken
-// grading experience.
+// 2026-09-18) -- MCQ, Theory, and Practical. Practical's mark-scheme
+// format (compound sub-part labels like "1(a)(i)") originally didn't
+// match parse_structured's assumptions (plan file Update 11), but the fix
+// built for the same problem on Chemistry/Biology Theory (Update 14)
+// turned out to cover Practical too -- re-verified against all 111 real
+// Physics Practical papers: 104/111 (94%) (Update 15).
 // TKT-0251: English's own real yearly component names ("Paper 2: Reading
 // and Writing (Extended)"/"Paper 4: Listening (Extended)") don't match
 // the topical library's own English structure at all (it uses a
@@ -137,6 +137,7 @@ const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearl
 const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Multiple Choice (Extended)",
   "Paper 4: Theory (Extended)",
+  "Paper 6: Alternative to Practical",
   "Paper 2: Non-calculator (Extended)",
   "Paper 4: Calculator (Extended)",
 ]);
