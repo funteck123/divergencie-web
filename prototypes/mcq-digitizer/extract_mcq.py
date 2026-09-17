@@ -2116,6 +2116,23 @@ def find_labeled_question_starts(lines):
         if m:
             raw.append({"number": m.group(1), "page": l["page"], "y0": l["y0"]})
 
+    # Fallback for a real yearly CAIE Theory/Practical paper (TKT-0251,
+    # 2026-09-18): this corpus's own custom worksheets always label a
+    # question with the literal word "Question N" (what the regex above
+    # matches), but a genuine official CAIE Theory/Practical paper never
+    # does -- it starts each question with a BARE number instead (e.g.
+    # "1 \n(a) Fig. 1.1 shows..."), confirmed real on IGCSE Physics 0625/42
+    # (May/June 2023): 0/0 questions/answers found via the literal-label
+    # path, since the label this regex looks for never appears anywhere in
+    # the document at all. find_bare_number_question_starts (below) was
+    # already built and proven for exactly this bare-number shape, just
+    # never wired into this function. Only used when the labeled path
+    # finds NOTHING at all -- a real worksheet that mixes both shapes has
+    # never been seen, so this isn't a merge, it's a straight either/or.
+    if not raw:
+        bare = find_bare_number_question_starts(lines)
+        return [{"number": str(b["number"]), "page": b["page"], "y0": b["y0"]} for b in bare]
+
     # Two confirmed real-world artifacts in these savemyexams-template
     # PDFs, both caught via a full-corpus audit (checked the actual
     # rendered crops, not just the counts): (1) some MS pages carry a
