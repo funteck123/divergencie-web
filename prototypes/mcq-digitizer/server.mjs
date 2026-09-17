@@ -110,6 +110,28 @@ const DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "full-librar
 // structured flow was found re-downloading + re-parsing both PDFs from
 // Drive on every single paper open.
 const STRUCTURED_DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "structured-library", "database.json");
+// TKT-0251: real yearly CIE past papers (not the topical worksheet
+// library above) -- built by build-yearly-paper-map.mjs from a local
+// filesystem archive (see study/agent-notes/23-yearly-past-paper-solver-
+// plan.md), NOT crawled from Google Drive. qpPath/msPath in this file are
+// real local filesystem paths already, so digitizing one never needs a
+// download step at all -- see the yearly-digitize handler below.
+const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");
+// Components verified end-to-end (batch-tested against real papers,
+// 2026-09-18) -- MCQ and Theory only. "Paper 6: Alternative to Practical"
+// exists in the crawled data but its mark-scheme format (compound sub-
+// part labels like "1(a)(i)") doesn't match parse_structured's
+// assumptions yet (see the plan file's Update 11) -- excluded from what's
+// served to the picker until that's fixed, rather than shipping a broken
+// grading experience.
+const YEARLY_READY_COMPONENTS = new Set([
+  "MCQ",
+  "Paper 4: Theory (Extended)",
+  "Paper 2: Non-calculator (Extended)",
+  "Paper 4: Calculator (Extended)",
+  "Paper 2: Reading and Writing (Extended)",
+  "Paper 4: Listening (Extended)",
+]);
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than
 // the free vision router for structured-JSON output, and this grading
@@ -898,6 +920,53 @@ function loadDatabase() {
   }
 }
 
+let yearlyLibraryCache = null;
+let yearlyLibraryCacheMtime = 0;
+function loadYearlyLibrary() {
+  try {
+    const stat = fs.statSync(YEARLY_LIBRARY_PATH);
+    if (yearlyLibraryCache && stat.mtimeMs === yearlyLibraryCacheMtime) return yearlyLibraryCache;
+    yearlyLibraryCache = JSON.parse(fs.readFileSync(YEARLY_LIBRARY_PATH, "utf8"));
+    yearlyLibraryCacheMtime = stat.mtimeMs;
+    return yearlyLibraryCache;
+  } catch {
+    return null;
+  }
+}
+
+// Only components proven end-to-end are exposed to the picker -- see
+// YEARLY_READY_COMPONENTS's own comment for why Practical is excluded.
+function readyYearlyLibrary() {
+  const full = loadYearlyLibrary();
+  if (!full) return null;
+  const filtered = {};
+  for (const [board, subjects] of Object.entries(full)) {
+    filtered[board] = {};
+    for (const [subject, components] of Object.entries(subjects)) {
+      const keptComponents = {};
+      for (const [component, papers] of Object.entries(components)) {
+        if (YEARLY_READY_COMPONENTS.has(component)) keptComponents[component] = papers;
+      }
+      if (Object.keys(keptComponents).length > 0) filtered[board][subject] = keptComponents;
+    }
+  }
+  return filtered;
+}
+
+function findYearlyPaperById(paperId) {
+  const full = loadYearlyLibrary();
+  if (!full) return null;
+  for (const subjects of Object.values(full)) {
+    for (const components of Object.values(subjects)) {
+      for (const papers of Object.values(components)) {
+        const found = papers.find((p) => p.paperId === paperId);
+        if (found) return found;
+      }
+    }
+  }
+  return null;
+}
+
 function digitizeFromDatabaseEntry(entry) {
   const questions = entry.questions.map((q) => {
     const imgPath = path.join(REPO_ROOT, q.imagePaths[0]);
@@ -1221,6 +1290,70 @@ const server = http.createServer(async (req, res) => {
       res.end(body);
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // TKT-0251: real yearly past papers, a separate library from the
+  // topical-worksheet one above -- see YEARLY_LIBRARY_PATH's own comment.
+  if (req.method === "GET" && req.url === "/api/yearly-library") {
+    try {
+      const library = readyYearlyLibrary();
+      if (!library) {
+        res.writeHead(503, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Yearly paper map not built yet -- run build-yearly-paper-map.mjs." }));
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(library));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // Digitizes one real yearly paper by its paperId (never a raw
+  // filesystem path over the wire -- the browser only ever sees the id,
+  // matching how the topical library keys off a Drive file id instead of
+  // a URL). qpPath/msPath are already local files (see
+  // YEARLY_LIBRARY_PATH's comment), so this skips the Drive-download step
+  // digitizeFromDriveIds needs entirely -- straight to
+  // digitizeFromPaths/digitizeStructuredFromPaths.
+  if (req.method === "POST" && req.url === "/api/yearly-digitize") {
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch (e) {
+      if (e instanceof PayloadTooLargeError) {
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: e.message }));
+      } else {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Request body must be valid JSON." }));
+      }
+      return;
+    }
+    try {
+      if (!body.paperId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "paperId is required." }));
+        return;
+      }
+      const paper = findYearlyPaperById(body.paperId);
+      if (!paper || !YEARLY_READY_COMPONENTS.has(paper.component)) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));
+        return;
+      }
+      const result = paper.component === "MCQ"
+        ? await digitizeFromPaths(paper.qpPath, paper.msPath)
+        : await digitizeStructuredFromPaths(paper.qpPath, paper.msPath);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    } catch (e) {
+      res.writeHead(e instanceof InvalidPdfError ? 400 : 500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
     }
     return;

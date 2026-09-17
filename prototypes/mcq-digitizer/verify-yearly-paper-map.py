@@ -25,8 +25,17 @@ EXPECTED_KEYWORDS = {
     "MCQ": [r"Multiple\s*Choice.*Extended"],
     "Paper 4: Theory (Extended)": [r"Theory.*Extended", r"Extended.*Theory"],
     "Paper 6: Alternative to Practical": [r"Alternative to Practical"],
-    "Paper 2: Non-calculator (Extended)": [r"Non-?calculator.*Extended", r"Extended.*Non-?calculator"],
-    "Paper 4: Calculator (Extended)": [r"Calculator.*Extended", r"Extended.*Calculator"],
+    # Confirmed real (TKT-0251, 2026-09-18): Cambridge only started
+    # printing "Non-calculator"/"Calculator" in the Maths paper title from
+    # 2025 onward -- every prior year (confirmed 2010-2022 directly) just
+    # says the bare "Paper 2 (Extended)" / "Paper 4 (Extended)", no
+    # calculator qualifier at all. The specific pattern alone wrongly
+    # dropped 202/223 real, valid Maths papers as false negatives before
+    # this fallback was added (928 kept dropped to a suspiciously low
+    # number, caught by checking the real post-filter count, not assumed
+    # correct).
+    "Paper 2: Non-calculator (Extended)": [r"Non-?calculator.*Extended", r"Extended.*Non-?calculator", r"Paper\s*2\s*\(Extended\)"],
+    "Paper 4: Calculator (Extended)": [r"Calculator.*Extended", r"Extended.*Calculator", r"Paper\s*4\s*\(Extended\)"],
     "Paper 2: Reading and Writing (Extended)": [r"Reading and Writing.*Extended"],
     "Paper 4: Listening (Extended)": [r"Listening.*Extended"],
 }
@@ -56,20 +65,25 @@ def main():
 
     kept, dropped = 0, 0
     dropped_samples = []
-    for subject, papers in data.items():
-        verified = []
-        for p in papers:
-            text = cover_page_text(p["qpPath"])
-            result = matches_expected(p["component"], text)
-            if result is False:
-                dropped += 1
-                if len(dropped_samples) < 20:
-                    dropped_samples.append(f"{p['title']} -- expected {p['component']}, cover page didn't match")
-                continue
-            # result is True (verified) or None (unverifiable component, e.g. English) -- keep either way
-            verified.append(p)
-            kept += 1
-        data[subject] = verified
+    # Shape is now {board: {subject: {component: [papers]}}} (nested under
+    # "IGCSE" to match the topical library's own shape) -- iterate three
+    # levels deep instead of the old flat {subject: [papers]}.
+    for board, subjects in data.items():
+        for subject, components in subjects.items():
+            for component, papers in components.items():
+                verified = []
+                for p in papers:
+                    text = cover_page_text(p["qpPath"])
+                    result = matches_expected(p["component"], text)
+                    if result is False:
+                        dropped += 1
+                        if len(dropped_samples) < 20:
+                            dropped_samples.append(f"{p['title']} -- expected {p['component']}, cover page didn't match")
+                        continue
+                    # result is True (verified) or None (unverifiable component, e.g. English) -- keep either way
+                    verified.append(p)
+                    kept += 1
+                components[component] = verified
 
     with open(path, "w") as f:
         json.dump(data, f, indent=2)

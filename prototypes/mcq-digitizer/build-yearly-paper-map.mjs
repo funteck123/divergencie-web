@@ -126,14 +126,20 @@ function crawlSubject(subjectDef) {
     const component = subjectDef.componentByDigit ? subjectDef.componentByDigit[paperDigit] : `Paper ${paperDigit}`;
     if (!component) continue; // a paper-digit this subject's map doesn't recognize (e.g. Core tier) -- not in scope yet
     const year = Number(entry.yy) >= 90 ? 1900 + Number(entry.yy) : 2000 + Number(entry.yy);
+    const variant = `${entry.paperDigit}${entry.variantDigit}`;
     papers.push({
       board: "IGCSE",
       subject: subjectDef.subject,
       component,
       year,
       session: sessionLabel(entry.session),
-      variant: `${entry.paperDigit}${entry.variantDigit}`,
-      title: `CAIE IGCSE ${subjectDef.subject} ${sessionLabel(entry.session)} ${year} Paper ${entry.paperDigit}${entry.variantDigit}`,
+      variant,
+      // Stable, unique per real paper -- the real CAIE session+variant
+      // code, e.g. "0625_m24_22" -- used by the server to look this exact
+      // paper back up for digitizing, without exposing a raw filesystem
+      // path to the browser.
+      paperId: `${subjectDef.code}_${entry.session}${entry.yy}_${variant}`,
+      title: `CAIE IGCSE ${subjectDef.subject} ${sessionLabel(entry.session)} ${year} Paper ${variant}`,
       qpPath: entry.qpPath,
       msPath: entry.msPath,
     });
@@ -142,10 +148,19 @@ function crawlSubject(subjectDef) {
   return papers;
 }
 
-const result = {};
+// Nested under "IGCSE" (all 5 subjects here are IGCSE-only) to match the
+// existing topical library's board->subject->component->[papers] shape --
+// lets the Next.js proxy's existing enrollment filter (built for that
+// shape) work on this data completely unchanged, and lets the picker UI
+// reuse the same board/subject selection pattern.
+const result = { IGCSE: {} };
 for (const subjectDef of SUBJECTS) {
   const papers = crawlSubject(subjectDef);
-  result[subjectDef.subject] = papers;
+  result.IGCSE[subjectDef.subject] = {};
+  for (const p of papers) {
+    result.IGCSE[subjectDef.subject][p.component] = result.IGCSE[subjectDef.subject][p.component] || [];
+    result.IGCSE[subjectDef.subject][p.component].push(p);
+  }
   console.log(`${subjectDef.subject}: ${papers.length} real qp+ms pairs found`);
 }
 
