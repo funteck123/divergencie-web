@@ -836,7 +836,17 @@ def find_question_starts(lines, doc=None):
     specifically so a check can use whichever order is actually correct
     for it, not just whichever this function iterates in."""
     raw_by_idx = lines
-    lines = sorted(lines, key=lambda l: (l["page"], l["y0"]))
+    # x0 as a tiebreaker (TKT-0251, 2026-09-18): confirmed real on IGCSE
+    # Chemistry 0620/22 (Feb/March 2024) question 36 -- its heading number
+    # and its own question text ("Which molecules are structural
+    # isomers?") share the EXACT same y0 (same visual line, number at the
+    # left margin, text starting just right of it), but PyMuPDF's own
+    # extraction order returned the text span before the number span for
+    # this one line, causing the number to sort AFTER its own question
+    # text and never register as a heading at all -- the whole question
+    # silently vanished. Two spans on the same y0 belong in left-to-right
+    # reading order, which y0-only sorting can't guarantee when they tie.
+    lines = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
     starts = []
     is_igcse = _paper_is_igcse(doc)
     # A bare numbered stem next to a raster-image answer table (a common
