@@ -2346,10 +2346,20 @@ def find_bare_number_question_starts(lines):
         # exactly this pattern. Match any shape; the monotonic-sequence
         # filter below is what actually keeps false positives out, not
         # this regex.
+        # Lowercase letter case (TKT-0251, 2026-09-18): a real IGCSE Maths
+        # question can open with a lowercase variable name as its
+        # grammatical subject ("16 y is inversely proportional to x2."),
+        # confirmed real on 0580/22 (Feb/March 2023) -- silently dropped
+        # the whole question before this, exactly the same failure shape
+        # already documented above for a merged full-sentence heading,
+        # just triggered by a lowercase first letter instead of uppercase.
+        # Safe to widen per this function's own docstring: the monotonic-
+        # sequence filter below is the real false-positive guard, not this
+        # regex.
         m = (
             re.match(r'^(\d{1,2})$', text)
             or re.match(r'^(\d{1,2})\s*\(a\)', text)
-            or re.match(r'^(\d{1,2})\s+[A-Z]', text)
+            or re.match(r'^(\d{1,2})\s+[A-Za-z]', text)
         )
         # 100 missed a real heading confirmed at x0=107 (A-Level Biology's
         # own margin runs slightly wider than the vendor samples this
