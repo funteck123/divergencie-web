@@ -1899,29 +1899,63 @@ def parse_ms_table(lines):
     row that fails to parse should stay in this code path rather than
     silently falling through to the elimination parser, which is built
     for a document shape this one isn't. Returns (None, False) when no
-    such header exists, so the caller knows to try the other path."""
+    such header exists, so the caller knows to try the other path.
+
+    A second, older real variant also exists (confirmed on IGCSE Physics
+    0625/22, March 2016): a "Question / Number / Key" header -- laid out
+    as TWO side-by-side columns (Q1-20 on the left, Q21-40 on the right,
+    same visual row), so the header text itself repeats twice before data
+    starts, and each row is 4 cells (num, letter, num, letter) with no
+    marks column at all, not 3. Batch-verified against 109 real Physics
+    MCQ papers (2026-09-18): this variant covers a cluster the first one
+    (header "Question/Answer/Marks") completely missed."""
     header_idx = None
+    variant = None
     for i in range(len(lines) - 2):
-        if (lines[i]["text"].strip() == "Question"
-                and lines[i + 1]["text"].strip() == "Answer"
-                and lines[i + 2]["text"].strip() == "Marks"):
-            header_idx = i + 3
+        a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
+        if a == "Question" and b == "Answer" and c == "Marks":
+            header_idx, variant = i + 3, "answer_marks"
+            break
+        if a == "Question" and b == "Number" and c == "Key":
+            header_idx, variant = i + 3, "number_key"
             break
     if header_idx is None:
         return None, False
 
     answers = {}
     i = header_idx
-    while i + 2 < len(lines):
-        a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
-        if re.match(r'^\d{1,2}$', a) and re.match(r'^[A-D]$', b) and re.match(r'^\d+$', c):
-            answers[a] = b
+    if variant == "answer_marks":
+        while i + 2 < len(lines):
+            a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
+            if re.match(r'^\d{1,2}$', a) and re.match(r'^[A-D]$', b) and re.match(r'^\d+$', c):
+                answers[a] = b
+                i += 3
+            else:
+                # Page-break noise (a repeated running header/footer like
+                # "0625/22" or "Page 2 of 3") -- skip one line at a time
+                # so a single stray line can't desync the rest of the table.
+                i += 1
+    else:
+        # number_key variant -- skip any further repeats of the same
+        # header (the two-column layout prints it twice, once per column,
+        # before any real data appears), then read a flat, ungapped stream
+        # of (number, letter) pairs -- the two-column layout doesn't
+        # change this: reading left-to-right, top-to-bottom naturally
+        # interleaves as num,letter,num,letter regardless of which visual
+        # column each pair belongs to, since there's no marks digit here
+        # to desync against.
+        while (i + 2 < len(lines)
+               and lines[i]["text"].strip() == "Question"
+               and lines[i + 1]["text"].strip() == "Number"
+               and lines[i + 2]["text"].strip() == "Key"):
             i += 3
-        else:
-            # Page-break noise (a repeated running header/footer like
-            # "0625/22" or "Page 2 of 3") -- skip one line at a time so a
-            # single stray line can't desync the whole rest of the table.
-            i += 1
+        while i + 1 < len(lines):
+            a, b = lines[i]["text"].strip(), lines[i + 1]["text"].strip()
+            if re.match(r'^\d{1,2}$', a) and re.match(r'^[A-D]$', b):
+                answers[a] = b
+                i += 2
+            else:
+                i += 1
     return answers, True
 
 
