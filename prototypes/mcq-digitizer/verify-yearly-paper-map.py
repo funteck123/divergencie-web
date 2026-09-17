@@ -27,6 +27,8 @@ EXPECTED_KEYWORDS = {
     "Paper 6: Alternative to Practical": [r"Alternative to Practical"],
     "Paper 2: Non-calculator (Extended)": [r"Non-?calculator.*Extended", r"Extended.*Non-?calculator"],
     "Paper 4: Calculator (Extended)": [r"Calculator.*Extended", r"Extended.*Calculator"],
+    "Paper 2: Reading and Writing (Extended)": [r"Reading and Writing.*Extended"],
+    "Paper 4: Listening (Extended)": [r"Listening.*Extended"],
 }
 
 

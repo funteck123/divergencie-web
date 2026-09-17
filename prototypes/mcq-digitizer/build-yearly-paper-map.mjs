@@ -36,6 +36,15 @@ const MATHS_COMPONENT_BY_DIGIT = {
   "2": "Paper 2: Non-calculator (Extended)",
   "4": "Paper 4: Calculator (Extended)",
 };
+// Confirmed real (TKT-0251, 2026-09-18) by reading actual cover pages,
+// not guessed: Paper 1 "Reading and Writing (Core)", Paper 2 "Reading
+// and Writing (Extended)", Paper 3 "Listening (Core)", Paper 4
+// "Listening (Extended)" -- Extended tier only, matching this crawler's
+// existing scope for every other subject.
+const ENGLISH_COMPONENT_BY_DIGIT = {
+  "2": "Paper 2: Reading and Writing (Extended)",
+  "4": "Paper 4: Listening (Extended)",
+};
 
 // Subject registry: code, board-visible name, component map, and the
 // real root folders to search (found by direct listing, not assumed --
@@ -58,11 +67,7 @@ const SUBJECTS = [
     roots: ["Maths/Past Papers"],
   },
   {
-    // English component mapping is NOT confirmed yet (per the plan's
-    // "Explicitly deferred" list) -- labeled generically as "Paper N"
-    // rather than guessing a real CAIE component name that could be
-    // wrong. Fix this before shipping the English picker option.
-    code: "0510", subject: "English", componentByDigit: null,
+    code: "0510", subject: "English", componentByDigit: ENGLISH_COMPONENT_BY_DIGIT,
     roots: ["English/Past Papers"],
   },
 ];
