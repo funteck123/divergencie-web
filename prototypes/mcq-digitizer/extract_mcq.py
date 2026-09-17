@@ -2274,6 +2274,64 @@ def _looks_garbled(text):
     return (hits / len(words)) < 0.08
 
 
+def find_compound_labeled_question_starts(lines):
+    """Real CAIE Theory/Practical mark schemes (confirmed on Chemistry and
+    Biology 0620/0610 Theory, TKT-0251 2026-09-18) use a "Question /
+    Answer / Marks" table -- same header/shape family as the MCQ table in
+    parse_ms_table -- but rows are keyed by a COMPOUND sub-part label
+    ("1(a)", "1(e)(i)", "1(f)"...) at a finer granularity than the QP
+    side's own top-level "1, 2, 3..." numbering. Neither
+    find_labeled_question_starts (literal "Question N" text) nor
+    find_bare_number_question_starts (a bare top-level number alone) ever
+    matches this shape at all, so it previously fell straight through the
+    Generic Marking Principles boilerplate instead -- 7 boilerplate items
+    detected as "questions" on a real Chemistry paper whose QP genuinely
+    only found 5 (matching neither the boilerplate's numbering NOR ever
+    finding this table's own real 1(a)-1(g) content). Returns ONE start
+    per PARENT number (at its first sub-part's position), matching the
+    QP's own coarser per-question crop -- every sub-part after the first
+    for a given parent falls naturally into that parent's captured image/
+    text range without needing its own explicit boundary."""
+    header_idx = None
+    for i in range(len(lines) - 2):
+        a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
+        if a == "Question" and b == "Answer" and c == "Marks":
+            header_idx = i + 3
+            break
+    if header_idx is None:
+        return []
+    compound_re = re.compile(r'^(\d{1,2})(?:\([a-z]\))?(?:\([ivxlc]+\))?$', re.I)
+    ordered = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
+    start_idx = next((i for i, l in enumerate(ordered) if l is lines[header_idx]), None)
+    if start_idx is None:
+        # header_idx was computed against the ORIGINAL (stream) order, not
+        # this position-sorted copy -- fall back to a text/position
+        # re-match rather than assume the two orders align.
+        header_line = lines[header_idx]
+        start_idx = next((i for i, l in enumerate(ordered)
+                           if l["page"] == header_line["page"] and l["y0"] == header_line["y0"]), 0)
+    candidates = []
+    seen_parents = set()
+    for l in ordered[start_idx:]:
+        m = compound_re.match(l["text"].strip())
+        if not m:
+            continue
+        parent = int(m.group(1))
+        if parent in seen_parents:
+            continue
+        seen_parents.add(parent)
+        candidates.append({"number": parent, "page": l["page"], "y0": l["y0"]})
+    # A stray unrelated bare number elsewhere in the document (a mark
+    # total, a page number, table content) can coincidentally match this
+    # regex too -- confirmed real on the same Chemistry paper this
+    # function was built for: a spurious "14" appeared after the real
+    # 1-5 sequence, from content this table format has no monotonic
+    # awareness of on its own. Reuses the same monotonic-sequence guard
+    # already proven elsewhere in this file rather than inventing a
+    # second, subtly different one.
+    return _monotonic_accept(candidates)
+
+
 def parse_structured(pdf_path):
     """One image + one text block per question/answer block, cropped
     exactly like a real MCQ question (reuses render_question_image) but
@@ -2287,7 +2345,7 @@ def parse_structured(pdf_path):
     suspect."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    starts = find_labeled_question_starts(lines)
+    starts = find_compound_labeled_question_starts(lines) or find_labeled_question_starts(lines)
     blocks = []
     for i, s in enumerate(starts):
         if i + 1 < len(starts):
