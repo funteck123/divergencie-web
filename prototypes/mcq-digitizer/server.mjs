@@ -126,14 +126,29 @@ const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearl
 // Physics Practical papers: 104/111 (94%) (Update 15).
 // TKT-0251: English's own real yearly component names ("Paper 2: Reading
 // and Writing (Extended)"/"Paper 4: Listening (Extended)") don't match
-// the topical library's own English structure at all (it uses a
-// completely different Paper 1/2/3 split with no Core/Extended tier and
-// different subject-matter-per-number -- confirmed via a live
-// GET /api/library, not assumed) -- the picker's topical-vs-yearly toggle
-// keys off matching component NAMES, so English's yearly papers, while
-// crawled and gradable, are never reachable from the picker until that
-// naming mismatch is reconciled. Deliberately left OUT of this set for
-// now rather than exposed through a toggle that would never appear.
+// the topical library's own English structure at all -- per explicit
+// user decision (2026-09-18), the naming mismatch itself is solved by
+// exposing these as YEARLY-ONLY components (see populateComponents() in
+// index.html, which unions them into the Component dropdown with no
+// topical counterpart needed). BUT crawling+naming isn't the real
+// blocker: real extraction is. Checked directly against real papers
+// (2026-09-18) -- English's actual PDF structure is fundamentally
+// different from every other subject already working here:
+//   - "Paper 2: Reading and Writing" QPs are structured as "Exercise 1/
+//     2/3..." reading passages with answers on separate pages, not
+//     "Question N" numbering at all -- parse_structured found ZERO
+//     questions on a real paper (0510/21 May/June 2014).
+//   - "Paper 4: Listening" QPs MIX two numbering conventions in the same
+//     document -- questions 1-6 are bare-digit style ("1 What is..."),
+//     7+ are "Question N" labeled style. parse_structured's `or` chain
+//     between detectors only ever uses ONE detector's result, so it
+//     silently lost questions 1-6 on a real paper (same 0510/41 2014).
+// Both need real new parsing logic (an Exercise-boundary detector; a
+// combined-detector merge instead of `or`), not a quick regex tweak --
+// left OUT of this set until that's built, so nothing broken gets
+// exposed to a real student. The crawler + cover-page verification +
+// frontend union-logic changes are still real, working groundwork --
+// only the extraction pipeline itself is the open item.
 const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Multiple Choice (Extended)",
   "Paper 4: Theory (Extended)",

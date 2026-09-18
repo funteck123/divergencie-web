@@ -75,7 +75,12 @@ const SUBJECTS = [
     roots: ["Maths/Past Papers"],
   },
   {
-    code: "0510", subject: "English", componentByDigit: ENGLISH_COMPONENT_BY_DIGIT,
+    // Subject name matches the topical library's exact key ("English as a
+    // Second Language", confirmed via /api/library) so these two yearly-
+    // only components merge into the SAME subject entry the student
+    // already sees, rather than creating a confusing duplicate "English"
+    // subject with nothing else in it (TKT-0251, 2026-09-18).
+    code: "0510", subject: "English as a Second Language", componentByDigit: ENGLISH_COMPONENT_BY_DIGIT,
     roots: ["English/Past Papers"],
   },
 ];
