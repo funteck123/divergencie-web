@@ -34,6 +34,7 @@ import re
 import json
 import base64
 import io
+import functools
 import fitz
 from PIL import Image, ImageDraw, ImageFont
 
@@ -2167,7 +2168,7 @@ def _despace(text):
     return re.sub(r'[^A-Za-z0-9]+', '', text or '')
 
 
-def find_labeled_question_starts(lines):
+def find_labeled_question_starts(lines, reject_table_rows=True):
     raw = []
     for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
         m = QUESTION_LABEL_DESPACED_RE.match(_despace(l["text"]))
@@ -2202,7 +2203,7 @@ def find_labeled_question_starts(lines):
     # real bare-number sequence), so this can't wrongly override a
     # genuine "Question N"-labeled paper that has plenty of exact
     # matches of its own.
-    bare = find_bare_number_question_starts(lines)
+    bare = find_bare_number_question_starts(lines, reject_table_rows=reject_table_rows)
     if not raw or len(bare) > len(raw):
         return [{"number": str(b["number"]), "page": b["page"], "y0": b["y0"]} for b in bare]
 
@@ -2491,7 +2492,7 @@ def find_exercise_labeled_question_starts(lines):
     return [last_seen[n] for n in sorted(last_seen)]
 
 
-def find_bare_number_question_starts(lines):
+def find_bare_number_question_starts(lines, reject_table_rows=True):
     """IGCSE/A-Level Physics/Chemistry/Biology Theory papers (2026-09-05
     survey) use a completely different QP template from Math's "Question
     N": each question starts with a BARE 1-2 digit number, bold or not,
@@ -2607,7 +2608,9 @@ def find_bare_number_question_starts(lines):
         # false positives out (proven on 15 real samples), so widening
         # this modestly is safe for the same reason it was safe on the MS
         # side.
-        if m and l["x0"] < 120 and _row_sibling_count(l["page"], l["y0"]) < 3:
+        if m and l["x0"] < 120 and (
+            not reject_table_rows or _row_sibling_count(l["page"], l["y0"]) < 3
+        ):
             candidates.append({"number": int(m.group(1)), "page": l["page"], "y0": l["y0"], "x0": l["x0"]})
 
     # A real internal numbered marking sub-list inside an answer's own
@@ -2652,7 +2655,7 @@ def find_bare_number_question_starts(lines):
     return _monotonic_accept(candidates)
 
 
-def find_mixed_numbering_question_starts(lines):
+def find_mixed_numbering_question_starts(lines, reject_table_rows=True):
     r"""Real English 0510 "Listening" QP/MS documents (confirmed real,
     TKT-0251 2026-09-18, 0510/41 May/June 2014) MIX two numbering
     conventions in the SAME document: early questions are bare-digit
@@ -2697,7 +2700,7 @@ def find_mixed_numbering_question_starts(lines):
         m = loose_question_re.match(l["text"].strip())
         if m:
             labeled.append({"number": m.group(1), "page": l["page"], "y0": l["y0"]})
-    bare = find_bare_number_question_starts(lines)
+    bare = find_bare_number_question_starts(lines, reject_table_rows=reject_table_rows)
     if not labeled or not bare:
         return []
     combined = {int(s["number"]): s for s in bare}
@@ -2725,6 +2728,31 @@ DEFAULT_STRUCTURED_CHAIN = [
     find_mixed_numbering_question_starts,
     find_labeled_question_starts,
 ]
+# Mathematics MS's real vendor format is a literal Question|Answer|Marks
+# TABLE with the bare question number, its answer, and its mark value all
+# sitting within a few points of each other on the same row (confirmed
+# real, 0580/21 May/June 2010: heading "3" at x0=55.0 has "44" (answer)
+# and "2" (marks) both within 6pt of its own y0) -- exactly the shape
+# find_bare_number_question_starts's table-row-sibling rejection (added
+# to fix a real Chemistry Alternative-to-Practical false positive, see
+# its own docstring) was built to reject. A blind sibling-count threshold
+# can't separate the two: real Maths MS headings legitimately reach 9
+# siblings in some documents (0580/22 May/June 2012), MORE than the 8
+# siblings the original Chemistry false-positive case had. Caught via a
+# full regression batch AFTER the Chemistry fix was already committed
+# (Maths silently dropped from 108/113 to 3/113) -- the batch script that
+# should have caught this before commit used the wrong subject key
+# ("Maths" instead of the real "Mathematics") and silently skipped it
+# entirely. Fixed by giving Mathematics its own chain via
+# `reject_table_rows=False` instead of tuning the threshold further --
+# the subject-specific dispatch this whole file already uses for exactly
+# this kind of per-subject format conflict.
+_find_labeled_question_starts_no_table_reject = functools.partial(
+    find_labeled_question_starts, reject_table_rows=False
+)
+_find_mixed_numbering_question_starts_no_table_reject = functools.partial(
+    find_mixed_numbering_question_starts, reject_table_rows=False
+)
 STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT = {
     ("English as a Second Language", "Paper 2: Reading and Writing (Extended)"): [
         find_exercise_labeled_question_starts,
@@ -2739,6 +2767,18 @@ STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT = {
         find_compound_labeled_question_starts,
         find_mixed_numbering_question_starts,
         find_labeled_question_starts,
+    ],
+    ("Mathematics", "Paper 2: Non-calculator (Extended)"): [
+        find_compound_labeled_question_starts,
+        find_exercise_labeled_question_starts,
+        _find_mixed_numbering_question_starts_no_table_reject,
+        _find_labeled_question_starts_no_table_reject,
+    ],
+    ("Mathematics", "Paper 4: Calculator (Extended)"): [
+        find_compound_labeled_question_starts,
+        find_exercise_labeled_question_starts,
+        _find_mixed_numbering_question_starts_no_table_reject,
+        _find_labeled_question_starts_no_table_reject,
     ],
 }
 
