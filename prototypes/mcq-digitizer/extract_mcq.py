@@ -2384,6 +2384,40 @@ def find_compound_labeled_question_starts(lines):
     return _monotonic_accept(candidates)
 
 
+def find_exercise_labeled_question_starts(lines):
+    """Real English 0510 "Reading and Writing" QP/MS documents (confirmed
+    real, TKT-0251 2026-09-18) use a completely different structure from
+    every other subject: no leading question NUMBER at all, just
+    "Exercise 1", "Exercise 2"... headings, each containing lettered-only
+    sub-parts ("(a)", "(b)"...) with no parent number prefix. Treats each
+    Exercise as one PARENT block, same idea as the compound-label parser's
+    one-start-per-parent, just keyed on a completely different real label
+    shape.
+
+    The real MS ALSO opens with an "Overview of exercises" summary table
+    that repeats "Exercise 1".."Exercise 7" a second time before the
+    actual per-exercise mark-scheme sections -- confirmed real on 0510/21
+    May/June 2014. Taking the FIRST occurrence of each number (as every
+    other parent-labeled detector in this file does) would anchor on the
+    summary table's row instead of the real section, cropping completely
+    the wrong content. Fix: take the LAST occurrence of each number
+    instead -- the summary table always precedes the real sections
+    chronologically in a well-formed paper, so the last occurrence is
+    always the genuine one. No monotonic-sequence guard is needed here
+    (unlike the bare-digit detectors): the literal word "Exercise" is
+    specific enough that stray unrelated numbers elsewhere in the
+    document essentially never coincidentally match it.
+    """
+    exercise_re = re.compile(r'^Exercise\s+(\d{1,2})\b')
+    ordered = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
+    last_seen = {}
+    for l in ordered:
+        m = exercise_re.match(l["text"].strip())
+        if m:
+            last_seen[int(m.group(1))] = {"number": m.group(1), "page": l["page"], "y0": l["y0"]}
+    return [last_seen[n] for n in sorted(last_seen)]
+
+
 def parse_structured(pdf_path):
     """One image + one text block per question/answer block, cropped
     exactly like a real MCQ question (reuses render_question_image) but
@@ -2397,7 +2431,10 @@ def parse_structured(pdf_path):
     suspect."""
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
-    starts = find_compound_labeled_question_starts(lines) or find_labeled_question_starts(lines)
+    starts = (find_compound_labeled_question_starts(lines)
+              or find_exercise_labeled_question_starts(lines)
+              or find_mixed_numbering_question_starts(lines)
+              or find_labeled_question_starts(lines))
     blocks = []
     for i, s in enumerate(starts):
         if i + 1 < len(starts):
@@ -2498,6 +2535,60 @@ def find_bare_number_question_starts(lines):
     # "expected" that's stuck one number behind forever. Reuses the same
     # gap-of-1 tolerance already proven safe on the MS side.
     return _monotonic_accept(candidates)
+
+
+def find_mixed_numbering_question_starts(lines):
+    r"""Real English 0510 "Listening" QP/MS documents (confirmed real,
+    TKT-0251 2026-09-18, 0510/41 May/June 2014) MIX two numbering
+    conventions in the SAME document: early questions are bare-digit
+    style ("1 What is..."), later ones are "Question N" labeled style
+    ("Question 7", etc) -- on the confirmed real sample, 1-6 are bare and
+    7-10 are labeled. parse_structured's detector chain is a plain `or`
+    of single-scheme detectors, which only ever uses the FIRST one that
+    returns anything non-empty -- so a document with both styles present
+    silently loses whichever half didn't fire first (confirmed: labeled-
+    only found 7-10, dropping 1-6 entirely).
+
+    Real MS "Question N" headings in this specific corpus also carry a
+    trailing topic title ("Question 8: The Freeze Festival") that
+    `QUESTION_LABEL_DESPACED_RE`'s exact `^question(\d{1,2})$` match
+    rejects outright -- and since `find_labeled_question_starts` itself
+    falls back to `find_bare_number_question_starts` whenever its own
+    literal match finds NOTHING, calling it here would silently return
+    the exact same bare-number result a second time, hiding the real
+    "Question N:" headings entirely (confirmed real: returned [1..6]
+    twice, not [1..10]). Uses its own loose PREFIX match instead
+    (`^question(\d{1,2})\b`, not anchored to end-of-string) so a trailing
+    title doesn't break it.
+
+    This only activates when BOTH the loose "Question N" prefix match
+    and `find_bare_number_question_starts` independently find something
+    on their own -- that's the actual signal a document mixes both
+    styles. Returns [] otherwise, so it can never affect any single-
+    scheme paper that already works correctly via one detector alone
+    (every other subject; most of English itself, e.g. Exercise-based
+    Reading & Writing never reaches this function since neither of these
+    detectors would fire on it in the first place)."""
+    # Matched against the RAW text, not `_despace`d -- despacing strips
+    # ALL whitespace, and a digit followed directly by a letter (e.g.
+    # "Question8TheFreezeFestival") has no \b boundary between them at
+    # all (both are \w characters), so the trailing-title case this
+    # function exists for would still silently fail to match even with
+    # this loose regex. The raw text's own punctuation/whitespace after
+    # the number (": ", or end of line) gives a real \b every time.
+    loose_question_re = re.compile(r'^question\s*(\d{1,2})\b', re.IGNORECASE)
+    labeled = []
+    for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
+        m = loose_question_re.match(l["text"].strip())
+        if m:
+            labeled.append({"number": m.group(1), "page": l["page"], "y0": l["y0"]})
+    bare = find_bare_number_question_starts(lines)
+    if not labeled or not bare:
+        return []
+    combined = {int(s["number"]): s for s in bare}
+    for s in labeled:
+        combined.setdefault(int(s["number"]), s)
+    return [combined[n] for n in sorted(combined)]
 
 
 # SUPERSEDED 2026-09-06: the original approach scanned for "[Total: N]" /
