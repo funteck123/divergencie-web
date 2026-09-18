@@ -2509,6 +2509,35 @@ def find_bare_number_question_starts(lines):
     "accept only if it equals the running count + 1" walk silently
     absorbs every false positive without ever needing to consult
     position or boldness at all."""
+    # A real "results table" row (numeric column headers/values, e.g. a
+    # gas-syringe time/min table) can place a lone leftmost-column digit
+    # at a plausible heading x0 AND continue the running monotonic
+    # sequence by pure coincidence -- confirmed real, Chemistry 0620/63
+    # Oct/Nov 2012 (Alternative to Practical): a "time / min: 0 1 2 3 4 5
+    # 6" results table's row labels landed at x0=83.8 (within the
+    # anchor's 50pt tolerance of the real x0=49.6 heading margin) and
+    # continued the real 1,2 headings straight into 3,4,5,6,7, silently
+    # absorbing the real Q3-Q6 headings further down the document (each
+    # then rejected since the running count was already past them by the
+    # time they appeared). The tell that distinguishes this from a real
+    # heading: every other cell in the SAME table row is ALSO a bare
+    # number, just at a wider x0 that misses the x0<120 gate below -- a
+    # real heading's line never has multiple other numeric-only siblings
+    # at its exact y0. >=3 siblings (not 1) keeps a heading's own nearby
+    # "[2]" mark annotation from tripping this.
+    # The row LABEL's own y0 doesn't line up exactly with its row's other
+    # cells (confirmed real, same paper: label "3" sits at y0=298.5, its
+    # row's "0"/"10"/.../"60" cells all sit at y0=293.8, a real ~4.7pt
+    # offset) -- a small window, not exact equality, is needed to group
+    # them as the same row.
+    numeric_lines_by_page = {}
+    for l in lines:
+        if re.match(r'^\d+(\.\d+)?$', l["text"].strip()):
+            numeric_lines_by_page.setdefault(l["page"], []).append(l["y0"])
+
+    def _row_sibling_count(page, y0, tol=6):
+        return sum(1 for other_y0 in numeric_lines_by_page.get(page, []) if abs(other_y0 - y0) <= tol)
+
     candidates = []
     for l in sorted(lines, key=lambda l: (l["page"], l["y0"])):
         if l["page"] == 0:
@@ -2578,7 +2607,7 @@ def find_bare_number_question_starts(lines):
         # false positives out (proven on 15 real samples), so widening
         # this modestly is safe for the same reason it was safe on the MS
         # side.
-        if m and l["x0"] < 120:
+        if m and l["x0"] < 120 and _row_sibling_count(l["page"], l["y0"]) < 3:
             candidates.append({"number": int(m.group(1)), "page": l["page"], "y0": l["y0"], "x0": l["x0"]})
 
     # A real internal numbered marking sub-list inside an answer's own
