@@ -2184,11 +2184,26 @@ def find_labeled_question_starts(lines):
     # path, since the label this regex looks for never appears anywhere in
     # the document at all. find_bare_number_question_starts (below) was
     # already built and proven for exactly this bare-number shape, just
-    # never wired into this function. Only used when the labeled path
-    # finds NOTHING at all -- a real worksheet that mixes both shapes has
-    # never been seen, so this isn't a merge, it's a straight either/or.
-    if not raw:
-        bare = find_bare_number_question_starts(lines)
+    # never wired into this function.
+    #
+    # Originally only used when `raw` was EMPTY (a real worksheet mixing
+    # both shapes had never been seen) -- but a real false positive
+    # breaks that assumption: a genuine CAIE Theory QP's own body text
+    # can reference an earlier question by name ("...when answering
+    # Question 1."), and after `_despace` strips the trailing period,
+    # that reference despaces to the exact same "question1" the real
+    # heading would -- confirmed real, Chemistry 0620/42 Oct/Nov 2019,
+    # where this single spurious match blocked the bare-number fallback
+    # entirely and silently dropped questions 2-5 (bare-number found all
+    # 5 correctly on its own). Fix: also fall back whenever bare-number
+    # finds MORE candidates than the literal-label path did -- a real
+    # embedded self-reference can only ever produce a small, incomplete
+    # `raw` list (never one that legitimately outnumbers the paper's own
+    # real bare-number sequence), so this can't wrongly override a
+    # genuine "Question N"-labeled paper that has plenty of exact
+    # matches of its own.
+    bare = find_bare_number_question_starts(lines)
+    if not raw or len(bare) > len(raw):
         return [{"number": str(b["number"]), "page": b["page"], "y0": b["y0"]} for b in bare]
 
     # Two confirmed real-world artifacts in these savemyexams-template
