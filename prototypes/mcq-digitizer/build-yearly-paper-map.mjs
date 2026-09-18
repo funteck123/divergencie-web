@@ -23,6 +23,15 @@ const ARCHIVE_ROOT = "/mnt/e/CIE/IGCSE";
 // new mapping invented here, just reused).
 const FILENAME_RE = /^(\d{4})_([smw])(\d{2})_(qp|ms)_(\d)(\d)\.pdf$/i;
 
+// Examiner reports (TKT-0251, 2026-09-18): a real standalone document per
+// (subject, session, year) -- NOT per paper variant, so it gets its own
+// pseudo-component "Examiner Report" rather than fitting the qp/ms
+// variant-pairing shape above at all. Real filenames seen across all 5
+// subjects: "{code}_{session}{yy}_er.pdf", sometimes with an extra
+// "_0_0" before "_er" on a handful of files (a real archive quirk, not a
+// different subject/session) -- the `(?:_0_0)?` here absorbs that.
+const FILENAME_ER_RE = /^(\d{4})_([smw])(\d{2})(?:_0_0)?_er\.pdf$/i;
+
 // Extended-tier only (variant first digit even = Extended for sciences,
 // matches the existing topical library's own scope -- see plan's
 // "Explicitly deferred" section, Core tier is a later decision, not
@@ -161,6 +170,47 @@ function crawlSubject(subjectDef) {
   return papers;
 }
 
+// Separate from crawlSubject's qp/ms pairing above -- an examiner report
+// is one file per (subject, session, year), no variant, no pairing, and
+// no digitizing at all (just served as a raw PDF -- see /api/yearly-pdf
+// in server.mjs and the "Examiner Report" component handling in
+// index.html). Real personal-archive duplicate-folder copies handled the
+// same way as crawlSubject: first one found per (session, year) wins.
+function crawlExaminerReports(subjectDef) {
+  const files = [];
+  for (const root of subjectDef.roots) {
+    walk(path.join(ARCHIVE_ROOT, root), files);
+  }
+  const byKey = new Map();
+  for (const filePath of files) {
+    const base = path.basename(filePath);
+    const m = FILENAME_ER_RE.exec(base);
+    if (!m) continue;
+    const [, code, session, yy] = m;
+    if (code !== subjectDef.code) continue;
+    const key = `${session}${yy}`;
+    if (!byKey.has(key)) byKey.set(key, filePath);
+  }
+  const reports = [];
+  for (const [key, erPath] of byKey) {
+    const session = key[0];
+    const yy = key.slice(1);
+    const year = Number(yy) >= 90 ? 1900 + Number(yy) : 2000 + Number(yy);
+    reports.push({
+      board: "IGCSE",
+      subject: subjectDef.subject,
+      component: "Examiner Report",
+      year,
+      session: sessionLabel(session),
+      paperId: `${subjectDef.code}_${session}${yy}_er`,
+      title: `CAIE IGCSE ${subjectDef.subject} ${sessionLabel(session)} ${year} Examiner Report`,
+      erPath,
+    });
+  }
+  reports.sort((a, b) => a.year - b.year || a.session.localeCompare(b.session));
+  return reports;
+}
+
 // Nested under "IGCSE" (all 5 subjects here are IGCSE-only) to match the
 // existing topical library's board->subject->component->[papers] shape --
 // lets the Next.js proxy's existing enrollment filter (built for that
@@ -169,12 +219,16 @@ function crawlSubject(subjectDef) {
 const result = { IGCSE: {} };
 for (const subjectDef of SUBJECTS) {
   const papers = crawlSubject(subjectDef);
+  const reports = crawlExaminerReports(subjectDef);
   result.IGCSE[subjectDef.subject] = {};
   for (const p of papers) {
     result.IGCSE[subjectDef.subject][p.component] = result.IGCSE[subjectDef.subject][p.component] || [];
     result.IGCSE[subjectDef.subject][p.component].push(p);
   }
-  console.log(`${subjectDef.subject}: ${papers.length} real qp+ms pairs found`);
+  if (reports.length > 0) {
+    result.IGCSE[subjectDef.subject]["Examiner Report"] = reports;
+  }
+  console.log(`${subjectDef.subject}: ${papers.length} real qp+ms pairs found, ${reports.length} examiner reports found`);
 }
 
 const outPath = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");

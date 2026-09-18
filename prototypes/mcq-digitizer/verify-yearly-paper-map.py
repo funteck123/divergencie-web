@@ -73,6 +73,16 @@ def main():
             for component, papers in components.items():
                 verified = []
                 for p in papers:
+                    # Examiner Report entries (TKT-0251, 2026-09-18) have no
+                    # qpPath at all -- they're a standalone document, not a
+                    # qp/ms pair, and their component name is a fixed
+                    # literal ("Examiner Report"), never subject to the
+                    # filename-variant-digit misclassification this whole
+                    # verification pass exists to catch. Keep unconditionally.
+                    if "qpPath" not in p:
+                        verified.append(p)
+                        kept += 1
+                        continue
                     text = cover_page_text(p["qpPath"])
                     result = matches_expected(p["component"], text)
                     if result is False:

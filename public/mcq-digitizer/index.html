@@ -883,6 +883,11 @@ function onComponentOrTypeChange() {
     document.getElementById("pickYearRow").style.display = "none";
     populatePapers();
   }
+  // TKT-0251: "Examiner Report" never starts a quiz -- relabel the button
+  // so a student doesn't expect a graded attempt to follow.
+  const component = document.getElementById("pickComponent").value;
+  document.getElementById("fetchAndDigitizeBtn").textContent =
+    component === "Examiner Report" ? "View examiner report" : "Fetch this paper and start";
 }
 function populateYearlyYears() {
   const papers = currentYearlyPapers();
@@ -903,7 +908,10 @@ function populateYearlyPapers() {
   const session = document.getElementById("pickSession").value;
   const matching = papers.filter((p) => p.year === year && p.session === session);
   const paperSelect = document.getElementById("pickPaper");
-  paperSelect.innerHTML = matching.map((p) => `<option value="${escapeHtml(p.paperId)}">Paper ${escapeHtml(p.variant)}</option>`).join("");
+  // TKT-0251: an Examiner Report has no `variant` at all (one document per
+  // session, not per paper number) -- label it plainly instead of
+  // printing "Paper undefined".
+  paperSelect.innerHTML = matching.map((p) => `<option value="${escapeHtml(p.paperId)}">${p.variant ? `Paper ${escapeHtml(p.variant)}` : "Examiner Report"}</option>`).join("");
   document.getElementById("pickPaperNote").textContent = "";
   document.getElementById("fetchAndDigitizeBtn").disabled = matching.length === 0;
   document.getElementById("mistakesModeBtn").style.display = "none"; // TKT-0251: mistakes-mode data doesn't cover yearly papers yet
@@ -959,6 +967,16 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     const paperId = document.getElementById("pickPaper").value;
     const paper = currentYearlyPapers().find((p) => p.paperId === paperId);
     if (!paper) return;
+
+    // TKT-0251: "Examiner Report" is never gradable/digitizable -- a
+    // standalone teacher-guidance document, not a qp/ms pair. Just open
+    // the real PDF directly ("just wire in the PDF for now", per explicit
+    // instruction) instead of routing into the practice/test-mode flow at
+    // all.
+    if (component === "Examiner Report") {
+      window.open(`/api/mcq/yearly-pdf?paperId=${encodeURIComponent(paper.paperId)}`, "_blank");
+      return;
+    }
 
     if (isStructuredComponent(board, subject, component)) {
       currentAttemptMeta = { subject: `${board} ${subject}`, chapter: null, paperId: paper.paperId };

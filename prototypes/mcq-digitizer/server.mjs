@@ -155,6 +155,11 @@ const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearl
 // "Writing" exercises share ONE generic marking rubric in the MS with
 // no individually addressable heading for either. Left OUT of this set
 // until that's solved, so nothing broken reaches a real student.
+// "Examiner Report" (TKT-0251, 2026-09-18) is a real component too, but a
+// different kind: one standalone document per (subject, session, year),
+// no qp/ms pairing, no digitizing at all -- just served as a raw PDF (see
+// GET /api/yearly-pdf below and the matching frontend branch in
+// index.html that skips the whole digitize flow for this component).
 const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Multiple Choice (Extended)",
   "Paper 4: Theory (Extended)",
@@ -162,6 +167,7 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Non-calculator (Extended)",
   "Paper 4: Calculator (Extended)",
   "Paper 4: Listening (Extended)",
+  "Examiner Report",
 ]);
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than
@@ -1394,6 +1400,43 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       res.writeHead(e instanceof InvalidPdfError ? 400 : 500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // TKT-0251: "Examiner Report" is a real yearly component, but never
+  // goes through digitizeFromPaths/digitizeStructuredFromPaths at all --
+  // it's a standalone document, not a gradable qp/ms pair. Streams the
+  // real local file straight to the browser, same idea as the Drive-
+  // based /api/pdf below but reading directly from disk (yearly papers
+  // are already local files, no download step -- see YEARLY_LIBRARY_PATH's
+  // own comment).
+  if (req.method === "GET" && req.url.startsWith("/api/yearly-pdf")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const paperId = url.searchParams.get("paperId");
+      if (!paperId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "paperId query param is required." }));
+        return;
+      }
+      const paper = findYearlyPaperById(paperId);
+      if (!paper || !paper.erPath || !YEARLY_READY_COMPONENTS.has(paper.component)) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));
+        return;
+      }
+      const buf = fs.readFileSync(paper.erPath);
+      const safeName = paper.title.replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150);
+      res.writeHead(200, {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `inline; filename="${safeName}.pdf"`,
+        "Content-Length": buf.length,
+      });
+      res.end(buf);
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Failed to read the examiner report file." }));
     }
     return;
   }

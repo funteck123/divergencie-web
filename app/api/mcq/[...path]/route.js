@@ -114,7 +114,9 @@ export async function GET(req, { params }) {
   // TKT-0245: "View QP PDF" / "View MS PDF" streams a raw PDF, not JSON --
   // every other proxied GET response is parsed as JSON below, which would
   // corrupt binary PDF bytes trying to round-trip them through JSON.parse.
-  if (subPath === "pdf") {
+  // TKT-0251: "yearly-pdf" (a real yearly Examiner Report, served straight
+  // from the local archive) needs the exact same binary passthrough.
+  if (subPath === "pdf" || subPath === "yearly-pdf") {
     if (!upstream.ok) {
       const errBody = await upstream.json().catch(() => ({ error: `Upstream returned ${upstream.status}.` }));
       return NextResponse.json(errBody, { status: upstream.status });
