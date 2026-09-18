@@ -2357,7 +2357,30 @@ def find_compound_labeled_question_starts(lines):
     # `int(m.group(1))` already only reads the plain digit, so 8A/8B rows
     # both correctly group under parent item 8, same as any other
     # sub-part.
-    letter_re = re.compile(r'^(\d{1,2})[A-Z]?\([a-z]\)(?:\([ivxlc]+\))?$', re.I)
+    #
+    # The optional `\s*` before the parenthetical covers a real Maths MS
+    # variant (confirmed, 0580/23 Oct/Nov 2025): "18 (a)" with a genuine
+    # space between the number and the paren, not "18(a)" -- this
+    # document also happens to have a real "Question/Answer/Marks" table
+    # header elsewhere, triggering this compound-label detector to fire
+    # at all (correct for its OTHER real compound rows), but without this
+    # the space made "18 (a)" match neither letter_re nor bare_re, so it
+    # never became a candidate and question 18 was silently dropped --
+    # confirmed real, cost a whole missing answer on an otherwise-27/28-
+    # correct paper.
+    #
+    # A second `\s*` before the roman-numeral group covers a real
+    # regression this first fix introduced (caught by re-running the full
+    # batch, not assumed clean from a few spot checks): a real Maths MS
+    # (0580/22 Oct/Nov 2016) has "15 (a) (i)" -- a genuine SPACE between
+    # the two parenthetical groups too, not "15 (a)(i)". Without this,
+    # "15" itself never became a candidate (matched neither pattern),
+    # while OTHER real questions on the SAME document (11, 12, 13...) did
+    # match via the first `\s*` fix, so compound-labeled fired at all and
+    # silently lost 15 specifically. Confirmed real: re-ran the full
+    # batch after the first widening and it broke 5 previously-passing
+    # papers this same way.
+    letter_re = re.compile(r'^(\d{1,2})[A-Z]?\s*\([a-z]\)(?:\s*\([ivxlc]+\))?$', re.I)
     bare_re = re.compile(r'^(\d{1,2})$')
     ordered = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
     start_idx = next((i for i, l in enumerate(ordered) if l is lines[header_idx]), None)
