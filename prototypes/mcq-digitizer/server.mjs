@@ -130,31 +130,38 @@ const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearl
 // user decision (2026-09-18), the naming mismatch itself is solved by
 // exposing these as YEARLY-ONLY components (see populateComponents() in
 // index.html, which unions them into the Component dropdown with no
-// topical counterpart needed). BUT crawling+naming isn't the real
-// blocker: real extraction is. Checked directly against real papers
-// (2026-09-18) -- English's actual PDF structure is fundamentally
-// different from every other subject already working here:
-//   - "Paper 2: Reading and Writing" QPs are structured as "Exercise 1/
-//     2/3..." reading passages with answers on separate pages, not
-//     "Question N" numbering at all -- parse_structured found ZERO
-//     questions on a real paper (0510/21 May/June 2014).
-//   - "Paper 4: Listening" QPs MIX two numbering conventions in the same
-//     document -- questions 1-6 are bare-digit style ("1 What is..."),
-//     7+ are "Question N" labeled style. parse_structured's `or` chain
-//     between detectors only ever uses ONE detector's result, so it
-//     silently lost questions 1-6 on a real paper (same 0510/41 2014).
-// Both need real new parsing logic (an Exercise-boundary detector; a
-// combined-detector merge instead of `or`), not a quick regex tweak --
-// left OUT of this set until that's built, so nothing broken gets
-// exposed to a real student. The crawler + cover-page verification +
-// frontend union-logic changes are still real, working groundwork --
-// only the extraction pipeline itself is the open item.
+// topical counterpart needed).
+//
+// "Paper 4: Listening (Extended)" is LIVE (2026-09-18): built a real
+// subject/component-specific detector dispatch (parse_structured now
+// takes subject/component and picks a chain from
+// STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT in extract_mcq.py, instead of
+// one universal chain -- Listening's real MS also contains "Exercise N"
+// headings but at the wrong granularity, which no universal priority
+// order could express) plus two real MS-parsing bug fixes surfaced by
+// it (a "8A(a)"-style compound sub-part label; MS tables using singular
+// "Mark" not "Marks"). An early glob-based batch check across the whole
+// on-disk archive (which double-counts duplicate-folder copies and
+// silently skips papers with no MS in the exact same folder) wrongly
+// suggested only ~53% -- re-verified against the crawler's own real,
+// deduplicated pair list (the ACTUAL set a student sees): 66/67 (99%).
+//
+// "Paper 2: Reading and Writing (Extended)" is NOT live -- checked
+// against the same real deduplicated list: 32/67 (48%), far below the
+// bar. Its real PDF structure is a genuinely different, still-unsolved
+// problem: "Exercise 1/2/3..." reading passages with lettered-only
+// sub-parts and no leading number at all; 2024+ MS files abandoned
+// "Exercise N" labeling entirely for flat 1-40 numbering; and the two
+// "Writing" exercises share ONE generic marking rubric in the MS with
+// no individually addressable heading for either. Left OUT of this set
+// until that's solved, so nothing broken reaches a real student.
 const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Multiple Choice (Extended)",
   "Paper 4: Theory (Extended)",
   "Paper 6: Alternative to Practical",
   "Paper 2: Non-calculator (Extended)",
   "Paper 4: Calculator (Extended)",
+  "Paper 4: Listening (Extended)",
 ]);
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than
