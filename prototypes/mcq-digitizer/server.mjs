@@ -146,15 +146,32 @@ const YEARLY_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "yearl
 // suggested only ~53% -- re-verified against the crawler's own real,
 // deduplicated pair list (the ACTUAL set a student sees): 66/67 (99%).
 //
-// "Paper 2: Reading and Writing (Extended)" is NOT live -- checked
-// against the same real deduplicated list: 32/67 (48%), far below the
-// bar. Its real PDF structure is a genuinely different, still-unsolved
-// problem: "Exercise 1/2/3..." reading passages with lettered-only
-// sub-parts and no leading number at all; 2024+ MS files abandoned
-// "Exercise N" labeling entirely for flat 1-40 numbering; and the two
-// "Writing" exercises share ONE generic marking rubric in the MS with
-// no individually addressable heading for either. Left OUT of this set
-// until that's solved, so nothing broken reaches a real student.
+// "Paper 2: Reading and Writing (Extended)" is LIVE too (2026-09-18):
+// the earlier 32/67 (48%) figure was ITSELF measured wrong -- that batch
+// used a naive glob across the whole on-disk archive, which picked up a
+// real 2024 syllabus renumbering (Cambridge's own 0510 "Paper 2" now
+// means Listening, not Reading & Writing, for 2024+ sessions) that the
+// crawler's cover-page verification already correctly filters out of
+// the real served library -- those misclassified files were never
+// actually reachable by a real student. Re-checked against the crawler's
+// real, deduplicated 67-paper list and every genuine failure was the
+// SAME already-known cause: the two "Writing" exercises (always the
+// last two) share ONE generic marking-criteria section in the MS with
+// no individual heading for either -- a real content gap, not a parsing
+// bug (open-ended writing has no per-exercise "correct answer" to give,
+// just one shared Content/Language rubric). Fixed by having
+// find_exercise_labeled_question_starts detect the combined "...
+// criteria for Exercises N and M" heading and point BOTH exercise
+// numbers at that same real content, and extending parse_structured's
+// block-boundary loop to skip past consecutive starts sharing the exact
+// same position so both duplicates crop the SAME real content instead
+// of one getting everything and the other an empty sliver. Verified:
+// 63/67 (94%). The 4 remaining failures are a genuinely different, older
+// (pre-2021) MS format that uses a plain bare-numbered "Question/Answer/
+// Marks" table instead of "Exercise N" headings at all for the early
+// exercises -- a real, distinct third format-era, affecting only 2019-
+// 2020 sessions, left as a known documented gap rather than chasing a
+// third detector variant for 4 of 67 real papers.
 // "Examiner Report" (TKT-0251, 2026-09-18) is a real component too, but a
 // different kind: one standalone document per (subject, session, year),
 // no qp/ms pairing, no digitizing at all -- just served as a raw PDF (see
@@ -167,6 +184,7 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Non-calculator (Extended)",
   "Paper 4: Calculator (Extended)",
   "Paper 4: Listening (Extended)",
+  "Paper 2: Reading and Writing (Extended)",
   "Examiner Report",
 ]);
 // Free-tier text model, same choice/reasoning as exam-grader and

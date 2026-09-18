@@ -2438,12 +2438,33 @@ def find_exercise_labeled_question_starts(lines):
     document essentially never coincidentally match it.
     """
     exercise_re = re.compile(r'^Exercise\s+(\d{1,2})\b')
+    # Real MS content gap, not a parsing bug (confirmed real, English 0510
+    # Reading & Writing, every year checked 2019-2023): the two "Writing"
+    # exercises (always the last two, e.g. "Exercise 5"/"Exercise 6") have
+    # NO individual "Exercise N" heading anywhere in the MS at all -- only
+    # a single shared "...criteria for Exercises 5 and 6" section, because
+    # open-ended writing is marked against ONE generic Content/Language
+    # rubric that doesn't differ per exercise. There is no more granular
+    # real answer to extract even in principle. Since the QP still asks
+    # two separate questions but the MS only ever gives one real answer
+    # block for both, the honest handling is to point BOTH exercise
+    # numbers at that same real shared content -- not invented, it's
+    # exactly the material a teacher would actually grade either writing
+    # task against.
+    combined_re = re.compile(r'criteria for Exercises\s+(\d{1,2})\s+and\s+(\d{1,2})', re.IGNORECASE)
     ordered = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
     last_seen = {}
     for l in ordered:
-        m = exercise_re.match(l["text"].strip())
+        text = l["text"].strip()
+        m = exercise_re.match(text)
         if m:
             last_seen[int(m.group(1))] = {"number": m.group(1), "page": l["page"], "y0": l["y0"]}
+            continue
+        m2 = combined_re.search(text)
+        if m2:
+            n1, n2 = int(m2.group(1)), int(m2.group(2))
+            for n in (n1, n2):
+                last_seen[n] = {"number": str(n), "page": l["page"], "y0": l["y0"]}
     return [last_seen[n] for n in sorted(last_seen)]
 
 
@@ -2696,8 +2717,26 @@ def parse_structured(pdf_path, subject=None, component=None):
             break
     blocks = []
     for i, s in enumerate(starts):
-        if i + 1 < len(starts):
-            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
+        # Two consecutive parents can share the EXACT same (page, y0) --
+        # confirmed real, English 0510 Reading & Writing MS: the two
+        # "Writing" exercises (e.g. "Exercise 5"/"Exercise 6") have no
+        # individual heading in the MS at all, only one shared "...
+        # criteria for Exercises 5 and 6" section, so
+        # find_exercise_labeled_question_starts deliberately points BOTH
+        # parent numbers at that same real position -- there's genuinely
+        # no more granular content to split them at. Naively using the
+        # very next start as the boundary would crop the FIRST of the two
+        # down to a zero-height sliver (start==end) and dump the entire
+        # real content onto the second instead. Skip ahead to the next
+        # start with a genuinely DIFFERENT position (or end of document)
+        # so both duplicate parents crop and show the SAME real content,
+        # rather than one getting everything and the other getting
+        # nothing.
+        j = i + 1
+        while j < len(starts) and starts[j]["page"] == s["page"] and starts[j]["y0"] == s["y0"]:
+            j += 1
+        if j < len(starts):
+            end_page, end_y = starts[j]["page"], starts[j]["y0"]
         else:
             end_page, end_y = doc.page_count - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
