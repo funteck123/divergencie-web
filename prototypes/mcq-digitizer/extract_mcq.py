@@ -2298,10 +2298,17 @@ def find_compound_labeled_question_starts(lines):
     # itself (x0 far from the real Question column), poisoning the
     # column-based bare-digit filter below with the wrong anchor x0 and
     # silently losing most of the paper's questions (only 5 of 21 found).
+    # Accepts singular "Mark" as well as plural "Marks" -- confirmed real
+    # (English 0510/43 May/June 2023): every table header in this MS uses
+    # "Question / Answer / Mark" (singular), never plural, so the exact-
+    # match-on-"Marks" check found no header at all anywhere in the whole
+    # document and silently fell through to the wrong (bare-number)
+    # fallback. Same singular/plural class of bug already fixed in
+    # parse_ms_table for the equivalent MCQ table shape.
     header_idx = None
     for i in range(len(lines) - 2):
         a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
-        if a == "Question" and b == "Answer" and c == "Marks":
+        if a == "Question" and b == "Answer" and c in ("Marks", "Mark"):
             header_idx = i + 3
             if i + 3 < len(lines) and lines[i + 3]["text"].strip() == "Part Marks":
                 header_idx = i + 4
@@ -2328,7 +2335,14 @@ def find_compound_labeled_question_starts(lines):
     # label column too. So: any letter-suffixed row anchors the real
     # column's x0 range, and a bare number is only accepted if its own x0
     # falls within that range.
-    letter_re = re.compile(r'^(\d{1,2})\([a-z]\)(?:\([ivxlc]+\))?$', re.I)
+    # The optional `[A-Z]?` between the number and the parenthetical
+    # covers a real English Listening MS variant (confirmed, 0510/42
+    # Feb/March 2022): a single QP item split into two recording parts
+    # labels its sub-answers "8A(a)", "8A(b)"..."8B(a)", "8B(b)"... --
+    # `int(m.group(1))` already only reads the plain digit, so 8A/8B rows
+    # both correctly group under parent item 8, same as any other
+    # sub-part.
+    letter_re = re.compile(r'^(\d{1,2})[A-Z]?\([a-z]\)(?:\([ivxlc]+\))?$', re.I)
     bare_re = re.compile(r'^(\d{1,2})$')
     ordered = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
     start_idx = next((i for i, l in enumerate(ordered) if l is lines[header_idx]), None)
@@ -2416,44 +2430,6 @@ def find_exercise_labeled_question_starts(lines):
         if m:
             last_seen[int(m.group(1))] = {"number": m.group(1), "page": l["page"], "y0": l["y0"]}
     return [last_seen[n] for n in sorted(last_seen)]
-
-
-def parse_structured(pdf_path):
-    """One image + one text block per question/answer block, cropped
-    exactly like a real MCQ question (reuses render_question_image) but
-    with no option-letter detection or answer resolution at all -- this
-    format doesn't have either. Works for QP and MS alike; the caller
-    decides which. `marks` is the sum of every [N] mark allocation found
-    in the block's own text (0 if none/unparseable); `corrupted` flags a
-    block whose text extraction is very likely unusable prose (see
-    _looks_garbled) -- the image is still fine either way, only the text
-    (used for Test-mode LLM grading, not practice-mode display) is
-    suspect."""
-    doc = fitz.open(pdf_path)
-    lines = extract_lines(doc)
-    starts = (find_compound_labeled_question_starts(lines)
-              or find_exercise_labeled_question_starts(lines)
-              or find_mixed_numbering_question_starts(lines)
-              or find_labeled_question_starts(lines))
-    blocks = []
-    for i, s in enumerate(starts):
-        if i + 1 < len(starts):
-            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
-        else:
-            end_page, end_y = doc.page_count - 1, None
-        image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
-        image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
-        text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
-        marks = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
-        blocks.append({
-            "questionNumber": s["number"],
-            "image": image_b64,
-            "text": text,
-            "marks": marks,
-            "corrupted": _looks_garbled(text),
-        })
-    doc.close()
-    return blocks
 
 
 def find_bare_number_question_starts(lines):
@@ -2589,6 +2565,88 @@ def find_mixed_numbering_question_starts(lines):
     for s in labeled:
         combined.setdefault(int(s["number"]), s)
     return [combined[n] for n in sorted(combined)]
+
+
+# Subject/component-specific detector chains (TKT-0251, 2026-09-18).
+# The universal "try every detector, first non-empty wins" chain broke
+# down for real on English: recent Listening QPs/MSs genuinely contain
+# "Exercise N" headings too (confirmed real, 0510/42 2022), but at a
+# COARSER grouping than the per-question answers Listening actually
+# needs -- so `find_exercise_labeled_question_starts` (correct for
+# Reading & Writing) wins there by sheer luck of firing first, and wins
+# WRONG. A universal priority order can't express "this ordering is
+# right for component X, wrong for component Y" at all -- only knowing
+# which subject/component this document actually is can. Keyed by
+# (subject, component) exactly as they appear in yearly-papers.json;
+# falls back to DEFAULT_STRUCTURED_CHAIN for every subject/component
+# not listed here (i.e. every subject this was already working for).
+DEFAULT_STRUCTURED_CHAIN = [
+    find_compound_labeled_question_starts,
+    find_exercise_labeled_question_starts,
+    find_mixed_numbering_question_starts,
+    find_labeled_question_starts,
+]
+STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT = {
+    ("English as a Second Language", "Paper 2: Reading and Writing (Extended)"): [
+        find_exercise_labeled_question_starts,
+        find_labeled_question_starts,
+    ],
+    # Confirmed real (0510/42 Feb/March 2022): this MS's real per-item
+    # content uses the SAME compound "Question/Answer/Marks" table format
+    # already handled for Chemistry/Biology Theory (e.g. "3(b)", "5(f)"),
+    # not bare-digit or "Question N" labeled numbering at all -- tried
+    # FIRST, same priority as every other subject using this table shape.
+    ("English as a Second Language", "Paper 4: Listening (Extended)"): [
+        find_compound_labeled_question_starts,
+        find_mixed_numbering_question_starts,
+        find_labeled_question_starts,
+    ],
+}
+
+
+def parse_structured(pdf_path, subject=None, component=None):
+    """One image + one text block per question/answer block, cropped
+    exactly like a real MCQ question (reuses render_question_image) but
+    with no option-letter detection or answer resolution at all -- this
+    format doesn't have either. Works for QP and MS alike; the caller
+    decides which. `marks` is the sum of every [N] mark allocation found
+    in the block's own text (0 if none/unparseable); `corrupted` flags a
+    block whose text extraction is very likely unusable prose (see
+    _looks_garbled) -- the image is still fine either way, only the text
+    (used for Test-mode LLM grading, not practice-mode display) is
+    suspect.
+
+    `subject`/`component` are optional real metadata (from
+    yearly-papers.json, or a topical paper's own library entry) used to
+    pick a subject/component-specific detector chain instead of the
+    universal one -- see STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT above."""
+    doc = fitz.open(pdf_path)
+    lines = extract_lines(doc)
+    chain = STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT.get((subject, component), DEFAULT_STRUCTURED_CHAIN)
+    starts = []
+    for detector in chain:
+        starts = detector(lines)
+        if starts:
+            break
+    blocks = []
+    for i, s in enumerate(starts):
+        if i + 1 < len(starts):
+            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
+        else:
+            end_page, end_y = doc.page_count - 1, None
+        image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
+        image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
+        text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
+        marks = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
+        blocks.append({
+            "questionNumber": s["number"],
+            "image": image_b64,
+            "text": text,
+            "marks": marks,
+            "corrupted": _looks_garbled(text),
+        })
+    doc.close()
+    return blocks
 
 
 # SUPERSEDED 2026-09-06: the original approach scanned for "[Total: N]" /
@@ -2991,16 +3049,24 @@ def main():
             "answers": parse_theory_ms(ms_path),
         }))
         return
-    if len(sys.argv) == 4 and sys.argv[1] == "--structured":
+    if len(sys.argv) in (4, 6) and sys.argv[1] == "--structured":
         qp_path, ms_path = sys.argv[2], sys.argv[3]
+        # Optional trailing subject/component args (TKT-0251, 2026-09-18)
+        # -- real metadata from the caller (yearly-papers.json, or a
+        # topical library entry) used to pick a subject/component-
+        # specific detector chain instead of the universal one. Omitted
+        # entirely -> DEFAULT_STRUCTURED_CHAIN, same behavior as before
+        # this existed.
+        subject = sys.argv[4] if len(sys.argv) == 6 else None
+        component = sys.argv[5] if len(sys.argv) == 6 else None
         print(json.dumps({
-            "questions": parse_structured(qp_path),
-            "answers": parse_structured(ms_path),
+            "questions": parse_structured(qp_path, subject, component),
+            "answers": parse_structured(ms_path, subject, component),
         }))
         return
     if len(sys.argv) != 3:
         print("usage: extract_mcq.py <qp_pdf_path> <ms_pdf_path>", file=sys.stderr)
-        print("       extract_mcq.py --structured <qp_pdf_path> <ms_pdf_path>", file=sys.stderr)
+        print("       extract_mcq.py --structured <qp_pdf_path> <ms_pdf_path> [subject component]", file=sys.stderr)
         sys.exit(1)
     qp_path, ms_path = sys.argv[1], sys.argv[2]
     questions = parse_qp(qp_path)

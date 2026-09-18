@@ -240,11 +240,19 @@ async function digitizeFromPaths(qpPath, msPath) {
 // other real template found this session that ISN'T handled yet); an
 // empty `questions` array means the caller should fall back to the
 // plain whole-document QP/MS links.
-async function digitizeStructuredFromPaths(qpPath, msPath) {
+// `subject`/`component` (TKT-0251, 2026-09-18) are optional real metadata,
+// passed straight through to extract_mcq.py so it can pick a subject/
+// component-specific detector chain instead of guessing universally --
+// see STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT in extract_mcq.py. Omitted for
+// a topical paper (no such metadata readily threaded through that call
+// path yet) -- falls back to the same universal chain as before.
+async function digitizeStructuredFromPaths(qpPath, msPath, subject, component) {
   let stdout;
   try {
+    const args = [path.join(__dirname, "extract_mcq.py"), "--structured", qpPath, msPath];
+    if (subject && component) args.push(subject, component);
     ({ stdout } = await execFileAsync(
-      "python3", [path.join(__dirname, "extract_mcq.py"), "--structured", qpPath, msPath],
+      "python3", args,
       { maxBuffer: 64 * 1024 * 1024 },
     ));
   } catch (e) {
@@ -1373,7 +1381,7 @@ const server = http.createServer(async (req, res) => {
       }
       const result = paper.component === "MCQ"
         ? await digitizeFromPaths(paper.qpPath, paper.msPath)
-        : await digitizeStructuredFromPaths(paper.qpPath, paper.msPath);
+        : await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {
