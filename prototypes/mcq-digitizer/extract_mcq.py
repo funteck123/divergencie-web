@@ -2300,7 +2300,28 @@ def find_compound_labeled_question_starts(lines):
             break
     if header_idx is None:
         return []
-    compound_re = re.compile(r'^(\d{1,2})(?:\([a-z]\))?(?:\([ivxlc]+\))?$', re.I)
+    # A bare number alone (no letter suffix) is ambiguous: it's the real
+    # label for a genuine single-part question with no sub-parts at all
+    # (confirmed real, TKT-0251 2026-09-18: Physics 0625/62 2023 Q4 has
+    # no "4(a)" at all, only a bare "4") -- but it's ALSO what a stray
+    # DATA VALUE from within an answer's own content coincidentally
+    # matches (a real proton/neutron/electron count table inside Q1's
+    # own answer, 0620/42 Feb/March 2016, produced bare "31"/"38"/"40"
+    # that scrambled the monotonic walk's timing badly enough to lose
+    # questions 3 onward). Requiring a mandatory letter suffix fixed the
+    # 2016 case but broke the 2023 case -- a real single-part question
+    # has no letter-suffixed row to detect at all.
+    #
+    # Fix: the label column has a fixed, narrow x0 range (confirmed real:
+    # ~65-90pt across every checked paper), while both known false-
+    # positive sources sit far outside it -- the Marks-awarded column is
+    # way out at the right margin (x0~771 in the Physics Practical MS),
+    # and the Chemistry 2016 data-table values are indented well past the
+    # label column too. So: any letter-suffixed row anchors the real
+    # column's x0 range, and a bare number is only accepted if its own x0
+    # falls within that range.
+    letter_re = re.compile(r'^(\d{1,2})\([a-z]\)(?:\([ivxlc]+\))?$', re.I)
+    bare_re = re.compile(r'^(\d{1,2})$')
     ordered = sorted(lines, key=lambda l: (l["page"], l["y0"], l["x0"]))
     start_idx = next((i for i, l in enumerate(ordered) if l is lines[header_idx]), None)
     if start_idx is None:
@@ -2310,11 +2331,23 @@ def find_compound_labeled_question_starts(lines):
         header_line = lines[header_idx]
         start_idx = next((i for i, l in enumerate(ordered)
                            if l["page"] == header_line["page"] and l["y0"] == header_line["y0"]), 0)
+    body = ordered[start_idx:]
+    letter_x0s = [l["x0"] for l in body if letter_re.match(l["text"].strip())]
+    if letter_x0s:
+        col_lo, col_hi = min(letter_x0s) - 15, max(letter_x0s) + 15
+    else:
+        # No letter-suffixed rows at all on this paper -- every question
+        # is single-part. Fall back to the header's own x0 as the column.
+        header_line = lines[header_idx]
+        col_lo, col_hi = header_line["x0"] - 15, header_line["x0"] + 15
     candidates = []
     seen_parents = set()
-    for l in ordered[start_idx:]:
-        m = compound_re.match(l["text"].strip())
+    for l in body:
+        t = l["text"].strip()
+        m = letter_re.match(t) or bare_re.match(t)
         if not m:
+            continue
+        if not letter_re.match(t) and not (col_lo <= l["x0"] <= col_hi):
             continue
         parent = int(m.group(1))
         if parent in seen_parents:
