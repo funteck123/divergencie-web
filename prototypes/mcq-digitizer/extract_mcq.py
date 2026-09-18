@@ -2535,7 +2535,39 @@ def find_bare_number_question_starts(lines):
         # this modestly is safe for the same reason it was safe on the MS
         # side.
         if m and l["x0"] < 120:
-            candidates.append({"number": int(m.group(1)), "page": l["page"], "y0": l["y0"]})
+            candidates.append({"number": int(m.group(1)), "page": l["page"], "y0": l["y0"], "x0": l["x0"]})
+
+    # A real internal numbered marking sub-list inside an answer's own
+    # content (not a genuine heading at all) can form a PERFECT 1,2,3...
+    # sequence indistinguishable from real headings by the monotonic walk
+    # alone -- confirmed real, Biology 0610/42 Feb/March 2016: question
+    # 1's own answer contains a 7-item numbered list, and it happened to
+    # be a flawless 1-7 run, inflating a real 6-question paper's MS to 10
+    # "found" answers. Both real headings and this stray list pass the
+    # x0<120 gate above, so that alone can't separate them -- but every
+    # real heading on a given document consistently sits at the SAME x0
+    # (confirmed: this exact Biology MS has every genuine heading at
+    # x0=39.5 and every stray list item at x0=110.3, a clean, wide gap),
+    # so anchor to whichever x0 the first candidate numbered "1" used and
+    # drop anything too far from it. Real question numbers 2+ can appear
+    # at a slightly different x0 than 1 on some papers (multi-digit
+    # numbers indenting differently, e.g. "10" vs "1"), so the tolerance
+    # needs real headroom -- confirmed real, Biology 0610/42 Oct/Nov 2020:
+    # question 3's own heading sits 45pt further right than 1/2/4 on the
+    # same paper (a diagram shifting that one question's indent), a
+    # legitimate variance a 20pt tolerance (first tried) wrongly excluded,
+    # regressing a paper that passed before this whole fix existed.
+    # Widened to 50pt -- still comfortably excludes a stray column ~70pt
+    # away (the original Biology 0610/42 Feb/March 2016 case this anchor
+    # was built for), while accepting this real same-document variance.
+    # No candidate numbered "1" at all (rare, but real -- see the Physics
+    # single-part-question class already handled elsewhere) -- skip
+    # anchoring entirely rather than risk guessing wrong from a non-
+    # representative candidate.
+    ones = [c["x0"] for c in candidates if c["number"] == 1]
+    if ones:
+        anchor_x0 = ones[0]
+        candidates = [c for c in candidates if abs(c["x0"] - anchor_x0) <= 50]
 
     # Confirmed real on several A-Level Math papers: a heading merges
     # into a full sentence with no "(a)" marker at all ("2       The
