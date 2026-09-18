@@ -2292,11 +2292,19 @@ def find_compound_labeled_question_starts(lines):
     QP's own coarser per-question crop -- every sub-part after the first
     for a given parent falls naturally into that parent's captured image/
     text range without needing its own explicit boundary."""
+    # Some real Maths MS tables (confirmed: 0580/22 Feb/March 2017) use a
+    # FOURTH header cell, "Part Marks", after "Question/Answer/Marks" --
+    # skipping only 3 cells landed header_idx ON that 4th header cell
+    # itself (x0 far from the real Question column), poisoning the
+    # column-based bare-digit filter below with the wrong anchor x0 and
+    # silently losing most of the paper's questions (only 5 of 21 found).
     header_idx = None
     for i in range(len(lines) - 2):
         a, b, c = lines[i]["text"].strip(), lines[i + 1]["text"].strip(), lines[i + 2]["text"].strip()
         if a == "Question" and b == "Answer" and c == "Marks":
             header_idx = i + 3
+            if i + 3 < len(lines) and lines[i + 3]["text"].strip() == "Part Marks":
+                header_idx = i + 4
             break
     if header_idx is None:
         return []
@@ -2333,13 +2341,24 @@ def find_compound_labeled_question_starts(lines):
                            if l["page"] == header_line["page"] and l["y0"] == header_line["y0"]), 0)
     body = ordered[start_idx:]
     letter_x0s = [l["x0"] for l in body if letter_re.match(l["text"].strip())]
-    if letter_x0s:
-        col_lo, col_hi = min(letter_x0s) - 15, max(letter_x0s) + 15
-    else:
-        # No letter-suffixed rows at all on this paper -- every question
-        # is single-part. Fall back to the header's own x0 as the column.
-        header_line = lines[header_idx]
-        col_lo, col_hi = header_line["x0"] - 15, header_line["x0"] + 15
+    if not letter_x0s:
+        # Zero letter-suffixed rows ANYWHERE in the document -- this isn't
+        # actually a compound sub-part table at all, just a real "Question/
+        # Answer/Marks"-headed table with plain single-tier numbering (e.g.
+        # some Maths MS tables: same header text, but a different,
+        # multi-column-per-page layout this function was never built for --
+        # confirmed real, 0580/22 Feb/March 2017, only found 5-12 of 21
+        # real questions here before this guard existed). A genuine
+        # compound table (Chemistry/Biology Theory/Practical) always has
+        # letter-suffixed rows SOMEWHERE even if one particular question
+        # on one particular paper turns out to be single-part (that case
+        # is handled below via the x0-column filter, not here) -- so zero
+        # anywhere is the real distinguishing signal. Returning [] lets
+        # parse_structured's `or find_labeled_question_starts(lines)`
+        # fallback take over, which already finds this Maths format
+        # correctly on its own.
+        return []
+    col_lo, col_hi = min(letter_x0s) - 15, max(letter_x0s) + 15
     candidates = []
     seen_parents = set()
     for l in body:
