@@ -2503,10 +2503,29 @@ def find_bare_number_question_starts(lines):
         # the real MS, which found it fine on its own separate scanning
         # path -- this file's QP and MS scanners aren't the same code, so
         # one can miss a heading the other catches).
+        #
+        # Opens with a font-substituted math symbol, not a letter (TKT-0251,
+        # 2026-09-18): a real Maths question's grammatical subject can be a
+        # set-notation symbol (e.g. "10 ∈ = {n: ...}") whose real glyph
+        # this specific PDF's font remaps to a plain ASCII character like
+        # "%" -- confirmed real on 0580/21 (Oct/Nov 2025): "10 % = {n: n is
+        # an integer..." matched none of the three patterns above (not a
+        # letter, not "(", not a lone digit), so the real Q10 heading never
+        # became a candidate at all. Because the monotonic walk's gap-of-1
+        # rescue only fires when the expected number is CONFIRMED absent
+        # from the rest of the candidate list, and a stray "10" happened to
+        # appear much later from unrelated content, the walk never rescued
+        # 10 OR any later real question -- it just stalled, silently
+        # dropping 10 through the end of the paper (10 of 26 real questions
+        # found). Widened to accept ANY non-digit, non-whitespace character
+        # after the number+space, not just a letter -- safe for the same
+        # reason every other widening in this function has been: the
+        # monotonic-sequence walk is the real false-positive guard, not
+        # this regex's character class.
         m = (
             re.match(r'^(\d{1,2})$', text)
             or re.match(r'^(\d{1,2})\s*\(', text)
-            or re.match(r'^(\d{1,2})\s+[A-Za-z]', text)
+            or re.match(r'^(\d{1,2})\s+[^\s\d]', text)
         )
         # 100 missed a real heading confirmed at x0=107 (A-Level Biology's
         # own margin runs slightly wider than the vendor samples this
