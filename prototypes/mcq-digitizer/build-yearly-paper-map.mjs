@@ -211,6 +211,102 @@ function crawlExaminerReports(subjectDef) {
   return reports;
 }
 
+// ZNotes (TKT-0253, 2026-09-18): a static, per-subject revision-notes
+// document -- NOT tied to any year/session/variant at all, unlike every
+// other component above. Sourced exclusively from papacambridge.com per
+// explicit user instruction (not znotes.org's current site, which the
+// user says has gotten worse) -- every path below was individually
+// confirmed to exist AND visually verified (rendered cover page) to be
+// the real, correct document before being hardcoded here, not guessed.
+// "Component level" here means matching each subject's own real exam-
+// component split (Theory vs Alternative-to-Practical for the sciences,
+// or the 6 separate unit files -- P1/P3/M1/M2/S1/S2 -- ZNotes itself
+// publishes for A-Level Maths; there's no separate P2 file even on
+// ZNotes's own site, not an omission on this end). A plain filename-
+// pattern scan (like FILENAME_ER_RE above) doesn't work here: real local
+// copies are inconsistently named -- some keep the original "-znotes"
+// suffix, some were renamed at some point (e.g. A-Level Physics's own
+// A2 theory file has no "znote" anywhere in its name) -- confirmed by
+// rendering cover pages during the Update 37 survey, not assumed.
+// IGCSE English (0510) has NO entry at all: confirmed via direct
+// papacambridge lookup that no ZNotes document exists anywhere for that
+// syllabus (only an unrelated official Cambridge learner guide) --
+// this is a real absence, not a missed file.
+const ZNOTES_FILES = {
+  "IGCSE|Physics": [
+    { component: "Theory", path: "IGCSE/Physics/Notes/cie-igcse-physics-0625-theory-v4-znotes.pdf" },
+    { component: "Alternative to Practical", path: "IGCSE/Physics/Notes/cie-igcse-physics-0625-atp-v2-znotes.pdf" },
+  ],
+  "IGCSE|Chemistry": [
+    { component: "Theory", path: "IGCSE/Chemistry/Content/Notes/cie-igcse-chemistry-0620-theory-v2-znotes.pdf" },
+    { component: "Alternative to Practical", path: "IGCSE/Chemistry/Content/Notes/cie-igcse-chemistry-0620-atp-v1-znotes.pdf" },
+  ],
+  "IGCSE|Biology": [
+    { component: "Theory", path: "IGCSE/Biology/Notes/cie-igcse-biology-0610-theory-v2-znotes.pdf" },
+    { component: "Alternative to Practical", path: "IGCSE/Biology/Notes/cie-igcse-biology-0610-atp-v2-znotes.pdf" },
+  ],
+  "IGCSE|Mathematics": [
+    { component: "Notes", path: "IGCSE/Maths/Notes/cie-igcse-maths-0580-v3-znotes.pdf" },
+  ],
+  "A Levels|Physics": [
+    { component: "AS Theory", path: "A Levels/Physics/Notes/misc/cie-as-physics-9702-theory-v1-znotes.pdf" },
+    { component: "AS Practical", path: "A Levels/Physics/Notes/cie-as-physics-9702-practical-v2-znotes.pdf" },
+    { component: "A2 Theory", path: "A Levels/Physics/Notes/caie-a2-physics-9702-theory.pdf" },
+    { component: "A2 Practical", path: "A Levels/Physics/Notes/cie-a2-physics-9702-practical-v3-znotes.pdf" },
+  ],
+  "A Levels|Chemistry": [
+    { component: "AS Theory", path: "A Levels/Chemistry/Notes/caie-as-chemistry-9701-theory.pdf" },
+    { component: "AS Practical", path: "A Levels/Chemistry/Notes/caie-as-chemistry-9701-practical.pdf" },
+    { component: "A2 Theory", path: "A Levels/Chemistry/Notes/caie-a2-chemistry-9701-theory.pdf" },
+    { component: "A2 Practical", path: "A Levels/Chemistry/Notes/caie-a2-chemistry-9701-practical.pdf" },
+  ],
+  "A Levels|Biology": [
+    { component: "AS Theory", path: "A Levels/Biology/caie-as-level-biology-9700-theory-v2.pdf" },
+    { component: "AS Practical", path: "A Levels/Biology/cie-as-biology-9700-practical-v1-znotes.pdf" },
+    { component: "A2 Theory", path: "A Levels/Biology/cie-a2-biology-9700-theory-v1-znotes.pdf" },
+    { component: "A2 Practical", path: "A Levels/Biology/cie-a2-biology-9700-practical-v1-znotes.pdf" },
+  ],
+  "A Levels|Mathematics": [
+    { component: "Pure 1", path: "A Levels/Maths/Notes/caie-as-maths-9709-pure-1_Redacted.pdf" },
+    { component: "Pure 3", path: "A Levels/Maths/Notes/caie-a2-maths-9709-pure-3.pdf" },
+    { component: "Mechanics 1", path: "A Levels/Maths/Notes/caie-as-maths-9709-mechanics.pdf" },
+    { component: "Mechanics 2", path: "A Levels/Maths/Notes/cie-a2-maths-9709-mechanics2-v2-znotes.pdf" },
+    { component: "Statistics 1", path: "A Levels/Maths/Notes/caie-as-maths-9709-statistics-1.pdf" },
+    { component: "Statistics 2", path: "A Levels/Maths/Notes/cie-a2-maths-9709-statistics2-v2-znotes.pdf" },
+  ],
+  // Named "English Language" (not bare "English") to avoid colliding
+  // with the topical library's real, DIFFERENT A-Level subject "English
+  // General Paper" (confirmed via a live /api/library check) -- these are
+  // two genuinely different real Cambridge syllabuses, not a naming
+  // inconsistency to reconcile.
+  "A Levels|English Language": [
+    { component: "AS Language", path: "A Levels/sas/cie-as-englishlanguage-9093-v1-znotes.pdf" },
+  ],
+};
+// ARCHIVE_ROOT is "/mnt/e/CIE/IGCSE" (see top of file) -- ZNotes paths
+// above need the real archive root ONE level up, since they span both
+// IGCSE and A Levels.
+const CIE_ROOT = path.join(ARCHIVE_ROOT, "..");
+
+function crawlZNotes(board, subject) {
+  const entries = ZNOTES_FILES[`${board}|${subject}`];
+  if (!entries) return [];
+  const notes = [];
+  for (const { component, path: relPath } of entries) {
+    const fullPath = path.join(CIE_ROOT, relPath);
+    if (!fs.existsSync(fullPath)) continue; // confirmed present at survey time; skip rather than crash if the archive changes later
+    notes.push({
+      board,
+      subject,
+      component: `ZNotes: ${component}`,
+      title: `ZNotes -- ${subject} ${component}`,
+      paperId: `znotes_${board.replace(/\s+/g, "")}_${subject.replace(/\s+/g, "")}_${component.replace(/\s+/g, "")}`,
+      znotesPath: fullPath,
+    });
+  }
+  return notes;
+}
+
 // Nested under "IGCSE" (all 5 subjects here are IGCSE-only) to match the
 // existing topical library's board->subject->component->[papers] shape --
 // lets the Next.js proxy's existing enrollment filter (built for that
@@ -229,6 +325,30 @@ for (const subjectDef of SUBJECTS) {
     result.IGCSE[subjectDef.subject]["Examiner Report"] = reports;
   }
   console.log(`${subjectDef.subject}: ${papers.length} real qp+ms pairs found, ${reports.length} examiner reports found`);
+}
+
+// ZNotes is wired in separately from the qp/ms exam-paper crawl above --
+// it doesn't need a real qp/ms pair crawl to exist for a subject/board at
+// all (A Levels has no yearly qp/ms crawler yet, only ZNotes), so this
+// loop covers every (board, subject) key in ZNOTES_FILES directly rather
+// than piggybacking on the IGCSE-only SUBJECTS array.
+for (const key of Object.keys(ZNOTES_FILES)) {
+  const [board, subject] = key.split("|");
+  const notes = crawlZNotes(board, subject);
+  if (notes.length === 0) continue;
+  result[board] = result[board] || {};
+  result[board][subject] = result[board][subject] || {};
+  // Each note already carries its own distinct component name (e.g.
+  // "ZNotes: Theory" vs "ZNotes: Mechanics 2") -- group by that, the same
+  // way the main qp/ms crawl above groups papers by p.component, so the
+  // picker's Component dropdown shows each one as a separate real choice
+  // instead of collapsing every ZNotes document for a subject into one
+  // mixed list.
+  for (const note of notes) {
+    result[board][subject][note.component] = result[board][subject][note.component] || [];
+    result[board][subject][note.component].push(note);
+  }
+  console.log(`${board} ${subject}: ${notes.length} ZNotes file(s) found`);
 }
 
 const outPath = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");

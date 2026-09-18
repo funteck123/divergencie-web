@@ -187,6 +187,16 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Reading and Writing (Extended)",
   "Examiner Report",
 ]);
+// ZNotes (TKT-0253, 2026-09-18): same "standalone document, no
+// digitizing" shape as Examiner Report above, but there isn't one fixed
+// component name -- each subject has its own real component split (e.g.
+// "ZNotes: Theory" vs "ZNotes: Mechanics 2"), and the list grows every
+// time a new subject/component file is added to build-yearly-paper-
+// map.mjs's ZNOTES_FILES registry. A prefix check avoids having to keep
+// this file's own literal Set in sync with that registry by hand.
+function isYearlyReadyComponent(component) {
+  return YEARLY_READY_COMPONENTS.has(component) || component.startsWith("ZNotes: ");
+}
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than
 // the free vision router for structured-JSON output, and this grading
@@ -1008,7 +1018,7 @@ function readyYearlyLibrary() {
     for (const [subject, components] of Object.entries(subjects)) {
       const keptComponents = {};
       for (const [component, papers] of Object.entries(components)) {
-        if (YEARLY_READY_COMPONENTS.has(component)) keptComponents[component] = papers;
+        if (isYearlyReadyComponent(component)) keptComponents[component] = papers;
       }
       if (Object.keys(keptComponents).length > 0) filtered[board][subject] = keptComponents;
     }
@@ -1405,7 +1415,7 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const paper = findYearlyPaperById(body.paperId);
-      if (!paper || !YEARLY_READY_COMPONENTS.has(paper.component)) {
+      if (!paper || !isYearlyReadyComponent(paper.component)) {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));
         return;
@@ -1439,12 +1449,13 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const paper = findYearlyPaperById(paperId);
-      if (!paper || !paper.erPath || !YEARLY_READY_COMPONENTS.has(paper.component)) {
+      const rawPath = paper && (paper.erPath || paper.znotesPath);
+      if (!paper || !rawPath || !isYearlyReadyComponent(paper.component)) {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));
         return;
       }
-      const buf = fs.readFileSync(paper.erPath);
+      const buf = fs.readFileSync(rawPath);
       const safeName = paper.title.replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150);
       res.writeHead(200, {
         "Content-Type": "application/pdf",
