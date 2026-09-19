@@ -143,6 +143,9 @@
   .mark-breakdown-item .mb-status.awarded { color: var(--good); }
   .mark-breakdown-item .mb-status.missed { color: var(--bad); }
   .full-mark-answer { white-space: pre-wrap; background: rgba(31,157,85,0.05); border: 1px solid var(--good); border-radius: 6px; padding: 0.5rem 0.7rem; margin-top: 0.25rem; font-size: 0.85rem; }
+  .diagram-hint { border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.7rem; font-size: 0.82rem; background: var(--bg-soft); }
+  .diagram-hint summary { cursor: pointer; font-weight: 700; color: var(--navy); }
+  .diagram-hint-body { white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.76rem; line-height: 1.4; margin-top: 0.5rem; background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.6rem; max-height: 16rem; overflow-y: auto; }
 </style>
 </head>
 <body>
@@ -344,6 +347,37 @@
         <button class="timer-btn" id="structuredCancelQuizBtn" type="button" style="margin-left:auto;">&larr; Cancel</button>
       </div>
       <div id="structuredPdfLinksPractice" style="margin-top:0.6rem;"></div>
+      <details class="diagram-hint" id="diagramHintBox" style="display:none; margin-top:0.6rem;">
+        <summary>📐 Answering with a table or diagram? Click for the text template</summary>
+        <pre class="diagram-hint-body">Tables -- use pipes, header row then dashes:
+| Property | Value |
+|---|---|
+| e.g. Speed | 5 m/s |
+
+Graphs -- state axes, then the line/points:
+AXES: x = Time (s), 0-10 | y = Distance (m), 0-20
+LINE: straight, from (0,0) to (10,20)
+
+Circuits -- chain components, // for parallel branches:
+[Cell 6V] -- [Switch] -- [Ammeter] -- [Resistor 10R] -- back to [Cell]
+[Cell] -- [Switch] -- ( [R1 5R] // [R2 10R] ) -- back to [Cell]
+
+Rays / forces / fields -- arrows labelled at each end:
+Object --&gt; [Convex lens f=5cm] --&gt; Image (real, inverted, magnified)
+Force left &lt;--5N-- [Box] --10N--&gt; Force right (net 5N right)
+
+Labelled diagrams -- indented list, say where each part is:
+Test tube setup:
+- stopper (top, sealed)
+- gas produced (inside, rising)
+- delivery tube (from stopper, into beaker)
+- limewater (in beaker, turns cloudy)
+
+Write any of these as plain text in your answer -- the grader reads
+them as if you'd drawn the real diagram/table, and marks them the
+same way. Don't leave a diagram/table mark blank just because you
+can't draw it here.</pre>
+      </details>
     </div>
 
     <div id="structuredItems"></div>
@@ -1247,7 +1281,7 @@ function renderStructuredItems(mode) {
       <span class="qnum">Question ${escapeHtml(q.questionNumber)}</span>
       ${testMode ? `
         <img class="qimg" src="${q.qImage}" alt="Question ${escapeHtml(q.questionNumber)}" />
-        <textarea class="structured-answer-box" data-qnum="${escapeHtml(q.questionNumber)}" placeholder="Write your full working here, step by step..."></textarea>
+        <textarea class="structured-answer-box" data-qnum="${escapeHtml(q.questionNumber)}" placeholder="Write your full working here, step by step... (needs a table/diagram? see the hint above)"></textarea>
         <div class="structured-submit-row" data-qnum="${escapeHtml(q.questionNumber)}">
           <button type="button" class="primary-btn structured-submit-answer-btn" data-qnum="${escapeHtml(q.questionNumber)}" style="width:auto; padding:0.5rem 1.2rem;">Submit answer</button>
           <span class="hint structured-submit-status" data-qnum="${escapeHtml(q.questionNumber)}">Not submitted yet</span>
@@ -1395,6 +1429,9 @@ document.getElementById("structuredStartPracticeBtn").addEventListener("click", 
   document.getElementById("structuredTestHeader").style.display = "block";
   document.getElementById("structuredHeaderTitle").textContent = "Practice";
   document.getElementById("structuredPdfLinksPractice").innerHTML = pdfLinksHtml(currentStructuredPaper.qpId, currentStructuredPaper.msId, currentStructuredPaper.title);
+  // Diagram/table hint is only relevant where a graded free-text answer is
+  // actually being typed -- Practice mode has no answer box at all.
+  document.getElementById("diagramHintBox").style.display = "none";
   renderStructuredItems("practice");
   resetStructuredTimer();
   startStructuredTimer();
@@ -1428,6 +1465,7 @@ document.getElementById("structuredStartTestBtn").addEventListener("click", () =
   document.getElementById("structuredSubmitTestBtn").style.display = "block";
   // TKT-0245: never shown in Test mode -- see MCQ's own startTestBtn handler.
   document.getElementById("structuredPdfLinksPractice").innerHTML = "";
+  document.getElementById("diagramHintBox").style.display = "block";
   renderStructuredItems("test");
   resetStructuredTimer();
   startStructuredTimer();
