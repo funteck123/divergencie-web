@@ -1420,7 +1420,19 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));
         return;
       }
-      const result = paper.component === "MCQ"
+      // BUG FIXED 2026-09-19: this used to compare against the literal
+      // string "MCQ", which no real yearly component is ever named -- the
+      // real MCQ component across Physics/Chemistry/Biology is literally
+      // "Paper 2: Multiple Choice (Extended)" (see YEARLY_READY_COMPONENTS
+      // above). That meant EVERY yearly MCQ paper silently fell through to
+      // digitizeStructuredFromPaths, which crops the right number of
+      // questions but never applies A-D letter grading -- confirmed live
+      // against a real paper (0625_m20_22): extraction found all 40
+      // questions, but correctAnswer was null on every one, while the
+      // exact same file pair graded 40/40 correctly via a direct
+      // extract_mcq.py CLI call. No yearly MCQ paper has ever been
+      // correctly graded through this endpoint until this fix.
+      const result = paper.component === "Paper 2: Multiple Choice (Extended)"
         ? await digitizeFromPaths(paper.qpPath, paper.msPath)
         : await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
       res.writeHead(200, { "Content-Type": "application/json" });
