@@ -209,7 +209,12 @@ const GRADING_MODEL = process.env.OPENROUTER_TEXT_MODEL || "nvidia/nemotron-3-su
 // answer (confirmed live) -- too tight a cap now risks truncating the
 // JSON mid-object (a parse failure, not silent corruption, but still an
 // avoidable one).
-const GRADING_MAX_TOKENS = Number(process.env.OPENROUTER_MAX_TOKENS) || 3000;
+// Raised again from 3000 (2026-09-20, TKT-0256): the response schema grew
+// two more fields -- a per-mark-point ledger (markBreakdown) and a full
+// worked model answer (fullMarkAnswer) -- on top of the existing
+// lineFeedback breakdown, so the same truncation risk applies at the old
+// cap.
+const GRADING_MAX_TOKENS = Number(process.env.OPENROUTER_MAX_TOKENS) || 4500;
 // Same free vision fallback exam-grader and quiz-digitizer already use
 // for image inputs (openrouter/free) -- structured Test-mode grading
 // sends the mark-scheme CROP IMAGE, not its text (see
@@ -377,6 +382,10 @@ Mark strictly and fairly against the mark scheme image's actual method/answer re
 
 Break the student's working into its individual lines/steps (however the student actually wrote it -- a numbered list, separate sentences, separate calculation lines) and mark EACH one, not just the final answer as a whole. For a step that's wrong, give the specific mistake AND the correct step that should replace it -- an alternative correct working line the student could have written instead, not just "this is wrong."
 
+Then go further than the line-by-line pass above: identify EVERY individual mark point the mark scheme actually awards for this question (an "M1"/"A1"/"B1"-style scheme already enumerates these; if the scheme states its marks as a single flowing method instead of labelled points, split it into one entry per mark it awards, in the order a real examiner would tick them off). For each individual mark point, decide whether the student's answer actually earned it, quoting the exact bit of their answer that earned it, or -- if it wasn't earned -- exactly what was missing. This must fully rebuild the student's answer as a mark-by-mark ledger, not just a correct/incorrect step list: every mark point in the scheme needs its own entry, and the count of entries marked earned must equal marksAwarded below.
+
+Finally, write out a complete, real, full-mark model answer for this question -- the actual working a top student would write, line by line, in the same style/length as genuine exam working (not a description of the method, not "student should show working" -- the literal lines of maths/reasoning/units that would earn every mark in the scheme). This is what "getting this question completely right" would actually look like on paper.
+
 Respond with ONLY a single JSON object, no markdown code fences, no commentary before or after, matching exactly this shape:
 {
   "studentAnswerVerbatim": "<the STUDENT ANSWER text reproduced EXACTLY character-for-character, unchanged and unsummarized -- if it was left blank, use the literal string \\"(left blank)\\">",
@@ -388,10 +397,19 @@ Respond with ONLY a single JSON object, no markdown code fences, no commentary b
       "correctAlternative": "<if correct is false: the correct version of this step, written out as real working the student could have used instead. If correct is true: empty string \\"\\">"
     }
   ],
-  "marksAwarded": <marks actually earned by the student answer overall, integer, out of the total marks shown in the image>,
+  "markBreakdown": [
+    {
+      "markLabel": "<the mark scheme's own label for this individual mark point if it has one (e.g. \\"M1\\", \\"A1\\", \\"B1\\"), otherwise a short description of what this one mark is for (e.g. \\"Correct formula selected\\")>",
+      "awarded": <true if the student's answer earned this specific mark, false otherwise>,
+      "evidence": "<if awarded is true: the exact part of the student's answer that earned this mark, quoted verbatim. If awarded is false: empty string \\"\\">",
+      "whatWasNeeded": "<if awarded is false: exactly what the student needed to write to earn this specific mark. If awarded is true: empty string \\"\\">"
+    }
+  ],
+  "fullMarkAnswer": "<the complete full-mark model answer for this question, written as real exam working line by line -- everything a student would need to write to earn every mark in the scheme>",
+  "marksAwarded": <marks actually earned by the student answer overall, integer, out of the total marks shown in the image -- must equal the number of markBreakdown entries with awarded true>,
   "remark": "<one short sentence, examiner-style, summarizing what was right or wrong overall>"
 }
-If the student left the answer blank or wrote nothing gradable, lineFeedback should be a single entry noting no working was shown, marksAwarded 0.`;
+If the student left the answer blank or wrote nothing gradable, lineFeedback should be a single entry noting no working was shown, every markBreakdown entry should have awarded false, marksAwarded 0, and fullMarkAnswer should still be filled in with the real model answer.`;
 
 // Global concurrency cap across EVERY student's grading requests, not
 // per-session -- per explicit direction 2026-09-05: with per-question
@@ -552,10 +570,24 @@ const GEMINI_RESPONSE_SCHEMA = {
         required: ["step", "correct", "mistake", "correctAlternative"],
       },
     },
+    markBreakdown: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          markLabel: { type: "string" },
+          awarded: { type: "boolean" },
+          evidence: { type: "string" },
+          whatWasNeeded: { type: "string" },
+        },
+        required: ["markLabel", "awarded", "evidence", "whatWasNeeded"],
+      },
+    },
+    fullMarkAnswer: { type: "string" },
     marksAwarded: { type: "integer" },
     remark: { type: "string" },
   },
-  required: ["studentAnswerVerbatim", "lineFeedback", "marksAwarded", "remark"],
+  required: ["studentAnswerVerbatim", "lineFeedback", "markBreakdown", "fullMarkAnswer", "marksAwarded", "remark"],
 };
 
 async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, model) {
@@ -738,6 +770,17 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
         correctAlternative: typeof l?.correctAlternative === "string" ? l.correctAlternative : "",
       }))
     : [];
+  // Same defensive-default reasoning as lineFeedback above -- OpenRouter
+  // has no schema enforcement, so a model could skip these two new fields
+  // entirely rather than send them empty.
+  const markBreakdown = Array.isArray(parsed.markBreakdown)
+    ? parsed.markBreakdown.map((m) => ({
+        markLabel: typeof m?.markLabel === "string" ? m.markLabel : "",
+        awarded: Boolean(m?.awarded),
+        evidence: typeof m?.evidence === "string" ? m.evidence : "",
+        whatWasNeeded: typeof m?.whatWasNeeded === "string" ? m.whatWasNeeded : "",
+      }))
+    : [];
   return {
     ungradable: false,
     marksAwarded,
@@ -745,6 +788,8 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
     remark: typeof parsed.remark === "string" ? parsed.remark : "",
     studentAnswerVerbatim: typeof parsed.studentAnswerVerbatim === "string" ? parsed.studentAnswerVerbatim : (studentAnswer || "(left blank)"),
     lineFeedback,
+    markBreakdown,
+    fullMarkAnswer: typeof parsed.fullMarkAnswer === "string" ? parsed.fullMarkAnswer : "",
     ...(parsed.lowConfidence ? { lowConfidence: true } : {}),
   };
 }

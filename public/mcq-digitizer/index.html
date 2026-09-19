@@ -135,6 +135,14 @@
   .instant-verdict { font-weight: 700; font-size: 0.85rem; }
   .instant-verdict.correct { color: var(--good); }
   .instant-verdict.incorrect, .instant-verdict.unanswered { color: var(--bad); }
+  .mark-breakdown { margin-top: 0.25rem; }
+  .mark-breakdown-item { border-left: 3px solid var(--border); padding: 0.35rem 0 0.35rem 0.6rem; margin-bottom: 0.3rem; font-size: 0.85rem; }
+  .mark-breakdown-item.awarded { border-left-color: var(--good); }
+  .mark-breakdown-item.missed { border-left-color: var(--bad); }
+  .mark-breakdown-item .mb-label { font-weight: 700; margin-right: 0.5rem; }
+  .mark-breakdown-item .mb-status.awarded { color: var(--good); }
+  .mark-breakdown-item .mb-status.missed { color: var(--bad); }
+  .full-mark-answer { white-space: pre-wrap; background: rgba(31,157,85,0.05); border: 1px solid var(--good); border-radius: 6px; padding: 0.5rem 0.7rem; margin-top: 0.25rem; font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -1504,6 +1512,8 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
                 `).join("")}
               </div>
             ` : ""}
+            ${markBreakdownHtml(g.markBreakdown)}
+            ${fullMarkAnswerHtml(g.fullMarkAnswer)}
           `}
       </div>
     `;
@@ -1526,6 +1536,8 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
     marksAvailable: g.marksAvailable,
     remark: g.remark,
     lineFeedback: g.lineFeedback,
+    markBreakdown: g.markBreakdown,
+    fullMarkAnswer: g.fullMarkAnswer,
     lowConfidence: g.lowConfidence,
   }));
 
@@ -1632,6 +1644,34 @@ document.getElementById("digitizeBtn").addEventListener("click", async () => {
     btn.disabled = false;
   }
 });
+
+// TKT-0256: shared by both places a structured question's grading result
+// gets rendered (the live results screen below, and the "view answers"
+// history panel further down) so the two never drift into two different
+// markups for the same data.
+function markBreakdownHtml(markBreakdown) {
+  if (!Array.isArray(markBreakdown) || markBreakdown.length === 0) return "";
+  return `
+    <div class="answer-verbatim-label">Mark-by-mark breakdown</div>
+    <div class="mark-breakdown">
+      ${markBreakdown.map((m) => `
+        <div class="mark-breakdown-item ${m.awarded ? "awarded" : "missed"}">
+          <span class="mb-label">${escapeHtml(m.markLabel || "Mark")}</span>
+          <span class="mb-status ${m.awarded ? "awarded" : "missed"}">${m.awarded ? "✓ Awarded" : "✗ Not awarded"}</span>
+          ${m.awarded && m.evidence ? `<div>From your answer: ${escapeHtml(m.evidence)}</div>` : ""}
+          ${!m.awarded && m.whatWasNeeded ? `<div>Needed: ${escapeHtml(m.whatWasNeeded)}</div>` : ""}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+function fullMarkAnswerHtml(fullMarkAnswer) {
+  if (!fullMarkAnswer) return "";
+  return `
+    <div class="answer-verbatim-label">What a full-mark answer looks like</div>
+    <div class="full-mark-answer">${escapeHtml(fullMarkAnswer)}</div>
+  `;
+}
 
 function questionPanelHtml(q, showOptions = true) {
   return `
@@ -1810,6 +1850,8 @@ function mistakeResults(items) {
         out.marksAvailable = r.marksAvailable;
         out.remark = r.remark;
         out.lineFeedback = r.lineFeedback;
+        out.markBreakdown = r.markBreakdown;
+        out.fullMarkAnswer = r.fullMarkAnswer;
         out.lowConfidence = r.lowConfidence;
         out.flagged = r.flagged;
         out.correctAnswer = r.correctAnswer;
@@ -2226,6 +2268,8 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
             `).join("")}
           </div>
         ` : ""}
+        ${markBreakdownHtml(r.mark_breakdown)}
+        ${fullMarkAnswerHtml(r.full_mark_answer)}
       </div>
     `).join("");
   } catch (e2) {
