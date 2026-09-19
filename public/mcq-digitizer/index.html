@@ -126,6 +126,15 @@
   .lb-tabs { display: flex; gap: 0.4rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
   .scope-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; font-size: 0.8rem; color: var(--charcoal); }
   .scope-row select { margin-left: 0.4rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.82rem; }
+  .instant-check-toggle { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; cursor: pointer; }
+  .instant-check-toggle input { cursor: pointer; }
+  .check-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.6rem; }
+  #quizItems.instant-check-off .check-row { display: none; }
+  .check-answer-btn { padding: 0.3rem 0.8rem; border-radius: 6px; border: 1.5px solid var(--navy); background: white; color: var(--navy); font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+  .check-answer-btn:hover { background: var(--bg-soft); }
+  .instant-verdict { font-weight: 700; font-size: 0.85rem; }
+  .instant-verdict.correct { color: var(--good); }
+  .instant-verdict.incorrect, .instant-verdict.unanswered { color: var(--bad); }
 </style>
 </head>
 <body>
@@ -227,6 +236,10 @@
         <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
         <button class="timer-btn" id="cancelQuizBtn" type="button" style="margin-left:auto;">&larr; Cancel</button>
       </div>
+      <label class="instant-check-toggle hint" id="instantCheckRow" style="display:none;">
+        <input type="checkbox" id="instantCheckToggle" />
+        Show if I'm right after each question (instead of only at the end)
+      </label>
       <div id="pdfLinksPractice" style="margin-top:0.6rem;"></div>
     </div>
 
@@ -495,12 +508,36 @@ function applyDigitizeResult(data) {
   showStage(2);
 }
 
+// TKT-0255: per-question "check my answer now" toggle for Test/Mistakes
+// mode -- opt-in (remembered across papers via localStorage) because the
+// default graded-attempt behaviour (TKT-0245's comment above) should stay
+// intact unless a student explicitly asks to see feedback as they go.
+// q.correctAnswer is already loaded client-side regardless of mode (see
+// Practice mode's own answer-tab reveal), so this is a pure local
+// comparison -- no server round-trip, no change to the real Submit-quiz
+// scoring logic below.
+const INSTANT_CHECK_KEY = "mcqInstantCheckEnabled";
+function isInstantCheckEnabled() {
+  try { return localStorage.getItem(INSTANT_CHECK_KEY) === "1"; } catch { return false; }
+}
+function applyInstantCheckClass() {
+  document.getElementById("quizItems").classList.toggle("instant-check-off", !isInstantCheckEnabled());
+}
+document.getElementById("instantCheckToggle").addEventListener("change", (e) => {
+  try { localStorage.setItem(INSTANT_CHECK_KEY, e.target.checked ? "1" : "0"); } catch {}
+  applyInstantCheckClass();
+});
+
 document.getElementById("startPracticeBtn").addEventListener("click", () => {
   quizMode = "practice";
   document.getElementById("modeSelectCard").style.display = "none";
   document.getElementById("finishPracticeBtn").style.display = "block";
   document.getElementById("testHeader").style.display = "block";
   document.getElementById("quizHeaderTitle").textContent = "Practice";
+  // Practice mode already reveals the answer freely via its own Question/
+  // Answer tabs -- the instant-check toggle only makes sense in a mode
+  // that otherwise withholds the answer until Submit.
+  document.getElementById("instantCheckRow").style.display = "none";
   document.getElementById("pdfLinksPractice").innerHTML = currentMcqPaper ? pdfLinksHtml(currentMcqPaper.qpId, currentMcqPaper.msId, currentMcqPaper.title) : "";
   renderQuiz();
   resetTimer();
@@ -515,7 +552,10 @@ document.getElementById("startTestBtn").addEventListener("click", () => {
   // TKT-0245: never shown in Test mode -- looking up the real mark scheme
   // mid-quiz would defeat the point of a graded attempt.
   document.getElementById("pdfLinksPractice").innerHTML = "";
+  document.getElementById("instantCheckRow").style.display = "flex";
+  document.getElementById("instantCheckToggle").checked = isInstantCheckEnabled();
   renderQuiz();
+  applyInstantCheckClass();
   resetTimer();
   startTimer();
 });
@@ -608,7 +648,10 @@ async function startMistakesMode() {
     document.getElementById("finishPracticeBtn").style.display = "none";
     document.getElementById("flaggedSummary").style.display = "none";
     document.getElementById("quizItems").innerHTML = "";
+    document.getElementById("instantCheckRow").style.display = "flex";
+    document.getElementById("instantCheckToggle").checked = isInstantCheckEnabled();
     renderQuiz();
+    applyInstantCheckClass();
     resetTimer();
     startTimer();
     showStage(2);
@@ -1603,6 +1646,10 @@ function questionPanelHtml(q, showOptions = true) {
         </label>
       `).join("")}
     </div>
+    <div class="check-row">
+      <button type="button" class="check-answer-btn" data-qnum="${escapeHtml(q.questionNumber)}">Check answer</button>
+      <span class="instant-verdict" data-qnum="${escapeHtml(q.questionNumber)}"></span>
+    </div>
     ` : ""}
   `;
 }
@@ -1661,6 +1708,26 @@ function renderQuiz() {
       cb.addEventListener("change", () => {
         cb.closest(".mcq-item").classList.toggle("flagged", cb.checked);
         renderFlaggedSummary();
+      });
+    });
+    container.querySelectorAll(".check-answer-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qnum = btn.dataset.qnum;
+        const q = quiz.find((qq) => String(qq.questionNumber) === qnum);
+        const verdictEl = container.querySelector(`.instant-verdict[data-qnum="${CSS.escape(qnum)}"]`);
+        if (!verdictEl) return;
+        const selected = document.querySelector(`input[name="q${CSS.escape(qnum)}"]:checked`);
+        if (!q.correctAnswer) {
+          verdictEl.textContent = "Not auto-gradable";
+          verdictEl.className = "instant-verdict unanswered";
+        } else if (!selected) {
+          verdictEl.textContent = "Select an answer first";
+          verdictEl.className = "instant-verdict unanswered";
+        } else {
+          const correct = selected.value === q.correctAnswer;
+          verdictEl.textContent = correct ? "Correct" : `Incorrect (answer: ${q.correctAnswer})`;
+          verdictEl.className = "instant-verdict " + (correct ? "correct" : "incorrect");
+        }
       });
     });
   }

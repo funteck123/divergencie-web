@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 ### Features
 
+* **mcq-digitizer (TKT-0255):** Test mode and Mistakes mode now offer an opt-in "Show if I'm right after each question" toggle (remembered per-browser via localStorage, off by default so the existing single-submission exam-integrity behavior is unchanged unless a student turns it on). When enabled, each question gets its own "Check answer" button that compares the selected option to that question's already-loaded answer key and shows Correct/Incorrect instantly -- purely client-side, no new server endpoint, no change to the real Submit-quiz scoring or mistake-logging.
+
 * **accounts:** Management can "Log in as" a Student/Teacher/Staff/Parent/Ambassador account without ever seeing or resetting their password, via a short-lived impersonation session with a visible "Stop impersonating" banner and full audit logging. Replaces a proposed change to make stored passwords reversible/viewable again, which would have reopened the plaintext-password-leak incident scrypt hashing was introduced to fix.
 
 * **mcq-digitizer:** Mathematics (and any other subject with no real MCQ paper) can now be practiced question by question in the Question Solver, using the exact same practice-mode UI as the MCQ flow -- a mode-select card, then one card per question with a Question/Answer tab toggle revealing that question's own real mark-scheme crop, no separate stepper or "Open Question Paper" screen.
