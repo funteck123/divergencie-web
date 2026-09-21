@@ -441,7 +441,8 @@ If the student left the answer blank or wrote nothing gradable, lineFeedback sho
 // queue for every student, well past whatever Gemini's own outage lasted.
 // A hard timeout guarantees every grading attempt resolves one way or
 // another, so a slot always frees up.
-const GRADING_FETCH_TIMEOUT_MS = 25000;
+const GRADING_FETCH_TIMEOUT_MS = 40000; // gemini-3-flash-preview normally answers in 12-20s but sometimes 25-30s
+const GRADING_DEADLINE_MS = 85000;
 async function fetchWithTimeout(url, options) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), GRADING_FETCH_TIMEOUT_MS);
@@ -508,7 +509,12 @@ function runGradingQueued(fn) {
 // regression documented above -- it's tried only as an absolute last
 // resort (after the whole pool AND OpenRouter have failed), and its
 // result is flagged lowConfidence so a caller can surface that.
-const GEMINI_MODEL_POOL = [process.env.GEMINI_MODEL || "gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro"];
+const GEMINI_MODEL_POOL = process.env.GEMINI_MODEL_POOL
+  ? process.env.GEMINI_MODEL_POOL.split(",").map((m) => m.trim()).filter(Boolean)
+  // gemini-2.5-flash/-pro answer 404 "no longer available to new users" for this
+  // key (2026-09-22), so they only burned an attempt each. gemini-3-flash-preview
+  // graded the same two test questions correctly in ~17-20s.
+  : [process.env.GEMINI_MODEL || "gemini-3.5-flash", "gemini-3-flash-preview"];
 const GEMINI_LAST_RESORT_MODEL = "gemini-3.5-flash-lite";
 // Matches Google's own real observed limit for this key/model ("limit:
 // 20" in the live 429 body, confirmed 2026-09-15), not a guessed/assumed
@@ -730,10 +736,20 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
   let lastError;
   if (process.env.GEMINI_API_KEY) {
     for (const model of shuffled(GEMINI_MODEL_POOL)) {
-      try {
-        return await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, model, taskText);
-      } catch (e) {
-        lastError = e;
+      // "High demand" 503s are momentary spikes: one immediate retry on the
+      // same model is far cheaper than falling through to the slow OpenRouter
+      // path. Quota (429) and "no longer available" (404) are not retried.
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const t0 = Date.now();
+        try {
+          const r = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, model, taskText);
+          console.log(`grading: ${model} ok in ${Date.now() - t0}ms`);
+          return r;
+        } catch (e) {
+          console.log(`grading: ${model} failed after ${Date.now() - t0}ms: ${String(e.message).slice(0, 120)}`);
+          lastError = e;
+          if (!/\(503\)/.test(String(e.message))) break;
+        }
       }
     }
   }
@@ -774,6 +790,10 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
 // per paperId, since re-running the Python extractor per submitted answer
 // would take seconds each time.
 const yearlyDigitizeCache = new Map();
+function rememberYearlyDigitize(paperId, result) {
+  yearlyDigitizeCache.set(paperId, result);
+  if (yearlyDigitizeCache.size > 20) yearlyDigitizeCache.delete(yearlyDigitizeCache.keys().next().value); // bound memory: each entry holds base64 crops
+}
 async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   const paper = findYearlyPaperById(paperId);
   if (!paper || !isYearlyReadyComponent(paper.component)) {
@@ -782,7 +802,7 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   let digitized = yearlyDigitizeCache.get(paperId);
   if (!digitized) {
     digitized = await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
-    yearlyDigitizeCache.set(paperId, digitized);
+    rememberYearlyDigitize(paperId, digitized);
   }
   const answer = (digitized.answers || []).find((a) => String(a.questionNumber) === questionNumber);
   // Official yearly mark schemes list marks as bare numbers in a table, so
@@ -1548,9 +1568,16 @@ const server = http.createServer(async (req, res) => {
       // exact same file pair graded 40/40 correctly via a direct
       // extract_mcq.py CLI call. No yearly MCQ paper has ever been
       // correctly graded through this endpoint until this fix.
-      const result = paper.component === "Paper 2: Multiple Choice (Extended)"
-        ? await digitizeFromPaths(paper.qpPath, paper.msPath)
-        : await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
+      let result;
+      if (paper.component === "Paper 2: Multiple Choice (Extended)") {
+        result = await digitizeFromPaths(paper.qpPath, paper.msPath);
+      } else {
+        // Shared with gradeYearlyQuestion, so the first "Submit answer" does
+        // not re-run the Python extractor (seconds, on top of grading time).
+        result = yearlyDigitizeCache.get(body.paperId)
+          || await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
+        rememberYearlyDigitize(body.paperId, result);
+      }
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {
@@ -1756,11 +1783,19 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: "questionNumber and either paperId (yearly paper) or qpId and msId (topical paper) are required." }));
         return;
       }
-      const result = await runGradingQueued(() =>
+      // Cloudflare quick tunnels cut any response that takes over ~100s and
+      // return an HTML page the site cannot parse. Answer with a clear JSON
+      // error before that happens.
+      const gradingWork = runGradingQueued(() =>
         body.paperId
           ? gradeYearlyQuestion(String(body.paperId), String(body.questionNumber), String(body.studentAnswer || ""))
           : gradeStructuredQuestion(body.qpId, body.msId, String(body.questionNumber), String(body.studentAnswer || ""))
       );
+      gradingWork.catch(() => {}); // a late failure after the deadline must not be an unhandled rejection
+      const result = await Promise.race([
+        gradingWork,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Grading is taking too long right now. Please press Submit answer again in a moment.")), GRADING_DEADLINE_MS)),
+      ]);
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
     } catch (e) {

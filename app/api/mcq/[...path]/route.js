@@ -132,7 +132,7 @@ export async function GET(req, { params }) {
 
   const body = await upstream.json().catch(() => null);
   if (body === null) {
-    return NextResponse.json({ error: "Extraction service returned an invalid response." }, { status: 502 });
+    return NextResponse.json({ error: `Question Solver did not answer properly (it may be restarting or busy; upstream status ${upstream.status}). Wait a minute and try again.` }, { status: 502 });
   }
 
   if (subPath === "library" && upstream.ok) {
@@ -172,7 +172,7 @@ export async function POST(req, { params }) {
   }
   const body = await upstream.json().catch(() => null);
   if (body === null) {
-    return NextResponse.json({ error: "Extraction service returned an invalid response." }, { status: 502 });
+    return NextResponse.json({ error: `Question Solver did not answer properly (it may be restarting or busy; upstream status ${upstream.status}). Wait a minute and try again.` }, { status: 502 });
   }
   return NextResponse.json(body, { status: upstream.status });
 }
