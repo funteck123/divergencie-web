@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { requireSession } from "@/lib/authz";
-import { getSyllabusViewerUrl } from "@/lib/mcqConfig";
+import { requireSession, requireManagement } from "@/lib/authz";
+import { getSyllabusViewerUrl, setSyllabusViewerUrl } from "@/lib/mcqConfig";
 
 // Syllabus Viewer's own Cloudflare tunnel URL, moved out of a hardcoded
 // const in components/ResourcesSection.jsx (2026-09-14) into the same
@@ -12,5 +12,20 @@ export async function GET(req) {
   if (error) return error;
 
   const url = await getSyllabusViewerUrl();
+  return NextResponse.json({ url });
+}
+
+// body: { url: string }. Same shape as PATCH /api/mcq-config; used by
+// scripts/ops/question-solver-supervisor.sh to publish a fresh tunnel URL
+// after every restart (TKT-0262).
+export async function PATCH(req) {
+  const { error } = requireManagement(req);
+  if (error) return error;
+
+  const { url } = await req.json();
+  if (!url || typeof url !== "string" || !/^https?:\/\//.test(url)) {
+    return NextResponse.json({ error: "url must be a non-empty http(s) URL." }, { status: 400 });
+  }
+  await setSyllabusViewerUrl(url.replace(/\/+$/, ""));
   return NextResponse.json({ url });
 }
