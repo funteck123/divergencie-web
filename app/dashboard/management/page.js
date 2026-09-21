@@ -7106,6 +7106,23 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
   const [holdSaving, setHoldSaving] = useState(false);
   const [unholding, setUnholding] = useState(false);
 
+  // Internal notes: append-only, see PATCH /api/tickets action "note".
+  const [noting, setNoting] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
+
+  async function confirmNote() {
+    if (!noteDraft.trim()) return;
+    setNoteSaving(true);
+    try {
+      await onSetState(t.TicketID, "note", { noteText: noteDraft });
+      setNoteDraft("");
+      setNoting(false);
+    } finally {
+      setNoteSaving(false);
+    }
+  }
+
   async function reopen() {
     setReopening(true);
     try {
@@ -7216,6 +7233,41 @@ function TicketRow({ ticket: t, nameOf, onSetState, onEdit }) {
           </div>
         ) : (
           <span style={{ whiteSpace: "pre-wrap" }}>{t.Message}</span>
+        )}
+        {Array.isArray(t.Notes) && t.Notes.length > 0 && (
+          <div className="space-y-1" style={{ marginTop: 8 }}>
+            {t.Notes.map((n, i) => (
+              <div key={i} className="text-sm" style={{ borderLeft: "3px solid var(--border)", paddingLeft: 8, whiteSpace: "pre-wrap" }}>
+                <span style={{ color: "var(--muted)" }}>{nameOf(n.By)} · {formatDateTime(n.At)}</span>
+                <div>{n.Text}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {noting ? (
+          <div className="space-y-1" style={{ marginTop: 8 }}>
+            <textarea
+              className="field"
+              style={{ width: "100%", minHeight: 60 }}
+              placeholder="Add a note…"
+              value={noteDraft}
+              onChange={(e) => setNoteDraft(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <button className="btn" type="button" disabled={noteSaving || !noteDraft.trim()} onClick={confirmNote}>
+                {noteSaving ? "Saving…" : "Add note"}
+              </button>
+              <button className="btn-ghost" type="button" onClick={() => { setNoting(false); setNoteDraft(""); }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          !editing && (
+            <div style={{ marginTop: 6 }}>
+              <button className="btn-ghost" type="button" onClick={() => setNoting(true)}>+ Note</button>
+            </div>
+          )
         )}
       </td>
       <td>

@@ -53,6 +53,7 @@ export async function POST(req) {
 }
 
 // body: { ticketId, action?: "close" | "reopen" | "edit" | "hold" | "unhold", message?, attachmentUrl?, closeMessage?, holdReason? }
+// "note" appends { At, By, Text } to ticket.Notes (body: noteText).
 // action defaults to "close" (unchanged behavior for existing callers).
 // close/reopen are idempotent: closing an already-closed ticket or
 // reopening an already-open one just returns it unchanged rather than
@@ -70,10 +71,10 @@ export async function PATCH(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { ticketId, action, message, attachmentUrl, closeMessage, holdReason } = await req.json();
+  const { ticketId, action, message, attachmentUrl, closeMessage, holdReason, noteText } = await req.json();
   if (!ticketId) return NextResponse.json({ error: "ticketId is required." }, { status: 400 });
-  if (action !== undefined && !["close", "reopen", "edit", "hold", "unhold"].includes(action)) {
-    return NextResponse.json({ error: "action must be close, reopen, edit, hold, or unhold." }, { status: 400 });
+  if (action !== undefined && !["close", "reopen", "edit", "hold", "unhold", "note"].includes(action)) {
+    return NextResponse.json({ error: "action must be close, reopen, edit, hold, unhold, or note." }, { status: 400 });
   }
 
   const db = await readDB();
@@ -118,6 +119,17 @@ export async function PATCH(req) {
     ticket.OnHoldReason = (holdReason || "").trim();
     await writeDB(db, ["tickets"]);
     await logAudit({ actorUserId: session.userId, action: "hold", entityType: "Ticket", entityId: ticket.TicketID, summary: `Put ticket ${ticket.TicketID} on hold${ticket.OnHoldReason ? `: ${ticket.OnHoldReason}` : ""}` });
+  } else if (action === "note") {
+    // Append-only internal note (Management-only field, never returned to
+    // the sender). Separate from "edit" so adding context never rewrites
+    // what the reporter actually wrote.
+    const text = (noteText || "").trim();
+    if (!text) return NextResponse.json({ error: "noteText is required to add a note." }, { status: 400 });
+    if (text.length > 4000) return NextResponse.json({ error: "noteText must be 4000 characters or fewer." }, { status: 400 });
+    ticket.Notes = Array.isArray(ticket.Notes) ? ticket.Notes : [];
+    ticket.Notes.push({ At: new Date().toISOString(), By: session.userId, Text: text });
+    await writeDB(db, ["tickets"]);
+    await logAudit({ actorUserId: session.userId, action: "note", entityType: "Ticket", entityId: ticket.TicketID, summary: `Added a note to ticket ${ticket.TicketID}` });
   } else if (action === "unhold") {
     ticket.OnHold = false;
     ticket.OnHoldReason = "";
