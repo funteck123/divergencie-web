@@ -1209,12 +1209,9 @@ async function submitStructuredAnswer(questionNumber) {
     const res = await fetch("/api/mcq/grade-structured-question", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        qpId: currentStructuredPaper.qpId,
-        msId: currentStructuredPaper.msId,
-        questionNumber,
-        studentAnswer,
-      }),
+      body: JSON.stringify(currentStructuredPaper.paperId
+        ? { paperId: currentStructuredPaper.paperId, questionNumber, studentAnswer }
+        : { qpId: currentStructuredPaper.qpId, msId: currentStructuredPaper.msId, questionNumber, studentAnswer }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);

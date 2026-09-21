@@ -762,10 +762,38 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
   const imageB64 = fs.readFileSync(path.join(REPO_ROOT, answer.imagePath)).toString("base64");
   const mimeType = mimeTypeForImagePath(answer.imagePath);
   const parsed = await gradeStructuredQuestionAnswer(imageB64, mimeType, answer.marks, studentAnswer);
+  return finalizeStructuredGrade(parsed, answer.marks, studentAnswer);
+}
 
+// Yearly papers are not in the structured database: their crops come from
+// digitizeStructuredFromPaths (base64 PNG per question) and are cached here
+// per paperId, since re-running the Python extractor per submitted answer
+// would take seconds each time.
+const yearlyDigitizeCache = new Map();
+async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
+  const paper = findYearlyPaperById(paperId);
+  if (!paper || !isYearlyReadyComponent(paper.component)) {
+    return { ungradable: true, reason: "Unknown or not-yet-supported paperId." };
+  }
+  let digitized = yearlyDigitizeCache.get(paperId);
+  if (!digitized) {
+    digitized = await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
+    yearlyDigitizeCache.set(paperId, digitized);
+  }
+  const answer = (digitized.answers || []).find((a) => String(a.questionNumber) === questionNumber);
+  if (!answer || !answer.marks || !answer.image) {
+    return { ungradable: true, reason: "This question's mark allocation couldn't be reliably read for auto-grading." };
+  }
+  const m = /^data:([^;]+);base64,(.*)$/.exec(answer.image);
+  if (!m) return { ungradable: true, reason: "This question's mark scheme image could not be read." };
+  const parsed = await gradeStructuredQuestionAnswer(m[2], m[1], answer.marks, studentAnswer);
+  return finalizeStructuredGrade(parsed, answer.marks, studentAnswer);
+}
+
+function finalizeStructuredGrade(parsed, marks, studentAnswer) {
   // Never trust an out-of-range score from a free model outright -- clamp
   // to the shape the UI actually expects rather than pass through garbage.
-  const marksAwarded = Math.min(answer.marks, Math.max(0, Number(parsed.marksAwarded) || 0));
+  const marksAwarded = Math.min(marks, Math.max(0, Number(parsed.marksAwarded) || 0));
   // Defensive defaults: a model that skips the schema (OpenRouter has no
   // native schema enforcement, only the prompt's own instruction) could
   // omit the new fields -- fall back to the student's raw input text and
@@ -792,7 +820,7 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
   return {
     ungradable: false,
     marksAwarded,
-    marksAvailable: answer.marks,
+    marksAvailable: marks,
     remark: typeof parsed.remark === "string" ? parsed.remark : "",
     studentAnswerVerbatim: typeof parsed.studentAnswerVerbatim === "string" ? parsed.studentAnswerVerbatim : (studentAnswer || "(left blank)"),
     lineFeedback,
@@ -801,6 +829,7 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
     ...(parsed.lowConfidence ? { lowConfidence: true } : {}),
   };
 }
+
 
 // Cache-first, exactly like the MCQ path's digitizeFromDriveIds above --
 // only a paper NOT yet built by build_structured_database.py pays for a
@@ -1688,13 +1717,15 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     try {
-      if (!body.qpId || !body.msId || !body.questionNumber) {
+      if (!body.questionNumber || (!body.paperId && (!body.qpId || !body.msId))) {
         res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "qpId, msId, and questionNumber are required." }));
+        res.end(JSON.stringify({ error: "questionNumber and either paperId (yearly paper) or qpId and msId (topical paper) are required." }));
         return;
       }
       const result = await runGradingQueued(() =>
-        gradeStructuredQuestion(body.qpId, body.msId, String(body.questionNumber), String(body.studentAnswer || ""))
+        body.paperId
+          ? gradeYearlyQuestion(String(body.paperId), String(body.questionNumber), String(body.studentAnswer || ""))
+          : gradeStructuredQuestion(body.qpId, body.msId, String(body.questionNumber), String(body.studentAnswer || ""))
       );
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(result));
