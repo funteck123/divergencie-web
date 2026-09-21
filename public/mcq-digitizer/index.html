@@ -1296,15 +1296,31 @@ async function submitStructuredAnswer(questionNumber) {
   statusEl.className = "hint structured-submit-status grading";
   statusEl.textContent = "Grading…";
   try {
+    const payload = currentStructuredPaper.paperId
+      ? { paperId: currentStructuredPaper.paperId, questionNumber, studentAnswer }
+      : { qpId: currentStructuredPaper.qpId, msId: currentStructuredPaper.msId, questionNumber, studentAnswer };
+    // Grading runs as a background job (a single request can outlast the
+    // tunnel's ~100s limit when the AI provider is slow); poll until done.
     const res = await fetch("/api/mcq/grade-structured-question", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(currentStructuredPaper.paperId
-        ? { paperId: currentStructuredPaper.paperId, questionNumber, studentAnswer }
-        : { qpId: currentStructuredPaper.qpId, msId: currentStructuredPaper.msId, questionNumber, studentAnswer }),
+      body: JSON.stringify({ ...payload, async: true }),
     });
-    const data = await res.json();
+    let data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    if (data.jobId) {
+      const startedAt = Date.now();
+      for (;;) {
+        await new Promise((r) => setTimeout(r, 2000));
+        statusEl.textContent = `Grading… ${Math.round((Date.now() - startedAt) / 1000)}s`;
+        const pr = await fetch(`/api/mcq/grade-structured-status?jobId=${encodeURIComponent(data.jobId)}`);
+        const job = await pr.json();
+        if (!pr.ok) throw new Error(job.error || `HTTP ${pr.status}`);
+        if (job.status === "done") { data = job.result; break; }
+        if (job.status === "error") throw new Error(job.error);
+        if (Date.now() - startedAt > 6 * 60 * 1000) throw new Error("Grading took too long. Please press Submit answer again.");
+      }
+    }
     structuredGraded[questionNumber] = { questionNumber, ...data };
     structuredSubmittedText[questionNumber] = studentAnswer;
     statusEl.className = "hint structured-submit-status submitted";

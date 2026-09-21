@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // Standalone server for the mcq-digitizer prototype -- no framework, no
 // LLM, no API key anywhere in this tool. MCQ grading needs zero judgment
 // (a selected letter either matches the answer key or it doesn't), so
@@ -789,6 +790,23 @@ async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer
 // digitizeStructuredFromPaths (base64 PNG per question) and are cached here
 // per paperId, since re-running the Python extractor per submitted answer
 // would take seconds each time.
+// Background grading jobs. A single grading call can outlast the ~100s
+// Cloudflare tunnel limit when Google is slow, so the client starts a job and
+// polls for it instead of holding one request open.
+const gradingJobs = new Map(); // jobId -> { status, result?, error?, createdAt }
+const GRADING_JOB_HARD_CAP_MS = 5 * 60 * 1000;
+function startGradingJob(work) {
+  const jobId = crypto.randomUUID();
+  const job = { status: "pending", createdAt: Date.now() };
+  gradingJobs.set(jobId, job);
+  for (const [id, j] of gradingJobs) if (Date.now() - j.createdAt > 15 * 60 * 1000) gradingJobs.delete(id);
+  Promise.race([
+    work(),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Grading took too long. Please press Submit answer again.")), GRADING_JOB_HARD_CAP_MS)),
+  ]).then((result) => { job.status = "done"; job.result = result; })
+    .catch((e) => { job.status = "error"; job.error = e.message; });
+  return jobId;
+}
 const yearlyDigitizeCache = new Map();
 function rememberYearlyDigitize(paperId, result) {
   yearlyDigitizeCache.set(paperId, result);
@@ -1763,6 +1781,19 @@ const server = http.createServer(async (req, res) => {
   // (per explicit direction 2026-09-05); this endpoint only ever reports
   // the raw marksAwarded/marksAvailable, the pass/fail cutoff itself is
   // the frontend's call to make when it renders the result.
+  if (req.method === "GET" && req.url.startsWith("/api/grade-structured-status")) {
+    const jobId = new URL(req.url, "http://x").searchParams.get("jobId");
+    const job = jobId && gradingJobs.get(jobId);
+    if (!job) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Unknown or expired grading job. Please submit the answer again." }));
+      return;
+    }
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(job.status === "pending" ? { status: "pending" } : job.status === "done" ? { status: "done", result: job.result } : { status: "error", error: job.error }));
+    return;
+  }
+
   if (req.method === "POST" && req.url === "/api/grade-structured-question") {
     let body;
     try {
@@ -1781,6 +1812,16 @@ const server = http.createServer(async (req, res) => {
       if (!body.questionNumber || (!body.paperId && (!body.qpId || !body.msId))) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "questionNumber and either paperId (yearly paper) or qpId and msId (topical paper) are required." }));
+        return;
+      }
+      if (body.async) {
+        const jobId = startGradingJob(() => runGradingQueued(() =>
+          body.paperId
+            ? gradeYearlyQuestion(String(body.paperId), String(body.questionNumber), String(body.studentAnswer || ""))
+            : gradeStructuredQuestion(body.qpId, body.msId, String(body.questionNumber), String(body.studentAnswer || ""))
+        ));
+        res.writeHead(202, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ jobId }));
         return;
       }
       // Cloudflare quick tunnels cut any response that takes over ~100s and
