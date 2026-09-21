@@ -793,11 +793,14 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   // question paper's prose "up to N marks for ..." (English writing tasks,
   // where content and language marks are stated separately).
   const question = (digitized.questions || []).find((q) => String(q.questionNumber) === questionNumber);
-  const maxTotal = /Max(?:imum)?\s+total\s+for\s+exercises?\s*\d+\s*:?\s*(\d+)\s*marks?/i.exec((answer && answer.text) || "");
+  const maxTotal = /Max(?:imum)?\s+(?:overall\s+)?total\s+for\s+exercises?\s*\d+\s*:?\s*(\d+)\s*marks?/i.exec((answer && answer.text) || "");
+  const totalTag = (t) => { const m = /\[\s*Total\s*:?\s*(\d+)/i.exec(t || ""); return m ? Number(m[1]) : 0; };
   const proseMarks = ((question && question.text) || "").match(/up to (\d+) marks?/gi);
   const marks = (answer && answer.marks)
     || (maxTotal && Number(maxTotal[1]))
+    || totalTag(answer && answer.text)
     || (question && question.marks)
+    || totalTag(question && question.text)
     || (proseMarks ? proseMarks.reduce((sum, m) => sum + Number(/\d+/.exec(m)[0]), 0) : 0);
   if (!answer || !marks || !answer.image) {
     return { ungradable: true, reason: "This question's mark allocation couldn't be reliably read for auto-grading." };
@@ -806,7 +809,10 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   // Exercise 7's criteria table, "apply to both exercises") carries no
   // rubric of its own: grade against the next block's image instead.
   let rubricImage = answer.image;
-  if (((answer.text || "").trim().length < 150)) {
+  // Only for writing tasks (the question paper states "up to N marks for
+  // ..."): short scheme blocks elsewhere, like Listening's one-line answer
+  // lists, are real answers and must not be swapped for a neighbour's.
+  if (proseMarks && ((answer.text || "").trim().length < 150)) {
     const idx = digitized.answers.indexOf(answer);
     const next = digitized.answers[idx + 1];
     if (next && next.image) rubricImage = next.image;
