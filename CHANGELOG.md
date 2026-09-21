@@ -32,6 +32,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 ### Bug Fixes
 
+* **site (TKT-0262):** pages showed completely unstyled on older Safari (macOS Big Sur and earlier, iOS 15.3 and older). Tailwind v4 puts about 77% of the site CSS inside `@layer` blocks, which those browsers ignore entirely. The build now flattens the layers (`@csstools/postcss-cascade-layers` after Tailwind in `postcss.config.mjs`), so the built stylesheet has no `@layer`. Checked in Chromium against production: home (only the background video frame differs), pricing and login render identically. Not yet checked on a real old Safari.
+
 * **mcq-digitizer (TKT-0268):** "Submit answer" on a yearly past paper in Test mode failed with "qpId, msId, and questionNumber are required." The grader only understood topical worksheet ids. `POST /api/grade-structured-question` now also accepts a yearly `paperId`; the server crops that paper's own mark scheme (cached per paper) and grades against it, the same way as topical papers. Live-tested on a yearly English paper (9 marks, full breakdown returned) and a topical paper (unchanged).
 
 * **mcq-digitizer (TKT-0267):** removed the header line "question paper + mark scheme → instant multiple-choice quiz. No LLM, anywhere." It was wrong: structured-question grading uses an AI model.
