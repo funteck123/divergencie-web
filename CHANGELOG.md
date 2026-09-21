@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 ### Features
 
+* **mcq-digitizer (TKT-0269):** Test mode now autosaves the in-progress attempt (chosen answers, flags, written answers, and the timer) in the browser every few seconds and whenever the tab is hidden or closed. If a tab crashes or closes mid-test, reopening Test mode on the same paper offers "Resume it?". The save is cleared on submit or cancel, ignored after 24 hours, and only reused for the same account and paper. It is per browser, not synced across devices.
+
 * **tickets:** Management can now append internal notes to any ticket ("+ Note" under the ticket text in the Tickets tab). Notes are append-only, timestamped, attributed to the author, audit-logged, and never shown to the person who reported the ticket. Backed by a new `note` action on `PATCH /api/tickets`.
 
 * **ops (TKT-0262):** a supervisor (`scripts/ops/question-solver-supervisor.sh`, run as a systemd user unit) now keeps the Question Solver and Syllabus Viewer servers and their Cloudflare tunnels running, restarts any that die, and publishes each new tunnel URL to production config automatically. Before this, a machine reboot left both tools down (production showed "Extraction service unreachable") until someone restarted them by hand and pasted the new URL. Added `PATCH /api/syllabus-config` (Management only) for the URL sync. Live-tested: killing the tunnel or the server recovers in under a minute with no manual step.

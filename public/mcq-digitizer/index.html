@@ -519,6 +519,7 @@ document.getElementById("timerToggleBtn").addEventListener("click", () => {
 // (never graded), so it leaves immediately.
 document.getElementById("cancelQuizBtn").addEventListener("click", () => {
   if ((quizMode === "test" || quizMode === "mistakes") && !confirm("Cancel this attempt? Your answers won't be saved.")) return;
+  autosaveClear();
   pauseTimer();
   resetToLibrary();
 });
@@ -529,6 +530,93 @@ document.getElementById("cancelQuizBtn").addEventListener("click", () => {
 // locked in for the rest of that attempt (only "Digitize another paper"
 // / "Done practicing" resets it).
 let quizMode = null; // "practice" | "test"
+
+// TKT-0269: autosave of an in-progress Test-mode attempt (MCQ and written),
+// so a crashed or closed tab doesn't lose every answer. One slot in this
+// browser's localStorage, keyed by account + paper; offered back as a
+// "Resume?" prompt when the same student opens Test mode on the same paper
+// again. Same-device only by design (no server round-trip). Cleared on
+// submit / cancel / leaving the paper, and ignored after 24h.
+const AUTOSAVE_KEY = "mcqTestAutosave.v1";
+const AUTOSAVE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+let autosaveActive = null; // "mcq" | "structured" while a Test attempt is running
+let autosaveDebounce = null;
+
+function autosaveRead() {
+  try { return JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { return null; }
+}
+function autosaveWrite(rec) {
+  try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(rec)); } catch { /* private mode / quota: autosave is best-effort */ }
+}
+function autosaveClear() {
+  clearTimeout(autosaveDebounce);
+  if (!autosaveActive) return;
+  autosaveActive = null;
+  try { localStorage.removeItem(AUTOSAVE_KEY); } catch { /* best-effort */ }
+}
+function autosaveNow() {
+  if (!autosaveActive || !currentAttemptMeta) return;
+  const rec = { v: 1, acct: accountId || "", kind: autosaveActive, paperKey: currentAttemptMeta.paperId, savedAt: Date.now() };
+  if (autosaveActive === "mcq") {
+    rec.elapsed = timerSeconds;
+    rec.answers = {};
+    quiz.forEach((q) => {
+      const sel = document.querySelector(`input[name="q${CSS.escape(q.questionNumber)}"]:checked`);
+      if (sel) rec.answers[q.questionNumber] = sel.value;
+    });
+    rec.flags = [...document.querySelectorAll(".flag-checkbox:checked")].map((cb) => cb.dataset.qnum);
+  } else {
+    rec.elapsed = structuredTimerSeconds;
+    rec.texts = {};
+    document.querySelectorAll("#structuredItems .structured-answer-box").forEach((ta) => {
+      if (ta.value.trim()) rec.texts[ta.dataset.qnum] = ta.value;
+    });
+  }
+  autosaveWrite(rec);
+}
+function scheduleAutosave() {
+  if (!autosaveActive) return;
+  clearTimeout(autosaveDebounce);
+  autosaveDebounce = setTimeout(autosaveNow, 400);
+}
+// Called right after a Test attempt's questions are rendered. Returns the
+// saved elapsed seconds if the student chose to resume, else null.
+function autosaveBegin(kind) {
+  autosaveActive = null;
+  const rec = autosaveRead();
+  let resumed = null;
+  if (rec && rec.v === 1 && rec.kind === kind && rec.acct === (accountId || "")
+      && currentAttemptMeta && rec.paperKey === currentAttemptMeta.paperId
+      && Date.now() - rec.savedAt < AUTOSAVE_MAX_AGE_MS) {
+    const mins = Math.max(1, Math.round((Date.now() - rec.savedAt) / 60000));
+    if (confirm(`You have an unfinished attempt on this paper, saved ${mins} min ago. Resume it?\n\nOK = resume, Cancel = start fresh.`)) {
+      if (kind === "mcq") {
+        Object.entries(rec.answers || {}).forEach(([qn, letter]) => {
+          const input = document.querySelector(`input[name="q${CSS.escape(qn)}"][value="${CSS.escape(letter)}"]`);
+          if (input) { input.checked = true; input.dispatchEvent(new Event("change", { bubbles: true })); }
+        });
+        (rec.flags || []).forEach((qn) => {
+          const cb = document.querySelector(`.flag-checkbox[data-qnum="${CSS.escape(qn)}"]`);
+          if (cb) { cb.checked = true; cb.dispatchEvent(new Event("change", { bubbles: true })); }
+        });
+      } else {
+        Object.entries(rec.texts || {}).forEach(([qn, text]) => {
+          const ta = document.querySelector(`#structuredItems .structured-answer-box[data-qnum="${CSS.escape(qn)}"]`);
+          if (ta) { ta.value = text; ta.dispatchEvent(new Event("input", { bubbles: true })); }
+        });
+      }
+      resumed = rec.elapsed || 0;
+    }
+  }
+  autosaveActive = kind;
+  autosaveNow();
+  return resumed;
+}
+document.getElementById("quizItems").addEventListener("change", scheduleAutosave);
+document.getElementById("structuredItems").addEventListener("input", scheduleAutosave);
+setInterval(autosaveNow, 10000);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") autosaveNow(); });
+window.addEventListener("pagehide", autosaveNow);
 
 function applyDigitizeResult(data) {
   quiz = data.questions;
@@ -598,6 +686,8 @@ document.getElementById("startTestBtn").addEventListener("click", () => {
   renderQuiz();
   applyInstantCheckClass();
   resetTimer();
+  const resumedElapsed = autosaveBegin("mcq");
+  if (resumedElapsed) { timerSeconds = resumedElapsed; renderTimer(); }
   startTimer();
 });
 document.getElementById("finishPracticeBtn").addEventListener("click", () => {
@@ -1264,6 +1354,7 @@ document.getElementById("structuredTimerToggleBtn").addEventListener("click", ()
 document.getElementById("structuredCancelQuizBtn").addEventListener("click", () => {
   const isTestMode = document.getElementById("structuredSubmitTestBtn").style.display !== "none";
   if (isTestMode && !confirm("Cancel this attempt? Your answers won't be saved.")) return;
+  autosaveClear();
   pauseStructuredTimer();
   resetStructuredToLibrary();
 });
@@ -1335,6 +1426,7 @@ function renderStructuredItems(mode) {
 }
 
 function resetStructuredToLibrary() {
+  autosaveClear();
   currentAttemptMeta = null;
   document.getElementById("structuredModeSelectCard").style.display = "block";
   document.getElementById("structuredTestHeader").style.display = "none";
@@ -1464,6 +1556,8 @@ document.getElementById("structuredStartTestBtn").addEventListener("click", () =
   document.getElementById("diagramHintBox").style.display = "block";
   renderStructuredItems("test");
   resetStructuredTimer();
+  const resumedElapsed = autosaveBegin("structured");
+  if (resumedElapsed) { structuredTimerSeconds = resumedElapsed; renderStructuredTimer(); }
   startStructuredTimer();
 });
 
@@ -1553,6 +1647,7 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
     `;
   }).join("") || `<p class="hint">You didn't submit an answer for any question.</p>`;
 
+  autosaveClear(); // graded and on screen: nothing left to recover
   showStage(6);
 
   // Score tracking -- mirrors the MCQ Test-mode submit handler exactly
@@ -1904,6 +1999,7 @@ function postMistakes({ subject, chapter, paperId, items, attemptId }) {
 }
 
 document.getElementById("submitQuizBtn").addEventListener("click", () => {
+  autosaveClear();
   // Grading is entirely local, instant, no network call -- no LLM
   // anywhere in this tool, comparing a selected letter to correctAnswer
   // is the whole job.
@@ -1996,6 +2092,7 @@ document.getElementById("submitQuizBtn").addEventListener("click", () => {
 });
 
 function resetToLibrary() {
+  autosaveClear();
   quiz = [];
   quizMode = null;
   currentAttemptMeta = null;
