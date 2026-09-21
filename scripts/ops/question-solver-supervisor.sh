@@ -89,5 +89,11 @@ tick() {
   done
 }
 
+# The digitizer shells out to python3 (PyMuPDF). systemd's default PATH finds the
+# system python3, which has no PyMuPDF, so every PDF fails with a generic error.
+if ! python3 -c "import fitz" 2>/dev/null; then
+  log "WARNING: python3 ($(command -v python3)) cannot import PyMuPDF; set PATH in the unit to include the python that has it"
+fi
+
 log "supervisor starting (repo $REPO)"
 while true; do tick; sleep "$INTERVAL"; done

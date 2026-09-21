@@ -9,7 +9,8 @@ Setup on the host (WSL, systemd enabled):
 1. `~/.config/divergencie/tunnel-sync.env` (chmod 600): `SITE`, `MGMT_USER`, `MGMT_PASS` (a Management login).
 2. `~/.config/systemd/user/question-solver.service`: `ExecStart` = this script, `Restart=always`,
    `KillMode=control-group`, `Environment=NODE_BIN=<absolute path to node>` (systemd does not see nvm's PATH),
-   `Environment=ENABLED_SERVICES=mcq syllabus` (default is both).
+   `Environment=ENABLED_SERVICES=mcq syllabus` (default is both), and `Environment=PATH=...` including the python that has PyMuPDF
+   (miniconda3/bin here). Without it the digitizer runs the system python3 and every PDF fails with "Failed to process the uploaded PDFs."
 3. `systemctl --user enable --now question-solver.service`; `loginctl enable-linger $USER`.
 4. Windows must start WSL at boot (Task Scheduler: `wsl.exe -d Ubuntu -- sleep infinity` at logon/startup),
    otherwise nothing runs after a Windows reboot.
