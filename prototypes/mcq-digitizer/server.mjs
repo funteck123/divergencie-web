@@ -781,13 +781,21 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
     yearlyDigitizeCache.set(paperId, digitized);
   }
   const answer = (digitized.answers || []).find((a) => String(a.questionNumber) === questionNumber);
-  if (!answer || !answer.marks || !answer.image) {
+  // Official yearly mark schemes list marks as bare numbers in a table, so
+  // the answer block's own bracket count reads 0 (TKT: every Physics/
+  // Chemistry Theory and Maths question came back "not auto-gradable"). The
+  // question paper shows "[N]" after every part, so fall back to that; the
+  // question totals for Physics/Chemistry/Maths Paper 4 sum to the paper's
+  // real total (80 / 80 / 130).
+  const question = (digitized.questions || []).find((q) => String(q.questionNumber) === questionNumber);
+  const marks = (answer && answer.marks) || (question && question.marks) || 0;
+  if (!answer || !marks || !answer.image) {
     return { ungradable: true, reason: "This question's mark allocation couldn't be reliably read for auto-grading." };
   }
   const m = /^data:([^;]+);base64,(.*)$/.exec(answer.image);
   if (!m) return { ungradable: true, reason: "This question's mark scheme image could not be read." };
-  const parsed = await gradeStructuredQuestionAnswer(m[2], m[1], answer.marks, studentAnswer);
-  return finalizeStructuredGrade(parsed, answer.marks, studentAnswer);
+  const parsed = await gradeStructuredQuestionAnswer(m[2], m[1], marks, studentAnswer);
+  return finalizeStructuredGrade(parsed, marks, studentAnswer);
 }
 
 function finalizeStructuredGrade(parsed, marks, studentAnswer) {
