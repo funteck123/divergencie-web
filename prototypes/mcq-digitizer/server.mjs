@@ -529,6 +529,14 @@ const GEMINI_RPD_LIMIT = 1500;
 // Google's side, so a shared single counter would have falsely throttled
 // model B just because model A was busy.
 const geminiRequestTimestampsByModel = new Map();
+// A 429 here is Google's real account-level quota, not just our own RPM
+// self-throttle -- confirmed live 2026-09-22: dozens of calls a minute
+// apart still 429'd well under GEMINI_RPM_LIMIT/GEMINI_RPD_LIMIT.
+// Skipping a model for a few minutes after it 429s avoids paying its full
+// RPM wait (up to 60s) again immediately, only to hit the same 429.
+const GEMINI_QUOTA_COOLDOWN_MS = 3 * 60 * 1000;
+const geminiQuotaCooldownUntil = new Map();
+
 const geminiDayCountByModel = new Map();
 let geminiDayKey = null;
 
@@ -740,6 +748,11 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
       // "High demand" 503s are momentary spikes: one immediate retry on the
       // same model is far cheaper than falling through to the slow OpenRouter
       // path. Quota (429) and "no longer available" (404) are not retried.
+      const cooldownUntil = geminiQuotaCooldownUntil.get(model) || 0;
+      if (Date.now() < cooldownUntil) {
+        console.log(`grading: ${model} skipped, on quota cooldown for ${Math.round((cooldownUntil - Date.now()) / 1000)}s more`);
+        continue;
+      }
       for (let attempt = 0; attempt < 2; attempt++) {
         const t0 = Date.now();
         try {
@@ -749,6 +762,10 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
         } catch (e) {
           console.log(`grading: ${model} failed after ${Date.now() - t0}ms: ${String(e.message).slice(0, 120)}`);
           lastError = e;
+          if (/\(429\)/.test(String(e.message))) {
+            geminiQuotaCooldownUntil.set(model, Date.now() + GEMINI_QUOTA_COOLDOWN_MS);
+            break;
+          }
           if (!/\(503\)/.test(String(e.message))) break;
         }
       }
