@@ -7,6 +7,7 @@ import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES } from "@/lib/
 import { generatePassword, hashPassword } from "@/lib/passwords";
 import { createTimesheet } from "@/lib/timesheetAutomator";
 import { createProgressTracker } from "@/lib/progressTrackerAutomator";
+import { gatherAccountRelatedRecords, deleteGatheredRecords, writeDeletionBackup } from "@/lib/accountDeletion";
 
 // Re-exported for existing importers (e.g. api/paychecks/pdf/route.js),
 // lib/accountTypes.js is the single source of truth now, shared with the
@@ -469,22 +470,58 @@ function userHasHistory(db, userId) {
   );
 }
 
+// body: { userId, force?: boolean }. Default (force omitted/false): unchanged
+// behavior, refuses outright if userHasHistory(). force: true (TKT-0278) is
+// the new second tier -- cascades through EVERY real reference to this
+// account (see lib/accountDeletion.js's own REFERENCING_COLLECTIONS/
+// DIRECT_TABLES lists), but only after writing everything about to be
+// removed into deleted_account_backups, so it's reversible via
+// POST /api/users/restore-deleted, not a one-way door. That backup table
+// (data/tmp/migration_deleted_account_backups.sql) must be created in
+// Supabase before force is ever used -- if it doesn't exist yet, the
+// backup write fails and the whole force-delete aborts before touching
+// anything (backup-then-delete ordering, never the other way around).
 export async function DELETE(req) {
   const { session, error: authError } = requireManagement(req);
   if (authError) return authError;
 
-  const { userId } = await req.json();
+  const { userId, force } = await req.json();
   if (!userId) return NextResponse.json({ error: "userId is required." }, { status: 400 });
 
   const db = await readDB();
   const index = db.users.findIndex((u) => u.UserID === userId);
   if (index === -1) return NextResponse.json({ error: "User not found." }, { status: 404 });
+  const user = db.users[index];
 
-  if (userHasHistory(db, userId)) {
+  const hasHistory = userHasHistory(db, userId);
+  if (hasHistory && !force) {
     return NextResponse.json(
-      { error: "This account has real history (enrollment, billing, attendance, or a Parent link) and can't be deleted." },
+      { error: "This account has real history (enrollment, billing, attendance, or a Parent link) and can't be deleted.", hasHistory: true },
       { status: 400 }
     );
+  }
+
+  let backupId = null;
+  if (force) {
+    const { snapshot, parentsToClean } = await gatherAccountRelatedRecords(db, userId);
+    const credential = db.credentials.find((c) => c.UserID === userId);
+    snapshot.users = [user];
+    if (credential) snapshot.credentials = [credential];
+    // Backup MUST succeed before anything is deleted -- if this throws
+    // (e.g. the migration hasn't been run yet), the route's own unhandled
+    // rejection returns a 500 and nothing below has run, per Next.js route
+    // handler semantics.
+    backupId = await writeDeletionBackup({
+      userId,
+      userName: user.Name,
+      userType: user.UserType,
+      snapshot,
+      deletedBy: session.userId,
+    });
+    await deleteGatheredRecords(snapshot, parentsToClean, userId, (deletions) => deleteRecords(db, deletions));
+    if (parentsToClean.length > 0) {
+      await writeDB(db, ["users"]);
+    }
   }
 
   const [deletedUser] = db.users.splice(index, 1);
@@ -495,7 +532,14 @@ export async function DELETE(req) {
     { collection: "users", ids: [userId] },
     ...(deletedCred ? [{ collection: "credentials", ids: [deletedCred.UserID] }] : []),
   ]);
-  await logAudit({ actorUserId: session.userId, action: "delete", entityType: "User", entityId: userId, summary: `Deleted ${deletedUser.UserType} "${deletedUser.Name}"`, snapshot: deletedUser });
+  await logAudit({
+    actorUserId: session.userId,
+    action: "delete",
+    entityType: "User",
+    entityId: userId,
+    summary: force ? `Force-deleted ${deletedUser.UserType} "${deletedUser.Name}" (cascade, backup ${backupId})` : `Deleted ${deletedUser.UserType} "${deletedUser.Name}"`,
+    snapshot: deletedUser,
+  });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, backupId });
 }

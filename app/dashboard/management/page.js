@@ -98,6 +98,112 @@ function ConfirmButton({ label, confirmText, confirmLabel = "Yes, delete", busyL
   );
 }
 
+// TKT-0278: block-by-default (mirrors the API's own default), with an
+// explicit "force delete" second tier that requires typing the account's
+// exact name -- a plain ConfirmButton's single click is too easy to fire
+// by accident for an action this destructive, even with a backup behind
+// it. Stages: idle -> confirmSoft (normal delete attempt) -> if the API
+// blocks it, "blocked" shows why and offers force -> confirmForce (typed
+// name gate) -> deleted.
+function DeleteAccountButton({ user, onDelete }) {
+  const [stage, setStage] = useState("idle");
+  const [busy, setBusy] = useState(false);
+  const [blockMessage, setBlockMessage] = useState("");
+  const [typedName, setTypedName] = useState("");
+
+  async function runDelete(force) {
+    setBusy(true);
+    const res = await onDelete(user.UserID, force);
+    setBusy(false);
+    if (res.ok) {
+      setStage("idle");
+    } else if (!force) {
+      setBlockMessage(res.message);
+      setStage("blocked");
+    } else {
+      setBlockMessage(res.message);
+      setStage("forceFailed");
+    }
+  }
+
+  if (stage === "idle") {
+    return (
+      <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => setStage("confirmSoft")}>
+        Delete
+      </button>
+    );
+  }
+  if (stage === "confirmSoft") {
+    return (
+      <span className="flex items-center gap-1 flex-wrap">
+        <span className="text-xs" style={{ color: "var(--bad)" }}>
+          Delete this account?
+        </span>
+        <button className="btn" style={{ background: "var(--bad)" }} disabled={busy} onClick={() => runDelete(false)}>
+          {busy ? "Deleting…" : "Yes, delete"}
+        </button>
+        <button className="btn-ghost" disabled={busy} onClick={() => setStage("idle")}>
+          Cancel
+        </button>
+      </span>
+    );
+  }
+  if (stage === "blocked" || stage === "forceFailed") {
+    return (
+      <span className="flex flex-col gap-1" style={{ maxWidth: 260 }}>
+        <span className="text-xs" style={{ color: "var(--bad)" }}>
+          {blockMessage}
+        </span>
+        {stage === "blocked" ? (
+          <span className="flex items-center gap-1 flex-wrap">
+            <button className="btn-ghost" style={{ color: "var(--bad)" }} onClick={() => { setTypedName(""); setStage("confirmForce"); }}>
+              Force delete (cascade)
+            </button>
+            <button className="btn-ghost" onClick={() => setStage("idle")}>
+              Cancel
+            </button>
+          </span>
+        ) : (
+          <button className="btn-ghost" onClick={() => setStage("idle")}>
+            Close
+          </button>
+        )}
+      </span>
+    );
+  }
+  // confirmForce -- typed-name gate. This permanently removes every real
+  // reference to the account (enrollments, invoices, paychecks, tickets,
+  // mistake/attempt history, etc.), backed up first so it's restorable
+  // from Deleted Accounts, but still a real destructive action.
+  return (
+    <span className="flex flex-col gap-1" style={{ maxWidth: 280 }}>
+      <span className="text-xs" style={{ color: "var(--bad)" }}>
+        This permanently removes EVERY record tied to &quot;{user.Name}&quot; (enrollments, billing, tickets, mistake/attempt history, etc.) -- backed up first and restorable from Deleted Accounts. Type the account name to confirm.
+      </span>
+      <input
+        className="field"
+        style={{ fontSize: "0.8rem" }}
+        placeholder={user.Name}
+        value={typedName}
+        onChange={(e) => setTypedName(e.target.value)}
+      />
+      <span className="flex items-center gap-1 flex-wrap">
+        <button
+          className="btn"
+          style={{ background: "var(--bad)" }}
+          disabled={busy || typedName.trim() !== user.Name}
+          onClick={() => runDelete(true)}
+        >
+          {busy ? "Deleting…" : "Force delete"}
+        </button>
+        <button className="btn-ghost" disabled={busy} onClick={() => setStage("idle")}>
+          Cancel
+        </button>
+      </span>
+    </span>
+  );
+}
+
 function Body() {
   const [tab, setTab] = useState("Applications");
   // Lifted out of Applications/Pipeline/Accounts themselves: those three
@@ -1507,6 +1613,28 @@ function Accounts({ issued, setIssued }) {
     }
   }
 
+  // TKT-0278: block-by-default with an explicit force (cascade + backup)
+  // escape hatch. Returns {ok, message, backupId} instead of throwing, so
+  // DeleteAccountButton can show the block reason and offer force delete
+  // rather than just failing.
+  async function deleteUser(userId, force) {
+    setBusySaveIds((prev) => new Set(prev).add(userId));
+    try {
+      const res = await api("/api/users", { method: "DELETE", body: JSON.stringify({ userId, force }) });
+      setUsers((prev) => prev.filter((u) => u.UserID !== userId));
+      if (res.backupId) setError(`Deleted. Backup ${res.backupId} -- restorable from Deleted Accounts.`);
+      return { ok: true, backupId: res.backupId };
+    } catch (e) {
+      return { ok: false, message: e.message };
+    } finally {
+      setBusySaveIds((prev) => {
+        const next = new Set(prev);
+        next.delete(userId);
+        return next;
+      });
+    }
+  }
+
   async function saveEdit(userId, fields) {
     setError("");
     setBusySaveIds((prev) => new Set(prev).add(userId));
@@ -1902,6 +2030,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                     <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
                       {editingId === u.UserID ? "Close" : "Edit"}
                     </button>
+                    <DeleteAccountButton user={u} onDelete={deleteUser} />
                   </td>
                 </tr>
                 {editingId === u.UserID && (
