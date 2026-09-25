@@ -336,13 +336,12 @@ const SAMPLE_RESPONSE_FILES = {
     // null/alternative hypothesis, z-value significance testing.
     { component: "Paper 6: Probability & Statistics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper7_ECR_v1.pdf" },
   ],
-  // Old M2 (the file literally named "Paper5") -- confirmed mechanics
-  // content ("centre of mass of the semi-circular lamina"), a SECOND
-  // document for the same merged "Paper 4: Mechanics" component, not its
-  // own component.
-  "A Levels|Mathematics|extra": [
-    { component: "Paper 4: Mechanics", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper5_ECR_v1.pdf" },
-  ],
+  // Old M2 (the file literally named "Paper5", "centre of mass of a
+  // semi-circular lamina") deliberately NOT included here -- M2 content
+  // (further mechanics: circular motion, rotation, etc.) isn't on the
+  // current merged "Mechanics" paper's own syllabus, so shipping it as a
+  // sample response would mislead a current student about what's
+  // examinable. Removed 2026-09-25 per explicit instruction.
   "A Levels|English Language": [
     { component: "AS Language", path: "A Levels/English Lang/9093_English_Language_Example_Candidate_Responses_Booklet_2015.pdf" },
   ],
