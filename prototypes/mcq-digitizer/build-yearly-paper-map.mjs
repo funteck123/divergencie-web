@@ -287,6 +287,62 @@ const ZNOTES_FILES = {
 // above need the real archive root ONE level up, since they span both
 // IGCSE and A Levels.
 const CIE_ROOT = path.join(ARCHIVE_ROOT, "..");
+// Sample Response / Example Candidate Responses (ECR) -- same static,
+// no-year/session shape as ZNotes above, sourced from the local E: drive
+// archive. Scoped to v1 (2026-09-25) to the clean single-PDF-per-paper
+// sets only -- Biology/Chemistry IGCSE and A-Level Physics also have
+// "iECR" sets (one PDF per individual question, 19-21+ files each),
+// deliberately left out of this first pass as a different shape needing
+// its own per-question wiring, not an oversight.
+const SAMPLE_RESPONSE_FILES = {
+  "IGCSE|Physics": [
+    { component: "Paper 4: Theory (Extended)", path: "IGCSE/Physics/past papers/0625_Example_Candidate_Responses_Paper_4_(for_examination_from_2016).pdf" },
+  ],
+  "IGCSE|First Language English": [
+    { component: "Paper 1: Reading", path: "IGCSE/FLE/0500_Example_Candidate_Responses_Paper_1_(for_examination_from_2020).pdf" },
+    { component: "Paper 2: Directed Writing and Composition", path: "IGCSE/FLE/0500_Example_Candidate_Responses_Paper_2_(for_examination_from_2020).pdf" },
+  ],
+  "A Levels|Physics": [
+    { component: "Paper 2: AS Level Structured Questions", path: "A Levels/Physics/Past Papers/other resources/ECR_AS-AL_Physics_9702_P2_v1.pdf" },
+    { component: "Paper 3: Advanced Practical Skills (A Level)", path: "A Levels/Physics/Past Papers/other resources/ECR_AS-AL_Physics_9702_P3_v1.pdf" },
+    { component: "Paper 4: A Level Structured Questions (A Level)", path: "A Levels/Physics/Past Papers/other resources/ECR_AS-AL_Physics_9702_P4_v1.pdf" },
+    { component: "Paper 5: Planning, Analysis and Evaluation (A Level)", path: "A Levels/Physics/Past Papers/other resources/ECR_AS-AL_Physics_9702_P5_v1.pdf" },
+  ],
+  "A Levels|Mathematics": [
+    { component: "Paper 1: Pure Mathematics 1", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper1_ECR_v1.pdf" },
+    { component: "Paper 2: Pure Mathematics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper2_ECR_v1.pdf" },
+    { component: "Paper 3: Pure Mathematics 3", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper3_ECR_v1.pdf" },
+    { component: "Paper 4: Mechanics", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper4_ECR_v1.pdf" },
+    { component: "Paper 5: Probability & Statistics 1", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper5_ECR_v1.pdf" },
+    { component: "Paper 6: Probability & Statistics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper6_ECR_v1.pdf" },
+  ],
+  "A Levels|English Language": [
+    { component: "AS Language", path: "A Levels/English Lang/9093_English_Language_Example_Candidate_Responses_Booklet_2015.pdf" },
+  ],
+  "A Levels|Literature in English": [
+    { component: "Paper 2: Prose and Unseen (AS Level)", path: "A Levels/English Literature/Paper_2_Example_Candidate_Responses.pdf" },
+  ],
+};
+
+function crawlSampleResponses(board, subject) {
+  const entries = SAMPLE_RESPONSE_FILES[`${board}|${subject}`];
+  if (!entries) return [];
+  const docs = [];
+  for (const { component, path: relPath } of entries) {
+    const fullPath = path.join(CIE_ROOT, relPath);
+    if (!fs.existsSync(fullPath)) continue; // confirmed present at survey time; skip rather than crash if the archive changes later
+    docs.push({
+      board,
+      subject,
+      component: `Sample Response: ${component}`,
+      title: `Sample Response -- ${subject} ${component}`,
+      paperId: `sampleresponse_${board.replace(/\s+/g, "")}_${subject.replace(/\s+/g, "")}_${component.replace(/\s+/g, "")}`,
+      sampleResponsePath: fullPath,
+    });
+  }
+  return docs;
+}
+
 
 function crawlZNotes(board, subject) {
   const entries = ZNOTES_FILES[`${board}|${subject}`];
@@ -349,6 +405,23 @@ for (const key of Object.keys(ZNOTES_FILES)) {
     result[board][subject][note.component].push(note);
   }
   console.log(`${board} ${subject}: ${notes.length} ZNotes file(s) found`);
+}
+
+// Sample Response is wired in the same standalone way as ZNotes above --
+// its own key set (SAMPLE_RESPONSE_FILES), not piggybacked on any qp/ms
+// crawl, since some of these subjects (English Language, Literature) have
+// no yearly qp/ms crawler at all.
+for (const key of Object.keys(SAMPLE_RESPONSE_FILES)) {
+  const [board, subject] = key.split("|");
+  const docs = crawlSampleResponses(board, subject);
+  if (docs.length === 0) continue;
+  result[board] = result[board] || {};
+  result[board][subject] = result[board][subject] || {};
+  for (const doc of docs) {
+    result[board][subject][doc.component] = result[board][subject][doc.component] || [];
+    result[board][subject][doc.component].push(doc);
+  }
+  console.log(`${board} ${subject}: ${docs.length} Sample Response file(s) found`);
 }
 
 const outPath = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");

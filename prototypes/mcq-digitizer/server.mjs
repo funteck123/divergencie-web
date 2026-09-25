@@ -196,7 +196,7 @@ const YEARLY_READY_COMPONENTS = new Set([
 // map.mjs's ZNOTES_FILES registry. A prefix check avoids having to keep
 // this file's own literal Set in sync with that registry by hand.
 function isYearlyReadyComponent(component) {
-  return YEARLY_READY_COMPONENTS.has(component) || component.startsWith("ZNotes: ");
+  return YEARLY_READY_COMPONENTS.has(component) || component.startsWith("ZNotes: ") || component.startsWith("Sample Response: ");
 }
 // Free-tier text model, same choice/reasoning as exam-grader and
 // quiz-digitizer: a text-only free model measured far more reliable than
@@ -1639,7 +1639,7 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const paper = findYearlyPaperById(paperId);
-      const rawPath = paper && (paper.erPath || paper.znotesPath);
+      const rawPath = paper && (paper.erPath || paper.znotesPath || paper.sampleResponsePath);
       if (!paper || !rawPath || !isYearlyReadyComponent(paper.component)) {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));

@@ -1060,7 +1060,7 @@ function onComponentOrTypeChange() {
     typeRow.style.display = "block";
     topicalOption.hidden = false;
   }
-  if (typeSelect.value === "yearly" && yearlyPapers.length > 0 && component.startsWith("ZNotes: ")) {
+  if (typeSelect.value === "yearly" && yearlyPapers.length > 0 && (component.startsWith("ZNotes: ") || component.startsWith("Sample Response: "))) {
     // TKT-0253: ZNotes has no year/session/variant at all -- one static
     // document per component, unlike Examiner Report (which still has a
     // real year+session, just no variant). Skip the whole year/session
@@ -1081,6 +1081,7 @@ function onComponentOrTypeChange() {
   document.getElementById("fetchAndDigitizeBtn").textContent =
     component === "Examiner Report" ? "View examiner report"
     : component.startsWith("ZNotes: ") ? "View notes"
+    : component.startsWith("Sample Response: ") ? "View sample responses"
     : "Fetch this paper and start";
 }
 function populateYearlyYears() {
@@ -1182,7 +1183,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     // TKT-0253: "ZNotes: *" components are the same "just open the raw
     // PDF" shape as Examiner Report above -- a static revision-notes
     // document, never gradable/digitizable.
-    if (component === "Examiner Report" || component.startsWith("ZNotes: ")) {
+    if (component === "Examiner Report" || component.startsWith("ZNotes: ") || component.startsWith("Sample Response: ")) {
       window.open(`/api/mcq/yearly-pdf?paperId=${encodeURIComponent(paper.paperId)}`, "_blank");
       return;
     }
