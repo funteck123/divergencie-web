@@ -220,7 +220,13 @@ const GRADING_MAX_TOKENS = Number(process.env.OPENROUTER_MAX_TOKENS) || 4500;
 // for image inputs (openrouter/free) -- structured Test-mode grading
 // sends the mark-scheme CROP IMAGE, not its text (see
 // gradeStructuredQuestion's own comment for why).
-const STRUCTURED_GRADING_VISION_MODEL = process.env.OPENROUTER_MODEL || "openrouter/free";
+// PINNED to a specific free vision model, not the "openrouter/free"
+// auto-router -- confirmed live 2026-09-25 the auto-router is genuinely
+// non-deterministic (one call got routed to a model that returned a bare
+// safety-classifier stub instead of attempting grading at all). A pinned
+// model can still be swapped via env if OpenRouter rotates it out of the
+// free tier (a real, observed pattern -- free model IDs get pulled).
+const STRUCTURED_GRADING_VISION_MODEL = process.env.OPENROUTER_MODEL || "qwen/qwen3.8-27b:free";
 
 class PayloadTooLargeError extends Error {}
 
@@ -517,53 +523,81 @@ const GEMINI_MODEL_POOL = process.env.GEMINI_MODEL_POOL
   // graded the same two test questions correctly in ~17-20s.
   : [process.env.GEMINI_MODEL || "gemini-3.5-flash", "gemini-3-flash-preview"];
 const GEMINI_LAST_RESORT_MODEL = "gemini-3.5-flash-lite";
-// Matches Google's own real observed limit for this key/model ("limit:
-// 20" in the live 429 body, confirmed 2026-09-15), not a guessed/assumed
-// number -- was 15, an unnecessarily tighter self-throttle that didn't
-// actually prevent the real 429s seen live (Google's own window likely
-// doesn't align exactly with this 60s sliding window), so tightening
-// further wasn't the fix; the real fix is the multi-model pool above.
-const GEMINI_RPM_LIMIT = 20;
+
+// Multi-key pool (2026-09-25 auto-router improvement): Google's free-tier
+// quota is tied to the ACCOUNT/PROJECT behind a key, not the key string
+// itself -- a second key from the SAME project shares one quota bucket and
+// adds zero real capacity. GEMINI_API_KEY_PRIMARY/SECONDARY are each a
+// genuinely separate Google account/project (confirmed with the user
+// before wiring this), so each is tracked as its own independent bucket.
+// GEMINI_API_KEY alone (old single-key deployments) still works.
+const GEMINI_API_KEYS = [
+  ["primary", process.env.GEMINI_API_KEY_PRIMARY],
+  ["secondary", process.env.GEMINI_API_KEY_SECONDARY],
+  ["default", process.env.GEMINI_API_KEY],
+].filter(([, key], i, arr) => key && arr.findIndex(([, k]) => k === key) === i); // dedupe identical key values (e.g. GEMINI_API_KEY === GEMINI_API_KEY_PRIMARY on purpose for backward compat)
+
+// One "endpoint" = one (key, model) pair -- each gets its own RPM window,
+// daily counter, and 429 cooldown, and is round-robin scheduled by last-
+// used time rather than random shuffle, so load actually spreads instead
+// of clustering on whichever endpoint a Math.random() happened to pick
+// twice in a row.
+const GEMINI_ENDPOINTS = GEMINI_API_KEYS.flatMap(([keyLabel, apiKey]) =>
+  GEMINI_MODEL_POOL.map((model) => ({ id: `${keyLabel}:${model}`, keyLabel, apiKey, model }))
+);
+
+// Real observed limit for THIS key/model combo used to be "20" (confirmed
+// live 2026-09-15) -- that was against an older model generation. Live
+// 429s on 2026-09-22/25 against the CURRENT pool (gemini-3.5-flash,
+// gemini-3-flash-preview) kept recurring dozens of calls a minute apart,
+// well under 20 -- the real per-endpoint ceiling for these newer models is
+// far lower, closer to 1-2/min (per direct user instruction, matching what
+// was observed). Kept low and conservative rather than re-guessed high --
+// multiple ENDPOINTS (not a higher per-endpoint limit) is the real lever
+// now that the pool can hold more than one key.
+const GEMINI_RPM_LIMIT = Number(process.env.GEMINI_RPM_LIMIT) || 2;
 const GEMINI_RPD_LIMIT = 1500;
-// Keyed by model name -- each model has its own independent quota on
-// Google's side, so a shared single counter would have falsely throttled
-// model B just because model A was busy.
-const geminiRequestTimestampsByModel = new Map();
+// Keyed by endpoint id (keyLabel:model), not bare model name -- two
+// different keys calling the same model name are two independent quotas.
+const geminiRequestTimestampsByEndpoint = new Map();
 // A 429 here is Google's real account-level quota, not just our own RPM
 // self-throttle -- confirmed live 2026-09-22: dozens of calls a minute
-// apart still 429'd well under GEMINI_RPM_LIMIT/GEMINI_RPD_LIMIT.
-// Skipping a model for a few minutes after it 429s avoids paying its full
-// RPM wait (up to 60s) again immediately, only to hit the same 429.
+// apart still 429'd well under the self-throttle. Skipping an endpoint for
+// a few minutes after it 429s avoids paying its full RPM wait again
+// immediately, only to hit the same 429.
 const GEMINI_QUOTA_COOLDOWN_MS = 3 * 60 * 1000;
 const geminiQuotaCooldownUntil = new Map();
+let geminiEndpointRoundRobinCursor = 0;
+
+// Observability (2026-09-25): rolling per-endpoint + OpenRouter counters,
+// exposed via GET /api/grading-health, so "is the autograder broken" is a
+// real number instead of grepping this process's own stdout log by hand.
+const gradingHealth = new Map(); // id -> { ok, fail, lastOkAt, lastFailAt, lastError }
+function recordGradingResult(id, success, errorMessage) {
+  const h = gradingHealth.get(id) || { ok: 0, fail: 0, lastOkAt: null, lastFailAt: null, lastError: null };
+  if (success) { h.ok++; h.lastOkAt = new Date().toISOString(); }
+  else { h.fail++; h.lastFailAt = new Date().toISOString(); h.lastError = errorMessage?.slice(0, 200) || null; }
+  gradingHealth.set(id, h);
+}
 
 const geminiDayCountByModel = new Map();
 let geminiDayKey = null;
 
-function shuffled(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function reserveGeminiDailyQuota(model) {
+function reserveGeminiDailyQuota(endpointId) {
   const todayKey = new Date().toISOString().slice(0, 10); // UTC, matches Google's own quota reset
   if (geminiDayKey !== todayKey) {
     geminiDayKey = todayKey;
     geminiDayCountByModel.clear();
   }
-  const count = geminiDayCountByModel.get(model) || 0;
+  const count = geminiDayCountByModel.get(endpointId) || 0;
   if (count >= GEMINI_RPD_LIMIT) {
-    throw new Error(`Daily free Gemini grading quota (${GEMINI_RPD_LIMIT}/day) reached for ${model}.`);
+    throw new Error(`Daily free Gemini grading quota (${GEMINI_RPD_LIMIT}/day) reached for ${endpointId}.`);
   }
-  geminiDayCountByModel.set(model, count + 1);
+  geminiDayCountByModel.set(endpointId, count + 1);
 }
 
-async function waitForGeminiRpmSlot(model) {
-  const timestamps = geminiRequestTimestampsByModel.get(model) || [];
+async function waitForGeminiRpmSlot(endpointId) {
+  const timestamps = geminiRequestTimestampsByEndpoint.get(endpointId) || [];
   for (;;) {
     const now = Date.now();
     while (timestamps.length && now - timestamps[0] > 60000) {
@@ -571,11 +605,26 @@ async function waitForGeminiRpmSlot(model) {
     }
     if (timestamps.length < GEMINI_RPM_LIMIT) {
       timestamps.push(now);
-      geminiRequestTimestampsByModel.set(model, timestamps);
+      geminiRequestTimestampsByEndpoint.set(endpointId, timestamps);
       return;
     }
     await new Promise((r) => setTimeout(r, 60000 - (now - timestamps[0]) + 50));
   }
+}
+
+// Round-robin, not random shuffle: picks the not-on-cooldown endpoint that
+// was used longest ago (or never), so load actually spreads across every
+// (key, model) pair evenly instead of clustering on whichever one a coin
+// flip favors. Falls back to cooldown endpoints (oldest cooldown first) only
+// if every endpoint is currently cooling down, so a real request still gets
+// a shot rather than failing outright with endpoints technically available.
+function nextGeminiEndpoints() {
+  const now = Date.now();
+  const available = GEMINI_ENDPOINTS.filter((e) => (geminiQuotaCooldownUntil.get(e.id) || 0) <= now);
+  const pool = available.length > 0 ? available : GEMINI_ENDPOINTS;
+  const start = geminiEndpointRoundRobinCursor % pool.length;
+  geminiEndpointRoundRobinCursor = (geminiEndpointRoundRobinCursor + 1) % GEMINI_ENDPOINTS.length;
+  return [...pool.slice(start), ...pool.slice(0, start)];
 }
 
 const GEMINI_RESPONSE_SCHEMA = {
@@ -615,10 +664,10 @@ const GEMINI_RESPONSE_SCHEMA = {
   required: ["studentAnswerVerbatim", "lineFeedback", "markBreakdown", "fullMarkAnswer", "marksAwarded", "remark"],
 };
 
-async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, model, taskText) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  reserveGeminiDailyQuota(model);
-  await waitForGeminiRpmSlot(model);
+async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText) {
+  const { id, apiKey, model } = endpoint;
+  reserveGeminiDailyQuota(id);
+  await waitForGeminiRpmSlot(id);
 
   const body = {
     systemInstruction: { parts: [{ text: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT }] },
@@ -735,35 +784,40 @@ async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAns
   throw lastError;
 }
 
-// Tries a random order of GEMINI_MODEL_POOL (each model has its own real,
-// independent Google quota, so one model being saturated doesn't mean the
-// next one is), then OpenRouter's existing free-router fallback, and only
-// as a last resort the known-less-reliable lite model -- flagged
-// lowConfidence so a caller/UI can surface that instead of presenting it
-// as an ordinary result. Only throws once every option has failed.
+// Round-robins across every (key, model) endpoint -- each has its own real,
+// independent Google quota (confirmed: independence requires a separate
+// account/project per key, not just a separate key string), so one
+// endpoint being saturated doesn't mean the next one is -- then a pinned
+// OpenRouter free vision model, and only as a last resort the known-less-
+// reliable lite model -- flagged lowConfidence so a caller/UI can surface
+// that instead of presenting it as an ordinary result. Only throws once
+// every option has failed.
 async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable, studentAnswer, taskText) {
   let lastError;
-  if (process.env.GEMINI_API_KEY) {
-    for (const model of shuffled(GEMINI_MODEL_POOL)) {
+  if (GEMINI_ENDPOINTS.length > 0) {
+    for (const endpoint of nextGeminiEndpoints()) {
       // "High demand" 503s are momentary spikes: one immediate retry on the
-      // same model is far cheaper than falling through to the slow OpenRouter
-      // path. Quota (429) and "no longer available" (404) are not retried.
-      const cooldownUntil = geminiQuotaCooldownUntil.get(model) || 0;
+      // same endpoint is far cheaper than falling through to the slow
+      // OpenRouter path. Quota (429) and "no longer available" (404) are
+      // not retried.
+      const cooldownUntil = geminiQuotaCooldownUntil.get(endpoint.id) || 0;
       if (Date.now() < cooldownUntil) {
-        console.log(`grading: ${model} skipped, on quota cooldown for ${Math.round((cooldownUntil - Date.now()) / 1000)}s more`);
+        console.log(`grading: ${endpoint.id} skipped, on quota cooldown for ${Math.round((cooldownUntil - Date.now()) / 1000)}s more`);
         continue;
       }
       for (let attempt = 0; attempt < 2; attempt++) {
         const t0 = Date.now();
         try {
-          const r = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, model, taskText);
-          console.log(`grading: ${model} ok in ${Date.now() - t0}ms`);
+          const r = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText);
+          console.log(`grading: ${endpoint.id} ok in ${Date.now() - t0}ms`);
+          recordGradingResult(endpoint.id, true);
           return r;
         } catch (e) {
-          console.log(`grading: ${model} failed after ${Date.now() - t0}ms: ${String(e.message).slice(0, 120)}`);
+          console.log(`grading: ${endpoint.id} failed after ${Date.now() - t0}ms: ${String(e.message).slice(0, 120)}`);
           lastError = e;
+          recordGradingResult(endpoint.id, false, e.message);
           if (/\(429\)/.test(String(e.message))) {
-            geminiQuotaCooldownUntil.set(model, Date.now() + GEMINI_QUOTA_COOLDOWN_MS);
+            geminiQuotaCooldownUntil.set(endpoint.id, Date.now() + GEMINI_QUOTA_COOLDOWN_MS);
             break;
           }
           if (!/\(503\)/.test(String(e.message))) break;
@@ -772,21 +826,28 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
     }
   }
   if (process.env.OPENROUTER_API_KEY) {
+    const t0 = Date.now();
     try {
-      return await gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAnswer, taskText);
+      const r = await gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAnswer, taskText);
+      recordGradingResult(`openrouter:${STRUCTURED_GRADING_VISION_MODEL}`, true);
+      return r;
     } catch (e) {
       lastError = e;
+      recordGradingResult(`openrouter:${STRUCTURED_GRADING_VISION_MODEL}`, false, e.message);
     }
   }
-  if (process.env.GEMINI_API_KEY) {
+  const lastResortEndpoint = GEMINI_ENDPOINTS.find((e) => e.model === GEMINI_LAST_RESORT_MODEL) || GEMINI_ENDPOINTS[0];
+  if (lastResortEndpoint) {
     try {
-      const result = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, GEMINI_LAST_RESORT_MODEL, taskText);
+      const result = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, { ...lastResortEndpoint, id: `${lastResortEndpoint.keyLabel}:${GEMINI_LAST_RESORT_MODEL}`, model: GEMINI_LAST_RESORT_MODEL }, taskText);
+      recordGradingResult(`${lastResortEndpoint.keyLabel}:${GEMINI_LAST_RESORT_MODEL}`, true);
       return { ...result, lowConfidence: true };
     } catch (e) {
       lastError = e;
+      recordGradingResult(`${lastResortEndpoint.keyLabel}:${GEMINI_LAST_RESORT_MODEL}`, false, e.message);
     }
   }
-  throw lastError || new Error("No grading provider is configured (set GEMINI_API_KEY or OPENROUTER_API_KEY).");
+  throw lastError || new Error("No grading provider is configured (set GEMINI_API_KEY/_PRIMARY/_SECONDARY or OPENROUTER_API_KEY).");
 }
 
 async function gradeStructuredQuestion(qpId, msId, questionNumber, studentAnswer) {
@@ -1808,6 +1869,24 @@ const server = http.createServer(async (req, res) => {
     }
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(job.status === "pending" ? { status: "pending" } : job.status === "done" ? { status: "done", result: job.result } : { status: "error", error: job.error }));
+    return;
+  }
+
+  // Observability (2026-09-25, auto-router improvement plan item D): a real
+  // per-endpoint success/fail count instead of grepping this process's own
+  // stdout log by hand every time someone asks "is the autograder broken".
+  if (req.method === "GET" && req.url === "/api/grading-health") {
+    const endpoints = {};
+    for (const e of GEMINI_ENDPOINTS) {
+      endpoints[e.id] = {
+        ...(gradingHealth.get(e.id) || { ok: 0, fail: 0, lastOkAt: null, lastFailAt: null, lastError: null }),
+        cooldownRemainingSec: Math.max(0, Math.round(((geminiQuotaCooldownUntil.get(e.id) || 0) - Date.now()) / 1000)),
+      };
+    }
+    const openrouterId = `openrouter:${STRUCTURED_GRADING_VISION_MODEL}`;
+    if (gradingHealth.has(openrouterId)) endpoints[openrouterId] = gradingHealth.get(openrouterId);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ endpoints }));
     return;
   }
 
