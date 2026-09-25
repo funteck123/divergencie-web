@@ -309,13 +309,39 @@ const SAMPLE_RESPONSE_FILES = {
     { component: "Paper 4: A Level Structured Questions (A Level)", path: "A Levels/Physics/Past Papers/other resources/ECR_AS-AL_Physics_9702_P4_v1.pdf" },
     { component: "Paper 5: Planning, Analysis and Evaluation (A Level)", path: "A Levels/Physics/Past Papers/other resources/ECR_AS-AL_Physics_9702_P5_v1.pdf" },
   ],
+  // CORRECTED 2026-09-25: these ECR files carry the OLD pre-2020 9709
+  // paper numbering on their own covers (P4=M1, P5=M2, P6=S1, P7=S2 --
+  // 7 papers total), which does NOT line up 1:1 with the current 6-paper
+  // numbering (P4=Mechanics, merging what used to be M1+M2, so everything
+  // from P5 onward shifts down by one). An earlier pass here mapped file
+  // number straight to component number and got it wrong for 3 of 6 files
+  // -- caught by actually reading each PDF's content, not trusting the
+  // cover label: Paper5_ECR turned out to contain "centre of mass of the
+  // semi-circular lamina" (mechanics, not stats), Paper6_ECR contained
+  // permutation/combination with zero hypothesis-testing (S1, not S2),
+  // and the file literally labeled "Paper 7" contained null/alternative
+  // hypothesis + z-value testing (genuine S2). Fixed below by content,
+  // confirmed live for every one of the 6 files -- see the deep-dive in
+  // this same session for the actual grep counts.
   "A Levels|Mathematics": [
     { component: "Paper 1: Pure Mathematics 1", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper1_ECR_v1.pdf" },
     { component: "Paper 2: Pure Mathematics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper2_ECR_v1.pdf" },
     { component: "Paper 3: Pure Mathematics 3", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper3_ECR_v1.pdf" },
+    // Old M1 -- confirmed mechanics content (force/velocity/momentum/acceleration).
     { component: "Paper 4: Mechanics", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper4_ECR_v1.pdf" },
-    { component: "Paper 5: Probability & Statistics 1", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper5_ECR_v1.pdf" },
-    { component: "Paper 6: Probability & Statistics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper6_ECR_v1.pdf" },
+    // Old S1 (the file literally named "Paper6") -- confirmed by content:
+    // permutation/combination present, zero hypothesis-testing terms.
+    { component: "Paper 5: Probability & Statistics 1", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper6_ECR_v1.pdf" },
+    // Old S2 (the file literally named "Paper7") -- confirmed by content:
+    // null/alternative hypothesis, z-value significance testing.
+    { component: "Paper 6: Probability & Statistics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper7_ECR_v1.pdf" },
+  ],
+  // Old M2 (the file literally named "Paper5") -- confirmed mechanics
+  // content ("centre of mass of the semi-circular lamina"), a SECOND
+  // document for the same merged "Paper 4: Mechanics" component, not its
+  // own component.
+  "A Levels|Mathematics|extra": [
+    { component: "Paper 4: Mechanics", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper5_ECR_v1.pdf" },
   ],
   "A Levels|English Language": [
     { component: "AS Language", path: "A Levels/English Lang/9093_English_Language_Example_Candidate_Responses_Booklet_2015.pdf" },
@@ -354,18 +380,6 @@ const SAMPLE_RESPONSE_FILES = {
     // Already-present local file (not one of today's downloads) -- Paper 1
     // had no Sample Response entry before, only Paper 2.
     { component: "Paper 1: Drama and Poetry (AS Level)", path: "A Levels/English Literature/ilide.info-9695-example-candidate-responses-paper-1-for-examination-from-2024-pr_428f5366c6caa1d9484d644a8e6988b9 (1).pdf" },
-  ],
-  // "Paper 7" here is the file's own real cover-page label -- an old-
-  // syllabus paper number (pre-2020 9709 split Mechanics/Stats into two
-  // papers each: P4=M1, P5=M2, P6=S1, P7=S2; the current syllabus's
-  // Paper 6 IS that same Probability & Statistics 2 content, just
-  // renumbered). Confirmed by content, not just the label: zero mechanics
-  // terms (force/velocity/momentum), 5+ statistics terms
-  // (probability/distribution/variance/mean). Filed alongside the current
-  // Paper 6 document as a second resource for the same component, not as
-  // a fake "Paper 7" component the real current syllabus doesn't have.
-  "A Levels|Mathematics|extra": [
-    { component: "Paper 6: Probability & Statistics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper7_ECR_v1.pdf" },
   ],
 };
 
