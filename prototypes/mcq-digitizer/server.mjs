@@ -534,6 +534,7 @@ const GEMINI_LAST_RESORT_MODEL = "gemini-3.5-flash-lite";
 const GEMINI_API_KEYS = [
   ["primary", process.env.GEMINI_API_KEY_PRIMARY],
   ["secondary", process.env.GEMINI_API_KEY_SECONDARY],
+  ["tertiary", process.env.GEMINI_API_KEY_TERTIARY],
   ["default", process.env.GEMINI_API_KEY],
 ].filter(([, key], i, arr) => key && arr.findIndex(([, k]) => k === key) === i); // dedupe identical key values (e.g. GEMINI_API_KEY === GEMINI_API_KEY_PRIMARY on purpose for backward compat)
 
@@ -551,12 +552,31 @@ const GEMINI_ENDPOINTS = GEMINI_API_KEYS.flatMap(([keyLabel, apiKey]) =>
 // 429s on 2026-09-22/25 against the CURRENT pool (gemini-3.5-flash,
 // gemini-3-flash-preview) kept recurring dozens of calls a minute apart,
 // well under 20 -- the real per-endpoint ceiling for these newer models is
-// far lower, closer to 1-2/min (per direct user instruction, matching what
-// was observed). Kept low and conservative rather than re-guessed high --
-// multiple ENDPOINTS (not a higher per-endpoint limit) is the real lever
-// now that the pool can hold more than one key.
+// far lower, closer to 1-2/min. Set conservatively low on that basis.
+// CONFLICTING SIGNAL (2026-09-25, unverified): third-party aggregator sites
+// (not Google's own docs -- ai.google.dev publishes no static numbers, see
+// GEMINI_RPD_LIMIT's own comment) claim 10-15 RPM for this tier, which
+// would mean this constant is needlessly starving real capacity. Our own
+// live 429 pattern outweighs an unverified secondhand number, so left low
+// pending an actual account-console check (https://aistudio.google.com/rate-limit) --
+// multiple ENDPOINTS is still the primary real lever regardless of which
+// per-endpoint number turns out correct.
 const GEMINI_RPM_LIMIT = Number(process.env.GEMINI_RPM_LIMIT) || 2;
-const GEMINI_RPD_LIMIT = 1500;
+// CORRECTED 2026-09-25: 1500/day was carried over from an older model
+// generation's real observed limit (confirmed live 2026-09-15, but against
+// gemini-2.5-flash, which is now restricted to existing users -- see
+// server.mjs's own dead-model comment above). ai.google.dev's own rate-limit
+// page does NOT publish static per-model numbers at all -- it says limits
+// vary by account/tier and must be checked live at
+// https://aistudio.google.com/rate-limit (account-specific, needs a login
+// this session doesn't have). Third-party aggregator sites (not Google's own
+// docs, so treated as unverified) consistently report ~20 requests/DAY for
+// the current "Flash" tier (3.5/3.6/3.7/3.8-flash, gemini-3-flash-preview)
+// and ~500/day for "Flash-Lite" tier -- a 25x difference this pool doesn't
+// currently exploit (flash-lite is only used as the very-last-resort model
+// today, for a real accuracy regression found earlier, not a quota reason).
+// Set conservatively low pending an actual account-console check.
+const GEMINI_RPD_LIMIT = Number(process.env.GEMINI_RPD_LIMIT) || 20;
 // Keyed by endpoint id (keyLabel:model), not bare model name -- two
 // different keys calling the same model name are two independent quotas.
 const geminiRequestTimestampsByEndpoint = new Map();
