@@ -547,36 +547,30 @@ const GEMINI_ENDPOINTS = GEMINI_API_KEYS.flatMap(([keyLabel, apiKey]) =>
   GEMINI_MODEL_POOL.map((model) => ({ id: `${keyLabel}:${model}`, keyLabel, apiKey, model }))
 );
 
-// Real observed limit for THIS key/model combo used to be "20" (confirmed
-// live 2026-09-15) -- that was against an older model generation. Live
-// 429s on 2026-09-22/25 against the CURRENT pool (gemini-3.5-flash,
-// gemini-3-flash-preview) kept recurring dozens of calls a minute apart,
-// well under 20 -- the real per-endpoint ceiling for these newer models is
-// far lower, closer to 1-2/min. Set conservatively low on that basis.
-// CONFLICTING SIGNAL (2026-09-25, unverified): third-party aggregator sites
-// (not Google's own docs -- ai.google.dev publishes no static numbers, see
-// GEMINI_RPD_LIMIT's own comment) claim 10-15 RPM for this tier, which
-// would mean this constant is needlessly starving real capacity. Our own
-// live 429 pattern outweighs an unverified secondhand number, so left low
-// pending an actual account-console check (https://aistudio.google.com/rate-limit) --
-// multiple ENDPOINTS is still the primary real lever regardless of which
-// per-endpoint number turns out correct.
-const GEMINI_RPM_LIMIT = Number(process.env.GEMINI_RPM_LIMIT) || 2;
-// CORRECTED 2026-09-25: 1500/day was carried over from an older model
-// generation's real observed limit (confirmed live 2026-09-15, but against
-// gemini-2.5-flash, which is now restricted to existing users -- see
-// server.mjs's own dead-model comment above). ai.google.dev's own rate-limit
-// page does NOT publish static per-model numbers at all -- it says limits
-// vary by account/tier and must be checked live at
-// https://aistudio.google.com/rate-limit (account-specific, needs a login
-// this session doesn't have). Third-party aggregator sites (not Google's own
-// docs, so treated as unverified) consistently report ~20 requests/DAY for
-// the current "Flash" tier (3.5/3.6/3.7/3.8-flash, gemini-3-flash-preview)
-// and ~500/day for "Flash-Lite" tier -- a 25x difference this pool doesn't
-// currently exploit (flash-lite is only used as the very-last-resort model
-// today, for a real accuracy regression found earlier, not a quota reason).
-// Set conservatively low pending an actual account-console check.
-const GEMINI_RPD_LIMIT = Number(process.env.GEMINI_RPD_LIMIT) || 20;
+// CONFIRMED REAL 2026-09-25 from the actual account console
+// (aistudio.google.com/rate-limit, user-provided screenshot) -- no longer a
+// guess or a third-party estimate. Per-model, since Flash and Flash-Lite are
+// NOT the same limit (a flat constant here was wrong): Flash tier
+// (gemini-3.5/3.6/3.7/3.8-flash, gemini-3-flash-preview, gemini-2.5-flash)
+// is 5 RPM / 20 RPD; Flash-Lite tier (gemini-3.1/3.5-flash-lite) is a real
+// 15 RPM / 500 RPD -- 3x the RPM and 25x the RPD of regular Flash. Falls
+// back to the old conservative 2/20 for any model not in this table (e.g. a
+// future model added to GEMINI_MODEL_POOL before this table is updated).
+const GEMINI_LIMITS_BY_MODEL = {
+  "gemini-3.5-flash": { rpm: 5, rpd: 20 },
+  "gemini-3.6-flash": { rpm: 5, rpd: 20 },
+  "gemini-3.7-flash": { rpm: 5, rpd: 20 },
+  "gemini-3.8-flash": { rpm: 5, rpd: 20 },
+  "gemini-3-flash-preview": { rpm: 5, rpd: 20 },
+  "gemini-2.5-flash": { rpm: 5, rpd: 20 },
+  "gemini-2.5-flash-lite": { rpm: 10, rpd: 20 },
+  "gemini-3.1-flash-lite": { rpm: 15, rpd: 500 },
+  "gemini-3.5-flash-lite": { rpm: 15, rpd: 500 },
+};
+const GEMINI_DEFAULT_LIMITS = { rpm: 2, rpd: 20 };
+function limitsForModel(model) {
+  return GEMINI_LIMITS_BY_MODEL[model] || GEMINI_DEFAULT_LIMITS;
+}
 // Keyed by endpoint id (keyLabel:model), not bare model name -- two
 // different keys calling the same model name are two independent quotas.
 const geminiRequestTimestampsByEndpoint = new Map();
@@ -603,27 +597,29 @@ function recordGradingResult(id, success, errorMessage) {
 const geminiDayCountByModel = new Map();
 let geminiDayKey = null;
 
-function reserveGeminiDailyQuota(endpointId) {
+function reserveGeminiDailyQuota(endpointId, model) {
   const todayKey = new Date().toISOString().slice(0, 10); // UTC, matches Google's own quota reset
   if (geminiDayKey !== todayKey) {
     geminiDayKey = todayKey;
     geminiDayCountByModel.clear();
   }
+  const { rpd } = limitsForModel(model);
   const count = geminiDayCountByModel.get(endpointId) || 0;
-  if (count >= GEMINI_RPD_LIMIT) {
-    throw new Error(`Daily free Gemini grading quota (${GEMINI_RPD_LIMIT}/day) reached for ${endpointId}.`);
+  if (count >= rpd) {
+    throw new Error(`Daily free Gemini grading quota (${rpd}/day) reached for ${endpointId}.`);
   }
   geminiDayCountByModel.set(endpointId, count + 1);
 }
 
-async function waitForGeminiRpmSlot(endpointId) {
+async function waitForGeminiRpmSlot(endpointId, model) {
+  const { rpm } = limitsForModel(model);
   const timestamps = geminiRequestTimestampsByEndpoint.get(endpointId) || [];
   for (;;) {
     const now = Date.now();
     while (timestamps.length && now - timestamps[0] > 60000) {
       timestamps.shift();
     }
-    if (timestamps.length < GEMINI_RPM_LIMIT) {
+    if (timestamps.length < rpm) {
       timestamps.push(now);
       geminiRequestTimestampsByEndpoint.set(endpointId, timestamps);
       return;
@@ -686,8 +682,8 @@ const GEMINI_RESPONSE_SCHEMA = {
 
 async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText) {
   const { id, apiKey, model } = endpoint;
-  reserveGeminiDailyQuota(id);
-  await waitForGeminiRpmSlot(id);
+  reserveGeminiDailyQuota(id, model);
+  await waitForGeminiRpmSlot(id, model);
 
   const body = {
     systemInstruction: { parts: [{ text: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT }] },
