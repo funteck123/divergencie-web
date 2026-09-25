@@ -323,6 +323,50 @@ const SAMPLE_RESPONSE_FILES = {
   "A Levels|Literature in English": [
     { component: "Paper 2: Prose and Unseen (AS Level)", path: "A Levels/English Literature/Paper_2_Example_Candidate_Responses.pdf" },
   ],
+  "A Levels|Chemistry": [
+    // Paper 2/4/5 come from the iECR merge below instead -- no clean
+    // single-doc source found for those on the local archive.
+    { component: "Paper 3: Advanced Practical Skills (A Level)", path: "A Levels/Chemistry/9701_iECRs/9701_Example_Candidate_Responses_Paper_3_(for_examination_from_2016).pdf" },
+  ],
+  "A Levels|Computer Science": [
+    { component: "Paper 1: Theory Fundamentals (AS Level)", path: "A Levels/Computer Science/Past Papers/gce 9608 pp all/9608_ECR_AS-A_Level_P1_FINAL.pdf" },
+    { component: "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)", path: "A Levels/Computer Science/Past Papers/gce 9608 pp all/9608_ECR_AS-A_Level_P2_FINAL.pdf" },
+    { component: "Paper 3: Advanced Theory (A Level)", path: "A Levels/Computer Science/Past Papers/gce 9608 pp all/9608_ECR_AS-A_Level_P3_FINAL.pdf" },
+    { component: "Paper 4: Practical Programming (A Level)", path: "A Levels/Computer Science/Past Papers/gce 9608 pp all/9608_ECR_AS-A_Level_P4_FINAL.pdf" },
+  ],
+  // Downloaded 2026-09-25 from official/reputable sources (Cambridge's own
+  // site for Biology; core-docs.s3.amazonaws.com, a legitimate school
+  // resource-hosting bucket, for Business and English General Paper) --
+  // real, content-verified single documents, not guessed filenames. Only
+  // one component each was actually found and confirmed real; the rest
+  // (Biology P3-5, Business P1/3/4, Economics) turned up as dead links or
+  // login-walled Scribd/Studocu pages during this pass, not fetched.
+  "A Levels|Biology": [
+    { component: "Paper 2: AS Level Structured Questions", path: "A Levels/Biology/9700_Example_Candidate_Responses_Paper_2_(for_examination_from_2016).pdf" },
+  ],
+  "A Levels|Business": [
+    { component: "Paper 2: Business Concepts 2 (AS Level)", path: "A Levels/Business/9609_Example_Candidate_Responses_Paper_2_(for_examination_from_2017).pdf" },
+  ],
+  "A Levels|English General Paper": [
+    { component: "Component 2: Comprehension", path: "A Levels/English General Paper/8021_Example_Candidate_Responses_Paper_2_(for_examination_from_2019).pdf" },
+  ],
+  "A Levels|Literature in English|extra": [
+    // Already-present local file (not one of today's downloads) -- Paper 1
+    // had no Sample Response entry before, only Paper 2.
+    { component: "Paper 1: Drama and Poetry (AS Level)", path: "A Levels/English Literature/ilide.info-9695-example-candidate-responses-paper-1-for-examination-from-2024-pr_428f5366c6caa1d9484d644a8e6988b9 (1).pdf" },
+  ],
+  // "Paper 7" here is the file's own real cover-page label -- an old-
+  // syllabus paper number (pre-2020 9709 split Mechanics/Stats into two
+  // papers each: P4=M1, P5=M2, P6=S1, P7=S2; the current syllabus's
+  // Paper 6 IS that same Probability & Statistics 2 content, just
+  // renumbered). Confirmed by content, not just the label: zero mechanics
+  // terms (force/velocity/momentum), 5+ statistics terms
+  // (probability/distribution/variance/mean). Filed alongside the current
+  // Paper 6 document as a second resource for the same component, not as
+  // a fake "Paper 7" component the real current syllabus doesn't have.
+  "A Levels|Mathematics|extra": [
+    { component: "Paper 6: Probability & Statistics 2", path: "A Levels/Maths/9709 Past Papers Categorised/9709_Mathematics_Paper7_ECR_v1.pdf" },
+  ],
 };
 
 // iECR (interactive, per-question) sets -- unlike SAMPLE_RESPONSE_FILES
@@ -351,6 +395,19 @@ const IECR_FOLDERS = {
   // strictly worse duplicate under the same component name.
 };
 const MERGED_ECR_DIR = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "merged-ecr");
+IECR_FOLDERS["A Levels|Chemistry"] = {
+  root: "A Levels/Chemistry/9701_iECRs",
+  // Filenames are "IECRs ASA level Chemistry P<paper><variant> Q<n>[letter].pdf"
+  // -- paper is the FIRST digit only (variant is the second). Question
+  // numbers can carry a trailing letter (e.g. "Q3a"), so a bare \d+ would
+  // fail to match; \d+[a-z]? handles both, and the merge sorts by the
+  // leading number so a lettered sub-question sorts next to its parent.
+  pattern: /^IECRs ASA level Chemistry P(\d)\d Q(\d+)[a-z]?\.pdf$/i,
+  // Paper 3 deliberately excluded: SAMPLE_RESPONSE_FILES above already has
+  // a complete official single-doc ECR for it.
+  paperToComponent: { 2: "Paper 2: AS Level Structured Questions", 4: "Paper 4: A Level Structured Questions (A Level)", 5: "Paper 5: Planning, Analysis and Evaluation (A Level)" },
+};
+
 
 function listIecrFiles(def) {
   const dir = path.join(CIE_ROOT, def.root);
@@ -404,9 +461,13 @@ function crawlIecr(board, subject) {
 }
 
 function crawlSampleResponses(board, subject) {
-  const entries = SAMPLE_RESPONSE_FILES[`${board}|${subject}`];
-  if (!entries) return [];
+  const entries = [
+    ...(SAMPLE_RESPONSE_FILES[`${board}|${subject}`] || []),
+    ...(SAMPLE_RESPONSE_FILES[`${board}|${subject}|extra`] || []),
+  ];
+  if (entries.length === 0) return [];
   const docs = [];
+  let extraIndex = 0;
   for (const { component, path: relPath } of entries) {
     const fullPath = path.join(CIE_ROOT, relPath);
     if (!fs.existsSync(fullPath)) continue; // confirmed present at survey time; skip rather than crash if the archive changes later
@@ -415,7 +476,7 @@ function crawlSampleResponses(board, subject) {
       subject,
       component: `Sample Response: ${component}`,
       title: `Sample Response -- ${subject} ${component}`,
-      paperId: `sampleresponse_${board.replace(/\s+/g, "")}_${subject.replace(/\s+/g, "")}_${component.replace(/\s+/g, "")}`,
+      paperId: `sampleresponse_${board.replace(/\s+/g, "")}_${subject.replace(/\s+/g, "")}_${component.replace(/\s+/g, "")}${SAMPLE_RESPONSE_FILES[`${board}|${subject}`]?.some((e) => e.component === component && e.path === relPath) ? "" : `_extra${extraIndex++}`}`,
       sampleResponsePath: fullPath,
     });
   }
@@ -491,7 +552,8 @@ for (const key of Object.keys(ZNOTES_FILES)) {
 // crawl, since some of these subjects (English Language, Literature) have
 // no yearly qp/ms crawler at all.
 for (const key of Object.keys(SAMPLE_RESPONSE_FILES)) {
-  const [board, subject] = key.split("|");
+  const [board, subject, extraTag] = key.split("|");
+  if (extraTag) continue; // handled together with the base key inside crawlSampleResponses
   const docs = crawlSampleResponses(board, subject);
   if (docs.length === 0) continue;
   result[board] = result[board] || {};
