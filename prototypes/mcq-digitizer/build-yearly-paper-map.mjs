@@ -11,6 +11,7 @@
 // that would otherwise pollute the match.
 import fs from "fs";
 import path from "path";
+import { spawnSync } from "child_process";
 
 const ARCHIVE_ROOT = "/mnt/e/CIE/IGCSE";
 
@@ -324,6 +325,84 @@ const SAMPLE_RESPONSE_FILES = {
   ],
 };
 
+// iECR (interactive, per-question) sets -- unlike SAMPLE_RESPONSE_FILES
+// above, these are folders of one PDF per question that need merging into
+// one combined document per paper before they fit the same "one static
+// document per component" shape as everything else here. Merged output is
+// cached under data/mcq-digitizer/yearly-library/merged-ecr/ (gitignored,
+// like every other data/ output) and only rebuilt when a source folder's
+// newest file is newer than the cached merge.
+const IECR_FOLDERS = {
+  "IGCSE|Biology": {
+    root: "IGCSE/Biology/0610_iECRs",
+    pattern: /^0610_IECR_P(\d+)_Q(\d+)_v\d+\.pdf$/i,
+    paperToComponent: { 3: "Paper 3: Theory (Core)", 4: "Paper 4: Theory (Extended)", 5: "Paper 5: Practical Test", 6: "Paper 6: Alternative to Practical" },
+  },
+  "IGCSE|Chemistry": {
+    root: "IGCSE/Chemistry/0620_iECRs",
+    pattern: /^0620_P(\d+)_Q(\d+)_v\d+\.pdf$/i,
+    paperToComponent: { 3: "Paper 3: Theory (Core)", 4: "Paper 4: Theory (Extended)", 5: "Paper 5: Practical Test", 6: "Paper 6: Alternative to Practical" },
+  },
+  // A Levels|Physics deliberately has NO entry here: SAMPLE_RESPONSE_FILES
+  // above already covers it with the official single-PDF ECR booklets
+  // (ECR_AS-AL_Physics_9702_P2-5_v1.pdf), which are complete documents;
+  // the iECR folder only has a partial subset of questions per paper
+  // (e.g. Paper 2: Q1/4/5/7 only, not the full set) and would just add a
+  // strictly worse duplicate under the same component name.
+};
+const MERGED_ECR_DIR = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "merged-ecr");
+
+function listIecrFiles(def) {
+  const dir = path.join(CIE_ROOT, def.root);
+  if (!fs.existsSync(dir)) return [];
+  const files = [];
+  const scan = (d) => {
+    for (const name of fs.readdirSync(d)) {
+      const full = path.join(d, name);
+      if (fs.statSync(full).isDirectory()) { if (def.nested) scan(full); continue; }
+      const m = def.pattern.exec(name);
+      if (m) files.push({ full, paper: Number(m[1]), question: Number(m[2]) });
+    }
+  };
+  scan(dir);
+  return files;
+}
+
+function crawlIecr(board, subject) {
+  const def = IECR_FOLDERS[`${board}|${subject}`];
+  if (!def) return [];
+  const files = listIecrFiles(def);
+  if (files.length === 0) return [];
+  const byPaper = new Map();
+  for (const f of files) {
+    if (!byPaper.has(f.paper)) byPaper.set(f.paper, []);
+    byPaper.get(f.paper).push(f);
+  }
+  const docs = [];
+  fs.mkdirSync(MERGED_ECR_DIR, { recursive: true });
+  for (const [paperNum, list] of byPaper) {
+    const component = def.paperToComponent[paperNum];
+    if (!component) continue; // an unmapped paper number in the folder -- skip rather than guess a component name
+    list.sort((a, b) => a.question - b.question);
+    const newestSourceMtime = Math.max(...list.map((f) => fs.statSync(f.full).mtimeMs));
+    const outPath = path.join(MERGED_ECR_DIR, `${board.replace(/\s+/g, "")}_${subject.replace(/\s+/g, "")}_P${paperNum}.pdf`);
+    const needsRebuild = !fs.existsSync(outPath) || fs.statSync(outPath).mtimeMs < newestSourceMtime;
+    if (needsRebuild) {
+      const res = spawnSync("python3", [path.join(process.cwd(), "merge_iecr.py"), outPath, ...list.map((f) => f.full)], { encoding: "utf8" });
+      if (res.status !== 0) { console.log(`iECR merge failed for ${board} ${subject} Paper ${paperNum}: ${res.stderr}`); continue; }
+    }
+    docs.push({
+      board,
+      subject,
+      component: `Sample Response: ${component}`,
+      title: `Sample Response -- ${subject} ${component} (${list.length} questions)`,
+      paperId: `sampleresponse_${board.replace(/\s+/g, "")}_${subject.replace(/\s+/g, "")}_P${paperNum}`,
+      sampleResponsePath: outPath,
+    });
+  }
+  return docs;
+}
+
 function crawlSampleResponses(board, subject) {
   const entries = SAMPLE_RESPONSE_FILES[`${board}|${subject}`];
   if (!entries) return [];
@@ -422,6 +501,22 @@ for (const key of Object.keys(SAMPLE_RESPONSE_FILES)) {
     result[board][subject][doc.component].push(doc);
   }
   console.log(`${board} ${subject}: ${docs.length} Sample Response file(s) found`);
+}
+
+// iECR sets merge into the same "Sample Response: <component>" shape --
+// a subject present in BOTH registries (none currently overlap) would
+// have its per-component arrays simply extended, not overwritten.
+for (const key of Object.keys(IECR_FOLDERS)) {
+  const [board, subject] = key.split("|");
+  const docs = crawlIecr(board, subject);
+  if (docs.length === 0) continue;
+  result[board] = result[board] || {};
+  result[board][subject] = result[board][subject] || {};
+  for (const doc of docs) {
+    result[board][subject][doc.component] = result[board][subject][doc.component] || [];
+    result[board][subject][doc.component].push(doc);
+  }
+  console.log(`${board} ${subject}: ${docs.length} merged iECR Sample Response file(s) found`);
 }
 
 const outPath = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");

@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. See [commit
 
 ### Features
 
+* **mcq-digitizer:** added the per-question "iECR" Sample Response sets (IGCSE Biology and Chemistry, 8 papers) -- these come as one PDF per question rather than one per paper, so a new merge step (`merge_iecr.py`, PyMuPDF) combines them into a single document per component at crawl time, cached and only rebuilt when a source file changes. A Level Physics also has an iECR set but was deliberately left out of this: it only covers a partial subset of questions per paper, and would have duplicated the already-complete official ECR booklet added for that subject last commit.
+
 * **mcq-digitizer:** added Sample Response (Example Candidate Responses) as a component-level yearly resource, same static-document pattern as ZNotes -- 15 real files across IGCSE Physics, IGCSE First Language English, A Level Physics, A Level Mathematics (all 6 papers), A Level English Language and A Level Literature in English. Scoped to v1: the single-PDF-per-paper sets only; IGCSE Biology/Chemistry and A Level Physics also have "iECR" sets (one file per question, 19-21+ files each) left for a follow-up since they need per-question wiring, not this component-level shape.
 
 * **mcq-digitizer (TKT-0269):** Test mode now autosaves the in-progress attempt (chosen answers, flags, written answers, and the timer) in the browser every few seconds and whenever the tab is hidden or closed. If a tab crashes or closes mid-test, reopening Test mode on the same paper offers "Resume it?". The save is cleared on submit or cancel, ignored after 24 hours, and only reused for the same account and paper. It is per browser, not synced across devices.
