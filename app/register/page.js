@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { api } from "@/lib/client";
-import { COUNTRY_CODE_GROUPS, DEFAULT_COUNTRY_DIAL } from "@/lib/countryCodes";
+import { INTAKE_COUNTRIES } from "@/lib/cognitoCountries";
 
 const REQUESTED_TYPE_LABEL = {
   Trial: "trial",
@@ -50,39 +50,27 @@ const SUBJECT_OPTIONS = [
 ];
 const HEARD_OPTIONS = ["Social Media", "Referral", "Newspaper"];
 
-// Country code select + number. min-w-0 / max-w on the pieces is what stops
-// the row from forcing the page wider than a phone (TKT-0283).
-function PhoneField({ label, dial, onDial, number, onNumber, required, ariaLabel }) {
+// One international-format box, like the Cognito form: the applicant types the
+// country code themselves (WhatsApp label says "Include country code!").
+// Value must start with + and then digits, so numbers stay usable for WhatsApp.
+const INTL_PHONE_PATTERN = "\\+[0-9][0-9 \\-]{6,}";
+function PhoneField({ label, hint, value, onChange, placeholder }) {
   return (
     <div className="space-y-2">
       <label className={LABEL_CLASS}>{label}</label>
-      <div className="flex gap-2 min-w-0">
-        <select
-          className={`${FIELD_CLASS} w-auto flex-none min-w-0 max-w-[38%]`}
-          value={dial}
-          onChange={(e) => onDial(e.target.value)}
-          aria-label={ariaLabel}
-        >
-          {COUNTRY_CODE_GROUPS.map((group) => (
-            <optgroup key={group.label} label={group.label}>
-              {group.options.map((c) => (
-                <option key={`${group.label}-${c.name}`} value={c.dial}>
-                  {c.dial} {c.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <input
-          type="tel"
-          className={`${FIELD_CLASS} flex-1 min-w-0`}
-          value={number}
-          onChange={(e) => onNumber(e.target.value)}
-          placeholder="Phone number"
-          required={required}
-          aria-label={`${label} number`}
-        />
-      </div>
+      <input
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        className={`${FIELD_CLASS} w-full`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        pattern={INTL_PHONE_PATTERN}
+        title="Start with + and the country code, for example +44 7000 000000"
+        required
+      />
+      {hint && <p className="text-[11px] font-medium text-[var(--text-muted)]">{hint}</p>}
     </div>
   );
 }
@@ -93,7 +81,6 @@ function RegisterForm() {
   const [name, setName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [countryDial, setCountryDial] = useState(DEFAULT_COUNTRY_DIAL);
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whyDivergenCIE, setWhyDivergenCIE] = useState("");
   const [resume, setResume] = useState(null);
@@ -102,7 +89,6 @@ function RegisterForm() {
   );
   const [gender, setGender] = useState("");
   const [location, setLocation] = useState("");
-  const [parentDial, setParentDial] = useState(DEFAULT_COUNTRY_DIAL);
   const [parentNumber, setParentNumber] = useState("");
   const [parentEmail, setParentEmail] = useState("");
   const [schoolName, setSchoolName] = useState("");
@@ -131,12 +117,12 @@ function RegisterForm() {
       const formData = new FormData();
       formData.set("name", isStudent ? `${name} ${lastName}`.trim() : name);
       formData.set("email", email);
-      formData.set("whatsappNumber", `${countryDial} ${whatsappNumber}`.trim());
+      formData.set("whatsappNumber", whatsappNumber.trim());
       formData.set("requestedType", requestedType);
       if (isStudent) {
         formData.set("gender", gender);
         formData.set("location", location);
-        formData.set("parentContactNumber", `${parentDial} ${parentNumber}`.trim());
+        formData.set("parentContactNumber", parentNumber.trim());
         formData.set("parentEmail", parentEmail);
         formData.set("schoolName", schoolName);
         formData.set("studying", studying.join(", "));
@@ -180,11 +166,14 @@ function RegisterForm() {
   }
 
   return (
-    <main className="h-screen flex bg-white dark:bg-[var(--bg-primary)] overflow-hidden">
+    <main className="h-screen flex bg-[var(--navy)] overflow-hidden relative">
+      {/* TKT-0283: study-desk illustration behind the whole page; the dark wash keeps text readable. */}
+      <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url(/assets/images/register_bg.jpg)" }} />
+      <div aria-hidden="true" className="absolute inset-0" style={{ backgroundColor: "rgba(26, 60, 94, 0.35)" }} />
       {/* Left Panel: Brand (Desktop Only) -- same treatment as login,
           shorter content (no numeric stats/testimonial for this ticket's
           scope, see file-level comment above). */}
-      <div className="hidden lg:flex flex-1 bg-[var(--navy)] relative overflow-hidden flex-col justify-center px-12 py-[2vh] text-white">
+      <div className="hidden lg:flex flex-1 relative overflow-hidden flex-col justify-center px-12 py-[2vh] text-white">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,var(--gold)_0%,transparent_60%)]"></div>
           <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_bottom_right,var(--sky)_0%,transparent_60%)]"></div>
@@ -211,12 +200,12 @@ function RegisterForm() {
           underneath the absolute "Back to site" link instead of below
           it. Top padding clears that link; the longer form scrolls
           naturally from the top instead. */}
-      <div className="flex-1 flex flex-col justify-start px-8 md:px-12 pt-20 pb-8 relative overflow-y-auto">
-        <Link href="/" className="absolute top-6 left-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] hover:text-[var(--navy)] dark:hover:text-white transition-colors group">
+      <div className="flex-1 flex flex-col justify-start px-4 sm:px-8 md:px-12 pt-20 pb-8 relative overflow-y-auto z-10">
+        <Link href="/" className="absolute top-6 left-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-colors group z-10">
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to site
         </Link>
 
-        <div className="max-w-md w-full mx-auto">
+        <div className="max-w-md w-full mx-auto relative z-10 bg-white dark:bg-[var(--bg-primary)] p-6 sm:p-8 shadow-2xl mb-8">
           <div className="mb-[2vh]">
             <h2 className="text-4xl font-black text-[var(--navy)] dark:text-white uppercase mb-2">Apply</h2>
             <p className="text-[var(--text-muted)] font-medium">Tell us a bit about you to get started.</p>
@@ -259,23 +248,28 @@ function RegisterForm() {
               <>
                 <div className="space-y-2">
                   <label className={LABEL_CLASS}>Gender (optional)</label>
-                  <input className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)} />
+                  <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className={LABEL_CLASS}>Location (optional)</label>
-                  <input className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Country" />
+                  <select className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)}>
+                    <option value="">Country</option>
+                    {INTAKE_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
               </>
             )}
 
             <PhoneField
-              label="WhatsApp number"
-              dial={countryDial}
-              onDial={setCountryDial}
-              number={whatsappNumber}
-              onNumber={setWhatsappNumber}
-              required
-              ariaLabel="Country code"
+              label={isStudent ? "WhatsApp number (include country code!)" : "WhatsApp number"}
+              value={whatsappNumber}
+              onChange={setWhatsappNumber}
+              placeholder="+44 7000 000000"
             />
 
             <div className="space-y-2">
@@ -293,12 +287,9 @@ function RegisterForm() {
               <>
                 <PhoneField
                   label="Parent's contact number"
-                  dial={parentDial}
-                  onDial={setParentDial}
-                  number={parentNumber}
-                  onNumber={setParentNumber}
-                  required
-                  ariaLabel="Parent country code"
+                  value={parentNumber}
+                  onChange={setParentNumber}
+                  placeholder="Phone (International)"
                 />
                 <div className="space-y-2">
                   <label className={LABEL_CLASS}>Parent&apos;s email (optional)</label>
