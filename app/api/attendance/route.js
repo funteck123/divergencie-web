@@ -137,14 +137,42 @@ function resolveAcceptance(existingForSubject, isSelf) {
   return { accepted: !hasSelf, demoteOthers: false };
 }
 
-// body: { scheduleItemId, userId, status, loggedDuration }
+// TKT-0260: a Teacher must attach the class topic and the recording link to
+// every attendance record they log (about themselves or about a Student).
+// Validated here, not just in the UI, so no client can skip it.
+function validateTeacherClassInfo(topicName, recordingLink) {
+  const topic = (topicName || "").trim();
+  const link = (recordingLink || "").trim();
+  if (!topic) return { error: "Class topic name is required when a Teacher logs attendance." };
+  if (topic.length > 200) return { error: "Class topic name must be 200 characters or fewer." };
+  if (!link) return { error: "Recording link is required when a Teacher logs attendance." };
+  let url;
+  try {
+    url = new URL(link);
+  } catch {
+    return { error: "Recording link must be a full web address, e.g. https://..." };
+  }
+  if (!["http:", "https:"].includes(url.protocol)) return { error: "Recording link must start with http:// or https://" };
+  if (link.length > 500) return { error: "Recording link must be 500 characters or fewer." };
+  return { topic, link };
+}
+
+// body: { scheduleItemId, userId, status, loggedDuration, topicName?, recordingLink? }
+// (topicName + recordingLink are required when the caller is a Teacher.)
 // `userId` is the subject the record is about; the actual author is always
 // the caller's own session (never client-supplied) -- LoggedBy previously
 // (bug) always equaled the subject's id even when someone else logged it.
 export async function POST(req) {
-  const { scheduleItemId, userId, status, loggedDuration } = await req.json();
+  const { scheduleItemId, userId, status, loggedDuration, topicName, recordingLink } = await req.json();
   const { session, error } = requireSession(req);
   if (error) return error;
+
+  let classInfo = null;
+  if (session.userType === "Teacher") {
+    const v = validateTeacherClassInfo(topicName, recordingLink);
+    if (v.error) return NextResponse.json({ error: v.error }, { status: 400 });
+    classInfo = v;
+  }
 
   const db = await readDB();
 
@@ -182,6 +210,7 @@ export async function POST(req) {
     LoggedBy: session.userId,
     LoggedAt: new Date().toISOString(),
     AcceptedForBilling: accepted,
+    ...(classInfo ? { TopicName: classInfo.topic, RecordingLink: classInfo.link } : {}),
   };
 
   const insertedId = await insertAttendanceIfNew(db, item);

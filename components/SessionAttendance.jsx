@@ -34,11 +34,22 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState(null);
+  // TKT-0260: a Teacher attaches the class topic + recording link to every
+  // record they log. One shared pair per session panel, prefilled from any
+  // record already saved for this session so it's typed once, not per person.
+  const [topicName, setTopicName] = useState("");
+  const [recordingLink, setRecordingLink] = useState("");
+  const isTeacher = viewerType === "Teacher" && !isManagement;
 
   async function load() {
     try {
       const d = await api(`/api/attendance?scheduleItemId=${scheduleId}`);
       setData(d);
+      const saved = (d.attendanceItems || []).find((a) => a.TopicName && a.RecordingLink);
+      if (saved) {
+        setTopicName((cur) => cur || saved.TopicName);
+        setRecordingLink((cur) => cur || saved.RecordingLink);
+      }
     } catch (e) {
       setError(e.message);
     }
@@ -50,10 +61,20 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
 
   async function log(subjectUserId, status, loggedDuration) {
     setError("");
+    if (isTeacher && (!topicName.trim() || !recordingLink.trim())) {
+      setError("Fill in the class topic and the recording link first, they are required for every attendance you log.");
+      return;
+    }
     try {
       await api("/api/attendance", {
         method: "POST",
-        body: JSON.stringify({ scheduleItemId: scheduleId, userId: subjectUserId, status, loggedDuration }),
+        body: JSON.stringify({
+          scheduleItemId: scheduleId,
+          userId: subjectUserId,
+          status,
+          loggedDuration,
+          ...(isTeacher ? { topicName: topicName.trim(), recordingLink: recordingLink.trim() } : {}),
+        }),
       });
       load();
       onLogged?.();
@@ -120,6 +141,33 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
           </button>
         </p>
       )}
+      {isTeacher && (
+        <div className="p-2 space-y-2" style={{ border: "1px solid var(--border)", borderRadius: 6 }}>
+          <p className="font-medium">Class details (required for every attendance you log)</p>
+          <label className="block">
+            <span style={{ color: "var(--muted)" }}>Class topic name</span>
+            <input
+              className="field w-full"
+              type="text"
+              maxLength={200}
+              value={topicName}
+              onChange={(e) => setTopicName(e.target.value)}
+              placeholder="e.g. Quadratic equations, factorising"
+            />
+          </label>
+          <label className="block">
+            <span style={{ color: "var(--muted)" }}>Recording link</span>
+            <input
+              className="field w-full"
+              type="url"
+              maxLength={500}
+              value={recordingLink}
+              onChange={(e) => setRecordingLink(e.target.value)}
+              placeholder="https://..."
+            />
+          </label>
+        </div>
+      )}
       {roster.length === 0 && <p style={{ color: "var(--muted)" }}>No one enrolled in this session.</p>}
       {roster.map((person) => {
         const records = attendanceItems.filter((a) => a.UserID === person.userId);
@@ -147,6 +195,16 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
                     <span className="text-xs" style={{ color: "var(--muted)" }}>
                       {formatDateTime(r.LoggedAt)}
                     </span>
+                  )}
+                  {r.TopicName && (
+                    <span className="text-xs" style={{ color: "var(--muted)" }}>
+                      Topic: {r.TopicName}
+                    </span>
+                  )}
+                  {r.RecordingLink && /^https?:\/\//i.test(r.RecordingLink) && (
+                    <a className="text-xs" href={r.RecordingLink} target="_blank" rel="noopener noreferrer">
+                      Recording
+                    </a>
                   )}
                   {isManagement && r.AcceptedForBilling === false && (
                     <button className="btn-ghost" onClick={() => markCorrect(r.AttendanceID)}>
