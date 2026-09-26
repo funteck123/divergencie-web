@@ -39,15 +39,28 @@ export async function GET(req) {
     return NextResponse.json(library, { status: upstream.status });
   }
 
+  // TKT-0258 (2026-09-21 audit): the flattened `titles` map below discards
+  // which board+subject each paper belongs to -- fine for just showing a
+  // readable title, not enough to fill in a chapter NAME for a subject
+  // outside the viewer's current enrollment, since the client can't
+  // reliably reconstruct "<board> <subject>" (as used everywhere else,
+  // e.g. "A Levels Mathematics") by parsing it back out of the paper's
+  // filename text (which spells it differently -- "A Level Maths"). This
+  // full unfiltered `library` object already has the real board/subject
+  // structure right here; keeping it (as `subjects`, qpId -> "board
+  // subject") instead of throwing it away fixes that at the source.
   const titles = {};
-  for (const subjects of Object.values(library)) {
-    for (const components of Object.values(subjects)) {
+  const subjects = {};
+  for (const [board, boardSubjects] of Object.entries(library)) {
+    for (const [subject, components] of Object.entries(boardSubjects)) {
       for (const papers of Object.values(components)) {
         for (const p of papers) {
-          if (p.qpId) titles[p.qpId] = p.title;
+          if (!p.qpId) continue;
+          titles[p.qpId] = p.title;
+          subjects[p.qpId] = `${board} ${subject}`;
         }
       }
     }
   }
-  return NextResponse.json(titles);
+  return NextResponse.json({ titles, subjects });
 }

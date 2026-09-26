@@ -924,6 +924,17 @@ function chapterKey(title) {
   const name = chapterNameOf(title);
   return name ? `${num} ${name}` : num;
 }
+
+// TKT-0258 (2026-09-21 audit): chapterNameByKey was only ever built from
+// the ENROLLMENT-scoped library -- fine for a subject the student is
+// currently enrolled in, but any subject outside current enrollment (or
+// whose enrollment has ended) had no name in the table at all, showing a
+// bare chapter number in history/chart/leaderboard for those. Fixed at
+// GET /api/mcq/paper-titles, which now also returns each paper's real
+// "<board> <subject>" (see that route's own comment for why this can't be
+// reliably reparsed from the filename text client-side -- e.g. the real
+// key is "A Levels Mathematics" but the filename spells it "A Level
+// Maths"). loadLibrary() below fills chapterNameByKey from it.
 function chapterLabel(subject, chapter) {
   if (!chapter) return "—"; // em dash, matches this file's existing "no chapter" placeholder
   if (/\s/.test(chapter)) return chapter; // already a full "N Name" key (chapterKey format)
@@ -981,9 +992,19 @@ async function loadLibrary() {
     // longer) show -- a past attempt must still show its real title, not a
     // raw Drive file id, even after the subject falls outside enrollment.
     if (titlesRes && titlesRes.ok) {
-      const allTitles = await titlesRes.json().catch(() => ({}));
+      const titlesBody = await titlesRes.json().catch(() => ({}));
+      const allTitles = titlesBody.titles || {};
+      const allSubjects = titlesBody.subjects || {};
       for (const [qpId, title] of Object.entries(allTitles)) {
         if (!(qpId in paperTitleById)) paperTitleById[qpId] = title;
+        // Fill chapter-name gaps left by the enrollment-scoped pass above
+        // (TKT-0258) -- never overwrites an entry that pass already set.
+        const fullSubject = allSubjects[qpId];
+        const chNum = chapterOf(title);
+        const chName = chapterNameOf(title);
+        if (fullSubject && chNum && chName && !chapterNameByKey[`${fullSubject}::${chNum}`]) {
+          chapterNameByKey[`${fullSubject}::${chNum}`] = chName;
+        }
       }
     }
     statusEl.style.display = "none";
