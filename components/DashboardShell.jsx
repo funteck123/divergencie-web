@@ -66,12 +66,14 @@ function ReportIssueButton() {
                 <textarea
                   className="field"
                   rows={4}
+                  aria-label="What went wrong?"
                   placeholder="What went wrong?"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
                 <input
                   className="field"
+                  aria-label="Attachment URL (optional)"
                   placeholder="Attachment URL (optional — screenshot, doc, etc.)"
                   value={attachmentUrl}
                   onChange={(e) => setAttachmentUrl(e.target.value)}

@@ -311,7 +311,7 @@ function Body({ user }) {
           </p>
         ) : (
           <div className="flex gap-3">
-            <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+            <select className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
               <option value="">Select a service…</option>
               {eligibleServices.map((s) => (
                 <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
@@ -335,7 +335,7 @@ function Body({ user }) {
             assigned once your request is approved.
           </p>
           <div className="flex gap-3">
-            <select className="field" value={trialServiceId} onChange={(e) => setTrialServiceId(e.target.value)}>
+            <select className="field" aria-label="Trial service" value={trialServiceId} onChange={(e) => setTrialServiceId(e.target.value)}>
               <option value="">Select a service…</option>
               {eligibleTrialServices.map((s) => (
                 <option key={s.ServiceID} value={s.ServiceID} disabled={requestedTrialServiceIds.has(s.ServiceID)}>
@@ -371,7 +371,7 @@ function TaskForm({ onSubmit }) {
         }
       }}
     >
-      <input className="field" placeholder="Link to your task submission…" value={link} onChange={(e) => setLink(e.target.value)} />
+      <input className="field" aria-label="Task submission link" placeholder="Link to your task submission…" value={link} onChange={(e) => setLink(e.target.value)} />
       <button className="btn" type="submit" disabled={saving}>
         {saving ? "Submitting…" : "Submit"}
       </button>
@@ -397,7 +397,7 @@ function TrialFeedbackForm({ onSubmit }) {
         }
       }}
     >
-      <input className="field" placeholder="How did the trial go?" value={text} onChange={(e) => setText(e.target.value)} />
+      <input className="field" aria-label="Trial feedback" placeholder="How did the trial go?" value={text} onChange={(e) => setText(e.target.value)} />
       <button className="btn" type="submit" disabled={saving}>
         {saving ? "Submitting…" : "Submit"}
       </button>

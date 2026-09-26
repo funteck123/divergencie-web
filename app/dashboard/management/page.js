@@ -307,6 +307,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
     return (
       <select
         className="field"
+        aria-label="Instructor account"
         value={facilitatorUserId}
         onChange={(e) => {
           const picked = candidateUsers.find((u) => u.UserID === e.target.value);
@@ -324,18 +325,19 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
   }
   return (
     <span className="flex gap-1">
-      <input
+      <Labeled label="Instructor"><input
         className="field"
         placeholder="Instructor"
         value={facilitator}
         onChange={(e) => onChange({ facilitator: e.target.value, facilitatorUserId: "" })}
-      />
+      /></Labeled>
       {candidateUsers.length > 0 && (
         <select
           className="field"
           style={{ maxWidth: 40 }}
           value=""
           title="Link to an account instead"
+          aria-label="Link instructor to an account"
           onChange={(e) => {
             const picked = candidateUsers.find((u) => u.UserID === e.target.value);
             if (picked) onChange({ facilitator: picked.Name, facilitatorUserId: picked.UserID });
@@ -350,6 +352,18 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
         </select>
       )}
     </span>
+  );
+}
+
+// TKT-0280: a placeholder is not a label -- it disappears the moment the
+// field has a value (so a filled Hrs/Instructor/Rate box showed no hint of
+// what it was). Wraps a control in a real, always-visible caption.
+function Labeled({ label, children }) {
+  return (
+    <label className="text-xs block" style={{ color: "var(--muted)" }}>
+      {label}
+      <span style={{ display: "block" }}>{children}</span>
+    </label>
   );
 }
 
@@ -1385,7 +1399,7 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
         Time
         <input className="field" style={{ width: 100, display: "block" }} type="time" value={time} onChange={(e) => setTime(e.target.value)} />
       </label>
-      <input
+      <Labeled label="Hours"><input
         className="field"
         style={{ width: 70 }}
         type="number"
@@ -1394,14 +1408,14 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
         placeholder="Hrs"
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
-      />
-      <input
+      /></Labeled>
+      <Labeled label="Instructor"><input
         className="field"
         style={{ width: 130 }}
         placeholder="Instructor"
         value={facilitator}
         onChange={(e) => setFacilitator(e.target.value)}
-      />
+      /></Labeled>
       <button
         className="btn"
         type="button"
@@ -1435,20 +1449,20 @@ function InterviewOutcomeForm({ initialFeedback, initialLink, onSendOffer, onWai
 
   return (
     <div className="space-y-2">
-      <input
+      <Labeled label="Feedback on task"><input
         className="field"
         style={{ width: 160 }}
         placeholder="Feedback on task…"
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
-      />
-      <input
+      /></Labeled>
+      <Labeled label="Offer letter link"><input
         className="field"
         style={{ width: 160 }}
         placeholder="Offer letter link…"
         value={offerLetterLink}
         onChange={(e) => setOfferLetterLink(e.target.value)}
-      />
+      /></Labeled>
       <div className="flex gap-2">
         <button
           className="btn"
@@ -1487,20 +1501,20 @@ function OfferSentControls({ item, onSave, onUnsend }) {
   if (editing) {
     return (
       <div className="space-y-2">
-        <input
+        <Labeled label="Feedback on task"><input
           className="field"
           style={{ width: 160 }}
           placeholder="Feedback on task…"
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
-        />
-        <input
+        /></Labeled>
+        <Labeled label="Offer letter link"><input
           className="field"
           style={{ width: 160 }}
           placeholder="Offer letter link…"
           value={offerLetterLink}
           onChange={(e) => setOfferLetterLink(e.target.value)}
-        />
+        /></Labeled>
         <div className="flex gap-2">
           <button
             className="btn"
@@ -2614,7 +2628,7 @@ function CreateAccount({ onCreated, users }) {
           </select>
         </div>
 
-        <input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <Labeled label="Name"><input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required /></Labeled>
 
         <div>
           <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
@@ -2648,26 +2662,26 @@ function CreateAccount({ onCreated, users }) {
 
         {ROLE_ELIGIBLE.includes(userType) && (
           <>
-            <input className="field" placeholder="Role (e.g. SM Assistant)" value={role} onChange={(e) => setRole(e.target.value)} />
-            <input
+            <Labeled label="Role"><input className="field" placeholder="Role (e.g. SM Assistant)" value={role} onChange={(e) => setRole(e.target.value)} /></Labeled>
+            <Labeled label="WhatsApp Number"><input
               className="field"
               placeholder="WhatsApp Number"
               value={whatsappNumber}
               onChange={(e) => setWhatsappNumber(e.target.value)}
-            />
-            <input
+            /></Labeled>
+            <Labeled label="Email"><input
               className="field"
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
+            /></Labeled>
+            <Labeled label="Passport / IC Number"><input
               className="field"
               placeholder="Passport / IC Number"
               value={passportNumber}
               onChange={(e) => setPassportNumber(e.target.value)}
-            />
+            /></Labeled>
           </>
         )}
 
@@ -2681,29 +2695,29 @@ function CreateAccount({ onCreated, users }) {
                 </option>
               ))}
             </select>
-            <input
+            <Labeled label="Work Folder URL"><input
               className="field"
               placeholder="Work Folder URL (Google Drive)"
               value={workFolderUrl}
               onChange={(e) => setWorkFolderUrl(e.target.value)}
-            />
-            <input
+            /></Labeled>
+            <Labeled label="Timesheet URL"><input
               className="field"
               placeholder="Timesheet URL"
               value={timesheetUrl}
               onChange={(e) => setTimesheetUrl(e.target.value)}
-            />
+            /></Labeled>
           </>
         )}
 
         {userType === "Teacher" && (
-          <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
+          <Labeled label="Batch"><input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} /></Labeled>
         )}
 
         {userType === "Student" && (
           <>
-            <input className="field" placeholder="Course" value={course} onChange={(e) => setCourse(e.target.value)} />
-            <input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} />
+            <Labeled label="Course"><input className="field" placeholder="Course" value={course} onChange={(e) => setCourse(e.target.value)} /></Labeled>
+            <Labeled label="Batch"><input className="field" placeholder="Batch" value={batch} onChange={(e) => setBatch(e.target.value)} /></Labeled>
           </>
         )}
 
@@ -3220,7 +3234,7 @@ function Services() {
         <h2 className="font-semibold mb-4">{editingId ? `Edit Service (${editingId})` : "Create Service"}</h2>
         <form onSubmit={submit} className="space-y-3">
           <div className="flex gap-2 items-center">
-            <input
+            <Labeled label="Service name"><input
               className="field"
               placeholder="Service name"
               value={effectiveName}
@@ -3229,7 +3243,7 @@ function Services() {
                 setNameManuallyEdited(true);
               }}
               required
-            />
+            /></Labeled>
             {/* Mobile UI fix: this row (input + button, both flex-shrinking
                 by default) let the button lose the fight for space on a
                 narrow screen, wrapping its own "↺ Suggest" text onto two
@@ -3257,10 +3271,10 @@ function Services() {
               ))}
             </div>
           </div>
-          <EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" />
+          <Labeled label="Type"><EditableCombobox value={type} onChange={setType} options={typeOptions} placeholder="Type" /></Labeled>
           {isRoleBasedService && (
             <>
-              <input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} />
+              <Labeled label="Role"><input className="field" placeholder="Role (job title)" value={role} onChange={(e) => setRole(e.target.value)} /></Labeled>
               {isStaffRole && (
                 <div>
                   <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
@@ -3279,31 +3293,31 @@ function Services() {
           )}
           {isAdmissions && (
             <>
-              <input className="field" placeholder="Country (e.g. UK)" value={country} onChange={(e) => setCountry(e.target.value)} />
-              <input className="field" placeholder="University" value={university} onChange={(e) => setUniversity(e.target.value)} />
+              <Labeled label="Country"><input className="field" placeholder="Country (e.g. UK)" value={country} onChange={(e) => setCountry(e.target.value)} /></Labeled>
+              <Labeled label="University"><input className="field" placeholder="University" value={university} onChange={(e) => setUniversity(e.target.value)} /></Labeled>
             </>
           )}
           {cohortEligible && (
             <>
-              <input className="field" placeholder="Curriculum / Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} />
-              <input
+              <Labeled label="Curriculum / Board"><input className="field" placeholder="Curriculum / Board (e.g. Cambridge)" value={board} onChange={(e) => setBoard(e.target.value)} /></Labeled>
+              <Labeled label="Course"><input
                 className="field"
                 placeholder="Course (e.g. IGCSE, A-Level, SAT)"
                 value={course}
                 onChange={(e) => setCourse(e.target.value)}
-              />
-              <input
+              /></Labeled>
+              <Labeled label="Subject Code"><input
                 className="field"
                 placeholder="Subject Code"
                 value={subjectCode}
                 onChange={(e) => setSubjectCode(e.target.value)}
-              />
-              <input
+              /></Labeled>
+              <Labeled label="Subject Name"><input
                 className="field"
                 placeholder="Subject Name"
                 value={subjectName}
                 onChange={(e) => setSubjectName(e.target.value)}
-              />
+              /></Labeled>
             </>
           )}
           {cohortEligible && (
@@ -3311,30 +3325,30 @@ function Services() {
               <label className="text-sm block" style={{ color: "var(--muted)" }}>
                 Resource links (shown on the Student&apos;s and Teacher&apos;s own Resources section for this service)
               </label>
-              <input
+              <Labeled label="Recordings link"><input
                 className="field"
                 placeholder="Recordings link"
                 value={recordingsLink}
                 onChange={(e) => setRecordingsLink(e.target.value)}
-              />
-              <input
+              /></Labeled>
+              <Labeled label="Syllabus link"><input
                 className="field"
                 placeholder="Syllabus link"
                 value={syllabusLink}
                 onChange={(e) => setSyllabusLink(e.target.value)}
-              />
-              <input
+              /></Labeled>
+              <Labeled label="Worksheets link"><input
                 className="field"
                 placeholder="Worksheets link"
                 value={worksheetsLink}
                 onChange={(e) => setWorksheetsLink(e.target.value)}
-              />
-              <input
+              /></Labeled>
+              <Labeled label="Google Classroom link"><input
                 className="field"
                 placeholder="Google Classroom link"
                 value={gcrLink}
                 onChange={(e) => setGcrLink(e.target.value)}
-              />
+              /></Labeled>
             </>
           )}
 
@@ -3344,8 +3358,8 @@ function Services() {
             </label>
             {links.map((l, li) => (
               <div key={li} className="flex gap-2 items-center">
-                <input className="field" style={{ maxWidth: 160 }} placeholder="Link name (e.g. Answers)" value={l.name} onChange={(e) => updateLink(li, "name", e.target.value)} />
-                <input className="field" placeholder="URL" value={l.url} onChange={(e) => updateLink(li, "url", e.target.value)} />
+                <Labeled label="Link name"><input className="field" style={{ maxWidth: 160 }} placeholder="Link name (e.g. Answers)" value={l.name} onChange={(e) => updateLink(li, "name", e.target.value)} /></Labeled>
+                <Labeled label="URL"><input className="field" placeholder="URL" value={l.url} onChange={(e) => updateLink(li, "url", e.target.value)} /></Labeled>
                 {links.length > 1 && (
                   <button type="button" className="btn-ghost" onClick={() => removeLink(li)}>
                     ✕
@@ -3375,15 +3389,15 @@ function Services() {
                       ))}
                     </select>
                   </label>
-                  <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateFlatRate(ri, "rate", e.target.value)} />
-                  <input
+                  <Labeled label="Rate"><input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateFlatRate(ri, "rate", e.target.value)} /></Labeled>
+                  <Labeled label="Description"><input
                     className="field"
                     style={{ maxWidth: 120 }}
                     placeholder="Description"
                     maxLength={40}
                     value={r.description}
                     onChange={(e) => updateFlatRate(ri, "description", e.target.value)}
-                  />
+                  /></Labeled>
                   <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Billing type
                     <select className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
@@ -3422,14 +3436,14 @@ function Services() {
                     Time
                     <input className="field" style={{ display: "block" }} type="time" value={o.time} onChange={(e) => updateFlatOcc(oi, "time", e.target.value)} />
                   </label>
-                  <input
+                  <Labeled label="Hours"><input
                     className="field"
                     type="number"
                     step="0.5"
                     placeholder="Hrs"
                     value={o.duration}
                     onChange={(e) => updateFlatOcc(oi, "duration", e.target.value)}
-                  />
+                  /></Labeled>
                   <FacilitatorInput
                     facilitator={o.facilitator}
                     facilitatorUserId={o.facilitatorUserId}
@@ -3466,12 +3480,12 @@ function Services() {
               {components.map((c, ci) => (
                 <div key={ci} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "0.6rem" }} className="space-y-2">
                   <div className="flex gap-2 items-center">
-                    <input
+                    <Labeled label="Component name"><input
                       className="field"
                       placeholder="Component name (optional — e.g. Pure Mathematics 1)"
                       value={c.componentName}
                       onChange={(e) => updateComponent(ci, "componentName", e.target.value)}
-                    />
+                    /></Labeled>
                     {components.length > 1 && (
                       <button type="button" className="btn-ghost" onClick={() => removeComponent(ci)}>
                         ✕ Component
@@ -3492,12 +3506,12 @@ function Services() {
                             />
                           </div>
                         ) : (
-                          <input
+                          <Labeled label="Batch name"><input
                             className="field"
                             placeholder="Batch name (e.g. B14)"
                             value={b.batchName}
                             onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
-                          />
+                          /></Labeled>
                         )}
                         {c.batches.length > 1 && (
                           <button type="button" className="btn-ghost" onClick={() => removeBatch(ci, bi)}>
@@ -3522,15 +3536,15 @@ function Services() {
                                 ))}
                               </select>
                             </label>
-                            <input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} />
-                            <input
+                            <Labeled label="Rate"><input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} /></Labeled>
+                            <Labeled label="Description"><input
                               className="field"
                               style={{ maxWidth: 120 }}
                               placeholder="Description"
                               maxLength={40}
                               value={r.description}
                               onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
-                            />
+                            /></Labeled>
                             <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Billing type
                               <select className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
@@ -3582,14 +3596,14 @@ function Services() {
                               Time
                               <input className="field" style={{ display: "block" }} type="time" value={o.time} onChange={(e) => updateOcc(ci, bi, oi, "time", e.target.value)} />
                             </label>
-                            <input
+                            <Labeled label="Hours"><input
                               className="field"
                               type="number"
                               step="0.5"
                               placeholder="Hrs"
                               value={o.duration}
                               onChange={(e) => updateOcc(ci, bi, oi, "duration", e.target.value)}
-                            />
+                            /></Labeled>
                             <FacilitatorInput
                               facilitator={o.facilitator}
                               facilitatorUserId={o.facilitatorUserId}
@@ -4424,6 +4438,7 @@ function SchedulePool() {
               ))}
             </select>
           </div>
+          <Labeled label="Service">
           <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
             <option value="">Select service…</option>
             {eligibleServices.map((s) => (
@@ -4432,28 +4447,29 @@ function SchedulePool() {
               </option>
             ))}
           </select>
-          <input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          </Labeled>
+          <Labeled label="Date"><input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} required /></Labeled>
           <div>
-            <input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+            <Labeled label="Time"><input className="field" type="time" value={time} onChange={(e) => setTime(e.target.value)} required /></Labeled>
             {/* TKT-0079: every Trial/Interview slot is stored as IST — this
                 input has no timezone of its own, so make that explicit
                 rather than leaving it ambiguous. */}
             <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>IST (India)</p>
           </div>
-          <input
+          <Labeled label="Duration"><input
             className="field"
             type="number"
             step="0.5"
             placeholder="Duration (hrs)"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
-          />
-          <input
+          /></Labeled>
+          <Labeled label="Instructor"><input
             className="field"
             placeholder="Instructor"
             value={facilitator}
             onChange={(e) => setFacilitator(e.target.value)}
-          />
+          /></Labeled>
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
           <button className="btn" type="submit" disabled={creatingSlot}>
             {creatingSlot ? "Offering…" : "Offer slot"}
@@ -5075,7 +5091,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                             </option>
                           ))}
                         </select>
-                        <input className="field" type="number" placeholder="Amount" value={customRateDraft.rate} onChange={(e) => setCustomRateDraft((d) => ({ ...d, rate: e.target.value }))} />
+                        <Labeled label="Amount"><input className="field" type="number" placeholder="Amount" value={customRateDraft.rate} onChange={(e) => setCustomRateDraft((d) => ({ ...d, rate: e.target.value }))} /></Labeled>
                         <select className="field" style={{ maxWidth: 110 }} value={customRateDraft.billingType} onChange={(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))}>
                           {BILLING_TYPES.map((t) => (
                             <option key={t} value={t}>
@@ -5084,13 +5100,13 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                           ))}
                         </select>
                       </div>
-                      <input
+                      <Labeled label="Description"><input
                         className="field"
                         placeholder="Description (optional)"
                         maxLength={40}
                         value={customRateDraft.description}
                         onChange={(e) => setCustomRateDraft((d) => ({ ...d, description: e.target.value }))}
-                      />
+                      /></Labeled>
                       {customRateError && (
                         <p className="text-sm" style={{ color: "var(--bad)" }}>
                           {customRateError}
@@ -5792,7 +5808,7 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
         Use for: one-off exceptions Generate Drafts won&apos;t create.
       </p>
       <form onSubmit={submit} className="space-y-3">
-        <select className="field" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
+        <select className="field" aria-label="Student" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
           <option value="">Select Student…</option>
           {people.map((p) => (
             <option key={p.UserID} value={p.UserID}>
@@ -5801,8 +5817,8 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
           ))}
         </select>
         <div className="flex gap-2">
-          <input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} />
-          <input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} />
+          <Labeled label="Year"><input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} /></Labeled>
+          <Labeled label="Month"><input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} /></Labeled>
         </div>
         {personId && (
           <div className="space-y-2">
@@ -5879,7 +5895,7 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
         </p>
       )}
       <form onSubmit={submit} className="space-y-3">
-        <select className="field" value={personId} onChange={(e) => setPersonId(e.target.value)} required>
+        <select className="field" aria-label={personLabel} value={personId} onChange={(e) => setPersonId(e.target.value)} required>
           <option value="">Select {personLabel}…</option>
           {people.map((p) => (
             <option key={p.UserID} value={p.UserID}>
@@ -5887,7 +5903,7 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
             </option>
           ))}
         </select>
-        <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
+        <select className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
           <option value="">Select service…</option>
           {services.map((s) => (
             <option key={s.ServiceID} value={s.ServiceID}>
@@ -5896,10 +5912,10 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
           ))}
         </select>
         <div className="flex gap-2">
-          <input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} />
-          <input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} />
+          <Labeled label="Year"><input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} /></Labeled>
+          <Labeled label="Month"><input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} /></Labeled>
         </div>
-        <input className="field" type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} required />
+        <Labeled label="Amount"><input className="field" type="number" placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} required /></Labeled>
         {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
         <button className="btn" type="submit" disabled={saving}>
           {saving ? "Creating…" : "Create draft"}
@@ -7533,6 +7549,7 @@ function AuditLog() {
         <div className="flex gap-2 items-center">
           <select
             className="field"
+            aria-label="Entity type"
             value={entityType}
             onChange={(e) => {
               setEntityType(e.target.value);
@@ -7704,6 +7721,7 @@ function McqExtractionUrlConfig() {
         <input
           type="text"
           className="field"
+          aria-label="Extraction service tunnel URL"
           style={{ flex: 1 }}
           placeholder="https://random-words.trycloudflare.com"
           value={url}
@@ -7838,8 +7856,8 @@ function GuideForm({ initial, onSubmit, submitLabel = "Add Guide" }) {
 
   return (
     <form onSubmit={submit} className="space-y-3">
-      <input className="field" placeholder="Button name (e.g. Student Handbook)" value={name} onChange={(e) => setName(e.target.value)} required />
-      <input className="field" type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required />
+      <Labeled label="Button name"><input className="field" placeholder="Button name (e.g. Student Handbook)" value={name} onChange={(e) => setName(e.target.value)} required /></Labeled>
+      <Labeled label="https://..."><input className="field" type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required /></Labeled>
       <div>
         <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
           Show on
