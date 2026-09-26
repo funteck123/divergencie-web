@@ -29,7 +29,7 @@ const REQUESTED_TYPE_LABEL = {
 // to a sliver). Every other field adds `w-full` itself.
 const FIELD_CLASS =
   "p-4 border border-white/30 bg-white/10 text-white placeholder:text-white/50 focus:border-[var(--gold)] focus:bg-white/15 outline-none transition-colors [&_option]:text-black [&_optgroup]:text-black";
-const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-white/80";
+const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-[#ff6161]";
 
 // TKT-0283: the Student form mirrors the public intake form at
 // bit.ly/divergencie (Cognito Forms), field for field, in the same order.
@@ -57,7 +57,7 @@ const INTL_PHONE_PATTERN = "\\+[0-9][0-9 \\-]{6,}";
 function PhoneField({ label, hint, value, onChange, placeholder }) {
   return (
     <div className="space-y-2">
-      <label className={LABEL_CLASS}>{label}</label>
+      <label className={LABEL_CLASS}>{label}<Req /></label>
       <input
         type="tel"
         inputMode="tel"
@@ -74,6 +74,9 @@ function PhoneField({ label, hint, value, onChange, placeholder }) {
     </div>
   );
 }
+
+// Cognito marks required fields with a red asterisk.
+const Req = () => <span aria-hidden="true" className="text-[#ff3b30] ml-1">*</span>;
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -231,7 +234,7 @@ function RegisterForm() {
 
             {isStudent ? (
               <div className="space-y-2">
-                <label className={LABEL_CLASS}>Student name</label>
+                <label className={LABEL_CLASS}>Student name<Req /></label>
                 <div className="flex gap-2 min-w-0">
                   <input className={`${FIELD_CLASS} flex-1 min-w-0`} value={name} onChange={(e) => setName(e.target.value)} placeholder="First" aria-label="Student first name" required />
                   <input className={`${FIELD_CLASS} flex-1 min-w-0`} value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last" aria-label="Student last name" required />
@@ -239,7 +242,7 @@ function RegisterForm() {
               </div>
             ) : (
               <div className="space-y-2">
-                <label className={LABEL_CLASS}>Full name</label>
+                <label className={LABEL_CLASS}>Full name<Req /></label>
                 <input className={`${FIELD_CLASS} w-full`} value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
             )}
@@ -273,7 +276,7 @@ function RegisterForm() {
             />
 
             <div className="space-y-2">
-              <label className={LABEL_CLASS}>{isStudent ? "Your email" : "Email"}</label>
+              <label className={LABEL_CLASS}>{isStudent ? "Your email" : "Email"}<Req /></label>
               <input
                 type="email"
                 className={`${FIELD_CLASS} w-full`}
@@ -300,10 +303,10 @@ function RegisterForm() {
                   <input className={`${FIELD_CLASS} w-full`} value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
                 </div>
                 <fieldset className="space-y-2 min-w-0">
-                  <legend className={LABEL_CLASS}>What are you studying? (choose at least one)</legend>
+                  <legend className={LABEL_CLASS}>What are you studying? (choose at least one)<Req /></legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1 border border-white/30 p-3">
                     {STUDYING_OPTIONS.map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium min-w-0">
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161] min-w-0">
                         <input type="checkbox" checked={studying.includes(o)} onChange={() => toggle(studying, setStudying, o)} /> <span className="min-w-0">{o}</span>
                       </label>
                     ))}
@@ -313,7 +316,7 @@ function RegisterForm() {
                   <legend className={LABEL_CLASS}>How shall we help? (optional)</legend>
                   <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
                     {HELP_OPTIONS.map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium">
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161]">
                         <input type="checkbox" checked={help.includes(o)} onChange={() => toggle(help, setHelp, o)} /> {o}
                       </label>
                     ))}
@@ -323,7 +326,7 @@ function RegisterForm() {
                   <legend className={LABEL_CLASS}>Subjects (optional)</legend>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1 max-h-64 overflow-y-auto border border-white/30 p-3">
                     {SUBJECT_OPTIONS.map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium min-w-0">
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161] min-w-0">
                         <input type="checkbox" checked={subjects.includes(o)} onChange={() => toggle(subjects, setSubjects, o)} /> <span className="min-w-0">{o}</span>
                       </label>
                     ))}
@@ -334,7 +337,7 @@ function RegisterForm() {
                   <input className={`${FIELD_CLASS} w-full`} value={referrer} onChange={(e) => setReferrer(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <label className={LABEL_CLASS}>How did you hear about us?</label>
+                  <label className={LABEL_CLASS}>How did you hear about us?<Req /></label>
                   <select className={`${FIELD_CLASS} w-full`} value={heardAbout} onChange={(e) => setHeardAbout(e.target.value)} required>
                     <option value="">Select</option>
                     {HEARD_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -348,7 +351,7 @@ function RegisterForm() {
                   <legend className={LABEL_CLASS}>Do you feel you can score A* with proper guidance?</legend>
                   <div className="flex gap-6 pt-1">
                     {["Yes", "No"].map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium">
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161]">
                         <input type="radio" name="scoreAStar" checked={scoreAStar === o} onChange={() => setScoreAStar(o)} /> {o}
                       </label>
                     ))}
@@ -381,7 +384,7 @@ function RegisterForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-[var(--gold)] text-black text-sm font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg"
+              className="w-full py-4 bg-[#4ef314] text-[#0b1b2e] text-sm font-black uppercase tracking-widest rounded-[3px] hover:brightness-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
               {loading ? "Submitting…" : "Submit application"}
             </button>
