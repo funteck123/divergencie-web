@@ -13,9 +13,9 @@ import GuidesSection from "@/components/GuidesSection";
 import RescheduleControl from "@/components/RescheduleControl";
 import SortableTh from "@/components/SortableTh";
 import InvoicePaidControl from "@/components/InvoicePaidControl";
-import { api, formatRate, useSort, GROUP_COLORS, todayDateStr } from "@/lib/client";
+import { api, formatRate, useSort, GROUP_COLORS, todayDateStr, daysAgoStr } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
-import { formatDate } from "@/lib/formatDate";
+import { formatDate, formatDay } from "@/lib/formatDate";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -42,7 +42,13 @@ function Body({ user }) {
   const [expandedAttendance, setExpandedAttendance] = useState(null);
   // TKT-0027: hide past schedule/attendance entries by default in the List
   // view (today's own sessions still show — they still need logging).
-  const [showPastSchedule, setShowPastSchedule] = useState(false);
+  // TKT-0279: "Show past" was a single on/off toggle -- turning it on
+  // dumped every session ever generated, oldest first, with no way to just
+  // see "the last week" without sorting/scrolling through all of history.
+  // scheduleRange replaces it: "upcoming" keeps the old default behavior
+  // unchanged, the two "last N days" presets bound the past window instead
+  // of showing everything, "all" is the old checked-checkbox behavior.
+  const [scheduleRange, setScheduleRange] = useState("upcoming");
 
   async function load() {
     const bundle = await api(`/api/me?userId=${user.UserID}`);
@@ -119,7 +125,12 @@ function Body({ user }) {
   const [schedSearch, setSchedSearch] = useState("");
   const [invSearch, setInvSearch] = useState("");
   const scheduleRows = (data?.scheduleItems || [])
-    .filter((s) => showPastSchedule || s.Date >= todayStr)
+    .filter((s) => {
+      if (scheduleRange === "all") return true;
+      if (scheduleRange === "last7") return s.Date >= daysAgoStr(7) && s.Date <= todayStr;
+      if (scheduleRange === "last30") return s.Date >= daysAgoStr(30) && s.Date <= todayStr;
+      return s.Date >= todayStr; // "upcoming" (default)
+    })
     .map((s) => ({ ...s, _dt: s.Date + s.Time }))
     .filter((s) => {
       const q = schedSearch.trim().toLowerCase();
@@ -243,8 +254,13 @@ function Body({ user }) {
         {view === "list" && (
           <>
             <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
-              <input type="checkbox" checked={showPastSchedule} onChange={(e) => setShowPastSchedule(e.target.checked)} />
-              Show past
+              Date range
+              <select value={scheduleRange} onChange={(e) => setScheduleRange(e.target.value)}>
+                <option value="upcoming">Upcoming</option>
+                <option value="last7">Last 7 days</option>
+                <option value="last30">Last 30 days</option>
+                <option value="all">All</option>
+              </select>
             </label>
             <FilterBar search={schedSearch} onSearch={setSchedSearch} searchPlaceholder="Search service or instructor…" />
           </>
@@ -270,6 +286,7 @@ function Body({ user }) {
               <tr>
                 <SortableTh label="Service" sortKeyName="ServiceName" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <SortableTh label="Date" sortKeyName="_dt" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
+                <th>Day</th>
                 <th>Time</th>
                 <SortableTh className="num" label="Hrs" sortKeyName="Duration" sortKey={schedSort.sortKey} sortDir={schedSort.sortDir} onSort={schedSort.toggleSort} />
                 <th>Instructor</th>
@@ -286,6 +303,7 @@ function Body({ user }) {
                     <tr>
                       <td>{s.ServiceName}</td>
                       <td>{formatDate(s.Date)}</td>
+                      <td>{formatDay(s.Date)}</td>
                       <td>{s.Time}</td>
                       <td className="num">{s.Duration}</td>
                       <td>{s.Facilitator || "—"}</td>
@@ -311,7 +329,7 @@ function Body({ user }) {
                     </tr>
                     {expanded && (
                       <tr>
-                        <td colSpan={7}>
+                        <td colSpan={8}>
                           <SessionAttendance scheduleId={s.ScheduleID} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" onLogged={load} />
                         </td>
                       </tr>
@@ -321,12 +339,12 @@ function Body({ user }) {
               })}
               {schedSort.sorted.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ color: "var(--muted)" }}>
+                  <td colSpan={8} style={{ color: "var(--muted)" }}>
                     {data.scheduleItems.length === 0
                       ? "No sessions yet — ask Management to enroll you in a Service."
                       : schedSearch.trim()
                       ? "No matches."
-                      : "No upcoming sessions — check \"Show past\" to see history."}
+                      : "No upcoming sessions — try a wider date range above."}
                   </td>
                 </tr>
               )}
