@@ -187,6 +187,11 @@ if (accountId) {
 const TAG_OPTIONS = [
   { key: "completed", label: "Completed", color: "#1f9d55" },
   { key: "revise", label: "Revise", color: "#4a9fd4" },
+  // TKT-0250: a memorisation marking, same mechanism as the others -- shows as
+  // a chip on every topic and gets its own section in the exported summary.
+  // Like Revise/Doubt/Practice/Critical it is stored in this browser only;
+  // only "Completed" is synced to the server (see the topic-complete calls).
+  { key: "memorised", label: "Memorised", color: "#0e9aa7" },
   { key: "doubt", label: "Doubt", color: "#e8a832" },
   { key: "practice", label: "Practice", color: "#7c5cbf" },
   { key: "critical", label: "Critical", color: "#e05a4e" },
