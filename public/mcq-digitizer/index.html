@@ -988,6 +988,14 @@ async function loadLibrary() {
         chapterNameByKey[`${fullSubject}::${chNum}`] = chName;
       }
     }))));
+    // TKT-0273: a Yearly-paper attempt is recorded under paper.paperId
+    // (e.g. "0625_s10_21"), but paperTitleById was only ever filled from
+    // the topical `library` above (keyed by qpId) -- a Yearly attempt's
+    // history/leaderboard row always fell back to that raw id string
+    // instead of its real title, since it could never be found here.
+    Object.values(yearlyLibrary).forEach((subjects) => Object.values(subjects).forEach((components) => Object.values(components).forEach((papers) => papers.forEach((p) => {
+      if (p.paperId) paperTitleById[p.paperId] = p.title;
+    }))));
     // Fill in any paper the enrollment-scoped library above doesn't (or no
     // longer) show -- a past attempt must still show its real title, not a
     // raw Drive file id, even after the subject falls outside enrollment.
