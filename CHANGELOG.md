@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [commit
 ## [Unreleased]
 
 ### Fixed
-- Registration page (TKT-0283): no more sideways scroll on phones (the country code select and number input now shrink). Student applications now use the same fields as the public form at bit.ly/divergencie (gender, location, parent contact, school, what they study, subjects, referrer, how they heard, coupon, A* question) and no longer ask for a resume. Interview applications keep resume and "why". Management sees the extra details in the RegForm table.
+- Registration page (TKT-0283): no more sideways scroll on phones (the country code select and number input now shrink). Student applications now use the same fields, required marks and input types as the public form at bit.ly/divergencie, re-checked against the live Cognito form (first and last name, gender and location as free text, parent contact, school, what they study as checkboxes, subjects, referrer, how they heard, coupon, A* question) and no longer ask for a resume. Interview applications keep resume and "why". Management sees the extra details in the RegForm table.
 - Contact page on phones (TKT-0284): the "Globally Remote" box no longer cuts off the Pakistan chip (fixed height became a minimum), the country flag emoji that showed as empty boxes are gone, the form and WhatsApp card use phone-sized padding so the fields are wider, and the card shadow no longer sticks out past the right edge.
 
 ### Added

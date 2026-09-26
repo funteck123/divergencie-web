@@ -91,6 +91,7 @@ function RegisterForm() {
   const searchParams = useSearchParams();
   const presetType = searchParams.get("requestedType");
   const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [countryDial, setCountryDial] = useState(DEFAULT_COUNTRY_DIAL);
   const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -105,7 +106,7 @@ function RegisterForm() {
   const [parentNumber, setParentNumber] = useState("");
   const [parentEmail, setParentEmail] = useState("");
   const [schoolName, setSchoolName] = useState("");
-  const [studying, setStudying] = useState("");
+  const [studying, setStudying] = useState([]);
   const [help, setHelp] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [referrer, setReferrer] = useState("");
@@ -124,8 +125,11 @@ function RegisterForm() {
     setError("");
     setLoading(true);
     try {
+      if (isStudent && studying.length === 0) {
+        throw new Error("Please choose at least one option under \"What are you studying?\".");
+      }
       const formData = new FormData();
-      formData.set("name", name);
+      formData.set("name", isStudent ? `${name} ${lastName}`.trim() : name);
       formData.set("email", email);
       formData.set("whatsappNumber", `${countryDial} ${whatsappNumber}`.trim());
       formData.set("requestedType", requestedType);
@@ -135,7 +139,7 @@ function RegisterForm() {
         formData.set("parentContactNumber", `${parentDial} ${parentNumber}`.trim());
         formData.set("parentEmail", parentEmail);
         formData.set("schoolName", schoolName);
-        formData.set("studying", studying);
+        formData.set("studying", studying.join(", "));
         formData.set("help", help.join(", "));
         formData.set("subjects", subjects.join(", "));
         formData.set("referrer", referrer);
@@ -236,24 +240,30 @@ function RegisterForm() {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <label className={LABEL_CLASS}>{isStudent ? "Student name" : "Full name"}</label>
-              <input className={`${FIELD_CLASS} w-full`} value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
+            {isStudent ? (
+              <div className="space-y-2">
+                <label className={LABEL_CLASS}>Student name</label>
+                <div className="flex gap-2 min-w-0">
+                  <input className={`${FIELD_CLASS} flex-1 min-w-0`} value={name} onChange={(e) => setName(e.target.value)} placeholder="First" aria-label="Student first name" required />
+                  <input className={`${FIELD_CLASS} flex-1 min-w-0`} value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last" aria-label="Student last name" required />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className={LABEL_CLASS}>Full name</label>
+                <input className={`${FIELD_CLASS} w-full`} value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+            )}
 
             {isStudent && (
               <>
                 <div className="space-y-2">
                   <label className={LABEL_CLASS}>Gender (optional)</label>
-                  <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
+                  <input className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <label className={LABEL_CLASS}>Location (optional)</label>
-                  <input className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)} />
+                  <input className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Country" />
                 </div>
               </>
             )}
@@ -298,13 +308,16 @@ function RegisterForm() {
                   <label className={LABEL_CLASS}>School name (optional)</label>
                   <input className={`${FIELD_CLASS} w-full`} value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
                 </div>
-                <div className="space-y-2">
-                  <label className={LABEL_CLASS}>What are you studying?</label>
-                  <select className={`${FIELD_CLASS} w-full`} value={studying} onChange={(e) => setStudying(e.target.value)} required>
-                    <option value="">Select</option>
-                    {STUDYING_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
+                <fieldset className="space-y-2 min-w-0">
+                  <legend className={LABEL_CLASS}>What are you studying? (choose at least one)</legend>
+                  <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-x-4 gap-y-2 pt-1 border border-[var(--border-subtle)] p-3">
+                    {STUDYING_OPTIONS.map((o) => (
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium min-w-0">
+                        <input type="checkbox" checked={studying.includes(o)} onChange={() => toggle(studying, setStudying, o)} /> <span className="min-w-0">{o}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
                 <fieldset className="space-y-2 min-w-0">
                   <legend className={LABEL_CLASS}>How shall we help? (optional)</legend>
                   <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
