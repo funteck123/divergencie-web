@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import InstallAppButton from "@/components/InstallAppButton";
 import { getCurrentUser, setCurrentUser, getImpersonatorInfo, setImpersonatorInfo, logout, api, roleHomePath } from "@/lib/client";
 
 // Generic "raise an issue" ticket — sender info is always the logged-in
@@ -159,7 +160,7 @@ export default function DashboardShell({ allowedType, children }) {
         </div>
       )}
       <header
-        className="flex items-center justify-between px-6 py-4"
+        className="flex flex-wrap items-center justify-between gap-y-3 gap-x-4 px-6 py-4"
         style={{ borderBottom: "1px solid var(--border)" }}
       >
         <div>
@@ -168,7 +169,10 @@ export default function DashboardShell({ allowedType, children }) {
           </div>
           <div className="font-semibold">{user.Name}</div>
         </div>
-        <div className="flex items-center gap-2">
+        {/* nowrap on each button + a wrapping row: on a phone three buttons no
+            longer squash their own labels onto several lines (TKT-0281). */}
+        <div className="flex flex-wrap items-center gap-2 [&>button]:whitespace-nowrap">
+          <InstallAppButton />
           <ReportIssueButton />
           <button
             className="btn-ghost"

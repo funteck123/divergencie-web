@@ -12,7 +12,13 @@ const inter = Inter({
 export const metadata = {
   title: "DivergenCIE Coaching - Best IGCSE & A Level, IELTS, SAT Country & World Topper Teachers",
   description: "DivergenCIE Coaching is a team of teachers, examiners and previous Cambridge A Level Country & World Toppers accepted at prestigious universities in the UK, including the University of Edinburgh, London School of Economics and Imperial College London.",
+  // TKT-0281: lets iPhone treat the home-screen icon as an app.
+  appleWebApp: { capable: true, title: "DivergenCIE", statusBarStyle: "default" },
 };
+
+// TKT-0281: colours the browser bar / status bar of the installed app (see
+// app/manifest.js).
+export const viewport = { themeColor: "#1a3c5e" };
 
 export default function RootLayout({ children }) {
   return (

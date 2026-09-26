@@ -175,7 +175,7 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
         <h3 className="text-sm" style={{ color: "var(--muted)" }}>
           Schedule
         </h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button className={view === "weekly" ? "btn" : "btn-ghost"} onClick={() => setView("weekly")}>
             Weekly
           </button>

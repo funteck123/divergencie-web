@@ -239,9 +239,9 @@ function Body({ user }) {
       <GuidesSection guides={data.guides} />
 
       <div className="card">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <h2 className="font-semibold">My Schedule</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button className={view === "weekly" ? "btn" : "btn-ghost"} onClick={() => setView("weekly")}>
               Weekly
             </button>
