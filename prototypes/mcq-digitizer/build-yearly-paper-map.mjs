@@ -286,12 +286,30 @@ const ZNOTES_FILES = {
   // TKT-0253 follow-up (2026-09-26 audit): found on disk, never wired in.
   // AS-only (no A2 file exists) -- confirmed by listing the archive, same
   // "confirmed present, else omit" convention as everywhere else in this
-  // file. A Level Business, English General Paper, and Literature in
-  // English were also checked and confirmed to have NO ZNotes files
-  // anywhere in the archive -- genuinely absent, not missed.
+  // file. A Level Business, English General Paper, Literature in English,
+  // Information Technology, and Economics were all also checked and
+  // confirmed to have NO ZNotes files anywhere in the archive -- genuinely
+  // absent, not missed. A Level Maths "Pure 2" (flagged missing in the
+  // 2026-09-21 audit note) was also checked: no ZNotes-branded document
+  // for it exists anywhere in the archive either (only generic textbooks/
+  // scheme-of-work files, not the same kind of document as everything
+  // else in this table) -- also genuinely absent.
   "A Levels|Computer Science": [
     { component: "AS Theory", path: "A Levels/Computer Science/AS-A LEVEL CS-2017/as resurces cs/cie-as-computer-science-9608-znotes.pdf" },
     { component: "AS Practical", path: "A Levels/Computer Science/AS-A LEVEL CS-2017/as resurces cs/cie-as-computer-science-9608-practical-znotes.pdf" },
+  ],
+  "IGCSE|ICT": [
+    { component: "Theory", path: "IGCSE/ICT/Notes/cie-igcse-ict-0417-theory-v4-znotes.pdf" },
+  ],
+  "IGCSE|Economics": [
+    { component: "Theory", path: "IGCSE/Economics/cie-igcse-economics-0455-theory-v3-znotes.pdf" },
+    { component: "Mnemonics", path: "IGCSE/Economics/cie-igcse-economics-0455-mnemonics-v2-znotes.pdf" },
+  ],
+  "IGCSE|Business Studies": [
+    { component: "Theory", path: "IGCSE/Business Studies/cie-igcse-businessstudies-0450-v1-znotes.pdf" },
+  ],
+  "IGCSE|Computer Science": [
+    { component: "Theory", path: "IGCSE/Computer Science/cie-igcse-computerscience-0478-theory-v2-znotes_2.pdf" },
   ],
 };
 // ARCHIVE_ROOT is "/mnt/e/CIE/IGCSE" (see top of file) -- ZNotes paths
