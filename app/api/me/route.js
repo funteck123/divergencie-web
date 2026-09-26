@@ -3,6 +3,7 @@ import { readDB, writeDB } from "@/lib/db";
 import { ensureScheduleGenerated, isSlotBooked, groupMatches, sortByDateTime } from "@/lib/scheduleGen";
 import { requireSelfOrManagement } from "@/lib/authz";
 import { convertINRAmount } from "@/lib/fxRates";
+import { normalizeTimezone, convertScheduleDateTime } from "@/lib/timezones";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -31,10 +32,24 @@ export async function GET(req) {
   // Trial/Interview slots, not batch-derived) still match on ServiceID alone.
   const enrolledServiceIds = new Set(activeEnrollments.map((e) => e.ServiceID));
   const enrolledBatchKeys = new Set(activeEnrollments.map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
+  // TKT-0277: each ScheduleItem carries its own Timezone (the class's
+  // reference zone, set on the Occurrence it was generated from), which
+  // usually differs from the viewing account's own Timezone -- the schedule
+  // TABLE in the dashboard rendered the stored Date/Time as-is, unconverted
+  // (only the separate downloadable PNG schedule image ever converted it).
+  // Converted here, per viewer, into a NEW array -- db.scheduleItems itself
+  // is never mutated, since the stored Date/Time is shared/canonical and
+  // other viewers (Management, the class's own reference view) still need
+  // the real original values.
+  const viewerTimezone = normalizeTimezone(user.Timezone);
   const scheduleItems = sortByDateTime(
-    db.scheduleItems.filter((s) =>
-      s.BatchID ? enrolledBatchKeys.has(`${s.ServiceID}::${s.BatchID}`) : enrolledServiceIds.has(s.ServiceID)
-    )
+    db.scheduleItems
+      .filter((s) => (s.BatchID ? enrolledBatchKeys.has(`${s.ServiceID}::${s.BatchID}`) : enrolledServiceIds.has(s.ServiceID)))
+      .map((s) => {
+        if (!s.Timezone || !viewerTimezone) return s;
+        const { date, time } = convertScheduleDateTime(s.Date, s.Time, normalizeTimezone(s.Timezone), viewerTimezone);
+        return date === s.Date && time === s.Time ? s : { ...s, Date: date, Time: time };
+      })
   );
   const attendanceItems = db.attendanceItems.filter((a) => a.UserID === userId);
 
