@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB } from "@/lib/db";
 import { requireSelfOrManagement } from "@/lib/authz";
 import { isValidTimezone } from "@/lib/timezones";
+import { formatInternationalNumber } from "@/lib/countryCodes";
 
 // TKT-0120: every interview account (Teacher/Staff/Ambassador track) needs a
 // Personal Info section (email, WhatsApp number, country/timezone) and a
@@ -43,7 +44,7 @@ export async function PATCH(req) {
   }
 
   if (email !== undefined) user.Email = email;
-  if (whatsappNumber !== undefined) user.WhatsAppNumber = whatsappNumber;
+  if (whatsappNumber !== undefined) user.WhatsAppNumber = formatInternationalNumber(whatsappNumber);
   if (timezone !== undefined) user.Timezone = timezone;
   if (resumeUrl !== undefined) user.ResumeURL = resumeUrl;
   if (coverLetterUrl !== undefined) user.CoverLetterURL = coverLetterUrl;

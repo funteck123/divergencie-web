@@ -8,6 +8,7 @@ import { generatePassword, hashPassword } from "@/lib/passwords";
 import { createTimesheet } from "@/lib/timesheetAutomator";
 import { createProgressTracker } from "@/lib/progressTrackerAutomator";
 import { gatherAccountRelatedRecords, deleteGatheredRecords, writeDeletionBackup } from "@/lib/accountDeletion";
+import { formatInternationalNumber } from "@/lib/countryCodes";
 
 // Re-exported for existing importers (e.g. api/paychecks/pdf/route.js),
 // lib/accountTypes.js is the single source of truth now, shared with the
@@ -102,7 +103,7 @@ function applyPassportNumber(user, userType, passportNumber) {
 // the sole owner of Student's own WhatsAppNumber, called separately.
 function applyWhatsAppNumber(user, userType, whatsappNumber) {
   if (ROLE_ELIGIBLE.includes(userType)) {
-    user.WhatsAppNumber = whatsappNumber || "";
+    user.WhatsAppNumber = formatInternationalNumber(whatsappNumber) || "";
   } else if (userType !== "Student") {
     delete user.WhatsAppNumber;
   }
@@ -175,8 +176,8 @@ function applyStudentExtras(user, userType, fields) {
     gcrSent,
     scheduleSent,
   } = fields;
-  if (whatsappNumber !== undefined) user.WhatsAppNumber = whatsappNumber || "";
-  if (parentWhatsappNumber !== undefined) user.ParentWhatsAppNumber = parentWhatsappNumber || "";
+  if (whatsappNumber !== undefined) user.WhatsAppNumber = formatInternationalNumber(whatsappNumber) || "";
+  if (parentWhatsappNumber !== undefined) user.ParentWhatsAppNumber = formatInternationalNumber(parentWhatsappNumber) || "";
   // Optional, Management-only (edited via EditAccountForm same as
   // ParentWhatsAppNumber), format validated client-side only (type="email"
   // input), matching how the Student's own Email field is validated below.

@@ -6,6 +6,7 @@ import GuidesSection from "@/components/GuidesSection";
 import { api, groupMatches } from "@/lib/client";
 import { formatDate } from "@/lib/formatDate";
 import { TIMEZONE_GROUPS } from "@/lib/timezones";
+import { formatInternationalNumber } from "@/lib/countryCodes";
 
 const INTERVIEW_ACC_TYPES = ["TeacherInterviewAcc", "StaffInterviewAcc", "AmbassadorInterviewAcc"];
 
@@ -411,7 +412,7 @@ function TrialFeedbackForm({ onSubmit }) {
 // the candidate can still change it here.
 function PersonalInfoCard({ user, onSave }) {
   const [email, setEmail] = useState(user.Email || "");
-  const [whatsappNumber, setWhatsappNumber] = useState(user.WhatsAppNumber || "");
+  const [whatsappNumber, setWhatsappNumber] = useState(formatInternationalNumber(user.WhatsAppNumber) || "");
   const [timezone, setTimezone] = useState(user.Timezone || "Asia/Kolkata");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");

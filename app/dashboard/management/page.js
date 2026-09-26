@@ -12,6 +12,7 @@ import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TY
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel, tzAbbrFor } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
+import { formatInternationalNumber } from "@/lib/countryCodes";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Tickets", "Audit Log"];
 // The three pending Interview tracks — each converts to its own final
@@ -1244,7 +1245,7 @@ function Pipeline({ issued, setIssued }) {
               <tr key={l.LeadID}>
                 <td>{l.Name}</td>
                 <td>{l.Email}</td>
-                <td style={{ color: "var(--muted)" }}>{l.WhatsAppNumber || "—"}</td>
+                <td style={{ color: "var(--muted)" }}>{formatInternationalNumber(l.WhatsAppNumber) || "—"}</td>
                 <td style={{ color: "var(--muted)" }}>{l.Country || "—"}</td>
                 <td style={{ color: "var(--muted)" }}>
                   <span className="subject-truncate" title={l.Notes}>{l.Notes || "—"}</span>
@@ -1761,8 +1762,8 @@ function Accounts({ issued, setIssued }) {
           { header: "Batch", render: (u) => u.Batch || "—", sortValue: (u) => u.Batch || "" },
           { header: "Timezone", render: (u) => timezoneLabel(u.Timezone), sortValue: (u) => timezoneLabel(u.Timezone) },
           { header: "Currency", render: (u) => u.Currency || "INR", sortValue: (u) => u.Currency || "INR" },
-          { header: "WhatsApp #", render: (u) => u.WhatsAppNumber || "—", sortValue: (u) => u.WhatsAppNumber || "" },
-          { header: "Parent WhatsApp #", render: (u) => u.ParentWhatsAppNumber || "—", sortValue: (u) => u.ParentWhatsAppNumber || "" },
+          { header: "WhatsApp #", render: (u) => formatInternationalNumber(u.WhatsAppNumber) || "—", sortValue: (u) => formatInternationalNumber(u.WhatsAppNumber) || "" },
+          { header: "Parent WhatsApp #", render: (u) => formatInternationalNumber(u.ParentWhatsAppNumber) || "—", sortValue: (u) => formatInternationalNumber(u.ParentWhatsAppNumber) || "" },
           { header: "Parent Email", render: (u) => u.ParentEmail || "—", sortValue: (u) => u.ParentEmail || "" },
           { header: "Email", render: (u) => u.Email || "—", sortValue: (u) => u.Email || "" },
           { header: "School", render: (u) => u.School || "—", sortValue: (u) => u.School || "" },
@@ -2112,8 +2113,8 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [studentIds, setStudentIds] = useState(user.StudentIDs || []);
   const [username, setUsername] = useState(user.Username || "");
   const [password, setPassword] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState(user.WhatsAppNumber || "");
-  const [parentWhatsappNumber, setParentWhatsappNumber] = useState(user.ParentWhatsAppNumber || "");
+  const [whatsappNumber, setWhatsappNumber] = useState(formatInternationalNumber(user.WhatsAppNumber) || "");
+  const [parentWhatsappNumber, setParentWhatsappNumber] = useState(formatInternationalNumber(user.ParentWhatsAppNumber) || "");
   const [parentEmail, setParentEmail] = useState(user.ParentEmail || "");
   const [email, setEmail] = useState(user.Email || "");
   const [school, setSchool] = useState(user.School || "");

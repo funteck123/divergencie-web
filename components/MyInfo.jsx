@@ -1,6 +1,7 @@
 "use client";
 
 import { timezoneLabel } from "@/lib/timezones";
+import { formatInternationalNumber } from "@/lib/countryCodes";
 
 // Fields that only apply to Teacher/Staff/Ambassador accounts — mirrors
 // ROLE_ELIGIBLE in api/users/route.js (duplicated since that module can't
@@ -27,13 +28,13 @@ export default function MyInfo({ user, linkedChildren }) {
     rows.push(["Role", user.Role || "—"]);
     rows.push(["Department", user.Department || "—"]);
     rows.push(["Passport / IC Number", user.PassportNumber || "—"]);
-    rows.push(["WhatsApp Number", user.WhatsAppNumber || "—"]);
+    rows.push(["WhatsApp Number", formatInternationalNumber(user.WhatsAppNumber) || "—"]);
     rows.push(["Email", user.Email || "—"]);
   }
   rows.push(["Currency", user.Currency || "INR"]);
   if (user.UserType === "Student") {
-    rows.push(["WhatsApp Number", user.WhatsAppNumber || "—"]);
-    rows.push(["Parent WhatsApp Number", user.ParentWhatsAppNumber || "—"]);
+    rows.push(["WhatsApp Number", formatInternationalNumber(user.WhatsAppNumber) || "—"]);
+    rows.push(["Parent WhatsApp Number", formatInternationalNumber(user.ParentWhatsAppNumber) || "—"]);
     rows.push(["Email", user.Email || "—"]);
     rows.push(["School", user.School || "—"]);
     rows.push(["Location", user.Location || "—"]);
