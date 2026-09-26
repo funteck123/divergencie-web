@@ -101,13 +101,16 @@
   /* 5-column shape (Paper/Chapter/Score/%/When), overriding the 4-column
      leaderboard rules above via the compound .lb-table.history-table
      selector's higher specificity. */
+  /* Widths rebalanced so "100%" and a full date/time are never cut off (they
+     were 6% and 13%, which showed "10..." and "9/27/2026, ..."). Score, %,
+     time and date wrap onto a second line instead of truncating. */
   .lb-table.history-table th:nth-child(1), .lb-table.history-table td:nth-child(1) { width: 22%; white-space: normal; }
-  .lb-table.history-table th:nth-child(2), .lb-table.history-table td:nth-child(2) { width: 8%; }
-  .lb-table.history-table th:nth-child(3), .lb-table.history-table td:nth-child(3) { width: 20%; white-space: normal; }
-  .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 9%; }
-  .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 6%; }
-  .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 12%; }
-  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 13%; }
+  .lb-table.history-table th:nth-child(2), .lb-table.history-table td:nth-child(2) { width: 7%; }
+  .lb-table.history-table th:nth-child(3), .lb-table.history-table td:nth-child(3) { width: 17%; white-space: normal; }
+  .lb-table.history-table th:nth-child(4), .lb-table.history-table td:nth-child(4) { width: 9%; white-space: normal; }
+  .lb-table.history-table th:nth-child(5), .lb-table.history-table td:nth-child(5) { width: 8%; white-space: normal; overflow: visible; }
+  .lb-table.history-table th:nth-child(6), .lb-table.history-table td:nth-child(6) { width: 11%; white-space: normal; }
+  .lb-table.history-table th:nth-child(7), .lb-table.history-table td:nth-child(7) { width: 16%; white-space: normal; overflow: visible; }
   .lb-table.history-table th:nth-child(8), .lb-table.history-table td:nth-child(8) { width: 10%; }
   .answers-panel { background: rgba(0,0,0,0.02); }
   .answers-panel .answer-verbatim-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.5rem; }
@@ -151,7 +154,6 @@
 <body>
 
 <header>
-  <span class="badge">Prototype</span>
   <div>
     <h1>DC Question Solver</h1>
   </div>
