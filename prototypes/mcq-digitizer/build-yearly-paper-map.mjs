@@ -622,6 +622,53 @@ for (const key of Object.keys(IECR_FOLDERS)) {
   console.log(`${board} ${subject}: ${docs.length} merged iECR Sample Response file(s) found`);
 }
 
+// TKT-0265: Listening papers had no audio anywhere in the app. The archive
+// holds real listening tracks (.mp3) under IGCSE/English -- but named for the
+// sister syllabus 0511 (same Paper 4 listening papers, only the extra speaking
+// test differs), in three different filename styles over the years, so this
+// indexes them by (session, year, paper, variant) and attaches each to the
+// matching 0510 Paper 4 entry as `audioPath`. A paper with no matching file
+// simply gets no audioPath (the UI says so) -- coverage on the drive is
+// partial (2014-2018 sessions), not something this step can invent.
+const AUDIO_NAME_PATTERNS = [
+  /^0511_([smw])(\d{2})_su_(\d)(\d)\.mp3$/i,
+  /^0511_([smw])(\d{2})_(\d)_(\d)_sf\.mp3$/i,
+  /^0511_([smw])(\d{2})_qp_(\d)(\d)\.mp3$/i,
+  /^0510_([smw])(\d{2})_(?:sf|su)_(\d)(\d)\.mp3$/i,
+];
+function indexListeningAudio() {
+  const index = {};
+  const stack = [path.join(ARCHIVE_ROOT, "English")];
+  while (stack.length) {
+    const dir = stack.pop();
+    let entries;
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) { stack.push(full); continue; }
+      for (const re of AUDIO_NAME_PATTERNS) {
+        const m = re.exec(e.name);
+        if (!m) continue;
+        const [, sess, yy, paper, variant] = m;
+        if (paper !== "4") break; // library only carries Paper 4 (Extended listening)
+        const key = `0510_${sess.toLowerCase()}${yy}_${paper}${variant}`;
+        if (!index[key]) index[key] = full;
+        break;
+      }
+    }
+  }
+  return index;
+}
+{
+  const audioIndex = indexListeningAudio();
+  const listening = result.IGCSE?.["English as a Second Language"]?.["Paper 4: Listening (Extended)"] || [];
+  let withAudio = 0;
+  for (const paper of listening) {
+    if (audioIndex[paper.paperId]) { paper.audioPath = audioIndex[paper.paperId]; withAudio++; }
+  }
+  console.log(`ESL Listening: ${withAudio}/${listening.length} papers have a real audio track (${Object.keys(audioIndex).length} Paper 4 tracks found on disk)`);
+}
+
 const outPath = path.join(process.cwd(), "..", "..", "data", "mcq-digitizer", "yearly-library", "yearly-papers.json");
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, JSON.stringify(result, null, 2));

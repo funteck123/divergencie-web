@@ -101,9 +101,15 @@ export async function GET(req, { params }) {
   const subPath = path.join("/");
   const search = new URL(req.url).search;
 
+  // TKT-0265: an <audio> element seeks/resumes with Range requests, so the
+  // audio route must forward Range upstream and pass the 206 headers back.
+  const isAudio = subPath === "yearly-audio";
+  const upstreamHeaders = {};
+  if (isAudio && req.headers.get("range")) upstreamHeaders.Range = req.headers.get("range");
+
   let upstream;
   try {
-    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`);
+    upstream = await fetch(`${extractionUrl}/api/${subPath}${search}`, isAudio ? { headers: upstreamHeaders } : undefined);
   } catch (e) {
     // The whole reason this URL needs re-configuring after every restart
     // is that the tunnel is unstable -- an unreachable tunnel must not
@@ -128,6 +134,18 @@ export async function GET(req, { params }) {
         "Content-Disposition": upstream.headers.get("content-disposition") || "attachment",
       },
     });
+  }
+
+  if (isAudio) {
+    if (upstream.status !== 200 && upstream.status !== 206) {
+      const errBody = await upstream.json().catch(() => ({ error: `Upstream returned ${upstream.status}.` }));
+      return NextResponse.json(errBody, { status: upstream.status });
+    }
+    const headers = { "Content-Type": upstream.headers.get("content-type") || "audio/mpeg", "Accept-Ranges": "bytes" };
+    for (const h of ["content-length", "content-range"]) {
+      if (upstream.headers.get(h)) headers[h] = upstream.headers.get(h);
+    }
+    return new NextResponse(upstream.body, { status: upstream.status, headers });
   }
 
   const body = await upstream.json().catch(() => null);

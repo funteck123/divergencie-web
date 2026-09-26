@@ -325,6 +325,14 @@
 
   <div id="stage5" class="stage">
     <p class="hint"><a href="#" id="backFromStructuredLink">&larr; Back to library</a></p>
+  <!-- TKT-0265: Listening papers need their audio track. Lives OUTSIDE the
+       mode-select card (which hides once Practice/Test starts) and sticky, so
+       the player stays on screen while the student answers. -->
+    <div id="structuredAudioRow" style="display:none; position:sticky; top:0; z-index:5; background:var(--bg-soft); padding:0.5rem 0; border-bottom:1px solid var(--border);">
+      <label class="hint" for="structuredAudio">Listening audio</label>
+      <audio id="structuredAudio" controls preload="metadata" style="width:100%;"></audio>
+      <p class="hint" id="structuredAudioNote" style="display:none; margin:0.25rem 0 0;"></p>
+    </div>
     <div class="card" id="structuredModeSelectCard">
       <h2 id="structuredTitle">How do you want to use this paper?</h2>
       <p class="hint" id="structuredLoadingStatus">Loading questions...</p>
@@ -1505,7 +1513,39 @@ function resetStructuredToLibrary() {
   document.getElementById("structuredSubmitTestBtn").style.display = "none";
   document.getElementById("structuredGradingStatus").style.display = "none";
   document.getElementById("structuredItems").innerHTML = "";
+  hideListeningAudio();
   showStage(0);
+}
+
+// TKT-0265: a yearly Listening paper carries `audioPath` when the archive has
+// its real track (see build-yearly-paper-map.mjs). The player streams it
+// through /api/mcq/yearly-audio (Range-capable, so it can be scrubbed). A
+// Listening paper WITHOUT a track says so plainly instead of silently
+// showing questions nobody can answer.
+function hideListeningAudio() {
+  const row = document.getElementById("structuredAudioRow");
+  const audio = document.getElementById("structuredAudio");
+  audio.pause();
+  audio.removeAttribute("src");
+  audio.load();
+  document.getElementById("structuredAudioNote").style.display = "none";
+  row.style.display = "none";
+}
+function showListeningAudio(paper) {
+  if (!paper.paperId || !/listening/i.test(paper.component || "")) return;
+  const row = document.getElementById("structuredAudioRow");
+  const audio = document.getElementById("structuredAudio");
+  const note = document.getElementById("structuredAudioNote");
+  row.style.display = "block";
+  if (paper.audioPath) {
+    audio.style.display = "block";
+    audio.src = `/api/mcq/yearly-audio?paperId=${encodeURIComponent(paper.paperId)}`;
+    note.style.display = "none";
+  } else {
+    audio.style.display = "none";
+    note.textContent = "The audio track for this paper isn't available yet, so the questions can't be answered here. Ask your teacher for the recording.";
+    note.style.display = "block";
+  }
 }
 
 async function openStructuredPaper(paper) {
@@ -1523,6 +1563,7 @@ async function openStructuredPaper(paper) {
   document.getElementById("structuredTestCaption").style.display = "none";
   document.getElementById("structuredNoSplitNote").style.display = "none";
   document.getElementById("structuredErrorNote").style.display = "none";
+  hideListeningAudio();
   document.getElementById("structuredAttemptSaveStatus").textContent = "";
   document.getElementById("structuredProgressLinkRow").style.display = "none";
   document.getElementById("structuredPdfLinksMenu").innerHTML = "";
@@ -1571,6 +1612,7 @@ async function openStructuredPaper(paper) {
       msImage: answers.find((a) => a.questionNumber === q.questionNumber)?.image || null,
     }));
     loadingEl.style.display = "none";
+    showListeningAudio(paper);
     if (structuredItems.length === 0) {
       document.getElementById("structuredNoSplitNote").style.display = "block";
       return;
@@ -1593,6 +1635,7 @@ async function openStructuredPaper(paper) {
 }
 document.getElementById("backFromStructuredLink").addEventListener("click", (e) => {
   e.preventDefault();
+  hideListeningAudio();
   showStage(0);
 });
 document.getElementById("structuredStartPracticeBtn").addEventListener("click", () => {

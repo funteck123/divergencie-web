@@ -1551,6 +1551,12 @@ const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css
 // which the base64 encoding here doesn't obscure -- gzip still finds real
 // redundancy in base64 text).
 function wrapResponseForGzip(req, res) {
+  // TKT-0265: audio is streamed with res.write via pipe(), and this wrapper
+  // defers writeHead until end() -- so the mp3 bytes would hit the wire
+  // BEFORE the status line, a corrupt response (a Cloudflare tunnel, which
+  // always sends Accept-Encoding: gzip, showed it as a 502). mp3 is already
+  // compressed anyway, so audio simply opts out.
+  if (req.url.startsWith("/api/yearly-audio")) return;
   const acceptEncoding = req.headers["accept-encoding"] || "";
   if (!acceptEncoding.includes("gzip")) return;
   const originalWriteHead = res.writeHead.bind(res);
@@ -1760,6 +1766,48 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Failed to read the examiner report file." }));
+    }
+    return;
+  }
+
+  // TKT-0265: Listening-paper audio. Streams the real local .mp3 attached to
+  // a yearly paper as `audioPath` (see build-yearly-paper-map.mjs). Supports
+  // HTTP Range requests -- an <audio> element seeks and resumes with them,
+  // and without them a long track cannot be scrubbed. The file path comes
+  // ONLY from the loaded library entry for the given paperId, never from
+  // the request, so the caller cannot name an arbitrary file.
+  if (req.method === "GET" && req.url.startsWith("/api/yearly-audio")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const paperId = url.searchParams.get("paperId");
+      const paper = paperId ? findYearlyPaperById(paperId) : null;
+      const audioPath = paper && paper.audioPath;
+      if (!audioPath || !fs.existsSync(audioPath)) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "No audio track is available for this paper." }));
+        return;
+      }
+      const size = fs.statSync(audioPath).size;
+      const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+      let start = 0, end = size - 1, status = 200;
+      const headers = { "Content-Type": "audio/mpeg", "Accept-Ranges": "bytes" };
+      if (range && (range[1] !== "" || range[2] !== "")) {
+        if (range[1] === "") { start = Math.max(0, size - Number(range[2])); }
+        else { start = Number(range[1]); if (range[2] !== "") end = Math.min(end, Number(range[2])); }
+        if (start > end || start >= size) {
+          res.writeHead(416, { "Content-Range": `bytes */${size}` });
+          res.end();
+          return;
+        }
+        status = 206;
+        headers["Content-Range"] = `bytes ${start}-${end}/${size}`;
+      }
+      headers["Content-Length"] = end - start + 1;
+      res.writeHead(status, headers);
+      fs.createReadStream(audioPath, { start, end }).pipe(res);
+    } catch (e) {
+      if (!res.headersSent) res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Failed to read the audio file." }));
     }
     return;
   }
