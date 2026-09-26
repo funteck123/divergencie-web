@@ -1732,7 +1732,7 @@ function Accounts({ issued, setIssued }) {
     return studentIds.map((id) => users.find((u) => u.UserID === id)?.Name || id).join(", ");
   }
 
-  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, busyAccountIds, busySaveIds, convertEligible, impersonate, busyImpersonateIds };
+  const sharedProps = { users, issued, editingId, setEditingId, convert, saveEdit, deleteUser, busyAccountIds, busySaveIds, convertEligible, impersonate, busyImpersonateIds };
 
   return (
     <div className="space-y-6">
@@ -1894,7 +1894,7 @@ function Accounts({ issued, setIssued }) {
 // attributes (Course+Batch vs Batch vs Role+Department vs just Type), so
 // each passes its own `columns` def instead of one table trying to show
 // every possible field for every account type.
-function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, showSchedule, showConvert, busyAccountIds, busySaveIds, convertEligible, impersonate, busyImpersonateIds }) {
+function AccountGroupTable({ title, rows, columns, users, issued, editingId, setEditingId, convert, saveEdit, deleteUser, showSchedule, showConvert, busyAccountIds, busySaveIds, convertEligible, impersonate, busyImpersonateIds }) {
   const colSpan = 3 + columns.length + (showSchedule ? 1 : 0) + 2;
   const [search, setSearch] = useState("");
   const searchLower = search.trim().toLowerCase();
@@ -2030,7 +2030,7 @@ function AccountGroupTable({ title, rows, columns, users, issued, editingId, set
                     <button className="btn-ghost" onClick={() => setEditingId(editingId === u.UserID ? null : u.UserID)}>
                       {editingId === u.UserID ? "Close" : "Edit"}
                     </button>
-                    <DeleteAccountButton user={u} onDelete={deleteUser} />
+                    {deleteUser && <DeleteAccountButton user={u} onDelete={deleteUser} />}
                   </td>
                 </tr>
                 {editingId === u.UserID && (
