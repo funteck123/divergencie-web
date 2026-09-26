@@ -900,8 +900,33 @@ function chapterNameOf(title) {
 // number anywhere a name isn't known (e.g. a title matching neither
 // CHAPTER_NAME_PATTERNS).
 let chapterNameByKey = {};
+
+// TKT-0274: for most subjects a bare chapter number (from chapterOf) is a
+// unique topic id -- Physics/Chemistry number every topic 1.1, 1.2, 1.3...
+// with no reuse. Maths does NOT: real data confirms the same number is
+// reused across genuinely different topics (IGCSE Maths "Ch1" alone covers
+// Bounds/Conversion/Currency/Percentages/... as 15 distinct topics; A
+// Level Maths "Ch1.3" covers both "Coordinate Geometry" and "Vectors").
+// The old code kept only the FIRST name seen per number in
+// chapterNameByKey, so every other same-numbered topic silently displayed
+// (and, worse, counted its mistakes under) whichever topic happened to
+// crawl first -- wrong chapter name shown, and merged mistake counts.
+// Fixed by using number+name together as the chapter identity for any NEW
+// attempt/mistake going forward (see chapterOf's callers below) --
+// distinct topics that happen to share a number no longer collide.
+// Historical rows already stored under the old bare-number key aren't
+// migrated (their real per-title identity was never persisted, so there's
+// nothing to recompute it from) -- they keep displaying via the lookup-
+// table fallback below, same as before this fix.
+function chapterKey(title) {
+  const num = chapterOf(title);
+  if (!num) return null;
+  const name = chapterNameOf(title);
+  return name ? `${num} ${name}` : num;
+}
 function chapterLabel(subject, chapter) {
   if (!chapter) return "—"; // em dash, matches this file's existing "no chapter" placeholder
+  if (/\s/.test(chapter)) return chapter; // already a full "N Name" key (chapterKey format)
   const name = chapterNameByKey[`${subject}::${chapter}`];
   return name ? `${chapter} ${name}` : chapter;
 }
@@ -1229,7 +1254,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
   if (!paper || !paper.msId) return;
 
   if (isStructuredComponent(board, subject, component)) {
-    currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterOf(paper.title), paperId: paper.qpId };
+    currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterKey(paper.title), paperId: paper.qpId };
     openStructuredPaper(paper);
     return;
   }
@@ -1249,7 +1274,7 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-    currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterOf(paper.title), paperId: paper.qpId };
+    currentAttemptMeta = { subject: `${board} ${subject}`, chapter: chapterKey(paper.title), paperId: paper.qpId };
     currentMcqPaper = paper;
     applyDigitizeResult(data);
     statusEl.style.display = "none";
