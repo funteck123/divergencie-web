@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Added
+- Question Solver redesign mock A (real papers, auto-grader focus) under `planning/mockups/dc-solver-redesign/`.
+
 ### Features
 
 * **install app (TKT-0281):** the site is now installable. A web app manifest (`app/manifest.js`, name DivergenCIE Coaching, standalone window, navy theme colour) plus proper app icons cut from the DivergenCIE book mark (the old apple-icon was the whole logo lockup with the Cambridge and CollegeBoard logos, unreadable at icon size). The portal header gets an "Install app" button: on Chrome/Edge/Android it opens the browser's install dialog; on iPhone/iPad, which has no install prompt, it shows a three-step "Share, Add to Home Screen" guide; it is hidden when already running as an installed app or when the browser offers neither. The installed app opens `/app`, which sends a signed-in person to their own dashboard and everyone else to the login page. Deliberately no service worker: installability does not need one, and one that caches pages can serve a stale site after a deploy or keep another person's data on a shared device, so nothing works offline. Verified with Chrome's own installability check (0 errors, 0 manifest errors), icon sizes, the button's four states (hidden by default, shown on the install event and calls prompt once, iPhone guide, hidden when standalone) and the `/app` redirect both ways. Not verified on a real phone or installed on a real device (no device here). Also fixed on the way, because they made the installed app unusable on a phone: the schedule card's "Weekly / Calendar / List / Schedule Image" row could not wrap and pushed the page wider than the screen on every portal with a schedule (Student, Teacher, Staff, Ambassador, Parent), which also pushed dialogs half off-screen; the header buttons now wrap cleanly instead of squashing their labels onto several lines.
