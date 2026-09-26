@@ -28,8 +28,8 @@ const REQUESTED_TYPE_LABEL = {
 // precedence (found by actually rendering it: the number input collapsed
 // to a sliver). Every other field adds `w-full` itself.
 const FIELD_CLASS =
-  "p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors";
-const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]";
+  "p-4 border border-white/30 bg-white/10 text-white placeholder:text-white/50 focus:border-[var(--gold)] focus:bg-white/15 outline-none transition-colors [&_option]:text-black [&_optgroup]:text-black";
+const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-white/80";
 
 // TKT-0283: the Student form mirrors the public intake form at
 // bit.ly/divergencie (Cognito Forms), field for field, in the same order.
@@ -70,7 +70,7 @@ function PhoneField({ label, hint, value, onChange, placeholder }) {
         title="Start with + and the country code, for example +44 7000 000000"
         required
       />
-      {hint && <p className="text-[11px] font-medium text-[var(--text-muted)]">{hint}</p>}
+      {hint && <p className="text-[11px] font-medium text-white/75">{hint}</p>}
     </div>
   );
 }
@@ -169,7 +169,7 @@ function RegisterForm() {
     <main className="h-screen flex bg-[var(--navy)] overflow-hidden relative">
       {/* TKT-0283: study-desk illustration behind the whole page; the dark wash keeps text readable. */}
       <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url(/assets/images/register_bg.jpg)" }} />
-      <div aria-hidden="true" className="absolute inset-0" style={{ backgroundColor: "rgba(26, 60, 94, 0.35)" }} />
+      <div aria-hidden="true" className="absolute inset-0" style={{ backgroundColor: "rgba(26, 60, 94, 0.12)" }} />
       {/* Left Panel: Brand (Desktop Only) -- same treatment as login,
           shorter content (no numeric stats/testimonial for this ticket's
           scope, see file-level comment above). */}
@@ -205,10 +205,10 @@ function RegisterForm() {
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to site
         </Link>
 
-        <div className="max-w-md w-full mx-auto relative z-10 bg-white dark:bg-[var(--bg-primary)] p-6 sm:p-8 shadow-2xl mb-8">
+        <div className="max-w-md w-full mx-auto relative z-10 bg-[rgba(10,25,45,0.42)] backdrop-blur-xl border border-white/25 p-6 sm:p-8 shadow-2xl mb-8 text-white">
           <div className="mb-[2vh]">
-            <h2 className="text-4xl font-black text-[var(--navy)] dark:text-white uppercase mb-2">Apply</h2>
-            <p className="text-[var(--text-muted)] font-medium">Tell us a bit about you to get started.</p>
+            <h2 className="text-4xl font-black text-white uppercase mb-2">Apply</h2>
+            <p className="text-white/80 font-medium">Tell us a bit about you to get started.</p>
           </div>
 
           {error && (
@@ -301,7 +301,7 @@ function RegisterForm() {
                 </div>
                 <fieldset className="space-y-2 min-w-0">
                   <legend className={LABEL_CLASS}>What are you studying? (choose at least one)</legend>
-                  <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-x-4 gap-y-2 pt-1 border border-[var(--border-subtle)] p-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1 border border-white/30 p-3">
                     {STUDYING_OPTIONS.map((o) => (
                       <label key={o} className="flex items-center gap-2 text-sm font-medium min-w-0">
                         <input type="checkbox" checked={studying.includes(o)} onChange={() => toggle(studying, setStudying, o)} /> <span className="min-w-0">{o}</span>
@@ -321,7 +321,7 @@ function RegisterForm() {
                 </fieldset>
                 <fieldset className="space-y-2 min-w-0">
                   <legend className={LABEL_CLASS}>Subjects (optional)</legend>
-                  <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-x-4 gap-y-2 pt-1 max-h-64 overflow-y-auto border border-[var(--border-subtle)] p-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1 max-h-64 overflow-y-auto border border-white/30 p-3">
                     {SUBJECT_OPTIONS.map((o) => (
                       <label key={o} className="flex items-center gap-2 text-sm font-medium min-w-0">
                         <input type="checkbox" checked={subjects.includes(o)} onChange={() => toggle(subjects, setSubjects, o)} /> <span className="min-w-0">{o}</span>
@@ -388,7 +388,7 @@ function RegisterForm() {
           </form>
 
           <div className="mt-[2vh]">
-            <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-white/75">
               Already have an account? <Link href="/login" className="text-[var(--gold)] border-b border-[var(--gold)] pb-1 ml-1">Sign in</Link>
             </p>
           </div>
