@@ -188,7 +188,8 @@ export default function SessionAttendance({ scheduleId, duration, viewerUserId, 
                   <span>{r.LoggedDuration}h</span>
                   <span style={{ color: "var(--muted)" }}>
                     by {r.LoggedBy === person.userId ? "self" : nameOf(r.LoggedBy)}
-                    {r.AcceptedForBilling === false ? ", not used for billing" : ""}
+                    {/* Billing detail is Management's concern; Teacher/Student don't see it. */}
+                    {isManagement && r.AcceptedForBilling === false ? ", not used for billing" : ""}
                   </span>
                   {/* TKT-0107: LoggedAt existed on the record already, never shown here. */}
                   {r.LoggedAt && (
