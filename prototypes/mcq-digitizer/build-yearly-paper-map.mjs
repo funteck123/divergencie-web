@@ -283,6 +283,16 @@ const ZNOTES_FILES = {
   "A Levels|English Language": [
     { component: "AS Language", path: "A Levels/sas/cie-as-englishlanguage-9093-v1-znotes.pdf" },
   ],
+  // TKT-0253 follow-up (2026-09-26 audit): found on disk, never wired in.
+  // AS-only (no A2 file exists) -- confirmed by listing the archive, same
+  // "confirmed present, else omit" convention as everywhere else in this
+  // file. A Level Business, English General Paper, and Literature in
+  // English were also checked and confirmed to have NO ZNotes files
+  // anywhere in the archive -- genuinely absent, not missed.
+  "A Levels|Computer Science": [
+    { component: "AS Theory", path: "A Levels/Computer Science/AS-A LEVEL CS-2017/as resurces cs/cie-as-computer-science-9608-znotes.pdf" },
+    { component: "AS Practical", path: "A Levels/Computer Science/AS-A LEVEL CS-2017/as resurces cs/cie-as-computer-science-9608-practical-znotes.pdf" },
+  ],
 };
 // ARCHIVE_ROOT is "/mnt/e/CIE/IGCSE" (see top of file) -- ZNotes paths
 // above need the real archive root ONE level up, since they span both
