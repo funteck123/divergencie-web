@@ -53,13 +53,13 @@ export default function ContactPage() {
       </section>
 
       {/* Main Contact Section */}
-      <section className="py-24">
+      <section className="py-12 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-5 gap-16">
+          <div className="grid lg:grid-cols-5 gap-10 lg:gap-16">
             
             {/* Left: Info */}
             <div className="lg:col-span-2 space-y-8">
-              <div className="p-10 bg-[#128c7e] text-white flex flex-col gap-8 shadow-[15px_15px_0px_rgba(18,140,126,0.1)]">
+              <div className="p-6 sm:p-10 bg-[#128c7e] text-white flex flex-col gap-8 sm:shadow-[15px_15px_0px_rgba(18,140,126,0.1)]">
                 <MessageSquare size={40} />
                 <div>
                   <h3 className="text-2xl font-black uppercase mb-4">WhatsApp Us</h3>
@@ -85,7 +85,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div className="p-8 bg-[var(--bg-secondary)] dark:bg-white/5 border-l-4 border-[var(--gold)]">
+              <div className="p-6 sm:p-8 bg-[var(--bg-secondary)] dark:bg-white/5 border-l-4 border-[var(--gold)]">
                 <p className="text-[10px] font-black uppercase tracking-widest text-[var(--gold)] mb-2">Office Hours</p>
                 <p className="text-sm font-bold text-[var(--navy)] dark:text-white uppercase tracking-widest">Mon–Sat, 9am–6pm IST</p>
               </div>
@@ -93,9 +93,9 @@ export default function ContactPage() {
 
             {/* Right: Form */}
             <div className="lg:col-span-3">
-              <form onSubmit={handleSubmit} className="p-12 border border-[var(--border-subtle)] bg-white dark:bg-[var(--bg-primary)] h-full">
+              <form onSubmit={handleSubmit} className="p-6 sm:p-12 border border-[var(--border-subtle)] bg-white dark:bg-[var(--bg-primary)] h-full">
                 {formState === "success" ? (
-                  <div className="text-center py-20">
+                  <div className="text-center py-12 sm:py-20">
                     <div className="w-20 h-20 bg-[var(--gold-light-bg)] dark:bg-white/5 flex items-center justify-center mx-auto mb-6">
                       <ShieldCheck size={40} className="text-[var(--gold)]" />
                     </div>
@@ -169,16 +169,16 @@ export default function ContactPage() {
       </section>
 
       {/* Map Placeholder */}
-      <section className="py-24">
+      <section className="pb-12 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="h-96 bg-[var(--navy)] flex flex-col items-center justify-center text-center p-12 relative overflow-hidden group">
+          <div className="min-h-96 bg-[var(--navy)] flex flex-col items-center justify-center text-center px-6 py-12 sm:p-12 relative overflow-hidden group">
              <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
              <MapPin size={48} className="text-[var(--gold)] mb-6 relative z-10" />
              <h2 className="text-3xl font-black text-white uppercase relative z-10 mb-4">Globally Remote</h2>
              <p className="text-white/60 max-w-md relative z-10 mb-8">We operate 100% online. Students join from UK, Malaysia, India, Saudi Arabia, and Pakistan.</p>
-             <div className="flex gap-6 relative z-10 flex-wrap justify-center">
-               {["🇬🇧 United Kingdom","🇲🇾 Malaysia","🇮🇳 India","🇸🇦 Saudi Arabia","🇵🇰 Pakistan"].map(c => (
-                 <span key={c} className="px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white text-xs font-black uppercase tracking-wider">{c}</span>
+             <div className="flex gap-3 sm:gap-6 relative z-10 flex-wrap justify-center">
+               {["United Kingdom","Malaysia","India","Saudi Arabia","Pakistan"].map(c => (
+                 <span key={c} className="px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white text-[11px] sm:text-xs font-black uppercase tracking-wider">{c}</span>
                ))}
              </div>
           </div>
