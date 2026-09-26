@@ -5,9 +5,10 @@ import { DOT_SIZE, HIGHLIGHT_DOTS, LAND_DOTS, LEADERS, MAP_VIEWBOX, MARKERS, REG
 // TKT-0221: the 21 real countries DivergenCIE has students in (user-
 // confirmed 2026-09-01, cross-checked against live account data -- see
 // planning/content-sweep-intermediate-plan.md's "Countries with real
-// students" section for the full provenance). UK doubles as the HQ marker
-// since it's both a real client country and where DivergenCIE is based --
-// not a duplicate, one dot covers both facts.
+// students" section for the full provenance). India doubles as the HQ marker
+// (gold, "(HQ)" in its region box) since it's both a real client country and
+// where DivergenCIE is based -- not a duplicate, one dot covers both facts.
+// (Corrected 2026-09-27: this said UK until the owner pointed out HQ is India.)
 //
 // TKT-0271: the map is now a halftone dot map on the Equal Earth projection
 // with real country shapes, each country at its true coordinates, and the

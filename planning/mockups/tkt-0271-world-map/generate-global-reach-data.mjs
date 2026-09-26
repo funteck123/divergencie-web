@@ -21,7 +21,7 @@ const c50 = feature(t50, t50.objects.countries).features.filter((f) => f.propert
 const proj = geoEqualEarth().fitExtent([[10, 24], [990, 520]], { type: "FeatureCollection", features: c50 });
 
 const C = [
-  { name: "UK", ne: "United Kingdom", lon: -1.5, lat: 53, hq: true, region: "EUROPE" },
+  { name: "UK", ne: "United Kingdom", lon: -1.5, lat: 53, region: "EUROPE" },
   { name: "US", ne: "United States of America", lon: -98.5, lat: 39.5, region: "AMERICAS" },
   { name: "Cayman Islands", ne: "Cayman Is.", lon: -81.25, lat: 19.3, region: "AMERICAS" },
   { name: "Egypt", ne: "Egypt", lon: 30, lat: 26.5, region: "AFRICA" },
@@ -35,7 +35,7 @@ const C = [
   { name: "Qatar", ne: "Qatar", lon: 51.2, lat: 25.3, region: "GULF" },
   { name: "UAE", ne: "United Arab Emirates", lon: 54.3, lat: 24.2, region: "GULF" },
   { name: "Pakistan", ne: "Pakistan", lon: 69.4, lat: 30, region: "SOUTH ASIA" },
-  { name: "India", ne: "India", lon: 78.9, lat: 22, region: "SOUTH ASIA" },
+  { name: "India", ne: "India", lon: 78.9, lat: 22, hq: true, region: "SOUTH ASIA" },
   { name: "Bangladesh", ne: "Bangladesh", lon: 90.3, lat: 23.7, region: "SOUTH ASIA" },
   { name: "Sri Lanka", ne: "Sri Lanka", lon: 80.7, lat: 7.8, region: "SOUTH ASIA" },
   { name: "Malaysia", ne: "Malaysia", lon: 102, lat: 4.2, region: "SOUTH-EAST ASIA" },
