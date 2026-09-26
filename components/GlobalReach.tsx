@@ -1,7 +1,6 @@
-"use client";
-
 import { Globe } from "lucide-react";
 import Link from "next/link";
+import { DOT_SIZE, HIGHLIGHT_DOTS, LAND_DOTS, LEADERS, MAP_VIEWBOX, MARKERS, REGION_BOXES } from "./globalReachMapData";
 
 // TKT-0221: the 21 real countries DivergenCIE has students in (user-
 // confirmed 2026-09-01, cross-checked against live account data -- see
@@ -9,37 +8,16 @@ import Link from "next/link";
 // students" section for the full provenance). UK doubles as the HQ marker
 // since it's both a real client country and where DivergenCIE is based --
 // not a duplicate, one dot covers both facts.
-const locations = [
-  { name: "UK", x: 428, y: 72, hq: true },
-  { name: "US", x: 175, y: 110 },
-  { name: "Cayman Islands", x: 165, y: 245 },
-  { name: "Egypt", x: 475, y: 135 },
-  { name: "Sudan", x: 480, y: 185 },
-  { name: "Nigeria", x: 430, y: 235 },
-  { name: "Tanzania", x: 500, y: 270 },
-  { name: "South Africa", x: 460, y: 335 },
-  { name: "Seychelles", x: 555, y: 290 },
-  // This cluster (Middle East through Southeast Asia) is where 11 of the
-  // 21 real countries sit close together -- spread wider than their real
-  // geography to keep each label readable rather than colliding into an
-  // unreadable smear, found by actually rendering a first attempt and
-  // looking at it (Saudi Arabia/UAE/Qatar and Sri Lanka/Singapore
-  // overlapped into unreadable text). A plain-text list below the map is
-  // the reliable, always-readable source for the full 21; this cluster's
-  // exact pixel spacing is a readability compromise, not a geography claim.
-  { name: "Turkey", x: 545, y: 85 },
-  { name: "Saudi Arabia", x: 560, y: 170 },
-  { name: "Qatar", x: 605, y: 215 },
-  { name: "UAE", x: 650, y: 165 },
-  { name: "Pakistan", x: 700, y: 130 },
-  { name: "India", x: 730, y: 180 },
-  { name: "Bangladesh", x: 790, y: 150 },
-  { name: "Sri Lanka", x: 760, y: 225 },
-  { name: "Malaysia", x: 830, y: 185 },
-  { name: "Singapore", x: 800, y: 235 },
-  { name: "Indonesia", x: 860, y: 255 },
-  { name: "Australia", x: 800, y: 335 },
-];
+//
+// TKT-0271: the map is now a halftone dot map on the Equal Earth projection
+// with real country shapes, each country at its true coordinates, and the
+// countries grouped into regional callout boxes so the crowded Middle East /
+// South Asia / South-East Asia cluster stays readable. The geometry lives in
+// globalReachMapData.ts (generated, see the header there); the three designs
+// that were considered are kept in planning/mockups/tkt-0271-world-map/.
+// Below the sm breakpoint the callout boxes are hidden (their text would be
+// too small to read on a phone) and the plain-text list under the map is the
+// readable enumeration of all 21.
 
 export default function GlobalReach() {
   return (
@@ -57,67 +35,80 @@ export default function GlobalReach() {
           </p>
         </div>
 
-        {/* Map Container - Card styling removed, made larger */}
-        <div className="relative w-full aspect-[2/1] max-w-screen-2xl mx-auto mb-8">
+        <div className="relative w-full max-w-screen-2xl mx-auto mb-4">
           <svg
-            viewBox="0 0 1000 500"
-            className="w-full h-full text-[var(--border-subtle)] fill-current"
-            aria-label="World map showing DivergenCIE student locations"
+            viewBox={MAP_VIEWBOX}
+            className="w-full h-auto"
+            role="img"
+            aria-label="World map showing the 21 countries where DivergenCIE has students"
           >
-            {/* Simple Map Paths */}
-            <path d="M80,80 L200,70 L230,90 L240,130 L220,160 L200,180 L180,200 L160,220 L130,230 L100,220 L80,200 L60,170 L55,140 L65,110 Z" />
-            <path d="M150,230 L175,225 L185,245 L170,260 L150,255 Z" />
-            <path d="M160,270 L220,255 L250,270 L260,310 L255,360 L230,400 L200,420 L175,410 L155,380 L145,340 L140,300 L145,275 Z" />
-            <path d="M430,60 L500,55 L520,70 L510,100 L490,115 L460,120 L435,110 L420,90 Z" />
-            <path d="M415,65 L430,60 L435,75 L425,85 L412,80 Z" />
-            <path d="M440,130 L510,120 L540,135 L550,180 L545,240 L525,300 L500,340 L470,350 L445,330 L425,280 L420,220 L425,170 L430,140 Z" />
-            <path d="M520,55 L700,50 L750,65 L770,90 L760,130 L730,155 L690,165 L640,160 L590,150 L555,140 L530,120 L515,95 L515,70 Z" />
-            <path d="M615,155 L650,150 L665,175 L655,210 L635,225 L615,210 L605,185 Z" />
-            <path d="M700,155 L740,145 L760,165 L755,195 L730,200 L705,185 Z" />
-            <path d="M730,280 L820,270 L855,290 L860,340 L840,375 L800,385 L760,375 L730,345 L720,310 Z" />
-            <path d="M780,90 L800,85 L810,100 L800,115 L782,110 Z" />
+            <path d={LAND_DOTS} className="fill-[#cfd6de] dark:fill-white/15" />
+            <path d={HIGHLIGHT_DOTS} className="fill-[var(--sky)]" />
 
-            {/* Pulsing Dots as Squares */}
-            {locations.map((loc, idx) => (
-              <g key={idx} transform={`translate(${loc.x},${loc.y})`} className="group cursor-help">
-                <rect 
-                  x={loc.hq ? -12 : -8} 
-                  y={loc.hq ? -12 : -8} 
-                  width={loc.hq ? 24 : 16} 
-                  height={loc.hq ? 24 : 16} 
-                  className={`animate-ping ${loc.hq ? 'text-[var(--gold)]/40' : 'text-[var(--sky)]/40'} fill-current`} 
-                />
-                <rect 
-                  x={loc.hq ? -5 : -3.5} 
-                  y={loc.hq ? -5 : -3.5} 
-                  width={loc.hq ? 10 : 7} 
-                  height={loc.hq ? 10 : 7} 
-                  className={`${loc.hq ? 'text-[var(--gold)]' : 'text-[var(--sky)]'} fill-current`} 
-                />
-                <text 
-                  x="10" 
-                  y="4" 
-                  className={`text-[11.5px] font-black uppercase tracking-tighter fill-[var(--navy)]/60 dark:fill-white/60 group-hover:fill-[var(--navy)] dark:group-hover:fill-white transition-colors`}
+            <g className="max-sm:hidden">
+              {LEADERS.map((l, i) => (
+                <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} strokeWidth={0.9} className="stroke-[var(--navy)]/55 dark:stroke-white/40" />
+              ))}
+            </g>
+
+            {MARKERS.map((m) => {
+              const size = m.hq ? 10 : 6.5;
+              return (
+                <rect
+                  key={m.name}
+                  x={m.x - size / 2}
+                  y={m.y - size / 2}
+                  width={size}
+                  height={size}
+                  strokeWidth={1}
+                  className={m.hq ? "fill-[var(--gold)] stroke-white dark:stroke-black" : "fill-[var(--navy)] stroke-white dark:fill-white dark:stroke-black"}
                 >
-                  {loc.name}
-                </text>
-              </g>
-            ))}
+                  <title>{m.hq ? `${m.name} (HQ)` : m.name}</title>
+                </rect>
+              );
+            })}
+
+            <g className="max-sm:hidden">
+              {REGION_BOXES.map((b) => (
+                <g key={b.title}>
+                  <rect x={b.x} y={b.y} width={b.w} height={b.h} strokeWidth={0.8} className="fill-white dark:fill-[#161616] stroke-[var(--navy)] dark:stroke-white/40" />
+                  <rect x={b.x} y={b.y} width={3} height={b.h} className="fill-[var(--gold)]" />
+                  <text x={b.x + 10} y={b.y + 14} fontSize={9.5} fontWeight={900} letterSpacing=".18em" className="fill-[var(--gold)]">
+                    {b.title}
+                  </text>
+                  {b.lines.map((line, i) => (
+                    <text key={line} x={b.x + 10} y={b.y + 28 + i * 13.5} fontSize={11} fontWeight={800} className="fill-[var(--navy)] dark:fill-white">
+                      {line}
+                    </text>
+                  ))}
+                </g>
+              ))}
+            </g>
           </svg>
         </div>
 
-        {/* Plain-text list -- the map's dot labels get genuinely crowded in
-            the Middle East/South-Southeast Asia cluster (11 of the 21
-            countries sit close together there), so this list is the
-            reliably readable enumeration of all 21, independent of how
-            legible any single map label is at a given screen size. */}
+        <p className="max-w-2xl mx-auto mb-10 text-xs leading-relaxed text-[var(--text-muted)]">
+          Drawn on the Equal Earth projection, which the UN General Assembly backed on 4 September 2026. Every country is shown at its true relative size.{" "}
+          <a
+            href="https://press.un.org/en/2026/ga12779.doc.htm"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-[var(--navy)] dark:hover:text-white"
+          >
+            UN press release
+          </a>
+        </p>
+
+        {/* Plain-text list -- the map's region boxes are hidden on phones, and
+            small country names are hard to read on any map, so this list is
+            the reliably readable enumeration of all 21. */}
         <div className="max-w-3xl mx-auto mb-16 flex flex-wrap justify-center gap-2">
-          {locations.map((loc) => (
+          {MARKERS.map((m) => (
             <span
-              key={loc.name}
+              key={m.name}
               className="px-3 py-1.5 rounded-none bg-white dark:bg-white/5 border border-[var(--border-subtle)] text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider"
             >
-              {loc.name}
+              {m.name}
             </span>
           ))}
         </div>
