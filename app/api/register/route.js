@@ -42,7 +42,9 @@ async function tryUploadResume(resumeFile, name) {
 // happens here — Management reviews it later and, separately, creates open
 // Trial/Interview slots for approved requests to book.
 // body (multipart/form-data): name, email, requestedType, whatsappNumber,
-// whyDivergenCIE?, resume? (file, optional)
+// whyDivergenCIE?, resume? (file, optional). Trial also: gender?, location?,
+// parentContactNumber, parentEmail?, schoolName?, studying, help?, subjects?,
+// referrer?, heardAbout, couponCode?, scoreAStar?
 export async function POST(req) {
   // Red-team pass (2026-08-24): 5 rapid POSTs, no throttle, all created
   // real (if disposable-looking) RegForm rows -- an unauthenticated spam
@@ -57,6 +59,9 @@ export async function POST(req) {
   const whatsappNumber = formData.get("whatsappNumber");
   const whyDivergenCIE = formData.get("whyDivergenCIE");
   const resumeFile = formData.get("resume");
+  // TKT-0283: student (Trial) applications carry the same fields as the public
+  // intake form at bit.ly/divergencie. Free text is trimmed and length-capped.
+  const field = (k, max = 300) => String(formData.get(k) || "").trim().slice(0, max);
 
   // TKT-0201/0202: email and WhatsApp are now required (email was
   // previously optional; WhatsApp didn't exist as a field at all).
@@ -67,7 +72,21 @@ export async function POST(req) {
     return NextResponse.json({ error: `requestedType must be one of ${BOOKING_TYPES.join(", ")}.` }, { status: 400 });
   }
 
-  const resumeURL = await tryUploadResume(resumeFile, name);
+  const isStudent = requestedType === "Trial";
+  if (isStudent) {
+    if (!field("parentContactNumber")) {
+      return NextResponse.json({ error: "Parent's contact number is required." }, { status: 400 });
+    }
+    if (!field("studying")) {
+      return NextResponse.json({ error: "Please choose what you are studying." }, { status: 400 });
+    }
+    if (!field("heardAbout")) {
+      return NextResponse.json({ error: "Please tell us how you heard about us." }, { status: 400 });
+    }
+  }
+
+  // Students do not upload a resume; only interview applicants do.
+  const resumeURL = isStudent ? "" : await tryUploadResume(resumeFile, name);
 
   const db = await readDB();
   const regForm = {
@@ -75,8 +94,24 @@ export async function POST(req) {
     Name: name,
     Email: email,
     WhatsAppNumber: whatsappNumber,
-    WhyDivergenCIE: whyDivergenCIE || "",
+    WhyDivergenCIE: isStudent ? "" : whyDivergenCIE || "",
     ResumeURL: resumeURL,
+    ...(isStudent
+      ? {
+          Gender: field("gender", 20),
+          Location: field("location"),
+          ParentContactNumber: field("parentContactNumber", 40),
+          ParentEmail: field("parentEmail"),
+          SchoolName: field("schoolName"),
+          Studying: field("studying", 60),
+          HelpWanted: field("help", 100),
+          Subjects: field("subjects", 800),
+          ReferrerName: field("referrer"),
+          HeardAbout: field("heardAbout", 60),
+          CouponCode: field("couponCode", 60),
+          ScoreAStar: field("scoreAStar", 10),
+        }
+      : {}),
     RequestedType: requestedType,
     Status: "Pending",
     SubmittedAt: new Date().toISOString(),

@@ -570,6 +570,7 @@ function Applications({ issued, setIssued }) {
             <SortableTh label="Name" sortKeyName="Name" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
             <SortableTh label="Type" sortKeyName="RequestedType" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
             <SortableTh label="Status" sortKeyName="Status" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+            <th>Details</th>
             <th>Credentials</th>
             <th></th>
           </tr>
@@ -580,6 +581,28 @@ function Applications({ issued, setIssued }) {
               <td>{r.RegFormID}</td>
               <td>{r.Name}</td>
               <td>{BOOKING_TYPE_LABEL[r.RequestedType] || r.RequestedType}</td>
+              <td style={{ fontSize: 12, color: "var(--muted)", minWidth: 200 }}>
+                {[
+                  ["Email", r.Email],
+                  ["WhatsApp", formatInternationalNumber(r.WhatsAppNumber)],
+                  ["Parent", formatInternationalNumber(r.ParentContactNumber)],
+                  ["Parent email", r.ParentEmail],
+                  ["Gender", r.Gender],
+                  ["Location", r.Location],
+                  ["School", r.SchoolName],
+                  ["Studying", r.Studying],
+                  ["Wants", r.HelpWanted],
+                  ["Subjects", r.Subjects],
+                  ["Referrer", r.ReferrerName],
+                  ["Heard via", r.HeardAbout],
+                  ["Coupon", r.CouponCode],
+                  ["A* possible", r.ScoreAStar],
+                ]
+                  .filter(([, v]) => v)
+                  .map(([k, v]) => (
+                    <div key={k}><b>{k}:</b> {v}</div>
+                  ))}
+              </td>
               <td>
                 <Badge kind={r.Status === "Pending" ? "pending" : r.Status === "Approved" ? "good" : "bad"}>
                   {r.Status}

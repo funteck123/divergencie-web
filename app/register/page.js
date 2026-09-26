@@ -31,6 +31,62 @@ const FIELD_CLASS =
   "p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors";
 const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]";
 
+// TKT-0283: the Student form mirrors the public intake form at
+// bit.ly/divergencie (Cognito Forms), field for field, in the same order.
+// Option lists are copied from study/agent-notes/12-intake-form-full-subject-scope.md.
+const STUDYING_OPTIONS = [
+  "A2 Levels", "AS Level", "AP", "IGCSE/O-Levels", "IB", "SAT", "Qudurat GAT", "Tahsili SAAT",
+  "SAT Subject Tests", "IELTS", "TOEFL", "CBSE", "JEE", "NEET", "CUET", "GMAT", "OCR", "Edexcel", "AQA",
+];
+const HELP_OPTIONS = ["Classes", "Study Resources"];
+const SUBJECT_OPTIONS = [
+  "Chemistry", "Physics", "Biology", "Computer Science", "Maths", "ICT", "Islamic Studies",
+  "Religious Studies", "PreCalculus", "Calculus", "Hindi", "Arabic", "Urdu", "Environmental Management",
+  "French", "Spanish", "German", "Pak. Studies", "Business Studies", "English Literature",
+  "English Language", "English as a Second Language", "First Language English", "Economics",
+  "Psychology", "Sociology", "History", "Global Perspectives", "Geography", "Art",
+  "Further Mathematics", "Drama", "Accounting", "Law", "English General Paper", "IT", "Science",
+  "Independent Research",
+];
+const HEARD_OPTIONS = ["Social Media", "Referral", "Newspaper"];
+
+// Country code select + number. min-w-0 / max-w on the pieces is what stops
+// the row from forcing the page wider than a phone (TKT-0283).
+function PhoneField({ label, dial, onDial, number, onNumber, required, ariaLabel }) {
+  return (
+    <div className="space-y-2">
+      <label className={LABEL_CLASS}>{label}</label>
+      <div className="flex gap-2 min-w-0">
+        <select
+          className={`${FIELD_CLASS} w-auto flex-none min-w-0 max-w-[38%]`}
+          value={dial}
+          onChange={(e) => onDial(e.target.value)}
+          aria-label={ariaLabel}
+        >
+          {COUNTRY_CODE_GROUPS.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.options.map((c) => (
+                <option key={`${group.label}-${c.name}`} value={c.dial}>
+                  {c.dial} {c.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        <input
+          type="tel"
+          className={`${FIELD_CLASS} flex-1 min-w-0`}
+          value={number}
+          onChange={(e) => onNumber(e.target.value)}
+          placeholder="Phone number"
+          required={required}
+          aria-label={`${label} number`}
+        />
+      </div>
+    </div>
+  );
+}
+
 function RegisterForm() {
   const searchParams = useSearchParams();
   const presetType = searchParams.get("requestedType");
@@ -43,9 +99,25 @@ function RegisterForm() {
   const [requestedType, setRequestedType] = useState(
     REQUESTED_TYPE_LABEL[presetType] ? presetType : "Trial"
   );
+  const [gender, setGender] = useState("");
+  const [location, setLocation] = useState("");
+  const [parentDial, setParentDial] = useState(DEFAULT_COUNTRY_DIAL);
+  const [parentNumber, setParentNumber] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+  const [studying, setStudying] = useState("");
+  const [help, setHelp] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [referrer, setReferrer] = useState("");
+  const [heardAbout, setHeardAbout] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [scoreAStar, setScoreAStar] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isStudent = requestedType === "Trial";
+  const toggle = (list, setList, v) => setList(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -56,9 +128,24 @@ function RegisterForm() {
       formData.set("name", name);
       formData.set("email", email);
       formData.set("whatsappNumber", `${countryDial} ${whatsappNumber}`.trim());
-      formData.set("whyDivergenCIE", whyDivergenCIE);
       formData.set("requestedType", requestedType);
-      if (resume) formData.set("resume", resume);
+      if (isStudent) {
+        formData.set("gender", gender);
+        formData.set("location", location);
+        formData.set("parentContactNumber", `${parentDial} ${parentNumber}`.trim());
+        formData.set("parentEmail", parentEmail);
+        formData.set("schoolName", schoolName);
+        formData.set("studying", studying);
+        formData.set("help", help.join(", "));
+        formData.set("subjects", subjects.join(", "));
+        formData.set("referrer", referrer);
+        formData.set("heardAbout", heardAbout);
+        formData.set("couponCode", couponCode);
+        formData.set("scoreAStar", scoreAStar);
+      } else {
+        formData.set("whyDivergenCIE", whyDivergenCIE);
+        if (resume) formData.set("resume", resume);
+      }
       await api("/api/register", { method: "POST", body: formData });
       setSubmitted(true);
     } catch (err) {
@@ -140,12 +227,49 @@ function RegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-[1.5vh]">
             <div className="space-y-2">
-              <label className={LABEL_CLASS}>Full name</label>
-              <input className={`${FIELD_CLASS} w-full`} value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
+              <label className={LABEL_CLASS}>I&apos;m applying as</label>
+              <select className={`${FIELD_CLASS} w-full`} value={requestedType} onChange={(e) => setRequestedType(e.target.value)}>
+                <option value="Trial">Trial (Student)</option>
+                <option value="TeacherInterview">Interview — Teacher</option>
+                <option value="StaffInterview">Interview — Staff</option>
+                <option value="AmbassadorInterview">Interview — Ambassador</option>
+              </select>
             </div>
 
             <div className="space-y-2">
-              <label className={LABEL_CLASS}>Email</label>
+              <label className={LABEL_CLASS}>{isStudent ? "Student name" : "Full name"}</label>
+              <input className={`${FIELD_CLASS} w-full`} value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+
+            {isStudent && (
+              <>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Gender (optional)</label>
+                  <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Location (optional)</label>
+                  <input className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)} />
+                </div>
+              </>
+            )}
+
+            <PhoneField
+              label="WhatsApp number"
+              dial={countryDial}
+              onDial={setCountryDial}
+              number={whatsappNumber}
+              onNumber={setWhatsappNumber}
+              required
+              ariaLabel="Country code"
+            />
+
+            <div className="space-y-2">
+              <label className={LABEL_CLASS}>{isStudent ? "Your email" : "Email"}</label>
               <input
                 type="email"
                 className={`${FIELD_CLASS} w-full`}
@@ -155,65 +279,100 @@ function RegisterForm() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className={LABEL_CLASS}>WhatsApp number</label>
-              <div className="flex gap-2">
-                <select
-                  className={`${FIELD_CLASS} w-auto flex-none`}
-                  value={countryDial}
-                  onChange={(e) => setCountryDial(e.target.value)}
-                  aria-label="Country code"
-                >
-                  {COUNTRY_CODE_GROUPS.map((group) => (
-                    <optgroup key={group.label} label={group.label}>
-                      {group.options.map((c) => (
-                        <option key={`${group.label}-${c.name}`} value={c.dial}>
-                          {c.dial} {c.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-                <input
-                  type="tel"
-                  className={`${FIELD_CLASS} flex-1`}
-                  value={whatsappNumber}
-                  onChange={(e) => setWhatsappNumber(e.target.value)}
-                  placeholder="Number without country code"
+            {isStudent ? (
+              <>
+                <PhoneField
+                  label="Parent's contact number"
+                  dial={parentDial}
+                  onDial={setParentDial}
+                  number={parentNumber}
+                  onNumber={setParentNumber}
                   required
+                  ariaLabel="Parent country code"
                 />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className={LABEL_CLASS}>Why DivergenCIE? (optional)</label>
-              <textarea
-                className={`${FIELD_CLASS} w-full`}
-                rows={3}
-                value={whyDivergenCIE}
-                onChange={(e) => setWhyDivergenCIE(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={LABEL_CLASS}>Resume</label>
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                className={`${FIELD_CLASS} w-full`}
-                onChange={(e) => setResume(e.target.files?.[0] || null)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className={LABEL_CLASS}>I&apos;m applying as</label>
-              <select className={`${FIELD_CLASS} w-full`} value={requestedType} onChange={(e) => setRequestedType(e.target.value)}>
-                <option value="Trial">Trial (Student)</option>
-                <option value="TeacherInterview">Interview — Teacher</option>
-                <option value="StaffInterview">Interview — Staff</option>
-                <option value="AmbassadorInterview">Interview — Ambassador</option>
-              </select>
-            </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Parent&apos;s email (optional)</label>
+                  <input type="email" className={`${FIELD_CLASS} w-full`} value={parentEmail} onChange={(e) => setParentEmail(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>School name (optional)</label>
+                  <input className={`${FIELD_CLASS} w-full`} value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>What are you studying?</label>
+                  <select className={`${FIELD_CLASS} w-full`} value={studying} onChange={(e) => setStudying(e.target.value)} required>
+                    <option value="">Select</option>
+                    {STUDYING_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+                <fieldset className="space-y-2 min-w-0">
+                  <legend className={LABEL_CLASS}>How shall we help? (optional)</legend>
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
+                    {HELP_OPTIONS.map((o) => (
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium">
+                        <input type="checkbox" checked={help.includes(o)} onChange={() => toggle(help, setHelp, o)} /> {o}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <fieldset className="space-y-2 min-w-0">
+                  <legend className={LABEL_CLASS}>Subjects (optional)</legend>
+                  <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-x-4 gap-y-2 pt-1 max-h-64 overflow-y-auto border border-[var(--border-subtle)] p-3">
+                    {SUBJECT_OPTIONS.map((o) => (
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium min-w-0">
+                        <input type="checkbox" checked={subjects.includes(o)} onChange={() => toggle(subjects, setSubjects, o)} /> <span className="min-w-0">{o}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Who referred you? (optional, referrer name)</label>
+                  <input className={`${FIELD_CLASS} w-full`} value={referrer} onChange={(e) => setReferrer(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>How did you hear about us?</label>
+                  <select className={`${FIELD_CLASS} w-full`} value={heardAbout} onChange={(e) => setHeardAbout(e.target.value)} required>
+                    <option value="">Select</option>
+                    {HEARD_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Coupon code (optional)</label>
+                  <input className={`${FIELD_CLASS} w-full`} value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
+                </div>
+                <fieldset className="space-y-2 min-w-0">
+                  <legend className={LABEL_CLASS}>Do you feel you can score A* with proper guidance?</legend>
+                  <div className="flex gap-6 pt-1">
+                    {["Yes", "No"].map((o) => (
+                      <label key={o} className="flex items-center gap-2 text-sm font-medium">
+                        <input type="radio" name="scoreAStar" checked={scoreAStar === o} onChange={() => setScoreAStar(o)} /> {o}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Why DivergenCIE? (optional)</label>
+                  <textarea
+                    className={`${FIELD_CLASS} w-full`}
+                    rows={3}
+                    value={whyDivergenCIE}
+                    onChange={(e) => setWhyDivergenCIE(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className={LABEL_CLASS}>Resume</label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className={`${FIELD_CLASS} w-full`}
+                    onChange={(e) => setResume(e.target.files?.[0] || null)}
+                  />
+                </div>
+              </>
+            )}
 
             <button
               type="submit"
