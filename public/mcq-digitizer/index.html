@@ -1537,17 +1537,30 @@ async function openStructuredPaper(paper) {
     // Drive fileId to fetch/stream a PDF-view link for, so pdfLinksHtml is
     // skipped for it below rather than pointed at a Drive id that doesn't
     // exist.
-    const res = paper.paperId
-      ? await fetch("/api/mcq/yearly-digitize", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paperId: paper.paperId }),
-        })
-      : await fetch("/api/mcq/digitize-structured", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
-        });
+    const doFetch = () =>
+      paper.paperId
+        ? fetch("/api/mcq/yearly-digitize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paperId: paper.paperId }),
+          })
+        : fetch("/api/mcq/digitize-structured", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ qpId: paper.qpId, msId: paper.msId }),
+          });
+    let res = await doFetch();
+    // TKT-0272: a 502/503 here almost always means the extraction service
+    // was mid-restart (the ops supervisor catches this within seconds --
+    // see scripts/ops/question-solver-supervisor.sh), not a real, lasting
+    // failure. Retry once, after a short pause, with a plain-language
+    // status instead of immediately surfacing a raw "invalid response"/
+    // "unreachable" message a student has no way to act on.
+    if (res.status === 502 || res.status === 503) {
+      loadingEl.textContent = "Question Solver is restarting, retrying in a moment...";
+      await new Promise((r) => setTimeout(r, 5000));
+      res = await doFetch();
+    }
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     const questions = data.questions || [];

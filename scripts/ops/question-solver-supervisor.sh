@@ -9,7 +9,12 @@ set -u
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ENV_FILE="${TUNNEL_SYNC_ENV:-$HOME/.config/divergencie/tunnel-sync.env}"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/question-solver"
-INTERVAL=30
+# TKT-0272: was 30 -- a dead server (port_listening check) went up to 30s
+# unnoticed, during which a real student's paper load would just fail. The
+# separate "public URL unreachable" tunnel-restart path is unaffected in
+# spirit (still gated on 3 consecutive misses) but now detects within
+# ~15s worst case instead of ~90s, since it ticks 6x more often.
+INTERVAL=5
 ENABLED="${ENABLED_SERVICES:-mcq syllabus}"
 mkdir -p "$STATE_DIR"
 
