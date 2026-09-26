@@ -16,6 +16,7 @@ import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, formatRate, useSort, GROUP_COLORS, todayDateStr, daysAgoStr } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
 import { formatDate, formatDay } from "@/lib/formatDate";
+import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 
 export default function StudentDashboard() {
   return <DashboardShell allowedType="Student">{(user) => <Body user={user} />}</DashboardShell>;
@@ -117,6 +118,10 @@ function Body({ user }) {
   }
 
   const todayStr = todayDateStr();
+  // Schedule Time is already converted to the viewer's own Timezone (see
+  // TKT-0277 / app/api/me/route.js) -- but the table itself never said
+  // *which* zone that was, leaving the viewer to guess. Shown next to Time.
+  const viewerTz = normalizeTimezone(user.Timezone);
   // TKT-0129/0130: none of these three tables had a search box at all
   // (sort already existed on Schedule/Invoices via useSort, Enrollments
   // had neither) — added consistently across all three, and sort added
@@ -274,6 +279,7 @@ function Body({ user }) {
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
+            viewerTz={viewerTz}
             portalColor={GROUP_COLORS.Student}
             renderExpanded={(scheduleId, s) => (
               <SessionAttendance scheduleId={scheduleId} duration={s.Duration} viewerUserId={user.UserID} viewerType="Student" onLogged={load} />
@@ -304,7 +310,7 @@ function Body({ user }) {
                       <td>{s.ServiceName}</td>
                       <td>{formatDate(s.Date)}</td>
                       <td>{formatDay(s.Date)}</td>
-                      <td>{s.Time}</td>
+                      <td>{s.Time} {tzAbbrFor(s.Date, viewerTz)}</td>
                       <td className="num">{s.Duration}</td>
                       <td>{s.Facilitator || "—"}</td>
                       <td>

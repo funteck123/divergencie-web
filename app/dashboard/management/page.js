@@ -9,7 +9,7 @@ import ScheduleCalendar from "@/components/ScheduleCalendar";
 import SessionAttendance from "@/components/SessionAttendance";
 import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient, todayDateStr, setCurrentUser, setImpersonatorInfo, roleHomePath, getCurrentUser } from "@/lib/client";
 import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
-import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel } from "@/lib/timezones";
+import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel, tzAbbrFor } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
 
@@ -1350,7 +1350,7 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
           <option value="">Select an open slot…</option>
           {candidateSlots.map((s) => (
             <option key={s.ScheduleID} value={s.ScheduleID}>
-              {formatDate(s.Date)} at {s.Time}
+              {formatDate(s.Date)} at {s.Time} {tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}
               {s.BatchName ? ` · ${s.BatchName}` : ""} ({s.Facilitator || "no instructor set"})
             </option>
           ))}
@@ -4308,7 +4308,7 @@ function SchedulePool() {
                     <tr>
                       <td>{s.ServiceName}</td>
                       <td>{formatDate(s.Date)}</td>
-                      <td>{s.Time}</td>
+                      <td>{s.Time} {tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}</td>
                       <td>{s.Facilitator || "—"}</td>
                       <td>
                         <button className="btn-ghost" onClick={() => setExpandedConflict(expanded ? null : s.ScheduleID)}>
@@ -4500,7 +4500,7 @@ function SchedulePool() {
                     <span className="subject-truncate" title={s.ServiceName}>{s.ServiceName}</span>
                   </td>
                   <td>{formatDate(s.Date)}</td>
-                  <td>{s.Time}</td>
+                  <td>{s.Time} {tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}</td>
                   <td>{s.Facilitator}</td>
                 </tr>
               ))}
@@ -4608,7 +4608,7 @@ function SchedulePool() {
                     <span className="subject-truncate" title={s.ServiceName}>{s.ServiceName}</span>
                   </td>
                   <td>{formatDate(s.Date)}</td>
-                  <td>{s.Time}</td>
+                  <td>{s.Time} {tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}</td>
                   <td className="num">{s.Duration}</td>
                   <td>{s.Facilitator}</td>
                   <td>

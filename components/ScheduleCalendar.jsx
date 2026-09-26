@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { GROUP_COLORS, groupGradient, normalizeGroup } from "@/lib/client";
+import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTH_LABELS = [
@@ -32,7 +33,12 @@ function fmtDate(y, m, d) {
 const VISIBLE_SESSIONS_PER_CELL = 3;
 const CELL_MAX_HEIGHT = 144;
 
-export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor, renderExpanded }) {
+// `viewerTz`: pass the viewer's own (normalized) Timezone when `scheduleItems`
+// has already been converted to it (student/teacher/staff/ambassador, via
+// /api/me -- see TKT-0277). Leave unset when items are raw/unconverted
+// (Parent viewing a child's schedule, Management's org-wide views) -- each
+// chip then falls back to that item's own stored Timezone instead.
+export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor, renderExpanded, viewerTz }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -118,7 +124,7 @@ export default function ScheduleCalendar({ scheduleItems, attendanceItems, onLog
           }}
           title={`${s.ServiceName} — ${normalizedGroup.join(" + ")}`}
         >
-          {s.Time} {s.ServiceName}
+          {s.Time} {tzAbbrFor(s.Date, viewerTz || normalizeTimezone(s.Timezone))} {s.ServiceName}
           {occNumberByScheduleId[s.ScheduleID] ? ` #${occNumberByScheduleId[s.ScheduleID]}` : ""}
           {s.Facilitator ? ` · ${s.Facilitator}` : ""}
           {att ? ` · ${att.Status}` : ""}

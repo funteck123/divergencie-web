@@ -14,6 +14,7 @@ import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort, GROUP_COLORS, todayDateStr } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
+import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 
 export default function StaffDashboard() {
   return <DashboardShell allowedType="Staff">{(user) => <Body user={user} />}</DashboardShell>;
@@ -82,6 +83,7 @@ function Body({ user }) {
   }
 
   const todayStr = todayDateStr();
+  const viewerTz = normalizeTimezone(user.Timezone);
   // TKT-0129/0130: none of these three tables had a search box (sort
   // already existed on Schedule/Paychecks via useSort, Enrollments had
   // neither) — added consistently, and sort added to Enrollments to match.
@@ -228,6 +230,7 @@ function Body({ user }) {
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
+            viewerTz={viewerTz}
             portalColor={GROUP_COLORS.Staff}
           />
         ) : (
@@ -251,7 +254,7 @@ function Body({ user }) {
                   <tr key={s.ScheduleID}>
                     <td>{s.ServiceName}</td>
                     <td>{formatDate(s.Date)}</td>
-                    <td>{s.Time}</td>
+                    <td>{s.Time} {tzAbbrFor(s.Date, viewerTz)}</td>
                     <td className="num">{s.Duration}</td>
                     <td>{s.Facilitator || "—"}</td>
                     <td>

@@ -9,6 +9,7 @@ import FilterBar from "@/components/FilterBar";
 import { api, groupMatches, useSort } from "@/lib/client";
 import { amountDueInOwnCurrency } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
+import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 
 // TKT-0126: Student and Parent dashboards both got a per-invoice Stripe
 // "Pay online" link (TKT-0039); Trial never did, even though the Add
@@ -155,7 +156,7 @@ function Body({ user }) {
                     from a real Service occurrence; a manually-offered pool
                     slot has none, so it's simply omitted for those. */}
                 {slot
-                  ? `${formatDate(slot.Date)} at ${slot.Time} IST${slot.BatchName ? ` · Batch ${slot.BatchName}` : ""}`
+                  ? `${formatDate(slot.Date)} at ${slot.Time} ${tzAbbrFor(slot.Date, normalizeTimezone(slot.Timezone))}${slot.BatchName ? ` · Batch ${slot.BatchName}` : ""}`
                   : t.ScheduleItemID}{" "}
                 <span className="badge badge-info">{t.Status}</span>
               </p>

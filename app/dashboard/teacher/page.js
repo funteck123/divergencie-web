@@ -15,6 +15,7 @@ import SortableTh from "@/components/SortableTh";
 import { api, formatRate, useSort, GROUP_COLORS, todayDateStr, daysAgoStr } from "@/lib/client";
 import { amountDueInOwnCurrency, rateById, batchesOf, lineItemName } from "@/lib/billing";
 import { formatDate, formatDay } from "@/lib/formatDate";
+import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 
 export default function TeacherDashboard() {
   return <DashboardShell allowedType="Teacher">{(user) => <Body user={user} />}</DashboardShell>;
@@ -88,6 +89,8 @@ function Body({ user }) {
   }
 
   const todayStr = todayDateStr();
+  // See matching comment in app/dashboard/student/page.js.
+  const viewerTz = normalizeTimezone(user.Timezone);
   // TKT-0129/0130: none of these three tables had a search box (sort
   // already existed on Schedule/Paychecks via useSort, Enrollments had
   // neither) — added consistently, and sort added to Enrollments to match.
@@ -244,6 +247,7 @@ function Body({ user }) {
             scheduleItems={data.scheduleItems}
             attendanceItems={data.attendanceItems}
             onLogAttendance={logAttendance}
+            viewerTz={viewerTz}
             portalColor={GROUP_COLORS.Teacher}
             renderExpanded={(scheduleId, s) => (
               <SessionAttendance scheduleId={scheduleId} duration={s.Duration} viewerUserId={user.UserID} viewerType="Teacher" onLogged={load} />
@@ -274,7 +278,7 @@ function Body({ user }) {
                       <td>{s.ServiceName}</td>
                       <td>{formatDate(s.Date)}</td>
                       <td>{formatDay(s.Date)}</td>
-                      <td>{s.Time}</td>
+                      <td>{s.Time} {tzAbbrFor(s.Date, viewerTz)}</td>
                       <td className="num">{s.Duration}</td>
                       <td>{s.Facilitator || "—"}</td>
                       <td>

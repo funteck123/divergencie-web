@@ -14,6 +14,7 @@ import InvoicePaidControl from "@/components/InvoicePaidControl";
 import { api, useSort, todayDateStr } from "@/lib/client";
 import { amountDueInOwnCurrency, batchesOf, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
+import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 
 export default function ParentDashboard() {
   return <DashboardShell allowedType="Parent">{(user) => <Body user={user} />}</DashboardShell>;
@@ -222,7 +223,13 @@ function ChildCard({ child, services, onSetPaid, onConfirmPaid, parentUserId, on
                 <tr key={s.ScheduleID}>
                   <td>{s.ServiceName}</td>
                   <td>{formatDate(s.Date)}</td>
-                  <td>{s.Time}</td>
+                  {/* Unlike the student/teacher/etc. portals, this Time is
+                      NOT converted to the parent's own Timezone (see
+                      ChildCard above -- `schedule` comes straight from
+                      /api/me's unconverted children[].schedule) -- labelled
+                      with the item's own stored Timezone so this isn't
+                      silently misleading. */}
+                  <td>{s.Time} {tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}</td>
                   <td>{s.Facilitator || "—"}</td>
                   <td>
                     <RescheduleControl
