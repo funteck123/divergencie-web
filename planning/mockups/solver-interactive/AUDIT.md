@@ -53,6 +53,23 @@ Cambridge-style MCQ questions with A–D grid, mark-based scoring, and a
 board/subject/component picker are unmistakably exam prep — the app could
 not be relabelled for a different industry without real restructuring.
 
+## Revision 2 (post-feedback)
+- **Real bug found and fixed:** four gold surfaces (resume button, gold
+  mode card, gold buttons) used a dark near-black text color I invented
+  (`#1a1200`), directly contradicting the brand doc's own rule ("Primary
+  CTA buttons: Gold background with white text", BDG-v1.0 §2.1) and the
+  real homepage's own `.btn-gold{color:#fff}`. Fixed to white on every
+  gold surface; verified none remain (`grep` for the old hex, zero matches).
+- Reverted the picker and quiz to the real live tool's structure per
+  explicit feedback (see DESIGN_NOTES). Re-ran the full Gate 1/2 checks
+  after the rewrite: 15 real questions render on one page, board/subject
+  cascading selects update correctly (verified switching board changes the
+  subject list), answers and flags survive re-render, a real running timer
+  updates every second, submit computes the real score from only the
+  questions actually answered. No console errors, no overflow at 390px,
+  920px desktop, or a wide viewport; the answer grid correctly goes
+  4-across at desktop width via the responsive breakpoint.
+
 ## Known limitations
 - Only one real paper (Ch1.2 Motion, 15 questions) has real content wired
   up; the other 11 real library titles are listed but show an honest "not

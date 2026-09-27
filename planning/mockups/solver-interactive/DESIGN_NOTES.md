@@ -17,14 +17,21 @@ Student picks a real paper → answers real questions one at a time → submits
   saved after every tap) → submitted (graded, immutable) → reviewed.
 
 ## Navigation architecture
-Bottom nav (Library / Progress) for browsing. The quiz itself is a
-**full-screen focused task** — nav and chrome disappear, replaced by a
-sticky progress bar up top and a sticky Back/Next/Submit bar at the bottom,
-one question per screen. This is a deliberate departure from the live
-tool's current one-long-page layout, chosen because "one screen, one
-purpose" is the skill's explicit standard and better fits a timed test.
-**Flagging this clearly: it is a proposed interaction model, not a claim
-about what the live tool currently does.**
+Bottom nav (Library / Progress) for browsing. Revision 2: reverted the quiz
+and picker to the real live tool's actual structure at the user's request —
+**one long scrolling page listing all 15 questions**, not one-at-a-time
+screens, and a **real cascading Board → Subject → Component → Paper picker**
+(4 selects, matching the live tool exactly), not a tile-browse reinvention.
+The v1 one-question-per-screen flow is gone; a sticky top bar (timer,
+progress fill, exit) stays fixed while the question list scrolls beneath
+it — this part of the v1 app-shell treatment is kept, since it was
+independently approved earlier and doesn't change the real page structure.
+
+## Responsive, not phone-locked
+The app frame is `max-width:920px`, not a fixed phone silhouette. On a wide
+screen the answer grid goes 4-across instead of 2, and the picker's
+Subject/Component fields sit side by side — a real responsive layout, not
+a mobile app centered in empty grey space.
 
 ## Domain-native components (not in the Fullunit reference)
 1. **Question stem + A–D grid** — the real exam question image with a
