@@ -1,0 +1,24 @@
+/* 5 alternatives to the flat white-card-on-grey-page treatment. Everything
+   else (sharp corners, Satoshi, brand colors, real content/structure) is
+   untouched -- these only restyle the .card surface itself, scoped per
+   option so all 5 can sit on one page without fighting each other. */
+.opt-lab{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;color:var(--gold);margin:0 0 .6rem}
+.opt-sub{font-size:.78rem;color:var(--muted);margin:0 0 1rem;max-width:60ch}
+.opt-block{margin:0 0 56px}
+
+/* A -- no box at all: content straight on the page, separated by a rule */
+.optA .card{background:transparent;border:0;border-top:3px solid var(--navy);padding-top:1.1rem}
+
+/* B -- page turns white, so there's no grey-vs-white contrast left to read as a "square" */
+.optB{background:#fff;margin:0 -1rem;padding:1.5rem 1rem}
+.optB .card{border:0;box-shadow:none}
+.optB .card h2{border-bottom:2px solid var(--line,#eee);padding-bottom:.6rem}
+
+/* C -- tinted panel instead of white (brand's own Light Blue, BDG-v1.0) */
+.optC .card{background:#d5e8f0;border:0}
+
+/* D -- outline only, no fill: page shows through */
+.optD .card{background:transparent;border:2px solid var(--navy)}
+
+/* E -- white fill kept, but a soft shadow instead of a hard border */
+.optE .card{border:0;box-shadow:0 16px 32px -20px rgba(26,60,94,.35)}
