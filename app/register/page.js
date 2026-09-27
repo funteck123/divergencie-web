@@ -6,7 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { api } from "@/lib/client";
+import { Roboto_Slab } from "next/font/google";
 import { INTAKE_COUNTRIES } from "@/lib/cognitoCountries";
+
+// Same typeface as the Cognito form at bit.ly/divergencie (TKT-0283).
+const formFont = Roboto_Slab({ subsets: ["latin"], weight: ["400", "500", "700"], display: "swap" });
 
 const REQUESTED_TYPE_LABEL = {
   Trial: "trial",
@@ -29,8 +33,8 @@ const REQUESTED_TYPE_LABEL = {
 // to a sliver). Every other field adds `w-full` itself.
 const FIELD_CLASS =
   "p-4 border border-black/20 bg-white/50 text-black placeholder:text-black/45 focus:border-[#1a3c5e] focus:bg-white/70 outline-none transition-colors [&_option]:text-black [&_optgroup]:text-black";
-const CHOICE_CLASS = "flex items-center gap-2 text-sm font-medium text-[#111] min-w-0";
-const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-[#ff6161] [text-shadow:0_0_6px_rgba(255,255,255,0.85),0_0_2px_rgba(255,255,255,0.9)]";
+const CHOICE_CLASS = "flex items-center gap-2 text-[15px] font-normal text-[#111] min-w-0";
+const LABEL_CLASS = "block text-sm font-medium text-[#e0403a]";
 
 // TKT-0283: the Student form mirrors the public intake form at
 // bit.ly/divergencie (Cognito Forms), field for field, in the same order.
@@ -246,7 +250,7 @@ function RegisterForm() {
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to site
         </Link>
 
-        <div className="max-w-3xl w-full mx-auto relative z-10 bg-white/50 sm:bg-white/80 backdrop-blur-xl border border-white/70 sm:border-white/80 p-6 sm:p-8 shadow-2xl mb-8 text-[#111]">
+        <div className={`max-w-3xl w-full mx-auto relative z-10 ${formFont.className} bg-white/50 sm:bg-white/80 backdrop-blur-xl border border-white/70 sm:border-white/80 p-6 sm:p-8 shadow-2xl mb-8 text-[#111]`}>
           <div className="mb-[2vh]">
             <h2 className="text-4xl font-black text-[#1a3c5e] uppercase mb-2">Apply</h2>
             <p className="text-black/65 font-medium">Tell us a bit about you to get started.</p>
