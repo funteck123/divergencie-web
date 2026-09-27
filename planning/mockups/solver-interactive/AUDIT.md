@@ -79,3 +79,31 @@ not be relabelled for a different industry without real restructuring.
 - The one-question-per-screen quiz layout is a proposed change from the
   live tool's current one-long-page layout — noted in DESIGN_NOTES, not
   silently assumed.
+
+## Revision 3 (real production timer + full picker options)
+- **Submit button** now reads just "Submit" (was "Submit test — X/15 answered").
+- **Timer replaced** with the real production structure, read directly from
+  `public/mcq-digitizer/index.html` (not guessed): "Answer the quiz" heading,
+  a `timer-display` box, Pause/Resume, Cancel — with **real working
+  pause/resume** (the clock actually freezes and resumes correctly,
+  verified: two ticks 1.2s apart read identical while paused, then advanced
+  again after resuming).
+- **Picker now matches production's real option set**, read from the real
+  library + yearly-library data (not invented): the Component list includes
+  Examiner Report, ZNotes: Theory, ZNotes: Alternative to Practical, and
+  Sample Response — document-only entries with no quiz flow, matching real
+  behaviour (selecting one shows "View document" and an honest toast, not a
+  fake quiz). A real conditional **Paper Type** row (Topical/Yearly) appears
+  only when a component genuinely has both (Paper 2 MCQ, Paper 4 Theory,
+  Paper 6 all do, confirmed from the real yearly-library data), with real
+  **Year/Session** cascading selects when Yearly is chosen (real years,
+  sessions, and variants — e.g. 2026 Feb/March only has variant 22, matching
+  the real data exactly).
+- **Real bug found and fixed:** the 7-field "Yearly" picker state is just
+  tall enough that its natural content lands exactly where the fixed bottom
+  tab bar sits — trailing padding after the button can't fix this, since the
+  button's on-screen position is set entirely by content *above* it. Fixed
+  by making the Fetch button its own fixed action bar positioned above the
+  tab bar (same pattern as the quiz's Submit bar), so it's reachable
+  regardless of how many fields are showing. Verified geometrically in both
+  the 4-field (Topical) and 7-field (Yearly) states.
