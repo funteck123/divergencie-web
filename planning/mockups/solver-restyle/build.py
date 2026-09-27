@@ -1,4 +1,4 @@
-import base64, os
+import base64, os, re
 R = "/home/funteck/projects/dc_p1/divergencie-claude/v6/divergencie/"
 D = os.path.dirname(os.path.abspath(__file__))
 real_css = open("/home/funteck/.claude/jobs/88431ec6/tmp/solver_real.css").read()
@@ -16,9 +16,17 @@ PAGES = [
     ("dom_mode.html", "solver-restyle-mode.html", "Mode choice"),
     ("dom_quiz.html", "solver-restyle-quiz.html", "Quiz, answered"),
     ("dom_results.html", "solver-restyle-results.html", "Results"),
+    ("dom_progress.html", "solver-restyle-progress.html", "Progress & leaderboard"),
 ]
 for src, out, title in PAGES:
     body = open("/home/funteck/.claude/jobs/88431ec6/tmp/" + src).read()
+    if "progressChart" in body:
+        chart_b64 = base64.b64encode(open("/home/funteck/.claude/jobs/88431ec6/tmp/progress_chart.png", "rb").read()).decode()
+        body = re.sub(
+            r'<canvas id="progressChart"[^>]*>.*?</canvas>',
+            f'<img id="progressChart" alt="Score % per attempt, real captured chart" style="width:100%;height:auto;border:1px solid var(--border)" src="data:image/png;base64,{chart_b64}">',
+            body, count=1, flags=re.S,
+        )
     body = body.replace(
         '<div style="display:flex; gap:0.5rem; align-items:stretch;">',
         '<div class="mistakes-row" style="display:flex; gap:0.5rem; align-items:stretch;">', 1
@@ -27,9 +35,6 @@ for src, out, title in PAGES:
     ICONS = {
         'id="showUploadLink"': ('id="showUploadLink"', '<svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0-12 4 4m-4-4-4 4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/></svg>'),
         'id="showProgressLink"': ('id="showProgressLink"', '<svg class="ic" viewBox="0 0 24 24"><path d="M4 19V9m6 10V5m6 14v-7"/></svg>'),
-        'id="backToLibraryLink"': ('id="backToLibraryLink"', '<svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6 6m-6-6 6-6"/></svg>'),
-        'id="backFromModeSelectLink"': ('id="backFromModeSelectLink"', '<svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6 6m-6-6 6-6"/></svg>'),
-        'id="backFromProgressLink"': ('id="backFromProgressLink"', '<svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6 6m-6-6 6-6"/></svg>'),
         'id="timerToggleBtn"': ('id="timerToggleBtn"', '<svg class="ic" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>'),
     }
     import re as _re
