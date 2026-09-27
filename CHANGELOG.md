@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [commit
 ### Added
 - Register form: two from-scratch persona-driven concepts (Atlas: utility/disclosure-based; Iris: brand/pill-toggle) under `planning/mockups/register-personas/`, with a comparison report (TKT-0283).
 - Register form styling mockups A to D (plain HTML, real fields and options) under `planning/mockups/register-form/`, for choosing how the form sits over the background image (TKT-0283).
+- Question Solver: app-first library screen (dark, bottom tab bar, pill category chips, tap-a-tile-to-open real papers) matching real mobile-app conventions (Grab/YouTube/Spotify), superseding the earlier top-nav "app-shell" pass that still read as a website.
 - Question Solver restyle: app-shell pass — sticky top app bar and sticky in-quiz toolbar (like a persistent player/control bar), elevated card panels with real shadows instead of a hard border or flat page, icon-paired actions, timer as a status chip. Real progress/leaderboard screen also captured (was missing before). Addresses "looks like a document, not an app."
 - Question Solver restyle: locked in the white-page card treatment (option B); fixed every plain link rendering as default browser blue (the live tool never styled bare <a> tags) to the brand's actual sky blue per BDG-v1.0.
 - Question Solver: 5 alternatives to the flat white-card-on-grey-page surface (no box, white page, tinted panel, outline only, shadow no border) in one comparison HTML, real library-picker content, everything else unchanged.
