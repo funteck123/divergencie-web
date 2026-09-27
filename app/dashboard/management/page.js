@@ -6123,10 +6123,12 @@ const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Se
 
 // TKT-0290/TKT-0291: builds the two WhatsApp templates Management types out
 // by hand today (payment reminder, payment acknowledged). Everything the
-// portal actually knows is filled in; Instructor and bank/Paytm details
-// aren't stored anywhere in the system (they live with each teacher, off
-// the portal), so those stay clearly-marked blanks for Management to fill
-// rather than guessing or hardcoding one teacher's numbers into shared code.
+// portal actually knows is filled in; bank/Paytm details aren't stored
+// anywhere in the system (they live with each teacher, off the portal), so
+// that stays a clearly-marked blank for Management to fill rather than
+// guessing or hardcoding one teacher's numbers into shared code. No
+// Instructor line, at request -- it isn't reliably known at the invoice
+// level either (Facilitator lives on schedule slots, not the invoice).
 function invoiceCourseLine(row, services) {
   if (Array.isArray(row.LineItems)) {
     return row.LineItems.map((li) => {
@@ -6156,7 +6158,6 @@ function buildReminderMessage(row, student, services) {
     `Status: ${student?.Status === "Converted" ? "Active" : student?.Status || "Active"}`,
     `Course: ${invoiceCourseLine(row, services)}`,
     `Month(s): ${MONTH_NAMES[row.Month - 1]} ${row.Year}`,
-    "Instructor: [add instructor name]",
     "",
     `Total due: ${totalDueLine(row)}`,
     "",
