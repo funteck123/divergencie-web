@@ -1,0 +1,94 @@
+/* Restyle overlay only. Every selector below targets a class that already
+   exists in the real, live Solver CSS (public/mcq-digitizer/index.html) --
+   nothing renamed, nothing restructured, no new components. Two changes
+   only: (1) sharp corners everywhere, replacing the live 6-10px radius,
+   (2) the homepage's actual type/weight/tracking/shadow language applied to
+   the same real elements, using the same brand tokens the live tool
+   already uses (--navy/--gold/--sky/--coral were already correct). */
+
+* { border-radius: 0 !important; }
+
+body { font-family: Satoshi, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+header .badge {
+  border-radius: 0 !important;
+  font-weight: 900; letter-spacing: .14em;
+}
+header h1 {
+  font-weight: 900; text-transform: uppercase; letter-spacing: -.02em;
+  font-size: 1.8rem;
+}
+
+.card { border-width: 1px; }
+.card h2 {
+  font-weight: 900; text-transform: uppercase; letter-spacing: -.01em;
+  font-size: 1.15rem; margin-bottom: 1rem;
+}
+
+label.field-label {
+  font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+  font-size: .7rem; color: var(--muted);
+}
+select, input[type="text"], input[type="tel"] {
+  border: 2px solid var(--border) !important;
+  padding: .7rem .8rem !important;
+  font-weight: 600;
+}
+select:focus { border-color: var(--navy) !important; outline: 3px solid var(--sky); outline-offset: 0; }
+
+/* Primary CTA -> homepage .btn-gold: gold fill, white text, bold uppercase, shadow */
+.primary-btn {
+  background: var(--gold) !important; color: #fff !important;
+  font-weight: 900; text-transform: uppercase; letter-spacing: .06em;
+  box-shadow: 0 16px 26px -14px rgba(232,168,50,.55);
+  padding: 1rem !important;
+}
+.primary-btn:hover { filter: brightness(1.04); }
+/* Test Mode is inlined white/navy in the live markup -- keep that as the
+   homepage's .btn-line (outline) treatment instead of gold-on-gold twice. */
+.primary-btn[style*="background:white"], .primary-btn[style*="background: white"] {
+  background: #fff !important; color: var(--navy) !important;
+  border: 2px solid var(--navy) !important; box-shadow: none;
+}
+
+.timer-btn, .check-answer-btn {
+  border: 2px solid var(--navy) !important;
+  font-weight: 900; letter-spacing: .08em; text-transform: uppercase; font-size: .72rem;
+}
+.timer-display {
+  font-weight: 900; letter-spacing: .02em; border: 1px solid var(--border);
+}
+
+.mcq-item { border-width: 1px; }
+.mcq-item .qnum {
+  font-weight: 900; text-transform: uppercase; letter-spacing: .06em; font-size: .8rem;
+}
+.letter-btn {
+  border-width: 2px !important; font-weight: 900; text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.letter-btn.selected { box-shadow: none; }
+
+.tab-btn { border-width: 2px !important; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+
+.score-banner {
+  background: var(--navy) !important; padding: 1.5rem 1.75rem !important;
+}
+.score-banner .label {
+  font-weight: 900; letter-spacing: .2em; font-size: .72rem;
+}
+.score-banner .big { font-size: 2.6rem !important; font-weight: 900 !important; }
+
+.result-item { border-left-width: 4px !important; }
+.result-item .rq { font-weight: 900; text-transform: uppercase; font-size: .8rem; }
+.result-item .rverdict { font-weight: 900; letter-spacing: .06em; text-transform: uppercase; font-size: .72rem; }
+
+.lb-section-title { font-weight: 900; letter-spacing: .12em; }
+
+/* real markup inlines `display:flex;gap:0.5rem` for the Component+Mistakes
+   row with no wrap -- add wrap only, structure/content untouched. */
+#pickComponent { min-width: 0; }
+div:has(> #mistakesModeBtn) { flex-wrap: wrap; }
+.mistakes-row { flex-wrap: wrap !important; }
+.mistakes-row #pickComponent { min-width: 200px; }
+select { width: 100%; }
