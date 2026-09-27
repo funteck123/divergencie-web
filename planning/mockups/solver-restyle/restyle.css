@@ -92,3 +92,18 @@ div:has(> #mistakesModeBtn) { flex-wrap: wrap; }
 .mistakes-row { flex-wrap: wrap !important; }
 .mistakes-row #pickComponent { min-width: 200px; }
 select { width: 100%; }
+
+/* Real gap: the live tool never styles a bare <a>, so every plain link
+   (upload link, progress link, back-to-library, mode-select back) falls
+   back to the browser default blue/underline. Brand doc rule (BDG-v1.0,
+   2.1): "Links: Sky Blue (#4A9FD4), underline on hover." */
+a { color: var(--sky); text-decoration: none; font-weight: 700; }
+a:hover { text-decoration: underline; }
+a:visited { color: var(--sky); }
+
+/* Chosen direction: option B (white page). No grey-vs-white card square --
+   the page itself is white, cards separate by a rule under the heading
+   instead of a filled box. */
+body { background: #fff; }
+.card { border: 0; box-shadow: none; }
+.card h2 { border-bottom: 2px solid var(--border); padding-bottom: .6rem; }

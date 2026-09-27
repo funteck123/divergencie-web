@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [commit
 ### Added
 - Register form: two from-scratch persona-driven concepts (Atlas: utility/disclosure-based; Iris: brand/pill-toggle) under `planning/mockups/register-personas/`, with a comparison report (TKT-0283).
 - Register form styling mockups A to D (plain HTML, real fields and options) under `planning/mockups/register-form/`, for choosing how the form sits over the background image (TKT-0283).
+- Question Solver restyle: locked in the white-page card treatment (option B); fixed every plain link rendering as default browser blue (the live tool never styled bare <a> tags) to the brand's actual sky blue per BDG-v1.0.
 - Question Solver: 5 alternatives to the flat white-card-on-grey-page surface (no box, white page, tinted panel, outline only, shadow no border) in one comparison HTML, real library-picker content, everything else unchanged.
 - Question Solver: restyle of the real, live production screens (library, mode choice, quiz, results), captured from an actual logged-in run — sharp corners and the homepage's type/weight treatment applied on top of the real DOM/CSS, no restructuring, under `planning/mockups/solver-restyle/`.
 - Question Solver: two on-brand concepts (F: search-first, G: guided one-card picker) using the real homepage design system (Satoshi, exact brand hex values, real components), superseding the earlier off-brand Nomi/Vesna personas.
