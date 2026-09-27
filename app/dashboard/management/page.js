@@ -5108,21 +5108,25 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                   customRateRow === index ? (
                     <div className="space-y-2 p-2" style={{ border: "1px dashed var(--border)", borderRadius: 6 }}>
                       <div className="flex gap-2 items-center">
-                        <select className="field" style={{ maxWidth: 100 }} value={customRateDraft.currency} onChange={(e) => setCustomRateDraft((d) => ({ ...d, currency: e.target.value }))}>
-                          {CURRENCIES_FULL.map((cur) => (
-                            <option key={cur.code} value={cur.code}>
-                              {cur.code}
-                            </option>
-                          ))}
-                        </select>
+                        <Labeled label="Currency">
+                          <select className="field" style={{ maxWidth: 100 }} value={customRateDraft.currency} onChange={(e) => setCustomRateDraft((d) => ({ ...d, currency: e.target.value }))}>
+                            {CURRENCIES_FULL.map((cur) => (
+                              <option key={cur.code} value={cur.code}>
+                                {cur.code}
+                              </option>
+                            ))}
+                          </select>
+                        </Labeled>
                         <Labeled label="Amount"><input className="field" type="number" placeholder="Amount" value={customRateDraft.rate} onChange={(e) => setCustomRateDraft((d) => ({ ...d, rate: e.target.value }))} /></Labeled>
-                        <select className="field" style={{ maxWidth: 110 }} value={customRateDraft.billingType} onChange={(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))}>
-                          {BILLING_TYPES.map((t) => (
-                            <option key={t} value={t}>
-                              {t}
-                            </option>
-                          ))}
-                        </select>
+                        <Labeled label="Frequency">
+                          <select className="field" style={{ maxWidth: 110 }} value={customRateDraft.billingType} onChange={(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))}>
+                            {BILLING_TYPES.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        </Labeled>
                       </div>
                       <Labeled label="Description"><input
                         className="field"
