@@ -1776,6 +1776,7 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
               </div>
             ` : ""}
             ${markBreakdownHtml(g.markBreakdown)}
+            ${styleChecklistHtml(g.styleChecklist)}
             ${fullMarkAnswerHtml(g.fullMarkAnswer)}
           `}
       </div>
@@ -1801,6 +1802,7 @@ document.getElementById("structuredSubmitTestBtn").addEventListener("click", asy
     remark: g.remark,
     lineFeedback: g.lineFeedback,
     markBreakdown: g.markBreakdown,
+    styleChecklist: g.styleChecklist,
     fullMarkAnswer: g.fullMarkAnswer,
     lowConfidence: g.lowConfidence,
   }));
@@ -1934,6 +1936,26 @@ function fullMarkAnswerHtml(fullMarkAnswer) {
   return `
     <div class="answer-verbatim-label">What a full-mark answer looks like</div>
     <div class="full-mark-answer">${escapeHtml(fullMarkAnswer)}</div>
+  `;
+}
+// Universal block, not question-type-specific here -- it renders whenever
+// a graded answer carries a styleChecklist, which the server only ever
+// fills in when a QUESTION_TYPE_GUIDANCE entry matched (currently: 0510/
+// 0511 email-writing only). Every other question simply has no
+// styleChecklist and this returns "", so nothing else changes.
+function styleChecklistHtml(styleChecklist) {
+  if (!Array.isArray(styleChecklist) || styleChecklist.length === 0) return "";
+  return `
+    <div class="answer-verbatim-label">Writing craft</div>
+    <div class="mark-breakdown">
+      ${styleChecklist.map((s) => `
+        <div class="mark-breakdown-item ${s.present ? "awarded" : "missed"}">
+          <span class="mb-label">${escapeHtml(s.device || "")}</span>
+          <span class="mb-status ${s.present ? "awarded" : "missed"}">${s.present ? "✓ Used" : "✗ Not seen"}</span>
+          ${s.present && s.evidence ? `<div>From your answer: ${escapeHtml(s.evidence)}</div>` : ""}
+        </div>
+      `).join("")}
+    </div>
   `;
 }
 
@@ -2115,6 +2137,7 @@ function mistakeResults(items) {
         out.remark = r.remark;
         out.lineFeedback = r.lineFeedback;
         out.markBreakdown = r.markBreakdown;
+        out.styleChecklist = r.styleChecklist;
         out.fullMarkAnswer = r.fullMarkAnswer;
         out.lowConfidence = r.lowConfidence;
         out.flagged = r.flagged;

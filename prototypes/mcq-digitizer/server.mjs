@@ -390,6 +390,46 @@ function structuredFromDatabaseEntry(entry) {
 // text -- the same real fallback pattern exam-grader and quiz-digitizer
 // already use for image inputs. Only the already-reliable numeric marks
 // count still comes from text.
+// Question-type grading guidance registry: extra, human-authored marking
+// criteria applied ONLY when a specific real question type is detected --
+// never a global prompt change, so every other subject/component/question
+// is byte-for-byte unaffected. Each entry's `match` decides whether it
+// applies (subject/component alone is never specific enough for a paper
+// with several exercises, so `match` also checks the question's own
+// printed task text); `criteria` is the human-supplied checklist; `label`
+// names the block for the results UI. Add more entries here for other
+// question types later -- the detection/prompt/UI plumbing below is
+// already generic, not hardcoded to email writing.
+const QUESTION_TYPE_GUIDANCE = [
+  {
+    id: "esl-email-writing",
+    label: "Writing craft",
+    // Real, confirmed wording from actual 0510 past papers (e.g.
+    // 0510_m19_qp_22 Exercise 5: "Write an email to your friend about
+    // the party..."). "write a message" covers the syllabus's other
+    // real phrasing for the same task type.
+    match: (subject, component, taskText) =>
+      subject === "English as a Second Language" &&
+      component === "Paper 2: Reading and Writing (Extended)" &&
+      /\bwrite an? (email|message)\b/i.test(taskText || ""),
+    criteria: [
+      "Simile", "Metaphor", "Participle", "Gerund",
+      "Variety of sentence type and length", "Variety of punctuation",
+      "Variety of vocabulary", "Phrasal verb", "Linking word",
+      "Organisation and paragraphing", "Call to action", "Adjective",
+      "Sound words", "Imagery", "Idioms",
+    ],
+  },
+];
+
+function detectQuestionTypeGuidance(subject, component, taskText) {
+  return QUESTION_TYPE_GUIDANCE.find((g) => g.match(subject, component, taskText)) || null;
+}
+
+function buildGuidanceInstructions(guidance) {
+  return `\n\nADDITIONAL MARKING GUIDANCE for this question type (human-supplied, apply IN ADDITION to everything above -- this never changes marksAwarded/marksAvailable, it is separate craft feedback): check the student's answer for each of the following writing devices/techniques. For each one, decide if it is genuinely present (quoting the exact word/phrase that shows it) or absent. Fill the "styleChecklist" field in your JSON response with one entry per item below, in this order:\n${guidance.criteria.map((c) => `- ${c}`).join("\n")}\nEach styleChecklist entry: {"device": "<the item name, exactly as listed>", "present": <true/false>, "evidence": "<if present: the exact word/phrase from the student's answer that shows it. If absent: empty string>"}.`;
+}
+
 const STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT = `You are a strict, experienced Cambridge International Examinations (CAIE) examiner marking one student's free-text working for ONE exam-style question, against the real official mark scheme image provided for that same question.
 
 You will be given an IMAGE (the question restated plus the full official worked solution, including its total mark allocation, exactly as printed) and a STUDENT ANSWER text block.
@@ -710,17 +750,32 @@ const GEMINI_RESPONSE_SCHEMA = {
     fullMarkAnswer: { type: "string" },
     marksAwarded: { type: "integer" },
     remark: { type: "string" },
+    // Optional -- only ever populated when extraInstructions asks for it
+    // (see QUESTION_TYPE_GUIDANCE). Not in `required` below, so a normal
+    // grading call (no guidance matched) is unaffected either way.
+    styleChecklist: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          device: { type: "string" },
+          present: { type: "boolean" },
+          evidence: { type: "string" },
+        },
+        required: ["device", "present", "evidence"],
+      },
+    },
   },
   required: ["studentAnswerVerbatim", "lineFeedback", "markBreakdown", "fullMarkAnswer", "marksAwarded", "remark"],
 };
 
-async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText) {
+async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText, extraInstructions) {
   const { id, apiKey, model } = endpoint;
   reserveGeminiDailyQuota(id, model);
   await waitForGeminiRpmSlot(id, model);
 
   const body = {
-    systemInstruction: { parts: [{ text: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT }] },
+    systemInstruction: { parts: [{ text: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT + (extraInstructions || "") }] },
     contents: [{
       parts: [
         { text: `--- MARK SCHEME (total marks available: ${marksAvailable}) ---` },
@@ -752,7 +807,7 @@ async function gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer,
   return JSON.parse(rawText);
 }
 
-async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAnswer, taskText) {
+async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAnswer, taskText, extraInstructions) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error("Neither GEMINI_API_KEY nor OPENROUTER_API_KEY is set for the mcq-digitizer prototype (see prototypes/mcq-digitizer/.env).");
@@ -794,7 +849,7 @@ async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAns
           model: STRUCTURED_GRADING_VISION_MODEL,
           max_tokens: GRADING_MAX_TOKENS,
           messages: [
-            { role: "system", content: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT },
+            { role: "system", content: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT + (extraInstructions || "") },
             { role: "user", content: userContent },
           ],
         }),
@@ -842,7 +897,7 @@ async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAns
 // reliable lite model -- flagged lowConfidence so a caller/UI can surface
 // that instead of presenting it as an ordinary result. Only throws once
 // every option has failed.
-async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable, studentAnswer, taskText) {
+async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable, studentAnswer, taskText, extraInstructions) {
   let lastError;
   if (GEMINI_ENDPOINTS.length > 0) {
     for (const endpoint of nextGeminiEndpoints()) {
@@ -858,7 +913,7 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
       for (let attempt = 0; attempt < 2; attempt++) {
         const t0 = Date.now();
         try {
-          const r = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText);
+          const r = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, endpoint, taskText, extraInstructions);
           console.log(`grading: ${endpoint.id} ok in ${Date.now() - t0}ms`);
           recordGradingResult(endpoint.id, true);
           // Flash-Lite models earned this flag from a real accuracy
@@ -882,7 +937,7 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
   if (process.env.OPENROUTER_API_KEY) {
     const t0 = Date.now();
     try {
-      const r = await gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAnswer, taskText);
+      const r = await gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAnswer, taskText, extraInstructions);
       recordGradingResult(`openrouter:${STRUCTURED_GRADING_VISION_MODEL}`, true);
       return r;
     } catch (e) {
@@ -893,7 +948,7 @@ async function gradeStructuredQuestionAnswer(imageB64, mimeType, marksAvailable,
   const lastResortEndpoint = GEMINI_ENDPOINTS.find((e) => e.model === GEMINI_LAST_RESORT_MODEL) || GEMINI_ENDPOINTS[0];
   if (lastResortEndpoint) {
     try {
-      const result = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, { ...lastResortEndpoint, id: `${lastResortEndpoint.keyLabel}:${GEMINI_LAST_RESORT_MODEL}`, model: GEMINI_LAST_RESORT_MODEL }, taskText);
+      const result = await gradeViaGemini(imageB64, mimeType, marksAvailable, studentAnswer, { ...lastResortEndpoint, id: `${lastResortEndpoint.keyLabel}:${GEMINI_LAST_RESORT_MODEL}`, model: GEMINI_LAST_RESORT_MODEL }, taskText, extraInstructions);
       recordGradingResult(`${lastResortEndpoint.keyLabel}:${GEMINI_LAST_RESORT_MODEL}`, true);
       return { ...result, lowConfidence: true };
     } catch (e) {
@@ -990,7 +1045,9 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   const m = /^data:([^;]+);base64,(.*)$/.exec(rubricImage);
   if (!m) return { ungradable: true, reason: "This question's mark scheme image could not be read." };
   const taskText = ((question && question.text) || "").replace(/\s+\n/g, "\n").trim().slice(0, 3000);
-  const parsed = await gradeStructuredQuestionAnswer(m[2], m[1], marks, studentAnswer, taskText);
+  const guidance = detectQuestionTypeGuidance(paper.subject, paper.component, taskText);
+  const extraInstructions = guidance ? buildGuidanceInstructions(guidance) : "";
+  const parsed = await gradeStructuredQuestionAnswer(m[2], m[1], marks, studentAnswer, taskText, extraInstructions);
   return finalizeStructuredGrade(parsed, marks, studentAnswer);
 }
 
@@ -1021,6 +1078,19 @@ function finalizeStructuredGrade(parsed, marks, studentAnswer) {
         whatWasNeeded: typeof m?.whatWasNeeded === "string" ? m.whatWasNeeded : "",
       }))
     : [];
+  // Universal field, but only ever non-empty when a QUESTION_TYPE_GUIDANCE
+  // entry matched and asked the model for it (see buildGuidanceInstructions)
+  // -- omitted from the output entirely otherwise, so every subject/
+  // question that never matched a guidance entry is completely unaffected.
+  const styleChecklist = Array.isArray(parsed.styleChecklist)
+    ? parsed.styleChecklist
+        .filter((s) => s && typeof s.device === "string")
+        .map((s) => ({
+          device: s.device,
+          present: Boolean(s.present),
+          evidence: typeof s.evidence === "string" ? s.evidence : "",
+        }))
+    : [];
   return {
     ungradable: false,
     marksAwarded,
@@ -1029,6 +1099,7 @@ function finalizeStructuredGrade(parsed, marks, studentAnswer) {
     studentAnswerVerbatim: typeof parsed.studentAnswerVerbatim === "string" ? parsed.studentAnswerVerbatim : (studentAnswer || "(left blank)"),
     lineFeedback,
     markBreakdown,
+    ...(styleChecklist.length > 0 ? { styleChecklist } : {}),
     fullMarkAnswer: typeof parsed.fullMarkAnswer === "string" ? parsed.fullMarkAnswer : "",
     ...(parsed.lowConfidence ? { lowConfidence: true } : {}),
   };
