@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Added
+- Question Solver extraction: every question/answer image is now auto-cropped to trim trailing fully-white rows at the bottom (a mark scheme box with unused ruled lines, or a clip rect that deliberately overshoots), keeping a 20px safety margin so nothing real is ever cut off. Verified with real PIL tests (correct crop point, byte-identical real content preserved, blank and no-whitespace images left untouched). Not yet deployed — the running Question Solver service needs a restart to pick this up, deferred until you say when.
+
 ### Fixed
 - Invoice PDF (TKT-0289): "Balance Due" on a monthly combined invoice now converts into the invoice's own frozen currency, same as the "Total" line at the bottom -- previously it converted into the student's current profile currency instead, which could show a different number (and a different currency) than the Total whenever the student's profile currency had changed since the invoice was generated.
 

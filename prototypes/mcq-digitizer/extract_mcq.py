@@ -36,7 +36,7 @@ import base64
 import io
 import functools
 import fitz
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageChops
 
 QUESTION_KEYWORD_RE = re.compile(r'^Question\s+(\d{1,2})\.?\s*(.*)$', re.IGNORECASE)
 # `\s*` (not `\s+`) deliberately -- a real question heading is often just
@@ -1590,6 +1590,31 @@ def render_statement_key_image(width=1190):
     return _STATEMENT_KEY_CACHE
 
 
+# TKT (user request, 2026-09-28): every question/answer crop carries whatever
+# blank space the source PDF's own rect left at the bottom -- a mark-scheme
+# box with far more ruled lines than the answer actually used, or a clip
+# rect that deliberately overshoots to avoid cutting off a descender, both
+# leave real, visible dead white space in the final image. Trims fully-white
+# rows from the BOTTOM only (never the top/sides -- "no other changes"),
+# stopping at the first row that has any non-white pixel, then keeps
+# `margin` px of that whitespace so nothing real is ever cropped flush.
+def autocrop_trailing_white_rows(png_bytes, margin=20):
+    img = Image.open(io.BytesIO(png_bytes)).convert("RGB")
+    bg = Image.new("RGB", img.size, (255, 255, 255))
+    diff = ImageChops.difference(img, bg)
+    bbox = diff.getbbox()
+    if bbox is None:
+        return png_bytes  # entirely blank -- nothing sensible to crop to
+    content_bottom = bbox[3]
+    new_bottom = min(img.height, content_bottom + margin)
+    if new_bottom >= img.height:
+        return png_bytes  # no trailing white rows to trim
+    cropped = img.crop((0, 0, img.width, new_bottom))
+    buf = io.BytesIO()
+    cropped.save(buf, format="PNG")
+    return buf.getvalue()
+
+
 def stitch_images_vertically(png_bytes_list, padding=24):
     """Combines multiple page-crop PNGs into ONE image, stacked top to
     bottom in the same order given (document reading order -- the
@@ -1689,7 +1714,7 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
             # full page instead is the safe fallback -- less tight, never
             # wrong or crashing.
             images.append(page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
-            return stitch_images_vertically(images)
+            return autocrop_trailing_white_rows(stitch_images_vertically(images))
         # Some MS/QP files mix landscape pages (~595pt tall) with a
         # portrait cover (~842pt), so a y-coordinate captured near one
         # page's bottom edge isn't guaranteed to stay inside another
@@ -1732,7 +1757,7 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
                 bottom2 = max(0, min(y_end - 4, last_page.rect.height))
                 rect2 = fitz.Rect(0, 0, last_page.rect.width, bottom2)
                 images.append(last_page.get_pixmap(clip=rect2, matrix=fitz.Matrix(2, 2)).tobytes("png"))
-    return stitch_images_vertically(images)
+    return autocrop_trailing_white_rows(stitch_images_vertically(images))
 
 
 def parse_qp(pdf_path):
