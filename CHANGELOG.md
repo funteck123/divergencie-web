@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Fixed
+- Question Solver yearly-paper library (TKT-0293, TKT-0294): A Level Computer Science (9618) had zero real practice papers -- the yearly-paper crawler (`build-yearly-paper-map.mjs`) only ever crawled IGCSE subjects, so A Levels only ever got ZNotes/Sample Response documents wired in, never real per-year exam papers. Extended the crawler to also crawl A Levels off the existing `CIE_ROOT`, added 9618's real per-year files (84 real qp+ms pairs found across all 4 papers, 21 for Paper 2), and added the 4 real 9618 components to the server's `YEARLY_READY_COMPONENTS` allowlist so the picker actually shows them. Verified end-to-end against a real 2023 Paper 2 pair before exposing: 8/8 questions extracted, 0 corrupted, extracted total (75) matches the real mark scheme's own printed "Maximum Mark: 75" exactly. Not yet deployed -- needs a `question-solver.service` restart to pick up the regenerated yearly-papers.json, deferred until you say when.
+
 ### Added
 - Question Solver extraction: every question/answer image is now auto-cropped to trim trailing fully-white rows at the bottom (a mark scheme box with unused ruled lines, or a clip rect that deliberately overshoots), keeping a 20px safety margin so nothing real is ever cut off. Verified with real PIL tests (correct crop point, byte-identical real content preserved, blank and no-whitespace images left untouched). Not yet deployed — the running Question Solver service needs a restart to pick this up, deferred until you say when.
 

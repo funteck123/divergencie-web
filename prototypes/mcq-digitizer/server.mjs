@@ -187,6 +187,17 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 4: Listening (Extended)",
   "Paper 2: Reading and Writing (Extended)",
   "Examiner Report",
+  // TKT-0294: A Level Computer Science (9618) real yearly papers, first
+  // paper (Paper 2) verified end-to-end against a real 2023 qp/ms pair
+  // before being added here -- 8/8 questions extracted, 0 corrupted,
+  // extracted total (75) matches the real MS's own printed "Maximum
+  // Mark: 75" exactly. All 4 papers use the same structured-question
+  // detector and the same MS format across the syllabus, so all 4 are
+  // added together rather than gating 1/3/4 behind a separate check.
+  "Paper 1: Theory Fundamentals (AS Level)",
+  "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)",
+  "Paper 3: Advanced Theory (A Level)",
+  "Paper 4: Practical Programming (A Level)",
 ]);
 // ZNotes (TKT-0253, 2026-09-18): same "standalone document, no
 // digitizing" shape as Examiner Report above, but there isn't one fixed

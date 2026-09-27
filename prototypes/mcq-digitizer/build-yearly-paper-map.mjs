@@ -64,6 +64,19 @@ const ENGLISH_COMPONENT_BY_DIGIT = {
   "4": "Paper 4: Listening (Extended)",
 };
 
+// TKT-0294: A Levels never had a real per-year qp/ms crawler before --
+// only ZNotes + ECR (see ZNOTES_FILES / SAMPLE_RESPONSE_FILES below) --
+// which is the full root cause of 9618 having no real practice papers.
+// Component names match the ones already hardcoded for this subject's
+// own ECR entries further down in this file exactly (no new naming
+// invented): paper digit 1-4 -> the 4 real 9618 components.
+const CS9618_COMPONENT_BY_DIGIT = {
+  "1": "Paper 1: Theory Fundamentals (AS Level)",
+  "2": "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)",
+  "3": "Paper 3: Advanced Theory (A Level)",
+  "4": "Paper 4: Practical Programming (A Level)",
+};
+
 // Subject registry: code, board-visible name, component map, and the
 // real root folders to search (found by direct listing, not assumed --
 // deliberately NOT a blind recursive walk of the whole subject dir).
@@ -93,6 +106,17 @@ const SUBJECTS = [
     code: "0510", subject: "English as a Second Language", componentByDigit: ENGLISH_COMPONENT_BY_DIGIT,
     roots: ["English/Past Papers"],
   },
+  {
+    // First A Level subject in this crawler (TKT-0294). `board` and
+    // `roots` here are CIE_ROOT-relative ("A Levels/..."), not
+    // ARCHIVE_ROOT-relative like every IGCSE entry above -- see the
+    // board-aware root resolution in crawlSubject/crawlExaminerReports.
+    // Real files confirmed on disk: /mnt/e/CIE/A Levels/Computer Science/
+    // Past Papers Years/{year}/9618_s{yy}_{qp|ms}_{variant}.pdf, same
+    // uniform CAIE filename convention FILENAME_RE already matches.
+    board: "A Levels", code: "9618", subject: "Computer Science", componentByDigit: CS9618_COMPONENT_BY_DIGIT,
+    roots: ["A Levels/Computer Science/Past Papers Years"],
+  },
 ];
 
 function walk(dir, out) {
@@ -117,9 +141,14 @@ function sessionLabel(letter) {
 }
 
 function crawlSubject(subjectDef) {
+  const board = subjectDef.board || "IGCSE";
+  // A Levels' roots are CIE_ROOT-relative ("A Levels/...") -- IGCSE's
+  // stay ARCHIVE_ROOT-relative as before, so no existing entry's paths
+  // need rewriting.
+  const base = board === "IGCSE" ? ARCHIVE_ROOT : CIE_ROOT;
   const files = [];
   for (const root of subjectDef.roots) {
-    walk(path.join(ARCHIVE_ROOT, root), files);
+    walk(path.join(base, root), files);
   }
 
   // key: subjectCode|session|year|variant -> { qpPath, msPath }
@@ -151,7 +180,7 @@ function crawlSubject(subjectDef) {
     const year = Number(entry.yy) >= 90 ? 1900 + Number(entry.yy) : 2000 + Number(entry.yy);
     const variant = `${entry.paperDigit}${entry.variantDigit}`;
     papers.push({
-      board: "IGCSE",
+      board,
       subject: subjectDef.subject,
       component,
       year,
@@ -162,7 +191,7 @@ function crawlSubject(subjectDef) {
       // paper back up for digitizing, without exposing a raw filesystem
       // path to the browser.
       paperId: `${subjectDef.code}_${entry.session}${entry.yy}_${variant}`,
-      title: `CAIE IGCSE ${subjectDef.subject} ${sessionLabel(entry.session)} ${year} Paper ${variant}`,
+      title: `CAIE ${board} ${subjectDef.subject} ${sessionLabel(entry.session)} ${year} Paper ${variant}`,
       qpPath: entry.qpPath,
       msPath: entry.msPath,
     });
@@ -178,9 +207,11 @@ function crawlSubject(subjectDef) {
 // index.html). Real personal-archive duplicate-folder copies handled the
 // same way as crawlSubject: first one found per (session, year) wins.
 function crawlExaminerReports(subjectDef) {
+  const board = subjectDef.board || "IGCSE";
+  const rootBase = board === "IGCSE" ? ARCHIVE_ROOT : CIE_ROOT;
   const files = [];
   for (const root of subjectDef.roots) {
-    walk(path.join(ARCHIVE_ROOT, root), files);
+    walk(path.join(rootBase, root), files);
   }
   const byKey = new Map();
   for (const filePath of files) {
@@ -198,13 +229,13 @@ function crawlExaminerReports(subjectDef) {
     const yy = key.slice(1);
     const year = Number(yy) >= 90 ? 1900 + Number(yy) : 2000 + Number(yy);
     reports.push({
-      board: "IGCSE",
+      board,
       subject: subjectDef.subject,
       component: "Examiner Report",
       year,
       session: sessionLabel(session),
       paperId: `${subjectDef.code}_${session}${yy}_er`,
-      title: `CAIE IGCSE ${subjectDef.subject} ${sessionLabel(session)} ${year} Examiner Report`,
+      title: `CAIE ${board} ${subjectDef.subject} ${sessionLabel(session)} ${year} Examiner Report`,
       erPath,
     });
   }
@@ -544,22 +575,24 @@ function crawlZNotes(board, subject) {
   return notes;
 }
 
-// Nested under "IGCSE" (all 5 subjects here are IGCSE-only) to match the
-// existing topical library's board->subject->component->[papers] shape --
-// lets the Next.js proxy's existing enrollment filter (built for that
-// shape) work on this data completely unchanged, and lets the picker UI
-// reuse the same board/subject selection pattern.
+// Nested under board (IGCSE or A Levels, TKT-0294) to match the existing
+// topical library's board->subject->component->[papers] shape -- lets the
+// Next.js proxy's existing enrollment filter (built for that shape) work
+// on this data completely unchanged, and lets the picker UI reuse the
+// same board/subject selection pattern.
 const result = { IGCSE: {} };
 for (const subjectDef of SUBJECTS) {
+  const board = subjectDef.board || "IGCSE";
+  result[board] = result[board] || {};
   const papers = crawlSubject(subjectDef);
   const reports = crawlExaminerReports(subjectDef);
-  result.IGCSE[subjectDef.subject] = {};
+  result[board][subjectDef.subject] = result[board][subjectDef.subject] || {};
   for (const p of papers) {
-    result.IGCSE[subjectDef.subject][p.component] = result.IGCSE[subjectDef.subject][p.component] || [];
-    result.IGCSE[subjectDef.subject][p.component].push(p);
+    result[board][subjectDef.subject][p.component] = result[board][subjectDef.subject][p.component] || [];
+    result[board][subjectDef.subject][p.component].push(p);
   }
   if (reports.length > 0) {
-    result.IGCSE[subjectDef.subject]["Examiner Report"] = reports;
+    result[board][subjectDef.subject]["Examiner Report"] = reports;
   }
   console.log(`${subjectDef.subject}: ${papers.length} real qp+ms pairs found, ${reports.length} examiner reports found`);
 }
