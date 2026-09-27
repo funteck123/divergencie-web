@@ -103,7 +103,7 @@ export async function POST(req) {
           ParentContactNumber: field("parentContactNumber", 40),
           ParentEmail: field("parentEmail"),
           SchoolName: field("schoolName"),
-          Studying: field("studying", 60),
+          Studying: field("studying", 250),
           HelpWanted: field("help", 100),
           Subjects: field("subjects", 800),
           ReferrerName: field("referrer"),
