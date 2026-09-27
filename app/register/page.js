@@ -28,7 +28,8 @@ const REQUESTED_TYPE_LABEL = {
 // precedence (found by actually rendering it: the number input collapsed
 // to a sliver). Every other field adds `w-full` itself.
 const FIELD_CLASS =
-  "p-4 border border-white/30 bg-white/10 text-white placeholder:text-white/50 focus:border-[var(--gold)] focus:bg-white/15 outline-none transition-colors [&_option]:text-black [&_optgroup]:text-black";
+  "p-4 border border-black/20 bg-white/50 text-black placeholder:text-black/45 focus:border-[#1a3c5e] focus:bg-white/70 outline-none transition-colors [&_option]:text-black [&_optgroup]:text-black";
+const CHOICE_CLASS = "flex items-center gap-2 text-sm font-medium text-[#111] min-w-0";
 const LABEL_CLASS = "text-[10px] font-black uppercase tracking-widest text-[#ff6161]";
 
 // TKT-0283: the Student form mirrors the public intake form at
@@ -70,13 +71,43 @@ function PhoneField({ label, hint, value, onChange, placeholder }) {
         title="Start with + and the country code, for example +44 7000 000000"
         required
       />
-      {hint && <p className="text-[11px] font-medium text-white/75">{hint}</p>}
+      {hint && <p className="text-[11px] font-medium text-black/60">{hint}</p>}
     </div>
   );
 }
 
+// Inline wrapping checkboxes with a trailing "Other" text option, like the
+// Cognito choice fields (TKT-0283). `other` is free text; the Other box shows
+// as ticked while it has text and clears it when unticked.
+function CheckGroup({ legend, required, options, selected, onToggle, other, onOther }) {
+  return (
+    <fieldset className="space-y-2 min-w-0">
+      <legend className={LABEL_CLASS}>{legend}{required && <Req />}</legend>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+        {options.map((o) => (
+          <label key={o} className={CHOICE_CLASS}>
+            <input type="checkbox" className="accent-[#4ef314]" checked={selected.includes(o)} onChange={() => onToggle(o)} /> {o}
+          </label>
+        ))}
+        {onOther && (
+          <label className={CHOICE_CLASS}>
+            <input type="checkbox" className="accent-[#4ef314]" checked={other.trim() !== ""} onChange={() => onOther("")} aria-label="Other" />
+            <input
+              className="min-w-0 w-40 bg-transparent border-0 border-b-2 border-dashed border-black/25 px-1 py-1 outline-none focus:border-[#1a3c5e] placeholder:text-black/45"
+              value={other}
+              onChange={(e) => onOther(e.target.value)}
+              placeholder="Other"
+              aria-label={`${legend} other`}
+            />
+          </label>
+        )}
+      </div>
+    </fieldset>
+  );
+}
+
 // Cognito marks required fields with a red asterisk.
-const Req = () => <span aria-hidden="true" className="text-[#ff3b30] ml-1">*</span>;
+const Req = () => <span aria-hidden="true" className="text-[#cc2a24] ml-1">*</span>;
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -97,9 +128,12 @@ function RegisterForm() {
   const [schoolName, setSchoolName] = useState("");
   const [studying, setStudying] = useState([]);
   const [help, setHelp] = useState([]);
+  const [otherStudying, setOtherStudying] = useState("");
+  const [otherHelp, setOtherHelp] = useState("");
+  const [otherSubjects, setOtherSubjects] = useState("");
   const [subjects, setSubjects] = useState([]);
   const [referrer, setReferrer] = useState("");
-  const [heardAbout, setHeardAbout] = useState("");
+  const [heardAbout, setHeardAbout] = useState([]);
   const [couponCode, setCouponCode] = useState("");
   const [scoreAStar, setScoreAStar] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -114,8 +148,12 @@ function RegisterForm() {
     setError("");
     setLoading(true);
     try {
-      if (isStudent && studying.length === 0) {
+      const withOther = (list, other) => (other.trim() ? [...list, other.trim()] : list);
+      if (isStudent && withOther(studying, otherStudying).length === 0) {
         throw new Error("Please choose at least one option under \"What are you studying?\".");
+      }
+      if (isStudent && heardAbout.length === 0) {
+        throw new Error("Please tell us how you heard about us.");
       }
       const formData = new FormData();
       formData.set("name", isStudent ? `${name} ${lastName}`.trim() : name);
@@ -128,11 +166,11 @@ function RegisterForm() {
         formData.set("parentContactNumber", parentNumber.trim());
         formData.set("parentEmail", parentEmail);
         formData.set("schoolName", schoolName);
-        formData.set("studying", studying.join(", "));
-        formData.set("help", help.join(", "));
-        formData.set("subjects", subjects.join(", "));
+        formData.set("studying", withOther(studying, otherStudying).join(", "));
+        formData.set("help", withOther(help, otherHelp).join(", "));
+        formData.set("subjects", withOther(subjects, otherSubjects).join(", "));
         formData.set("referrer", referrer);
-        formData.set("heardAbout", heardAbout);
+        formData.set("heardAbout", heardAbout.join(", "));
         formData.set("couponCode", couponCode);
         formData.set("scoreAStar", scoreAStar);
       } else {
@@ -188,8 +226,8 @@ function RegisterForm() {
             <span className="text-xl font-black tracking-tight text-white">Divergen<span className="text-[var(--gold)]">CIE</span></span>
           </Link>
 
-          <h1 className="text-6xl font-black leading-none mb-[1.5vh] uppercase tracking-tight">Join The <span className="text-[var(--gold)]">Team.</span></h1>
-          <p className="text-white/60 text-lg font-medium">
+          <h1 className="text-6xl font-black leading-none mb-[1.5vh] uppercase tracking-tight [text-shadow:0_2px_14px_rgba(0,0,0,0.6)]">Join The <span className="text-[var(--gold)]">Team.</span></h1>
+          <p className="text-white/95 text-lg font-medium [text-shadow:0_1px_10px_rgba(0,0,0,0.7)]">
             One application for a trial class, or a teacher, staff, or ambassador interview.
             Management reviews every request personally.
           </p>
@@ -208,10 +246,10 @@ function RegisterForm() {
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to site
         </Link>
 
-        <div className="max-w-md w-full mx-auto relative z-10 bg-[rgba(10,25,45,0.42)] backdrop-blur-xl border border-white/25 p-6 sm:p-8 shadow-2xl mb-8 text-white">
+        <div className="max-w-3xl w-full mx-auto relative z-10 bg-white/80 backdrop-blur-xl border border-white/80 p-6 sm:p-8 shadow-2xl mb-8 text-[#111]">
           <div className="mb-[2vh]">
-            <h2 className="text-4xl font-black text-white uppercase mb-2">Apply</h2>
-            <p className="text-white/80 font-medium">Tell us a bit about you to get started.</p>
+            <h2 className="text-4xl font-black text-[#1a3c5e] uppercase mb-2">Apply</h2>
+            <p className="text-black/65 font-medium">Tell us a bit about you to get started.</p>
           </div>
 
           {error && (
@@ -249,27 +287,29 @@ function RegisterForm() {
 
             {isStudent && (
               <>
-                <div className="space-y-2">
-                  <label className={LABEL_CLASS}>Gender (optional)</label>
-                  <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className={LABEL_CLASS}>Location (optional)</label>
-                  <select className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)}>
-                    <option value="">Country</option>
-                    {INTAKE_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2 min-w-0">
+                    <label className={LABEL_CLASS}>Gender</label>
+                    <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
+                      <option value="">Select</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2 min-w-0">
+                    <label className={LABEL_CLASS}>Location</label>
+                    <select className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)}>
+                      <option value="">Country</option>
+                      {INTAKE_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
                 </div>
               </>
             )}
 
             <PhoneField
-              label={isStudent ? "WhatsApp number (include country code!)" : "WhatsApp number"}
+              label={isStudent ? "WhatsApp Number (Include country code!)" : "WhatsApp number"}
               value={whatsappNumber}
               onChange={setWhatsappNumber}
               placeholder="+44 7000 000000"
@@ -289,70 +329,39 @@ function RegisterForm() {
             {isStudent ? (
               <>
                 <PhoneField
-                  label="Parent's contact number"
+                  label="Parent's Contact Number"
                   value={parentNumber}
                   onChange={setParentNumber}
                   placeholder="Phone (International)"
                 />
                 <div className="space-y-2">
-                  <label className={LABEL_CLASS}>Parent&apos;s email (optional)</label>
+                  <label className={LABEL_CLASS}>Parent&apos;s Email (Optional)</label>
                   <input type="email" className={`${FIELD_CLASS} w-full`} value={parentEmail} onChange={(e) => setParentEmail(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <label className={LABEL_CLASS}>School name (optional)</label>
+                  <label className={LABEL_CLASS}>School Name (Optional)</label>
                   <input className={`${FIELD_CLASS} w-full`} value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
                 </div>
-                <fieldset className="space-y-2 min-w-0">
-                  <legend className={LABEL_CLASS}>What are you studying? (choose at least one)<Req /></legend>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1 border border-white/30 p-3">
-                    {STUDYING_OPTIONS.map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161] min-w-0">
-                        <input type="checkbox" checked={studying.includes(o)} onChange={() => toggle(studying, setStudying, o)} /> <span className="min-w-0">{o}</span>
-                      </label>
-                    ))}
+                <CheckGroup legend="What are you studying?" required options={STUDYING_OPTIONS} selected={studying} onToggle={(o) => toggle(studying, setStudying, o)} other={otherStudying} onOther={setOtherStudying} />
+                <CheckGroup legend="How shall we help?" options={HELP_OPTIONS} selected={help} onToggle={(o) => toggle(help, setHelp, o)} other={otherHelp} onOther={setOtherHelp} />
+                <CheckGroup legend="Subjects" options={SUBJECT_OPTIONS} selected={subjects} onToggle={(o) => toggle(subjects, setSubjects, o)} other={otherSubjects} onOther={setOtherSubjects} />
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2 min-w-0">
+                    <label className={LABEL_CLASS}>Who referred you? (Referrer Name)</label>
+                    <input className={`${FIELD_CLASS} w-full`} value={referrer} onChange={(e) => setReferrer(e.target.value)} placeholder="Enter name!" />
                   </div>
-                </fieldset>
-                <fieldset className="space-y-2 min-w-0">
-                  <legend className={LABEL_CLASS}>How shall we help? (optional)</legend>
-                  <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1">
-                    {HELP_OPTIONS.map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161]">
-                        <input type="checkbox" checked={help.includes(o)} onChange={() => toggle(help, setHelp, o)} /> {o}
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-                <fieldset className="space-y-2 min-w-0">
-                  <legend className={LABEL_CLASS}>Subjects (optional)</legend>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pt-1 max-h-64 overflow-y-auto border border-white/30 p-3">
-                    {SUBJECT_OPTIONS.map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161] min-w-0">
-                        <input type="checkbox" checked={subjects.includes(o)} onChange={() => toggle(subjects, setSubjects, o)} /> <span className="min-w-0">{o}</span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-                <div className="space-y-2">
-                  <label className={LABEL_CLASS}>Who referred you? (optional, referrer name)</label>
-                  <input className={`${FIELD_CLASS} w-full`} value={referrer} onChange={(e) => setReferrer(e.target.value)} />
+                  <CheckGroup legend="How did you hear about us?" required options={HEARD_OPTIONS} selected={heardAbout} onToggle={(o) => toggle(heardAbout, setHeardAbout, o)} />
                 </div>
                 <div className="space-y-2">
-                  <label className={LABEL_CLASS}>How did you hear about us?<Req /></label>
-                  <select className={`${FIELD_CLASS} w-full`} value={heardAbout} onChange={(e) => setHeardAbout(e.target.value)} required>
-                    <option value="">Select</option>
-                    {HEARD_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className={LABEL_CLASS}>Coupon code (optional)</label>
+                  <label className={LABEL_CLASS}>Coupon Code (Optional)</label>
                   <input className={`${FIELD_CLASS} w-full`} value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
                 </div>
                 <fieldset className="space-y-2 min-w-0">
                   <legend className={LABEL_CLASS}>Do you feel you can score A* with proper guidance?</legend>
                   <div className="flex gap-6 pt-1">
                     {["Yes", "No"].map((o) => (
-                      <label key={o} className="flex items-center gap-2 text-sm font-medium text-[#ff6161]">
-                        <input type="radio" name="scoreAStar" checked={scoreAStar === o} onChange={() => setScoreAStar(o)} /> {o}
+                      <label key={o} className={CHOICE_CLASS}>
+                        <input type="radio" className="accent-[#4ef314]" name="scoreAStar" checked={scoreAStar === o} onChange={() => setScoreAStar(o)} /> {o}
                       </label>
                     ))}
                   </div>
@@ -386,13 +395,13 @@ function RegisterForm() {
               disabled={loading}
               className="w-full py-4 bg-[#4ef314] text-[#0b1b2e] text-sm font-black uppercase tracking-widest rounded-[3px] hover:brightness-95 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
-              {loading ? "Submitting…" : "Submit application"}
+              {loading ? "Submitting…" : isStudent ? "Submit" : "Submit application"}
             </button>
           </form>
 
           <div className="mt-[2vh]">
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/75">
-              Already have an account? <Link href="/login" className="text-[var(--gold)] border-b border-[var(--gold)] pb-1 ml-1">Sign in</Link>
+            <p className="text-[10px] font-black uppercase tracking-widest text-black/60">
+              Already have an account? <Link href="/login" className="text-[#1a3c5e] border-b border-[#1a3c5e] pb-1 ml-1">Sign in</Link>
             </p>
           </div>
         </div>
