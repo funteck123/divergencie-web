@@ -5608,6 +5608,7 @@ function Billing() {
         <InvoiceBillingTable
           rows={invoices}
           nameOf={nameOf}
+          users={users}
           services={services}
           onPatch={patchInvoice}
           onPatchLineItem={patchInvoiceLineItem}
@@ -6118,7 +6119,95 @@ function PersonStatusBadges({ personRows, paidFlagKey }) {
   );
 }
 
-function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem, onDelete }) {
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// TKT-0290/TKT-0291: builds the two WhatsApp templates Management types out
+// by hand today (payment reminder, payment acknowledged). Everything the
+// portal actually knows is filled in; Instructor and bank/Paytm details
+// aren't stored anywhere in the system (they live with each teacher, off
+// the portal), so those stay clearly-marked blanks for Management to fill
+// rather than guessing or hardcoding one teacher's numbers into shared code.
+function invoiceCourseLine(row, services) {
+  if (Array.isArray(row.LineItems)) {
+    return row.LineItems.map((li) => {
+      const s = services.find((s) => s.ServiceID === li.ServiceID);
+      return s ? lineItemName(s, li.BatchID) : li.ServiceID;
+    }).join(", ");
+  }
+  const s = services.find((s) => s.ServiceID === row.ServiceID);
+  return s ? lineItemName(s, row.BatchID) : row.ServiceID;
+}
+
+function totalDueLine(row) {
+  const currency = row.Currency || "INR";
+  const due = amountDueInOwnCurrency(row, currency);
+  if (currency === "INR") return `${currency} ${due.toFixed(2)}`;
+  return `${currency} ${due.toFixed(2)} (INR ${Number(row.INRDue).toFixed(2)})`;
+}
+
+function buildReminderMessage(row, student, services) {
+  const pdfUrl = typeof window !== "undefined" ? `${window.location.origin}/api/invoices/pdf?invoiceId=${row.InvoiceID}` : `/api/invoices/pdf?invoiceId=${row.InvoiceID}`;
+  return [
+    "Good morning! Fee payment is requested. 😊",
+    "",
+    "DivergenCIE Student Details Export",
+    "",
+    `Student Name: ${student?.Name || row.StudentID}`,
+    `Status: ${student?.Status === "Converted" ? "Active" : student?.Status || "Active"}`,
+    `Course: ${invoiceCourseLine(row, services)}`,
+    `Month(s): ${MONTH_NAMES[row.Month - 1]} ${row.Year}`,
+    "Instructor: [add instructor name]",
+    "",
+    `Total due: ${totalDueLine(row)}`,
+    "",
+    `Official Invoice PDF: ${pdfUrl}`,
+    "",
+    "The following are the account details provided by your teacher:",
+    "",
+    "CHECK ACCOUNT DETAILS:",
+    "[paste your bank or Paytm details here]",
+    "",
+    "Make sure to email the receipt to the team via the official address: DivergenCIE@outlook.com. Thank you! ✨",
+  ].join("\n");
+}
+
+function buildAcknowledgedMessage(row, student, services) {
+  const currency = row.Currency || "INR";
+  const paidDate = row.PaidAt ? formatDate(row.PaidAt) : formatDate(new Date().toISOString());
+  return `We acknowledge the fee payment receipt by ${student?.Name || row.StudentID} of ${currency} ${Number(row.Amount).toFixed(2)}/- for ${invoiceCourseLine(row, services)} in ${MONTH_NAMES[row.Month - 1]} ${row.Year} on ${paidDate}. Updated in the system. Thank you for choosing DivergenCIE Coaching! 💫`;
+}
+
+// Copies text to the clipboard and shows "Copied!" briefly on the button
+// itself -- the only confirmation a copy action needs, no toast/dialog.
+function CopyButton({ text, label }) {
+  const [copied, setCopied] = useState(false);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      // Clipboard API can fail (older browser, insecure context) -- fall
+      // back to the old textarea+execCommand trick rather than leaving
+      // Management with no way to copy the message at all.
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+  return (
+    <button className="btn-ghost" style={{ whiteSpace: "nowrap" }} onClick={copy}>
+      {copied ? "Copied!" : label}
+    </button>
+  );
+}
+
+function InvoiceBillingTable({ rows, nameOf, users, services, onPatch, onPatchLineItem, onDelete }) {
   const [expandedPeople, setExpandedPeople] = useState(new Set());
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -6221,6 +6310,7 @@ function InvoiceBillingTable({ rows, nameOf, services, onPatch, onPatchLineItem,
                     key={r.InvoiceID}
                     row={r}
                     nameOf={nameOf}
+                    student={users.find((u) => u.UserID === r.StudentID)}
                     services={services}
                     onPatch={onPatch}
                     onPatchLineItem={onPatchLineItem}
@@ -6289,7 +6379,7 @@ function ApprovePaymentControl({ onApprove }) {
   );
 }
 
-function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete, isDuplicateMonth }) {
+function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, onDelete, isDuplicateMonth }) {
   const [expanded, setExpanded] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
   const [inrDue, setInrDue] = useState(row.INRDue);
@@ -6460,6 +6550,8 @@ function InvoiceRow({ row, nameOf, services, onPatch, onPatchLineItem, onDelete,
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${row.InvoiceID}`} download>
                   PDF
                 </a>
+                <CopyButton text={buildReminderMessage(row, student, services)} label="Copy reminder" />
+                <CopyButton text={buildAcknowledgedMessage(row, student, services)} label="Copy acknowledged" />
                 <ConfirmButton
                   label="Delete"
                   confirmText="Delete this invoice? This cannot be undone."

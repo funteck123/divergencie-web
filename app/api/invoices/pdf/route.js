@@ -36,9 +36,17 @@ export async function GET(req) {
     // needed for the Total line. The item table below stays itemized in
     // each subject's own native billed currency, same "nothing about the
     // original charge is lost" principle as the OneOff path.
-    const convertedDueAmount = await convertINRAmount(db, invoice.INRDue, studentCurrency, invoice.Year, invoice.Month);
+    //
+    // TKT-0289: Balance Due must convert INRDue into invoice.Currency (the
+    // currency frozen on this invoice at creation), not the student's
+    // CURRENT profile Currency -- Total is invoice.Amount, already in
+    // invoice.Currency. Using the live profile currency here showed a
+    // Balance Due in a different currency (and so a different number) than
+    // the Total at the bottom of the same PDF whenever the student's
+    // profile currency had changed since this invoice was generated.
+    const convertedDueAmount = await convertINRAmount(db, invoice.INRDue, invoice.Currency, invoice.Year, invoice.Month);
     const displayDue = convertedDueAmount != null ? convertedDueAmount : invoice.INRDue;
-    const displayDueCurrency = convertedDueAmount != null ? studentCurrency : "INR";
+    const displayDueCurrency = convertedDueAmount != null ? invoice.Currency : "INR";
 
     buffer = await drawDocumentPDF({
       docType: "Invoice",
