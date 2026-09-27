@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. See [commit
 - Contact page on phones (TKT-0284): the "Globally Remote" box no longer cuts off the Pakistan chip (fixed height became a minimum), the country flag emoji that showed as empty boxes are gone, the form and WhatsApp card use phone-sized padding so the fields are wider, and the card shadow no longer sticks out past the right edge.
 
 ### Added
+- Register form styling mockups A to D (plain HTML, real fields and options) under `planning/mockups/register-form/`, for choosing how the form sits over the background image (TKT-0283).
 - Question Solver redesign mock A (real papers, auto-grader focus) under `planning/mockups/dc-solver-redesign/`.
 
 ### Features
