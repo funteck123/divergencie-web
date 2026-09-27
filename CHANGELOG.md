@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [commit
 ### Added
 - Register form: two from-scratch persona-driven concepts (Atlas: utility/disclosure-based; Iris: brand/pill-toggle) under `planning/mockups/register-personas/`, with a comparison report (TKT-0283).
 - Register form styling mockups A to D (plain HTML, real fields and options) under `planning/mockups/register-form/`, for choosing how the form sits over the background image (TKT-0283).
+- Question Solver: two persona-driven concepts (Nomi: search-first, dense; Vesna: guided, one-card-at-a-time) for the library picker and question/grading screens, using real question/answer/grade data, under `planning/mockups/solver-personas/`.
 - Question Solver redesign mock A (real papers, auto-grader focus) under `planning/mockups/dc-solver-redesign/`.
 
 ### Features
