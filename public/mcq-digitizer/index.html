@@ -2558,6 +2558,7 @@ document.querySelector("#historyTable tbody").addEventListener("click", async (e
           </div>
         ` : ""}
         ${markBreakdownHtml(r.mark_breakdown)}
+        ${styleChecklistHtml(r.style_checklist)}
         ${fullMarkAnswerHtml(r.full_mark_answer)}
       </div>
     `).join("");

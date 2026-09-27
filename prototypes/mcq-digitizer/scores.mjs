@@ -324,6 +324,14 @@ export async function recordQuestionResults({ accountId, accountName, subject, c
         marks_available: Number.isInteger(r.marksAvailable) ? r.marksAvailable : null,
         remark: r.remark || null,
         line_feedback: Array.isArray(r.lineFeedback) ? r.lineFeedback : null,
+        // mark_breakdown/full_mark_answer (TKT-0256) and style_checklist
+        // (QUESTION_TYPE_GUIDANCE) were previously computed but never
+        // persisted -- their columns existed only as an unapplied
+        // migration file. Applied now; a past attempt's "view my answers"
+        // can finally show what a live grading result already showed.
+        mark_breakdown: Array.isArray(r.markBreakdown) ? r.markBreakdown : null,
+        full_mark_answer: r.fullMarkAnswer || null,
+        style_checklist: Array.isArray(r.styleChecklist) ? r.styleChecklist : null,
         low_confidence: Boolean(r.lowConfidence),
         flagged: Boolean(r.flagged),
         // MCQ's own correction: line_feedback (structured Test mode) already
@@ -345,7 +353,7 @@ export async function getQuestionResponsesForAttempt(accountId, attemptId) {
   const c = requireClient();
   const { data, error } = await c
     .from(RESPONSES_TABLE)
-    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, low_confidence, flagged, correct_answer")
+    .select("question_number, student_answer, marks_awarded, marks_available, remark, line_feedback, mark_breakdown, full_mark_answer, style_checklist, low_confidence, flagged, correct_answer")
     .eq("account_id", accountId)
     .eq("attempt_id", attemptId)
     .order("question_number", { ascending: true });
