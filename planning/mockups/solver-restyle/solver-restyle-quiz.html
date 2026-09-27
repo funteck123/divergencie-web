@@ -254,18 +254,60 @@ a { color: var(--sky); text-decoration: none; font-weight: 700; }
 a:hover { text-decoration: underline; }
 a:visited { color: var(--sky); }
 
-/* Chosen direction: option B (white page). No grey-vs-white card square --
-   the page itself is white, cards separate by a rule under the heading
-   instead of a filled box. */
-body { background: #fff; }
-.card { border: 0; box-shadow: none; }
-.card h2 { border-bottom: 2px solid var(--border); padding-bottom: .6rem; }
+/* App-shell pass: not a document. Soft neutral canvas (not the harsh grey
+   that read as "photocopied form"), cards are real elevated surfaces
+   (shadow, no border -- this is what makes a panel read as software, not
+   paper), sticky header + sticky in-quiz toolbar like a persistent app
+   chrome (Spotify/YouTube/Zoom all keep controls fixed while content
+   scrolls), icons paired with actions instead of bare text links. */
+body { background: #f6f7f9; }
+.card {
+  border: 0;
+  box-shadow: 0 1px 2px rgba(16,32,52,.06), 0 10px 24px -14px rgba(16,32,52,.18);
+}
+.card h2 { padding-bottom: 0; }
+
+.app-bar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 0; margin: -2rem -1rem 2rem;
+}
+.app-bar .in {
+  max-width: 800px; margin: 0 auto; padding: .9rem 1rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.app-bar .mark { display: flex; align-items: center; gap: 10px; font-weight: 900; color: var(--navy); text-transform: uppercase; letter-spacing: -.01em; }
+.app-bar .mark .sq { width: 26px; height: 26px; background: var(--navy); flex: none; position: relative; }
+.app-bar .mark .sq::after { content: ""; position: absolute; inset: 6px; border: 2px solid var(--gold); }
+.app-bar .nav { display: flex; gap: 6px; }
+.app-bar .nav a {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .74rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--charcoal) !important; padding: .5rem .7rem;
+}
+.app-bar .nav a:hover { background: var(--bg-soft); text-decoration: none !important; }
+.app-bar .nav svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+header { display: none; } /* replaced by .app-bar */
+
+/* Sticky in-quiz toolbar -- stays visible like a call-control bar while the
+   question list scrolls beneath it. Only present on the quiz screen. */
+#testHeader { position: sticky; top: 64px; z-index: 40; }
+
+.ic { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -2px; margin-right: 5px; display: inline-block; }
+.timer-display { display: inline-flex; align-items: center; gap: 6px; background: var(--navy); color: #fff; }
+.timer-display::before { content: ""; width: 7px; height: 7px; background: var(--coral); display: inline-block; }
 
 </style></head>
 <body>
-<header><div><span class="badge">Restyled</span><h1>DC Question Solver</h1></div></header>
+<div class="app-bar"><div class="in">
+  <span class="mark"><span class="sq"></span>DC Question Solver</span>
+  <nav class="nav">
+    <a href="#"><svg class="ic" viewBox="0 0 24 24" style="margin-right:6px"><path d="M4 19V9m6 10V5m6 14v-7"/></svg>Progress</a>
+  </nav>
+</div></div>
 <main><div id="stage2" class="stage active">
-    <p class="hint"><a href="#" id="backFromModeSelectLink">← Back to library</a></p>
+    <p class="hint"><a href="#" id="backFromModeSelectLink"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6 6m-6-6 6-6"/></svg>← Back to library</a></p>
     <div class="card" id="modeSelectCard" style="display: none;">
       <h2>How do you want to use this paper?</h2>
       <p class="hint" id="digitizeCount">Found 16 questions.</p>
@@ -282,8 +324,8 @@ body { background: #fff; }
       <h2 id="quizHeaderTitle">Answer the quiz</h2>
       <div class="timer-row">
         <span class="timer-display" id="timerDisplay">00:01</span>
-        <button class="timer-btn" id="timerToggleBtn" type="button">Pause</button>
-        <button class="timer-btn" id="cancelQuizBtn" type="button" style="margin-left:auto;">← Cancel</button>
+        <button class="timer-btn" id="timerToggleBtn" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>Pause</button>
+        <button class="timer-btn" id="cancelQuizBtn" type="button" style="margin-left:auto;"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>Cancel</button>
       </div>
       <label class="instant-check-toggle hint" id="instantCheckRow" style="display: flex;">
         <input type="checkbox" id="instantCheckToggle">
