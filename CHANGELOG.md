@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [commit
 ## [Unreleased]
 
 ### Fixed
+- Question Solver picker (TKT-0296): Board/Subject/Component/Paper dropdown text was invisible under a dark browser/OS preference -- the page never declared `color-scheme`, so the browser auto-styled every bare `<select>` (none of which set their own background/color) with near-white text against the page's own fixed-light background. Added `color-scheme: light` plus explicit select styling from the page's own tokens. Reproduced and verified fixed under forced dark mode (before/after screenshots).
 - Question Solver yearly-paper library (TKT-0293, TKT-0294): A Level Computer Science (9618) had zero real practice papers -- the yearly-paper crawler (`build-yearly-paper-map.mjs`) only ever crawled IGCSE subjects, so A Levels only ever got ZNotes/Sample Response documents wired in, never real per-year exam papers. Extended the crawler to also crawl A Levels off the existing `CIE_ROOT`, added 9618's real per-year files (84 real qp+ms pairs found across all 4 papers, 21 for Paper 2), and added the 4 real 9618 components to the server's `YEARLY_READY_COMPONENTS` allowlist so the picker actually shows them. Verified end-to-end against a real 2023 Paper 2 pair before exposing: 8/8 questions extracted, 0 corrupted, extracted total (75) matches the real mark scheme's own printed "Maximum Mark: 75" exactly. Not yet deployed -- needs a `question-solver.service` restart to pick up the regenerated yearly-papers.json, deferred until you say when.
 
 ### Added
