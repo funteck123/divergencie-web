@@ -2517,6 +2517,31 @@ def find_exercise_labeled_question_starts(lines):
     return [last_seen[n] for n in sorted(last_seen)]
 
 
+def _prefer_anchor_aligned_duplicates(candidates, anchor_x0):
+    """TKT-0264: when SEVERAL candidates carry the same number, keep only the
+    one(s) closest to the document's own heading margin (anchor_x0).
+
+    Confirmed real, IGCSE Physics 0625/42 Feb/March 2026: Question 1 part (b)
+    is a two-item list -- "1 the student accelerates" / "2 the student
+    decelerates" -- indented 45pt from the margin, i.e. inside the 50pt anchor
+    tolerance above (which real headings on other papers legitimately need).
+    The walk below is greedy, so it accepted that indented "2" as Question 2,
+    cut Question 1 off after (b)(1), and started "Question 2" with the tail of
+    Question 1 ((b)(2) and (c)); the real "2 Figure 2.1 shows..." heading two
+    pages later was then rejected as a duplicate. The real heading and the
+    stray list item can't be told apart by x0 alone against a fixed tolerance,
+    but when BOTH exist for the same number the real one is the one on the
+    heading margin. A number with a single candidate is never touched, so a
+    heading legitimately shifted right by a diagram (Biology 0610/42 Oct/Nov
+    2020, Q3) still passes."""
+    best = {}
+    for c in candidates:
+        d = abs(c["x0"] - anchor_x0)
+        if c["number"] not in best or d < best[c["number"]]:
+            best[c["number"]] = d
+    return [c for c in candidates if abs(c["x0"] - anchor_x0) == best[c["number"]]]
+
+
 def find_bare_number_question_starts(lines, reject_table_rows=True):
     """IGCSE/A-Level Physics/Chemistry/Biology Theory papers (2026-09-05
     survey) use a completely different QP template from Math's "Question
@@ -2669,6 +2694,7 @@ def find_bare_number_question_starts(lines, reject_table_rows=True):
     if ones:
         anchor_x0 = ones[0]
         candidates = [c for c in candidates if abs(c["x0"] - anchor_x0) <= 50]
+        candidates = _prefer_anchor_aligned_duplicates(candidates, anchor_x0)
 
     # Confirmed real on several A-Level Math papers: a heading merges
     # into a full sentence with no "(a)" marker at all ("2       The
