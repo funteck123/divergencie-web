@@ -33,6 +33,10 @@ const REQUESTED_TYPE_LABEL = {
 // to a sliver). Every other field adds `w-full` itself.
 const FIELD_CLASS =
   "p-4 border border-black/20 bg-white/50 text-black placeholder:text-black/45 focus:border-[#1a3c5e] focus:bg-white/70 outline-none transition-colors [&_option]:text-black [&_optgroup]:text-black";
+// Phones only (TKT-0283): no big card, so the background illustration stays
+// visible; each field sits on its own frosted panel behind its text. From the
+// sm breakpoint up the panels reset and the wide glass card takes over.
+const PANEL = "bg-white/75 backdrop-blur-md border border-white/70 p-4 sm:bg-transparent sm:backdrop-blur-none sm:border-0 sm:p-0";
 const CHOICE_CLASS = "flex items-center gap-2 text-[15px] font-normal text-[#111] min-w-0";
 const LABEL_CLASS = "block text-sm font-medium text-[#e0403a]";
 
@@ -61,7 +65,7 @@ const HEARD_OPTIONS = ["Social Media", "Referral", "Newspaper"];
 const INTL_PHONE_PATTERN = "\\+[0-9][0-9 \\-]{6,}";
 function PhoneField({ label, hint, value, onChange, placeholder }) {
   return (
-    <div className="space-y-2">
+    <div className={`space-y-2 ${PANEL}`}>
       <label className={LABEL_CLASS}>{label}<Req /></label>
       <input
         type="tel"
@@ -85,8 +89,8 @@ function PhoneField({ label, hint, value, onChange, placeholder }) {
 // as ticked while it has text and clears it when unticked.
 function CheckGroup({ legend, required, options, selected, onToggle, other, onOther }) {
   return (
-    <fieldset className="space-y-2 min-w-0">
-      <legend className={LABEL_CLASS}>{legend}{required && <Req />}</legend>
+    <div role="group" aria-label={legend} className={`space-y-2 min-w-0 ${PANEL}`}>
+      <div className={LABEL_CLASS}>{legend}{required && <Req />}</div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
         {options.map((o) => (
           <label key={o} className={CHOICE_CLASS}>
@@ -106,7 +110,7 @@ function CheckGroup({ legend, required, options, selected, onToggle, other, onOt
           </label>
         )}
       </div>
-    </fieldset>
+    </div>
   );
 }
 
@@ -250,8 +254,8 @@ function RegisterForm() {
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back to site
         </Link>
 
-        <div className={`max-w-3xl w-full mx-auto relative z-10 ${formFont.className} bg-white/50 sm:bg-white/80 backdrop-blur-xl border border-white/70 sm:border-white/80 p-6 sm:p-8 shadow-2xl mb-8 text-[#111]`}>
-          <div className="mb-[2vh]">
+        <div className={`max-w-3xl w-full mx-auto relative z-10 ${formFont.className} sm:bg-white/80 sm:backdrop-blur-xl sm:border sm:border-white/80 p-0 sm:p-8 sm:shadow-2xl mb-8 text-[#111]`}>
+          <div className={`mb-2.5 sm:mb-[2vh] ${PANEL}`}>
             <h2 className="text-4xl font-black text-[#1a3c5e] uppercase mb-2">Apply</h2>
             <p className="text-black/65 font-medium">Tell us a bit about you to get started.</p>
           </div>
@@ -263,8 +267,8 @@ function RegisterForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-[1.5vh]">
-            <div className="space-y-2">
+          <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-[1.5vh]">
+            <div className={`space-y-2 ${PANEL}`}>
               <label className={LABEL_CLASS}>I&apos;m applying as</label>
               <select className={`${FIELD_CLASS} w-full`} value={requestedType} onChange={(e) => setRequestedType(e.target.value)}>
                 <option value="Trial">Trial (Student)</option>
@@ -275,7 +279,7 @@ function RegisterForm() {
             </div>
 
             {isStudent ? (
-              <div className="space-y-2">
+              <div className={`space-y-2 ${PANEL}`}>
                 <label className={LABEL_CLASS}>Student name<Req /></label>
                 <div className="flex gap-2 min-w-0">
                   <input className={`${FIELD_CLASS} flex-1 min-w-0`} value={name} onChange={(e) => setName(e.target.value)} placeholder="First" aria-label="Student first name" required />
@@ -283,7 +287,7 @@ function RegisterForm() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className={`space-y-2 ${PANEL}`}>
                 <label className={LABEL_CLASS}>Full name<Req /></label>
                 <input className={`${FIELD_CLASS} w-full`} value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
@@ -291,8 +295,8 @@ function RegisterForm() {
 
             {isStudent && (
               <>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2 min-w-0">
+                <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
+                  <div className={`space-y-2 min-w-0 ${PANEL}`}>
                     <label className={LABEL_CLASS}>Gender</label>
                     <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
                       <option value="">Select</option>
@@ -301,7 +305,7 @@ function RegisterForm() {
                       <option value="Prefer not to say">Prefer not to say</option>
                     </select>
                   </div>
-                  <div className="space-y-2 min-w-0">
+                  <div className={`space-y-2 min-w-0 ${PANEL}`}>
                     <label className={LABEL_CLASS}>Location</label>
                     <select className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)}>
                       <option value="">Country</option>
@@ -319,7 +323,7 @@ function RegisterForm() {
               placeholder="+44 7000 000000"
             />
 
-            <div className="space-y-2">
+            <div className={`space-y-2 ${PANEL}`}>
               <label className={LABEL_CLASS}>{isStudent ? "Your email" : "Email"}<Req /></label>
               <input
                 type="email"
@@ -338,30 +342,30 @@ function RegisterForm() {
                   onChange={setParentNumber}
                   placeholder="Phone (International)"
                 />
-                <div className="space-y-2">
+                <div className={`space-y-2 ${PANEL}`}>
                   <label className={LABEL_CLASS}>Parent&apos;s Email (Optional)</label>
                   <input type="email" className={`${FIELD_CLASS} w-full`} value={parentEmail} onChange={(e) => setParentEmail(e.target.value)} />
                 </div>
-                <div className="space-y-2">
+                <div className={`space-y-2 ${PANEL}`}>
                   <label className={LABEL_CLASS}>School Name (Optional)</label>
                   <input className={`${FIELD_CLASS} w-full`} value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
                 </div>
                 <CheckGroup legend="What are you studying?" required options={STUDYING_OPTIONS} selected={studying} onToggle={(o) => toggle(studying, setStudying, o)} other={otherStudying} onOther={setOtherStudying} />
                 <CheckGroup legend="How shall we help?" options={HELP_OPTIONS} selected={help} onToggle={(o) => toggle(help, setHelp, o)} other={otherHelp} onOther={setOtherHelp} />
                 <CheckGroup legend="Subjects" options={SUBJECT_OPTIONS} selected={subjects} onToggle={(o) => toggle(subjects, setSubjects, o)} other={otherSubjects} onOther={setOtherSubjects} />
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2 min-w-0">
+                <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
+                  <div className={`space-y-2 min-w-0 ${PANEL}`}>
                     <label className={LABEL_CLASS}>Who referred you? (Referrer Name)</label>
                     <input className={`${FIELD_CLASS} w-full`} value={referrer} onChange={(e) => setReferrer(e.target.value)} placeholder="Enter name!" />
                   </div>
                   <CheckGroup legend="How did you hear about us?" required options={HEARD_OPTIONS} selected={heardAbout} onToggle={(o) => toggle(heardAbout, setHeardAbout, o)} />
                 </div>
-                <div className="space-y-2">
+                <div className={`space-y-2 ${PANEL}`}>
                   <label className={LABEL_CLASS}>Coupon Code (Optional)</label>
                   <input className={`${FIELD_CLASS} w-full`} value={couponCode} onChange={(e) => setCouponCode(e.target.value)} />
                 </div>
-                <fieldset className="space-y-2 min-w-0">
-                  <legend className={LABEL_CLASS}>Do you feel you can score A* with proper guidance?</legend>
+                <div role="group" aria-label="Do you feel you can score A* with proper guidance?" className={`space-y-2 min-w-0 ${PANEL}`}>
+                  <div className={LABEL_CLASS}>Do you feel you can score A* with proper guidance?</div>
                   <div className="flex gap-6 pt-1">
                     {["Yes", "No"].map((o) => (
                       <label key={o} className={CHOICE_CLASS}>
@@ -369,11 +373,11 @@ function RegisterForm() {
                       </label>
                     ))}
                   </div>
-                </fieldset>
+                </div>
               </>
             ) : (
               <>
-                <div className="space-y-2">
+                <div className={`space-y-2 ${PANEL}`}>
                   <label className={LABEL_CLASS}>Why DivergenCIE? (optional)</label>
                   <textarea
                     className={`${FIELD_CLASS} w-full`}
@@ -382,7 +386,7 @@ function RegisterForm() {
                     onChange={(e) => setWhyDivergenCIE(e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className={`space-y-2 ${PANEL}`}>
                   <label className={LABEL_CLASS}>Resume</label>
                   <input
                     type="file"
@@ -403,7 +407,7 @@ function RegisterForm() {
             </button>
           </form>
 
-          <div className="mt-[2vh]">
+          <div className={`mt-2.5 sm:mt-[2vh] ${PANEL}`}>
             <p className="text-[10px] font-black uppercase tracking-widest text-black/60">
               Already have an account? <Link href="/login" className="text-[#1a3c5e] border-b border-[#1a3c5e] pb-1 ml-1">Sign in</Link>
             </p>
