@@ -6334,10 +6334,13 @@ function InvoiceBillingTable({ rows, nameOf, users, services, onPatch, onPatchLi
 
 // Shown on an Invoice/Paycheck row once the student or staff member has
 // self-reported it paid or received, but INRDue hasn't caught up yet
-// (still shows the full or a stale amount). Approving in full sets the
-// due to 0 in one click; Partial lets Management record a smaller
-// remaining due instead of the whole amount, for a part payment.
+// (still shows the full or a stale amount). One "Mark paid" button, not
+// two always-visible ones -- clicking it reveals the Full/Partial choice,
+// and only Partial then asks for an amount. Full sets the due to 0 in one
+// click; Partial lets Management record a smaller remaining due instead
+// of the whole amount, for a part payment.
 function ApprovePaymentControl({ onApprove }) {
+  const [choosing, setChoosing] = useState(false);
   const [customizing, setCustomizing] = useState(false);
   const [customDue, setCustomDue] = useState("0");
   const [saving, setSaving] = useState(false);
@@ -6363,9 +6366,25 @@ function ApprovePaymentControl({ onApprove }) {
           onChange={(e) => setCustomDue(e.target.value)}
         />
         <button className="btn" disabled={saving} onClick={() => approve(Number(customDue))}>
-          {saving ? "Approving…" : "Approve"}
+          {saving ? "Marking…" : "Confirm"}
         </button>
         <button className="btn-ghost" disabled={saving} onClick={() => setCustomizing(false)}>
+          Back
+        </button>
+      </span>
+    );
+  }
+
+  if (choosing) {
+    return (
+      <span className="flex items-center gap-1 flex-wrap">
+        <button className="btn" disabled={saving} onClick={() => approve(0)}>
+          {saving ? "Marking…" : "Full"}
+        </button>
+        <button className="btn-ghost" disabled={saving} onClick={() => setCustomizing(true)}>
+          Partial…
+        </button>
+        <button className="btn-ghost" disabled={saving} onClick={() => setChoosing(false)}>
           Cancel
         </button>
       </span>
@@ -6373,14 +6392,9 @@ function ApprovePaymentControl({ onApprove }) {
   }
 
   return (
-    <span className="flex items-center gap-1 flex-wrap">
-      <button className="btn" disabled={saving} onClick={() => approve(0)}>
-        {saving ? "Approving…" : "Approve (paid in full)"}
-      </button>
-      <button className="btn-ghost" disabled={saving} onClick={() => setCustomizing(true)}>
-        Partial…
-      </button>
-    </span>
+    <button className="btn" onClick={() => setChoosing(true)}>
+      Mark paid
+    </button>
   );
 }
 
@@ -6396,6 +6410,12 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
   // yet — Management needs to approve it (full or partial) before it's
   // considered settled.
   const needsApproval = row.StudentPaidFlag && Number(row.INRDue) > 0;
+  // Matches rowMatchesStatusFilter's own "settled" definition exactly:
+  // paid AND nothing left due. Gates which of the two copy-message
+  // buttons makes sense -- reminding someone to pay something already
+  // settled, or thanking them for a payment not yet confirmed, are both
+  // real mistakes a manual copy-paste flow invites.
+  const isSettled = row.StudentPaidFlag && Number(row.INRDue) === 0;
 
   function serviceNameOf(id, batchId) {
     const s = services.find((s) => s.ServiceID === id);
@@ -6555,8 +6575,8 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${row.InvoiceID}`} download>
                   PDF
                 </a>
-                <CopyButton text={buildReminderMessage(row, student, services)} label="Copy reminder" />
-                <CopyButton text={buildAcknowledgedMessage(row, student, services)} label="Copy acknowledged" />
+                {!isSettled && <CopyButton text={buildReminderMessage(row, student, services)} label="Copy reminder" />}
+                {isSettled && <CopyButton text={buildAcknowledgedMessage(row, student, services)} label="Copy acknowledged" />}
                 <ConfirmButton
                   label="Delete"
                   confirmText="Delete this invoice? This cannot be undone."
