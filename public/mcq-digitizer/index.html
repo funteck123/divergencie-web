@@ -1941,12 +1941,16 @@ function fullMarkAnswerHtml(fullMarkAnswer) {
 // Universal block, not question-type-specific here -- it renders whenever
 // a graded answer carries a styleChecklist, which the server only ever
 // fills in when a QUESTION_TYPE_GUIDANCE entry matched (currently: 0510/
-// 0511 email-writing only). Every other question simply has no
-// styleChecklist and this returns "", so nothing else changes.
+// 0511 email-writing only, more entries can be added later). Every other
+// question simply has no styleChecklist and this returns "", so nothing
+// else changes. Labelled "Question type feedback" (not the specific
+// device list's name) since any future guidance entry -- a different
+// subject, a different question type -- renders through this exact same
+// generic block.
 function styleChecklistHtml(styleChecklist) {
   if (!Array.isArray(styleChecklist) || styleChecklist.length === 0) return "";
   return `
-    <div class="answer-verbatim-label">Writing craft</div>
+    <div class="answer-verbatim-label">Question type feedback</div>
     <div class="mark-breakdown">
       ${styleChecklist.map((s) => `
         <div class="mark-breakdown-item ${s.present ? "awarded" : "missed"}">

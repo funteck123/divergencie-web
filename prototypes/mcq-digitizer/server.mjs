@@ -396,14 +396,16 @@ function structuredFromDatabaseEntry(entry) {
 // is byte-for-byte unaffected. Each entry's `match` decides whether it
 // applies (subject/component alone is never specific enough for a paper
 // with several exercises, so `match` also checks the question's own
-// printed task text); `criteria` is the human-supplied checklist; `label`
-// names the block for the results UI. Add more entries here for other
-// question types later -- the detection/prompt/UI plumbing below is
-// already generic, not hardcoded to email writing.
+// printed task text); `criteria` is the human-supplied checklist. The
+// results UI shows every matched entry's output under one universal
+// heading, "Question type feedback" -- not a per-entry label -- since the
+// whole point is that any question type can get its own feedback here,
+// not just this first one. Add more entries here for other question
+// types later -- the detection/prompt/UI plumbing below is already
+// generic, not hardcoded to email writing.
 const QUESTION_TYPE_GUIDANCE = [
   {
     id: "esl-email-writing",
-    label: "Writing craft",
     // Real, confirmed wording from actual 0510 past papers (e.g.
     // 0510_m19_qp_22 Exercise 5: "Write an email to your friend about
     // the party..."). "write a message" covers the syllabus's other
