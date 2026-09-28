@@ -6576,7 +6576,7 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
                   PDF
                 </a>
                 {!isSettled && <CopyButton text={buildReminderMessage(row, student, services)} label="Copy reminder" />}
-                {isSettled && <CopyButton text={buildAcknowledgedMessage(row, student, services)} label="Copy acknowledged" />}
+                {isSettled && <CopyButton text={buildAcknowledgedMessage(row, student, services)} label="Copy acknowledgement" />}
                 <ConfirmButton
                   label="Delete"
                   confirmText="Delete this invoice? This cannot be undone."
