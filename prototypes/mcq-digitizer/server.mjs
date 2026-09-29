@@ -198,6 +198,26 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)",
   "Paper 3: Advanced Theory (A Level)",
   "Paper 4: Practical Programming (A Level)",
+  // A Level Physics (9702), Chemistry (9701), Biology (9700) real yearly
+  // papers. Verified 2026-09-30 by digitizing sampled real qp/ms pairs
+  // across 2009-2026 for each subject: Paper 1 MCQ 40/40 questions with
+  // an answer for every one (after the structure-diagram option fix in
+  // extract_mcq.py), Paper 2 total 60, Paper 4 total 100, Paper 5 total
+  // 30, 0 corrupted blocks, totals equal to each MS's printed "Maximum
+  // Mark" where the MS prints one. Paper 3 (Advanced Practical Skills)
+  // stays excluded: it is a hands-on lab practical, same reasoning as the
+  // IGCSE "Practical Test" exclusion above.
+  "Paper 1: Multiple Choice (AS Level)",
+  "Paper 2: AS Level Structured Questions",
+  "Paper 4: A Level Structured Questions (A Level)",
+  "Paper 5: Planning, Analysis and Evaluation (A Level)",
+]);
+// Yearly components that are real A-D multiple choice: digitized through
+// extract_mcq.py's MCQ path (with answer-key grading), not the structured
+// question cropper. Matches subjectComponents.mjs's per-subject mcqComponent.
+const YEARLY_MCQ_COMPONENTS = new Set([
+  "Paper 2: Multiple Choice (Extended)",
+  "Paper 1: Multiple Choice (AS Level)",
 ]);
 // ZNotes (TKT-0253, 2026-09-18): same "standalone document, no
 // digitizing" shape as Examiner Report above, but there isn't one fixed
@@ -1798,7 +1818,7 @@ const server = http.createServer(async (req, res) => {
       // extract_mcq.py CLI call. No yearly MCQ paper has ever been
       // correctly graded through this endpoint until this fix.
       let result;
-      if (paper.component === "Paper 2: Multiple Choice (Extended)") {
+      if (YEARLY_MCQ_COMPONENTS.has(paper.component)) {
         result = await digitizeFromPaths(paper.qpPath, paper.msPath);
       } else {
         // Shared with gradeYearlyQuestion, so the first "Submit answer" does

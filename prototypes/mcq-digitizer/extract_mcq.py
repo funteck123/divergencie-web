@@ -1078,6 +1078,8 @@ def find_question_starts(lines, doc=None):
             # down first.
             if has_sentence or _has_nearby_image(page_images, line["page"], line["y0"]) or option_letters_in_block(
                 lines, (line["page"], line["y0"]), _next_heading_pos(lines, idx),
+            ) or _has_full_abcd_letter_set(
+                lines, (line["page"], line["y0"]), _next_heading_pos(lines, idx),
             ):
                 nearby = lines[idx + 1: idx + 55]
                 has_options = any(OPTION_LETTER_RE.match(l["text"]) for l in nearby)
@@ -1491,6 +1493,24 @@ def option_letters_in_block(lines, start_pos, end_pos):
     if other_single_letters:
         return set()
     return found
+
+
+def _has_full_abcd_letter_set(lines, start_pos, end_pos):
+    """True when all four of A, B, C, D appear as standalone option-letter
+    lines inside the block. option_letters_in_block returns an empty set
+    for any block containing other isolated single letters (atom symbols
+    in a skeletal formula), which also swallows a real QP question whose
+    A-D options are themselves structure diagrams (A Level Chemistry
+    9701_s23_12 Q25). A full A-D set is not something a stray skeletal
+    formula produces, so it is accepted as evidence of a real question."""
+    found = set()
+    for line in lines:
+        if not (start_pos <= _pos(line["page"], line["y0"]) < end_pos):
+            continue
+        m = OPTION_LETTER_RE.match(line["text"])
+        if m:
+            found.add(m.group(1).upper())
+    return found >= {"A", "B", "C", "D"}
 
 
 def is_branding_only(page_lines):

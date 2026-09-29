@@ -77,6 +77,17 @@ const CS9618_COMPONENT_BY_DIGIT = {
   "4": "Paper 4: Practical Programming (A Level)",
 };
 
+// A Level Physics/Chemistry/Biology share the same 5-paper structure. Names
+// match the topical library's own A Level component keys exactly (confirmed
+// via a live GET /api/library), so the topical/yearly toggle finds them.
+const ALEVEL_SCIENCE_COMPONENT_BY_DIGIT = {
+  "1": "Paper 1: Multiple Choice (AS Level)",
+  "2": "Paper 2: AS Level Structured Questions",
+  "3": "Paper 3: Advanced Practical Skills (A Level)",
+  "4": "Paper 4: A Level Structured Questions (A Level)",
+  "5": "Paper 5: Planning, Analysis and Evaluation (A Level)",
+};
+
 // Subject registry: code, board-visible name, component map, and the
 // real root folders to search (found by direct listing, not assumed --
 // deliberately NOT a blind recursive walk of the whole subject dir).
@@ -116,6 +127,18 @@ const SUBJECTS = [
     // uniform CAIE filename convention FILENAME_RE already matches.
     board: "A Levels", code: "9618", subject: "Computer Science", componentByDigit: CS9618_COMPONENT_BY_DIGIT,
     roots: ["A Levels/Computer Science/Past Papers Years"],
+  },
+  {
+    board: "A Levels", code: "9702", subject: "Physics", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
+    roots: ["A Levels/Physics/Past Papers", "A Levels/Physics/Past Papers Years"],
+  },
+  {
+    board: "A Levels", code: "9701", subject: "Chemistry", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
+    roots: ["A Levels/Chemistry/Past Papers"],
+  },
+  {
+    board: "A Levels", code: "9700", subject: "Biology", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
+    roots: ["A Levels/Biology/Past Papers"],
   },
 ];
 
