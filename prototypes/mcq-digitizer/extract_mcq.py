@@ -2879,10 +2879,14 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
     # win the same-number dedup against the real headings (confirmed real,
     # 9701_w17_31: real Q3 on page 6 lost to the notes page's "3"), so
     # hide that page and every later one from the detectors entirely.
+    # The page is found by its "Tests for anions / aqueous cations / gases"
+    # table headings, not by the phrase "Qualitative Analysis Notes": that
+    # phrase also appears inside real question text (9701_w19_31, page 7),
+    # and matching it cut off the real Q3.
     notes_page = None
     if component and "Advanced Practical Skills" in component:
         for l in lines:
-            if l["page"] > 0 and re.match(r'^Qualitative\s+analysis\s+notes\b', l["text"].strip(), re.IGNORECASE):
+            if l["page"] > 0 and re.match(r'^tests?\s+for\s+(aqueous\s+cations|anions|gases|ions)', l["text"].strip(), re.IGNORECASE):
                 notes_page = l["page"] if notes_page is None else min(notes_page, l["page"])
     detect_lines = lines if notes_page is None else [l for l in lines if l["page"] < notes_page]
     starts = []
