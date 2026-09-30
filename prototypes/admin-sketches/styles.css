@@ -141,9 +141,11 @@ h3{font:600 22px/1.2 var(--font);margin:40px 0 12px}
 @media print{
   html,body{background:#fff}
   .page{padding:0}
-  #app{width:auto;margin:0;zoom:1 !important}
+  #app{width:auto;margin:0;transform:none !important}
   .a4{margin:0;box-shadow:none;break-after:page;page-break-after:always;break-inside:avoid}
   .a4:last-child{break-after:auto;page-break-after:auto}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 .blk .facts{grid-template-columns:repeat(3,1fr) !important}
+
+.fit{overflow:visible;position:relative}

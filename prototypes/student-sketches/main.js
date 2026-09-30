@@ -45,7 +45,9 @@ parts.forEach((p) => {
   p.html.split(/(?=<div class="cap">)/).forEach((frame, i) => blocks.push({ kind: "frame", html: (i === 0 ? h2 : "") + frame }));
 });
 
-/* ---- A4 landscape, 96 dpi: 297 x 210 mm, margins 10 / 10 / 14 / 10 mm ---- */
+/* ---- A4 landscape, 96 dpi: 297 x 210 mm, margins 10 / 10 / 14 / 10 mm ----
+   Scaling uses transform plus explicitly sized holders, never the CSS zoom property,
+   so every browser lays it out and prints it the same way. */
 const MM = 96 / 25.4;
 const SHEET_W = Math.round(297 * MM);
 const CONTENT_W = Math.round(277 * MM);
@@ -57,34 +59,66 @@ const RAW_W = 1260;
 
 const app = document.getElementById("app");
 
+function holderFor(node, naturalW, naturalH, s) {
+  const holder = document.createElement("div");
+  holder.className = "fit";
+  holder.style.width = Math.round(naturalW * s) + "px";
+  holder.style.height = Math.round(naturalH * s) + "px";
+  node.parentNode.insertBefore(holder, node);
+  holder.appendChild(node);
+  node.style.width = naturalW + "px";
+  node.style.height = naturalH + "px";
+  node.style.transformOrigin = "0 0";
+  node.style.transform = "scale(" + s.toFixed(4) + ")";
+  return holder;
+}
+
+
+/* a frame without the "continues" fade must show all of its content: grow it to fit, never crop */
+function autoGrow(sk) {
+  const fade = sk.querySelector(".fade");
+  const top = sk.getBoundingClientRect().top;
+  let need = 0;
+  sk.querySelectorAll("*").forEach((e) => {
+    const r = e.getBoundingClientRect();
+    if (r.height > 0) need = Math.max(need, r.bottom - top);
+  });
+  const over = need - sk.offsetHeight;
+  if (over > 0 && (!fade || over <= 60)) sk.style.height = Math.ceil(need + 6 + (fade ? 40 : 0)) + "px";
+}
+
 function measure(block) {
   const el = document.createElement("section");
   el.className = "blk " + block.kind;
   el.innerHTML = block.html;
   if (block.kind === "raw") {
-    // phone rows: lay out at natural width (3 phones on one line), then scale the whole block to fit the sheet
     el.style.width = RAW_W + "px";
     app.appendChild(el);
     const h0 = el.offsetHeight;
-    const z = Math.min(CONTENT_W / RAW_W, CONTENT_H / h0);
-    el.style.zoom = z.toFixed(4);
-    return { el, h: Math.round(h0 * z) };
+    const s = Math.min(CONTENT_W / RAW_W, CONTENT_H / h0);
+    const box = document.createElement("section");
+    box.className = "blk raw";
+    app.replaceChild(box, el);
+    box.appendChild(el);
+    el.className = "";
+    box.style.width = Math.round(RAW_W * s) + "px";
+    box.style.height = Math.round(h0 * s) + "px";
+    el.style.transformOrigin = "0 0";
+    el.style.transform = "scale(" + s.toFixed(4) + ")";
+    return { el: box, h: Math.round(h0 * s) };
   }
   el.style.width = CONTENT_W + "px";
   app.appendChild(el);
-  const wraps = el.querySelectorAll(".wrap");
-  let scale = 1;
   if (block.kind === "frame") {
-    scale = CONTENT_W / FRAME_W;
-    wraps.forEach((w) => (w.style.zoom = scale));
+    let s = CONTENT_W / FRAME_W;
+    const wrap = el.querySelector(".wrap");
+    autoGrow(wrap.firstElementChild);
+    const natural = wrap.firstElementChild.offsetHeight + 2;
+    const rest = el.offsetHeight - wrap.offsetHeight;
+    if (rest + natural * s > CONTENT_H) s = Math.max(0.3, (CONTENT_H - rest) / natural);
+    holderFor(wrap, FRAME_W, natural, s);
   }
-  let h = el.offsetHeight;
-  if (block.kind === "frame" && h > CONTENT_H) {
-    const shrink = CONTENT_H / h;
-    wraps.forEach((w) => (w.style.zoom = (scale * shrink).toFixed(4)));
-    h = el.offsetHeight;
-  }
-  return { el, h };
+  return { el, h: el.offsetHeight };
 }
 
 function paginate() {
@@ -113,11 +147,31 @@ function paginate() {
   fitScreen();
 }
 
+/* small screens: scale the whole sheet column down; removed before printing */
+let fitHolder = null;
+function clearFit() {
+  if (!fitHolder) return;
+  fitHolder.parentNode.insertBefore(app, fitHolder);
+  fitHolder.remove();
+  fitHolder = null;
+  app.style.transform = "";
+  app.style.height = "";
+}
 function fitScreen() {
-  const z = Math.min(1, (innerWidth - 32) / SHEET_W);
-  app.style.zoom = z;
+  clearFit();
+  const s = Math.min(1, (innerWidth - 32) / SHEET_W);
+  if (s >= 0.999) return;
+  const h = app.offsetHeight;
+  fitHolder = document.createElement("div");
+  fitHolder.style.cssText = `width:${Math.round(SHEET_W * s)}px;height:${Math.round(h * s)}px;margin:0 auto`;
+  app.parentNode.insertBefore(fitHolder, app);
+  fitHolder.appendChild(app);
+  app.style.transformOrigin = "0 0";
+  app.style.transform = "scale(" + s.toFixed(4) + ")";
 }
 addEventListener("resize", fitScreen);
+addEventListener("beforeprint", clearFit);
+addEventListener("afterprint", fitScreen);
 
 const ready = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]) : Promise.resolve();
 ready.then(paginate);

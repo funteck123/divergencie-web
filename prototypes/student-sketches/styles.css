@@ -141,7 +141,7 @@ h3{font:600 22px/1.2 var(--font);margin:40px 0 12px}
 @media print{
   html,body{background:#fff}
   .page{padding:0}
-  #app{width:auto;margin:0;zoom:1 !important}
+  #app{width:auto;margin:0;transform:none !important}
   .a4{margin:0;box-shadow:none;break-after:page;page-break-after:always;break-inside:avoid}
   .a4:last-child{break-after:auto;page-break-after:auto}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -158,3 +158,5 @@ h3{font:600 22px/1.2 var(--font);margin:40px 0 12px}
 .qn{width:36px;height:32px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--lb);background:var(--white);font:600 13px var(--font);border-radius:var(--r);font-variant-numeric:tabular-nums}
 .qn.on{background:var(--navy);border-color:var(--navy);color:var(--white)}.qn.warn{background:var(--gold);border-color:var(--gold);color:var(--ink)}.qn.bad{background:var(--coral);border-color:var(--coral);color:var(--ink)}
 .ta{height:96px;border:1px solid var(--foot);background:var(--white);border-radius:var(--r);padding:8px 10px;color:var(--mut);font-size:13px}
+
+.fit{overflow:visible;position:relative}

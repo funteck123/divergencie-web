@@ -7,14 +7,14 @@ const nameCell = (r) => `<b>${r.n}</b>`;
 /* ---------- 1 Shell ---------- */
 export const part1 = () => {
   const sorted = [...TABS].sort();
-  const a = sk("1A", "Two-tier sticky bar", "both tiers stay pinned", `${topBar()}${tabsBar()}<div class="body" style="margin-top:-30px;position:relative">${miniAccounts(6)}</div>${fade}`, 400);
+  const a = sk("1A", "Two-tier sticky bar", "both tiers stay pinned", `${topBar()}${tabsBar()}<div class="body">${miniAccounts(6)}</div>${fade}`, 400);
   const b = sk(
     "1B",
     "One bar, section switcher",
     "sections in a searchable menu",
     `<div class="bar1">${brand}<span class="btn on-dark" style="height:34px;margin-left:16px;min-width:190px;justify-content:space-between"><span class="row" style="gap:8px">${I("users")}Accounts</span>${I("chevron-down", 14)}</span><div class="grow"></div>${actionBtns()}</div>
      <div class="menu" style="left:232px;top:54px;width:280px;padding:0"><div style="padding:8px;border-bottom:1px solid var(--lb)">${input("Search", { i: "search", s: "width:100%" })}</div>${sorted.map((t) => `<div class="${t === "Accounts" ? "hl" : ""}">${I(TAB_ICON[t], 16)}${t}</div>`).join("")}</div>
-     <div class="body" style="margin-top:-30px;position:relative">${miniAccounts(6)}</div>${fade}`,
+     <div class="body">${miniAccounts(6)}</div>${fade}`,
     600
   );
   const c = sk(
@@ -23,7 +23,7 @@ export const part1 = () => {
     "rail pinned, 72 px wide",
     `<div class="rail">${TABS.map((t) => `<div class="${t === "Accounts" ? "on" : ""}">${I(TAB_ICON[t], 20)}<span>${t.length > 9 ? t.replace("Enrollments", "Enroll").replace("Applications", "Apps") : t}</span></div>`).join("")}</div>
      <div style="margin-left:72px"><div class="bar1" style="height:48px">${brand}<div class="grow"></div>${actionBtns()}</div>
-     <div class="body" style="position:relative;margin-top:-26px">${miniAccounts(6).replace(/width:230px/, "width:210px")}</div></div>${fade}`,
+     <div class="body">${miniAccounts(6).replace(/width:230px/, "width:210px")}</div></div>${fade}`,
     640
   );
   return { id: "p1", n: "1", name: "Shell: header and section navigation", html: a + b + c };
