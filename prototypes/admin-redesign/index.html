@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DivergenCIE Admin Redesign</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="gl"></div>
+<div id="css"></div>
+
+<div class="hud layers" id="layers"><h6>Frames</h6></div>
+
+<div class="hud tools" id="tools">
+  <button id="fitAll" title="Fit all (0)">Fit all</button>
+  <button id="zoomOut" title="Zoom out (-)">−</button>
+  <span class="zoom" id="zoomPct">100%</span>
+  <button id="zoomIn" title="Zoom in (+)">+</button>
+  <span class="sep"></span>
+  <button id="modeWire" class="on">Wireframe</button>
+  <button id="modeStyled">Styled</button>
+  <span class="sep"></span>
+  <button id="themeBtn">Dark</button>
+  <button id="explodeBtn">3D layers</button>
+</div>
+
+<div class="hud tag">Wireframe for approval · nothing is built · sample data</div>
+<div class="hud help"><b>Drag</b> pan · <b>Scroll</b> zoom · <b>← →</b> next frame · <b>0</b> fit all</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

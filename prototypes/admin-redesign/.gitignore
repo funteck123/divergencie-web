@@ -1,0 +1,4 @@
+# vendor/: three@0.160.0 build/three.module.js + examples/jsm/renderers/CSS3DRenderer.js (import path edited to ./three.module.js)
+# fonts/: copies of public/fonts/satoshi-*.woff2
+vendor/
+fonts/

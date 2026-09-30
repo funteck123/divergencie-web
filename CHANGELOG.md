@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [commit
 ## [Unreleased]
 
 ### Added
+- Admin (Management) UI redesign wireframe for approval (`prototypes/admin-redesign/`): a three.js pan/zoom canvas of 15 frames (brief, header Classic|New toggle, Today home, Pipeline, Accounts, Schedule, Services, Billing, Tickets, Guides, Audit log, command palette and states, mobile, tokens, Classic-to-New map), with Wireframe/Styled, light/dark and exploded 3D layer views. Sample data only. Nothing is built into the app yet; awaiting approval.
 - Question Solver structured grading: a general question-type marking-guidance registry (`QUESTION_TYPE_GUIDANCE`) -- extra, human-authored criteria applied only when a specific real question type is detected (subject + component + the question's own printed task text), never as a global prompt change. First entry: 0510/0511 ESL email-writing (detected via real task wording, "write an email"/"write a message") checks for 15 writing devices (simile, metaphor, participle, gerund, sentence/punctuation/vocabulary variety, phrasal verbs, linking words, organisation/paragraphing, call to action, adjectives, sound words, imagery, idioms), surfaced as a universal "Writing craft" results section that only ever renders when a guidance entry actually matched -- every other subject/question is unaffected. Verified detection logic against a real 2019 0510 paper's task text (matches only the real email question; confirmed no match on other subjects, other components, and non-email ESL questions).
 
 ### Fixed
