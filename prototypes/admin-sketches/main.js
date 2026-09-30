@@ -51,6 +51,7 @@ const SHEET_W = Math.round(297 * MM);
 const CONTENT_W = Math.round(277 * MM);
 const CONTENT_H = Math.round(186 * MM);
 const GAP = 12;
+const SAFETY = 14;
 const FRAME_W = 1282;
 
 const app = document.getElementById("app");
@@ -85,7 +86,7 @@ function paginate() {
   let cur = null;
   let used = 0;
   measured.forEach(({ el, h }) => {
-    if (!cur || used + h + (used ? GAP : 0) > CONTENT_H) {
+    if (!cur || used + h + (used ? GAP : 0) > CONTENT_H - SAFETY) {
       cur = document.createElement("div");
       cur.className = "a4";
       cur.innerHTML = '<div class="a4c"></div><div class="a4f"></div>';
