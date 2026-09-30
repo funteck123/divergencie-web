@@ -204,10 +204,13 @@ const YEARLY_READY_COMPONENTS = new Set([
   // an answer for every one (after the structure-diagram option fix in
   // extract_mcq.py), Paper 2 total 60, Paper 4 total 100, Paper 5 total
   // 30, 0 corrupted blocks, totals equal to each MS's printed "Maximum
-  // Mark" where the MS prints one. Paper 3 (Advanced Practical Skills)
-  // stays excluded: it is a hands-on lab practical, same reasoning as the
-  // IGCSE "Practical Test" exclusion above.
+  // Mark" where the MS prints one. Paper 3 (Advanced Practical Skills) is
+  // enabled too (TKT-0300/0301): students answer from the printed question
+  // and the recorded results, so the solver can grade the written answers.
+  // Its marks are unreliable in the MS, so gradeYearlyQuestion uses a
+  // Paper 3 only rule (see there) and refuses to grade when no rule fits.
   "Paper 1: Multiple Choice (AS Level)",
+  "Paper 3: Advanced Practical Skills (A Level)",
   "Paper 2: AS Level Structured Questions",
   "Paper 4: A Level Structured Questions (A Level)",
   "Paper 5: Planning, Analysis and Evaluation (A Level)",
@@ -1043,7 +1046,20 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   const maxTotal = /Max(?:imum)?\s+(?:overall\s+)?total\s+for\s+exercises?\s*\d+\s*:?\s*(\d+)\s*marks?/i.exec((answer && answer.text) || "");
   const totalTag = (t) => { const m = /\[\s*Total\s*:?\s*(\d+)/i.exec(t || ""); return m ? Number(m[1]) : 0; };
   const proseMarks = ((question && question.text) || "").match(/up to (\d+) marks?/gi);
-  const marks = (answer && answer.marks)
+  // A Level Paper 3 is always 40 marks. Its MS marks column is often read
+  // as 0, a partial sum or a doubled sum, so trust a figure only when the
+  // whole paper adds up to 40: QP first, then MS, else refuse to grade.
+  const paper3Marks = () => {
+    const sum = (list, key) => list.reduce((s, x) => s + (x[key] || 0), 0);
+    const qs = digitized.questions || [];
+    const as = digitized.answers || [];
+    if (question && qs.length && sum(qs, "marks") === 40 && qs.every((q) => q.marks > 0)) return question.marks;
+    if (answer && as.length && sum(as, "marks") === 40 && as.every((a) => a.marks > 0)) return answer.marks;
+    return 0;
+  };
+  const marks = /Advanced Practical Skills/.test(paper.component)
+    ? paper3Marks()
+    : (answer && answer.marks)
     || (maxTotal && Number(maxTotal[1]))
     || totalTag(answer && answer.text)
     || (question && question.marks)
@@ -1387,7 +1403,7 @@ function loadYearlyLibrary() {
 }
 
 // Only components proven end-to-end are exposed to the picker -- see
-// YEARLY_READY_COMPONENTS's own comment for why Practical is excluded.
+// YEARLY_READY_COMPONENTS's own comment for why some components are excluded.
 function readyYearlyLibrary() {
   const full = loadYearlyLibrary();
   if (!full) return null;

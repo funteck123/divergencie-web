@@ -2854,7 +2854,7 @@ STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT = {
 }
 
 
-def parse_structured(pdf_path, subject=None, component=None):
+def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
     """One image + one text block per question/answer block, cropped
     exactly like a real MCQ question (reuses render_question_image) but
     with no option-letter detection or answer resolution at all -- this
@@ -2873,11 +2873,29 @@ def parse_structured(pdf_path, subject=None, component=None):
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     chain = STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT.get((subject, component), DEFAULT_STRUCTURED_CHAIN)
+    # A Level Chemistry Paper 3 QPs end with a shared "Qualitative analysis
+    # notes" reference page (tests for ions and gases). It is not a
+    # question, but its table rows carry bare "1"/"2"/"3" numbers. They
+    # win the same-number dedup against the real headings (confirmed real,
+    # 9701_w17_31: real Q3 on page 6 lost to the notes page's "3"), so
+    # hide that page and every later one from the detectors entirely.
+    notes_page = None
+    if component and "Advanced Practical Skills" in component:
+        for l in lines:
+            if l["page"] > 0 and re.match(r'^Qualitative\s+analysis\s+notes\b', l["text"].strip(), re.IGNORECASE):
+                notes_page = l["page"] if notes_page is None else min(notes_page, l["page"])
+    detect_lines = lines if notes_page is None else [l for l in lines if l["page"] < notes_page]
     starts = []
     for detector in chain:
-        starts = detector(lines)
+        starts = detector(detect_lines)
         if starts:
             break
+    # Paper 3 only: a results-table row label ("3" under "1", "2") can pass
+    # for a heading in either document (real 9700_w25_31 QP: 2 questions
+    # split into 3; 9701_s07_32 MS: 2 questions read as 3). The caller passes
+    # the question numbers both documents agree on; any other heading drops.
+    if only_numbers:
+        starts = [s for s in starts if str(s["number"]) in only_numbers]
     blocks = []
     for i, s in enumerate(starts):
         # Two consecutive parents can share the EXACT same (page, y0) --
@@ -2902,6 +2920,8 @@ def parse_structured(pdf_path, subject=None, component=None):
             end_page, end_y = starts[j]["page"], starts[j]["y0"]
         else:
             end_page, end_y = doc.page_count - 1, None
+        if notes_page is not None and end_page >= notes_page:
+            end_page, end_y = notes_page - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
@@ -3237,6 +3257,8 @@ def parse_theory_qp(pdf_path):
             end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
         else:
             end_page, end_y = doc.page_count - 1, None
+        if notes_page is not None and end_page >= notes_page:
+            end_page, end_y = notes_page - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         blocks.append({"questionNumber": s["number"], "image": image_b64})
@@ -3279,6 +3301,8 @@ def parse_theory_ms(pdf_path):
             end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
         else:
             end_page, end_y = doc.page_count - 1, None
+        if notes_page is not None and end_page >= notes_page:
+            end_page, end_y = notes_page - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
@@ -3327,10 +3351,14 @@ def main():
         # this existed.
         subject = sys.argv[4] if len(sys.argv) == 6 else None
         component = sys.argv[5] if len(sys.argv) == 6 else None
-        print(json.dumps({
-            "questions": parse_structured(qp_path, subject, component),
-            "answers": parse_structured(ms_path, subject, component),
-        }))
+        questions = parse_structured(qp_path, subject, component)
+        answers = parse_structured(ms_path, subject, component)
+        if component and "Advanced Practical Skills" in component:
+            common = {str(q["questionNumber"]) for q in questions} & {str(a["questionNumber"]) for a in answers}
+            if common and (len(common) < len(questions) or len(common) < len(answers)):
+                questions = parse_structured(qp_path, subject, component, common)
+                answers = parse_structured(ms_path, subject, component, common)
+        print(json.dumps({"questions": questions, "answers": answers}))
         return
     if len(sys.argv) != 3:
         print("usage: extract_mcq.py <qp_pdf_path> <ms_pdf_path>", file=sys.stderr)
