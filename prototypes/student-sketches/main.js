@@ -45,13 +45,13 @@ parts.forEach((p) => {
   p.html.split(/(?=<div class="cap">)/).forEach((frame, i) => blocks.push({ kind: "frame", html: (i === 0 ? h2 : "") + frame }));
 });
 
-/* ---- A4 landscape, 96 dpi: 297 x 210 mm, margins 10 / 10 / 14 / 10 mm ----
+/* ---- A4 portrait, 96 dpi: 210 x 297 mm, margins 10 / 10 / 14 / 10 mm ----
    Scaling uses transform plus explicitly sized holders, never the CSS zoom property,
    so every browser lays it out and prints it the same way. */
 const MM = 96 / 25.4;
-const SHEET_W = Math.round(297 * MM);
-const CONTENT_W = Math.round(277 * MM);
-const CONTENT_H = Math.round(186 * MM);
+const SHEET_W = Math.round(210 * MM);
+const CONTENT_W = Math.round(190 * MM);
+const CONTENT_H = Math.round(273 * MM);
 const GAP = 12;
 const SAFETY = 14;
 const FRAME_W = 1282;
