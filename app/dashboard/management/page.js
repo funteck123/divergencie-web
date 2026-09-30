@@ -3422,7 +3422,7 @@ function Services() {
                     className="field"
                     style={{ maxWidth: 120 }}
                     placeholder="Description"
-                    maxLength={40}
+                    maxLength={80}
                     value={r.description}
                     onChange={(e) => updateFlatRate(ri, "description", e.target.value)}
                   /></Labeled>
@@ -3569,7 +3569,7 @@ function Services() {
                               className="field"
                               style={{ maxWidth: 120 }}
                               placeholder="Description"
-                              maxLength={40}
+                              maxLength={80}
                               value={r.description}
                               onChange={(e) => updateRate(ci, bi, ri, "description", e.target.value)}
                             /></Labeled>
@@ -5135,7 +5135,7 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                       <Labeled label="Description"><input
                         className="field"
                         placeholder="Description (optional)"
-                        maxLength={40}
+                        maxLength={80}
                         value={customRateDraft.description}
                         onChange={(e) => setCustomRateDraft((d) => ({ ...d, description: e.target.value }))}
                       /></Labeled>
