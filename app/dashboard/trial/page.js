@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
@@ -188,7 +189,7 @@ function Body({ user }) {
           request is approved.
         </p>
         <div className="flex gap-3">
-          <select className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+          <SearchSelect className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
             <option value="">Select a service…</option>
             {eligibleServices.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
@@ -196,7 +197,7 @@ function Body({ user }) {
                 {requestedServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
               </option>
             ))}
-          </select>
+          </SearchSelect>
           <button className="btn" disabled={!serviceId || requesting} onClick={requestTrial}>
             {requesting ? "Requesting…" : "Request Trial"}
           </button>

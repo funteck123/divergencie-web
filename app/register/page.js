@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -270,12 +271,12 @@ function RegisterForm() {
           <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-[1.5vh]">
             <div className={`space-y-2 ${PANEL}`}>
               <label className={LABEL_CLASS}>I&apos;m applying as</label>
-              <select className={`${FIELD_CLASS} w-full`} value={requestedType} onChange={(e) => setRequestedType(e.target.value)}>
+              <SearchSelect className={`${FIELD_CLASS} w-full`} value={requestedType} onChange={(e) => setRequestedType(e.target.value)}>
                 <option value="Trial">Trial (Student)</option>
                 <option value="TeacherInterview">Interview — Teacher</option>
                 <option value="StaffInterview">Interview — Staff</option>
                 <option value="AmbassadorInterview">Interview — Ambassador</option>
-              </select>
+              </SearchSelect>
             </div>
 
             {isStudent ? (
@@ -298,19 +299,19 @@ function RegisterForm() {
                 <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-4">
                   <div className={`space-y-2 min-w-0 ${PANEL}`}>
                     <label className={LABEL_CLASS}>Gender</label>
-                    <select className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
+                    <SearchSelect className={`${FIELD_CLASS} w-full`} value={gender} onChange={(e) => setGender(e.target.value)}>
                       <option value="">Select</option>
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                       <option value="Prefer not to say">Prefer not to say</option>
-                    </select>
+                    </SearchSelect>
                   </div>
                   <div className={`space-y-2 min-w-0 ${PANEL}`}>
                     <label className={LABEL_CLASS}>Location</label>
-                    <select className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)}>
+                    <SearchSelect className={`${FIELD_CLASS} w-full`} value={location} onChange={(e) => setLocation(e.target.value)}>
                       <option value="">Country</option>
                       {INTAKE_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    </SearchSelect>
                   </div>
                 </div>
               </>

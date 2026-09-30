@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { Fragment, useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import FilterBar from "@/components/FilterBar";
@@ -260,12 +261,12 @@ function Body({ user }) {
           <>
             <label className="text-sm flex items-center gap-2 mb-3" style={{ color: "var(--muted)" }}>
               Date range
-              <select value={scheduleRange} onChange={(e) => setScheduleRange(e.target.value)}>
+              <SearchSelect value={scheduleRange} onChange={(e) => setScheduleRange(e.target.value)}>
                 <option value="upcoming">Upcoming</option>
                 <option value="last7">Last 7 days</option>
                 <option value="last30">Last 30 days</option>
                 <option value="all">All</option>
-              </select>
+              </SearchSelect>
             </label>
             <FilterBar search={schedSearch} onSearch={setSchedSearch} searchPlaceholder="Search service or instructor…" />
           </>

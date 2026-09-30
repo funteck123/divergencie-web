@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { Fragment, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -279,7 +280,7 @@ function Body() {
 
 function TimezoneSelect({ value, onChange }) {
   return (
-    <select className="field" value={value} onChange={(e) => onChange(e.target.value)}>
+    <SearchSelect className="field" value={value} onChange={(e) => onChange(e.target.value)}>
       {TIMEZONE_GROUPS.map((group) => (
         <optgroup key={group.label} label={group.label}>
           {group.options.map((o) => (
@@ -289,7 +290,7 @@ function TimezoneSelect({ value, onChange }) {
           ))}
         </optgroup>
       ))}
-    </select>
+    </SearchSelect>
   );
 }
 
@@ -306,7 +307,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
   const isLinked = !!facilitatorUserId;
   if (isLinked) {
     return (
-      <select
+      <SearchSelect
         className="field"
         aria-label="Instructor account"
         value={facilitatorUserId}
@@ -321,7 +322,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
           </option>
         ))}
         <option value="">Type a name instead…</option>
-      </select>
+      </SearchSelect>
     );
   }
   return (
@@ -333,7 +334,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
         onChange={(e) => onChange({ facilitator: e.target.value, facilitatorUserId: "" })}
       /></Labeled>
       {candidateUsers.length > 0 && (
-        <select
+        <SearchSelect
           className="field"
           style={{ maxWidth: 40 }}
           value=""
@@ -350,7 +351,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
               {u.Name}
             </option>
           ))}
-        </select>
+        </SearchSelect>
       )}
     </span>
   );
@@ -1384,7 +1385,7 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
   if (mode === "existing") {
     return (
       <div className="flex gap-2 items-center flex-wrap">
-        <select className="field" style={{ width: 220 }} value={scheduleId} onChange={(e) => setScheduleId(e.target.value)}>
+        <SearchSelect className="field" style={{ width: 220 }} value={scheduleId} onChange={(e) => setScheduleId(e.target.value)}>
           <option value="">Select an open slot…</option>
           {candidateSlots.map((s) => (
             <option key={s.ScheduleID} value={s.ScheduleID}>
@@ -1392,7 +1393,7 @@ function InterviewSlotAssign({ row, openPoolSlots, onApproveWithSlot, onCreateAn
               {s.BatchName ? ` · ${s.BatchName}` : ""} ({s.Facilitator || "no instructor set"})
             </option>
           ))}
-        </select>
+        </SearchSelect>
         <button
           className="btn"
           type="button"
@@ -2272,10 +2273,10 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Status
           </label>
-          <select className="field" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <SearchSelect className="field" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
-          </select>
+          </SearchSelect>
         </div>
       )}
 
@@ -2297,13 +2298,13 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
         <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
           Currency (invoice/paycheck totals are shown in this account&apos;s Currency)
         </label>
-        <select className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+        <SearchSelect className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
           {CURRENCIES_FULL.map((c) => (
             <option key={c.code} value={c.code}>
               {c.code} — {c.name}
             </option>
           ))}
-        </select>
+        </SearchSelect>
       </div>
 
       {ROLE_ELIGIBLE.includes(user.UserType) && (
@@ -2347,14 +2348,14 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Department
           </label>
-          <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+          <SearchSelect className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
             <option value="">Select department…</option>
             {DEPARTMENTS.map((d) => (
               <option key={d} value={d}>
                 {d}
               </option>
             ))}
-          </select>
+          </SearchSelect>
         </div>
       )}
 
@@ -2643,13 +2644,13 @@ function CreateAccount({ onCreated, users }) {
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
             Account type
           </label>
-          <select className="field" value={userType} onChange={(e) => setUserType(e.target.value)}>
+          <SearchSelect className="field" value={userType} onChange={(e) => setUserType(e.target.value)}>
             {CREATABLE_TYPES.map((t) => (
               <option key={t} value={t}>
                 {INTERVIEW_ACC_LABEL[t] || t}
               </option>
             ))}
-          </select>
+          </SearchSelect>
         </div>
 
         <Labeled label="Name"><input className="field" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required /></Labeled>
@@ -2658,13 +2659,13 @@ function CreateAccount({ onCreated, users }) {
           <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
             Currency
           </label>
-          <select className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
+          <SearchSelect className="field" style={{ maxWidth: 260 }} value={currency} onChange={(e) => setCurrency(e.target.value)}>
             {CURRENCIES_FULL.map((c) => (
               <option key={c.code} value={c.code}>
                 {c.code} — {c.name}
               </option>
             ))}
-          </select>
+          </SearchSelect>
         </div>
 
         {userType === "Parent" && (
@@ -2711,14 +2712,14 @@ function CreateAccount({ onCreated, users }) {
 
         {userType === "Staff" && (
           <>
-            <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+            <SearchSelect className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
               <option value="">Select department…</option>
               {DEPARTMENTS.map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>
               ))}
-            </select>
+            </SearchSelect>
             <Labeled label="Work Folder URL"><input
               className="field"
               placeholder="Work Folder URL (Google Drive)"
@@ -2808,6 +2809,9 @@ function typeOptionsFor(group) {
 // just type any custom value — nothing is enforced.
 function EditableCombobox({ value, onChange, options, placeholder }) {
   const [open, setOpen] = useState(false);
+  const sorted = [...options].sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+  const typed = String(value || "").trim().toLowerCase();
+  const shown = typed && !sorted.some((o) => o.toLowerCase() === typed) ? sorted.filter((o) => o.toLowerCase().includes(typed)) : sorted;
   return (
     <div style={{ position: "relative" }}>
       <input
@@ -2818,7 +2822,7 @@ function EditableCombobox({ value, onChange, options, placeholder }) {
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
       />
-      {open && options.length > 0 && (
+      {open && shown.length > 0 && (
         <div
           style={{
             position: "absolute",
@@ -2835,7 +2839,7 @@ function EditableCombobox({ value, onChange, options, placeholder }) {
             boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
           }}
         >
-          {options.map((o) => (
+          {shown.map((o) => (
             <div
               key={o}
               onMouseDown={() => {
@@ -3304,13 +3308,13 @@ function Services() {
                   <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
                     Department
                   </label>
-                  <select className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
+                  <SearchSelect className="field" value={department} onChange={(e) => setDepartment(e.target.value)}>
                     {DEPARTMENTS.map((d) => (
                       <option key={d} value={d}>
                         {d}
                       </option>
                     ))}
-                  </select>
+                  </SearchSelect>
                 </div>
               )}
             </>
@@ -3405,13 +3409,13 @@ function Services() {
                 <div key={ri} className="flex gap-2 items-end">
                   <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Currency
-                    <select className="field" style={{ width: 80, display: "block" }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
+                    <SearchSelect className="field" style={{ width: 80, display: "block" }} value={r.currency} onChange={(e) => updateFlatRate(ri, "currency", e.target.value)}>
                       {CURRENCIES_FULL.map((cur) => (
                         <option key={cur.code} value={cur.code}>
                           {cur.code}
                         </option>
                       ))}
-                    </select>
+                    </SearchSelect>
                   </label>
                   <Labeled label="Rate"><input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateFlatRate(ri, "rate", e.target.value)} /></Labeled>
                   <Labeled label="Description"><input
@@ -3424,13 +3428,13 @@ function Services() {
                   /></Labeled>
                   <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Billing type
-                    <select className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
+                    <SearchSelect className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateFlatRate(ri, "billingType", e.target.value)}>
                       {BILLING_TYPES.map((t) => (
                         <option key={t} value={t}>
                           {t}
                         </option>
                       ))}
-                    </select>
+                    </SearchSelect>
                   </label>
                   {flatRates.length > 1 && (
                     <button type="button" className="btn-ghost" onClick={() => removeFlatRate(ri)}>
@@ -3450,11 +3454,11 @@ function Services() {
                 <div key={oi} className="flex gap-2 items-end">
                   <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                     Day
-                    <select className="field" style={{ width: 130, display: "block" }} value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
+                    <SearchSelect className="field" style={{ width: 130, display: "block" }} value={o.day} onChange={(e) => updateFlatOcc(oi, "day", e.target.value)}>
                       {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
                         <option key={d}>{d}</option>
                       ))}
-                    </select>
+                    </SearchSelect>
                   </label>
                   <label className="text-xs" style={{ color: "var(--muted)" }}>
                     Time
@@ -3552,13 +3556,13 @@ function Services() {
                           <div key={ri} className="flex gap-2 items-end">
                             <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Currency
-                              <select className="field" style={{ width: 80, display: "block" }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
+                              <SearchSelect className="field" style={{ width: 80, display: "block" }} value={r.currency} onChange={(e) => updateRate(ci, bi, ri, "currency", e.target.value)}>
                                 {CURRENCIES_FULL.map((cur) => (
                                   <option key={cur.code} value={cur.code}>
                                     {cur.code}
                                   </option>
                                 ))}
-                              </select>
+                              </SearchSelect>
                             </label>
                             <Labeled label="Rate"><input className="field" type="number" placeholder="Rate" value={r.rate} onChange={(e) => updateRate(ci, bi, ri, "rate", e.target.value)} /></Labeled>
                             <Labeled label="Description"><input
@@ -3571,24 +3575,24 @@ function Services() {
                             /></Labeled>
                             <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Billing type
-                              <select className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
+                              <SearchSelect className="field" style={{ width: 110, display: "block" }} value={r.billingType} onChange={(e) => updateRate(ci, bi, ri, "billingType", e.target.value)}>
                                 {BILLING_TYPES.map((t) => (
                                   <option key={t} value={t}>
                                     {t}
                                   </option>
                                 ))}
-                              </select>
+                              </SearchSelect>
                             </label>
                             <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Restrict to
-                              <select className="field" style={{ width: 160, display: "block" }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
+                              <SearchSelect className="field" style={{ width: 160, display: "block" }} value={r.group} onChange={(e) => updateRate(ci, bi, ri, "group", e.target.value)}>
                                 <option value="">Any of the above</option>
                                 {group.map((g) => (
                                   <option key={g} value={g}>
                                     {g} only
                                   </option>
                                 ))}
-                              </select>
+                              </SearchSelect>
                             </label>
                             {b.rates.length > 1 && (
                               <button type="button" className="btn-ghost" onClick={() => removeRate(ci, bi, ri)}>
@@ -3610,11 +3614,11 @@ function Services() {
                           <div key={oi} className="flex gap-2 items-end">
                             <label className="text-xs" style={{ color: "var(--muted)", display: "block" }}>
                               Day
-                              <select className="field" style={{ width: 130, display: "block" }} value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
+                              <SearchSelect className="field" style={{ width: 130, display: "block" }} value={o.day} onChange={(e) => updateOcc(ci, bi, oi, "day", e.target.value)}>
                                 {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => (
                                   <option key={d}>{d}</option>
                                 ))}
-                              </select>
+                              </SearchSelect>
                             </label>
                             <label className="text-xs" style={{ color: "var(--muted)" }}>
                               Time
@@ -4447,7 +4451,7 @@ function SchedulePool() {
             <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
               Slot type
             </label>
-            <select
+            <SearchSelect
               className="field"
               value={serviceType}
               onChange={(e) => {
@@ -4460,17 +4464,17 @@ function SchedulePool() {
                   {BOOKING_TYPE_LABEL[t]}
                 </option>
               ))}
-            </select>
+            </SearchSelect>
           </div>
           <Labeled label="Service">
-          <select className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
+          <SearchSelect className="field" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
             <option value="">Select service…</option>
             {eligibleServices.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
                 {s.Name}
               </option>
             ))}
-          </select>
+          </SearchSelect>
           </Labeled>
           <Labeled label="Date"><input className="field" type="date" value={date} onChange={(e) => setDate(e.target.value)} required /></Labeled>
           <div>
@@ -5039,14 +5043,14 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
       <div className="card">
         <h2 className="font-semibold mb-4">Enroll a {title} into Service(s)</h2>
         <form onSubmit={submit} className="space-y-3">
-          <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)} required>
+          <SearchSelect className="field" value={userId} onChange={(e) => setUserId(e.target.value)} required>
             <option value="">Select {title.toLowerCase()}…</option>
             {people.map((u) => (
               <option key={u.UserID} value={u.UserID}>
                 {u.Name}
               </option>
             ))}
-          </select>
+          </SearchSelect>
 
           {rows.map((row, index) => {
             const { availableBatches, availableRates } = rowOptions(row);
@@ -5066,27 +5070,27 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                   <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
                     Service
                   </label>
-                  <select className="field" value={row.serviceId} onChange={(e) => pickServiceAt(index, e.target.value)} required>
+                  <SearchSelect className="field" value={row.serviceId} onChange={(e) => pickServiceAt(index, e.target.value)} required>
                     <option value="">Select service…</option>
                     {eligibleServices.map((s) => (
                       <option key={s.ServiceID} value={s.ServiceID}>
                         {s.Name}
                       </option>
                     ))}
-                  </select>
+                  </SearchSelect>
                 </div>
                 {availableBatches.length > 1 && (
                   <div>
                     <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
                       Batch
                     </label>
-                    <select className="field" value={row.batchId} onChange={(e) => pickBatchAt(index, e.target.value)} required>
+                    <SearchSelect className="field" value={row.batchId} onChange={(e) => pickBatchAt(index, e.target.value)} required>
                       {availableBatches.map((b) => (
                         <option key={b.BatchID} value={b.BatchID}>
                           {b.BatchName}{batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}
                         </option>
                       ))}
-                    </select>
+                    </SearchSelect>
                   </div>
                 )}
                 {availableRates.length > 0 && (
@@ -5094,14 +5098,14 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                     <label className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
                       Rate
                     </label>
-                    <select className="field" value={row.rateId} onChange={(e) => updateRow(index, { rateId: e.target.value })} required>
+                    <SearchSelect className="field" value={row.rateId} onChange={(e) => updateRow(index, { rateId: e.target.value })} required>
                       <option value="">Select a rate…</option>
                       {availableRates.map((r) => (
                         <option key={r.RateID} value={r.RateID}>
                           {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
                         </option>
                       ))}
-                    </select>
+                    </SearchSelect>
                   </div>
                 )}
                 {row.serviceId && (
@@ -5109,23 +5113,23 @@ function EnrollmentGroup({ title, people, eligibleServices, enrollments, onEnrol
                     <div className="space-y-2 p-2" style={{ border: "1px dashed var(--border)", borderRadius: 6 }}>
                       <div className="flex gap-2 items-center">
                         <Labeled label="Currency">
-                          <select className="field" style={{ maxWidth: 100 }} value={customRateDraft.currency} onChange={(e) => setCustomRateDraft((d) => ({ ...d, currency: e.target.value }))}>
+                          <SearchSelect className="field" style={{ maxWidth: 100 }} value={customRateDraft.currency} onChange={(e) => setCustomRateDraft((d) => ({ ...d, currency: e.target.value }))}>
                             {CURRENCIES_FULL.map((cur) => (
                               <option key={cur.code} value={cur.code}>
                                 {cur.code}
                               </option>
                             ))}
-                          </select>
+                          </SearchSelect>
                         </Labeled>
                         <Labeled label="Amount"><input className="field" type="number" placeholder="Amount" value={customRateDraft.rate} onChange={(e) => setCustomRateDraft((d) => ({ ...d, rate: e.target.value }))} /></Labeled>
                         <Labeled label="Frequency">
-                          <select className="field" style={{ maxWidth: 110 }} value={customRateDraft.billingType} onChange={(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))}>
+                          <SearchSelect className="field" style={{ maxWidth: 110 }} value={customRateDraft.billingType} onChange={(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))}>
                             {BILLING_TYPES.map((t) => (
                               <option key={t} value={t}>
                                 {t}
                               </option>
                             ))}
-                          </select>
+                          </SearchSelect>
                         </Labeled>
                       </div>
                       <Labeled label="Description"><input
@@ -5312,42 +5316,42 @@ function EnrollmentRow({ enrollment, users, services, nameOf, serviceNameOf, bat
     return (
       <tr>
         <td>
-          <select className="field" value={userId} onChange={(e) => setUserId(e.target.value)}>
+          <SearchSelect className="field" value={userId} onChange={(e) => setUserId(e.target.value)}>
             {users.map((u) => (
               <option key={u.UserID} value={u.UserID}>
                 {u.Name} ({u.UserType})
               </option>
             ))}
-          </select>
+          </SearchSelect>
         </td>
         <td>
-          <select className="field" value={serviceId} onChange={(e) => pickService(e.target.value)}>
+          <SearchSelect className="field" value={serviceId} onChange={(e) => pickService(e.target.value)}>
             {services.map((s) => (
               <option key={s.ServiceID} value={s.ServiceID}>
                 {s.Name}
               </option>
             ))}
-          </select>
+          </SearchSelect>
           {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
         </td>
         <td>
-          <select className="field" value={batchId} onChange={(e) => pickBatch(e.target.value)}>
+          <SearchSelect className="field" value={batchId} onChange={(e) => pickBatch(e.target.value)}>
             {availableBatches.map((b) => (
               <option key={b.BatchID} value={b.BatchID}>
                 {b.BatchName}{batchScheduleLabel(b) ? ` — ${batchScheduleLabel(b)}` : ""}
               </option>
             ))}
-          </select>
+          </SearchSelect>
         </td>
         <td>
-          <select className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
+          <SearchSelect className="field" value={rateId} onChange={(e) => setRateId(e.target.value)} required>
             <option value="">Select a rate…</option>
             {availableRates.map((r) => (
               <option key={r.RateID} value={r.RateID}>
                 {r.Currency} {r.Rate}{r.Description ? ` (${r.Description})` : ""}
               </option>
             ))}
-          </select>
+          </SearchSelect>
         </td>
         <td>
           <input className="field" style={{ width: 145 }} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
@@ -5837,14 +5841,14 @@ function ManualInvoiceForm({ people, services, enrollments, onSubmitRows, onDone
         Use for: one-off exceptions Generate Drafts won&apos;t create.
       </p>
       <form onSubmit={submit} className="space-y-3">
-        <select className="field" aria-label="Student" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
+        <SearchSelect className="field" aria-label="Student" value={personId} onChange={(e) => selectPerson(e.target.value)} required>
           <option value="">Select Student…</option>
           {people.map((p) => (
             <option key={p.UserID} value={p.UserID}>
               {p.Name}
             </option>
           ))}
-        </select>
+        </SearchSelect>
         <div className="flex gap-2">
           <Labeled label="Year"><input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} /></Labeled>
           <Labeled label="Month"><input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} /></Labeled>
@@ -5924,22 +5928,22 @@ function ManualBillingForm({ title, hint, personLabel, people, services, onSubmi
         </p>
       )}
       <form onSubmit={submit} className="space-y-3">
-        <select className="field" aria-label={personLabel} value={personId} onChange={(e) => setPersonId(e.target.value)} required>
+        <SearchSelect className="field" aria-label={personLabel} value={personId} onChange={(e) => setPersonId(e.target.value)} required>
           <option value="">Select {personLabel}…</option>
           {people.map((p) => (
             <option key={p.UserID} value={p.UserID}>
               {p.Name}
             </option>
           ))}
-        </select>
-        <select className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
+        </SearchSelect>
+        <SearchSelect className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)} required>
           <option value="">Select service…</option>
           {services.map((s) => (
             <option key={s.ServiceID} value={s.ServiceID}>
               {s.Name}
             </option>
           ))}
-        </select>
+        </SearchSelect>
         <div className="flex gap-2">
           <Labeled label="Year"><input className="field" type="number" placeholder="Year" value={year} onChange={(e) => setYear(e.target.value)} /></Labeled>
           <Labeled label="Month"><input className="field" type="number" min="1" max="12" placeholder="Month" value={month} onChange={(e) => setMonth(e.target.value)} /></Labeled>
@@ -6069,13 +6073,13 @@ function BillingFilterBar({ search, onSearch, statusFilter, onStatusFilter, sear
           onChange={(e) => onSearch(e.target.value)}
         />
         {hasStatus && (
-          <select className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
+          <SearchSelect className="field" style={{ maxWidth: 200 }} value={statusFilter} onChange={(e) => onStatusFilter(e.target.value)}>
             {Object.entries(statusOptions).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
             ))}
-          </select>
+          </SearchSelect>
         )}
         {active && (
           <button
@@ -7688,7 +7692,7 @@ function AuditLog() {
       <div className="flex justify-between items-center flex-wrap gap-2">
         <h2 className="font-semibold">Audit Log</h2>
         <div className="flex gap-2 items-center">
-          <select
+          <SearchSelect
             className="field"
             aria-label="Entity type"
             value={entityType}
@@ -7701,7 +7705,7 @@ function AuditLog() {
             {ENTITY_TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
-          </select>
+          </SearchSelect>
         </div>
       </div>
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}

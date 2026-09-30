@@ -2820,5 +2820,137 @@ document.getElementById("lbChapterSelect").addEventListener("change", onLeaderbo
 document.getElementById("lbPaperSelect").addEventListener("change", renderLeaderboardScope);
 document.getElementById("mistakeSubjectSelect").addEventListener("change", renderMistakeCharts);
 </script>
+<script>
+// TKT-0309: every dropdown lists its options A to Z and can be narrowed by typing.
+// The native <select> stays in the DOM (hidden) as the source of truth, so all
+// existing code that reads .value, sets .innerHTML/.disabled or listens for
+// "change" keeps working; this only adds the visible control.
+(function () {
+  var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+  var st = document.createElement("style");
+  st.textContent =
+    ".ss-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%}" +
+    ".ss-trigger{display:flex;align-items:center;justify-content:space-between;gap:.5rem;width:100%;text-align:left;cursor:pointer;font:inherit;color:var(--text);background:var(--bg)}" +
+    ".ss-trigger:disabled{opacity:.55;cursor:not-allowed}" +
+    ".ss-trigger span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}" +
+    ".ss-panel{position:fixed;z-index:1000;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.22);overflow:hidden;font-size:.88rem}" +
+    ".ss-panel input{width:100%;padding:.5rem .7rem;border:0;border-bottom:1px solid var(--border);outline:none;font:inherit;background:transparent;color:inherit}" +
+    ".ss-list{overflow-y:auto}" +
+    ".ss-opt{padding:.42rem .7rem;cursor:pointer}" +
+    ".ss-opt.act{background:var(--bg-soft)}.ss-opt.sel{font-weight:700}.ss-opt.ph{opacity:.65}.ss-none{padding:.5rem .7rem;opacity:.6}";
+  document.head.appendChild(st);
+  var valueDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value");
+  var idxDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "selectedIndex");
+  var openPanel = null;
+  function closePanel() { if (openPanel) { openPanel.remove(); openPanel = null; } }
+  document.addEventListener("pointerdown", function (e) { if (openPanel && !openPanel.contains(e.target) && !e.target.closest(".ss-trigger")) closePanel(); });
+
+  function enhance(sel) {
+    var cs = getComputedStyle(sel);
+    var wrap = document.createElement("span");
+    wrap.className = "ss-wrap";
+    var inline = sel.getAttribute("style");
+    if (inline) wrap.style.cssText = inline;
+    var trig = document.createElement("button");
+    trig.type = "button";
+    trig.className = "ss-trigger";
+    trig.style.cssText = "padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:6px;font-size:" + cs.fontSize;
+    if (cs.marginLeft !== "0px") { wrap.style.marginLeft = cs.marginLeft; }
+    var label = document.createElement("span");
+    var caret = document.createElement("span");
+    caret.textContent = "▾"; caret.style.cssText = "font-size:.7em;opacity:.7;flex:none";
+    trig.appendChild(label); trig.appendChild(caret);
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(trig); wrap.appendChild(sel);
+    sel.style.display = "none";
+    if (sel.id) trig.setAttribute("aria-controls", sel.id);
+
+    function refresh() {
+      var o = sel.options[sel.selectedIndex];
+      label.textContent = o ? o.textContent : " ";
+      label.style.opacity = o && o.value === "" ? ".65" : "1";
+      trig.disabled = sel.disabled;
+    }
+    Object.defineProperty(sel, "value", { configurable: true, get: function () { return valueDesc.get.call(sel); }, set: function (v) { valueDesc.set.call(sel, v); refresh(); } });
+    Object.defineProperty(sel, "selectedIndex", { configurable: true, get: function () { return idxDesc.get.call(sel); }, set: function (v) { idxDesc.set.call(sel, v); refresh(); } });
+    new MutationObserver(refresh).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ["disabled"] });
+    sel.addEventListener("change", refresh);
+    refresh();
+
+    function rows() {
+      var all = Array.prototype.map.call(sel.options, function (o) { return { value: o.value, text: o.textContent, index: o.index, disabled: o.disabled }; });
+      var ph = all.filter(function (o) { return o.value === ""; })[0];
+      var rest = all.filter(function (o) { return o !== ph; }).sort(function (a, b) { return collator.compare(a.text, b.text); });
+      return { ph: ph, rest: rest };
+    }
+
+    function open(seed) {
+      if (sel.disabled) return;
+      closePanel();
+      var data = rows(), query = seed || "", active = 0, visible = [];
+      var panel = document.createElement("div");
+      panel.className = "ss-panel";
+      var input = document.createElement("input");
+      input.placeholder = "Type to search…"; input.setAttribute("aria-label", "Search options");
+      var list = document.createElement("div");
+      list.className = "ss-list"; list.setAttribute("role", "listbox");
+      panel.appendChild(input); panel.appendChild(list);
+      document.body.appendChild(panel);
+      openPanel = panel;
+      var r = trig.getBoundingClientRect();
+      var below = window.innerHeight - r.bottom, up = below < 260 && r.top > below;
+      panel.style.left = r.left + "px"; panel.style.width = Math.max(r.width, 180) + "px";
+      if (up) panel.style.bottom = (window.innerHeight - r.top + 4) + "px"; else panel.style.top = (r.bottom + 4) + "px";
+      list.style.maxHeight = Math.max(160, Math.min(300, (up ? r.top : below) - 60)) + "px";
+
+      function render() {
+        var q = query.trim().toLowerCase();
+        visible = data.rest.filter(function (o) { return !q || o.text.toLowerCase().indexOf(q) !== -1; });
+        if (!q && data.ph) visible.unshift(data.ph);
+        if (active >= visible.length) active = Math.max(0, visible.length - 1);
+        list.innerHTML = "";
+        if (!visible.length) { var n = document.createElement("div"); n.className = "ss-none"; n.textContent = "No matches"; list.appendChild(n); return; }
+        visible.forEach(function (o, i) {
+          var d = document.createElement("div");
+          d.className = "ss-opt" + (i === active ? " act" : "") + (o.index === sel.selectedIndex ? " sel" : "") + (o.value === "" ? " ph" : "");
+          d.setAttribute("role", "option");
+          d.textContent = o.text || " ";
+          d.addEventListener("pointerdown", function (e) { e.preventDefault(); });
+          d.addEventListener("click", function () { pick(o); });
+          d.addEventListener("mouseenter", function () { active = i; Array.prototype.forEach.call(list.children, function (c, j) { c.classList.toggle("act", j === i); }); });
+          list.appendChild(d);
+        });
+        var a = list.children[active]; if (a && a.scrollIntoView) a.scrollIntoView({ block: "nearest" });
+      }
+      function pick(o) {
+        if (!o || o.disabled) return;
+        closePanel(); trig.focus();
+        if (sel.selectedIndex !== o.index) { idxDesc.set.call(sel, o.index); sel.dispatchEvent(new Event("change", { bubbles: true })); }
+        refresh();
+      }
+      input.value = query;
+      input.addEventListener("input", function () { query = input.value; active = 0; render(); });
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowDown") { e.preventDefault(); active = Math.min(visible.length - 1, active + 1); render(); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); active = Math.max(0, active - 1); render(); }
+        else if (e.key === "Enter") { e.preventDefault(); pick(visible[active]); }
+        else if (e.key === "Escape") { e.preventDefault(); closePanel(); trig.focus(); }
+        else if (e.key === "Tab") closePanel();
+      });
+      render();
+      if (!seed) { var cur = visible.map(function (o) { return o.index; }).indexOf(sel.selectedIndex); if (cur > 0) { active = cur; render(); } }
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+    trig.addEventListener("click", function () { if (openPanel) closePanel(); else open(""); });
+    trig.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") { e.preventDefault(); open(""); }
+      else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); open(e.key); }
+    });
+    window.addEventListener("resize", closePanel);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("select"), enhance);
+})();
+</script>
 </body>
 </html>

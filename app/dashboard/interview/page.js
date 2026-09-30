@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import GuidesSection from "@/components/GuidesSection";
@@ -312,7 +313,7 @@ function Body({ user }) {
           </p>
         ) : (
           <div className="flex gap-3">
-            <select className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+            <SearchSelect className="field" aria-label="Service" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
               <option value="">Select a service…</option>
               {eligibleServices.map((s) => (
                 <option key={s.ServiceID} value={s.ServiceID} disabled={requestedServiceIds.has(s.ServiceID)}>
@@ -320,7 +321,7 @@ function Body({ user }) {
                   {requestedServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
                 </option>
               ))}
-            </select>
+            </SearchSelect>
             <button className="btn" disabled={!serviceId || requesting} onClick={requestInterview}>
               {requesting ? "Requesting…" : "Request Interview"}
             </button>
@@ -336,7 +337,7 @@ function Body({ user }) {
             assigned once your request is approved.
           </p>
           <div className="flex gap-3">
-            <select className="field" aria-label="Trial service" value={trialServiceId} onChange={(e) => setTrialServiceId(e.target.value)}>
+            <SearchSelect className="field" aria-label="Trial service" value={trialServiceId} onChange={(e) => setTrialServiceId(e.target.value)}>
               <option value="">Select a service…</option>
               {eligibleTrialServices.map((s) => (
                 <option key={s.ServiceID} value={s.ServiceID} disabled={requestedTrialServiceIds.has(s.ServiceID)}>
@@ -344,7 +345,7 @@ function Body({ user }) {
                   {requestedTrialServiceIds.has(s.ServiceID) ? " (already requested)" : ""}
                 </option>
               ))}
-            </select>
+            </SearchSelect>
             <button className="btn" disabled={!trialServiceId || requestingTrial} onClick={requestTrial}>
               {requestingTrial ? "Requesting…" : "Request Trial"}
             </button>
@@ -456,7 +457,7 @@ function PersonalInfoCard({ user, onSave }) {
           <label htmlFor="pi-country" className="text-xs block mb-1" style={{ color: "var(--muted)" }}>
             Country (Timezone)
           </label>
-          <select id="pi-country" className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+          <SearchSelect id="pi-country" className="field" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
             {TIMEZONE_GROUPS.map((group) => (
               <optgroup key={group.label} label={group.label}>
                 {group.options.map((o) => (
@@ -466,7 +467,7 @@ function PersonalInfoCard({ user, onSave }) {
                 ))}
               </optgroup>
             ))}
-          </select>
+          </SearchSelect>
         </div>
         <button className="btn" type="submit" disabled={saving}>
           {saving ? "Saving…" : "Save"}

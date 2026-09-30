@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { MessageSquare, Mail, Camera, Link as LinkIcon, MapPin, Send, ShieldCheck } from "lucide-react";
@@ -127,7 +128,7 @@ export default function ContactPage() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Country</label>
-                        <select name="country" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors appearance-none">
+                        <SearchSelect name="country" className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors appearance-none">
                           <option value="" className="bg-white dark:bg-[var(--bg-primary)]">Where are you located?</option>
                           <option value="United Kingdom" className="bg-white dark:bg-[var(--bg-primary)]">United Kingdom</option>
                           <option value="Malaysia" className="bg-white dark:bg-[var(--bg-primary)]">Malaysia</option>
@@ -135,19 +136,19 @@ export default function ContactPage() {
                           <option value="Saudi Arabia" className="bg-white dark:bg-[var(--bg-primary)]">Saudi Arabia</option>
                           <option value="Pakistan" className="bg-white dark:bg-[var(--bg-primary)]">Pakistan</option>
                           <option value="Other" className="bg-white dark:bg-[var(--bg-primary)]">Other</option>
-                        </select>
+                        </SearchSelect>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Subject</label>
-                      <select name="subject" required className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors appearance-none">
+                      <SearchSelect name="subject" required className="w-full p-4 border border-[var(--border-subtle)] bg-transparent focus:border-[var(--gold)] outline-none transition-colors appearance-none">
                         <option value="" className="bg-white dark:bg-[var(--bg-primary)]">What&apos;s this about?</option>
                         <option value="enrol" className="bg-white dark:bg-[var(--bg-primary)]">Enrolment Enquiry</option>
                         <option value="pricing" className="bg-white dark:bg-[var(--bg-primary)]">Pricing & Packages</option>
                         <option value="trial" className="bg-white dark:bg-[var(--bg-primary)]">Book Free Trial</option>
                         <option value="tech" className="bg-white dark:bg-[var(--bg-primary)]">Portal Support</option>
                         <option value="other" className="bg-white dark:bg-[var(--bg-primary)]">Other</option>
-                      </select>
+                      </SearchSelect>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Message</label>

@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { useState } from "react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -105,10 +106,10 @@ function AdmissionsForm() {
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-1">Country *</label>
-            <select required value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
+            <SearchSelect required value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
               className="w-full p-3 border border-[var(--border-subtle)] bg-white dark:bg-transparent rounded-xl outline-none focus:border-[var(--gold)] text-sm">
               {COUNTRIES.map(c => <option key={c}>{c}</option>)}
-            </select>
+            </SearchSelect>
           </div>
           <div className="col-span-2">
             <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-1">Tell us about your goals</label>

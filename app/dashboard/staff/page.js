@@ -1,5 +1,6 @@
 "use client";
 
+import SearchSelect from "@/components/SearchSelect";
 import { useEffect, useState } from "react";
 import DashboardShell from "@/components/DashboardShell";
 import FilterBar from "@/components/FilterBar";
@@ -399,11 +400,11 @@ function AttendanceForm({ defaultHrs, onSubmit }) {
     >
       <label className="text-xs" style={{ color: "var(--muted)" }}>
         Status
-        <select className="field" style={{ width: 100, display: "block" }} value={status} onChange={(e) => setStatus(e.target.value)}>
+        <SearchSelect className="field" style={{ width: 100, display: "block" }} value={status} onChange={(e) => setStatus(e.target.value)}>
           <option>Present</option>
           <option>Absent</option>
           <option>Late</option>
-        </select>
+        </SearchSelect>
       </label>
       <label className="text-xs" style={{ color: "var(--muted)" }}>
         Hours
