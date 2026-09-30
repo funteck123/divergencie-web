@@ -2860,7 +2860,7 @@ function EditableCombobox({ value, onChange, options, placeholder }) {
 }
 
 function emptyBatch() {
-  return { batchName: "", rates: [{ ...EMPTY_RATE }], occurrences: [{ ...EMPTY_OCC }] };
+  return { batchName: "", startDate: "", endDate: "", rates: [{ ...EMPTY_RATE }], occurrences: [{ ...EMPTY_OCC }] };
 }
 function emptyComponent() {
   return { componentName: "", batches: [emptyBatch()] };
@@ -2880,6 +2880,8 @@ function Services() {
   const [syllabusLink, setSyllabusLink] = useState("");
   const [worksheetsLink, setWorksheetsLink] = useState("");
   const [gcrLink, setGcrLink] = useState("");
+  const [serviceStartDate, setServiceStartDate] = useState("");
+  const [serviceEndDate, setServiceEndDate] = useState("");
   const [components, setComponents] = useState([emptyComponent()]);
   const [role, setRole] = useState("");
   const [department, setDepartment] = useState(DEPARTMENTS[0]);
@@ -2993,6 +2995,8 @@ function Services() {
     setSyllabusLink("");
     setWorksheetsLink("");
     setGcrLink("");
+    setServiceStartDate("");
+    setServiceEndDate("");
     setComponents([emptyComponent()]);
     setRole("");
     setDepartment(DEPARTMENTS[0]);
@@ -3021,6 +3025,8 @@ function Services() {
     setSyllabusLink(s.SyllabusLink || "");
     setWorksheetsLink(s.WorksheetsLink || "");
     setGcrLink(s.GCRLink || "");
+    setServiceStartDate(s.StartDate || "");
+    setServiceEndDate(s.EndDate || "");
     setComponents(
       (s.OptionalComponents || []).length > 0
         ? s.OptionalComponents.map((c) => ({
@@ -3029,6 +3035,8 @@ function Services() {
           batches: (c.Batches || []).map((b) => ({
             batchId: b.BatchID,
             batchName: b.BatchName || "",
+            startDate: b.StartDate || "",
+            endDate: b.EndDate || "",
             rates: (b.Rates || []).map((r) => ({
               rateId: r.RateID,
               currency: r.Currency,
@@ -3204,7 +3212,7 @@ function Services() {
       return;
     }
     const body = isRoleBasedService
-      ? { name: effectiveName, type, group, role, department, rates: flatRates, occurrences: flatOccurrences, links }
+      ? { name: effectiveName, type, group, role, department, rates: flatRates, occurrences: flatOccurrences, links, startDate: serviceStartDate, endDate: serviceEndDate }
       : {
         name: effectiveName,
         type,
@@ -3221,6 +3229,8 @@ function Services() {
         country,
         components,
         links,
+        startDate: serviceStartDate,
+        endDate: serviceEndDate,
       };
     setSaving(true);
     try {
@@ -3379,6 +3389,11 @@ function Services() {
               /></Labeled>
             </>
           )}
+
+          <div className="flex gap-3 flex-wrap">
+            <Labeled label="Service start date"><input className="field" style={{ maxWidth: 180 }} type="date" value={serviceStartDate} onChange={(e) => setServiceStartDate(e.target.value)} /></Labeled>
+            <Labeled label="Service end date"><input className="field" style={{ maxWidth: 180 }} type="date" value={serviceEndDate} onChange={(e) => setServiceEndDate(e.target.value)} /></Labeled>
+          </div>
 
           <div className="space-y-2">
             <label className="text-sm" style={{ color: "var(--muted)" }}>
@@ -3541,6 +3556,8 @@ function Services() {
                             onChange={(e) => updateBatch(ci, bi, "batchName", e.target.value)}
                           /></Labeled>
                         )}
+                        <Labeled label="Batch start date"><input className="field" style={{ maxWidth: 170 }} type="date" value={b.startDate || ""} onChange={(e) => updateBatch(ci, bi, "startDate", e.target.value)} /></Labeled>
+                        <Labeled label="Batch end date"><input className="field" style={{ maxWidth: 170 }} type="date" value={b.endDate || ""} onChange={(e) => updateBatch(ci, bi, "endDate", e.target.value)} /></Labeled>
                         {c.batches.length > 1 && (
                           <button type="button" className="btn-ghost" onClick={() => removeBatch(ci, bi)}>
                             ✕ Batch
