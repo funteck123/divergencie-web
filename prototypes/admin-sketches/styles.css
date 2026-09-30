@@ -9,7 +9,8 @@ html{scroll-behavior:smooth}
 body{margin:0;background:var(--white);color:var(--ink);font:400 16px/1.6 var(--font)}
 ::selection{background:var(--lb);color:var(--navy)}
 a{color:var(--sky)}
-.page{max-width:1340px;margin:0 auto;padding:40px 24px 120px}
+.page{margin:0;padding:16px 0 48px}
+#app{width:1123px;margin:0 auto}
 h1{font:700 36px/1.2 var(--font);letter-spacing:-.02em;color:var(--navy);margin:0 0 8px}
 h2{font:600 28px/1.2 var(--font);color:var(--navy);margin:72px 0 16px;scroll-margin-top:16px}
 h3{font:600 22px/1.2 var(--font);margin:40px 0 12px}
@@ -127,3 +128,22 @@ h3{font:600 22px/1.2 var(--font);margin:40px 0 12px}
 :focus-visible{outline:2px solid var(--sky);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 .bar1 .chip::before{background:var(--white)}
+
+/* ---- A4 landscape sheets: same layout on screen and in print ---- */
+.a4{position:relative;width:297mm;height:210mm;padding:10mm 10mm 14mm;margin:0 auto 16px;background:var(--white);box-shadow:0 2px 14px rgba(26,26,26,.18);overflow:hidden}
+.a4c{width:277mm;height:186mm;overflow:hidden}
+.a4f{position:absolute;left:10mm;right:10mm;bottom:5mm;display:flex;justify-content:space-between;font-size:11px;color:var(--foot);border-top:1px solid var(--lb);padding-top:4px}
+.blk h1{margin-top:0}
+.blk h2{margin:0 0 4px;font-size:24px}
+.blk .cap{margin:10px 0 6px}
+.blk h3{margin:16px 0 8px;font-size:18px}
+@page{size:A4 landscape;margin:0}
+@media print{
+  html,body{background:#fff}
+  .page{padding:0}
+  #app{width:auto;margin:0;zoom:1 !important}
+  .a4{margin:0;box-shadow:none;break-after:page;page-break-after:always;break-inside:avoid}
+  .a4:last-child{break-after:auto;page-break-after:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.blk .facts{grid-template-columns:repeat(3,1fr) !important}

@@ -3,10 +3,10 @@ import { part6, part7, part8, part9, part10, part11, part12, part13 } from "./pa
 
 const parts = [part1, part2, part3, part4, part5, part6, part7, part8, part9, part10, part11, part12, part13].map((f) => f());
 
-const head = `
+const intro1 = `
 <h1>Admin UI sketches</h1>
 <p class="lead">Current layout kept. Structure, placement, sizing and spacing change. Pick one option per part.</p>
-<h3 style="margin-top:24px">Measured on production, 1440 × 900</h3>
+<h3 style="margin-top:20px">Measured on production, 1440 × 900</h3>
 <div class="facts">
   <div><b>2,175 px</b>hidden sideways scroll, Student Accounts</div>
   <div><b>21</b>columns in one Student table</div>
@@ -20,8 +20,9 @@ const head = `
   <div><b>A · Ledger</b><span>One line per record. Dense, fast to scan, everything visible.</span></div>
   <div><b>B · Desk</b><span>Two lines per record. Larger targets, sheets and pages for detail.</span></div>
   <div><b>C · Console</b><span>Action first. Selection bars, menus, rail, floating create.</span></div>
-</div>
-<h3>Parts</h3>
+</div>`;
+const intro2 = `
+<h3 style="margin-top:0">Parts</h3>
 <nav class="index">${parts.map((p) => `<a href="#${p.id}">${p.n} ${p.name.split(" (")[0]}</a>`).join("")}</nav>
 <h3>Rules applied to every sketch</h3>
 <div class="facts" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
@@ -33,15 +34,81 @@ const head = `
   <div>Dropdowns A to Z, searchable. Labels only, no sentences.</div>
 </div>`;
 
-const app = document.getElementById("app");
-app.innerHTML = head + parts.map((p) => `<h2 id="${p.id}">${p.n} · ${p.name}</h2>${p.html}`).join("");
+/* ---- blocks: the smallest pieces that must never be split across pages ---- */
+const blocks = [{ kind: "text", html: intro1 }, { kind: "text", html: intro2 }];
+parts.forEach((p) => {
+  const h2 = `<h2 id="${p.id}">${p.n} · ${p.name}</h2>`;
+  if (p.raw) {
+    blocks.push({ kind: "raw", html: h2 + p.html });
+    return;
+  }
+  p.html.split(/(?=<div class="cap">)/).forEach((frame, i) => blocks.push({ kind: "frame", html: (i === 0 ? h2 : "") + frame }));
+});
 
-function fit() {
-  const avail = Math.min(innerWidth - 48, 1290);
-  document.querySelectorAll(".sk:not(.ph)").forEach((el) => {
-    const z = Math.min(1, avail / 1282);
-    el.style.zoom = z;
-  });
+/* ---- A4 landscape, 96 dpi: 297 x 210 mm, margins 10 / 10 / 14 / 10 mm ---- */
+const MM = 96 / 25.4;
+const SHEET_W = Math.round(297 * MM);
+const CONTENT_W = Math.round(277 * MM);
+const CONTENT_H = Math.round(186 * MM);
+const GAP = 12;
+const FRAME_W = 1282;
+
+const app = document.getElementById("app");
+
+function measure(block) {
+  const el = document.createElement("section");
+  el.className = "blk " + block.kind;
+  el.style.width = CONTENT_W + "px";
+  el.innerHTML = block.html;
+  app.appendChild(el);
+  const wraps = el.querySelectorAll(".wrap");
+  let scale = 1;
+  if (block.kind === "frame") {
+    scale = CONTENT_W / FRAME_W;
+    wraps.forEach((w) => (w.style.zoom = scale));
+  }
+  let h = el.offsetHeight;
+  if (block.kind !== "text" && h > CONTENT_H) {
+    const shrink = CONTENT_H / h;
+    wraps.forEach((w) => (w.style.zoom = (scale * shrink).toFixed(4)));
+    if (block.kind === "raw") el.style.zoom = shrink.toFixed(4);
+    h = el.offsetHeight;
+    if (block.kind === "raw") h = Math.round(h * shrink);
+  }
+  return { el, h };
 }
-addEventListener("resize", fit);
-fit();
+
+function paginate() {
+  app.innerHTML = "";
+  const measured = blocks.map(measure);
+  const sheets = [];
+  let cur = null;
+  let used = 0;
+  measured.forEach(({ el, h }) => {
+    if (!cur || used + h + (used ? GAP : 0) > CONTENT_H) {
+      cur = document.createElement("div");
+      cur.className = "a4";
+      cur.innerHTML = '<div class="a4c"></div><div class="a4f"></div>';
+      sheets.push(cur);
+      used = 0;
+    }
+    cur.firstChild.appendChild(el);
+    el.style.marginTop = used ? GAP + "px" : "0";
+    used += h + (used ? GAP : 0);
+  });
+  app.innerHTML = "";
+  sheets.forEach((s, i) => {
+    s.lastChild.innerHTML = `<span>DivergenCIE admin UI sketches</span><span>${i + 1} / ${sheets.length}</span>`;
+    app.appendChild(s);
+  });
+  fitScreen();
+}
+
+function fitScreen() {
+  const z = Math.min(1, (innerWidth - 32) / SHEET_W);
+  app.style.zoom = z;
+}
+addEventListener("resize", fitScreen);
+
+const ready = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]) : Promise.resolve();
+ready.then(paginate);
