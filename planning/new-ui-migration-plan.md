@@ -193,7 +193,7 @@ The new UI is built from the DivergenCIE design documents in the parent folder `
 | C7 | Fonts: BDG says Inter plus Merriweather for body; MU says Inter only; sketches used Inter and a mono face for IDs. | | Inter for all UI (tabular numbers for IDs and phones). Merriweather only for long reading text if the user wants it (guides, syllabus notes). |
 | C8 | Type scale: BDG and MU scales are page scales (body 16 px, H1 36 to 40). Data screens need 12 to 14 px. | | A "dense UI" scale inside the same family: 12 px table text, 13 px labels, 14 px body in tools, 16 px in reading views. |
 | C9 | **Navigation:** MU specifies a fixed **left sidebar** (240 to 260 px) for the Student, Staff, Parent, Ambassador and Management portals. The user picked the **two-tier top bar (1A)** for admin. | | Because the user wants one consistent portal, use the 1A top bar pattern in **all** portals (sections as tabs on desktop, bottom bar on phones). This departs from MU and will be recorded in `DESIGN_RULES.md`. |
-| C10 | **Dark theme:** the app already has light and dark themes; BDG and MU define only light. | | Tokens defined for both themes from day one; the user decides whether dark is in the first release (default: yes, because the classic UI already has it). |
+| C10 | **Dark theme:** the classic app has light and dark themes; BDG and MU define only light. | | **DECIDED: no dark theme in the new UI.** Light only. Tokens are still named by role (not by colour) so a dark theme could be added later without touching screens. |
 | C11 | MU names Recharts for charts. | Recharts is much heavier than needed | `uPlot` (section 2.2) to meet the speed budgets, same look. |
 | C12 | MU breakpoints (xs under 480, sm 480 to 767, md 768 to 1023, lg 1024 to 1279, xl 1280 and up). | | Adopt exactly these; test widths 375, 390, 768, 1024, 1280, 1440, 1920. |
 
@@ -299,7 +299,7 @@ Effort is in agent working sessions (one long focused session each), not calenda
 
 | # | Phase | Scope | Exit criteria | Size |
 |---|---|---|---|---|
-| 0 | Foundations | Resolve the CONFIRM items (section 8). Parity extractor and first manifest. Design tokens from BDG v1 and MU v2 with the accepted accessibility fixes (section 3.0), logo set exported (full and icon, light and dark, optimised) from the Downloads files, `DESIGN_RULES.md` started, component skeletons. Data layer with a fake API. Toggle plumbing and the two classic hooks. CI guards. Baseline performance measurements of every endpoint. | Manifest committed, toggle works both ways with an empty new UI, budgets measured, guard test green, user approves the CONFIRM answers. | 2 |
+| 0 | Foundations | Resolve the CONFIRM items (section 8). Parity extractor and first manifest. Light-theme design tokens from BDG v1 and MU v2 with the accepted accessibility fixes (section 3.0), logo set exported (full and icon, light and dark, optimised) from the Downloads files, `DESIGN_RULES.md` started, component skeletons. Data layer with a fake API. Toggle plumbing and the two classic hooks. CI guards. Baseline performance measurements of every endpoint. | Manifest committed, toggle works both ways with an empty new UI, budgets measured, guard test green, user approves the CONFIRM answers. | 2 |
 | 1 | Vertical slice: Shell and Accounts (Students) | AppShell (1A), DataTable, FilterBar, RowActions, Accounts list for Students with the 21-column solution, URL state, skeletons. | Students list at 1280 and 390 with no sideways scroll, budgets met on 1,000 rows, parity for the Students table actions at list level. | 3 |
 | 2 | Accounts, complete | All account types and tabs; RecordSheet and in-place edit; DraftRow create; selection bar; Log in as; Reset password; Activate/Deactivate; Convert; Delete (with history guard); Import from form (just built); Copy credentials; groups modes. | Every Accounts manifest entry mapped and tested; parity journeys pass; five-lens review done. | 4 |
 | 3 | Services and Enrollments | Tree view and group modes, Create service FormPage (rates, batches, occurrences, facilitators, links), rate editing, service uptime, Enrollments (7C), enroll strip, add service, dates, rate move. | Parity for services and enrollments; the date-wipe bug class covered by tests (the earlier PATCH wholesale lesson). | 4 |
@@ -327,13 +327,13 @@ Decided by the user on 2026-10-02:
 8. **Toggle:** one switch for the whole portal, not per page.
 9. **Classic UI is the main UI; the new UI is an experimental, opt-in redesign** (section 0).
 10. **Brand files:** exist; found and read (section 3.0).
+11. **Palette (C1):** Brand Guidelines (BDG v1) colours as the source, plus derived semantic colours. Accepted.
+12. **Accessibility fixes (C2 to C5):** accepted (navy text on gold buttons, underlined navy links, darker error red, gold never as small text on white).
+13. **Dark theme:** not needed. The new UI is light only.
+14. **New Student fields** (Gender, Help wanted, Subjects, Referrer, Heard about us, Can score A*): shown in the record sheet. **All current table columns stay** (the 21 of option A); no existing column is dropped and the new fields are not added as table columns.
 
 Still open (the stated default applies if unanswered):
-- **New Student fields** (Gender, Help wanted, Subjects, Referrer, Heard about us, Can score A*): they would add 6 more columns to the 21. Default: **shown in the record sheet only**, not as table columns. (Say if you want any of them, for example Referrer, as a table column; it would need another column trimmed.)
-- **Palette (C1):** BDG v1 as the brand source plus derived semantic colours, or switch to MU v2's palette. [BDG v1]
-- **CTA contrast (C2 to C5):** accept the accessibility fixes (navy text on gold buttons, underlined navy links, darker error red). [accept]
-- **Dark theme (C10):** include in the first release. [yes]
-- **Merriweather (C7):** not used in the app UI, only if you want it for reading text. [not used]
+- **Merriweather (C7):** not used in the app UI. [not used]
 - **Services:** tree view like today as default plus the 7B group switcher. [yes]
 - **Billing modes:** Table (default), By person, By month, By due date, By status lanes. [as listed]
 - **Audit page size:** 25, 50, 100, 200. [yes]
