@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accounts One Line Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1b3a5c;--ink:#14212f;--muted:#5d6b7a;--line:#d6dee7;--head:#d7e8f2;--bg:#eef1f4;--panel:#fff;--gold:#e8a62b;--good:#2f7d5b;--warn:#e8a62b;--bad:#d4493f;--mute-dot:#9aa7b4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;padding:24px 8px 64px}
+main{max-width:1320px;margin:0 auto;display:grid;gap:28px}
+h1{font-size:26px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0;font-size:15px}
+.facts{display:flex;gap:10px;flex-wrap:wrap}
+.fact{background:var(--panel);border:1px solid var(--line);padding:8px 12px;font-size:13px}
+.fact b{font-size:18px;display:block}
+.opt{background:var(--panel);border:1px solid var(--line);padding:16px;display:grid;gap:10px}
+.opt h2{margin:0;font-size:18px;display:flex;gap:10px;align-items:center}
+.opt h2 b{background:var(--navy);color:#fff;padding:2px 9px;font-size:15px}
+.rec{background:var(--gold);color:#241a05;font-size:11px;padding:2px 8px;font-weight:700}
+.meta{margin:0;color:var(--muted);font-size:13px}
+.wrap{width:1248px;max-width:100%;overflow:visible;border:1px solid var(--line)}
+table{border-collapse:collapse;table-layout:fixed;width:1248px;font-size:12px}
+th{background:var(--head);color:var(--navy);text-align:left;font-weight:600;font-size:11px;padding:7px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td{padding:0 4px;height:34px;border-top:1px solid #e6ebf0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td.mono,th.mono{font-variant-numeric:tabular-nums;letter-spacing:0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--good)}
+.dot.off{background:var(--mute-dot)}
+.sent{display:inline-flex;gap:3px}
+.sent i{width:7px;height:7px;border-radius:50%;background:var(--navy)}
+.sent i.o{background:#c9d4de}
+.ic{display:inline-block;width:14px;height:14px;border:1.5px solid var(--navy);border-radius:3px;vertical-align:middle}
+.ic.off{border-color:#c9d4de}
+.act{display:inline-flex;gap:3px}
+.act span{width:24px;height:22px;border:1px solid var(--navy);color:var(--navy);display:inline-grid;place-items:center;font-size:11px;border-radius:2px}
+.tabs{display:flex;gap:0;margin-bottom:6px}
+.tabs span{border:1px solid var(--navy);padding:4px 12px;font-size:12px;color:var(--navy)}
+.tabs span.on{background:var(--navy);color:#fff}
+.chip{display:inline-block;background:var(--head);color:var(--navy);padding:2px 8px;font-size:11px;font-weight:600}
+.check{font-size:12px;color:var(--muted)}
+.check.bad{color:var(--bad);font-weight:600}
+.cmp{width:100%;border-collapse:collapse;font-size:13px}
+.cmp td,.cmp th{border:1px solid var(--line);padding:6px 8px;white-space:normal;height:auto;text-align:left;background:#fff}
+.cmp th{background:var(--head)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Accounts table: one line per row, no sideways scroll</h1>
+  <p class="sub">Student Accounts today has 21 columns. Real widths measured on production (12 px text, sizes only, no personal data).</p>
+</header>
+<div class="facts">
+  <div class="fact"><b>1,358 px</b>text only, widest values, before padding</div>
+  <div class="fact"><b>1,240 px</b>usable at 1280 screen width</div>
+  <div class="fact"><b>~1,700 px</b>needed with padding, full values</div>
+  <div class="fact"><b>12 px</b>text size used in all sketches below</div>
+</div>
+<section id="out" style="display:grid;gap:28px"></section>
+<section class="opt">
+  <h2>How the options compare</h2>
+  <table class="cmp">
+    <tr><th></th><th>A Fit all, trimmed</th><th>B Column sets</th><th>C Priority columns</th></tr>
+    <tr><th>All 21 columns on screen at once at 1280</th><td>Yes</td><td>No, 10 to 12 at a time</td><td>No, 9 are hidden at 1280</td></tr>
+    <tr><th>Every value readable in full</th><td>No: only 5 long text columns (Name, Email, Parent Email, School, Location) are cut with "…"; IDs, phones, status, course and the rest always show in full; the cut ones show in full on hover and in the row sheet</td><td>Yes</td><td>Yes</td></tr>
+    <tr><th>One line per row</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+    <tr><th>Text size</th><td>12 px</td><td>13 px</td><td>12 px</td></tr>
+    <tr><th>Extra clicks to see everything</th><td>0 for most, hover for cut text</td><td>1 per set</td><td>0 on screens over 1,600 px, else open the row</td></tr>
+    <tr><th>Matches what you wrote</th><td>Closest: all columns, no scroll</td><td>Breaks "all columns visible"</td><td>Breaks it on laptops</td></tr>
+  </table>
+</section>
+</main>
+<script>
+const NAMES=["Zara Malik","Leo Tan Wei Ming","Priya Nair Sundaram","Omar Haddad","Mei Lin Chen","Sam Okafor","Ananya Krishnamurthy","Hassan Al Mansouri"];
+const ROWS=NAMES.map((n,i)=>({id:"STU-04"+(12+i),name:n,active:i!==2,course:["IGCSE","A Level","IGCSE","IGCSE","A Level","IGCSE","A Level","IGCSE"][i],batch:["B14","B8","B14","B14","B8","B9","B8","B14"][i],tz:["IST","MYT","IST","AST","SGT","GMT","IST","GST"][i],tzLong:["Asia/Kolkata","Asia/Kuala_Lumpur","Asia/Kolkata","Asia/Riyadh","Asia/Singapore","Europe/London","Asia/Kolkata","Asia/Dubai"][i],cur:["INR","MYR","INR","SAR","USD","GBP","INR","AED"][i],wa:["+91 98100 00412","+60 12 000 0413","","+966 54 000 0415","+65 8000 0416","+44 7000 000417","+91 98100 00419","+971 50 000 0420"][i],pwa:["+91 98100 10412","","","+966 54 000 1415","+65 8000 1416","+44 7000 001417","+91 98100 10419","+971 50 000 1420"][i],pem:["","","","","","","vipulab@gmail.com",""][i],em:["zara.malik@example.com","leo.tan.weiming@example.com","","omar.haddad@example.com","mei.lin.chen@example.com","sam.okafor@example.com","ananya.krishnamurthy@example.com","hassan.almansouri@example.com"][i],school:["Delhi Public School, Delhi","Chong Hwa Independent High","","Riyadh International School","United World College SEA","Cp Goenka International, Pune","The Doon School","Dubai English Speaking School"][i],loc:["Delhi","Kuala Lumpur","","Riyadh","Singapore","London, UK","Dehradun","Dubai"][i],notes:i%4===0,ts:i%3!==1,pt:i%3===0,sent:[[1,1,0],[1,0,0],[0,0,0],[1,1,1],[1,1,1],[1,0,0],[1,1,0],[0,0,0]][i]}));
+const dot=(on)=>`<span class="dot ${on?"":"off"}"></span>${on?"Active":"Inactive"}`;
+const sent=(s)=>`<span class="sent" title="Group, GCR, Schedule">${s.map(x=>`<i class="${x?"":"o"}"></i>`).join("")}</span>`;
+const ic=(on)=>`<span class="ic ${on?"":"off"}"></span>`;
+const act=`<span class="act"><span>✎</span><span>⇥</span><span>⋯</span></span>`;
+const dash=(v)=>v||"—";
+function table(cols){
+  const total=cols.reduce((a,c)=>a+c.w,0);
+  const head=cols.map(c=>`<th style="width:${c.w}px" ${c.mono?'class="mono"':''} title="${c.title||c.h}">${c.h}</th>`).join("");
+  const body=ROWS.map(r=>`<tr>${cols.map(c=>`<td ${c.mono?'class="mono"':''} title="${(c.tip?c.tip(r):"")}">${c.v(r)}</td>`).join("")}</tr>`).join("");
+  return {total,html:`<div class="wrap"><table style="width:${total}px"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`};
+}
+const A=[
+ {h:"ID",w:74,v:r=>r.id,mono:1},{h:"Name",w:108,v:r=>`<b style="font-weight:600">${r.name}</b>`,tip:r=>r.name},{h:"Status",w:66,v:r=>dot(r.active)},
+ {h:"Course",w:56,v:r=>r.course},{h:"Batch",w:42,v:r=>r.batch},{h:"TZ",w:40,title:"Timezone",v:r=>r.tz,tip:r=>r.tzLong},{h:"Cur",w:38,title:"Currency",v:r=>r.cur},
+ {h:"WhatsApp #",w:124,v:r=>dash(r.wa),mono:1},{h:"Parent WA #",w:124,title:"Parent WhatsApp #",v:r=>dash(r.pwa),mono:1},{h:"Parent Email",w:76,v:r=>dash(r.pem),tip:r=>r.pem},
+ {h:"Email",w:122,v:r=>dash(r.em),tip:r=>r.em},{h:"School",w:92,v:r=>dash(r.school),tip:r=>r.school},{h:"Location",w:68,v:r=>dash(r.loc),tip:r=>r.loc},
+ {h:"Nt",w:22,title:"Notes",v:r=>ic(r.notes)},{h:"Ts",w:22,title:"Timesheet",v:r=>ic(r.ts)},{h:"Pt",w:22,title:"Progress Tracker",v:r=>ic(r.pt)},{h:"Sent",w:44,title:"Group, GCR, Schedule Sent",v:r=>sent(r.sent)},
+ {h:"",w:88,v:()=>act}];
+const B1=[
+ {h:"ID",w:80,v:r=>r.id,mono:1},{h:"Name",w:190,v:r=>`<b style="font-weight:600">${r.name}</b>`},{h:"Status",w:80,v:r=>dot(r.active)},{h:"Course",w:80,v:r=>r.course},{h:"Batch",w:60,v:r=>r.batch},
+ {h:"Timezone",w:170,v:r=>r.tzLong},{h:"Currency",w:80,v:r=>r.cur},{h:"Location",w:150,v:r=>dash(r.loc)},{h:"School",w:250,v:r=>dash(r.school)},{h:"",w:108,v:()=>act}];
+const B2=[
+ {h:"ID",w:80,v:r=>r.id,mono:1},{h:"Name",w:190,v:r=>`<b style="font-weight:600">${r.name}</b>`},{h:"WhatsApp #",w:140,v:r=>dash(r.wa),mono:1},{h:"Parent WhatsApp #",w:150,v:r=>dash(r.pwa),mono:1},
+ {h:"Email",w:240,v:r=>dash(r.em)},{h:"Parent Email",w:180,v:r=>dash(r.pem)},{h:"",w:108,v:()=>act}];
+const C=[
+ {h:"ID",w:80,v:r=>r.id,mono:1},{h:"Name",w:170,v:r=>`<b style="font-weight:600">${r.name}</b>`},{h:"Status",w:80,v:r=>dot(r.active)},{h:"Course",w:70,v:r=>r.course},{h:"Batch",w:50,v:r=>r.batch},
+ {h:"Timezone",w:140,v:r=>r.tzLong},{h:"Currency",w:62,v:r=>r.cur},{h:"WhatsApp #",w:120,v:r=>dash(r.wa),mono:1},{h:"Parent WhatsApp #",w:130,v:r=>dash(r.pwa),mono:1},
+ {h:"Email",w:200,v:r=>dash(r.em)},{h:"",w:96,v:()=>act}];
+const out=document.getElementById("out");
+function add(id,title,rec,meta,t,extra=""){
+  const el=document.createElement("article");el.className="opt";
+  el.innerHTML=`<h2><b>${id}</b>${title}${rec?'<span class="rec">RECOMMENDED</span>':""}</h2><p class="meta">${meta}</p>${extra}${t.html}<div class="check" data-total="${t.total}"></div>`;
+  out.appendChild(el);return el;
+}
+add("A","Fit all 21, trimmed",true,"One line per row, all columns, no sideways scroll at 1280. Trims: timezone and long headers shortened (full name on hover), yes/no and link columns become small marks, the three Sent flags share one cell, long text is cut with an ellipsis and shows in full on hover and in the row sheet. The New credentials column appears only right after an account is created. 12 px text, 34 px rows.",table(A));
+add("B","Column sets, one line each",false,"Switch between sets; each set shows 7 to 10 columns at 13 px with no cutting. Nothing is hidden forever, but not everything is on screen together.",table(B1),`<div class="tabs"><span class="on">Overview</span><span>Contact</span><span>Tracking</span></div>`);
+add("B","Set: Contact",false,"",table(B2),`<div class="tabs"><span>Overview</span><span class="on">Contact</span><span>Tracking</span></div>`);
+add("C","Priority columns",false,"Shows as many whole columns as fit and drops the lowest priority ones. At 1280 these nine are hidden: Parent Email, School, Location, Notes, Timesheet, Progress Tracker and the three Sent flags. A chip says how many are hidden; they show on screens wider than about 1,600 px.",table(C),`<span class="chip">+ 9 columns hidden at this width</span>`);
+document.querySelectorAll(".check").forEach(c=>{const t=+c.dataset.total;c.className="check"+(t>1248?" bad":"");c.textContent=`Table width ${t} px of 1248 px available: `+(t<=1248?"fits, no sideways scroll":"too wide")});
+</script>
+</body>
+</html>
