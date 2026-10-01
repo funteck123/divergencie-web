@@ -1,7 +1,7 @@
 "use client";
 
 import SearchSelect from "@/components/SearchSelect";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import DashboardShell from "@/components/DashboardShell";
@@ -14,6 +14,7 @@ import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel, tzAbbrFor } from "@/
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { formatInternationalNumber } from "@/lib/countryCodes";
+import { parseImport, findMatches, buildCreateBody, buildFillPatch } from "@/lib/accountImport";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Tickets", "Audit Log"];
 // The three pending Interview tracks — each converts to its own final
@@ -1775,7 +1776,11 @@ function Accounts({ issued, setIssued }) {
 
   return (
     <div className="space-y-6">
-      <CreateAccount onCreated={(newUser) => setUsers((prev) => [...prev, newUser])} users={users} />
+      <CreateAccount
+        onCreated={(newUser) => setUsers((prev) => [...prev, newUser])}
+        onUpdated={(updated) => setUsers((prev) => prev.map((u) => (u.UserID === updated.UserID ? { ...u, ...updated } : u)))}
+        users={users}
+      />
       {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
 
       <AccountGroupTable
@@ -2552,7 +2557,7 @@ const CREATABLE_TYPES = [
   "Ambassador",
 ];
 
-function CreateAccount({ onCreated, users }) {
+function CreateAccount({ onCreated, onUpdated, users }) {
   const [userType, setUserType] = useState("Parent");
   const [name, setName] = useState("");
   const [studentIds, setStudentIds] = useState([]);
@@ -2639,6 +2644,16 @@ function CreateAccount({ onCreated, users }) {
   return (
     <div className="card">
       <h2 className="font-semibold mb-4">Create Account</h2>
+      <ImportAccount
+        userType={userType}
+        users={users}
+        defaults={{ currency, timezone }}
+        onCreated={(res) => {
+          setIssued(res.credentials);
+          onCreated({ ...res.user, Username: res.credentials.username, Password: res.credentials.password });
+        }}
+        onUpdated={onUpdated}
+      />
       <form onSubmit={submit} className="space-y-3">
         <div>
           <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
@@ -2764,6 +2779,140 @@ function CreateAccount({ onCreated, users }) {
         <p className="mt-3 text-sm" style={{ color: "var(--muted)" }}>
           Credentials: {issued.username} / {issued.password}
         </p>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- Import an account from pasted text (TKT-0319) ---------------- */
+const IMPORT_LABELS = {
+  name: "Name", gender: "Gender", location: "Location", whatsapp: "WhatsApp number", email: "Email",
+  parentWhatsapp: "Parent WhatsApp number", parentEmail: "Parent email", course: "Studying", help: "Help wanted",
+  subjects: "Subjects", referrer: "Referrer", heardAbout: "Heard about us", scoreAStar: "Can score A*", school: "School",
+  coupon: "Coupon", passport: "Passport / IC number", role: "Role", department: "Department", batch: "Batch",
+  timezone: "Timezone", currency: "Currency", notes: "Notes",
+};
+
+// Paste a Cognito student entry (or Label: value lines for other account types). The text is read
+// as you type; nothing is saved until a button is pressed. An existing account that matches
+// (WhatsApp number, email or name) is offered for an "add info" update that only fills blanks.
+function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [choice, setChoice] = useState("");
+  const [error, setError] = useState("");
+  const [done, setDone] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const parsed = useMemo(() => (text.trim() ? parseImport(text, userType) : null), [text, userType]);
+  const matches = useMemo(() => (parsed && parsed.ok ? findMatches(users, parsed) : []), [users, parsed]);
+  // "new" or a UserID; the strongest match is selected until the user picks otherwise.
+  const selected = choice && (choice === "new" || matches.some((m) => m.user.UserID === choice)) ? choice : matches[0]?.user.UserID || "new";
+  const target = selected === "new" ? null : matches.find((m) => m.user.UserID === selected)?.user;
+  const fill = parsed && target ? buildFillPatch(target, parsed) : null;
+  const shown = parsed ? Object.entries(parsed.fields).filter(([, v]) => v) : [];
+
+  async function run() {
+    setError("");
+    setDone("");
+    setSaving(true);
+    try {
+      if (target) {
+        const res = await api("/api/users", { method: "PATCH", body: JSON.stringify(fill.patch) });
+        onUpdated(res.user);
+        setDone(`Added to ${target.UserID} ${target.Name}.`);
+      } else {
+        const res = await api("/api/users", { method: "POST", body: JSON.stringify(buildCreateBody(parsed, defaults)) });
+        onCreated(res);
+        setDone(`Created ${res.user.UserID} ${res.user.Name}.`);
+      }
+      setText("");
+      setChoice("");
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="mb-4">
+      <button type="button" className="btn-ghost" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        {open ? "Import from form \u25b4" : "Import from form \u25be"}
+      </button>
+      {open && (
+        <div className="space-y-3 mt-3">
+          <textarea
+            className="field"
+            rows={8}
+            style={{ fontFamily: "monospace", fontSize: 13 }}
+            placeholder={userType === "Student" ? "Paste the Cognito Forms entry" : "Name: ...\nEmail: ...\nWhatsApp: ...\nRole: ..."}
+            value={text}
+            onChange={(e) => {
+              setText(e.target.value);
+              setDone("");
+            }}
+          />
+          {parsed && (
+            <div className="space-y-2">
+              {parsed.warnings.map((w) => (
+                <p key={w} style={{ color: "var(--bad)" }}>{w}</p>
+              ))}
+              {shown.length > 0 && (
+                <table className="table" style={{ maxWidth: 560 }}>
+                  <tbody>
+                    {shown.map(([k, v]) => (
+                      <tr key={k}>
+                        <td style={{ color: "var(--muted)", whiteSpace: "nowrap" }}>{IMPORT_LABELS[k] || k}</td>
+                        <td>{v}</td>
+                      </tr>
+                    ))}
+                    {parsed.timezone && (
+                      <tr>
+                        <td style={{ color: "var(--muted)" }}>Timezone, currency</td>
+                        <td>{parsed.timezone}{parsed.currency ? `, ${parsed.currency}` : ""}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              )}
+              {parsed.ok && (
+                <div className="space-y-1">
+                  {matches.map((m) => (
+                    <label key={m.user.UserID} className="flex items-center gap-2 text-sm">
+                      <input type="radio" name="import-target" checked={selected === m.user.UserID} onChange={() => setChoice(m.user.UserID)} />
+                      Add to {m.user.UserID} {m.user.Name} <span style={{ color: "var(--muted)" }}>(same {m.reasons.join(", ")})</span>
+                    </label>
+                  ))}
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="radio" name="import-target" checked={selected === "new"} onChange={() => setChoice("new")} />
+                    Create a new account
+                  </label>
+                </div>
+              )}
+              {fill && (
+                <div className="text-sm space-y-1">
+                  {fill.changes.map((c) => (
+                    <p key={c.label}>
+                      <strong>{c.label}</strong>: {c.to.split("\n").map((line, i) => (<span key={i} style={{ display: "block" }}>{line}</span>))}
+                    </p>
+                  ))}
+                  {fill.kept.map((k) => (
+                    <p key={k.label} style={{ color: "var(--muted)" }}>
+                      {`${k.label}: kept "${k.existing}", form says "${k.imported}"`}
+                    </p>
+                  ))}
+                  {fill.nothingToDo && <p style={{ color: "var(--muted)" }}>Nothing new to add.</p>}
+                </div>
+              )}
+            </div>
+          )}
+          {error && <p style={{ color: "var(--bad)" }}>{error}</p>}
+          {done && <p style={{ color: "var(--good)" }}>{done}</p>}
+          <button type="button" className="btn" disabled={saving || !parsed || !parsed.ok || (target && fill.nothingToDo)} onClick={run}>
+            {saving ? "Saving\u2026" : target ? `Add info to ${target.UserID}` : "Create account from form"}
+          </button>
+        </div>
       )}
     </div>
   );
