@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "incremental": false,
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts", "./**/*.tsx", "../app/v2/**/*.ts", "../app/v2/**/*.tsx", "../next-env.d.ts", "../vitest.config.mts"],
+  "exclude": ["node_modules"]
+}

@@ -83,7 +83,7 @@ app/
 ui2/                       NEW shared code (not under app/, so nothing is routed by accident)
   components/              design-system components (section 3)
   features/<section>/      one folder per screen family: view, hooks, tests, manifest mapping
-  data/                    data layer (section 2.3)
+  queries/                 data layer (section 2.3)
   styles/                  tokens and base CSS
   testing/                 fixtures, fake API, parity harness
 ```
@@ -118,7 +118,7 @@ All are pinned, small or tree-shakeable, and wrapped behind our own components s
 
 ### 2.3 Data layer (the heart of "snappy")
 
-- One typed client (`ui2/data/client.ts`) wrapping the existing `api()` behaviour (cookie session, error shape). Query keys per resource and per filter, so a tab switch reads from cache and shows data **instantly**, then revalidates quietly.
+- One typed client (`ui2/queries/client.ts`) wrapping the existing `api()` behaviour (cookie session, error shape). Query keys per resource and per filter, so a tab switch reads from cache and shows data **instantly**, then revalidates quietly.
 - **Optimistic updates** for every toggle and small edit (tag changes, status flips, flags, deactivate/activate) with rollback and a toast on failure.
 - **Prefetch on intent:** hovering or focusing a section link, a row, or a tab prefetches its data and code (`next/link` prefetch and `queryClient.prefetchQuery`).
 - **Route-level parallel loading:** each section issues its requests in parallel, never in a chain. Skeletons mirror the final layout so nothing jumps.
