@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test lib/npc/actions/*.test.js lib/accountImport.test.js",
+    "test": "node --test lib/npc/actions/*.test.js lib/accountImport.test.js lib/invoiceDiscount.test.js",
     "lint": "eslint",
     "seed": "node scripts/seed.js",
     "migrate:supabase": "node scripts/migrate-to-supabase.mjs",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId, deleteRecords } from "@/lib/db";
-import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal } from "@/lib/billing";
+import { computeHoursAndAmount, ratesOf, rateById, isEnrollmentActiveForMonth, studentCurrencyOf, lineItemINR, refreshStudentTotal, applyInvoiceDiscount, validateDiscountInput, setDiscountFields, DISCOUNT_KEYS } from "@/lib/billing";
 import { getRateToINR } from "@/lib/fxRates";
 import { requireManagement, requireSelfOrParentOrManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
@@ -199,6 +199,7 @@ export async function POST(req) {
   const y = Number(year);
   const m = Number(month);
   const db = await readDB();
+  const keptDiscounts = new Map();
 
   if (rebuild) {
     if (!Array.isArray(onlyStudentIds) || onlyStudentIds.length === 0) {
@@ -208,6 +209,11 @@ export async function POST(req) {
     const toDelete = db.invoices.filter(
       (i) => i.Status === "Draft" && i.Year === y && i.Month === m && onlySet.has(i.StudentID)
     );
+    // TKT-0320: a rebuilt draft keeps the discount Management set on the one it replaces.
+    for (const old of toDelete) {
+      if (!Array.isArray(old.LineItems) || !DISCOUNT_KEYS.some((k) => old[k])) continue;
+      keptDiscounts.set(old.StudentID, Object.fromEntries(DISCOUNT_KEYS.filter((k) => old[k] !== undefined).map((k) => [k, old[k]])));
+    }
     if (toDelete.length > 0) {
       db.invoices = db.invoices.filter((i) => !toDelete.includes(i));
       await deleteRecords(db, [{ collection: "invoices", ids: toDelete.map((i) => i.InvoiceID) }]);
@@ -356,6 +362,8 @@ export async function POST(req) {
 
   for (const invoiceId of touchedInvoiceIds) {
     const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
+    const kept = keptDiscounts.get(invoice.StudentID);
+    if (kept) Object.assign(invoice, kept);
     await refreshStudentTotal(db, invoice);
   }
 
@@ -394,13 +402,16 @@ export async function POST(req) {
 // an in-flight client edit would silently point at the wrong subject.
 export async function PATCH(req) {
   const body = await req.json();
-  const { invoiceId, lineItemIndex, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, studentPaidFlag } = body;
+  const { invoiceId, lineItemIndex, scheduledHours, attendedHours, amount, inrAmount, inrDue, status, studentPaidFlag, discountPercent, customDiscount, couponCode, couponPercent } = body;
+  const discountTouched = [discountPercent, customDiscount, couponCode, couponPercent].some((v) => v !== undefined);
+  const discountError = discountTouched ? validateDiscountInput(body) : null;
+  if (discountError) return NextResponse.json({ error: discountError }, { status: 400 });
   const db = await readDB();
   const invoice = db.invoices.find((i) => i.InvoiceID === invoiceId);
   if (!invoice) return NextResponse.json({ error: "Invoice not found." }, { status: 404 });
 
   const isLineItemInvoice = Array.isArray(invoice.LineItems);
-  const managementOnly = [scheduledHours, attendedHours, amount, inrAmount, inrDue, status].some((v) => v !== undefined) || lineItemIndex !== undefined;
+  const managementOnly = [scheduledHours, attendedHours, amount, inrAmount, inrDue, status].some((v) => v !== undefined) || lineItemIndex !== undefined || discountTouched;
   const { session, error } = managementOnly
     ? requireManagement(req)
     : requireSelfOrParentOrManagement(req, db, invoice.StudentID);
@@ -438,6 +449,7 @@ export async function PATCH(req) {
 
   const before = JSON.parse(JSON.stringify(invoice));
   let summary;
+  if (discountTouched) setDiscountFields(invoice, body);
 
   if (isLineItemInvoice && lineItemIndex !== undefined) {
     const li = invoice.LineItems[lineItemIndex];
@@ -483,7 +495,7 @@ export async function PATCH(req) {
       invoice.StudentPaidFlag = Boolean(studentPaidFlag);
       invoice.PaidAt = studentPaidFlag ? invoice.PaidAt || new Date().toISOString() : "";
     }
-    summary = managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`;
+    summary = discountTouched ? `Set discount on invoice ${invoice.InvoiceID}` : managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`;
   } else {
     // Legacy flat-shape (OneOff) invoice — unchanged behavior.
     if (scheduledHours !== undefined) invoice.ScheduledHours = Number(scheduledHours);
@@ -502,6 +514,8 @@ export async function PATCH(req) {
     summary = managementOnly ? `Edited invoice ${invoice.InvoiceID}` : `Student self-reported invoice ${invoice.InvoiceID} as ${studentPaidFlag ? "paid" : "unpaid"}`;
   }
 
+  // TKT-0320: applied after every branch, it only changes anything when the discount or subtotal did.
+  applyInvoiceDiscount(invoice);
   await writeDB(db, ["invoices"]);
   await logAudit({
     actorUserId: session.userId,

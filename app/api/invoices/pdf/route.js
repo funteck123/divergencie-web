@@ -3,7 +3,7 @@ import { readDB, writeDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
-import { amountDueInOwnCurrency, lineItemName, invoicePdfFilename, attachmentDisposition } from "@/lib/billing";
+import { amountDueInOwnCurrency, lineItemName, invoicePdfFilename, attachmentDisposition, discountBreakdown, discountSummaryRows } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -75,8 +75,10 @@ export async function GET(req) {
           currency: li.Currency,
         };
       }),
+      // TKT-0320: subtotal, each discount and the net total when the invoice has a discount.
+      summaryRows: discountSummaryRows(invoice, invoice.Currency || "INR") || undefined,
       discountPercent: 0,
-      total: invoice.Amount,
+      total: discountBreakdown(invoice).net,
       totalCurrency: invoice.Currency,
       terms: TERMS,
     });
@@ -120,8 +122,10 @@ export async function GET(req) {
           currency: invoiceCurrency,
         },
       ],
+      // TKT-0320: shown in the displayed currency, scaled from the invoice's own amounts.
+      summaryRows: discountSummaryRows(invoice, displayCurrency, invoice.Amount ? displayTotal / invoice.Amount : 1) || undefined,
       discountPercent: 0,
-      total: displayTotal,
+      total: invoice.Amount ? displayTotal * (discountBreakdown(invoice).net / invoice.Amount) : displayTotal,
       totalCurrency: displayCurrency,
       terms: TERMS,
     });

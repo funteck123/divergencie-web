@@ -157,7 +157,7 @@ function applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl } = {}) 
 // deletion for every UserType except Student/Staff.
 function applyStudentExtras(user, userType, fields) {
   if (userType !== "Student") {
-    for (const key of ["ParentWhatsAppNumber", "ParentEmail", "School", "Location", "Notes", "ProgressTrackerURL", "GroupSent", "GCRSent", "ScheduleSent"]) {
+    for (const key of ["ParentWhatsAppNumber", "ParentEmail", "School", "Location", "Notes", "Gender", "Subjects", "HelpWanted", "ReferrerName", "ReferrerUserID", "HeardAbout", "ScoreAStar", "ProgressTrackerURL", "GroupSent", "GCRSent", "ScheduleSent"]) {
       delete user[key];
     }
     return;
@@ -175,7 +175,19 @@ function applyStudentExtras(user, userType, fields) {
     groupSent,
     gcrSent,
     scheduleSent,
+    gender,
+    subjects,
+    helpWanted,
+    heardAbout,
+    scoreAStar,
   } = fields;
+  // TKT-0319: intake answers. Free text, trimmed and length-capped like the public intake form.
+  const text = (v, max) => String(v ?? "").trim().slice(0, max);
+  if (gender !== undefined) user.Gender = text(gender, 20);
+  if (subjects !== undefined) user.Subjects = text(subjects, 800);
+  if (helpWanted !== undefined) user.HelpWanted = text(helpWanted, 100);
+  if (heardAbout !== undefined) user.HeardAbout = text(heardAbout, 60);
+  if (scoreAStar !== undefined) user.ScoreAStar = text(scoreAStar, 10);
   if (whatsappNumber !== undefined) user.WhatsAppNumber = formatInternationalNumber(whatsappNumber) || "";
   if (parentWhatsappNumber !== undefined) user.ParentWhatsAppNumber = formatInternationalNumber(parentWhatsappNumber) || "";
   // Optional, Management-only (edited via EditAccountForm same as
@@ -193,6 +205,21 @@ function applyStudentExtras(user, userType, fields) {
   if (scheduleSent !== undefined) user.ScheduleSent = Boolean(scheduleSent);
 }
 
+// TKT-0319: a Student's Referrer works like a class Instructor: plain text (ReferrerName) or a link
+// to any existing account (ReferrerUserID). A linked account's current name is stored in
+// ReferrerName on every write. Typing a name without a link clears the link.
+// Returns null (nothing sent), { error }, or { name, userId } (name undefined = keep the text).
+async function resolveReferrer({ userId, name, lookup, selfId }) {
+  if (userId === undefined && name === undefined) return null;
+  if (userId) {
+    if (userId === selfId) return { error: "referrerUserId cannot be the account itself." };
+    const target = await lookup(userId);
+    if (!target) return { error: "referrerUserId must be an existing account." };
+    return { name: target.Name, userId };
+  }
+  return { name: name === undefined ? undefined : String(name ?? "").trim().slice(0, 120), userId: "" };
+}
+
 // Management creates any account type directly from the Accounts tab.
 // Student/Teacher/Staff created here start fresh (no linked Trial/Interview
 // record, no invoice carry-over), that history only exists via /api/convert.
@@ -204,7 +231,8 @@ function applyStudentExtras(user, userType, fields) {
 //         only, Work Folder/Timesheet are Staff account attributes, not
 //         tied to a Service), course?, batch?, department? (Staff only, Teacher/
 //         Ambassador get a fixed value), timezone?, currency? (every type,
-//         defaults to "INR") }
+//         defaults to "INR"), Student only: gender?, subjects?, helpWanted?, heardAbout?,
+//         scoreAStar?, referrerName?, referrerUserId? (link to any existing account) }
 export async function POST(req) {
   const { session, error } = requireManagement(req);
   if (error) return error;
@@ -250,6 +278,14 @@ export async function POST(req) {
   applyCurrency(user, currency);
   applyStaffExtras(user, userType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, userType, body);
+  if (userType === "Student") {
+    const ref = await resolveReferrer({ userId: body.referrerUserId, name: body.referrerName, lookup: async (id) => db.users.find((u) => u.UserID === id), selfId: userId });
+    if (ref?.error) return NextResponse.json({ error: ref.error }, { status: 400 });
+    if (ref) {
+      user.ReferrerName = ref.name ?? "";
+      user.ReferrerUserID = ref.userId;
+    }
+  }
 
   // TKT-0207: auto-generate both real Drive files for a directly-created
   // Student, same as the conversion path in api/convert/route.js. A caller
@@ -331,6 +367,13 @@ export async function PATCH(req) {
     gcrSent,
     scheduleSent,
     workFolderUrl,
+    gender,
+    subjects,
+    helpWanted,
+    heardAbout,
+    scoreAStar,
+    referrerName,
+    referrerUserId,
   } = patchBody;
   if (
     [
@@ -360,6 +403,13 @@ export async function PATCH(req) {
       gcrSent,
       scheduleSent,
       workFolderUrl,
+      gender,
+      subjects,
+      helpWanted,
+      heardAbout,
+      scoreAStar,
+      referrerName,
+      referrerUserId,
     ].every((v) => v === undefined)
   ) {
     return NextResponse.json({ error: "at least one field to update is required." }, { status: 400 });
@@ -432,6 +482,14 @@ export async function PATCH(req) {
   if (currency !== undefined) applyCurrency(user, currency);
   if (workFolderUrl !== undefined || timesheetUrl !== undefined) applyStaffExtras(user, user.UserType, { workFolderUrl, timesheetUrl });
   applyStudentExtras(user, user.UserType, patchBody);
+  if (user.UserType === "Student") {
+    const ref = await resolveReferrer({ userId: referrerUserId, name: referrerName, lookup: async (id) => (await getUserAndCredentials(id)).user, selfId: user.UserID });
+    if (ref?.error) return NextResponse.json({ error: ref.error }, { status: 400 });
+    if (ref) {
+      if (ref.name !== undefined) user.ReferrerName = ref.name;
+      user.ReferrerUserID = ref.userId;
+    }
+  }
   if (username !== undefined) cred.Username = username;
   if (newPassword !== undefined) cred.Password = hashPassword(newPassword);
   await saveUserAndCredentials(user, cred);

@@ -14,7 +14,8 @@ import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel, tzAbbrFor } from "@/
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { formatInternationalNumber } from "@/lib/countryCodes";
-import { parseImport, findMatches, buildCreateBody, buildFillPatch } from "@/lib/accountImport";
+import { parseImport, findMatches, findReferrer, buildCreateBody, buildFillPatch } from "@/lib/accountImport";
+import { discountBreakdown } from "@/lib/invoiceDiscount";
 
 const TABS = ["Applications", "Pipeline", "Accounts", "Services", "Schedule", "Enrollments", "Billing", "Guides", "Tickets", "Audit Log"];
 // The three pending Interview tracks — each converts to its own final
@@ -304,13 +305,13 @@ function TimezoneSelect({ value, onChange }) {
 // TKT-0117: candidateUsers is scoped by the caller to whichever account
 // type actually fits the context (Teacher for a cohort class, or the
 // Service's own role group -- e.g. Staff -- for a role-based service).
-function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candidateUsers, onChange }) {
+function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candidateUsers, onChange, label = "Instructor", showType = false }) {
   const isLinked = !!facilitatorUserId;
   if (isLinked) {
     return (
       <SearchSelect
         className="field"
-        aria-label="Instructor account"
+        aria-label={`${label} account`}
         value={facilitatorUserId}
         onChange={(e) => {
           const picked = candidateUsers.find((u) => u.UserID === e.target.value);
@@ -319,7 +320,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
       >
         {candidateUsers.map((u) => (
           <option key={u.UserID} value={u.UserID}>
-            {u.Name}
+            {showType ? `${u.Name} (${u.UserType})` : u.Name}
           </option>
         ))}
         <option value="">Type a name instead…</option>
@@ -328,9 +329,9 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
   }
   return (
     <span className="flex gap-1">
-      <Labeled label="Instructor"><input
+      <Labeled label={label}><input
         className="field"
-        placeholder="Instructor"
+        placeholder={label}
         value={facilitator}
         onChange={(e) => onChange({ facilitator: e.target.value, facilitatorUserId: "" })}
       /></Labeled>
@@ -340,7 +341,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
           style={{ maxWidth: 40 }}
           value=""
           title="Link to an account instead"
-          aria-label="Link instructor to an account"
+          aria-label={`Link ${label.toLowerCase()} to an account`}
           onChange={(e) => {
             const picked = candidateUsers.find((u) => u.UserID === e.target.value);
             if (picked) onChange({ facilitator: picked.Name, facilitatorUserId: picked.UserID });
@@ -349,7 +350,7 @@ function FacilitatorInput({ facilitator, facilitatorUserId, teacherUsers: candid
           <option value="">🔗</option>
           {candidateUsers.map((u) => (
             <option key={u.UserID} value={u.UserID}>
-              {u.Name}
+              {showType ? `${u.Name} (${u.UserType})` : u.Name}
             </option>
           ))}
         </SearchSelect>
@@ -2149,6 +2150,13 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
   const [school, setSchool] = useState(user.School || "");
   const [location, setLocation] = useState(user.Location || "");
   const [notes, setNotes] = useState(user.Notes || "");
+  const [gender, setGender] = useState(user.Gender || "");
+  const [helpWanted, setHelpWanted] = useState(user.HelpWanted || "");
+  const [subjects, setSubjects] = useState(user.Subjects || "");
+  const [heardAbout, setHeardAbout] = useState(user.HeardAbout || "");
+  const [scoreAStar, setScoreAStar] = useState(user.ScoreAStar || "");
+  const [referrerName, setReferrerName] = useState(user.ReferrerName || "");
+  const [referrerUserId, setReferrerUserId] = useState(user.ReferrerUserID || "");
   const [timesheetUrl, setTimesheetUrl] = useState(user.TimesheetURL || "");
   const [workFolderUrl, setWorkFolderUrl] = useState(user.WorkFolderURL || "");
   const [progressTrackerUrl, setProgressTrackerUrl] = useState(user.ProgressTrackerURL || "");
@@ -2243,6 +2251,13 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
       fields.school = school;
       fields.location = location;
       fields.notes = notes;
+      fields.gender = gender;
+      fields.helpWanted = helpWanted;
+      fields.subjects = subjects;
+      fields.heardAbout = heardAbout;
+      fields.scoreAStar = scoreAStar;
+      fields.referrerName = referrerName;
+      fields.referrerUserId = referrerUserId;
       fields.timesheetUrl = timesheetUrl;
       fields.progressTrackerUrl = progressTrackerUrl;
       fields.groupSent = groupSent;
@@ -2437,6 +2452,62 @@ function EditAccountForm({ user, users, onSave, onCancel }) {
               Location
             </label>
             <input className="field" value={location} onChange={(e) => setLocation(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Gender
+            </label>
+            <SearchSelect className="field" style={{ maxWidth: 260 }} value={gender} onChange={(e) => setGender(e.target.value)}>
+              <option value="">Not set</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </SearchSelect>
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Help wanted
+            </label>
+            <input className="field" value={helpWanted} onChange={(e) => setHelpWanted(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Subjects
+            </label>
+            <input className="field" value={subjects} onChange={(e) => setSubjects(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Referrer
+            </label>
+            <FacilitatorInput
+              label="Referrer"
+              showType
+              facilitator={referrerName}
+              facilitatorUserId={referrerUserId}
+              teacherUsers={users.filter((u) => u.UserID !== user.UserID)}
+              onChange={({ facilitator, facilitatorUserId }) => {
+                setReferrerName(facilitator);
+                setReferrerUserId(facilitatorUserId);
+              }}
+            />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Heard about us
+            </label>
+            <input className="field" value={heardAbout} onChange={(e) => setHeardAbout(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
+              Can score A* with guidance
+            </label>
+            <SearchSelect className="field" style={{ maxWidth: 260 }} value={scoreAStar} onChange={(e) => setScoreAStar(e.target.value)}>
+              <option value="">Not set</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+              <option value="Maybe">Maybe</option>
+            </SearchSelect>
           </div>
           <div>
             <label className="text-sm block mb-1" style={{ color: "var(--muted)" }}>
@@ -2809,7 +2880,9 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
   // "new" or a UserID; the strongest match is selected until the user picks otherwise.
   const selected = choice && (choice === "new" || matches.some((m) => m.user.UserID === choice)) ? choice : matches[0]?.user.UserID || "new";
   const target = selected === "new" ? null : matches.find((m) => m.user.UserID === selected)?.user;
-  const fill = parsed && target ? buildFillPatch(target, parsed) : null;
+  // A referrer typed as an existing account's full name is linked to that account.
+  const referrer = parsed && parsed.fields.referrer ? findReferrer(users, parsed.fields.referrer) : null;
+  const fill = parsed && target ? buildFillPatch(target, parsed, { referrer }) : null;
   const shown = parsed ? Object.entries(parsed.fields).filter(([, v]) => v) : [];
 
   async function run() {
@@ -2822,7 +2895,7 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
         onUpdated(res.user);
         setDone(`Added to ${target.UserID} ${target.Name}.`);
       } else {
-        const res = await api("/api/users", { method: "POST", body: JSON.stringify(buildCreateBody(parsed, defaults)) });
+        const res = await api("/api/users", { method: "POST", body: JSON.stringify(buildCreateBody(parsed, { ...defaults, referrer })) });
         onCreated(res);
         setDone(`Created ${res.user.UserID} ${res.user.Name}.`);
       }
@@ -2864,7 +2937,7 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
                     {shown.map(([k, v]) => (
                       <tr key={k}>
                         <td style={{ color: "var(--muted)", whiteSpace: "nowrap" }}>{IMPORT_LABELS[k] || k}</td>
-                        <td>{v}</td>
+                        <td>{v}{k === "referrer" && referrer ? ` (linked to ${referrer.userId} ${referrer.name})` : ""}</td>
                       </tr>
                     ))}
                     {parsed.timezone && (
@@ -6637,6 +6710,13 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
   const [expanded, setExpanded] = useState(false);
   const [editingDue, setEditingDue] = useState(false);
   const [inrDue, setInrDue] = useState(row.INRDue);
+  // TKT-0320: discount editor (percent, custom amount, coupon code, coupon percent).
+  const [editingDiscount, setEditingDiscount] = useState(false);
+  const [dPercent, setDPercent] = useState(String(row.DiscountPercent ?? 0));
+  const [dCustom, setDCustom] = useState(String(row.CustomDiscount ?? 0));
+  const [dCode, setDCode] = useState(row.CouponCode || "");
+  const [dCouponPercent, setDCouponPercent] = useState(String(row.CouponPercent ?? 0));
+  const [discountError, setDiscountError] = useState("");
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
   const isDraft = row.Status === "Draft";
@@ -6680,6 +6760,28 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
     setEditingDue(false);
   }
 
+  async function saveDiscount() {
+    setSaving(true);
+    setDiscountError("");
+    try {
+      await onPatch(row.InvoiceID, { discountPercent: dPercent, customDiscount: dCustom, couponCode: dCode, couponPercent: dCouponPercent });
+      setEditingDiscount(false);
+    } catch (e) {
+      setDiscountError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+  function cancelDiscount() {
+    setDPercent(String(row.DiscountPercent ?? 0));
+    setDCustom(String(row.CustomDiscount ?? 0));
+    setDCode(row.CouponCode || "");
+    setDCouponPercent(String(row.CouponPercent ?? 0));
+    setDiscountError("");
+    setEditingDiscount(false);
+  }
+  const discount = discountBreakdown(row);
+
   async function toggleStatus(status) {
     setSaving(true);
     try {
@@ -6720,6 +6822,11 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
         </td>
         <td className="num">
           {row.Currency || "INR"} {Number(row.Amount).toFixed(2)}
+          {discount.total > 0 && (
+            <div className="text-xs" style={{ color: "var(--good)" }}>
+              {`-${row.Currency || "INR"} ${discount.total.toFixed(2)} discount${row.CouponCode ? ` (${row.CouponCode})` : ""}`}
+            </div>
+          )}
         </td>
         <td className="num">{`${row.Currency || "INR"} ${amountDueInOwnCurrency(row).toFixed(2)}`}</td>
         <td className="num">
@@ -6798,6 +6905,9 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
                 <button className="btn-ghost" onClick={() => setEditingDue(true)}>
                   Edit Due
                 </button>
+                <button className="btn-ghost" aria-expanded={editingDiscount} onClick={() => setEditingDiscount((v) => !v)}>
+                  Discount
+                </button>
                 {isDraft ? (
                   <button className="btn" disabled={saving} onClick={() => toggleStatus("Sent")}>
                     {saving ? "Working…" : "Send"}
@@ -6824,6 +6934,24 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
           </span>
         </td>
       </tr>
+      {editingDiscount && (
+        <tr>
+          <td colSpan={10}>
+            <div className="flex items-end gap-3 flex-wrap">
+              <Labeled label="Discount %"><input className="field" style={{ width: 90 }} type="number" min="0" max="100" step="any" value={dPercent} onChange={(e) => setDPercent(e.target.value)} /></Labeled>
+              <Labeled label={`Custom discount (${row.Currency || "INR"})`}><input className="field" style={{ width: 130 }} type="number" min="0" step="any" value={dCustom} onChange={(e) => setDCustom(e.target.value)} /></Labeled>
+              <Labeled label="Coupon code"><input className="field" style={{ width: 150 }} maxLength={40} value={dCode} onChange={(e) => setDCode(e.target.value)} /></Labeled>
+              <Labeled label="Coupon discount %"><input className="field" style={{ width: 120 }} type="number" min="0" max="100" step="any" value={dCouponPercent} onChange={(e) => setDCouponPercent(e.target.value)} /></Labeled>
+              <button className="btn" disabled={saving} onClick={saveDiscount}>{saving ? "…" : "Save discount"}</button>
+              <button className="btn-ghost" disabled={saving} onClick={cancelDiscount}>Cancel</button>
+            </div>
+            <div className="text-xs mt-1" style={{ color: "var(--muted)" }}>
+              {`Subtotal ${row.Currency || "INR"} ${Number(row.Amount).toFixed(2)}, discount -${discount.total.toFixed(2)}, bill ${discount.net.toFixed(2)} (saved discounts reduce Due).`}
+            </div>
+            {discountError && <p style={{ color: "var(--bad)" }}>{discountError}</p>}
+          </td>
+        </tr>
+      )}
       {isLineItemInvoice && expanded && (
         <tr>
           <td colSpan={9} style={{ padding: 0 }}>
