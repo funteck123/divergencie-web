@@ -3,7 +3,7 @@ import { readDB, writeDB } from "@/lib/db";
 import { drawDocumentPDF } from "@/lib/pdfDoc";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { convertRecordTotal, convertINRAmount } from "@/lib/fxRates";
-import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
+import { amountDueInOwnCurrency, lineItemName, invoicePdfFilename, attachmentDisposition } from "@/lib/billing";
 
 const TERMS =
   "Payment ensures the delivery of services; missed classes will be rescheduled or compensated. " +
@@ -131,7 +131,7 @@ export async function GET(req) {
   return new NextResponse(buffer, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="Invoice_${invoice.InvoiceID}.pdf"`,
+      "Content-Disposition": attachmentDisposition(invoicePdfFilename(invoice, student)),
       "Cache-Control": "no-store",
     },
   });
