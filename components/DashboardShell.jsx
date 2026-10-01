@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import InstallAppButton from "@/components/InstallAppButton";
+import UiSwitchButton from "@/components/UiSwitchButton";
 import { getCurrentUser, setCurrentUser, getImpersonatorInfo, setImpersonatorInfo, logout, api, roleHomePath } from "@/lib/client";
 
 // Generic "raise an issue" ticket — sender info is always the logged-in
@@ -172,6 +173,7 @@ export default function DashboardShell({ allowedType, children }) {
         {/* nowrap on each button + a wrapping row: on a phone three buttons no
             longer squash their own labels onto several lines (TKT-0281). */}
         <div className="flex flex-wrap items-center gap-2 [&>button]:whitespace-nowrap">
+          <UiSwitchButton user={user} />
           <InstallAppButton />
           <ReportIssueButton />
           <button

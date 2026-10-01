@@ -1,0 +1,38 @@
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--u2-space-2);
+  min-height: 36px; padding: 0 var(--u2-space-4);
+  border: 1px solid transparent; border-radius: var(--u2-radius-sm);
+  font-size: var(--u2-text-md); font-weight: var(--u2-weight-semibold); line-height: 1; white-space: nowrap;
+  transition: background-color var(--u2-motion-fast) var(--u2-ease-out), border-color var(--u2-motion-fast) var(--u2-ease-out),
+    box-shadow var(--u2-motion-fast) var(--u2-ease-out), transform var(--u2-motion-fast) var(--u2-ease-out);
+  position: relative;
+}
+.sm { min-height: 28px; padding: 0 var(--u2-space-3); font-size: var(--u2-text-sm); }
+@media (pointer: coarse) { .btn { min-height: var(--u2-touch-target); } .iconOnly { min-width: var(--u2-touch-target); } }
+
+.primary { background: var(--u2-color-accent); color: var(--u2-color-on-accent); }
+.primary:hover, .primary[data-force="hover"] { background: var(--u2-color-accent-hover); box-shadow: var(--u2-shadow-sm); }
+.secondary { background: var(--u2-color-brand); color: var(--u2-color-on-brand); }
+.secondary:hover, .secondary[data-force="hover"] { background: var(--u2-color-brand-hover); box-shadow: var(--u2-shadow-sm); }
+.ghost { background: transparent; color: var(--u2-color-brand); border-color: var(--u2-color-border-strong); }
+.ghost:hover, .ghost[data-force="hover"] { background: var(--u2-color-selected); }
+.danger { background: var(--u2-color-error); color: var(--u2-color-text-inverse); }
+.danger:hover, .danger[data-force="hover"] { box-shadow: var(--u2-shadow-sm); filter: brightness(0.94); }
+.onDark.ghost { color: var(--u2-color-on-brand); border-color: rgba(255, 255, 255, 0.55); }
+.onDark.ghost:hover { background: rgba(255, 255, 255, 0.12); }
+
+@media (hover: hover) { .btn:not(.isDisabled):active { transform: scale(0.98); } }
+.btn[data-force="focus"] { box-shadow: 0 0 0 2px var(--u2-color-bg), 0 0 0 4px var(--u2-color-focus); }
+
+.iconOnly { padding: 0; min-width: 36px; }
+.sm.iconOnly { min-width: 28px; }
+
+.isDisabled { opacity: 0.55; cursor: not-allowed; }
+.isLoading { cursor: progress; }
+.label { display: inline-flex; align-items: center; gap: var(--u2-space-2); }
+.isLoading .label { visibility: hidden; }
+.spinner {
+  position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
