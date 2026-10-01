@@ -6244,7 +6244,8 @@ function ReminderCopyMenu({ row, student, services }) {
   }, []);
   async function choose(opt) {
     if (!opt.text) return;
-    await copyToClipboard(buildReminderMessage(row, student, services, opt.text));
+    const section = opt.byCurrency?.[row.Currency || "INR"] || opt.text;
+    await copyToClipboard(buildReminderMessage(row, student, services, section));
     setCopiedKey(opt.key);
     setOpen(false);
     setTimeout(() => setCopiedKey(""), 1500);

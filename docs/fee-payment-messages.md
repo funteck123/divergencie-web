@@ -57,9 +57,14 @@ Thank you for choosing DivergenCIE! 😊
 
 Used by the **Saudi Stripe account** choice. In the Billing reminder it replaces the account-details part and closing line (it has its own email address and thank-you).
 
-## 3. International Stripe (placeholder)
+## 3. Stripe local and international (current logic, 2026-10-01)
 
-Same message and the same link as section 2, with "(SAR)" replaced by "(international)". This is a placeholder: the correct international payment link is still to be supplied (TKT-0317).
+Menu order: Indian UPI, Stripe local, Stripe international, Full Indian account.
+
+- Stripe local: same message as section 2 with the invoice currency label and that currency's link (MYR, USD, SAR, GBP). If the currency has no link, it sends the international message.
+- Stripe international: same message with "(international)" and the GBP link. GBP is also the default.
+- Links per currency: `study/payment-gateways/README.md` (git-ignored) and `lib/paymentDetails.js`.
+- Indian UPI replaces the old Paytm only option and shows "UPI ID - 9650675507@ptsbi".
 
 ## How the reminder is assembled
 
