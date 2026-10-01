@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Changed
+- Schedule images restyled (TKT-0318): Admin weekly, Teacher, Staff and Student images share one new look. Class cells are white with rounded corners and more space between them; the detail line ("A-Level · 9701") is a tag with role-colour dot(s) at its own fixed size, the subject is large and bold on its own size, and the role colour sits in a bar at the bottom (split bar for services open to several groups; Admin also shows the teacher as a small third line). Day headers (text repainted inside the existing template boxes) and time labels use the same bold Roboto, one common size per row, with safe margins so text never touches a border. Contrast of cell text goes from 2.3:1 to above 15:1. Layout, times, data and schedule logic are unchanged. The image ETag now includes a style version (`SCHEDULE_IMAGE_STYLE`) so cached images re-render. Applies everywhere the images show (dashboards, downloads, CLI, MCP), since they all use the same two routes.
+
 ### Added
 - Indian fee reminder closing line now tells students to email the receipt to finance@divergencie.co.uk (was DivergenCIE@outlook.com), matching the Stripe messages.
 - Fee reminder menu now reads: Indian UPI, Stripe local, Stripe international, Full Indian account (TKT-0316, TKT-0317). Stripe local sends the link for the invoice's own currency (MYR, USD, SAR or GBP) and falls back to the international message when the currency has no link. Stripe international uses the GBP link, which is also the default. Indian UPI replaces Paytm only and shows the UPI ID. Links live in `lib/paymentDetails.js` (server-only) and are saved in `study/payment-gateways/`. This supersedes the Saudi/international wording in the next entry.

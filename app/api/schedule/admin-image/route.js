@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import sharp from "sharp";
 import { readDB } from "@/lib/db";
-import { drawAdminSchedule } from "@/lib/scheduleImage";
+import { drawAdminSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
 import { normalizeGroup } from "@/lib/scheduleGen";
 import { batchesOf } from "@/lib/billing";
@@ -52,7 +52,7 @@ export async function GET(req) {
   // the Schedule tab's admin image, even when the underlying schedule
   // hadn't changed since the last view. ETag over exactly the rendered
   // inputs lets the browser revalidate cheaply (304) instead.
-  const etag = `"${crypto.createHash("sha256").update(JSON.stringify(entries)).digest("hex").slice(0, 32)}"`;
+  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ style: SCHEDULE_IMAGE_STYLE, entries })).digest("hex").slice(0, 32)}"`;
   if (!download && req.headers.get("if-none-match") === etag) {
     return new NextResponse(null, { status: 304, headers: { "Cache-Control": "private, max-age=0, must-revalidate", ETag: etag } });
   }

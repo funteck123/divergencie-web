@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import sharp from "sharp";
 import { readDB } from "@/lib/db";
-import { drawSchedule } from "@/lib/scheduleImage";
+import { drawSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
 import { normalizeTimezone, convertWeeklyTime } from "@/lib/timezones";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { batchesOf } from "@/lib/billing";
@@ -104,7 +104,7 @@ export async function GET(req) {
   // download when nothing changed) do the work — never stale, just not
   // wastefully regenerated when nothing moved. `download=1` always gets
   // the real file, never a 304 (a download click expects bytes).
-  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ entity, entries })).digest("hex").slice(0, 32)}"`;
+  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ style: SCHEDULE_IMAGE_STYLE, entity, entries })).digest("hex").slice(0, 32)}"`;
   if (!download && req.headers.get("if-none-match") === etag) {
     return new NextResponse(null, { status: 304, headers: { "Cache-Control": "private, max-age=0, must-revalidate", ETag: etag } });
   }
