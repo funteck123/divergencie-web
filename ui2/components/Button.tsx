@@ -1,3 +1,5 @@
+"use client";
+
 import { forwardRef, useId, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { clsx } from "clsx";
 import styles from "./Button.module.css";
