@@ -1,9 +1,15 @@
 # Plan: the new UI (admin, Question Solver, Syllabus) with a toggle, classic UI untouched
 
-Status: PLAN ONLY. Nothing is built. Written 2026-10-02.
+Status: PLAN ONLY. Nothing is built. Written 2026-10-02, updated the same day with the user's answers and the design documents found in the parent folder.
 Sources: the two hand-marked PDFs (`divergencie-web_admin-sketches-v1.0.4`, `divergencie-web_student-tools-sketches-v1.0.2`, read from the Downloads folder, 678 and 288 ink strokes decoded), the live code (8,464-line `app/dashboard/management/page.js`, 8 other dashboards, `public/mcq-digitizer/index.html`), `planning/same-domain-solver-and-syllabus-plan.md`, and the bundled Next.js 16.2 docs (`node_modules/next/dist/docs`).
 
-## 0. What "done" means (the user's words, made testable)
+## 0. Framing decided by the user (2026-10-02)
+
+- **The classic UI is the main UI and stays the main UI.** It is what people use every day. The new UI is an **experimental redesign migration**: opt-in, labelled Beta, never forced, never the default unless the user decides that later. Nothing in this project may slow down, destabilise or delay work on the classic UI.
+- **One switch for the whole portal, not per page.** A single "New UI (Beta)" / "Classic UI" switch flips the entire system for that account: every dashboard, the Question Solver and the Syllabus. Individual pages never have their own toggle.
+- **Consequences:** classic gets new features and fixes first, the new UI follows (see the drift report in section 4.1); business rules live in shared `lib/` code so a fix lands in both; the parity target is "everything the classic UI does today", not the unbuilt features of the PRD (section 3.0).
+
+## 0.1 What "done" means (the user's words, made testable)
 
 | Requirement | How it is proven |
 |---|---|
@@ -82,7 +88,7 @@ ui2/                       NEW shared code (not under app/, so nothing is routed
   testing/                 fixtures, fake API, parity harness
 ```
 
-- **Toggle.** A switch "New UI" in the classic header and "Classic UI" in the new header. The choice is stored per account (new field `UiPreference` on the user record, written by a new additive endpoint `PATCH /api/me/ui-preference`) with `localStorage` as the instant fallback. `roleHomePath` sends a signed-in user to the preferred UI. **Only two classic files get a hook:** the shared header (`components/DashboardShell.jsx`, one switch button) and the post-login redirect (`lib/client.js` `roleHomePath`). Both changes are additive and tested; every other classic file stays untouched.
+- **Toggle (global, one switch for the whole portal).** "New UI (Beta)" in the classic header and "Classic UI" in the new header. The choice is stored per account (new field `UiPreference` on the user record, written by a new additive endpoint `PATCH /api/me/ui-preference`) with `localStorage` as the instant fallback. Signing in opens the UI the account chose; **classic is the default for everyone**. The new portal has its own Resources section linking to the new Question Solver and Syllabus, so those follow the switch with **no edit to the classic Question Solver or its links**. A classic URL opened directly always shows classic. **Only two classic files get a hook:** the shared header (`components/DashboardShell.jsx`, one switch button) and the post-login redirect (`lib/client.js` `roleHomePath`). Both are additive and tested; every other classic file stays untouched.
 - **Shared logic, not copied:** the new UI imports pure rules from `lib/` (`billing.js`, `invoiceDiscount.js`, `accountImport.js`, `timezones.js`, `countryCodes.js`, schedule helpers). If a rule is missing from `lib/` and lives inside a classic page, it is **extracted into `lib/` first** in a separate commit with tests, and the classic page imports it unchanged in behaviour (a refactor commit, verified by the existing behaviour).
 - **API:** no breaking change. The new UI calls the same `/api/*` routes with the same bodies, so the classic UI and every other client (CLI, MCP) keep working. New endpoints are additive only (section 2.5).
 
@@ -162,6 +168,39 @@ Built once in `ui2/components/`, documented in a single page (`/v2/_system`, dev
 
 Tokens: colours, spacing scale, radii, type scale and elevation come from the brand guide used for the sketchbooks (Inter, Lucide, sharp-corner rule). Contrast is checked against WCAG AA; any conflict with the brand guide is reported, not silently fixed (the same rule as the sketch rounds).
 
+### 3.0 Design source of truth (documents found, and what they say)
+
+The new UI is built from the DivergenCIE design documents in the parent folder `/home/funteck/projects/dc_p1/`, not from guesswork:
+
+| Document | Where | What we take |
+|---|---|---|
+| Brand and Design Guidelines BDG v1.0 | `01_BDG_Brand_Design_Guidelines_v1.md` (parent folder) and `01_BDG_Brand_Design_Guidelines_v1.docx` (Downloads) | Palette, Inter, line icons (Lucide 2 px), logo versions and clear-space, tone of voice, brand do and don't. |
+| Mockup and Visual Design Guide MU v2 | `12_MU_Mockup_Guide_v2.md` | 8 px grid and spacing tokens, radius tokens, breakpoints, component inventory with required states, motion spec, accessibility rules, per-page mockup specs. |
+| User Journey Map UJM v3 | `06_UJM_User_Journey_Map_v3.md` | Real tasks and pain points per role (used in section 3.2). |
+| Product Requirements PRD v2 | `03_PRD_Product_Requirements_Document_v2.md` | Non-functional requirements: LCP under 2.5 s, CLS under 0.1, load under 3 s on 4G, WCAG 2.1 AA, last two versions of Chrome, Safari, Firefox and Edge, timezone shown in the user's local time, English only in phase 1. |
+| Logos | Downloads: `DC Logo ...` variants (black, grey and white horizontal, with and without banner, transparent), `logo_circle_*_v4/v5` (icon), `latest_logo_*` | The new UI uses the full logo and the icon-only logo. BDG asks for SVG or high-resolution PNG; only PNGs exist, so Phase 0 exports an optimised set (and an SVG if the original artwork exists). Minimum width 120 px, clear space equal to the height of the "D". |
+
+**Conflicts found between those documents and usability (reported, not silently fixed; the user decides):**
+
+| # | Conflict | Numbers | Recommendation |
+|---|---|---|---|
+| C1 | **Three palettes exist.** BDG v1 (navy `#1A3C5E`, gold `#E8A832`, sky `#4A9FD4`, coral `#E05A4E`, charcoal `#5C5248`), MU v2 (navy `#1B2A4A`, teal `#0D6E8A`, gold `#C9922A`, red `#C0392B`, green `#1A7A4A`), and what the app really uses (BDG hex in the site, a blue accent `#3b82f6` in the dashboards). | | One token set. Use **BDG v1** for brand colours (it matches the live site and the logo) and add the semantic colours the BDG lacks (success, warning, error, info). Adopt MU v2's rules, not its hex codes, unless the user prefers MU's palette. |
+| C2 | BDG: primary CTA is gold with **white** text. | white on `#E8A832` = **2.08:1** (needs 4.5) | Navy text on gold (5.44:1), or a navy primary button. |
+| C3 | BDG: links are sky blue. | `#4A9FD4` on white = **2.92:1** | Underlined navy links, or a darker sky for text. Sky stays a fill and accent colour. |
+| C4 | BDG: errors in coral. | coral `#E05A4E` on white = **3.66:1** | Error text in a darker red (MU's `#C0392B` is 5.44:1); coral stays a fill. |
+| C5 | MU: gold H3 text on white. | `#C9922A` on white = **2.75:1** | Gold only as fill, border or icon, never as small text on white (BDG itself says this). |
+| C6 | BDG: "do not create new colours or tints", but hover, selected, disabled and chart states need them. | | A small, documented set of derived tokens (fixed mixes of the palette with white or navy), so nothing is invented screen by screen. |
+| C7 | Fonts: BDG says Inter plus Merriweather for body; MU says Inter only; sketches used Inter and a mono face for IDs. | | Inter for all UI (tabular numbers for IDs and phones). Merriweather only for long reading text if the user wants it (guides, syllabus notes). |
+| C8 | Type scale: BDG and MU scales are page scales (body 16 px, H1 36 to 40). Data screens need 12 to 14 px. | | A "dense UI" scale inside the same family: 12 px table text, 13 px labels, 14 px body in tools, 16 px in reading views. |
+| C9 | **Navigation:** MU specifies a fixed **left sidebar** (240 to 260 px) for the Student, Staff, Parent, Ambassador and Management portals. The user picked the **two-tier top bar (1A)** for admin. | | Because the user wants one consistent portal, use the 1A top bar pattern in **all** portals (sections as tabs on desktop, bottom bar on phones). This departs from MU and will be recorded in `DESIGN_RULES.md`. |
+| C10 | **Dark theme:** the app already has light and dark themes; BDG and MU define only light. | | Tokens defined for both themes from day one; the user decides whether dark is in the first release (default: yes, because the classic UI already has it). |
+| C11 | MU names Recharts for charts. | Recharts is much heavier than needed | `uPlot` (section 2.2) to meet the speed budgets, same look. |
+| C12 | MU breakpoints (xs under 480, sm 480 to 767, md 768 to 1023, lg 1024 to 1279, xl 1280 and up). | | Adopt exactly these; test widths 375, 390, 768, 1024, 1280, 1440, 1920. |
+
+**Spec details adopted from MU v2 (so every screen matches):** 8 px grid with tokens space-1 to space-16 (4, 8, 12, 16, 24, 32, 48, 64); radius sm 4, md 8, lg 12, xl 20, full; motion: hover 150 ms, dropdown 150 ms, modal 200 ms, page transition 250 ms (under 300), toast 300 ms in and 3 s on screen, skeleton shimmer 1.2 s, never animate more than two properties, a no-motion fallback for `prefers-reduced-motion`, a loading state within 100 ms of any action; every component has Default, Hover, Active, Disabled and Focus states; sentence case labels (no ALL CAPS except badges); body line length at most 680 px in reading views; copy rules from BDG section 6 (active voice, always write A*, IGCSE, A Level, Cambridge, DivergenCIE exactly).
+
+**Out of scope but recorded.** The PRD and UJM describe features the app does not have yet (claims approval with linked evidence, budget approval, meetings module, missed-class banner, pre-class checklist, onboarding checklists, department dashboards for PR, HR, Finance, Marketing and IT, ambassador earnings, in-app notifications replacing WhatsApp). This migration reproduces **what exists today**; it does not add these. They are listed so the design system has room for them (cards, checklists, approval panels), and the user can request them as separate tickets later.
+
 ### 3.1 Consistency program (the user asked for the same look and behaviour across the whole DC portal)
 
 One system for **every** surface: Management, Student, Teacher, Staff, Parent, Ambassador, Trial, Interview, Resources, Question Solver, Syllabus, and the login and register pages. A user who moves between screens or roles must never have to relearn anything.
@@ -178,6 +217,21 @@ One system for **every** surface: Management, Student, Teacher, Staff, Parent, A
 10. **Reviews:** at the end of every phase a cross-role walkthrough (the same task done as each role, looking only for differences), a heuristic review (Nielsen's ten plus the portal rules above), and a side-by-side review page of all screens built so far for the user. Any inconsistency found is fixed in that phase, not logged for later.
 11. **Single source for decisions:** every new decision (a layout choice, a wording choice) is added to a short `DESIGN_RULES.md` so the next screen follows it automatically.
 
+### 3.2 Task-first speed targets per role (the user said "sure": derived from real usage and the User Journey Map)
+
+Evidence for Management: the production audit log, 2,178 entries from 2026-07-28 to 2026-10-01. **Treat as indicative only**: much of it comes from scripted maintenance (schedule clean-ups, rate edits) done through the command-line key, so it over-counts deletes and service edits. Top entries: schedule item delete 547, service edit 327, ticket close 287, attendance log create 113, account edit 110, account create 75, invoice delete 64 (rebuild), account delete 55, impersonate 53, enrollment create 52, invoice generate 47, ticket note 43, invoice edit 40, paycheck generate 36.
+
+| Role | Most frequent tasks (evidence) | Speed target (clicks from the section's first screen) |
+|---|---|---|
+| Management | Close or note a ticket (audit log, UJM "ticket oversight"); edit a service and its rates; create and edit an account; log in as a user; enroll a student; generate drafts, edit and send an invoice, copy the fee reminder; check conflicts and the week's schedule; log attendance | Close a ticket: 1 click on the row icon, then confirm. Edit account: 1 click, sheet opens with data already loaded. Create account: 1 click to a draft row, type, Enter. Fee reminder: 2 clicks. Generate drafts: 1 click plus confirm. |
+| Student | See today's classes and join; open recordings and notes; progress tracker and doubts; invoices and paying; raise a ticket; Question Solver and Syllabus (UJM journey 2) | Today's next class and its join link visible on the first screen with no click. Open a recording: 2 clicks. |
+| Teacher | Check the schedule; log attendance; timesheet; see paycheck (UJM journey 4) | Log attendance for a session: 2 clicks from the schedule row. |
+| Parent | Child's attendance and progress; invoices and paying; tickets (UJM journey 3) | Due invoice and a way to pay visible on the first screen. |
+| Staff and Ambassador | Their schedule, resources and timesheet, tickets, paycheck | Their own next session and open tickets on the first screen. |
+| Trial and Interview candidates | Book a slot, see status, submit the task (existing pages) | Next step visible on the first screen. |
+
+These targets become acceptance tests (count the clicks in the journey tests) and set what gets prefetched first.
+
 ## 4. Quality, testing and performance
 
 ### 4.1 The parity manifest (how "do not miss anything" is enforced)
@@ -186,7 +240,8 @@ One system for **every** surface: Management, Student, Teacher, Staff, Parent, A
 2. **Map.** `ui2/features/<section>/PARITY.md` maps each manifest entry to a new component or marks it `merged`, `moved` or `dropped` with a written reason that the user approves. Dropped items need explicit user sign-off (for example the sketches already agreed to drop invented buttons, not real ones).
 3. **Check.** `npm run parity` fails if any classic entry is unmapped. The number must be 100% per phase.
 4. **Behaviour test.** For each screen a Playwright test runs the same scripted user journey in classic and new against the **same mocked API**, records the sequence of `(method, url, body)` requests, and asserts they match (order-insensitive where the UI legitimately batches). This proves a button still does exactly what it did.
-5. **Number of things to cover (today):** management page 8,464 lines, about 154 button sites, 174 inputs, 8 forms, 80 `api()` calls across 52 components in ten tabs (Applications, Pipeline, Accounts, Services, Schedule, Enrollments, Billing, Guides, Tickets, Audit Log); eight more dashboards (interview 560 lines, student 449, staff 425, ambassador 422, teacher 417, parent 379, trial 302, resources 116); the Question Solver single file of 2,956 lines; the Syllabus single file. The generated manifest replaces these estimates with exact numbers on day one.
+5. **Drift report.** Because classic stays the main UI and keeps changing, the extractor also runs in CI on every push and compares against the committed manifest. A new button, input or API call in a classic page shows up as `NEW IN CLASSIC, UNMAPPED` in the report. It never fails the classic build; it creates a ticket line for the new-UI backlog.
+6. **Number of things to cover (today):** management page 8,464 lines, about 154 button sites, 174 inputs, 8 forms, 80 `api()` calls across 52 components in ten tabs (Applications, Pipeline, Accounts, Services, Schedule, Enrollments, Billing, Guides, Tickets, Audit Log); eight more dashboards (interview 560 lines, student 449, staff 425, ambassador 422, teacher 417, parent 379, trial 302, resources 116); the Question Solver single file of 2,956 lines; the Syllabus single file. The generated manifest replaces these estimates with exact numbers on day one.
 
 ### 4.2 Test layers
 
@@ -228,7 +283,7 @@ A phase cannot close if a budget is missed; the fix goes in the same phase.
 ## 5. Question Solver and Syllabus specifics
 
 - **Today:** Question Solver is a single static file `public/mcq-digitizer/index.html` (about 2,956 lines, vanilla JS, localStorage state, history-API router, `data-action` delegation) calling `/api/mcq/*` through a same-origin proxy. Syllabus is a separate page on the home machine reached through a Cloudflare quick tunnel (the domain changes in the address bar), identified only by URL parameters.
-- **New build:** React routes `app/v2/question-solver` and `app/v2/syllabus`, using the **same** `/api/mcq/*` proxy and the new `/api/syllabus/*` proxy. Classic Question Solver stays at `/mcq-digitizer/index.html`, untouched, with a toggle link in its bar (the one allowed edit, an additive link; if even that is unwanted, the toggle lives in the Resources section instead).
+- **New build:** React routes `app/v2/question-solver` and `app/v2/syllabus`, using the **same** `/api/mcq/*` proxy and the new `/api/syllabus/*` proxy. Classic Question Solver stays at `/mcq-digitizer/index.html`, untouched. The global switch (section 2.1) decides which one the portal links to: the new portal links to the new tools, the classic portal keeps linking to the classic ones. No edit to the classic tool is needed.
 - **Prerequisite for the new Syllabus:** the same-domain proxy of `planning/same-domain-solver-and-syllabus-plan.md` (option A). It also fixes the identity gap (session instead of `?account=&name=`). It is built first inside Phase 7a and ships on its own.
 - **Quiz engine:** one state machine (`idle → picking → ready → running → paused → submitted → reviewing`) with a pure reducer and tests, so timer, pause, cancel, flag, check-answer and submit behave exactly as today; the old single-file behaviours are captured as test cases from the current code before any UI is written.
 - **Snappy by design:** preload the paper's question images and answer data when "Fetch this paper and start" is pressed; prefetch the next question image; keep answers in memory and persist incrementally; no network call on question change.
@@ -244,7 +299,7 @@ Effort is in agent working sessions (one long focused session each), not calenda
 
 | # | Phase | Scope | Exit criteria | Size |
 |---|---|---|---|---|
-| 0 | Foundations | Resolve the CONFIRM items (section 8). Parity extractor and first manifest. Design tokens and the component skeletons. Data layer with a fake API. Toggle plumbing and the two classic hooks. CI guards. Baseline performance measurements of every endpoint. | Manifest committed, toggle works both ways with an empty new UI, budgets measured, guard test green, user approves the CONFIRM answers. | 2 |
+| 0 | Foundations | Resolve the CONFIRM items (section 8). Parity extractor and first manifest. Design tokens from BDG v1 and MU v2 with the accepted accessibility fixes (section 3.0), logo set exported (full and icon, light and dark, optimised) from the Downloads files, `DESIGN_RULES.md` started, component skeletons. Data layer with a fake API. Toggle plumbing and the two classic hooks. CI guards. Baseline performance measurements of every endpoint. | Manifest committed, toggle works both ways with an empty new UI, budgets measured, guard test green, user approves the CONFIRM answers. | 2 |
 | 1 | Vertical slice: Shell and Accounts (Students) | AppShell (1A), DataTable, FilterBar, RowActions, Accounts list for Students with the 21-column solution, URL state, skeletons. | Students list at 1280 and 390 with no sideways scroll, budgets met on 1,000 rows, parity for the Students table actions at list level. | 3 |
 | 2 | Accounts, complete | All account types and tabs; RecordSheet and in-place edit; DraftRow create; selection bar; Log in as; Reset password; Activate/Deactivate; Convert; Delete (with history guard); Import from form (just built); Copy credentials; groups modes. | Every Accounts manifest entry mapped and tested; parity journeys pass; five-lens review done. | 4 |
 | 3 | Services and Enrollments | Tree view and group modes, Create service FormPage (rates, batches, occurrences, facilitators, links), rate editing, service uptime, Enrollments (7C), enroll strip, add service, dates, rate move. | Parity for services and enrollments; the date-wipe bug class covered by tests (the earlier PATCH wholesale lesson). | 4 |
@@ -255,29 +310,34 @@ Effort is in agent working sessions (one long focused session each), not calenda
 | 7b | New Question Solver | Q1 to Q13 as decoded in section 1; quiz state machine; structured grading UI; results; progress chart; phone layouts; desktop version of the 13A picker. | Parity for every Question Solver action (including Mistakes Mode, Upload own QP + MS, Digitize this paper, leaderboard); quiz budgets met. | 5 |
 | 7c | New Syllabus | S1 to S13, tags with colours and icons, summary strip, progress tabs. | Parity with the classic page including Export tagged topics and view raw JSON. | 3 |
 | 8 | Hardening and sign-off | Accessibility pass, cross-browser (Chrome, Firefox, Safari-class), 390 and 768 and 1024 and 1280 and 1440 and 1920 checks, load test, security review (no new unauthenticated surface), parity audit report, documentation. | 100% parity report, all budgets met, user acceptance walk-through. | 2 |
-| 9 | Rollout | New UI opt-in for Management, then default-on for Management, then other roles. Classic stays available. **Retiring the classic UI is a separate decision the user makes later; nothing is deleted by this plan.** | Switch usage and error rates watched via the existing error tracking; rollback is flipping the default back. | 1 |
+| 9 | Opt-in Beta (not a rollout) | Beta label, feedback link that creates a ticket, error and speed monitoring through the existing error tracking. The switch stays opt-in per account. **Classic remains the default and the main UI.** Making the new UI the default, or retiring classic, would be a separate decision for the user and is not planned. | Beta users can switch both ways at any time without losing work; rollback is simply switching back. | 1 |
 
-Total about 40 sessions. Phases 1 to 5 deliver the whole Management dashboard; phases 7a to 7c can run in parallel with 3 to 5 if a second agent is used (they share only the design system from phase 0 and 1).
+Total about 40 sessions, plus a small recurring cost to keep the new UI in step with new classic features (drift report, section 4.1). Phases 1 to 5 deliver the whole Management dashboard; phases 7a to 7c can run in parallel with 3 to 5 if a second agent is used (they share only the design system from phase 0 and 1).
 
 ## 8. Decisions and open questions
 
-Answered by the user on 2026-10-02:
-1. **Shell:** 1A only.
-2. **Accounts columns:** one line per row, no two-line rows; options sketched (see section 1, part 3). Awaiting the pick between A, B and C.
-3. **Bulk actions:** the user asked what this meant. Plain version: after ticking several rows, a bar offers actions for all of them at once. Proposal: Deactivate, Activate, Reset password and Delete (typed confirmation, names listed, capped at 25 per action, each one written to the audit log). Edit and Log in as need one person, so they are greyed out with a reason. Open: whether to also offer "set one field for all selected" (for example change Batch for five students). That needs the same safeguards (preview of every change, explicit selection only, never "all rows of a type").
-4. **Other dashboards:** same look and consistent across the whole portal; section 3.1 is the program for it.
+Decided by the user on 2026-10-02:
+1. **Shell:** 1A only (two-tier sticky bar), used in all portals.
+2. **Accounts table:** one line per row, **option A** (fit all 21 columns, trimmed). The 5 long text columns are cut with an ellipsis and show in full on hover and in the record sheet; IDs, phones, status and course always show whole.
+3. **Bulk actions:** "sure" to the proposal: Deactivate, Activate, Reset password, Delete (names listed, typed confirmation, capped at 25, each in the audit log); Edit and Log in as are greyed with a reason. "Set one field for all selected" is **not** in the first release.
+4. **Other dashboards:** same look and consistent behaviour across the whole portal (section 3.1).
 5. **Dependencies:** approved, more is fine (section 2.2).
+6. **Role tasks:** delegated to me; derived in section 3.2.
+7. **Devices and connections, languages:** not needed (English only; no RTL work planned).
+8. **Toggle:** one switch for the whole portal, not per page.
+9. **Classic UI is the main UI; the new UI is an experimental, opt-in redesign** (section 0).
+10. **Brand files:** exist; found and read (section 3.0).
 
-Still open (defaults in brackets, unanswered items keep them):
-- Pick for the one-line Accounts table: A, B or C. [A]
-- Bulk "set one field for all selected": yes or no. [no, first release]
-- New Student fields (Gender, Help wanted, Subjects, Referrer, Heard about us, A* answer): they would make 27 columns. Show them only in the record sheet, or add some as columns (for example Referrer)? [record sheet only]
-- Services: tree view like today as default plus the 7B group switcher as a second mode. [yes]
-- Billing modes: Table (default), By person, By month, By due date, By status lanes. Anything else? [as listed]
-- Audit page size: 25, 50, 100, 200. [yes]
-- Question Solver Q2 default: 2A selects in one column, chips optional [yes]; Q3C single Start button wanted or dropped [dropped].
-- Toggle placement for the Question Solver: an additive link in its own bar, or only in the Resources section. [Resources section only, zero classic edits]
-- Confirm the classic UI is never deleted by this project. [confirmed unless told otherwise]
+Still open (the stated default applies if unanswered):
+- **New Student fields** (Gender, Help wanted, Subjects, Referrer, Heard about us, Can score A*): they would add 6 more columns to the 21. Default: **shown in the record sheet only**, not as table columns. (Say if you want any of them, for example Referrer, as a table column; it would need another column trimmed.)
+- **Palette (C1):** BDG v1 as the brand source plus derived semantic colours, or switch to MU v2's palette. [BDG v1]
+- **CTA contrast (C2 to C5):** accept the accessibility fixes (navy text on gold buttons, underlined navy links, darker error red). [accept]
+- **Dark theme (C10):** include in the first release. [yes]
+- **Merriweather (C7):** not used in the app UI, only if you want it for reading text. [not used]
+- **Services:** tree view like today as default plus the 7B group switcher. [yes]
+- **Billing modes:** Table (default), By person, By month, By due date, By status lanes. [as listed]
+- **Audit page size:** 25, 50, 100, 200. [yes]
+- **Question Solver Q2 default:** 2A selects in one column. Q3C single Start button: dropped. [yes]
 
 ## 9. Tickets to open (real tickets, one per item)
 
@@ -299,9 +359,10 @@ Still open (defaults in brackets, unanswered items keep them):
 | Two UIs diverge on business rules | Rules live in `lib/` and are shared; a rule change updates both. |
 | Dependency risk | Three small headless libraries, pinned versions, an adapter layer so they can be swapped. |
 | Long migration, long-lived branch | Each phase merges behind the toggle (default off), so `main` stays releasable. |
+| Classic keeps changing while the new UI is built | Drift report in CI lists any classic control or API call not yet mapped; classic features land first; shared `lib/` rules mean fixes reach both; the new UI is allowed to lag classic by one phase but never to block it. |
 
 ## 11. What happens next
 
-1. User picks the one-line Accounts option (section 8) and answers anything else open; unanswered items keep the stated defaults.
+1. User answers the open items in section 8 (defaults apply to anything unanswered).
 2. Create the tickets in section 9.
 3. Start Phase 0. Nothing is pushed without the user's approval.
