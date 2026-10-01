@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule Cell Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f5f8; --ink:#14172b; --muted:#5b6078; --panel:#fff; --line:#d9dce8;
+  --grid-bg:#3d1760; --time-bg:#c03fa9; --gold:#ffde59;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Roboto,system-ui,sans-serif;padding:24px 16px 64px}
+main{max-width:1180px;margin:0 auto;display:grid;gap:32px}
+h1{font-size:28px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:15px;margin:0}
+.opt{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:16px}
+.opt h2{margin:0;font-size:22px;display:flex;gap:12px;align-items:baseline}
+.opt h2 b{background:var(--ink);color:#fff;border-radius:3px;padding:2px 10px;font-size:18px}
+.meta{color:var(--muted);font-size:14px;margin:0}
+.row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.label{font-size:13px;color:var(--muted);margin:0 0 6px;letter-spacing:.04em;text-transform:uppercase}
+.close{display:flex;gap:10px}
+.wk{width:100%;max-width:860px;overflow:hidden}
+.week{background:var(--grid-bg);padding:12px;display:grid;grid-template-columns:repeat(7,216px);gap:4px;width:1596px;transform-origin:0 0}
+.week .hd{background:#3b82f6;color:#fff;font-size:22px;font-weight:700;text-align:center;padding:10px 0}
+.week .e{background:#fff;height:150px}
+.roles{display:flex;gap:8px;flex-wrap:wrap}
+.cell{width:216px;height:150px;position:relative;overflow:hidden;font-family:Roboto,sans-serif}
+
+.pick{background:var(--ink);color:#fff;padding:12px 16px;border-radius:6px;font-size:15px}
+.contrast{font-size:13px;color:var(--muted)}
+
+/* ---- Option 1: deep tone, white bold ---- */
+.o1{background:var(--tone-deep);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10px 12px;gap:4px}
+.o1 .t{font-weight:700;font-size:25px;line-height:1.12;text-wrap:balance}
+.o1 .s{font-weight:500;font-size:16px;opacity:.92}
+/* ---- Option 2: light tint, dark text, bottom bar ---- */
+.o2{background:var(--tone-tint);color:#0f1a14;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10px 12px 18px;gap:3px}
+.o2 .t{font-weight:700;font-size:25px;line-height:1.12;text-wrap:balance}
+.o2 .s{font-weight:500;font-size:16px;color:#33403a}
+.o2::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--tone)}
+/* ---- Option 3: navy card, gold code ---- */
+.o3{background:#14213d;color:#fff;display:grid;grid-template-rows:auto 1fr;text-align:center}
+.o3 .code{background:var(--tone);color:#0b1220;font-weight:900;font-size:24px;padding:5px 0;letter-spacing:.04em}
+.o3 .body{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:6px 12px}
+.o3 .t{font-weight:700;font-size:23px;line-height:1.12;text-wrap:balance}
+.o3 .s{font-weight:500;font-size:15px;color:#ffde59}
+/* ---- Option 4: role colour, near-black text ---- */
+.o4{background:var(--tone);color:#0a0f0c;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10px 12px;gap:4px}
+.o4 .t{font-weight:900;font-size:27px;line-height:1.1;text-wrap:balance}
+.o4 .s{font-weight:700;font-size:16px;opacity:.85}
+/* ---- Option 5: white card, dot + level tag ---- */
+.o5{background:#fff;color:#14172b;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:10px 20px;text-align:left;box-shadow:inset 0 0 0 7px var(--tone)}
+.o5 .tag{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:15px;color:#14172b}
+.o5 .tag i{width:14px;height:14px;border-radius:50%;background:var(--tone);display:inline-block}
+.o5 .tag span{background:var(--tone-tint);padding:2px 8px;border-radius:3px}
+.o5 .t{font-weight:700;font-size:24px;line-height:1.12;text-wrap:balance}
+
+/* role tones */
+.r-teacher{--tone:#22c55e;--tone-deep:#14532d;--tone-tint:#dcfce7}
+.r-student{--tone:#3b82f6;--tone-deep:#1e3a8a;--tone-tint:#dbeafe}
+.r-staff{--tone:#f59e0b;--tone-deep:#78350f;--tone-tint:#fef3c7}
+.r-ambassador{--tone:#a855f7;--tone-deep:#581c87;--tone-tint:#f3e8ff}
+.r-management{--tone:#ef4444;--tone-deep:#7f1d1d;--tone-tint:#fee2e2}
+.r-parent{--tone:#14b8a6;--tone-deep:#134e4a;--tone-tint:#ccfbf1}
+.rolecap{font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Schedule cell, 5 options</h1>
+    <p class="sub">Only the class cell changes. Same grid, times, data and role colours. Cells drawn at the real 216 px width. Pick by number.</p>
+  </header>
+  <section id="out" style="display:grid;gap:32px"></section>
+  <div class="pick">Reply with the number you want (1 to 5). Mix is fine, for example "3 but 28 px".</div>
+</main>
+<script>
+const SAMPLES = [
+  "Cambridge A-Level 9701 Chemistry",
+  "Cambridge A-Level 9709 Mathematics: Pure 1",
+  "Cambridge A-Level 9709 Mathematics: Statistics 1",
+  "Cambridge IGCSE 0510 English as a Second Language",
+  "Cambridge IGCSE 0417 Information & Communication Technology",
+  "Cambridge IGCSE 0610 Biology"
+];
+function parse(n){
+  const m = n.match(/^Cambridge (A-Level|IGCSE) (\d{4}) (.+)$/);
+  return m ? {level:m[1], code:m[2], subj:m[3]} : {level:"", code:"", subj:n};
+}
+const OPTS = [
+  {n:1, name:"Deep tone, big white text", note:"Dark shade of the role colour, 25 px bold white, level and code under the name.",
+   cell:p=>`<div class="cell o1"><div class="t">${p.subj}</div><div class="s">${p.level} · ${p.code}</div></div>`,
+   fg:"#ffffff", bg:{teacher:"#14532d"}},
+  {n:2, name:"Light tint, dark text, colour bar", note:"Pale tint, near-black 25 px bold text, role colour kept as a bottom bar.",
+   cell:p=>`<div class="cell o2"><div class="t">${p.subj}</div><div class="s">${p.level} · ${p.code}</div></div>`,
+   fg:"#0f1a14", bg:{teacher:"#dcfce7"}},
+  {n:3, name:"Code header, navy body", note:"Role colour only on the 24 px course-code strip. Navy body, white name, gold level.",
+   cell:p=>`<div class="cell o3"><div class="code">${p.code}</div><div class="body"><div class="t">${p.subj}</div><div class="s">${p.level}</div></div></div>`,
+   fg:"#ffffff", bg:{teacher:"#14213d"}},
+  {n:4, name:"Role colour, near-black text", note:"Keeps the current bright role colour but flips text to near-black, 27 px black weight.",
+   cell:p=>`<div class="cell o4"><div class="t">${p.subj}</div><div class="s">${p.level} · ${p.code}</div></div>`,
+   fg:"#0a0f0c", bg:{teacher:"#22c55e"}},
+  {n:5, name:"White card, dot and level tag", note:"White cell inside a 7 px role-colour frame so it never looks empty, plus a dot and level tag. Left aligned, 24 px bold.",
+   cell:p=>`<div class="cell o5"><div class="tag"><i></i><span>${p.level} · ${p.code}</span></div><div class="t">${p.subj}</div></div>`,
+   fg:"#14172b", bg:{teacher:"#ffffff"}}
+];
+function lum(h){const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function ratio(a,b){const x=lum(a),y=lum(b);return ((Math.max(x,y)+.05)/(Math.min(x,y)+.05)).toFixed(1)}
+const out=document.getElementById("out");
+const days=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+// real week from the current image: [dayIndex, rowIndex, name]
+const WEEK=[[0,0,SAMPLES[0]],[2,0,SAMPLES[0]],[4,0,SAMPLES[0]],[5,0,SAMPLES[1]],
+ [0,1,"Cambridge A-Level 9702 Physics"],[1,1,"Cambridge A-Level 9702 Physics"],[2,1,SAMPLES[2]],[3,1,"Cambridge A-Level 9702 Physics"],[4,1,SAMPLES[2]],
+ [0,2,SAMPLES[3]],[1,2,SAMPLES[5]],[2,2,"Cambridge IGCSE 0625 Physics"],[3,2,SAMPLES[5]],[5,2,"Cambridge IGCSE 0625 Physics"],[6,2,SAMPLES[3]],
+ [0,3,SAMPLES[4]],[2,3,"Cambridge IGCSE 0580 Mathematics"],[5,3,"Cambridge IGCSE 0580 Mathematics"],[6,3,SAMPLES[4]]];
+for(const o of OPTS){
+  const sec=document.createElement("article"); sec.className="opt";
+  const close=SAMPLES.slice(0,4).map(s=>`<div class="r-teacher">${o.cell(parse(s))}</div>`).join("");
+  const roles=["student","teacher","staff","ambassador","management","parent"].map(r=>`<div><div class="r-${r}">${o.cell(parse(SAMPLES[1]))}</div><div class="rolecap">${r}</div></div>`).join("");
+  let week=days.map(d=>`<div class="hd">${d.slice(0,3)}</div>`).join("");
+  for(let r=0;r<4;r++)for(let c=0;c<7;c++){const w=WEEK.find(x=>x[0]===c&&x[1]===r);week+=`<div class="e r-teacher">${w?o.cell(parse(w[2])):''}</div>`}
+  sec.innerHTML=`<h2><b>${o.n}</b>${o.name}</h2><p class="meta">${o.note}</p>
+   <p class="contrast">Text to background contrast (Teacher): ${ratio(o.fg,o.bg.teacher)} : 1. Current design: ${ratio("#ffffff","#22c55e")} : 1.</p>
+   <div><p class="label">Real size, 4 long names</p><div class="close" style="flex-wrap:wrap">${close}</div></div>
+   <div><p class="label">Six roles, same cell</p><div class="roles">${roles}</div></div>
+   <div><p class="label">Whole week, Teacher view, half scale</p><div class="wk"><div class="week">${week}</div></div></div>`;
+  out.appendChild(sec);
+}
+function fit(){document.querySelectorAll('.wk').forEach(w=>{const k=w.clientWidth/1596,g=w.firstElementChild;g.style.transform='scale('+k+')';w.style.height=(g.offsetHeight*k)+'px'})}
+fit();addEventListener('resize',fit);document.fonts&&document.fonts.ready.then(fit);
+</script>
+</body>
+</html>
