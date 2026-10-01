@@ -9,12 +9,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test lib/npc/actions/*.test.js lib/accountImport.test.js lib/invoiceDiscount.test.js",
+    "test": "node --test lib/npc/actions/*.test.js lib/accountImport.test.js lib/invoiceDiscount.test.js ui2/styles/palette.test.mjs ui2/testing/*.test.mjs scripts/*.test.mjs",
     "lint": "eslint",
     "seed": "node scripts/seed.js",
     "migrate:supabase": "node scripts/migrate-to-supabase.mjs",
     "mcp": "node mcp/server.mjs",
-    "release": "commit-and-tag-version"
+    "release": "commit-and-tag-version",
+    "test:ui2": "vitest run",
+    "tokens": "node scripts/build-tokens.mjs",
+    "parity:extract": "node ui2/testing/extract-classic.mjs",
+    "parity:check": "node ui2/testing/extract-classic.mjs --check",
+    "parity": "node ui2/testing/parity-report.mjs",
+    "guard:classic": "node scripts/guard-classic.mjs",
+    "typecheck:ui2": "tsc -p ui2/tsconfig.json --noEmit"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
