@@ -9,7 +9,7 @@ import SortableTh from "@/components/SortableTh";
 import ScheduleCalendar from "@/components/ScheduleCalendar";
 import SessionAttendance from "@/components/SessionAttendance";
 import { api, formatRate, groupMatches, normalizeGroup, roleGroupOf, useSort, groupGradient, todayDateStr, setCurrentUser, setImpersonatorInfo, roleHomePath, getCurrentUser } from "@/lib/client";
-import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
+import { ratesOf, rateById, batchesOf, batchById, batchScheduleLabel, BILLING_TYPES, amountDueInOwnCurrency, lineItemName, greetingForTimezone, invoiceCourseSummary } from "@/lib/billing";
 import { TIMEZONE_GROUPS, normalizeTimezone, timezoneLabel, tzAbbrFor } from "@/lib/timezones";
 import { DEPARTMENTS, ROLE_ELIGIBLE, FIXED_DEPARTMENT, CURRENCIES_FULL, GUIDE_AUDIENCES } from "@/lib/accountTypes";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
@@ -6175,13 +6175,13 @@ function totalDueLine(row) {
 function buildReminderMessage(row, student, services, accountText) {
   const pdfUrl = typeof window !== "undefined" ? `${window.location.origin}/api/invoices/pdf?invoiceId=${row.InvoiceID}` : `/api/invoices/pdf?invoiceId=${row.InvoiceID}`;
   return [
-    "Good morning! Fee payment is requested. 😊",
+    `${greetingForTimezone(normalizeTimezone(student?.Timezone))}! Fee payment is requested. 😊`,
     "",
     "DivergenCIE Student Details Export",
     "",
     `Student Name: ${student?.Name || row.StudentID}`,
     `Status: ${student?.Status === "Converted" ? "Active" : student?.Status || "Active"}`,
-    `Course: ${invoiceCourseLine(row, services)}`,
+    `Course: ${invoiceCourseSummary(row, services)}`,
     `Month(s): ${MONTH_NAMES[row.Month - 1]} ${row.Year}`,
     "",
     `Total due: ${totalDueLine(row)}`,
