@@ -38,7 +38,7 @@ Paytm ID - 9650675507@ptsbi
 Make sure to email the receipt to the team via the official address: DivergenCIE@outlook.com. Thank you! ✨
 ```
 
-Used by the **Full Indian account** and **Paytm only** choices (Paytm only keeps just the Paytm line under "CHECK ACCOUNT DETAILS:").
+Used by the **Full Indian account** and **Indian UPI** choices (Indian UPI keeps just the UPI line under "CHECK ACCOUNT DETAILS:"). Changed 2026-10-01: the live message now says finance@divergencie.co.uk instead of DivergenCIE@outlook.com; the text above is the original.
 
 ## 2. Stripe payment portal message (Saudi, SAR)
 
