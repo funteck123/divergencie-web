@@ -6149,9 +6149,9 @@ const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Se
 // TKT-0290/TKT-0291: builds the two WhatsApp templates Management types out
 // by hand today (payment reminder, payment acknowledged). Everything the
 // portal actually knows is filled in; bank/Paytm details aren't stored
-// anywhere in the system (they live with each teacher, off the portal), so
-// that stays a clearly-marked blank for Management to fill rather than
-// guessing or hardcoding one teacher's numbers into shared code. No
+// anywhere in the system. TKT-0316: Management chose to hardcode them, so they
+// now live in lib/paymentDetails.js (server-only) and arrive through
+// GET /api/payment-details; the reminder button offers one block per option. No
 // Instructor line, at request -- it isn't reliably known at the invoice
 // level either (Facilitator lives on schedule slots, not the invoice).
 function invoiceCourseLine(row, services) {
@@ -6172,7 +6172,7 @@ function totalDueLine(row) {
   return `${currency} ${due.toFixed(2)} (INR ${Number(row.INRDue).toFixed(2)})`;
 }
 
-function buildReminderMessage(row, student, services) {
+function buildReminderMessage(row, student, services, accountText) {
   const pdfUrl = typeof window !== "undefined" ? `${window.location.origin}/api/invoices/pdf?invoiceId=${row.InvoiceID}` : `/api/invoices/pdf?invoiceId=${row.InvoiceID}`;
   return [
     "Good morning! Fee payment is requested. 😊",
@@ -6190,8 +6190,7 @@ function buildReminderMessage(row, student, services) {
     "",
     "The following are the account details provided by your teacher:",
     "",
-    "CHECK ACCOUNT DETAILS:",
-    "[paste your bank or Paytm details here]",
+    accountText,
     "",
     "Make sure to email the receipt to the team via the official address: DivergenCIE@outlook.com. Thank you! ✨",
   ].join("\n");
@@ -6205,24 +6204,93 @@ function buildAcknowledgedMessage(row, student, services) {
 
 // Copies text to the clipboard and shows "Copied!" briefly on the button
 // itself -- the only confirmation a copy action needs, no toast/dialog.
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    // Clipboard API can fail (older browser, insecure context) -- fall
+    // back to the old textarea+execCommand trick rather than leaving
+    // Management with no way to copy the message at all.
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+}
+
+let paymentOptionsPromise = null;
+function loadPaymentOptions() {
+  if (!paymentOptionsPromise) {
+    paymentOptionsPromise = api("/api/payment-details").then((r) => r.options).catch((e) => {
+      paymentOptionsPromise = null;
+      throw e;
+    });
+  }
+  return paymentOptionsPromise;
+}
+
+// "Copy reminder" with four choices (TKT-0316): which account details go into the message.
+function ReminderCopyMenu({ row, student, services }) {
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState(null);
+  const [error, setError] = useState("");
+  const [copiedKey, setCopiedKey] = useState("");
+  useEffect(() => {
+    let alive = true;
+    loadPaymentOptions().then((o) => alive && setOptions(o)).catch(() => alive && setError("Could not load"));
+    return () => {
+      alive = false;
+    };
+  }, []);
+  async function choose(opt) {
+    if (!opt.text) return;
+    await copyToClipboard(buildReminderMessage(row, student, services, opt.text));
+    setCopiedKey(opt.key);
+    setOpen(false);
+    setTimeout(() => setCopiedKey(""), 1500);
+  }
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <button className="btn-ghost" style={{ whiteSpace: "nowrap" }} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        {copiedKey ? "Copied!" : "Copy reminder ▾"}
+      </button>
+      {open && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 30 }} onClick={() => setOpen(false)} />
+          <div
+            role="menu"
+            style={{ position: "absolute", zIndex: 31, top: "100%", left: 0, marginTop: 4, minWidth: 230, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.15)", overflow: "hidden" }}
+          >
+            {error && <div style={{ padding: "0.5rem 0.75rem", color: "var(--bad)" }}>{error}</div>}
+            {!options && !error && <div style={{ padding: "0.5rem 0.75rem", color: "var(--muted)" }}>Loading…</div>}
+            {(options || []).map((opt) => (
+              <button
+                key={opt.key}
+                role="menuitem"
+                disabled={!opt.text}
+                title={opt.text ? undefined : "Details not set up yet"}
+                onClick={() => choose(opt)}
+                style={{ display: "block", width: "100%", textAlign: "left", padding: "0.5rem 0.75rem", background: "transparent", border: 0, cursor: opt.text ? "pointer" : "not-allowed", opacity: opt.text ? 1 : 0.5, color: "inherit" }}
+              >
+                {opt.label}
+                {!opt.text && <span style={{ color: "var(--muted)" }}> (not set up)</span>}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </span>
+  );
+}
+
 function CopyButton({ text, label }) {
   const [copied, setCopied] = useState(false);
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (e) {
-      // Clipboard API can fail (older browser, insecure context) -- fall
-      // back to the old textarea+execCommand trick rather than leaving
-      // Management with no way to copy the message at all.
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    }
+    await copyToClipboard(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
@@ -6596,7 +6664,7 @@ function InvoiceRow({ row, nameOf, student, services, onPatch, onPatchLineItem, 
                 <a className="btn-ghost" style={{ whiteSpace: "nowrap" }} href={`/api/invoices/pdf?invoiceId=${row.InvoiceID}`} download>
                   PDF
                 </a>
-                {!isSettled && <CopyButton text={buildReminderMessage(row, student, services)} label="Copy reminder" />}
+                {!isSettled && <ReminderCopyMenu row={row} student={student} services={services} />}
                 {isSettled && <CopyButton text={buildAcknowledgedMessage(row, student, services)} label="Copy acknowledgement" />}
                 <ConfirmButton
                   label="Delete"
