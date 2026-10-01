@@ -2878,8 +2878,10 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
   const parsed = useMemo(() => (text.trim() ? parseImport(text, userType) : null), [text, userType]);
   const matches = useMemo(() => (parsed && parsed.ok ? findMatches(users, parsed) : []), [users, parsed]);
   // "new" or a UserID; the strongest match is selected until the user picks otherwise.
-  const selected = choice && (choice === "new" || matches.some((m) => m.user.UserID === choice)) ? choice : matches[0]?.user.UserID || "new";
-  const target = selected === "new" ? null : matches.find((m) => m.user.UserID === selected)?.user;
+  const sameType = users.filter((u) => u.UserType === userType);
+  const selected = choice && (choice === "new" || sameType.some((u) => u.UserID === choice)) ? choice : matches[0]?.user.UserID || "new";
+  const target = selected === "new" ? null : sameType.find((u) => u.UserID === selected) || null;
+  const pickedByHand = target && !matches.some((m) => m.user.UserID === selected);
   // A referrer typed as an existing account's full name is linked to that account.
   const referrer = parsed && parsed.fields.referrer ? findReferrer(users, parsed.fields.referrer) : null;
   const fill = parsed && target ? buildFillPatch(target, parsed, { referrer }) : null;
@@ -2954,13 +2956,29 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
                   {matches.map((m) => (
                     <label key={m.user.UserID} className="flex items-center gap-2 text-sm">
                       <input type="radio" name="import-target" checked={selected === m.user.UserID} onChange={() => setChoice(m.user.UserID)} />
-                      Add to {m.user.UserID} {m.user.Name} <span style={{ color: "var(--muted)" }}>(same {m.reasons.join(", ")})</span>
+                      Add to {m.user.UserID} {m.user.Name} <span style={{ color: "var(--muted)" }}>({m.reasons.map((r) => (r === "similar name" ? r : `same ${r}`)).join(", ")})</span>
                     </label>
                   ))}
+                  {pickedByHand && (
+                    <label className="flex items-center gap-2 text-sm">
+                      <input type="radio" name="import-target" checked readOnly />
+                      Add to {target.UserID} {target.Name} <span style={{ color: "var(--muted)" }}>(picked by hand)</span>
+                    </label>
+                  )}
                   <label className="flex items-center gap-2 text-sm">
                     <input type="radio" name="import-target" checked={selected === "new"} onChange={() => setChoice("new")} />
                     Create a new account
                   </label>
+                  <div style={{ maxWidth: 420 }}>
+                    <SearchSelect className="field" aria-label="Add to an existing account" value="" onChange={(e) => e.target.value && setChoice(e.target.value)}>
+                      <option value="">Add to a different existing account…</option>
+                      {sameType.map((u) => (
+                        <option key={u.UserID} value={u.UserID}>
+                          {`${u.Name} (${u.UserID})`}
+                        </option>
+                      ))}
+                    </SearchSelect>
+                  </div>
                 </div>
               )}
               {fill && (
