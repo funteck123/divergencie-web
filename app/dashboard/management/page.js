@@ -6172,7 +6172,7 @@ function totalDueLine(row) {
   return `${currency} ${due.toFixed(2)} (INR ${Number(row.INRDue).toFixed(2)})`;
 }
 
-function buildReminderMessage(row, student, services, accountText) {
+function buildReminderMessage(row, student, services, paymentSection) {
   const pdfUrl = typeof window !== "undefined" ? `${window.location.origin}/api/invoices/pdf?invoiceId=${row.InvoiceID}` : `/api/invoices/pdf?invoiceId=${row.InvoiceID}`;
   return [
     `${greetingForTimezone(normalizeTimezone(student?.Timezone))}! Fee payment is requested. 😊`,
@@ -6188,11 +6188,7 @@ function buildReminderMessage(row, student, services, accountText) {
     "",
     `Official Invoice PDF: ${pdfUrl}`,
     "",
-    "The following are the account details provided by your teacher:",
-    "",
-    accountText,
-    "",
-    "Make sure to email the receipt to the team via the official address: DivergenCIE@outlook.com. Thank you! ✨",
+    paymentSection,
   ].join("\n");
 }
 
