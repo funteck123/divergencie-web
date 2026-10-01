@@ -1,0 +1,60 @@
+{
+ "file": "components/SearchSelect.jsx",
+ "sha256": "5aa821706c68cfb503b24880c202313750d699ad8d85da5d8ee58c06a12ff015",
+ "components": [
+  "SearchSelect"
+ ],
+ "controls": [
+  {
+   "id": "SearchSelect:button:open-setopen-false-openpanel",
+   "component": "SearchSelect",
+   "tag": "button",
+   "label": "▾",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => (open ? setOpen(false) : openPanel())",
+    "onKeyDown": "onTriggerKey"
+   },
+   "line": 134
+  },
+  {
+   "id": "SearchSelect:input:expr",
+   "component": "SearchSelect",
+   "tag": "input",
+   "label": "{expr}",
+   "name": "{expr}",
+   "handlers": {
+    "onChange": "() => {}",
+    "onFocus": "() => triggerRef.current?.focus()"
+   },
+   "line": 152
+  },
+  {
+   "id": "SearchSelect:input:search-options",
+   "component": "SearchSelect",
+   "tag": "input",
+   "label": "Search options",
+   "handlers": {
+    "onChange": "(e) => { setQuery(e.target.value); setActive(0); }",
+    "onKeyDown": "onSearchKey"
+   },
+   "line": 169
+  },
+  {
+   "id": "SearchSelect:div:choose-o",
+   "component": "SearchSelect",
+   "tag": "div",
+   "label": "",
+   "handlers": {
+    "onClick": "() => choose(o)"
+   },
+   "line": 181
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 4,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

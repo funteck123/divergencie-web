@@ -1,0 +1,167 @@
+{
+ "file": "components/ScheduleCalendar.jsx",
+ "sha256": "6b24d217978c8b95ebd7c3f2f603ea234e49504ee0f9f935bb2fd28ed4099ac2",
+ "components": [
+  "MiniAttendanceForm",
+  "ScheduleCalendar"
+ ],
+ "controls": [
+  {
+   "id": "ScheduleCalendar:button:e-e-stoppropagation-if-clickable-setexpa",
+   "component": "ScheduleCalendar",
+   "tag": "button",
+   "label": "#{} · {} · {}",
+   "type": "button",
+   "handlers": {
+    "onClick": "(e) => { e.stopPropagation(); if (clickable) setExpandedId(expande"
+   },
+   "line": 111
+  },
+  {
+   "id": "ScheduleCalendar:div:e-e-stoppropagation",
+   "component": "ScheduleCalendar",
+   "tag": "div",
+   "label": "",
+   "handlers": {
+    "onClick": "(e) => e.stopPropagation()"
+   },
+   "line": 134
+  },
+  {
+   "id": "ScheduleCalendar:MiniAttendanceForm:status-hrs-onlogattendance-s-scheduleid-",
+   "component": "ScheduleCalendar",
+   "tag": "MiniAttendanceForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(status, hrs) => { onLogAttendance(s.ScheduleID, status, hrs); "
+   },
+   "line": 138
+  },
+  {
+   "id": "ScheduleCalendar:button:goprev",
+   "component": "ScheduleCalendar",
+   "tag": "button",
+   "label": "‹",
+   "handlers": {
+    "onClick": "goPrev"
+   },
+   "line": 186
+  },
+  {
+   "id": "ScheduleCalendar:button:today",
+   "component": "ScheduleCalendar",
+   "tag": "button",
+   "label": "Today",
+   "handlers": {
+    "onClick": "goToday"
+   },
+   "line": 187
+  },
+  {
+   "id": "ScheduleCalendar:button:gonext",
+   "component": "ScheduleCalendar",
+   "tag": "button",
+   "label": "›",
+   "handlers": {
+    "onClick": "goNext"
+   },
+   "line": 188
+  },
+  {
+   "id": "ScheduleCalendar:div:inmonth-sessions-length-0-setdaymodaldat",
+   "component": "ScheduleCalendar",
+   "tag": "div",
+   "label": "",
+   "handlers": {
+    "onClick": "() => inMonth && sessions.length > 0 && setDayModalDate(dateStr)"
+   },
+   "line": 229
+  },
+  {
+   "id": "ScheduleCalendar:button:more",
+   "component": "ScheduleCalendar",
+   "tag": "button",
+   "label": "+ more",
+   "type": "button",
+   "handlers": {
+    "onClick": "(e) => { e.stopPropagation(); setDayModalDate("
+   },
+   "line": 252
+  },
+  {
+   "id": "ScheduleCalendar:div:close",
+   "component": "ScheduleCalendar",
+   "tag": "div",
+   "label": "Close",
+   "handlers": {
+    "onClick": "() => setDayModalDate(null)"
+   },
+   "line": 271
+  },
+  {
+   "id": "ScheduleCalendar:div:close:2",
+   "component": "ScheduleCalendar",
+   "tag": "div",
+   "label": "Close",
+   "handlers": {
+    "onClick": "(e) => e.stopPropagation()"
+   },
+   "line": 275
+  },
+  {
+   "id": "ScheduleCalendar:button:close",
+   "component": "ScheduleCalendar",
+   "tag": "button",
+   "label": "Close",
+   "handlers": {
+    "onClick": "() => setDayModalDate(null)"
+   },
+   "line": 282
+  },
+  {
+   "id": "MiniAttendanceForm:form:status-present-absent-late-hours-logging",
+   "component": "MiniAttendanceForm",
+   "tag": "form",
+   "label": "Status Present Absent Late Hours Logging… | Log",
+   "handlers": {
+    "onSubmit": "async (e) => { e.preventDefault(); if (submitting) return; setSubm"
+   },
+   "line": 308
+  },
+  {
+   "id": "MiniAttendanceForm:SearchSelect:value-status",
+   "component": "MiniAttendanceForm",
+   "tag": "SearchSelect",
+   "label": "value:status",
+   "handlers": {
+    "onChange": "(e) => setStatus(e.target.value)"
+   },
+   "line": 323
+  },
+  {
+   "id": "MiniAttendanceForm:input:value-hrs",
+   "component": "MiniAttendanceForm",
+   "tag": "input",
+   "label": "value:hrs",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setHrs(e.target.value)"
+   },
+   "line": 332
+  },
+  {
+   "id": "MiniAttendanceForm:button:logging-log",
+   "component": "MiniAttendanceForm",
+   "tag": "button",
+   "label": "Logging… | Log",
+   "type": "submit",
+   "line": 341
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 15,
+  "apiCalls": 0,
+  "components": 2
+ }
+}

@@ -1,0 +1,79 @@
+{
+ "file": "app/login/page.js",
+ "sha256": "512a06009c74ab02b7108cf41b96809972d4d52954c1bf7589b9e2ac09f9aae3",
+ "components": [
+  "LoginPage"
+ ],
+ "controls": [
+  {
+   "id": "LoginPage:form:username-password-forgot-remember-me-ver",
+   "component": "LoginPage",
+   "tag": "form",
+   "label": "Username Password Forgot? Remember me Verifying... | Portal Login",
+   "handlers": {
+    "onSubmit": "handleSubmit"
+   },
+   "line": 113
+  },
+  {
+   "id": "LoginPage:input:your-username",
+   "component": "LoginPage",
+   "tag": "input",
+   "label": "your-username",
+   "type": "text",
+   "handlers": {
+    "onChange": "(e) => setUsername(e.target.value)"
+   },
+   "line": 116
+  },
+  {
+   "id": "LoginPage:a:forgot",
+   "component": "LoginPage",
+   "tag": "a",
+   "label": "Forgot?",
+   "href": "mailto:divergenCIE@outlook.com",
+   "line": 130
+  },
+  {
+   "id": "LoginPage:input:your-password",
+   "component": "LoginPage",
+   "tag": "input",
+   "label": "your-password",
+   "type": "text",
+   "handlers": {
+    "onChange": "(e) => setPassword(e.target.value)"
+   },
+   "line": 133
+  },
+  {
+   "id": "LoginPage:input:x",
+   "component": "LoginPage",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "line": 144
+  },
+  {
+   "id": "LoginPage:button:verifying-portal-login",
+   "component": "LoginPage",
+   "tag": "button",
+   "label": "Verifying... | Portal Login",
+   "type": "submit",
+   "line": 148
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "LoginPage",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/login",
+   "line": 29
+  }
+ ],
+ "counts": {
+  "controls": 6,
+  "apiCalls": 1,
+  "components": 1
+ }
+}

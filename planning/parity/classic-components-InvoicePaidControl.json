@@ -1,0 +1,74 @@
+{
+ "file": "components/InvoicePaidControl.jsx",
+ "sha256": "4291e1e99e824868ab75b94e4529ec434ab36458c980896eaa78362e3f97567b",
+ "components": [
+  "InvoicePaidControl"
+ ],
+ "controls": [
+  {
+   "id": "InvoicePaidControl:a:view-proof",
+   "component": "InvoicePaidControl",
+   "tag": "a",
+   "label": "View proof",
+   "href": "/api/invoices/proof?invoiceId={}",
+   "line": 21
+  },
+  {
+   "id": "InvoicePaidControl:button:mark-as-unpaid",
+   "component": "InvoicePaidControl",
+   "tag": "button",
+   "label": "Mark as unpaid",
+   "handlers": {
+    "onClick": "() => onMarkUnpaid(invoice.InvoiceID)"
+   },
+   "line": 25
+  },
+  {
+   "id": "InvoicePaidControl:button:mark-as-paid",
+   "component": "InvoicePaidControl",
+   "tag": "button",
+   "label": "Mark as paid",
+   "handlers": {
+    "onClick": "() => setConfirming(true)"
+   },
+   "line": 43
+  },
+  {
+   "id": "InvoicePaidControl:input:e-setfile-e-target-files-0-null",
+   "component": "InvoicePaidControl",
+   "tag": "input",
+   "label": "",
+   "type": "file",
+   "handlers": {
+    "onChange": "(e) => setFile(e.target.files?.[0] || null)"
+   },
+   "line": 65
+  },
+  {
+   "id": "InvoicePaidControl:button:uploading-confirm-payment",
+   "component": "InvoicePaidControl",
+   "tag": "button",
+   "label": "Uploading… | Confirm payment",
+   "handlers": {
+    "onClick": "async () => { setBusy(true); setError(\"\"); try { "
+   },
+   "line": 76
+  },
+  {
+   "id": "InvoicePaidControl:button:cancel",
+   "component": "InvoicePaidControl",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => { setConfirming(false); setFile(null); setError(\"\"); "
+   },
+   "line": 95
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 6,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

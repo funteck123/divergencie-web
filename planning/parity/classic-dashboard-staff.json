@@ -1,0 +1,158 @@
+{
+ "file": "app/dashboard/staff/page.js",
+ "sha256": "31c6f1863654354a7cda43f5aa5219277957e57ed5c47498f1045da6f8b0f801",
+ "components": [
+  "AttendanceForm",
+  "Body",
+  "StaffDashboard"
+ ],
+ "controls": [
+  {
+   "id": "Body:button:weekly",
+   "component": "Body",
+   "tag": "button",
+   "label": "Weekly",
+   "handlers": {
+    "onClick": "() => setView(\"weekly\")"
+   },
+   "line": 202
+  },
+  {
+   "id": "Body:button:calendar",
+   "component": "Body",
+   "tag": "button",
+   "label": "Calendar",
+   "handlers": {
+    "onClick": "() => setView(\"calendar\")"
+   },
+   "line": 205
+  },
+  {
+   "id": "Body:button:list",
+   "component": "Body",
+   "tag": "button",
+   "label": "List",
+   "handlers": {
+    "onClick": "() => setView(\"list\")"
+   },
+   "line": 208
+  },
+  {
+   "id": "Body:button:schedule-image",
+   "component": "Body",
+   "tag": "button",
+   "label": "Schedule Image",
+   "handlers": {
+    "onClick": "() => setView(\"image\")"
+   },
+   "line": 211
+  },
+  {
+   "id": "Body:input:e-setshowpastschedule-e-target-checked",
+   "component": "Body",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setShowPastSchedule(e.target.checked)"
+   },
+   "line": 219
+  },
+  {
+   "id": "Body:AttendanceForm:status-hrs-logattendance-s-scheduleid-st",
+   "component": "Body",
+   "tag": "AttendanceForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(status, hrs) => logAttendance(s.ScheduleID, status, hrs)"
+   },
+   "line": 267
+  },
+  {
+   "id": "Body:button:marking-mark-as-received",
+   "component": "Body",
+   "tag": "button",
+   "label": "Marking… | Mark as received",
+   "handlers": {
+    "onClick": "() => markPaycheckReceived(p.PaycheckID)"
+   },
+   "line": 353
+  },
+  {
+   "id": "Body:a:pdf",
+   "component": "Body",
+   "tag": "a",
+   "label": "PDF",
+   "href": "/api/paychecks/pdf?paycheckId={}",
+   "download": true,
+   "line": 363
+  },
+  {
+   "id": "AttendanceForm:form:status-present-absent-late-hours-logging",
+   "component": "AttendanceForm",
+   "tag": "form",
+   "label": "Status Present Absent Late Hours Logging… | Log",
+   "handlers": {
+    "onSubmit": "async (e) => { e.preventDefault(); setSaving(true); try { "
+   },
+   "line": 389
+  },
+  {
+   "id": "AttendanceForm:SearchSelect:value-status",
+   "component": "AttendanceForm",
+   "tag": "SearchSelect",
+   "label": "value:status",
+   "handlers": {
+    "onChange": "(e) => setStatus(e.target.value)"
+   },
+   "line": 403
+  },
+  {
+   "id": "AttendanceForm:input:value-hrs",
+   "component": "AttendanceForm",
+   "tag": "input",
+   "label": "value:hrs",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setHrs(e.target.value)"
+   },
+   "line": 411
+  },
+  {
+   "id": "AttendanceForm:button:logging-log",
+   "component": "AttendanceForm",
+   "tag": "button",
+   "label": "Logging… | Log",
+   "type": "submit",
+   "line": 420
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 34
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/attendance",
+   "line": 53
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/paychecks",
+   "line": 67
+  }
+ ],
+ "counts": {
+  "controls": 12,
+  "apiCalls": 3,
+  "components": 3
+ }
+}

@@ -1,0 +1,59 @@
+{
+ "file": "components/FilterBar.jsx",
+ "sha256": "62624bf9bef262de8f5b1bce4f650b1de36dc093bcf09146f35aa48b899a3004",
+ "components": [
+  "FilterBar"
+ ],
+ "controls": [
+  {
+   "id": "FilterBar:button:filter",
+   "component": "FilterBar",
+   "tag": "button",
+   "label": "⌕ Filter",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setOpen(true)"
+   },
+   "line": 28
+  },
+  {
+   "id": "FilterBar:input:expr",
+   "component": "FilterBar",
+   "tag": "input",
+   "label": "{expr}",
+   "type": "text",
+   "handlers": {
+    "onChange": "(e) => onSearch(e.target.value)"
+   },
+   "line": 37
+  },
+  {
+   "id": "FilterBar:button:clear",
+   "component": "FilterBar",
+   "tag": "button",
+   "label": "Clear",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => { onSearch(\"\"); setOpen(false); }"
+   },
+   "line": 46
+  },
+  {
+   "id": "FilterBar:button:hide",
+   "component": "FilterBar",
+   "tag": "button",
+   "label": "Hide",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setOpen(false)"
+   },
+   "line": 58
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 4,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

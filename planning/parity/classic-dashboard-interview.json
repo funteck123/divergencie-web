@@ -1,0 +1,334 @@
+{
+ "file": "app/dashboard/interview/page.js",
+ "sha256": "a84197d041cf61e840df2bc63fff4160f9d712c47630c0560ff7e3773b80294e",
+ "components": [
+  "Body",
+  "DocumentsCard",
+  "InterviewDashboard",
+  "PersonalInfoCard",
+  "TaskForm",
+  "TrialFeedbackForm"
+ ],
+ "controls": [
+  {
+   "id": "Body:TaskForm:link-submittask-it-interviewid-link",
+   "component": "Body",
+   "tag": "TaskForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(link) => submitTask(it.InterviewID, link)"
+   },
+   "line": 206
+  },
+  {
+   "id": "Body:a:open-offer-letter",
+   "component": "Body",
+   "tag": "a",
+   "label": "Open offer letter",
+   "href": "{expr}",
+   "line": 226
+  },
+  {
+   "id": "Body:button:accepting-accept-offer",
+   "component": "Body",
+   "tag": "button",
+   "label": "Accepting… | Accept offer",
+   "handlers": {
+    "onClick": "() => acceptOffer(it.InterviewID)"
+   },
+   "line": 230
+  },
+  {
+   "id": "Body:a:open-offer-letter:2",
+   "component": "Body",
+   "tag": "a",
+   "label": "Open offer letter",
+   "href": "{expr}",
+   "line": 242
+  },
+  {
+   "id": "Body:TrialFeedbackForm:fb-submittrialfeedback-t-trialid-fb",
+   "component": "Body",
+   "tag": "TrialFeedbackForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(fb) => submitTrialFeedback(t.TrialID, fb)"
+   },
+   "line": 289
+  },
+  {
+   "id": "Body:SearchSelect:service",
+   "component": "Body",
+   "tag": "SearchSelect",
+   "label": "Service",
+   "handlers": {
+    "onChange": "(e) => setServiceId(e.target.value)"
+   },
+   "line": 316
+  },
+  {
+   "id": "Body:button:requesting-request-interview",
+   "component": "Body",
+   "tag": "button",
+   "label": "Requesting… | Request Interview",
+   "handlers": {
+    "onClick": "requestInterview"
+   },
+   "line": 325
+  },
+  {
+   "id": "Body:SearchSelect:trial-service",
+   "component": "Body",
+   "tag": "SearchSelect",
+   "label": "Trial service",
+   "handlers": {
+    "onChange": "(e) => setTrialServiceId(e.target.value)"
+   },
+   "line": 340
+  },
+  {
+   "id": "Body:button:requesting-request-trial",
+   "component": "Body",
+   "tag": "button",
+   "label": "Requesting… | Request Trial",
+   "handlers": {
+    "onClick": "requestTrial"
+   },
+   "line": 349
+  },
+  {
+   "id": "TaskForm:form:submitting-submit",
+   "component": "TaskForm",
+   "tag": "form",
+   "label": "Submitting… | Submit",
+   "handlers": {
+    "onSubmit": "async (e) => { e.preventDefault(); if (!link.trim()) return; setSa"
+   },
+   "line": 363
+  },
+  {
+   "id": "TaskForm:input:task-submission-link",
+   "component": "TaskForm",
+   "tag": "input",
+   "label": "Task submission link",
+   "handlers": {
+    "onChange": "(e) => setLink(e.target.value)"
+   },
+   "line": 376
+  },
+  {
+   "id": "TaskForm:button:submitting-submit",
+   "component": "TaskForm",
+   "tag": "button",
+   "label": "Submitting… | Submit",
+   "type": "submit",
+   "line": 377
+  },
+  {
+   "id": "TrialFeedbackForm:form:submitting-submit",
+   "component": "TrialFeedbackForm",
+   "tag": "form",
+   "label": "Submitting… | Submit",
+   "handlers": {
+    "onSubmit": "async (e) => { e.preventDefault(); if (!text.trim()) return; setSa"
+   },
+   "line": 389
+  },
+  {
+   "id": "TrialFeedbackForm:input:trial-feedback",
+   "component": "TrialFeedbackForm",
+   "tag": "input",
+   "label": "Trial feedback",
+   "handlers": {
+    "onChange": "(e) => setText(e.target.value)"
+   },
+   "line": 402
+  },
+  {
+   "id": "TrialFeedbackForm:button:submitting-submit",
+   "component": "TrialFeedbackForm",
+   "tag": "button",
+   "label": "Submitting… | Submit",
+   "type": "submit",
+   "line": 403
+  },
+  {
+   "id": "PersonalInfoCard:form:name-email-whatsapp-number-country-timez",
+   "component": "PersonalInfoCard",
+   "tag": "form",
+   "label": "Name Email WhatsApp Number Country (Timezone) Saving… | Save",
+   "handlers": {
+    "onSubmit": "save"
+   },
+   "line": 437
+  },
+  {
+   "id": "PersonalInfoCard:input:value-user-name",
+   "component": "PersonalInfoCard",
+   "tag": "input",
+   "label": "value:user.Name",
+   "line": 442
+  },
+  {
+   "id": "PersonalInfoCard:input:value-email",
+   "component": "PersonalInfoCard",
+   "tag": "input",
+   "label": "value:email",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setEmail(e.target.value)"
+   },
+   "line": 448
+  },
+  {
+   "id": "PersonalInfoCard:input:value-whatsappnumber",
+   "component": "PersonalInfoCard",
+   "tag": "input",
+   "label": "value:whatsappNumber",
+   "handlers": {
+    "onChange": "(e) => setWhatsappNumber(e.target.value)"
+   },
+   "line": 454
+  },
+  {
+   "id": "PersonalInfoCard:SearchSelect:value-timezone",
+   "component": "PersonalInfoCard",
+   "tag": "SearchSelect",
+   "label": "value:timezone",
+   "handlers": {
+    "onChange": "(e) => setTimezone(e.target.value)"
+   },
+   "line": 460
+  },
+  {
+   "id": "PersonalInfoCard:button:saving-save",
+   "component": "PersonalInfoCard",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "type": "submit",
+   "line": 472
+  },
+  {
+   "id": "DocumentsCard:form:resume-required-google-drive-link-cover-",
+   "component": "DocumentsCard",
+   "tag": "form",
+   "label": "Resume (required, Google Drive link) Cover Letter (optional, Google Drive link) Portfolio (optional, up to 5 Google Drive links) Saving… | Save",
+   "handlers": {
+    "onSubmit": "save"
+   },
+   "line": 514
+  },
+  {
+   "id": "DocumentsCard:input:https-drive-google-com",
+   "component": "DocumentsCard",
+   "tag": "input",
+   "label": "https://drive.google.com/…",
+   "handlers": {
+    "onChange": "(e) => setResumeUrl(e.target.value)"
+   },
+   "line": 519
+  },
+  {
+   "id": "DocumentsCard:input:https-drive-google-com:2",
+   "component": "DocumentsCard",
+   "tag": "input",
+   "label": "https://drive.google.com/…",
+   "handlers": {
+    "onChange": "(e) => setCoverLetterUrl(e.target.value)"
+   },
+   "line": 525
+  },
+  {
+   "id": "DocumentsCard:input:portfolio-link",
+   "component": "DocumentsCard",
+   "tag": "input",
+   "label": "Portfolio link {}",
+   "handlers": {
+    "onChange": "(e) => setPortfolioLink(i, e.target.value)"
+   },
+   "line": 533
+  },
+  {
+   "id": "DocumentsCard:button:add-another-link",
+   "component": "DocumentsCard",
+   "tag": "button",
+   "label": "+ Add another link",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setPortfolioLinks((prev) => [...prev, \"\"])"
+   },
+   "line": 544
+  },
+  {
+   "id": "DocumentsCard:button:saving-save",
+   "component": "DocumentsCard",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "type": "submit",
+   "line": 553
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 48
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/schedule",
+   "line": 49
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/schedule/pick",
+   "line": 67
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/schedule/pick",
+   "line": 88
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/trial-feedback",
+   "line": 105
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/interview-task",
+   "line": 113
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/interview-offer",
+   "line": 123
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/interview-profile",
+   "line": 139
+  }
+ ],
+ "counts": {
+  "controls": 27,
+  "apiCalls": 8,
+  "components": 6
+ }
+}

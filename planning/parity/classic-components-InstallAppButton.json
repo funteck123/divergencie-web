@@ -1,0 +1,55 @@
+{
+ "file": "components/InstallAppButton.jsx",
+ "sha256": "2558b91098ae88eba09e4ad1e018b4b9d2ae2224db6c68935e9e9951837db519",
+ "components": [
+  "InstallAppButton"
+ ],
+ "controls": [
+  {
+   "id": "InstallAppButton:button:install-app",
+   "component": "InstallAppButton",
+   "tag": "button",
+   "label": "Install app",
+   "handlers": {
+    "onClick": "ios ? () => setHelpOpen(true) : install"
+   },
+   "line": 61
+  },
+  {
+   "id": "InstallAppButton:div:install-divergencie-tap-the-share-button",
+   "component": "InstallAppButton",
+   "tag": "div",
+   "label": "Install DivergenCIE Tap the Share button in Safari (the square with an arrow). Scroll down and tap Add to Home Screen. Tap Add. DivergenCIE now opens from your home screen like an app. Got it",
+   "handlers": {
+    "onClick": "() => setHelpOpen(false)"
+   },
+   "line": 65
+  },
+  {
+   "id": "InstallAppButton:div:install-divergencie-tap-the-share-button:2",
+   "component": "InstallAppButton",
+   "tag": "div",
+   "label": "Install DivergenCIE Tap the Share button in Safari (the square with an arrow). Scroll down and tap Add to Home Screen. Tap Add. DivergenCIE now opens from your home screen like an app. Got it",
+   "handlers": {
+    "onClick": "(e) => e.stopPropagation()"
+   },
+   "line": 69
+  },
+  {
+   "id": "InstallAppButton:button:got-it",
+   "component": "InstallAppButton",
+   "tag": "button",
+   "label": "Got it",
+   "handlers": {
+    "onClick": "() => setHelpOpen(false)"
+   },
+   "line": 76
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 4,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

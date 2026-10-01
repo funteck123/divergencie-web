@@ -1,0 +1,24 @@
+{
+ "file": "components/ScheduleImage.jsx",
+ "sha256": "096a381445c0cbddf286ac3d42a723e37037fb4f7fb680927dde8b503bf57bf1",
+ "components": [
+  "ScheduleImage"
+ ],
+ "controls": [
+  {
+   "id": "ScheduleImage:a:download-png",
+   "component": "ScheduleImage",
+   "tag": "a",
+   "label": "Download PNG",
+   "href": "{expr}",
+   "download": true,
+   "line": 36
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 1,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

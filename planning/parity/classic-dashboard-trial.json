@@ -1,0 +1,126 @@
+{
+ "file": "app/dashboard/trial/page.js",
+ "sha256": "423930cc218362bcfe3f86aed5ee03cbe98d4b3ef0ba39b54d6fa384e776aaa5",
+ "components": [
+  "Body",
+  "FeedbackForm",
+  "TrialDashboard"
+ ],
+ "controls": [
+  {
+   "id": "Body:FeedbackForm:fb-submitfeedback-t-trialid-fb",
+   "component": "Body",
+   "tag": "FeedbackForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(fb) => submitFeedback(t.TrialID, fb)"
+   },
+   "line": 174
+  },
+  {
+   "id": "Body:SearchSelect:service",
+   "component": "Body",
+   "tag": "SearchSelect",
+   "label": "Service",
+   "handlers": {
+    "onChange": "(e) => setServiceId(e.target.value)"
+   },
+   "line": 192
+  },
+  {
+   "id": "Body:button:requesting-request-trial",
+   "component": "Body",
+   "tag": "button",
+   "label": "Requesting… | Request Trial",
+   "handlers": {
+    "onClick": "requestTrial"
+   },
+   "line": 201
+  },
+  {
+   "id": "Body:a:pay-online",
+   "component": "Body",
+   "tag": "a",
+   "label": "Pay online",
+   "href": "{expr}",
+   "line": 243
+  },
+  {
+   "id": "FeedbackForm:form:submitting-submit",
+   "component": "FeedbackForm",
+   "tag": "form",
+   "label": "Submitting… | Submit",
+   "handlers": {
+    "onSubmit": "async (e) => { e.preventDefault(); if (!text.trim()) return; setSa"
+   },
+   "line": 283
+  },
+  {
+   "id": "FeedbackForm:input:trial-feedback",
+   "component": "FeedbackForm",
+   "tag": "input",
+   "label": "Trial feedback",
+   "handlers": {
+    "onChange": "(e) => setText(e.target.value)"
+   },
+   "line": 296
+  },
+  {
+   "id": "FeedbackForm:button:submitting-submit",
+   "component": "FeedbackForm",
+   "tag": "button",
+   "label": "Submitting… | Submit",
+   "type": "submit",
+   "line": 297
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 41
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/schedule",
+   "line": 42
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/schedule/pick",
+   "line": 61
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/trial-feedback",
+   "line": 75
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/invoices",
+   "line": 91
+  },
+  {
+   "component": "Body",
+   "call": "fetch",
+   "method": "POST",
+   "url": "/api/invoices/mark-paid",
+   "line": 105
+  }
+ ],
+ "counts": {
+  "controls": 7,
+  "apiCalls": 6,
+  "components": 3
+ }
+}

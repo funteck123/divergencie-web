@@ -1,0 +1,23 @@
+{
+ "file": "components/StaffResources.jsx",
+ "sha256": "670b39db2770773dca860370c1d0db7238a6cabb872ce11d98b1c3e3279031dc",
+ "components": [
+  "StaffResources"
+ ],
+ "controls": [
+  {
+   "id": "StaffResources:a:x",
+   "component": "StaffResources",
+   "tag": "a",
+   "label": "",
+   "href": "{expr}",
+   "line": 21
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 1,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

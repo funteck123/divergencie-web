@@ -1,0 +1,117 @@
+{
+ "file": "app/dashboard/teacher/page.js",
+ "sha256": "8a2732c49ade1beadf3eae191d7b9bf13f99961add08ec3bd70a655abbad3eac",
+ "components": [
+  "Body",
+  "TeacherDashboard"
+ ],
+ "controls": [
+  {
+   "id": "Body:button:weekly",
+   "component": "Body",
+   "tag": "button",
+   "label": "Weekly",
+   "handlers": {
+    "onClick": "() => setView(\"weekly\")"
+   },
+   "line": 214
+  },
+  {
+   "id": "Body:button:calendar",
+   "component": "Body",
+   "tag": "button",
+   "label": "Calendar",
+   "handlers": {
+    "onClick": "() => setView(\"calendar\")"
+   },
+   "line": 217
+  },
+  {
+   "id": "Body:button:list",
+   "component": "Body",
+   "tag": "button",
+   "label": "List",
+   "handlers": {
+    "onClick": "() => setView(\"list\")"
+   },
+   "line": 220
+  },
+  {
+   "id": "Body:button:schedule-image",
+   "component": "Body",
+   "tag": "button",
+   "label": "Schedule Image",
+   "handlers": {
+    "onClick": "() => setView(\"image\")"
+   },
+   "line": 223
+  },
+  {
+   "id": "Body:SearchSelect:value-schedulerange",
+   "component": "Body",
+   "tag": "SearchSelect",
+   "label": "value:scheduleRange",
+   "handlers": {
+    "onChange": "(e) => setScheduleRange(e.target.value)"
+   },
+   "line": 232
+  },
+  {
+   "id": "Body:button:log",
+   "component": "Body",
+   "tag": "button",
+   "label": "Log…",
+   "handlers": {
+    "onClick": "() => setExpandedAttendance(expanded ? null : s.ScheduleID)"
+   },
+   "line": 286
+  },
+  {
+   "id": "Body:button:marking-mark-as-received",
+   "component": "Body",
+   "tag": "button",
+   "label": "Marking… | Mark as received",
+   "handlers": {
+    "onClick": "() => markPaycheckReceived(p.PaycheckID)"
+   },
+   "line": 387
+  },
+  {
+   "id": "Body:a:pdf",
+   "component": "Body",
+   "tag": "a",
+   "label": "PDF",
+   "href": "/api/paychecks/pdf?paycheckId={}",
+   "download": true,
+   "line": 397
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 40
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/attendance",
+   "line": 59
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/paychecks",
+   "line": 73
+  }
+ ],
+ "counts": {
+  "controls": 8,
+  "apiCalls": 3,
+  "components": 2
+ }
+}

@@ -1,0 +1,131 @@
+{
+ "file": "components/DashboardShell.jsx",
+ "sha256": "1538fa64c857c3353d93e7c74646d294870221a034458f017eb9483731f9e623",
+ "components": [
+  "DashboardShell",
+  "ReportIssueButton"
+ ],
+ "controls": [
+  {
+   "id": "ReportIssueButton:button:report-an-issue",
+   "component": "ReportIssueButton",
+   "tag": "button",
+   "label": "Report an Issue",
+   "handlers": {
+    "onClick": "() => setOpen(true)"
+   },
+   "line": 38
+  },
+  {
+   "id": "ReportIssueButton:div:report-an-issue",
+   "component": "ReportIssueButton",
+   "tag": "div",
+   "label": "Report an Issue",
+   "handlers": {
+    "onClick": "close"
+   },
+   "line": 42
+  },
+  {
+   "id": "ReportIssueButton:div:report-an-issue:2",
+   "component": "ReportIssueButton",
+   "tag": "div",
+   "label": "Report an Issue",
+   "handlers": {
+    "onClick": "(e) => e.stopPropagation()"
+   },
+   "line": 54
+  },
+  {
+   "id": "ReportIssueButton:button:close",
+   "component": "ReportIssueButton",
+   "tag": "button",
+   "label": "Close",
+   "handlers": {
+    "onClick": "close"
+   },
+   "line": 63
+  },
+  {
+   "id": "ReportIssueButton:textarea:what-went-wrong",
+   "component": "ReportIssueButton",
+   "tag": "textarea",
+   "label": "What went wrong?",
+   "handlers": {
+    "onChange": "(e) => setMessage(e.target.value)"
+   },
+   "line": 67
+  },
+  {
+   "id": "ReportIssueButton:input:attachment-url-optional",
+   "component": "ReportIssueButton",
+   "tag": "input",
+   "label": "Attachment URL (optional)",
+   "handlers": {
+    "onChange": "(e) => setAttachmentUrl(e.target.value)"
+   },
+   "line": 75
+  },
+  {
+   "id": "ReportIssueButton:button:cancel",
+   "component": "ReportIssueButton",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "close"
+   },
+   "line": 84
+  },
+  {
+   "id": "ReportIssueButton:button:sending-send",
+   "component": "ReportIssueButton",
+   "tag": "button",
+   "label": "Sending… | Send",
+   "handlers": {
+    "onClick": "submit"
+   },
+   "line": 85
+  },
+  {
+   "id": "DashboardShell:button:returning-stop-impersonating",
+   "component": "DashboardShell",
+   "tag": "button",
+   "label": "Returning… | Stop impersonating",
+   "handlers": {
+    "onClick": "stopImpersonating"
+   },
+   "line": 152
+  },
+  {
+   "id": "DashboardShell:button:sign-out",
+   "component": "DashboardShell",
+   "tag": "button",
+   "label": "Sign out",
+   "handlers": {
+    "onClick": "() => { logout(); router.push(\"/login\"); }"
+   },
+   "line": 177
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "ReportIssueButton",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/tickets",
+   "line": 22
+  },
+  {
+   "component": "DashboardShell",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/impersonate",
+   "line": 123
+  }
+ ],
+ "counts": {
+  "controls": 10,
+  "apiCalls": 2,
+  "components": 2
+ }
+}

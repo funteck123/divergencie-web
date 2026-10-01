@@ -1,0 +1,47 @@
+{
+ "file": "components/MyInfo.jsx",
+ "sha256": "590cdbd05afcc10ad8732e5e4ae4aca80d74c168094bcc40ada675ced6df7870",
+ "components": [
+  "MyInfo"
+ ],
+ "controls": [
+  {
+   "id": "MyInfo:a:x",
+   "component": "MyInfo",
+   "tag": "a",
+   "label": "",
+   "href": "{expr}",
+   "line": 47
+  },
+  {
+   "id": "MyInfo:a:x:2",
+   "component": "MyInfo",
+   "tag": "a",
+   "label": "",
+   "href": "{expr}",
+   "line": 57
+  },
+  {
+   "id": "MyInfo:a:x:3",
+   "component": "MyInfo",
+   "tag": "a",
+   "label": "",
+   "href": "{expr}",
+   "line": 69
+  },
+  {
+   "id": "MyInfo:a:x:4",
+   "component": "MyInfo",
+   "tag": "a",
+   "label": "",
+   "href": "{expr}",
+   "line": 79
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 4,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

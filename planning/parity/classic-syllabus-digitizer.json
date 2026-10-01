@@ -1,0 +1,128 @@
+{
+ "file": "prototypes/syllabus-digitizer/index.html",
+ "sha256": "9e7eb516f640f2dead6c923d412a444a77051531aeacdc8c8ba3ab0116ae01ea",
+ "components": [
+  "html"
+ ],
+ "controls": [
+  {
+   "id": "html:select:progresssubjectselect",
+   "component": "html",
+   "tag": "select",
+   "label": "progressSubjectSelect",
+   "line": 132
+  },
+  {
+   "id": "html:select:progresschapterselect",
+   "component": "html",
+   "tag": "select",
+   "label": "progressChapterSelect",
+   "line": 133
+  },
+  {
+   "id": "html:select:lbsubjectselect",
+   "component": "html",
+   "tag": "select",
+   "label": "lbSubjectSelect",
+   "line": 150
+  },
+  {
+   "id": "html:select:lbchapterselect",
+   "component": "html",
+   "tag": "select",
+   "label": "lbChapterSelect",
+   "line": 151
+  },
+  {
+   "id": "html:input:search",
+   "component": "html",
+   "tag": "input",
+   "label": "search",
+   "line": 232
+  },
+  {
+   "id": "html:button:x",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 241
+  },
+  {
+   "id": "html:input:x",
+   "component": "html",
+   "tag": "input",
+   "label": "",
+   "line": 369
+  },
+  {
+   "id": "html:button:exportbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "exportBtn",
+   "line": 399
+  },
+  {
+   "id": "html:button:rawtoggle",
+   "component": "html",
+   "tag": "button",
+   "label": "rawToggle",
+   "line": 400
+  },
+  {
+   "id": "html:input:x:2",
+   "component": "html",
+   "tag": "input",
+   "label": "",
+   "line": 443
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/syllabi",
+   "line": 225
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/syllabi/{}",
+   "line": 263
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/topic-complete",
+   "line": 456
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/progress?account={}",
+   "line": 744
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/progress/all",
+   "line": 745
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/leaderboard",
+   "line": 746
+  }
+ ],
+ "counts": {
+  "controls": 10,
+  "apiCalls": 6,
+  "components": 1
+ }
+}

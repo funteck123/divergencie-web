@@ -1,0 +1,23 @@
+{
+ "file": "components/GuidesSection.jsx",
+ "sha256": "6546a26091180490f06928b544e1f00a2467ac31494908556ccd891af45d8a2c",
+ "components": [
+  "GuidesSection"
+ ],
+ "controls": [
+  {
+   "id": "GuidesSection:a:x",
+   "component": "GuidesSection",
+   "tag": "a",
+   "label": "",
+   "href": "{expr}",
+   "line": 14
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 1,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

@@ -1,0 +1,253 @@
+{
+ "file": "app/register/page.js",
+ "sha256": "cacfb599d1302fcc229800d21746e003557bf034aba01a9ffcbb21d591d2d098",
+ "components": [
+  "CheckGroup",
+  "PhoneField",
+  "RegisterForm",
+  "RegisterPage",
+  "Req"
+ ],
+ "controls": [
+  {
+   "id": "PhoneField:input:start-with-and-the-country-code-for-exam",
+   "component": "PhoneField",
+   "tag": "input",
+   "label": "Start with + and the country code, for example +44 7000 000000",
+   "type": "tel",
+   "handlers": {
+    "onChange": "(e) => onChange(e.target.value)"
+   },
+   "line": 71
+  },
+  {
+   "id": "CheckGroup:input:ontoggle-o",
+   "component": "CheckGroup",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => onToggle(o)"
+   },
+   "line": 98
+  },
+  {
+   "id": "CheckGroup:input:other",
+   "component": "CheckGroup",
+   "tag": "input",
+   "label": "Other",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => onOther(\"\")"
+   },
+   "line": 103
+  },
+  {
+   "id": "CheckGroup:input:other:2",
+   "component": "CheckGroup",
+   "tag": "input",
+   "label": "{} other",
+   "handlers": {
+    "onChange": "(e) => onOther(e.target.value)"
+   },
+   "line": 104
+  },
+  {
+   "id": "RegisterForm:form:i-m-applying-as-trial-student-interview-",
+   "component": "RegisterForm",
+   "tag": "form",
+   "label": "I'm applying as Trial (Student) Interview — Teacher Interview — Staff Interview — Ambassador Your email | Email Submitting… | Submit | Submit application",
+   "handlers": {
+    "onSubmit": "handleSubmit"
+   },
+   "line": 271
+  },
+  {
+   "id": "RegisterForm:SearchSelect:value-requestedtype",
+   "component": "RegisterForm",
+   "tag": "SearchSelect",
+   "label": "value:requestedType",
+   "handlers": {
+    "onChange": "(e) => setRequestedType(e.target.value)"
+   },
+   "line": 274
+  },
+  {
+   "id": "RegisterForm:input:student-first-name",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "Student first name",
+   "handlers": {
+    "onChange": "(e) => setName(e.target.value)"
+   },
+   "line": 286
+  },
+  {
+   "id": "RegisterForm:input:student-last-name",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "Student last name",
+   "handlers": {
+    "onChange": "(e) => setLastName(e.target.value)"
+   },
+   "line": 287
+  },
+  {
+   "id": "RegisterForm:input:value-name",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "value:name",
+   "handlers": {
+    "onChange": "(e) => setName(e.target.value)"
+   },
+   "line": 293
+  },
+  {
+   "id": "RegisterForm:SearchSelect:value-gender",
+   "component": "RegisterForm",
+   "tag": "SearchSelect",
+   "label": "value:gender",
+   "handlers": {
+    "onChange": "(e) => setGender(e.target.value)"
+   },
+   "line": 302
+  },
+  {
+   "id": "RegisterForm:SearchSelect:value-location",
+   "component": "RegisterForm",
+   "tag": "SearchSelect",
+   "label": "value:location",
+   "handlers": {
+    "onChange": "(e) => setLocation(e.target.value)"
+   },
+   "line": 311
+  },
+  {
+   "id": "RegisterForm:PhoneField:44-7000-000000",
+   "component": "RegisterForm",
+   "tag": "PhoneField",
+   "label": "+44 7000 000000",
+   "handlers": {
+    "onChange": "setWhatsappNumber"
+   },
+   "line": 320
+  },
+  {
+   "id": "RegisterForm:input:value-email",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "value:email",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setEmail(e.target.value)"
+   },
+   "line": 329
+  },
+  {
+   "id": "RegisterForm:PhoneField:phone-international",
+   "component": "RegisterForm",
+   "tag": "PhoneField",
+   "label": "Phone (International)",
+   "handlers": {
+    "onChange": "setParentNumber"
+   },
+   "line": 340
+  },
+  {
+   "id": "RegisterForm:input:value-parentemail",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "value:parentEmail",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setParentEmail(e.target.value)"
+   },
+   "line": 348
+  },
+  {
+   "id": "RegisterForm:input:value-schoolname",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "value:schoolName",
+   "handlers": {
+    "onChange": "(e) => setSchoolName(e.target.value)"
+   },
+   "line": 352
+  },
+  {
+   "id": "RegisterForm:input:enter-name",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "Enter name!",
+   "handlers": {
+    "onChange": "(e) => setReferrer(e.target.value)"
+   },
+   "line": 360
+  },
+  {
+   "id": "RegisterForm:input:value-couponcode",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "value:couponCode",
+   "handlers": {
+    "onChange": "(e) => setCouponCode(e.target.value)"
+   },
+   "line": 366
+  },
+  {
+   "id": "RegisterForm:input:scoreastar",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "scoreAStar",
+   "type": "radio",
+   "name": "scoreAStar",
+   "handlers": {
+    "onChange": "() => setScoreAStar(o)"
+   },
+   "line": 373
+  },
+  {
+   "id": "RegisterForm:textarea:value-whydivergencie",
+   "component": "RegisterForm",
+   "tag": "textarea",
+   "label": "value:whyDivergenCIE",
+   "handlers": {
+    "onChange": "(e) => setWhyDivergenCIE(e.target.value)"
+   },
+   "line": 383
+  },
+  {
+   "id": "RegisterForm:input:e-setresume-e-target-files-0-null",
+   "component": "RegisterForm",
+   "tag": "input",
+   "label": "",
+   "type": "file",
+   "handlers": {
+    "onChange": "(e) => setResume(e.target.files?.[0] || null)"
+   },
+   "line": 392
+  },
+  {
+   "id": "RegisterForm:button:submitting-submit-submit-application",
+   "component": "RegisterForm",
+   "tag": "button",
+   "label": "Submitting… | Submit | Submit application",
+   "type": "submit",
+   "line": 402
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "RegisterForm",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/register",
+   "line": 189
+  }
+ ],
+ "counts": {
+  "controls": 22,
+  "apiCalls": 1,
+  "components": 5
+ }
+}

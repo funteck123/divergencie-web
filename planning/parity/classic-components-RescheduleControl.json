@@ -1,0 +1,75 @@
+{
+ "file": "components/RescheduleControl.jsx",
+ "sha256": "ba8fedcbf7c3d3f1084d24bede014e4c0af512e54b89c39185240994a7e960e4",
+ "components": [
+  "RescheduleControl"
+ ],
+ "controls": [
+  {
+   "id": "RescheduleControl:input:value-date",
+   "component": "RescheduleControl",
+   "tag": "input",
+   "label": "value:date",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setDate(e.target.value)"
+   },
+   "line": 41
+  },
+  {
+   "id": "RescheduleControl:input:value-time",
+   "component": "RescheduleControl",
+   "tag": "input",
+   "label": "value:time",
+   "type": "time",
+   "handlers": {
+    "onChange": "(e) => setTime(e.target.value)"
+   },
+   "line": 45
+  },
+  {
+   "id": "RescheduleControl:button:send",
+   "component": "RescheduleControl",
+   "tag": "button",
+   "label": "Send",
+   "handlers": {
+    "onClick": "async () => { setError(\"\"); try { await api(\"/api/sc"
+   },
+   "line": 47
+  },
+  {
+   "id": "RescheduleControl:button:cancel",
+   "component": "RescheduleControl",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setEditing(false)"
+   },
+   "line": 65
+  },
+  {
+   "id": "RescheduleControl:button:suggest-reschedule",
+   "component": "RescheduleControl",
+   "tag": "button",
+   "label": "Suggest reschedule",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 74
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "RescheduleControl",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/schedule/reschedule-requests",
+   "line": 52
+  }
+ ],
+ "counts": {
+  "controls": 5,
+  "apiCalls": 1,
+  "components": 1
+ }
+}

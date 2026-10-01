@@ -1,0 +1,4369 @@
+{
+ "file": "app/dashboard/management/page.js",
+ "sha256": "74a40d01efc0bb4adca3b3a6c1b4bce8443cf1baf28b732b0fcaad4c08fa37f8",
+ "components": [
+  "AccountCell",
+  "AccountGroupTable",
+  "Accounts",
+  "Applications",
+  "ApprovePaymentControl",
+  "AuditLog",
+  "Badge",
+  "Billing",
+  "BillingFilterBar",
+  "Body",
+  "ConfirmButton",
+  "CopyButton",
+  "CopyCredentialsButton",
+  "CreateAccount",
+  "DeleteAccountButton",
+  "EditAccountForm",
+  "EditableCombobox",
+  "EnrollmentGroup",
+  "EnrollmentRow",
+  "Enrollments",
+  "ExpandableCell",
+  "FacilitatorInput",
+  "GroupRow",
+  "GuideForm",
+  "GuideRow",
+  "Guides",
+  "ImportAccount",
+  "InterviewOutcomeForm",
+  "InterviewSlotAssign",
+  "InvoiceBillingTable",
+  "InvoiceRow",
+  "Labeled",
+  "LineItemRow",
+  "ManagementDashboard",
+  "ManualBillingForm",
+  "ManualInvoiceForm",
+  "McqExtractionUrlConfig",
+  "OccurrencesCell",
+  "OfferSentControls",
+  "PaycheckBillingTable",
+  "PaycheckLineItemRow",
+  "PaycheckRow",
+  "PersonStatusBadges",
+  "Pipeline",
+  "RatesCell",
+  "RebuildDrafts",
+  "ReminderCopyMenu",
+  "RescheduleCell",
+  "ResourceToggles",
+  "SchedulePool",
+  "ServiceGroupTable",
+  "ServiceUptimePanel",
+  "Services",
+  "StepIndicator",
+  "SummaryMessage",
+  "TicketRow",
+  "Tickets",
+  "TimezoneSelect"
+ ],
+ "controls": [
+  {
+   "id": "ConfirmButton:button:async-setbusy-true-try-await-onconfirm",
+   "component": "ConfirmButton",
+   "tag": "button",
+   "label": "",
+   "handlers": {
+    "onClick": "async () => { setBusy(true); try { await onConfirm()"
+   },
+   "line": 75
+  },
+  {
+   "id": "ConfirmButton:button:cancel",
+   "component": "ConfirmButton",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setConfirming(false)"
+   },
+   "line": 91
+  },
+  {
+   "id": "ConfirmButton:button:setconfirming-true",
+   "component": "ConfirmButton",
+   "tag": "button",
+   "label": "",
+   "handlers": {
+    "onClick": "() => setConfirming(true)"
+   },
+   "line": 99
+  },
+  {
+   "id": "DeleteAccountButton:button:delete",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Delete",
+   "handlers": {
+    "onClick": "() => setStage(\"confirmSoft\")"
+   },
+   "line": 135
+  },
+  {
+   "id": "DeleteAccountButton:button:deleting-yes-delete",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Deleting… | Yes, delete",
+   "handlers": {
+    "onClick": "() => runDelete(false)"
+   },
+   "line": 146
+  },
+  {
+   "id": "DeleteAccountButton:button:cancel",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setStage(\"idle\")"
+   },
+   "line": 149
+  },
+  {
+   "id": "DeleteAccountButton:button:force-delete-cascade",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Force delete (cascade)",
+   "handlers": {
+    "onClick": "() => { setTypedName(\"\"); setStage(\"confirmForce\"); }"
+   },
+   "line": 163
+  },
+  {
+   "id": "DeleteAccountButton:button:cancel:2",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setStage(\"idle\")"
+   },
+   "line": 166
+  },
+  {
+   "id": "DeleteAccountButton:button:close",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Close",
+   "handlers": {
+    "onClick": "() => setStage(\"idle\")"
+   },
+   "line": 171
+  },
+  {
+   "id": "DeleteAccountButton:input:expr",
+   "component": "DeleteAccountButton",
+   "tag": "input",
+   "label": "{expr}",
+   "handlers": {
+    "onChange": "(e) => setTypedName(e.target.value)"
+   },
+   "line": 187
+  },
+  {
+   "id": "DeleteAccountButton:button:deleting-force-delete",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Deleting… | Force delete",
+   "handlers": {
+    "onClick": "() => runDelete(true)"
+   },
+   "line": 195
+  },
+  {
+   "id": "DeleteAccountButton:button:cancel:3",
+   "component": "DeleteAccountButton",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setStage(\"idle\")"
+   },
+   "line": 203
+  },
+  {
+   "id": "Body:button:settab-t",
+   "component": "Body",
+   "tag": "button",
+   "label": "",
+   "handlers": {
+    "onClick": "() => setTab(t)"
+   },
+   "line": 241
+  },
+  {
+   "id": "TimezoneSelect:SearchSelect:value-value",
+   "component": "TimezoneSelect",
+   "tag": "SearchSelect",
+   "label": "value:value",
+   "handlers": {
+    "onChange": "(e) => onChange(e.target.value)"
+   },
+   "line": 285
+  },
+  {
+   "id": "FacilitatorInput:SearchSelect:account",
+   "component": "FacilitatorInput",
+   "tag": "SearchSelect",
+   "label": "{} account",
+   "handlers": {
+    "onChange": "(e) => { const picked = candidateUsers.find((u) => u.UserID === e.target.value);"
+   },
+   "line": 312
+  },
+  {
+   "id": "FacilitatorInput:input:expr",
+   "component": "FacilitatorInput",
+   "tag": "input",
+   "label": "{expr}",
+   "handlers": {
+    "onChange": "(e) => onChange({ facilitator: e.target.value, facilitatorUserId: \"\" })"
+   },
+   "line": 332
+  },
+  {
+   "id": "FacilitatorInput:SearchSelect:link-to-an-account",
+   "component": "FacilitatorInput",
+   "tag": "SearchSelect",
+   "label": "Link {} to an account",
+   "handlers": {
+    "onChange": "(e) => { const picked = candidateUsers.find((u) => u.UserID === e.target.value"
+   },
+   "line": 339
+  },
+  {
+   "id": "Applications:input:toggleautoapprove",
+   "component": "Applications",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "toggleAutoApprove"
+   },
+   "line": 561
+  },
+  {
+   "id": "Applications:button:working-approve",
+   "component": "Applications",
+   "tag": "button",
+   "label": "Working… | Approve",
+   "handlers": {
+    "onClick": "() => act(r.RegFormID, \"approve\")"
+   },
+   "line": 641
+  },
+  {
+   "id": "Applications:button:working-reject",
+   "component": "Applications",
+   "tag": "button",
+   "label": "Working… | Reject",
+   "handlers": {
+    "onClick": "() => act(r.RegFormID, \"reject\")"
+   },
+   "line": 644
+  },
+  {
+   "id": "AccountCell:button:converting-convert",
+   "component": "AccountCell",
+   "tag": "button",
+   "label": "Converting… | Convert",
+   "handlers": {
+    "onClick": "() => convert(accountId)"
+   },
+   "line": 995
+  },
+  {
+   "id": "AccountCell:button:copied-copy-trial-message",
+   "component": "AccountCell",
+   "tag": "button",
+   "label": "Copied ✓ | Copy Trial Message",
+   "handlers": {
+    "onClick": "() => copyTrialMessage(t, slot)"
+   },
+   "line": 1106
+  },
+  {
+   "id": "AccountCell:button:adding-add-service",
+   "component": "AccountCell",
+   "tag": "button",
+   "label": "Adding… | Add Service",
+   "handlers": {
+    "onClick": "() => addService(t.TrialID)"
+   },
+   "line": 1116
+  },
+  {
+   "id": "AccountCell:a:link",
+   "component": "AccountCell",
+   "tag": "a",
+   "label": "link",
+   "href": "{expr}",
+   "line": 1200
+  },
+  {
+   "id": "AccountCell:a:link:2",
+   "component": "AccountCell",
+   "tag": "a",
+   "label": "link",
+   "href": "{expr}",
+   "line": 1209
+  },
+  {
+   "id": "AccountCell:button:send-task",
+   "component": "AccountCell",
+   "tag": "button",
+   "label": "Send Task",
+   "handlers": {
+    "onClick": "() => sendTask(i.InterviewID)"
+   },
+   "line": 1218
+  },
+  {
+   "id": "AccountCell:button:working-reject",
+   "component": "AccountCell",
+   "tag": "button",
+   "label": "Working… | Reject",
+   "handlers": {
+    "onClick": "() => actOnRequest(row._bookingType, id, \"reject\")"
+   },
+   "line": 1329
+  },
+  {
+   "id": "InterviewSlotAssign:SearchSelect:value-scheduleid",
+   "component": "InterviewSlotAssign",
+   "tag": "SearchSelect",
+   "label": "value:scheduleId",
+   "handlers": {
+    "onChange": "(e) => setScheduleId(e.target.value)"
+   },
+   "line": 1390
+  },
+  {
+   "id": "InterviewSlotAssign:button:approving-approve",
+   "component": "InterviewSlotAssign",
+   "tag": "button",
+   "label": "Approving… | Approve",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => runApprove(onApproveWithSlot, scheduleId)"
+   },
+   "line": 1399
+  },
+  {
+   "id": "InterviewSlotAssign:button:new-slot-instead",
+   "component": "InterviewSlotAssign",
+   "tag": "button",
+   "label": "+ New slot instead",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setMode(\"new\")"
+   },
+   "line": 1407
+  },
+  {
+   "id": "InterviewSlotAssign:input:value-date",
+   "component": "InterviewSlotAssign",
+   "tag": "input",
+   "label": "value:date",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setDate(e.target.value)"
+   },
+   "line": 1423
+  },
+  {
+   "id": "InterviewSlotAssign:input:value-time",
+   "component": "InterviewSlotAssign",
+   "tag": "input",
+   "label": "value:time",
+   "type": "time",
+   "handlers": {
+    "onChange": "(e) => setTime(e.target.value)"
+   },
+   "line": 1427
+  },
+  {
+   "id": "InterviewSlotAssign:input:hrs",
+   "component": "InterviewSlotAssign",
+   "tag": "input",
+   "label": "Hrs",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setDuration(e.target.value)"
+   },
+   "line": 1429
+  },
+  {
+   "id": "InterviewSlotAssign:input:instructor",
+   "component": "InterviewSlotAssign",
+   "tag": "input",
+   "label": "Instructor",
+   "handlers": {
+    "onChange": "(e) => setFacilitator(e.target.value)"
+   },
+   "line": 1439
+  },
+  {
+   "id": "InterviewSlotAssign:button:creating-create-approve",
+   "component": "InterviewSlotAssign",
+   "tag": "button",
+   "label": "Creating… | Create & Approve",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => runApprove(onCreateAndApprove, date, time, duration, facilitator)"
+   },
+   "line": 1446
+  },
+  {
+   "id": "InterviewSlotAssign:button:use-existing-slot-instead",
+   "component": "InterviewSlotAssign",
+   "tag": "button",
+   "label": "Use existing slot instead",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setMode(\"existing\")"
+   },
+   "line": 1455
+  },
+  {
+   "id": "InterviewOutcomeForm:input:feedback-on-task",
+   "component": "InterviewOutcomeForm",
+   "tag": "input",
+   "label": "Feedback on task…",
+   "handlers": {
+    "onChange": "(e) => setFeedback(e.target.value)"
+   },
+   "line": 1479
+  },
+  {
+   "id": "InterviewOutcomeForm:input:offer-letter-link",
+   "component": "InterviewOutcomeForm",
+   "tag": "input",
+   "label": "Offer letter link…",
+   "handlers": {
+    "onChange": "(e) => setOfferLetterLink(e.target.value)"
+   },
+   "line": 1486
+  },
+  {
+   "id": "InterviewOutcomeForm:button:sending-send-offer",
+   "component": "InterviewOutcomeForm",
+   "tag": "button",
+   "label": "Sending… | Send offer",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => run(onSendOffer, feedback, offerLetterLink)"
+   },
+   "line": 1494
+  },
+  {
+   "id": "InterviewOutcomeForm:button:waitlist",
+   "component": "InterviewOutcomeForm",
+   "tag": "button",
+   "label": "Waitlist",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => run(onWaitlist, feedback)"
+   },
+   "line": 1502
+  },
+  {
+   "id": "InterviewOutcomeForm:button:reject",
+   "component": "InterviewOutcomeForm",
+   "tag": "button",
+   "label": "Reject",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => run(onReject, feedback)"
+   },
+   "line": 1505
+  },
+  {
+   "id": "OfferSentControls:input:feedback-on-task",
+   "component": "OfferSentControls",
+   "tag": "input",
+   "label": "Feedback on task…",
+   "handlers": {
+    "onChange": "(e) => setFeedback(e.target.value)"
+   },
+   "line": 1531
+  },
+  {
+   "id": "OfferSentControls:input:offer-letter-link",
+   "component": "OfferSentControls",
+   "tag": "input",
+   "label": "Offer letter link…",
+   "handlers": {
+    "onChange": "(e) => setOfferLetterLink(e.target.value)"
+   },
+   "line": 1538
+  },
+  {
+   "id": "OfferSentControls:button:saving-save",
+   "component": "OfferSentControls",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "type": "button",
+   "handlers": {
+    "onClick": "async () => { await run(onSave, feedback, offerLetterLink); se"
+   },
+   "line": 1546
+  },
+  {
+   "id": "OfferSentControls:button:cancel",
+   "component": "OfferSentControls",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => { setFeedback(item.TaskFeedback || \"\"); setOfferLetterLi"
+   },
+   "line": 1557
+  },
+  {
+   "id": "OfferSentControls:button:edit",
+   "component": "OfferSentControls",
+   "tag": "button",
+   "label": "Edit",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 1576
+  },
+  {
+   "id": "OfferSentControls:button:unsending-unsend",
+   "component": "OfferSentControls",
+   "tag": "button",
+   "label": "Unsending… | Unsend",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => run(onUnsend)"
+   },
+   "line": 1579
+  },
+  {
+   "id": "Accounts:a:open",
+   "component": "Accounts",
+   "tag": "a",
+   "label": "Open",
+   "href": "{expr}",
+   "line": 1810
+  },
+  {
+   "id": "Accounts:a:open:2",
+   "component": "Accounts",
+   "tag": "a",
+   "label": "Open",
+   "href": "{expr}",
+   "line": 1822
+  },
+  {
+   "id": "Accounts:a:open:3",
+   "component": "Accounts",
+   "tag": "a",
+   "label": "Open",
+   "href": "{expr}",
+   "line": 1866
+  },
+  {
+   "id": "Accounts:a:open:4",
+   "component": "Accounts",
+   "tag": "a",
+   "label": "Open",
+   "href": "{expr}",
+   "line": 1878
+  },
+  {
+   "id": "AccountGroupTable:a:download-png",
+   "component": "AccountGroupTable",
+   "tag": "a",
+   "label": "Download PNG",
+   "href": "/api/schedule/image?userId={}&download=1",
+   "download": true,
+   "line": 2027
+  },
+  {
+   "id": "AccountGroupTable:button:converting-convert-to",
+   "component": "AccountGroupTable",
+   "tag": "button",
+   "label": "Converting… | Convert to {}",
+   "handlers": {
+    "onClick": "() => convert(u.UserID)"
+   },
+   "line": 2042
+  },
+  {
+   "id": "AccountGroupTable:button:working-deactivate-activate",
+   "component": "AccountGroupTable",
+   "tag": "button",
+   "label": "Working… | Deactivate | Activate",
+   "handlers": {
+    "onClick": "() => saveEdit(u.UserID, { status: u.Status === \"Active\" ? \"Inactive\" : \"Active\" })"
+   },
+   "line": 2048
+  },
+  {
+   "id": "AccountGroupTable:button:logging-in-log-in-as",
+   "component": "AccountGroupTable",
+   "tag": "button",
+   "label": "Logging in… | Log in as",
+   "handlers": {
+    "onClick": "() => impersonate(u.UserID)"
+   },
+   "line": 2057
+  },
+  {
+   "id": "AccountGroupTable:button:resetting-reset-password",
+   "component": "AccountGroupTable",
+   "tag": "button",
+   "label": "Resetting… | Reset password",
+   "handlers": {
+    "onClick": "() => saveEdit(u.UserID, { resetPassword: true })"
+   },
+   "line": 2067
+  },
+  {
+   "id": "AccountGroupTable:button:close-edit",
+   "component": "AccountGroupTable",
+   "tag": "button",
+   "label": "Close | Edit",
+   "handlers": {
+    "onClick": "() => setEditingId(editingId === u.UserID ? null : u.UserID)"
+   },
+   "line": 2075
+  },
+  {
+   "id": "CopyCredentialsButton:button:copied-copy",
+   "component": "CopyCredentialsButton",
+   "tag": "button",
+   "label": "Copied! | Copy",
+   "type": "button",
+   "handlers": {
+    "onClick": "async () => { await navigator.clipboard.writeText(`${credentials.username} / ${cre"
+   },
+   "line": 2109
+  },
+  {
+   "id": "EditAccountForm:form:name-username-new-password-leave-blank-t",
+   "component": "EditAccountForm",
+   "tag": "form",
+   "label": "Name Username New password (leave blank to keep current) Currency (invoice/paycheck totals are shown in this account's Currency) Saving… | Save Cancel",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 2279
+  },
+  {
+   "id": "EditAccountForm:input:value-name",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:name",
+   "handlers": {
+    "onChange": "(e) => setName(e.target.value)"
+   },
+   "line": 2284
+  },
+  {
+   "id": "EditAccountForm:SearchSelect:value-status",
+   "component": "EditAccountForm",
+   "tag": "SearchSelect",
+   "label": "value:status",
+   "handlers": {
+    "onChange": "(e) => setStatus(e.target.value)"
+   },
+   "line": 2296
+  },
+  {
+   "id": "EditAccountForm:input:value-username",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:username",
+   "handlers": {
+    "onChange": "(e) => setUsername(e.target.value)"
+   },
+   "line": 2307
+  },
+  {
+   "id": "EditAccountForm:input:value-password",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:password",
+   "handlers": {
+    "onChange": "(e) => setPassword(e.target.value)"
+   },
+   "line": 2314
+  },
+  {
+   "id": "EditAccountForm:SearchSelect:value-currency",
+   "component": "EditAccountForm",
+   "tag": "SearchSelect",
+   "label": "value:currency",
+   "handlers": {
+    "onChange": "(e) => setCurrency(e.target.value)"
+   },
+   "line": 2321
+  },
+  {
+   "id": "EditAccountForm:input:value-role",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:role",
+   "handlers": {
+    "onChange": "(e) => setRole(e.target.value)"
+   },
+   "line": 2335
+  },
+  {
+   "id": "EditAccountForm:input:value-passportnumber",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:passportNumber",
+   "handlers": {
+    "onChange": "(e) => setPassportNumber(e.target.value)"
+   },
+   "line": 2344
+  },
+  {
+   "id": "EditAccountForm:input:value-whatsappnumber",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:whatsappNumber",
+   "handlers": {
+    "onChange": "(e) => setWhatsappNumber(e.target.value)"
+   },
+   "line": 2353
+  },
+  {
+   "id": "EditAccountForm:input:value-email",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:email",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setEmail(e.target.value)"
+   },
+   "line": 2362
+  },
+  {
+   "id": "EditAccountForm:SearchSelect:value-department",
+   "component": "EditAccountForm",
+   "tag": "SearchSelect",
+   "label": "value:department",
+   "handlers": {
+    "onChange": "(e) => setDepartment(e.target.value)"
+   },
+   "line": 2371
+  },
+  {
+   "id": "EditAccountForm:input:value-workfolderurl",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:workFolderUrl",
+   "handlers": {
+    "onChange": "(e) => setWorkFolderUrl(e.target.value)"
+   },
+   "line": 2394
+  },
+  {
+   "id": "EditAccountForm:input:value-timesheeturl",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:timesheetUrl",
+   "handlers": {
+    "onChange": "(e) => setTimesheetUrl(e.target.value)"
+   },
+   "line": 2400
+  },
+  {
+   "id": "EditAccountForm:input:value-course",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:course",
+   "handlers": {
+    "onChange": "(e) => setCourse(e.target.value)"
+   },
+   "line": 2410
+  },
+  {
+   "id": "EditAccountForm:input:value-whatsappnumber:2",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:whatsappNumber",
+   "handlers": {
+    "onChange": "(e) => setWhatsappNumber(e.target.value)"
+   },
+   "line": 2420
+  },
+  {
+   "id": "EditAccountForm:input:value-parentwhatsappnumber",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:parentWhatsappNumber",
+   "handlers": {
+    "onChange": "(e) => setParentWhatsappNumber(e.target.value)"
+   },
+   "line": 2426
+  },
+  {
+   "id": "EditAccountForm:input:value-parentemail",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:parentEmail",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setParentEmail(e.target.value)"
+   },
+   "line": 2436
+  },
+  {
+   "id": "EditAccountForm:input:value-email:2",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:email",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setEmail(e.target.value)"
+   },
+   "line": 2442
+  },
+  {
+   "id": "EditAccountForm:input:value-school",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:school",
+   "handlers": {
+    "onChange": "(e) => setSchool(e.target.value)"
+   },
+   "line": 2448
+  },
+  {
+   "id": "EditAccountForm:input:value-location",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:location",
+   "handlers": {
+    "onChange": "(e) => setLocation(e.target.value)"
+   },
+   "line": 2454
+  },
+  {
+   "id": "EditAccountForm:SearchSelect:value-gender",
+   "component": "EditAccountForm",
+   "tag": "SearchSelect",
+   "label": "value:gender",
+   "handlers": {
+    "onChange": "(e) => setGender(e.target.value)"
+   },
+   "line": 2460
+  },
+  {
+   "id": "EditAccountForm:input:value-helpwanted",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:helpWanted",
+   "handlers": {
+    "onChange": "(e) => setHelpWanted(e.target.value)"
+   },
+   "line": 2471
+  },
+  {
+   "id": "EditAccountForm:input:value-subjects",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:subjects",
+   "handlers": {
+    "onChange": "(e) => setSubjects(e.target.value)"
+   },
+   "line": 2477
+  },
+  {
+   "id": "EditAccountForm:FacilitatorInput:facilitator-facilitatoruserid-setreferre",
+   "component": "EditAccountForm",
+   "tag": "FacilitatorInput",
+   "label": "",
+   "handlers": {
+    "onChange": "({ facilitator, facilitatorUserId }) => { setReferrerName(facilitator); "
+   },
+   "line": 2483
+  },
+  {
+   "id": "EditAccountForm:input:value-heardabout",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:heardAbout",
+   "handlers": {
+    "onChange": "(e) => setHeardAbout(e.target.value)"
+   },
+   "line": 2499
+  },
+  {
+   "id": "EditAccountForm:SearchSelect:value-scoreastar",
+   "component": "EditAccountForm",
+   "tag": "SearchSelect",
+   "label": "value:scoreAStar",
+   "handlers": {
+    "onChange": "(e) => setScoreAStar(e.target.value)"
+   },
+   "line": 2505
+  },
+  {
+   "id": "EditAccountForm:textarea:value-notes",
+   "component": "EditAccountForm",
+   "tag": "textarea",
+   "label": "value:notes",
+   "handlers": {
+    "onChange": "(e) => setNotes(e.target.value)"
+   },
+   "line": 2516
+  },
+  {
+   "id": "EditAccountForm:input:value-timesheeturl:2",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:timesheetUrl",
+   "handlers": {
+    "onChange": "(e) => setTimesheetUrl(e.target.value)"
+   },
+   "line": 2523
+  },
+  {
+   "id": "EditAccountForm:button:generating-generate-timesheet-url",
+   "component": "EditAccountForm",
+   "tag": "button",
+   "label": "Generating… | Generate Timesheet URL",
+   "type": "button",
+   "handlers": {
+    "onClick": "generateTimesheet"
+   },
+   "line": 2524
+  },
+  {
+   "id": "EditAccountForm:input:value-progresstrackerurl",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:progressTrackerUrl",
+   "handlers": {
+    "onChange": "(e) => setProgressTrackerUrl(e.target.value)"
+   },
+   "line": 2536
+  },
+  {
+   "id": "EditAccountForm:button:generating-generate-progress-tracker-url",
+   "component": "EditAccountForm",
+   "tag": "button",
+   "label": "Generating… | Generate Progress Tracker URL",
+   "type": "button",
+   "handlers": {
+    "onClick": "generateProgressTracker"
+   },
+   "line": 2542
+  },
+  {
+   "id": "EditAccountForm:input:e-setgroupsent-e-target-checked",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setGroupSent(e.target.checked)"
+   },
+   "line": 2555
+  },
+  {
+   "id": "EditAccountForm:input:e-setgcrsent-e-target-checked",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setGcrSent(e.target.checked)"
+   },
+   "line": 2559
+  },
+  {
+   "id": "EditAccountForm:input:e-setschedulesent-e-target-checked",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setScheduleSent(e.target.checked)"
+   },
+   "line": 2563
+  },
+  {
+   "id": "EditAccountForm:input:value-batch",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "value:batch",
+   "handlers": {
+    "onChange": "(e) => setBatch(e.target.value)"
+   },
+   "line": 2576
+  },
+  {
+   "id": "EditAccountForm:TimezoneSelect:settimezone",
+   "component": "EditAccountForm",
+   "tag": "TimezoneSelect",
+   "label": "",
+   "handlers": {
+    "onChange": "setTimezone"
+   },
+   "line": 2585
+  },
+  {
+   "id": "EditAccountForm:input:togglestudent-s-userid",
+   "component": "EditAccountForm",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => toggleStudent(s.UserID)"
+   },
+   "line": 2597
+  },
+  {
+   "id": "EditAccountForm:button:saving-save",
+   "component": "EditAccountForm",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "type": "submit",
+   "line": 2607
+  },
+  {
+   "id": "EditAccountForm:button:cancel",
+   "component": "EditAccountForm",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "onCancel"
+   },
+   "line": 2610
+  },
+  {
+   "id": "CreateAccount:form:account-type-currency-creating-create-ac",
+   "component": "CreateAccount",
+   "tag": "form",
+   "label": "Account type Currency Creating… | Create account",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 2728
+  },
+  {
+   "id": "CreateAccount:SearchSelect:value-usertype",
+   "component": "CreateAccount",
+   "tag": "SearchSelect",
+   "label": "value:userType",
+   "handlers": {
+    "onChange": "(e) => setUserType(e.target.value)"
+   },
+   "line": 2733
+  },
+  {
+   "id": "CreateAccount:input:name",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Name",
+   "handlers": {
+    "onChange": "(e) => setName(e.target.value)"
+   },
+   "line": 2742
+  },
+  {
+   "id": "CreateAccount:SearchSelect:value-currency",
+   "component": "CreateAccount",
+   "tag": "SearchSelect",
+   "label": "value:currency",
+   "handlers": {
+    "onChange": "(e) => setCurrency(e.target.value)"
+   },
+   "line": 2748
+  },
+  {
+   "id": "CreateAccount:input:togglestudent-s-userid",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => toggleStudent(s.UserID)"
+   },
+   "line": 2765
+  },
+  {
+   "id": "CreateAccount:input:role-e-g-sm-assistant",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Role (e.g. SM Assistant)",
+   "handlers": {
+    "onChange": "(e) => setRole(e.target.value)"
+   },
+   "line": 2776
+  },
+  {
+   "id": "CreateAccount:input:whatsapp-number",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "WhatsApp Number",
+   "handlers": {
+    "onChange": "(e) => setWhatsappNumber(e.target.value)"
+   },
+   "line": 2777
+  },
+  {
+   "id": "CreateAccount:input:email",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Email",
+   "type": "email",
+   "handlers": {
+    "onChange": "(e) => setEmail(e.target.value)"
+   },
+   "line": 2783
+  },
+  {
+   "id": "CreateAccount:input:passport-ic-number",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Passport / IC Number",
+   "handlers": {
+    "onChange": "(e) => setPassportNumber(e.target.value)"
+   },
+   "line": 2790
+  },
+  {
+   "id": "CreateAccount:SearchSelect:value-department",
+   "component": "CreateAccount",
+   "tag": "SearchSelect",
+   "label": "value:department",
+   "handlers": {
+    "onChange": "(e) => setDepartment(e.target.value)"
+   },
+   "line": 2801
+  },
+  {
+   "id": "CreateAccount:input:work-folder-url-google-drive",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Work Folder URL (Google Drive)",
+   "handlers": {
+    "onChange": "(e) => setWorkFolderUrl(e.target.value)"
+   },
+   "line": 2809
+  },
+  {
+   "id": "CreateAccount:input:timesheet-url",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Timesheet URL",
+   "handlers": {
+    "onChange": "(e) => setTimesheetUrl(e.target.value)"
+   },
+   "line": 2815
+  },
+  {
+   "id": "CreateAccount:input:batch",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Batch",
+   "handlers": {
+    "onChange": "(e) => setBatch(e.target.value)"
+   },
+   "line": 2825
+  },
+  {
+   "id": "CreateAccount:input:course",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Course",
+   "handlers": {
+    "onChange": "(e) => setCourse(e.target.value)"
+   },
+   "line": 2830
+  },
+  {
+   "id": "CreateAccount:input:batch:2",
+   "component": "CreateAccount",
+   "tag": "input",
+   "label": "Batch",
+   "handlers": {
+    "onChange": "(e) => setBatch(e.target.value)"
+   },
+   "line": 2831
+  },
+  {
+   "id": "CreateAccount:TimezoneSelect:settimezone",
+   "component": "CreateAccount",
+   "tag": "TimezoneSelect",
+   "label": "",
+   "handlers": {
+    "onChange": "setTimezone"
+   },
+   "line": 2840
+  },
+  {
+   "id": "CreateAccount:button:creating-create-account",
+   "component": "CreateAccount",
+   "tag": "button",
+   "label": "Creating… | Create account",
+   "type": "submit",
+   "line": 2845
+  },
+  {
+   "id": "ImportAccount:button:import-from-form-import-from-form",
+   "component": "ImportAccount",
+   "tag": "button",
+   "label": "Import from form ▴ | Import from form ▾",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setOpen((v) => !v)"
+   },
+   "line": 2917
+  },
+  {
+   "id": "ImportAccount:textarea:paste-the-cognito-forms-entry-name-email",
+   "component": "ImportAccount",
+   "tag": "textarea",
+   "label": "Paste the Cognito Forms entry | Name: ...\nEmail: ...\nWhatsApp: ...\nRole: ...",
+   "handlers": {
+    "onChange": "(e) => { setText(e.target.value); setDone(\"\"); }"
+   },
+   "line": 2922
+  },
+  {
+   "id": "ImportAccount:input:import-target",
+   "component": "ImportAccount",
+   "tag": "input",
+   "label": "import-target",
+   "type": "radio",
+   "name": "import-target",
+   "handlers": {
+    "onChange": "() => setChoice(m.user.UserID)"
+   },
+   "line": 2961
+  },
+  {
+   "id": "ImportAccount:input:import-target:2",
+   "component": "ImportAccount",
+   "tag": "input",
+   "label": "import-target",
+   "type": "radio",
+   "name": "import-target",
+   "line": 2967
+  },
+  {
+   "id": "ImportAccount:input:import-target:3",
+   "component": "ImportAccount",
+   "tag": "input",
+   "label": "import-target",
+   "type": "radio",
+   "name": "import-target",
+   "handlers": {
+    "onChange": "() => setChoice(\"new\")"
+   },
+   "line": 2972
+  },
+  {
+   "id": "ImportAccount:SearchSelect:add-to-an-existing-account",
+   "component": "ImportAccount",
+   "tag": "SearchSelect",
+   "label": "Add to an existing account",
+   "handlers": {
+    "onChange": "(e) => e.target.value && setChoice(e.target.value)"
+   },
+   "line": 2976
+  },
+  {
+   "id": "ImportAccount:button:saving-add-info-to-create-account-from-f",
+   "component": "ImportAccount",
+   "tag": "button",
+   "label": "Saving… | Add info to {} | Create account from form",
+   "type": "button",
+   "handlers": {
+    "onClick": "run"
+   },
+   "line": 3006
+  },
+  {
+   "id": "EditableCombobox:input:expr",
+   "component": "EditableCombobox",
+   "tag": "input",
+   "label": "{expr}",
+   "handlers": {
+    "onChange": "(e) => onChange(e.target.value)",
+    "onFocus": "() => setOpen(true)",
+    "onBlur": "() => setTimeout(() => setOpen(false), 150)"
+   },
+   "line": 3060
+  },
+  {
+   "id": "Services:form:suggest-open-to-trial-books-student-open",
+   "component": "Services",
+   "tag": "form",
+   "label": "↺ Suggest Open to (Trial books Student-open services; each Interview track books its own matching group — Teacher/Staff/Ambassador) Resource Links (freeform, named — e.g. a Book service with a \"Questions\" link and an \"Answers\" link) + Add link Saving… | Save changes | Create service",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 3516
+  },
+  {
+   "id": "Services:input:service-name",
+   "component": "Services",
+   "tag": "input",
+   "label": "Service name",
+   "handlers": {
+    "onChange": "(e) => { setName(e.target.value); setNameManuallyEdited(tr"
+   },
+   "line": 3518
+  },
+  {
+   "id": "Services:button:suggest",
+   "component": "Services",
+   "tag": "button",
+   "label": "↺ Suggest",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setNameManuallyEdited(false)"
+   },
+   "line": 3532
+  },
+  {
+   "id": "Services:input:togglegroup-g",
+   "component": "Services",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => toggleGroup(g)"
+   },
+   "line": 3549
+  },
+  {
+   "id": "Services:EditableCombobox:type",
+   "component": "Services",
+   "tag": "EditableCombobox",
+   "label": "Type",
+   "handlers": {
+    "onChange": "setType"
+   },
+   "line": 3555
+  },
+  {
+   "id": "Services:input:role-job-title",
+   "component": "Services",
+   "tag": "input",
+   "label": "Role (job title)",
+   "handlers": {
+    "onChange": "(e) => setRole(e.target.value)"
+   },
+   "line": 3558
+  },
+  {
+   "id": "Services:SearchSelect:value-department",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:department",
+   "handlers": {
+    "onChange": "(e) => setDepartment(e.target.value)"
+   },
+   "line": 3564
+  },
+  {
+   "id": "Services:input:country-e-g-uk",
+   "component": "Services",
+   "tag": "input",
+   "label": "Country (e.g. UK)",
+   "handlers": {
+    "onChange": "(e) => setCountry(e.target.value)"
+   },
+   "line": 3577
+  },
+  {
+   "id": "Services:input:university",
+   "component": "Services",
+   "tag": "input",
+   "label": "University",
+   "handlers": {
+    "onChange": "(e) => setUniversity(e.target.value)"
+   },
+   "line": 3578
+  },
+  {
+   "id": "Services:input:curriculum-board-e-g-cambridge",
+   "component": "Services",
+   "tag": "input",
+   "label": "Curriculum / Board (e.g. Cambridge)",
+   "handlers": {
+    "onChange": "(e) => setBoard(e.target.value)"
+   },
+   "line": 3583
+  },
+  {
+   "id": "Services:input:course-e-g-igcse-a-level-sat",
+   "component": "Services",
+   "tag": "input",
+   "label": "Course (e.g. IGCSE, A-Level, SAT)",
+   "handlers": {
+    "onChange": "(e) => setCourse(e.target.value)"
+   },
+   "line": 3584
+  },
+  {
+   "id": "Services:input:subject-code",
+   "component": "Services",
+   "tag": "input",
+   "label": "Subject Code",
+   "handlers": {
+    "onChange": "(e) => setSubjectCode(e.target.value)"
+   },
+   "line": 3590
+  },
+  {
+   "id": "Services:input:subject-name",
+   "component": "Services",
+   "tag": "input",
+   "label": "Subject Name",
+   "handlers": {
+    "onChange": "(e) => setSubjectName(e.target.value)"
+   },
+   "line": 3596
+  },
+  {
+   "id": "Services:input:recordings-link",
+   "component": "Services",
+   "tag": "input",
+   "label": "Recordings link",
+   "handlers": {
+    "onChange": "(e) => setRecordingsLink(e.target.value)"
+   },
+   "line": 3609
+  },
+  {
+   "id": "Services:input:syllabus-link",
+   "component": "Services",
+   "tag": "input",
+   "label": "Syllabus link",
+   "handlers": {
+    "onChange": "(e) => setSyllabusLink(e.target.value)"
+   },
+   "line": 3615
+  },
+  {
+   "id": "Services:input:worksheets-link",
+   "component": "Services",
+   "tag": "input",
+   "label": "Worksheets link",
+   "handlers": {
+    "onChange": "(e) => setWorksheetsLink(e.target.value)"
+   },
+   "line": 3621
+  },
+  {
+   "id": "Services:input:google-classroom-link",
+   "component": "Services",
+   "tag": "input",
+   "label": "Google Classroom link",
+   "handlers": {
+    "onChange": "(e) => setGcrLink(e.target.value)"
+   },
+   "line": 3627
+  },
+  {
+   "id": "Services:input:value-servicestartdate",
+   "component": "Services",
+   "tag": "input",
+   "label": "value:serviceStartDate",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setServiceStartDate(e.target.value)"
+   },
+   "line": 3637
+  },
+  {
+   "id": "Services:input:value-serviceenddate",
+   "component": "Services",
+   "tag": "input",
+   "label": "value:serviceEndDate",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setServiceEndDate(e.target.value)"
+   },
+   "line": 3638
+  },
+  {
+   "id": "Services:input:link-name-e-g-answers",
+   "component": "Services",
+   "tag": "input",
+   "label": "Link name (e.g. Answers)",
+   "handlers": {
+    "onChange": "(e) => updateLink(li, \"name\", e.target.value)"
+   },
+   "line": 3647
+  },
+  {
+   "id": "Services:input:url",
+   "component": "Services",
+   "tag": "input",
+   "label": "URL",
+   "handlers": {
+    "onChange": "(e) => updateLink(li, \"url\", e.target.value)"
+   },
+   "line": 3648
+  },
+  {
+   "id": "Services:button:removelink-li",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeLink(li)"
+   },
+   "line": 3650
+  },
+  {
+   "id": "Services:button:add-link",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add link",
+   "type": "button",
+   "handlers": {
+    "onClick": "addLink"
+   },
+   "line": 3656
+  },
+  {
+   "id": "Services:SearchSelect:value-r-currency",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:r.currency",
+   "handlers": {
+    "onChange": "(e) => updateFlatRate(ri, \"currency\", e.target.value)"
+   },
+   "line": 3670
+  },
+  {
+   "id": "Services:input:rate",
+   "component": "Services",
+   "tag": "input",
+   "label": "Rate",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => updateFlatRate(ri, \"rate\", e.target.value)"
+   },
+   "line": 3678
+  },
+  {
+   "id": "Services:input:description",
+   "component": "Services",
+   "tag": "input",
+   "label": "Description",
+   "handlers": {
+    "onChange": "(e) => updateFlatRate(ri, \"description\", e.target.value)"
+   },
+   "line": 3679
+  },
+  {
+   "id": "Services:SearchSelect:value-r-billingtype",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:r.billingType",
+   "handlers": {
+    "onChange": "(e) => updateFlatRate(ri, \"billingType\", e.target.value)"
+   },
+   "line": 3689
+  },
+  {
+   "id": "Services:button:removeflatrate-ri",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeFlatRate(ri)"
+   },
+   "line": 3698
+  },
+  {
+   "id": "Services:button:add-rate",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add rate",
+   "type": "button",
+   "handlers": {
+    "onClick": "addFlatRate"
+   },
+   "line": 3704
+  },
+  {
+   "id": "Services:SearchSelect:value-o-day",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:o.day",
+   "handlers": {
+    "onChange": "(e) => updateFlatOcc(oi, \"day\", e.target.value)"
+   },
+   "line": 3715
+  },
+  {
+   "id": "Services:input:value-o-time",
+   "component": "Services",
+   "tag": "input",
+   "label": "value:o.time",
+   "type": "time",
+   "handlers": {
+    "onChange": "(e) => updateFlatOcc(oi, \"time\", e.target.value)"
+   },
+   "line": 3723
+  },
+  {
+   "id": "Services:input:hrs",
+   "component": "Services",
+   "tag": "input",
+   "label": "Hrs",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => updateFlatOcc(oi, \"duration\", e.target.value)"
+   },
+   "line": 3725
+  },
+  {
+   "id": "Services:FacilitatorInput:facilitator-facilitatoruserid-updateflat",
+   "component": "Services",
+   "tag": "FacilitatorInput",
+   "label": "",
+   "handlers": {
+    "onChange": "({ facilitator, facilitatorUserId }) => { updateFlatOcc(oi, \"facilit"
+   },
+   "line": 3733
+  },
+  {
+   "id": "Services:TimezoneSelect:v-updateflatocc-oi-timezone-v",
+   "component": "Services",
+   "tag": "TimezoneSelect",
+   "label": "",
+   "handlers": {
+    "onChange": "(v) => updateFlatOcc(oi, \"timezone\", v)"
+   },
+   "line": 3746
+  },
+  {
+   "id": "Services:button:removeflatocc-oi",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeFlatOcc(oi)"
+   },
+   "line": 3749
+  },
+  {
+   "id": "Services:button:add-occurrence",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add occurrence",
+   "type": "button",
+   "handlers": {
+    "onClick": "addFlatOcc"
+   },
+   "line": 3755
+  },
+  {
+   "id": "Services:input:component-name-optional-e-g-pure-mathema",
+   "component": "Services",
+   "tag": "input",
+   "label": "Component name (optional — e.g. Pure Mathematics 1)",
+   "handlers": {
+    "onChange": "(e) => updateComponent(ci, \"componentName\", e.target.value)"
+   },
+   "line": 3769
+  },
+  {
+   "id": "Services:button:component",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕ Component",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeComponent(ci)"
+   },
+   "line": 3776
+  },
+  {
+   "id": "Services:EditableCombobox:academic-session-e-g-fall-2026",
+   "component": "Services",
+   "tag": "EditableCombobox",
+   "label": "Academic Session (e.g. Fall 2026)",
+   "handlers": {
+    "onChange": "(v) => updateBatch(ci, bi, \"batchName\", v)"
+   },
+   "line": 3787
+  },
+  {
+   "id": "Services:input:batch-name-e-g-b14",
+   "component": "Services",
+   "tag": "input",
+   "label": "Batch name (e.g. B14)",
+   "handlers": {
+    "onChange": "(e) => updateBatch(ci, bi, \"batchName\", e.target.value)"
+   },
+   "line": 3795
+  },
+  {
+   "id": "Services:input:value-b-startdate",
+   "component": "Services",
+   "tag": "input",
+   "label": "value:b.startDate || \"\"",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => updateBatch(ci, bi, \"startDate\", e.target.value)"
+   },
+   "line": 3802
+  },
+  {
+   "id": "Services:input:value-b-enddate",
+   "component": "Services",
+   "tag": "input",
+   "label": "value:b.endDate || \"\"",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => updateBatch(ci, bi, \"endDate\", e.target.value)"
+   },
+   "line": 3803
+  },
+  {
+   "id": "Services:button:batch",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕ Batch",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeBatch(ci, bi)"
+   },
+   "line": 3805
+  },
+  {
+   "id": "Services:SearchSelect:value-r-currency:2",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:r.currency",
+   "handlers": {
+    "onChange": "(e) => updateRate(ci, bi, ri, \"currency\", e.target.value)"
+   },
+   "line": 3819
+  },
+  {
+   "id": "Services:input:rate:2",
+   "component": "Services",
+   "tag": "input",
+   "label": "Rate",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => updateRate(ci, bi, ri, \"rate\", e.target.value)"
+   },
+   "line": 3827
+  },
+  {
+   "id": "Services:input:description:2",
+   "component": "Services",
+   "tag": "input",
+   "label": "Description",
+   "handlers": {
+    "onChange": "(e) => updateRate(ci, bi, ri, \"description\", e.target.value)"
+   },
+   "line": 3828
+  },
+  {
+   "id": "Services:SearchSelect:value-r-billingtype:2",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:r.billingType",
+   "handlers": {
+    "onChange": "(e) => updateRate(ci, bi, ri, \"billingType\", e.target.value)"
+   },
+   "line": 3838
+  },
+  {
+   "id": "Services:SearchSelect:value-r-group",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:r.group",
+   "handlers": {
+    "onChange": "(e) => updateRate(ci, bi, ri, \"group\", e.target.value)"
+   },
+   "line": 3848
+  },
+  {
+   "id": "Services:button:removerate-ci-bi-ri",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeRate(ci, bi, ri)"
+   },
+   "line": 3858
+  },
+  {
+   "id": "Services:button:add-rate:2",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add rate",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => addRate(ci, bi)"
+   },
+   "line": 3864
+  },
+  {
+   "id": "Services:SearchSelect:value-o-day:2",
+   "component": "Services",
+   "tag": "SearchSelect",
+   "label": "value:o.day",
+   "handlers": {
+    "onChange": "(e) => updateOcc(ci, bi, oi, \"day\", e.target.value)"
+   },
+   "line": 3877
+  },
+  {
+   "id": "Services:input:value-o-time:2",
+   "component": "Services",
+   "tag": "input",
+   "label": "value:o.time",
+   "type": "time",
+   "handlers": {
+    "onChange": "(e) => updateOcc(ci, bi, oi, \"time\", e.target.value)"
+   },
+   "line": 3885
+  },
+  {
+   "id": "Services:input:hrs:2",
+   "component": "Services",
+   "tag": "input",
+   "label": "Hrs",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => updateOcc(ci, bi, oi, \"duration\", e.target.value)"
+   },
+   "line": 3887
+  },
+  {
+   "id": "Services:FacilitatorInput:facilitator-facilitatoruserid-updateocc-",
+   "component": "Services",
+   "tag": "FacilitatorInput",
+   "label": "",
+   "handlers": {
+    "onChange": "({ facilitator, facilitatorUserId }) => { updateOcc(ci, bi"
+   },
+   "line": 3895
+  },
+  {
+   "id": "Services:TimezoneSelect:v-updateocc-ci-bi-oi-timezone-v",
+   "component": "Services",
+   "tag": "TimezoneSelect",
+   "label": "",
+   "handlers": {
+    "onChange": "(v) => updateOcc(ci, bi, oi, \"timezone\", v)"
+   },
+   "line": 3908
+  },
+  {
+   "id": "Services:button:removeocc-ci-bi-oi",
+   "component": "Services",
+   "tag": "button",
+   "label": "✕",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeOcc(ci, bi, oi)"
+   },
+   "line": 3911
+  },
+  {
+   "id": "Services:button:add-occurrence:2",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add occurrence",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => addOcc(ci, bi)"
+   },
+   "line": 3917
+  },
+  {
+   "id": "Services:button:add-batch",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add batch",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => addBatch(ci)"
+   },
+   "line": 3923
+  },
+  {
+   "id": "Services:button:add-optional-component",
+   "component": "Services",
+   "tag": "button",
+   "label": "+ Add optional component",
+   "type": "button",
+   "handlers": {
+    "onClick": "addComponent"
+   },
+   "line": 3928
+  },
+  {
+   "id": "Services:button:saving-save-changes-create-service",
+   "component": "Services",
+   "tag": "button",
+   "label": "Saving… | Save changes | Create service",
+   "type": "submit",
+   "line": 3936
+  },
+  {
+   "id": "Services:button:cancel",
+   "component": "Services",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "resetForm"
+   },
+   "line": 3940
+  },
+  {
+   "id": "Services:input:search-by-name",
+   "component": "Services",
+   "tag": "input",
+   "label": "Search by name…",
+   "handlers": {
+    "onChange": "(e) => setSearchQuery(e.target.value)"
+   },
+   "line": 3952
+  },
+  {
+   "id": "ExpandableCell:button:setopen-o-o",
+   "component": "ExpandableCell",
+   "tag": "button",
+   "label": "▾ | ▸",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setOpen((o) => !o)"
+   },
+   "line": 3997
+  },
+  {
+   "id": "GroupRow:button:ontoggle",
+   "component": "GroupRow",
+   "tag": "button",
+   "label": "▾ | ▸",
+   "type": "button",
+   "handlers": {
+    "onClick": "onToggle"
+   },
+   "line": 4033
+  },
+  {
+   "id": "ServiceGroupTable:button:togglein-setexpandedservices-row-service",
+   "component": "ServiceGroupTable",
+   "tag": "button",
+   "label": "▾ | ▸",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => toggleIn(setExpandedServices, row.ServiceID)"
+   },
+   "line": 4147
+  },
+  {
+   "id": "ServiceGroupTable:button:togglein-setexpandedservices-row-service:2",
+   "component": "ServiceGroupTable",
+   "tag": "button",
+   "label": "▾ | ▸",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => toggleIn(setExpandedServices, row.ServiceID)"
+   },
+   "line": 4155
+  },
+  {
+   "id": "ServiceGroupTable:button:edit",
+   "component": "ServiceGroupTable",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => onEdit(row.service)"
+   },
+   "line": 4169
+  },
+  {
+   "id": "ServiceGroupTable:button:togglein-setexpandedcomponents-c-key",
+   "component": "ServiceGroupTable",
+   "tag": "button",
+   "label": "▾ | ▸",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => toggleIn(setExpandedComponents, c.key)"
+   },
+   "line": 4214
+  },
+  {
+   "id": "SchedulePool:button:close-resolve",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Close | Resolve",
+   "handlers": {
+    "onClick": "() => setExpandedConflict(expanded ? null : s.ScheduleID)"
+   },
+   "line": 4616
+  },
+  {
+   "id": "SchedulePool:button:working-approve",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Working… | Approve",
+   "handlers": {
+    "onClick": "() => reviewRescheduleRequest(r.RescheduleRequestID, \"approve\")"
+   },
+   "line": 4675
+  },
+  {
+   "id": "SchedulePool:button:working-reject",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Working… | Reject",
+   "handlers": {
+    "onClick": "() => reviewRescheduleRequest(r.RescheduleRequestID, \"reject\")"
+   },
+   "line": 4682
+  },
+  {
+   "id": "SchedulePool:form:slot-type-select-service-ist-india-offer",
+   "component": "SchedulePool",
+   "tag": "form",
+   "label": "Slot type Select service… IST (India) Offering… | Offer slot",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 4709
+  },
+  {
+   "id": "SchedulePool:SearchSelect:value-servicetype",
+   "component": "SchedulePool",
+   "tag": "SearchSelect",
+   "label": "value:serviceType",
+   "handlers": {
+    "onChange": "(e) => { setServiceType(e.target.value); setServiceId(\"\");"
+   },
+   "line": 4714
+  },
+  {
+   "id": "SchedulePool:SearchSelect:value-serviceid",
+   "component": "SchedulePool",
+   "tag": "SearchSelect",
+   "label": "value:serviceId",
+   "handlers": {
+    "onChange": "(e) => setServiceId(e.target.value)"
+   },
+   "line": 4730
+  },
+  {
+   "id": "SchedulePool:input:value-date",
+   "component": "SchedulePool",
+   "tag": "input",
+   "label": "value:date",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setDate(e.target.value)"
+   },
+   "line": 4739
+  },
+  {
+   "id": "SchedulePool:input:value-time",
+   "component": "SchedulePool",
+   "tag": "input",
+   "label": "value:time",
+   "type": "time",
+   "handlers": {
+    "onChange": "(e) => setTime(e.target.value)"
+   },
+   "line": 4741
+  },
+  {
+   "id": "SchedulePool:input:duration-hrs",
+   "component": "SchedulePool",
+   "tag": "input",
+   "label": "Duration (hrs)",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setDuration(e.target.value)"
+   },
+   "line": 4747
+  },
+  {
+   "id": "SchedulePool:input:instructor",
+   "component": "SchedulePool",
+   "tag": "input",
+   "label": "Instructor",
+   "handlers": {
+    "onChange": "(e) => setFacilitator(e.target.value)"
+   },
+   "line": 4755
+  },
+  {
+   "id": "SchedulePool:button:offering-offer-slot",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Offering… | Offer slot",
+   "type": "submit",
+   "line": 4762
+  },
+  {
+   "id": "SchedulePool:button:list",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "List",
+   "handlers": {
+    "onClick": "() => setPoolView(\"list\")"
+   },
+   "line": 4770
+  },
+  {
+   "id": "SchedulePool:button:calendar",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Calendar",
+   "handlers": {
+    "onClick": "() => setPoolView(\"calendar\")"
+   },
+   "line": 4773
+  },
+  {
+   "id": "SchedulePool:button:list:2",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "List",
+   "handlers": {
+    "onClick": "() => setServiceView(\"list\")"
+   },
+   "line": 4826
+  },
+  {
+   "id": "SchedulePool:button:calendar:2",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Calendar",
+   "handlers": {
+    "onClick": "() => setServiceView(\"calendar\")"
+   },
+   "line": 4829
+  },
+  {
+   "id": "SchedulePool:button:weekly-schedule-image",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "Weekly Schedule Image",
+   "handlers": {
+    "onClick": "() => setServiceView(\"image\")"
+   },
+   "line": 4832
+  },
+  {
+   "id": "SchedulePool:input:e-setshowpastschedule-e-target-checked",
+   "component": "SchedulePool",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setShowPastSchedule(e.target.checked)"
+   },
+   "line": 4840
+  },
+  {
+   "id": "SchedulePool:input:e-setconflictsonly-e-target-checked",
+   "component": "SchedulePool",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setConflictsOnly(e.target.checked)"
+   },
+   "line": 4844
+  },
+  {
+   "id": "SchedulePool:a:download-png",
+   "component": "SchedulePool",
+   "tag": "a",
+   "label": "Download PNG",
+   "href": "/api/schedule/admin-image?download=1",
+   "download": true,
+   "line": 4869
+  },
+  {
+   "id": "SchedulePool:button:logged-none",
+   "component": "SchedulePool",
+   "tag": "button",
+   "label": "{} logged | None ⚠",
+   "handlers": {
+    "onClick": "() => setExpandedAttendance(expanded ? null : s.ScheduleID)"
+   },
+   "line": 4919
+  },
+  {
+   "id": "RescheduleCell:button:working-approve",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Working… | Approve",
+   "handlers": {
+    "onClick": "() => run(onReviewRequest, pendingRequest.RescheduleRequestID, \"approve\")"
+   },
+   "line": 4995
+  },
+  {
+   "id": "RescheduleCell:button:working-reject",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Working… | Reject",
+   "handlers": {
+    "onClick": "() => run(onReviewRequest, pendingRequest.RescheduleRequestID, \"reject\")"
+   },
+   "line": 5002
+  },
+  {
+   "id": "RescheduleCell:input:value-date",
+   "component": "RescheduleCell",
+   "tag": "input",
+   "label": "value:date",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setDate(e.target.value)"
+   },
+   "line": 5020
+  },
+  {
+   "id": "RescheduleCell:input:value-time",
+   "component": "RescheduleCell",
+   "tag": "input",
+   "label": "value:time",
+   "type": "time",
+   "handlers": {
+    "onChange": "(e) => setTime(e.target.value)"
+   },
+   "line": 5024
+  },
+  {
+   "id": "RescheduleCell:button:saving-save",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "handlers": {
+    "onClick": "async () => { await run(onDirectReschedule, slot.ScheduleID, date, time); "
+   },
+   "line": 5026
+  },
+  {
+   "id": "RescheduleCell:button:cancel",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setEditing(false)"
+   },
+   "line": 5036
+  },
+  {
+   "id": "RescheduleCell:button:edit",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 5050
+  },
+  {
+   "id": "RescheduleCell:button:clearing-clear",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Clearing… | Clear",
+   "handlers": {
+    "onClick": "() => run(onDirectReschedule, slot.ScheduleID, \"\", \"\")"
+   },
+   "line": 5053
+  },
+  {
+   "id": "RescheduleCell:button:reschedule",
+   "component": "RescheduleCell",
+   "tag": "button",
+   "label": "Reschedule",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 5067
+  },
+  {
+   "id": "EnrollmentGroup:form:select-add-another-service-start-date-op",
+   "component": "EnrollmentGroup",
+   "tag": "form",
+   "label": "Select … + Add another service Start date (optional — applies to all services above) End date (optional — leave blank if ongoing) Enrolling… | Enroll into {} service{}",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 5305
+  },
+  {
+   "id": "EnrollmentGroup:SearchSelect:value-userid",
+   "component": "EnrollmentGroup",
+   "tag": "SearchSelect",
+   "label": "value:userId",
+   "handlers": {
+    "onChange": "(e) => setUserId(e.target.value)"
+   },
+   "line": 5306
+  },
+  {
+   "id": "EnrollmentGroup:button:remove",
+   "component": "EnrollmentGroup",
+   "tag": "button",
+   "label": "Remove",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => removeRow(index)"
+   },
+   "line": 5324
+  },
+  {
+   "id": "EnrollmentGroup:SearchSelect:value-row-serviceid",
+   "component": "EnrollmentGroup",
+   "tag": "SearchSelect",
+   "label": "value:row.serviceId",
+   "handlers": {
+    "onChange": "(e) => pickServiceAt(index, e.target.value)"
+   },
+   "line": 5333
+  },
+  {
+   "id": "EnrollmentGroup:SearchSelect:value-row-batchid",
+   "component": "EnrollmentGroup",
+   "tag": "SearchSelect",
+   "label": "value:row.batchId",
+   "handlers": {
+    "onChange": "(e) => pickBatchAt(index, e.target.value)"
+   },
+   "line": 5347
+  },
+  {
+   "id": "EnrollmentGroup:SearchSelect:value-row-rateid",
+   "component": "EnrollmentGroup",
+   "tag": "SearchSelect",
+   "label": "value:row.rateId",
+   "handlers": {
+    "onChange": "(e) => updateRow(index, { rateId: e.target.value })"
+   },
+   "line": 5361
+  },
+  {
+   "id": "EnrollmentGroup:SearchSelect:value-customratedraft-currency",
+   "component": "EnrollmentGroup",
+   "tag": "SearchSelect",
+   "label": "value:customRateDraft.currency",
+   "handlers": {
+    "onChange": "(e) => setCustomRateDraft((d) => ({ ...d, currency: e.target.value }))"
+   },
+   "line": 5376
+  },
+  {
+   "id": "EnrollmentGroup:input:amount",
+   "component": "EnrollmentGroup",
+   "tag": "input",
+   "label": "Amount",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setCustomRateDraft((d) => ({ ...d, rate: e.target.value }))"
+   },
+   "line": 5384
+  },
+  {
+   "id": "EnrollmentGroup:SearchSelect:value-customratedraft-billingtype",
+   "component": "EnrollmentGroup",
+   "tag": "SearchSelect",
+   "label": "value:customRateDraft.billingType",
+   "handlers": {
+    "onChange": "(e) => setCustomRateDraft((d) => ({ ...d, billingType: e.target.value }))"
+   },
+   "line": 5386
+  },
+  {
+   "id": "EnrollmentGroup:input:description-optional",
+   "component": "EnrollmentGroup",
+   "tag": "input",
+   "label": "Description (optional)",
+   "handlers": {
+    "onChange": "(e) => setCustomRateDraft((d) => ({ ...d, description: e.target.value }))"
+   },
+   "line": 5395
+  },
+  {
+   "id": "EnrollmentGroup:button:adding-add-rate",
+   "component": "EnrollmentGroup",
+   "tag": "button",
+   "label": "Adding… | Add rate",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => submitCustomRate(index)"
+   },
+   "line": 5408
+  },
+  {
+   "id": "EnrollmentGroup:button:cancel",
+   "component": "EnrollmentGroup",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setCustomRateRow(null)"
+   },
+   "line": 5411
+  },
+  {
+   "id": "EnrollmentGroup:button:new-rate-for-this-service",
+   "component": "EnrollmentGroup",
+   "tag": "button",
+   "label": "+ New rate for this service",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => openCustomRate(index)"
+   },
+   "line": 5417
+  },
+  {
+   "id": "EnrollmentGroup:button:add-another-service",
+   "component": "EnrollmentGroup",
+   "tag": "button",
+   "label": "+ Add another service",
+   "type": "button",
+   "handlers": {
+    "onClick": "addRow"
+   },
+   "line": 5425
+  },
+  {
+   "id": "EnrollmentGroup:input:value-startdate",
+   "component": "EnrollmentGroup",
+   "tag": "input",
+   "label": "value:startDate",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setStartDate(e.target.value)"
+   },
+   "line": 5433
+  },
+  {
+   "id": "EnrollmentGroup:input:value-enddate",
+   "component": "EnrollmentGroup",
+   "tag": "input",
+   "label": "value:endDate",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setEndDate(e.target.value)"
+   },
+   "line": 5439
+  },
+  {
+   "id": "EnrollmentGroup:button:enrolling-enroll-into-service",
+   "component": "EnrollmentGroup",
+   "tag": "button",
+   "label": "Enrolling… | Enroll into {} service{}",
+   "type": "submit",
+   "line": 5441
+  },
+  {
+   "id": "EnrollmentRow:SearchSelect:value-userid",
+   "component": "EnrollmentRow",
+   "tag": "SearchSelect",
+   "label": "value:userId",
+   "handlers": {
+    "onChange": "(e) => setUserId(e.target.value)"
+   },
+   "line": 5579
+  },
+  {
+   "id": "EnrollmentRow:SearchSelect:value-serviceid",
+   "component": "EnrollmentRow",
+   "tag": "SearchSelect",
+   "label": "value:serviceId",
+   "handlers": {
+    "onChange": "(e) => pickService(e.target.value)"
+   },
+   "line": 5588
+  },
+  {
+   "id": "EnrollmentRow:SearchSelect:value-batchid",
+   "component": "EnrollmentRow",
+   "tag": "SearchSelect",
+   "label": "value:batchId",
+   "handlers": {
+    "onChange": "(e) => pickBatch(e.target.value)"
+   },
+   "line": 5598
+  },
+  {
+   "id": "EnrollmentRow:SearchSelect:value-rateid",
+   "component": "EnrollmentRow",
+   "tag": "SearchSelect",
+   "label": "value:rateId",
+   "handlers": {
+    "onChange": "(e) => setRateId(e.target.value)"
+   },
+   "line": 5607
+  },
+  {
+   "id": "EnrollmentRow:input:value-startdate",
+   "component": "EnrollmentRow",
+   "tag": "input",
+   "label": "value:startDate",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setStartDate(e.target.value)"
+   },
+   "line": 5617
+  },
+  {
+   "id": "EnrollmentRow:input:value-enddate",
+   "component": "EnrollmentRow",
+   "tag": "input",
+   "label": "value:endDate",
+   "type": "date",
+   "handlers": {
+    "onChange": "(e) => setEndDate(e.target.value)"
+   },
+   "line": 5620
+  },
+  {
+   "id": "EnrollmentRow:button:saving-save",
+   "component": "EnrollmentRow",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "handlers": {
+    "onClick": "save"
+   },
+   "line": 5623
+  },
+  {
+   "id": "EnrollmentRow:button:cancel",
+   "component": "EnrollmentRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "cancel"
+   },
+   "line": 5626
+  },
+  {
+   "id": "EnrollmentRow:button:edit",
+   "component": "EnrollmentRow",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 5647
+  },
+  {
+   "id": "SummaryMessage:button:hide-show-skipped-items",
+   "component": "SummaryMessage",
+   "tag": "button",
+   "label": "▾ Hide | ▸ Show skipped items ( )",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setShowDetails((v) => !v)"
+   },
+   "line": 5678
+  },
+  {
+   "id": "Billing:input:value-year",
+   "component": "Billing",
+   "tag": "input",
+   "label": "value:year",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setYear(e.target.value)"
+   },
+   "line": 5811
+  },
+  {
+   "id": "Billing:input:value-month",
+   "component": "Billing",
+   "tag": "input",
+   "label": "value:month",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setMonth(e.target.value)"
+   },
+   "line": 5815
+  },
+  {
+   "id": "Billing:button:generating-generate-drafts-for-this-mont",
+   "component": "Billing",
+   "tag": "button",
+   "label": "Generating… | Generate drafts for this month",
+   "handlers": {
+    "onClick": "generate"
+   },
+   "line": 5817
+  },
+  {
+   "id": "Billing:ManualBillingForm:create-paycheck",
+   "component": "Billing",
+   "tag": "ManualBillingForm",
+   "label": "Create Paycheck",
+   "handlers": {
+    "onSubmit": "async ({ personId, serviceId, year, month, amount }) => { const res = await ap"
+   },
+   "line": 5847
+  },
+  {
+   "id": "RebuildDrafts:input:value-year",
+   "component": "RebuildDrafts",
+   "tag": "input",
+   "label": "value:year",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setYear(e.target.value)"
+   },
+   "line": 5998
+  },
+  {
+   "id": "RebuildDrafts:input:value-month",
+   "component": "RebuildDrafts",
+   "tag": "input",
+   "label": "value:month",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setMonth(e.target.value)"
+   },
+   "line": 6002
+  },
+  {
+   "id": "RebuildDrafts:input:toggle-p-userid",
+   "component": "RebuildDrafts",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => toggle(p.UserID)"
+   },
+   "line": 6008
+  },
+  {
+   "id": "RebuildDrafts:button:rebuild-selected",
+   "component": "RebuildDrafts",
+   "tag": "button",
+   "label": "Rebuild {} selected",
+   "handlers": {
+    "onClick": "() => setConfirming(true)"
+   },
+   "line": 6015
+  },
+  {
+   "id": "RebuildDrafts:button:rebuilding-yes-rebuild",
+   "component": "RebuildDrafts",
+   "tag": "button",
+   "label": "Rebuilding… | Yes, rebuild",
+   "handlers": {
+    "onClick": "rebuild"
+   },
+   "line": 6023
+  },
+  {
+   "id": "RebuildDrafts:button:cancel",
+   "component": "RebuildDrafts",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setConfirming(false)"
+   },
+   "line": 6026
+  },
+  {
+   "id": "ManualInvoiceForm:form:select-student-creating-create-draft-s",
+   "component": "ManualInvoiceForm",
+   "tag": "form",
+   "label": "Select Student… Creating… | Create draft(s)",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 6103
+  },
+  {
+   "id": "ManualInvoiceForm:SearchSelect:student",
+   "component": "ManualInvoiceForm",
+   "tag": "SearchSelect",
+   "label": "Student",
+   "handlers": {
+    "onChange": "(e) => selectPerson(e.target.value)"
+   },
+   "line": 6104
+  },
+  {
+   "id": "ManualInvoiceForm:input:year",
+   "component": "ManualInvoiceForm",
+   "tag": "input",
+   "label": "Year",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setYear(e.target.value)"
+   },
+   "line": 6113
+  },
+  {
+   "id": "ManualInvoiceForm:input:month",
+   "component": "ManualInvoiceForm",
+   "tag": "input",
+   "label": "Month",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setMonth(e.target.value)"
+   },
+   "line": 6114
+  },
+  {
+   "id": "ManualInvoiceForm:input:e-setchecked-prev-prev-s-serviceid-e-tar",
+   "component": "ManualInvoiceForm",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setChecked((prev) => ({ ...prev, [s.ServiceID]: e.target.checked }))"
+   },
+   "line": 6121
+  },
+  {
+   "id": "ManualInvoiceForm:input:amount",
+   "component": "ManualInvoiceForm",
+   "tag": "input",
+   "label": "Amount",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setAmounts((prev) => ({ ...prev, [s.ServiceID]: e.target.value }))"
+   },
+   "line": 6127
+  },
+  {
+   "id": "ManualInvoiceForm:button:creating-create-draft-s",
+   "component": "ManualInvoiceForm",
+   "tag": "button",
+   "label": "Creating… | Create draft(s)",
+   "type": "submit",
+   "line": 6141
+  },
+  {
+   "id": "ManualBillingForm:form:select-select-service-creating-create-dr",
+   "component": "ManualBillingForm",
+   "tag": "form",
+   "label": "Select … Select service… Creating… | Create draft",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 6190
+  },
+  {
+   "id": "ManualBillingForm:SearchSelect:expr",
+   "component": "ManualBillingForm",
+   "tag": "SearchSelect",
+   "label": "{expr}",
+   "handlers": {
+    "onChange": "(e) => setPersonId(e.target.value)"
+   },
+   "line": 6191
+  },
+  {
+   "id": "ManualBillingForm:SearchSelect:service",
+   "component": "ManualBillingForm",
+   "tag": "SearchSelect",
+   "label": "Service",
+   "handlers": {
+    "onChange": "(e) => setServiceId(e.target.value)"
+   },
+   "line": 6199
+  },
+  {
+   "id": "ManualBillingForm:input:year",
+   "component": "ManualBillingForm",
+   "tag": "input",
+   "label": "Year",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setYear(e.target.value)"
+   },
+   "line": 6208
+  },
+  {
+   "id": "ManualBillingForm:input:month",
+   "component": "ManualBillingForm",
+   "tag": "input",
+   "label": "Month",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setMonth(e.target.value)"
+   },
+   "line": 6209
+  },
+  {
+   "id": "ManualBillingForm:input:amount",
+   "component": "ManualBillingForm",
+   "tag": "input",
+   "label": "Amount",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setAmount(e.target.value)"
+   },
+   "line": 6211
+  },
+  {
+   "id": "ManualBillingForm:button:creating-create-draft",
+   "component": "ManualBillingForm",
+   "tag": "button",
+   "label": "Creating… | Create draft",
+   "type": "submit",
+   "line": 6213
+  },
+  {
+   "id": "BillingFilterBar:button:filter",
+   "component": "BillingFilterBar",
+   "tag": "button",
+   "label": "⌕ Filter",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setOpen(true)"
+   },
+   "line": 6318
+  },
+  {
+   "id": "BillingFilterBar:input:expr",
+   "component": "BillingFilterBar",
+   "tag": "input",
+   "label": "{expr}",
+   "type": "text",
+   "handlers": {
+    "onChange": "(e) => onSearch(e.target.value)"
+   },
+   "line": 6327
+  },
+  {
+   "id": "BillingFilterBar:SearchSelect:value-statusfilter",
+   "component": "BillingFilterBar",
+   "tag": "SearchSelect",
+   "label": "value:statusFilter",
+   "handlers": {
+    "onChange": "(e) => onStatusFilter(e.target.value)"
+   },
+   "line": 6336
+  },
+  {
+   "id": "BillingFilterBar:button:clear",
+   "component": "BillingFilterBar",
+   "tag": "button",
+   "label": "Clear",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => { onSearch(\"\"); if (hasStatus) onStatusFilter(\"all\"); "
+   },
+   "line": 6345
+  },
+  {
+   "id": "BillingFilterBar:button:hide",
+   "component": "BillingFilterBar",
+   "tag": "button",
+   "label": "Hide",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setOpen(false)"
+   },
+   "line": 6358
+  },
+  {
+   "id": "ReminderCopyMenu:button:copied-copy-reminder",
+   "component": "ReminderCopyMenu",
+   "tag": "button",
+   "label": "Copied! | Copy reminder ▾",
+   "handlers": {
+    "onClick": "() => setOpen((v) => !v)"
+   },
+   "line": 6498
+  },
+  {
+   "id": "ReminderCopyMenu:div:setopen-false",
+   "component": "ReminderCopyMenu",
+   "tag": "div",
+   "label": "",
+   "handlers": {
+    "onClick": "() => setOpen(false)"
+   },
+   "line": 6503
+  },
+  {
+   "id": "ReminderCopyMenu:button:details-not-set-up-yet",
+   "component": "ReminderCopyMenu",
+   "tag": "button",
+   "label": "Details not set up yet",
+   "handlers": {
+    "onClick": "() => choose(opt)"
+   },
+   "line": 6511
+  },
+  {
+   "id": "CopyButton:button:copied",
+   "component": "CopyButton",
+   "tag": "button",
+   "label": "Copied!",
+   "handlers": {
+    "onClick": "copy"
+   },
+   "line": 6538
+  },
+  {
+   "id": "InvoiceBillingTable:td:invoice-s",
+   "component": "InvoiceBillingTable",
+   "tag": "td",
+   "label": "▾ | ▸ — invoice s",
+   "handlers": {
+    "onClick": "() => togglePerson(studentId)",
+    "onKeyDown": "(e) => { if (e.key === \"Enter\" || e.key === \" \") { "
+   },
+   "line": 6622
+  },
+  {
+   "id": "ApprovePaymentControl:input:value-customdue",
+   "component": "ApprovePaymentControl",
+   "tag": "input",
+   "label": "value:customDue",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setCustomDue(e.target.value)"
+   },
+   "line": 6689
+  },
+  {
+   "id": "ApprovePaymentControl:button:marking-confirm",
+   "component": "ApprovePaymentControl",
+   "tag": "button",
+   "label": "Marking… | Confirm",
+   "handlers": {
+    "onClick": "() => approve(Number(customDue))"
+   },
+   "line": 6697
+  },
+  {
+   "id": "ApprovePaymentControl:button:back",
+   "component": "ApprovePaymentControl",
+   "tag": "button",
+   "label": "Back",
+   "handlers": {
+    "onClick": "() => setCustomizing(false)"
+   },
+   "line": 6700
+  },
+  {
+   "id": "ApprovePaymentControl:button:marking-full",
+   "component": "ApprovePaymentControl",
+   "tag": "button",
+   "label": "Marking… | Full",
+   "handlers": {
+    "onClick": "() => approve(0)"
+   },
+   "line": 6710
+  },
+  {
+   "id": "ApprovePaymentControl:button:partial",
+   "component": "ApprovePaymentControl",
+   "tag": "button",
+   "label": "Partial…",
+   "handlers": {
+    "onClick": "() => setCustomizing(true)"
+   },
+   "line": 6713
+  },
+  {
+   "id": "ApprovePaymentControl:button:cancel",
+   "component": "ApprovePaymentControl",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setChoosing(false)"
+   },
+   "line": 6716
+  },
+  {
+   "id": "ApprovePaymentControl:button:mark-paid",
+   "component": "ApprovePaymentControl",
+   "tag": "button",
+   "label": "Mark paid",
+   "handlers": {
+    "onClick": "() => setChoosing(true)"
+   },
+   "line": 6724
+  },
+  {
+   "id": "InvoiceRow:button:subject-s",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "▾ | ▸ subject s",
+   "handlers": {
+    "onClick": "() => setExpanded((v) => !v)"
+   },
+   "line": 6834
+  },
+  {
+   "id": "InvoiceRow:input:value-inrdue",
+   "component": "InvoiceRow",
+   "tag": "input",
+   "label": "value:inrDue",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setInrDue(e.target.value)"
+   },
+   "line": 6871
+  },
+  {
+   "id": "InvoiceRow:button:save",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "… | Save",
+   "handlers": {
+    "onClick": "saveDue"
+   },
+   "line": 6878
+  },
+  {
+   "id": "InvoiceRow:button:cancel",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "cancelDue"
+   },
+   "line": 6881
+  },
+  {
+   "id": "InvoiceRow:a:proof",
+   "component": "InvoiceRow",
+   "tag": "a",
+   "label": "Proof",
+   "href": "/api/invoices/proof?invoiceId={}",
+   "line": 6904
+  },
+  {
+   "id": "InvoiceRow:button:edit-due",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "Edit Due",
+   "handlers": {
+    "onClick": "() => setEditingDue(true)"
+   },
+   "line": 6926
+  },
+  {
+   "id": "InvoiceRow:button:discount",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "Discount",
+   "handlers": {
+    "onClick": "() => setEditingDiscount((v) => !v)"
+   },
+   "line": 6929
+  },
+  {
+   "id": "InvoiceRow:button:working-send",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "Working… | Send",
+   "handlers": {
+    "onClick": "() => toggleStatus(\"Sent\")"
+   },
+   "line": 6933
+  },
+  {
+   "id": "InvoiceRow:button:working-unsend",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "Working… | Unsend",
+   "handlers": {
+    "onClick": "() => toggleStatus(\"Draft\")"
+   },
+   "line": 6937
+  },
+  {
+   "id": "InvoiceRow:a:pdf",
+   "component": "InvoiceRow",
+   "tag": "a",
+   "label": "PDF",
+   "href": "/api/invoices/pdf?invoiceId={}",
+   "download": true,
+   "line": 6941
+  },
+  {
+   "id": "InvoiceRow:input:value-dpercent",
+   "component": "InvoiceRow",
+   "tag": "input",
+   "label": "value:dPercent",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setDPercent(e.target.value)"
+   },
+   "line": 6962
+  },
+  {
+   "id": "InvoiceRow:input:value-dcustom",
+   "component": "InvoiceRow",
+   "tag": "input",
+   "label": "value:dCustom",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setDCustom(e.target.value)"
+   },
+   "line": 6963
+  },
+  {
+   "id": "InvoiceRow:input:value-dcode",
+   "component": "InvoiceRow",
+   "tag": "input",
+   "label": "value:dCode",
+   "handlers": {
+    "onChange": "(e) => setDCode(e.target.value)"
+   },
+   "line": 6964
+  },
+  {
+   "id": "InvoiceRow:input:value-dcouponpercent",
+   "component": "InvoiceRow",
+   "tag": "input",
+   "label": "value:dCouponPercent",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setDCouponPercent(e.target.value)"
+   },
+   "line": 6965
+  },
+  {
+   "id": "InvoiceRow:button:save-discount",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "… | Save discount",
+   "handlers": {
+    "onClick": "saveDiscount"
+   },
+   "line": 6966
+  },
+  {
+   "id": "InvoiceRow:button:cancel:2",
+   "component": "InvoiceRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "cancelDiscount"
+   },
+   "line": 6967
+  },
+  {
+   "id": "LineItemRow:input:value-scheduledhours",
+   "component": "LineItemRow",
+   "tag": "input",
+   "label": "value:scheduledHours ?? \"\"",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setScheduledHours(e.target.value)"
+   },
+   "line": 7046
+  },
+  {
+   "id": "LineItemRow:input:value-attendedhours",
+   "component": "LineItemRow",
+   "tag": "input",
+   "label": "value:attendedHours ?? \"\"",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setAttendedHours(e.target.value)"
+   },
+   "line": 7060
+  },
+  {
+   "id": "LineItemRow:input:value-amount",
+   "component": "LineItemRow",
+   "tag": "input",
+   "label": "value:amount",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setAmount(e.target.value)"
+   },
+   "line": 7080
+  },
+  {
+   "id": "LineItemRow:button:saving-save",
+   "component": "LineItemRow",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "handlers": {
+    "onClick": "save"
+   },
+   "line": 7089
+  },
+  {
+   "id": "LineItemRow:button:cancel",
+   "component": "LineItemRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "cancel"
+   },
+   "line": 7092
+  },
+  {
+   "id": "LineItemRow:button:edit",
+   "component": "LineItemRow",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 7097
+  },
+  {
+   "id": "PaycheckBillingTable:td:paycheck-s",
+   "component": "PaycheckBillingTable",
+   "tag": "td",
+   "label": "▾ | ▸ — paycheck s",
+   "handlers": {
+    "onClick": "() => togglePerson(staffId)",
+    "onKeyDown": "(e) => { if (e.key === \"Enter\" || e.key === \" \") { "
+   },
+   "line": 7229
+  },
+  {
+   "id": "PaycheckRow:button:subject-s",
+   "component": "PaycheckRow",
+   "tag": "button",
+   "label": "▾ | ▸ subject s",
+   "handlers": {
+    "onClick": "() => setExpanded((v) => !v)"
+   },
+   "line": 7341
+  },
+  {
+   "id": "PaycheckRow:input:value-inrdue",
+   "component": "PaycheckRow",
+   "tag": "input",
+   "label": "value:inrDue",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setInrDue(e.target.value)"
+   },
+   "line": 7373
+  },
+  {
+   "id": "PaycheckRow:button:save",
+   "component": "PaycheckRow",
+   "tag": "button",
+   "label": "… | Save",
+   "handlers": {
+    "onClick": "saveDue"
+   },
+   "line": 7380
+  },
+  {
+   "id": "PaycheckRow:button:cancel",
+   "component": "PaycheckRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "cancelDue"
+   },
+   "line": 7383
+  },
+  {
+   "id": "PaycheckRow:button:edit-due",
+   "component": "PaycheckRow",
+   "tag": "button",
+   "label": "Edit Due",
+   "handlers": {
+    "onClick": "() => setEditingDue(true)"
+   },
+   "line": 7421
+  },
+  {
+   "id": "PaycheckRow:button:working-send",
+   "component": "PaycheckRow",
+   "tag": "button",
+   "label": "Working… | Send",
+   "handlers": {
+    "onClick": "() => toggleStatus(\"Sent\")"
+   },
+   "line": 7425
+  },
+  {
+   "id": "PaycheckRow:button:working-unsend",
+   "component": "PaycheckRow",
+   "tag": "button",
+   "label": "Working… | Unsend",
+   "handlers": {
+    "onClick": "() => toggleStatus(\"Draft\")"
+   },
+   "line": 7429
+  },
+  {
+   "id": "PaycheckRow:a:pdf",
+   "component": "PaycheckRow",
+   "tag": "a",
+   "label": "PDF",
+   "href": "/api/paychecks/pdf?paycheckId={}",
+   "download": true,
+   "line": 7433
+  },
+  {
+   "id": "PaycheckLineItemRow:input:value-scheduledhours",
+   "component": "PaycheckLineItemRow",
+   "tag": "input",
+   "label": "value:scheduledHours ?? \"\"",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setScheduledHours(e.target.value)"
+   },
+   "line": 7518
+  },
+  {
+   "id": "PaycheckLineItemRow:input:value-attendedhours",
+   "component": "PaycheckLineItemRow",
+   "tag": "input",
+   "label": "value:attendedHours ?? \"\"",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setAttendedHours(e.target.value)"
+   },
+   "line": 7532
+  },
+  {
+   "id": "PaycheckLineItemRow:input:value-amount",
+   "component": "PaycheckLineItemRow",
+   "tag": "input",
+   "label": "value:amount",
+   "type": "number",
+   "handlers": {
+    "onChange": "(e) => setAmount(e.target.value)"
+   },
+   "line": 7552
+  },
+  {
+   "id": "PaycheckLineItemRow:button:saving-save",
+   "component": "PaycheckLineItemRow",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "handlers": {
+    "onClick": "save"
+   },
+   "line": 7561
+  },
+  {
+   "id": "PaycheckLineItemRow:button:cancel",
+   "component": "PaycheckLineItemRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "cancel"
+   },
+   "line": 7564
+  },
+  {
+   "id": "PaycheckLineItemRow:button:edit",
+   "component": "PaycheckLineItemRow",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 7569
+  },
+  {
+   "id": "ServiceUptimePanel:button:checking-check-uptime",
+   "component": "ServiceUptimePanel",
+   "tag": "button",
+   "label": "Checking… | Check Uptime",
+   "type": "button",
+   "handlers": {
+    "onClick": "checkNow"
+   },
+   "line": 7617
+  },
+  {
+   "id": "Tickets:input:e-setshowonhold-e-target-checked",
+   "component": "Tickets",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setShowOnHold(e.target.checked)"
+   },
+   "line": 7711
+  },
+  {
+   "id": "Tickets:input:e-setshowclosed-e-target-checked",
+   "component": "Tickets",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setShowClosed(e.target.checked)"
+   },
+   "line": 7715
+  },
+  {
+   "id": "TicketRow:textarea:value-draft",
+   "component": "TicketRow",
+   "tag": "textarea",
+   "label": "value:draft",
+   "handlers": {
+    "onChange": "(e) => setDraft(e.target.value)"
+   },
+   "line": 7888
+  },
+  {
+   "id": "TicketRow:button:saving-save",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "type": "button",
+   "handlers": {
+    "onClick": "save"
+   },
+   "line": 7896
+  },
+  {
+   "id": "TicketRow:button:cancel",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setEditing(false)"
+   },
+   "line": 7899
+  },
+  {
+   "id": "TicketRow:textarea:add-a-note",
+   "component": "TicketRow",
+   "tag": "textarea",
+   "label": "Add a note…",
+   "handlers": {
+    "onChange": "(e) => setNoteDraft(e.target.value)"
+   },
+   "line": 7919
+  },
+  {
+   "id": "TicketRow:button:saving-add-note",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Saving… | Add note",
+   "type": "button",
+   "handlers": {
+    "onClick": "confirmNote"
+   },
+   "line": 7927
+  },
+  {
+   "id": "TicketRow:button:cancel:2",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => { setNoting(false); setNoteDraft(\"\"); }"
+   },
+   "line": 7930
+  },
+  {
+   "id": "TicketRow:button:note",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "+ Note",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setNoting(true)"
+   },
+   "line": 7938
+  },
+  {
+   "id": "TicketRow:a:link",
+   "component": "TicketRow",
+   "tag": "a",
+   "label": "Link",
+   "href": "{expr}",
+   "line": 7945
+  },
+  {
+   "id": "TicketRow:textarea:resolution-note-optional",
+   "component": "TicketRow",
+   "tag": "textarea",
+   "label": "Resolution note (optional)…",
+   "handlers": {
+    "onChange": "(e) => setCloseDraft(e.target.value)"
+   },
+   "line": 7968
+  },
+  {
+   "id": "TicketRow:button:saving-save-note-confirm-close",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Saving… | Save note | Confirm Close",
+   "type": "button",
+   "handlers": {
+    "onClick": "confirmClose"
+   },
+   "line": 7976
+  },
+  {
+   "id": "TicketRow:button:cancel:3",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setClosing(false)"
+   },
+   "line": 7979
+  },
+  {
+   "id": "TicketRow:textarea:why-is-this-on-hold-optional",
+   "component": "TicketRow",
+   "tag": "textarea",
+   "label": "Why is this on hold? (optional)…",
+   "handlers": {
+    "onChange": "(e) => setHoldDraft(e.target.value)"
+   },
+   "line": 7986
+  },
+  {
+   "id": "TicketRow:button:saving-confirm-hold",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Saving… | Confirm Hold",
+   "type": "button",
+   "handlers": {
+    "onClick": "confirmHold"
+   },
+   "line": 7994
+  },
+  {
+   "id": "TicketRow:button:cancel:4",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Cancel",
+   "type": "button",
+   "handlers": {
+    "onClick": "() => setHolding(false)"
+   },
+   "line": 7997
+  },
+  {
+   "id": "TicketRow:button:edit",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "startEdit"
+   },
+   "line": 8005
+  },
+  {
+   "id": "TicketRow:button:close",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Close",
+   "handlers": {
+    "onClick": "startClose"
+   },
+   "line": 8009
+  },
+  {
+   "id": "TicketRow:button:resuming-resume",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Resuming… | Resume",
+   "handlers": {
+    "onClick": "unhold"
+   },
+   "line": 8011
+  },
+  {
+   "id": "TicketRow:button:hold",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Hold",
+   "handlers": {
+    "onClick": "startHold"
+   },
+   "line": 8013
+  },
+  {
+   "id": "TicketRow:button:edit-note-add-note",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Edit note | Add note",
+   "handlers": {
+    "onClick": "startClose"
+   },
+   "line": 8018
+  },
+  {
+   "id": "TicketRow:button:reopening-reopen",
+   "component": "TicketRow",
+   "tag": "button",
+   "label": "Reopening… | Reopen",
+   "handlers": {
+    "onClick": "reopen"
+   },
+   "line": 8019
+  },
+  {
+   "id": "AuditLog:SearchSelect:entity-type",
+   "component": "AuditLog",
+   "tag": "SearchSelect",
+   "label": "Entity type",
+   "handlers": {
+    "onChange": "(e) => { setEntityType(e.target.value); setOffset(0); "
+   },
+   "line": 8075
+  },
+  {
+   "id": "AuditLog:button:previous",
+   "component": "AuditLog",
+   "tag": "button",
+   "label": "Previous",
+   "handlers": {
+    "onClick": "() => setOffset(Math.max(0, offset - limit))"
+   },
+   "line": 8126
+  },
+  {
+   "id": "AuditLog:button:next",
+   "component": "AuditLog",
+   "tag": "button",
+   "label": "Next",
+   "handlers": {
+    "onClick": "() => setOffset(offset + limit)"
+   },
+   "line": 8129
+  },
+  {
+   "id": "ResourceToggles:input:e-flip-key-e-target-checked",
+   "component": "ResourceToggles",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => flip(key, e.target.checked)"
+   },
+   "line": 8192
+  },
+  {
+   "id": "McqExtractionUrlConfig:input:extraction-service-tunnel-url",
+   "component": "McqExtractionUrlConfig",
+   "tag": "input",
+   "label": "Extraction service tunnel URL",
+   "type": "text",
+   "handlers": {
+    "onChange": "(e) => setUrl(e.target.value)"
+   },
+   "line": 8246
+  },
+  {
+   "id": "McqExtractionUrlConfig:button:saving-save",
+   "component": "McqExtractionUrlConfig",
+   "tag": "button",
+   "label": "Saving… | Save",
+   "handlers": {
+    "onClick": "save"
+   },
+   "line": 8255
+  },
+  {
+   "id": "Guides:GuideForm:create",
+   "component": "Guides",
+   "tag": "GuideForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "create"
+   },
+   "line": 8323
+  },
+  {
+   "id": "GuideForm:form:show-on-saving",
+   "component": "GuideForm",
+   "tag": "form",
+   "label": "Show on Saving…",
+   "handlers": {
+    "onSubmit": "submit"
+   },
+   "line": 8383
+  },
+  {
+   "id": "GuideForm:input:button-name-e-g-student-handbook",
+   "component": "GuideForm",
+   "tag": "input",
+   "label": "Button name (e.g. Student Handbook)",
+   "handlers": {
+    "onChange": "(e) => setName(e.target.value)"
+   },
+   "line": 8384
+  },
+  {
+   "id": "GuideForm:input:https",
+   "component": "GuideForm",
+   "tag": "input",
+   "label": "https://...",
+   "type": "url",
+   "handlers": {
+    "onChange": "(e) => setUrl(e.target.value)"
+   },
+   "line": 8385
+  },
+  {
+   "id": "GuideForm:input:toggleaudience-a-key",
+   "component": "GuideForm",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "() => toggleAudience(a.key)"
+   },
+   "line": 8393
+  },
+  {
+   "id": "GuideForm:button:saving",
+   "component": "GuideForm",
+   "tag": "button",
+   "label": "Saving…",
+   "type": "submit",
+   "line": 8399
+  },
+  {
+   "id": "GuideRow:GuideForm:async-name-url-usertypes-await-onupdate-",
+   "component": "GuideRow",
+   "tag": "GuideForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "async (name, url, userTypes) => { await onUpdate(guide.GuideID, { name, url, u"
+   },
+   "line": 8422
+  },
+  {
+   "id": "GuideRow:button:cancel",
+   "component": "GuideRow",
+   "tag": "button",
+   "label": "Cancel",
+   "handlers": {
+    "onClick": "() => setEditing(false)"
+   },
+   "line": 8430
+  },
+  {
+   "id": "GuideRow:button:edit",
+   "component": "GuideRow",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => setEditing(true)"
+   },
+   "line": 8451
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "Applications",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/register-settings",
+   "line": 510
+  },
+  {
+   "component": "Applications",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/regforms",
+   "line": 523
+  },
+  {
+   "component": "Applications",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/register-settings",
+   "line": 523
+  },
+  {
+   "component": "Applications",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/regforms",
+   "line": 536
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 755
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/services",
+   "line": 756
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/invoices",
+   "line": 757
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/schedule/requests",
+   "line": 758
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/schedule",
+   "line": 759
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/leads",
+   "line": 760
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 789
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 790
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/trial-enroll",
+   "line": 836
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/interview-offer",
+   "line": 853
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/interview-offer",
+   "line": 858
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/interview-task",
+   "line": 863
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/convert",
+   "line": 879
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/schedule/requests",
+   "line": 904
+  },
+  {
+   "component": "Pipeline",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/schedule",
+   "line": 930
+  },
+  {
+   "component": "Accounts",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 1609
+  },
+  {
+   "component": "Accounts",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 1612
+  },
+  {
+   "component": "Accounts",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/convert",
+   "line": 1635
+  },
+  {
+   "component": "Accounts",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/users",
+   "line": 1664
+  },
+  {
+   "component": "Accounts",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/users",
+   "line": 1683
+  },
+  {
+   "component": "Accounts",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/impersonate",
+   "line": 1745
+  },
+  {
+   "component": "EditAccountForm",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/timesheet-automator",
+   "line": 2188
+  },
+  {
+   "component": "EditAccountForm",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/progress-tracker-automator",
+   "line": 2207
+  },
+  {
+   "component": "CreateAccount",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/users",
+   "line": 2701
+  },
+  {
+   "component": "ImportAccount",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/users",
+   "line": 2898
+  },
+  {
+   "component": "ImportAccount",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/users",
+   "line": 2902
+  },
+  {
+   "component": "Services",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/services",
+   "line": 3208
+  },
+  {
+   "component": "Services",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 3208
+  },
+  {
+   "component": "Services",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/services",
+   "line": 3481
+  },
+  {
+   "component": "Services",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/services",
+   "line": 3484
+  },
+  {
+   "component": "Services",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/services",
+   "line": 3499
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/schedule",
+   "line": 4416
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/services",
+   "line": 4417
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/schedule/reschedule-requests",
+   "line": 4418
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/enrollments",
+   "line": 4419
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/attendance",
+   "line": 4420
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/schedule",
+   "line": 4441
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/schedule/reschedule-requests",
+   "line": 4458
+  },
+  {
+   "component": "SchedulePool",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/schedule",
+   "line": 4479
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 5082
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/services",
+   "line": 5083
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/enrollments",
+   "line": 5084
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/enrollments",
+   "line": 5106
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/services/rates",
+   "line": 5122
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/enrollments",
+   "line": 5128
+  },
+  {
+   "component": "Enrollments",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/enrollments",
+   "line": 5133
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/invoices",
+   "line": 5715
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/paychecks",
+   "line": 5716
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 5717
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/services",
+   "line": 5718
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/enrollments",
+   "line": 5719
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/invoices",
+   "line": 5745
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/paychecks",
+   "line": 5746
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/invoices",
+   "line": 5764
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/invoices",
+   "line": 5768
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/paychecks",
+   "line": 5772
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/paychecks",
+   "line": 5776
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/invoices",
+   "line": 5780
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/paychecks",
+   "line": 5784
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/invoices",
+   "line": 5839
+  },
+  {
+   "component": "Billing",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/paychecks",
+   "line": 5854
+  },
+  {
+   "component": "RebuildDrafts",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/invoices",
+   "line": 5964
+  },
+  {
+   "component": "RebuildDrafts",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/paychecks",
+   "line": 5967
+  },
+  {
+   "component": "PersonStatusBadges",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/payment-details",
+   "line": 6467
+  },
+  {
+   "component": "ServiceUptimePanel",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/admin/service-uptime",
+   "line": 7598
+  },
+  {
+   "component": "Tickets",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/tickets",
+   "line": 7653
+  },
+  {
+   "component": "Tickets",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 7653
+  },
+  {
+   "component": "Tickets",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/tickets",
+   "line": 7672
+  },
+  {
+   "component": "Tickets",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/tickets",
+   "line": 7681
+  },
+  {
+   "component": "AuditLog",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/auditlog?{}",
+   "line": 8050
+  },
+  {
+   "component": "AuditLog",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/users",
+   "line": 8051
+  },
+  {
+   "component": "ResourceToggles",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/resource-toggles",
+   "line": 8159
+  },
+  {
+   "component": "ResourceToggles",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/resource-toggles",
+   "line": 8166
+  },
+  {
+   "component": "McqExtractionUrlConfig",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/mcq-config",
+   "line": 8220
+  },
+  {
+   "component": "McqExtractionUrlConfig",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/mcq-config",
+   "line": 8227
+  },
+  {
+   "component": "Guides",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/guides",
+   "line": 8275
+  },
+  {
+   "component": "Guides",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/guides",
+   "line": 8286
+  },
+  {
+   "component": "Guides",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/guides",
+   "line": 8296
+  },
+  {
+   "component": "Guides",
+   "call": "api",
+   "method": "DELETE",
+   "url": "/api/guides",
+   "line": 8306
+  }
+ ],
+ "counts": {
+  "controls": 362,
+  "apiCalls": 83,
+  "components": 58
+ }
+}

@@ -1,0 +1,14 @@
+{
+ "file": "components/WeeklyOccurrences.jsx",
+ "sha256": "d9686bcaeee5be60f80ad2767ddc683b277b011815cc21dbfccb50f6e54f996a",
+ "components": [
+  "WeeklyOccurrences"
+ ],
+ "controls": [],
+ "apiCalls": [],
+ "counts": {
+  "controls": 0,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

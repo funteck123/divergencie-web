@@ -1,0 +1,25 @@
+{
+ "file": "components/SortableTh.jsx",
+ "sha256": "3f15900d3a6d99762b90431d4b397231af464783194d2da5a0833774faf61915",
+ "components": [
+  "SortableTh"
+ ],
+ "controls": [
+  {
+   "id": "SortableTh:th:onsort-sortkeyname",
+   "component": "SortableTh",
+   "tag": "th",
+   "label": "▲ | ▼",
+   "handlers": {
+    "onClick": "() => onSort(sortKeyName)"
+   },
+   "line": 6
+  }
+ ],
+ "apiCalls": [],
+ "counts": {
+  "controls": 1,
+  "apiCalls": 0,
+  "components": 1
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "file": "components/SessionAttendance.jsx",
+ "sha256": "8ad350b6338552b06e7b0d3b58036653e2616f61e85efd4f3356941808924da5",
+ "components": [
+  "SessionAttendance"
+ ],
+ "controls": [
+  {
+   "id": "SessionAttendance:button:dismiss",
+   "component": "SessionAttendance",
+   "tag": "button",
+   "label": "Dismiss",
+   "handlers": {
+    "onClick": "() => setError(\"\")"
+   },
+   "line": 139
+  },
+  {
+   "id": "SessionAttendance:input:e-g-quadratic-equations-factorising",
+   "component": "SessionAttendance",
+   "tag": "input",
+   "label": "e.g. Quadratic equations, factorising",
+   "type": "text",
+   "handlers": {
+    "onChange": "(e) => setTopicName(e.target.value)"
+   },
+   "line": 149
+  },
+  {
+   "id": "SessionAttendance:input:https",
+   "component": "SessionAttendance",
+   "tag": "input",
+   "label": "https://...",
+   "type": "url",
+   "handlers": {
+    "onChange": "(e) => setRecordingLink(e.target.value)"
+   },
+   "line": 160
+  },
+  {
+   "id": "SessionAttendance:a:recording",
+   "component": "SessionAttendance",
+   "tag": "a",
+   "label": "Recording",
+   "href": "{expr}",
+   "line": 206
+  },
+  {
+   "id": "SessionAttendance:button:mark-correct",
+   "component": "SessionAttendance",
+   "tag": "button",
+   "label": "Mark correct",
+   "handlers": {
+    "onClick": "() => markCorrect(r.AttendanceID)"
+   },
+   "line": 211
+  },
+  {
+   "id": "SessionAttendance:button:edit",
+   "component": "SessionAttendance",
+   "tag": "button",
+   "label": "Edit",
+   "handlers": {
+    "onClick": "() => setEditingId(r.AttendanceID)"
+   },
+   "line": 216
+  },
+  {
+   "id": "SessionAttendance:MiniAttendanceForm:status-hrs-saveedit-r-attendanceid-statu",
+   "component": "SessionAttendance",
+   "tag": "MiniAttendanceForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(status, hrs) => saveEdit(r.AttendanceID, status, hrs)"
+   },
+   "line": 222
+  },
+  {
+   "id": "SessionAttendance:MiniAttendanceForm:status-hrs-log-person-userid-status-hrs",
+   "component": "SessionAttendance",
+   "tag": "MiniAttendanceForm",
+   "label": "",
+   "handlers": {
+    "onSubmit": "(status, hrs) => log(person.userId, status, hrs)"
+   },
+   "line": 230
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "SessionAttendance",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/attendance?scheduleItemId={}",
+   "line": 46
+  },
+  {
+   "component": "SessionAttendance",
+   "call": "api",
+   "method": "POST",
+   "url": "/api/attendance",
+   "line": 69
+  },
+  {
+   "component": "SessionAttendance",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/attendance",
+   "line": 89
+  },
+  {
+   "component": "SessionAttendance",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/attendance",
+   "line": 104
+  }
+ ],
+ "counts": {
+  "controls": 8,
+  "apiCalls": 4,
+  "components": 1
+ }
+}

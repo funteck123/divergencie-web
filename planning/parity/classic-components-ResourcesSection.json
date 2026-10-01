@@ -1,0 +1,46 @@
+{
+ "file": "components/ResourcesSection.jsx",
+ "sha256": "077b7d83b9e5bf6465331cf64387948ed17537d9e975e4958da9b41e75b72e5a",
+ "components": [
+  "ResourcesSection"
+ ],
+ "controls": [
+  {
+   "id": "ResourcesSection:a:syllabus-viewer",
+   "component": "ResourcesSection",
+   "tag": "a",
+   "label": "Syllabus Viewer",
+   "href": "{}?{}",
+   "line": 88
+  },
+  {
+   "id": "ResourcesSection:a:dc-question-solver",
+   "component": "ResourcesSection",
+   "tag": "a",
+   "label": "DC Question Solver",
+   "href": "/mcq-digitizer/index.html?{}",
+   "line": 98
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "ResourcesSection",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/resource-toggles",
+   "line": 60
+  },
+  {
+   "component": "ResourcesSection",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/syllabus-config",
+   "line": 64
+  }
+ ],
+ "counts": {
+  "controls": 2,
+  "apiCalls": 2,
+  "components": 1
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "file": "app/dashboard/resources/[feature]/page.js",
+ "sha256": "ba7273e1feee7b640218bc648e01c3f3fd5b4b7478e288ad56a800c8d6401276",
+ "components": [
+  "Body",
+  "DriveFolderGrid",
+  "ResourceFeaturePage"
+ ],
+ "controls": [
+  {
+   "id": "Body:button:back",
+   "component": "Body",
+   "tag": "button",
+   "label": "← Back",
+   "handlers": {
+    "onClick": "() => router.back()"
+   },
+   "line": 52
+  },
+  {
+   "id": "Body:a:access",
+   "component": "Body",
+   "tag": "a",
+   "label": "Access",
+   "href": "{expr}",
+   "line": 61
+  },
+  {
+   "id": "DriveFolderGrid:a:x",
+   "component": "DriveFolderGrid",
+   "tag": "a",
+   "label": "",
+   "href": "https://google.com",
+   "line": 100
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "DriveFolderGrid",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/resources/drive-folder?link={}",
+   "line": 84
+  }
+ ],
+ "counts": {
+  "controls": 3,
+  "apiCalls": 1,
+  "components": 3
+ }
+}

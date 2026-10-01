@@ -1,0 +1,492 @@
+{
+ "file": "public/mcq-digitizer/index.html",
+ "sha256": "3aa895635d5958e5224a1e856bbde0c6dc01566e46781326ebf95ff240e8df07",
+ "components": [
+  "html"
+ ],
+ "controls": [
+  {
+   "id": "html:select:x",
+   "component": "html",
+   "tag": "select",
+   "label": "",
+   "line": 13
+  },
+  {
+   "id": "html:select:pickboard",
+   "component": "html",
+   "tag": "select",
+   "label": "pickBoard",
+   "line": 175
+  },
+  {
+   "id": "html:select:picksubject",
+   "component": "html",
+   "tag": "select",
+   "label": "pickSubject",
+   "line": 177
+  },
+  {
+   "id": "html:select:pickcomponent",
+   "component": "html",
+   "tag": "select",
+   "label": "pickComponent",
+   "line": 180
+  },
+  {
+   "id": "html:button:mistakesmodebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "mistakesModeBtn",
+   "line": 185
+  },
+  {
+   "id": "html:select:pickpapertype",
+   "component": "html",
+   "tag": "select",
+   "label": "pickPaperType",
+   "line": 194
+  },
+  {
+   "id": "html:select:pickyear",
+   "component": "html",
+   "tag": "select",
+   "label": "pickYear",
+   "line": 201
+  },
+  {
+   "id": "html:select:picksession",
+   "component": "html",
+   "tag": "select",
+   "label": "pickSession",
+   "line": 203
+  },
+  {
+   "id": "html:select:pickpaper",
+   "component": "html",
+   "tag": "select",
+   "label": "pickPaper",
+   "line": 206
+  },
+  {
+   "id": "html:button:fetchanddigitizebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "fetchAndDigitizeBtn",
+   "line": 208
+  },
+  {
+   "id": "html:input:qppdf",
+   "component": "html",
+   "tag": "input",
+   "label": "qpPdf",
+   "line": 225
+  },
+  {
+   "id": "html:input:mspdf",
+   "component": "html",
+   "tag": "input",
+   "label": "msPdf",
+   "line": 230
+  },
+  {
+   "id": "html:button:digitizebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "digitizeBtn",
+   "line": 233
+  },
+  {
+   "id": "html:button:startpracticebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "startPracticeBtn",
+   "line": 244
+  },
+  {
+   "id": "html:button:starttestbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "startTestBtn",
+   "line": 246
+  },
+  {
+   "id": "html:button:timertogglebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "timerToggleBtn",
+   "line": 254
+  },
+  {
+   "id": "html:button:cancelquizbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "cancelQuizBtn",
+   "line": 255
+  },
+  {
+   "id": "html:input:instantchecktoggle",
+   "component": "html",
+   "tag": "input",
+   "label": "instantCheckToggle",
+   "line": 258
+  },
+  {
+   "id": "html:button:submitquizbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "submitQuizBtn",
+   "line": 266
+  },
+  {
+   "id": "html:button:finishpracticebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "finishPracticeBtn",
+   "line": 267
+  },
+  {
+   "id": "html:button:restartbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "restartBtn",
+   "line": 277
+  },
+  {
+   "id": "html:select:progresssubjectselect",
+   "component": "html",
+   "tag": "select",
+   "label": "progressSubjectSelect",
+   "line": 289
+  },
+  {
+   "id": "html:select:progresschapterselect",
+   "component": "html",
+   "tag": "select",
+   "label": "progressChapterSelect",
+   "line": 290
+  },
+  {
+   "id": "html:select:mistakesubjectselect",
+   "component": "html",
+   "tag": "select",
+   "label": "mistakeSubjectSelect",
+   "line": 307
+  },
+  {
+   "id": "html:select:lbsubjectselect",
+   "component": "html",
+   "tag": "select",
+   "label": "lbSubjectSelect",
+   "line": 316
+  },
+  {
+   "id": "html:select:lbchapterselect",
+   "component": "html",
+   "tag": "select",
+   "label": "lbChapterSelect",
+   "line": 317
+  },
+  {
+   "id": "html:select:lbpaperselect",
+   "component": "html",
+   "tag": "select",
+   "label": "lbPaperSelect",
+   "line": 318
+  },
+  {
+   "id": "html:button:structuredstartpracticebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredStartPracticeBtn",
+   "line": 349
+  },
+  {
+   "id": "html:button:structuredstarttestbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredStartTestBtn",
+   "line": 351
+  },
+  {
+   "id": "html:button:structuredtimertogglebtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredTimerToggleBtn",
+   "line": 361
+  },
+  {
+   "id": "html:button:structuredcancelquizbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredCancelQuizBtn",
+   "line": 362
+  },
+  {
+   "id": "html:button:structuredsubmittestbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredSubmitTestBtn",
+   "line": 400
+  },
+  {
+   "id": "html:button:structuredfinishbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredFinishBtn",
+   "line": 401
+  },
+  {
+   "id": "html:button:structuredrestartbtn",
+   "component": "html",
+   "tag": "button",
+   "label": "structuredRestartBtn",
+   "line": 412
+  },
+  {
+   "id": "html:textarea:write-your-full-working-here-step-by-ste",
+   "component": "html",
+   "tag": "textarea",
+   "label": "Write your full working here, step by step... (needs a table/diagram? see the hint above)",
+   "line": 1458
+  },
+  {
+   "id": "html:button:x",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 1460
+  },
+  {
+   "id": "html:button:x:2",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 1465
+  },
+  {
+   "id": "html:button:x:3",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 1466
+  },
+  {
+   "id": "html:input:x",
+   "component": "html",
+   "tag": "input",
+   "label": "",
+   "line": 1974
+  },
+  {
+   "id": "html:button:x:4",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 1980
+  },
+  {
+   "id": "html:input:x:2",
+   "component": "html",
+   "tag": "input",
+   "label": "",
+   "line": 1996
+  },
+  {
+   "id": "html:button:x:5",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 2002
+  },
+  {
+   "id": "html:button:x:6",
+   "component": "html",
+   "tag": "button",
+   "label": "",
+   "line": 2003
+  },
+  {
+   "id": "html:button:escapehtml-paperid",
+   "component": "html",
+   "tag": "button",
+   "label": "${escapeHtml(paperId)}",
+   "line": 2540
+  },
+  {
+   "id": "html:button:escapehtml-paperid:2",
+   "component": "html",
+   "tag": "button",
+   "label": "${escapeHtml(paperId)}",
+   "line": 2541
+  },
+  {
+   "id": "html:select:x:2",
+   "component": "html",
+   "tag": "select",
+   "label": "",
+   "line": 2825
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/mistakes?account={}&subject={}",
+   "line": 751
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/paper?qpId={}",
+   "line": 770
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/library",
+   "line": 966
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/subject-meta",
+   "line": 967
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/paper-titles",
+   "line": 972
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/yearly-library",
+   "line": 977
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/yearly-digitize",
+   "line": 1275
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/fetch-and-digitize",
+   "line": 1315
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/grade-structured-question",
+   "line": 1375
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/grade-structured-status?jobId={}",
+   "line": 1387
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/yearly-digitize",
+   "line": 1591
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/digitize-structured",
+   "line": 1596
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/grade-structured",
+   "line": 1856
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/digitize",
+   "line": 1894
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/attempts",
+   "line": 2109
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/mistakes",
+   "line": 2156
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/question-responses?account={}&attemptId={}",
+   "line": 2526
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/question-image?paperId={}&questionNumber={}&kind={}",
+   "line": 2592
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/mistakes/chart?account={}",
+   "line": 2757
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/progress?account={}",
+   "line": 2773
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/progress/all",
+   "line": 2774
+  },
+  {
+   "component": "html",
+   "call": "fetch",
+   "method": "GET",
+   "url": "/api/mcq/leaderboard",
+   "line": 2775
+  }
+ ],
+ "counts": {
+  "controls": 46,
+  "apiCalls": 22,
+  "components": 1
+ }
+}

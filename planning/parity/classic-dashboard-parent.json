@@ -1,0 +1,107 @@
+{
+ "file": "app/dashboard/parent/page.js",
+ "sha256": "3746b39a57eb9b89d3cfafd19263244f3d5a97ea512f20daa40955dde923f7ec",
+ "components": [
+  "Body",
+  "ChildCard",
+  "ParentDashboard"
+ ],
+ "controls": [
+  {
+   "id": "ChildCard:button:weekly",
+   "component": "ChildCard",
+   "tag": "button",
+   "label": "Weekly",
+   "handlers": {
+    "onClick": "() => setView(\"weekly\")"
+   },
+   "line": 179
+  },
+  {
+   "id": "ChildCard:button:calendar",
+   "component": "ChildCard",
+   "tag": "button",
+   "label": "Calendar",
+   "handlers": {
+    "onClick": "() => setView(\"calendar\")"
+   },
+   "line": 182
+  },
+  {
+   "id": "ChildCard:button:list",
+   "component": "ChildCard",
+   "tag": "button",
+   "label": "List",
+   "handlers": {
+    "onClick": "() => setView(\"list\")"
+   },
+   "line": 185
+  },
+  {
+   "id": "ChildCard:button:schedule-image",
+   "component": "ChildCard",
+   "tag": "button",
+   "label": "Schedule Image",
+   "handlers": {
+    "onClick": "() => setView(\"image\")"
+   },
+   "line": 188
+  },
+  {
+   "id": "ChildCard:input:e-setshowpastschedule-e-target-checked",
+   "component": "ChildCard",
+   "tag": "input",
+   "label": "",
+   "type": "checkbox",
+   "handlers": {
+    "onChange": "(e) => setShowPastSchedule(e.target.checked)"
+   },
+   "line": 196
+  },
+  {
+   "id": "ChildCard:a:pay-online",
+   "component": "ChildCard",
+   "tag": "a",
+   "label": "Pay online",
+   "href": "{expr}",
+   "line": 354
+  },
+  {
+   "id": "ChildCard:a:pdf",
+   "component": "ChildCard",
+   "tag": "a",
+   "label": "PDF",
+   "href": "/api/invoices/pdf?invoiceId={}",
+   "download": true,
+   "line": 364
+  }
+ ],
+ "apiCalls": [
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "GET",
+   "url": "/api/me?userId={}",
+   "line": 41
+  },
+  {
+   "component": "Body",
+   "call": "api",
+   "method": "PATCH",
+   "url": "/api/invoices",
+   "line": 65
+  },
+  {
+   "component": "Body",
+   "call": "fetch",
+   "method": "POST",
+   "url": "/api/invoices/mark-paid",
+   "line": 79
+  }
+ ],
+ "counts": {
+  "controls": 7,
+  "apiCalls": 3,
+  "components": 3
+ }
+}
