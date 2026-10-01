@@ -2878,7 +2878,9 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
   const parsed = useMemo(() => (text.trim() ? parseImport(text, userType) : null), [text, userType]);
   const matches = useMemo(() => (parsed && parsed.ok ? findMatches(users, parsed) : []), [users, parsed]);
   // "new" or a UserID; the strongest match is selected until the user picks otherwise.
-  const sameType = users.filter((u) => u.UserType === userType);
+  // A pasted student form is read as a Student whatever the Account type dropdown says.
+  const readAs = parsed ? parsed.userType : userType;
+  const sameType = users.filter((u) => u.UserType === readAs);
   const selected = choice && (choice === "new" || sameType.some((u) => u.UserID === choice)) ? choice : matches[0]?.user.UserID || "new";
   const target = selected === "new" ? null : sameType.find((u) => u.UserID === selected) || null;
   const pickedByHand = target && !matches.some((m) => m.user.UserID === selected);
@@ -2930,6 +2932,7 @@ function ImportAccount({ userType, users, defaults, onCreated, onUpdated }) {
           />
           {parsed && (
             <div className="space-y-2">
+              {parsed.userType !== userType && <p style={{ color: "var(--muted)" }}>{`Read as a ${parsed.userType} form.`}</p>}
               {parsed.warnings.map((w) => (
                 <p key={w} style={{ color: "var(--bad)" }}>{w}</p>
               ))}
