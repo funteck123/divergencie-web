@@ -23,9 +23,9 @@ Legend: ✓ picked, ✗ rejected. Items marked **CONFIRM** have a mark I could n
 
 | Part | Marks | Decision for the build |
 |---|---|---|
-| 1 Shell | 1A ✓, 1B ✗, 1C ✓ | Two-tier sticky bar (1A) and icon rail (1C) are both ticked. **CONFIRM:** build 1A (top bar plus section tabs) as default on wide screens and 1C (72 px icon rail, slim top bar) as a user-selectable layout, or only one? Plan assumes both, one setting. |
+| 1 Shell | 1A ✓, 1B ✗, 1C ✓ | **DECIDED 2026-10-02: 1A only** (two-tier sticky bar: top bar plus section tabs). The icon rail (1C) is not built. |
 | 2 Toolbar | 2A ✗, **2B ✓**, 2C ✗ | Two rows: actions above, filters below. Edits on 2B: remove the count badge next to the title, and remove the "Columns" and "Export" buttons (struck out, arrow to "Create account"): only buttons that exist today stay. |
-| 3 Record rows | 3A ✗, 3B ✗, 3C ✗ | Nothing picked. Notes: "**all columns should be visible without horizontal scroll**" and "3C grouped by batch is an option to choose" (a view mode). **CONFIRM, needs design:** Student Accounts has 21 columns today, 1,280 px gives about 60 px per column. Section 8 proposes how to show all 21 without sideways scroll and without unreadable text. |
+| 3 Record rows | 3A ✗, 3B ✗, 3C ✗ | Nothing picked. Notes: "**all columns should be visible without horizontal scroll**" and "3C grouped by batch is an option to choose" (a view mode). **DECIDED 2026-10-02: one line per row, no two-line rows.** Three one-line options are sketched at the real 1280 width in `prototypes/accounts-one-line-options` (A fit all, trimmed; B column sets; C priority columns). Recommended: A. Awaiting the pick. |
 | 4 Row actions | **4A ✓**, 4B ✗, **4C ✓** "better" | Two visible buttons (Edit, Log in as) plus an overflow menu, and the "select rows, act in a bar" bar. Note: "how will two selected work?" **CONFIRM:** plan: Edit opens one record at a time; bulk bar offers only actions that are safe in bulk (Deactivate, Activate, Reset password, Delete with a typed confirmation); Edit and Log in as are disabled with a reason when more than one row is selected (the sketch greys "Log in as"). |
 | 5 Edit record | **5A ✓**, **5B ✓✓**, 5C ✗ | Expand in place (5A) and bottom sheet with the list visible above (5B, ticked twice). Build both: sheet on desktop and phone as default, in-place expand as a setting. |
 | 6 Create forms | 6A ✗, **6B ✓**, **6C ✓** | Draft row at the top of the list for Create account (6B). Full-width form page for Create service (6C, the longest form). |
@@ -86,19 +86,29 @@ ui2/                       NEW shared code (not under app/, so nothing is routed
 - **Shared logic, not copied:** the new UI imports pure rules from `lib/` (`billing.js`, `invoiceDiscount.js`, `accountImport.js`, `timezones.js`, `countryCodes.js`, schedule helpers). If a rule is missing from `lib/` and lives inside a classic page, it is **extracted into `lib/` first** in a separate commit with tests, and the classic page imports it unchanged in behaviour (a refactor commit, verified by the existing behaviour).
 - **API:** no breaking change. The new UI calls the same `/api/*` routes with the same bodies, so the classic UI and every other client (CLI, MCP) keep working. New endpoints are additive only (section 2.5).
 
-### 2.2 Stack choices (decision needed, recommendation given)
+### 2.2 Stack choices (approved by the user: "yes, more is okay")
 
-| Choice | Recommendation | Why / fallback |
+| Layer | Choice | Why it improves the experience |
 |---|---|---|
-| Language | TypeScript, `strict`, in `ui2/` and `app/v2/` (the repo already has `.tsx` and a `tsconfig`) | Catches the prop and shape errors that an 8,000-line JS page hides. Fallback: JS with JSDoc types checked by `tsc`. |
-| Data fetching and cache | TanStack Query | Stale-while-revalidate, request dedupe, optimistic updates with rollback, background refetch: all required for "snappy". Fallback: a 150-line hand-written cache with the same API (more code to own). |
-| Tables | TanStack Table (headless) plus TanStack Virtual | Sorting on every column, filters by value and range, column visibility, and virtualised rows so 1,000+ rows stay at 60 fps. We keep full control of markup and styling. |
-| Styling | The existing CSS variables (brand tokens) plus CSS Modules in `ui2/` | No new CSS framework, no runtime cost, no clash with classic styles (scoped class names). |
-| Icons | `lucide-react` (already a dependency) | Same line style as the sketches. |
-| Motion | Reduced-motion aware CSS transitions; `framer-motion` only where a sheet needs a gesture | Keeps the bundle small. |
-| Forms | Controlled components plus `zod` (already a dependency) for validation | Same validation rules as the server, in one place per form. |
+| Language | TypeScript `strict` in `ui2/` and `app/v2/` (the repo already has `.tsx` and a `tsconfig`) | Catches shape and prop errors an 8,000-line JS page hides. |
+| Data and cache | TanStack Query | Instant tab switches from cache, background refresh, request dedupe, optimistic updates with rollback. |
+| Tables | TanStack Table plus TanStack Virtual | Sorting on every column, value and range filters, 1,000+ rows at 60 fps, full control of markup. |
+| Accessible primitives | Radix Primitives (Dialog, Popover, DropdownMenu, Tabs, Tooltip, Toggle, Checkbox) | Correct keyboard, focus trap and screen-reader behaviour for every menu, sheet and tab, instead of hand-rolled versions. |
+| Searchable A to Z select and command search | `cmdk` on a Radix Popover | Fast filtering of long lists, keyboard first. Replaces `SearchSelect` everywhere. |
+| Bottom sheets with touch gestures | `vaul` | Drag-to-close sheets for the 5B edit sheet and phone menus. |
+| Toasts | `sonner` | Small, accessible, stackable confirmations and error toasts. |
+| URL state | `nuqs` | Type-safe filters, sort, view mode, page size and open record in the URL (back button, shareable links, open in new tab). |
+| Charts | `uPlot` | Tiny and very fast line charts (dates on the axis, faint comparison lines, tooltips). |
+| Dates | `date-fns` | Predictable date maths and formatting in one place. |
+| Fonts | Inter through `next/font` (self-hosted, no layout shift) | Same face as the sketches, no flash of unstyled text. |
+| Class names | `clsx` | Tidy conditional classes. |
+| Styling | Existing CSS variables plus CSS Modules in `ui2/` | No new CSS framework, no runtime cost, no clash with classic styles. |
+| Icons | `lucide-react` (already installed) | Same line style as the sketches. |
+| Validation | `zod` (already installed) | One rule set per form, matching the server. |
+| Field performance | `web-vitals` reporting to the existing Sentry | Real INP, LCP and CLS numbers from real use, not only lab tests. |
+| Tests | Playwright test runner, Vitest with Testing Library, `@axe-core/playwright` | Journeys and parity, component states, automatic accessibility checks. |
 
-New dependencies: TanStack Query, Table, Virtual (all small, tree-shakeable). Everything else is already installed. **CONFIRM** this list before Phase 0 ends.
+All are pinned, small or tree-shakeable, and wrapped behind our own components so any of them can be swapped without touching screens.
 
 ### 2.3 Data layer (the heart of "snappy")
 
@@ -131,7 +141,7 @@ Built once in `ui2/components/`, documented in a single page (`/v2/_system`, dev
 
 | Component | Needed by | Intent |
 |---|---|---|
-| `AppShell` (TopBar, SectionTabs, IconRail, PhoneBottomNav) | all admin | Pinned bars, the 1A/1C layouts, bottom bar that hides on scroll. |
+| `AppShell` (TopBar, SectionTabs, PhoneBottomNav) | all admin | Pinned two-tier bar (1A), bottom bar that hides on scroll on phones. |
 | `DataTable` (virtualised, sticky header, sortable on every column, column priority) | Accounts, Services, Billing, Tickets, Audit, Enrollments | One table engine for ten screens, so behaviour is identical. |
 | `FilterBar` (search, type tabs, value filters, **range filters**) | all tables | Filters by value and by range, state in the URL. |
 | `GroupedView` (tree and group-switcher modes) | Accounts, Services, Billing, Audit | Tree like today, group-by modes, counts, fold state remembered. |
@@ -151,6 +161,22 @@ Built once in `ui2/components/`, documented in a single page (`/v2/_system`, dev
 | `PdfLink`, `CopyButton`, `CopyMenu` | Billing, reminders | The reminder message menus already built. |
 
 Tokens: colours, spacing scale, radii, type scale and elevation come from the brand guide used for the sketchbooks (Inter, Lucide, sharp-corner rule). Contrast is checked against WCAG AA; any conflict with the brand guide is reported, not silently fixed (the same rule as the sketch rounds).
+
+### 3.1 Consistency program (the user asked for the same look and behaviour across the whole DC portal)
+
+One system for **every** surface: Management, Student, Teacher, Staff, Parent, Ambassador, Trial, Interview, Resources, Question Solver, Syllabus, and the login and register pages. A user who moves between screens or roles must never have to relearn anything.
+
+1. **Six page archetypes**, every screen is one of them: List page (toolbar, filters, table), Record sheet (bottom sheet or in place), Form page (stacked sections), Dashboard home (cards of what needs attention), Tool workspace (pinned bars, one task in focus), Auth page. A new screen picks an archetype; it does not invent a layout.
+2. **Tokens only.** Colour, spacing, type, radius, elevation, motion duration and breakpoints (390, 768, 1024, 1280, 1440, 1920) come from one token file. A style rule bans raw colours and pixel values outside it.
+3. **One component per job.** One Button (primary, secondary, danger, icon), one Table, one Select, one Sheet, one Toast, one Confirm. Raw `<button>`, `<select>` and `<table>` are banned in `app/v2` and `ui2/features` by lint.
+4. **State matrix for every component and screen:** default, hover, focus, active, disabled (with a reason), loading (skeleton shaped like the content), empty (label only), error (what happened, what to do), offline, no permission. A screen is not done until every state exists.
+5. **A copy deck:** every label, verb and message lives in one file. The same action has the same word everywhere (Create, Save, Cancel, Delete, Reset password, Log in as), the same icon, the same position (primary action bottom right of sheets, top right of lists), and the same confirmation pattern for destructive actions.
+6. **One set of formatters:** dates, times and timezones, money and currency, phone numbers, names, statuses and their colours come from shared helpers, so a date never looks different on two screens.
+7. **Behaviour rules identical everywhere:** sort and filter state in the URL, pagination and page size, selection, keyboard shortcuts (`/` search, `Esc` close, arrows in menus), focus order, scroll restoration, unsaved-change warnings, optimistic updates and their rollback toast.
+8. **Responsive rules identical everywhere:** pinned bars, bottom navigation on phones that hides on scroll down and shows on scroll up, no sideways scroll at any listed width, touch targets at least 44 px on touch devices while staying dense on desktop.
+9. **Enforcement, not goodwill:** (a) lint rules for tokens and banned elements, (b) a consistency audit script that scans the new code for off-token values and non-system components and fails the build, (c) a gallery page (`/v2/_system`) showing every component in every state, (d) visual regression snapshots of every screen at the six widths, (e) an axe accessibility check in every journey test.
+10. **Reviews:** at the end of every phase a cross-role walkthrough (the same task done as each role, looking only for differences), a heuristic review (Nielsen's ten plus the portal rules above), and a side-by-side review page of all screens built so far for the user. Any inconsistency found is fixed in that phase, not logged for later.
+11. **Single source for decisions:** every new decision (a layout choice, a wording choice) is added to a short `DESIGN_RULES.md` so the next screen follows it automatically.
 
 ## 4. Quality, testing and performance
 
@@ -219,12 +245,12 @@ Effort is in agent working sessions (one long focused session each), not calenda
 | # | Phase | Scope | Exit criteria | Size |
 |---|---|---|---|---|
 | 0 | Foundations | Resolve the CONFIRM items (section 8). Parity extractor and first manifest. Design tokens and the component skeletons. Data layer with a fake API. Toggle plumbing and the two classic hooks. CI guards. Baseline performance measurements of every endpoint. | Manifest committed, toggle works both ways with an empty new UI, budgets measured, guard test green, user approves the CONFIRM answers. | 2 |
-| 1 | Vertical slice: Shell and Accounts (Students) | AppShell (1A and 1C), DataTable, FilterBar, RowActions, Accounts list for Students with the 21-column solution, URL state, skeletons. | Students list at 1280 and 390 with no sideways scroll, budgets met on 1,000 rows, parity for the Students table actions at list level. | 3 |
+| 1 | Vertical slice: Shell and Accounts (Students) | AppShell (1A), DataTable, FilterBar, RowActions, Accounts list for Students with the 21-column solution, URL state, skeletons. | Students list at 1280 and 390 with no sideways scroll, budgets met on 1,000 rows, parity for the Students table actions at list level. | 3 |
 | 2 | Accounts, complete | All account types and tabs; RecordSheet and in-place edit; DraftRow create; selection bar; Log in as; Reset password; Activate/Deactivate; Convert; Delete (with history guard); Import from form (just built); Copy credentials; groups modes. | Every Accounts manifest entry mapped and tested; parity journeys pass; five-lens review done. | 4 |
 | 3 | Services and Enrollments | Tree view and group modes, Create service FormPage (rates, batches, occurrences, facilitators, links), rate editing, service uptime, Enrollments (7C), enroll strip, add service, dates, rate move. | Parity for services and enrollments; the date-wipe bug class covered by tests (the earlier PATCH wholesale lesson). | 4 |
 | 4 | Billing | Full table default, group modes, sort every column, value and range filters, lifecycle lanes mode, generate and rebuild drafts, manual forms, invoice rows, line items, discount editor, approve/partial payment, PDF, reminder menus (UPI, Stripe local, international, Indian full), paychecks, acknowledgement copy. | Parity for every billing action and message text byte for byte; discount and INRDue math verified by the existing unit tests plus journeys. | 5 |
 | 5 | Pipeline, Applications, Schedule, Tickets, Audit, Guides, Settings | 8B pipeline, applications review, Schedule with agenda, month, conflicts, offer slot, reschedule, weekly image link, then the new day timeline (9C); Tickets table with open-in-tab thread, notes, hold, close, uptime check; Audit with page size; Guides; resource toggles; registration settings; MCQ config. | Every tab of the classic Management dashboard has a mapped, tested new equivalent. | 5 |
-| 6 | Other dashboards (needs a design step) | Student, teacher, staff, parent, ambassador, trial, interview, resources. **Not covered by the sketchbooks.** First produce short sketch rounds in the same process (3 options per part), get picks, then build with the same components. | Sketch picks approved, then parity per dashboard. | 4 |
+| 6 | Other dashboards (same look, section 3.1) | Student, teacher, staff, parent, ambassador, trial, interview, resources, login and register. **Not covered by the sketchbooks, decided: same look and behaviour as the rest of the portal.** Built from the six page archetypes and the shared components, no new layouts invented. One side-by-side review page of all of them for the user before building details; extra sketch options are made only where a screen truly has no archetype. | Parity per dashboard, cross-role consistency walkthrough passes. | 4 |
 | 7a | Syllabus same-domain proxy | `/api/syllabus/*` with session check and caching (option A of the existing plan). | Classic link unchanged, proxy tested, images cached at the CDN. | 1 |
 | 7b | New Question Solver | Q1 to Q13 as decoded in section 1; quiz state machine; structured grading UI; results; progress chart; phone layouts; desktop version of the 13A picker. | Parity for every Question Solver action (including Mistakes Mode, Upload own QP + MS, Digitize this paper, leaderboard); quiz budgets met. | 5 |
 | 7c | New Syllabus | S1 to S13, tags with colours and icons, summary strip, progress tabs. | Parity with the classic page including Export tagged topics and view raw JSON. | 3 |
@@ -233,19 +259,25 @@ Effort is in agent working sessions (one long focused session each), not calenda
 
 Total about 40 sessions. Phases 1 to 5 deliver the whole Management dashboard; phases 7a to 7c can run in parallel with 3 to 5 if a second agent is used (they share only the design system from phase 0 and 1).
 
-## 8. Open questions for the user (answer before Phase 0 closes)
+## 8. Decisions and open questions
 
-1. **Shell:** both 1A (two-tier bar) and 1C (icon rail) are ticked. Build both with a setting, which is the default, or only one?
-2. **Accounts, 21 columns without sideways scroll (part 3):** all three sketches are crossed out and the note says all columns must be visible. Proposal: group the 21 columns into **three bands per row** (identity, contact and course, status and tracking) shown as a **two-line row** with the same columns in the same order everywhere, plus a **column set** switch (All, Contact, Tracking, Billing) so the screen shows the columns that matter at a readable size, every set fitting 1280 without scrolling, and "All" using small two-line cells. Is that acceptable, or do you want something else (for example hiding columns by priority, or a detail strip)?
-3. **Bulk actions (4C):** which actions may run on several selected rows? Proposal in section 1 (safe ones only, Edit and Log in as disabled).
-4. **Services (7A/7B):** tree view like today as default, with the group switcher as a second mode. Correct?
-5. **Billing modes:** the list "entity, monthly due, etc." is open. Proposal: Table (default), By person, By month, By due date, By status lanes (10C), with all modes sharing the same sort and filter state. Anything else to group by?
-6. **Audit page size:** options 25, 50, 100, 200. OK?
-7. **Question Solver Q2:** default is the 2A selects in one column; chips as an option. Q3C single Start button: wanted or dropped?
-8. **Other dashboards (student, teacher, staff, parent, ambassador, trial, interview):** do you want the same sketch process for them (recommended), or should they simply inherit the new look automatically?
-9. **Dependencies:** approve TanStack Query, Table and Virtual (section 2.2), or choose the no-dependency fallback.
-10. **Toggle placement for the Question Solver:** an additive link in its own bar (one small classic edit), or only in the Resources section (zero classic edits)?
-11. **Scope guard:** confirm the classic UI is never deleted by this project and any removal is decided later.
+Answered by the user on 2026-10-02:
+1. **Shell:** 1A only.
+2. **Accounts columns:** one line per row, no two-line rows; options sketched (see section 1, part 3). Awaiting the pick between A, B and C.
+3. **Bulk actions:** the user asked what this meant. Plain version: after ticking several rows, a bar offers actions for all of them at once. Proposal: Deactivate, Activate, Reset password and Delete (typed confirmation, names listed, capped at 25 per action, each one written to the audit log). Edit and Log in as need one person, so they are greyed out with a reason. Open: whether to also offer "set one field for all selected" (for example change Batch for five students). That needs the same safeguards (preview of every change, explicit selection only, never "all rows of a type").
+4. **Other dashboards:** same look and consistent across the whole portal; section 3.1 is the program for it.
+5. **Dependencies:** approved, more is fine (section 2.2).
+
+Still open (defaults in brackets, unanswered items keep them):
+- Pick for the one-line Accounts table: A, B or C. [A]
+- Bulk "set one field for all selected": yes or no. [no, first release]
+- New Student fields (Gender, Help wanted, Subjects, Referrer, Heard about us, A* answer): they would make 27 columns. Show them only in the record sheet, or add some as columns (for example Referrer)? [record sheet only]
+- Services: tree view like today as default plus the 7B group switcher as a second mode. [yes]
+- Billing modes: Table (default), By person, By month, By due date, By status lanes. Anything else? [as listed]
+- Audit page size: 25, 50, 100, 200. [yes]
+- Question Solver Q2 default: 2A selects in one column, chips optional [yes]; Q3C single Start button wanted or dropped [dropped].
+- Toggle placement for the Question Solver: an additive link in its own bar, or only in the Resources section. [Resources section only, zero classic edits]
+- Confirm the classic UI is never deleted by this project. [confirmed unless told otherwise]
 
 ## 9. Tickets to open (real tickets, one per item)
 
@@ -270,6 +302,6 @@ Total about 40 sessions. Phases 1 to 5 deliver the whole Management dashboard; p
 
 ## 11. What happens next
 
-1. User answers section 8 (even one line each; unanswered items keep the stated defaults).
+1. User picks the one-line Accounts option (section 8) and answers anything else open; unanswered items keep the stated defaults.
 2. Create the tickets in section 9.
 3. Start Phase 0. Nothing is pushed without the user's approval.
