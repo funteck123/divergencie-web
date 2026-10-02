@@ -200,7 +200,7 @@ export function PipelineView() {
           <input type="search" className="u2-search" placeholder="Search name or service…" aria-label="Search trials" value={tSearch} onChange={(e) => setTSearch(e.target.value)} />
           <div style={{ minWidth: 200 }}><Combobox aria-label="Trial status" value={tStatus} onChange={setTStatus} options={Object.entries(TRIAL_STATUS_FILTER_LABEL).map(([value, label]) => ({ value, label }))} /></div>
         </div>
-        {modeTrial === "lanes" ? <Lanes rows={trialRows} steps={TRIAL_STEPS} indexOf={trialStepIndex} keyOf={(t) => t.TrialID} deadEnd={trialDeadEnd} /> : <DataTable caption="Trial pipeline" rows={trialRows} columns={trialCols} rowKey={(t) => t.TrialID} initialSort={{ id: "name", dir: "asc" }} emptyText={trialItems.length === 0 ? "No trial bookings yet." : "No matches."} />}
+        {modeTrial === "lanes" ? <Lanes<TRow> rows={trialRows} steps={TRIAL_STEPS} indexOf={trialStepIndex} keyOf={(t) => t.TrialID} deadEnd={trialDeadEnd} /> : <DataTable caption="Trial pipeline" rows={trialRows} columns={trialCols} rowKey={(t) => t.TrialID} initialSort={{ id: "name", dir: "asc" }} emptyText={trialItems.length === 0 ? "No trial bookings yet." : "No matches."} />}
       </section>
 
       <section className="u2-box">
@@ -209,7 +209,7 @@ export function PipelineView() {
           <input type="search" className="u2-search" placeholder="Search name or service…" aria-label="Search interviews" value={iSearch} onChange={(e) => setISearch(e.target.value)} />
           <div style={{ minWidth: 200 }}><Combobox aria-label="Interview status" value={iStatus} onChange={setIStatus} options={Object.entries(INTERVIEW_STATUS_FILTER_LABEL).map(([value, label]) => ({ value, label }))} /></div>
         </div>
-        {modeInterview === "lanes" ? <Lanes rows={interviewRows} steps={INTERVIEW_STEPS} indexOf={interviewStepIndex} keyOf={(i) => i.InterviewID} deadEnd={interviewDeadEnd} /> : <DataTable caption="Interview pipeline" rows={interviewRows} columns={interviewCols} rowKey={(i) => i.InterviewID} initialSort={{ id: "name", dir: "asc" }} emptyText={interviewItems.length === 0 ? "No interview bookings yet." : "No matches."} />}
+        {modeInterview === "lanes" ? <Lanes<IRow> rows={interviewRows} steps={INTERVIEW_STEPS} indexOf={interviewStepIndex} keyOf={(i) => i.InterviewID} deadEnd={interviewDeadEnd} /> : <DataTable caption="Interview pipeline" rows={interviewRows} columns={interviewCols} rowKey={(i) => i.InterviewID} initialSort={{ id: "name", dir: "asc" }} emptyText={interviewItems.length === 0 ? "No interview bookings yet." : "No matches."} />}
       </section>
 
       <section className="u2-box">
