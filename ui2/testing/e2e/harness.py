@@ -8,7 +8,8 @@ MGMT = {"UserID": "MGT-0001", "UserType": "Management", "Name": "Test Admin", "U
 
 
 class Session:
-    def __init__(self, user=None, width=1280, height=800, state=None):
+    def __init__(self, user=None, width=1280, height=800, state=None, anon=False):
+        self.anon = anon
         self.user = user or MGMT
         self.size = {"width": width, "height": height}
         self.state = state if state is not None else {}
@@ -23,7 +24,8 @@ class Session:
         self._p = sync_playwright().start()
         self.browser = self._p.chromium.launch()
         ctx = self.browser.new_context(viewport=self.size, permissions=["clipboard-read", "clipboard-write"])
-        ctx.add_init_script("localStorage.setItem('dcp1_user', %s)" % json.dumps(json.dumps(self.user)))
+        if not self.anon:
+            ctx.add_init_script("localStorage.setItem('dcp1_user', %s)" % json.dumps(json.dumps(self.user)))
         self.page = ctx.new_page()
         self.page.set_default_timeout(30000)
         self.page.on("pageerror", lambda e: self.errors.append(str(e)[:300]))

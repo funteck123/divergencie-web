@@ -1538,5 +1538,514 @@
   "ConfirmButton:button:setconfirming-true": {
     "status": "mapped",
     "to": "ui2/components/ConfirmDialog.tsx (modal confirm replaces the inline two-step; delete service, enrollment, invoice, paycheck, guide, ticket-less deletes); e2e services, enrollments, billing, audit_guides journeys"
+  },
+  "LoginPage:form:username-password-forgot-remember-me-ver": {
+    "status": "merged",
+    "to": "ui2/features/auth/LoginForm.tsx",
+    "reason": "The classic Remember me checkbox is connected to nothing (session length is fixed by the server cookie), so the new form leaves it out."
+  },
+  "LoginPage:input:your-username": {
+    "status": "mapped",
+    "to": "ui2/features/auth/LoginForm.tsx; e2e auth_journey.py"
+  },
+  "LoginPage:a:forgot": {
+    "status": "mapped",
+    "to": "ui2/features/auth/LoginForm.tsx; e2e auth_journey.py"
+  },
+  "LoginPage:input:your-password": {
+    "status": "mapped",
+    "to": "ui2/features/auth/LoginForm.tsx; e2e auth_journey.py"
+  },
+  "LoginPage:input:x": {
+    "status": "mapped",
+    "to": "ui2/features/auth/LoginForm.tsx; e2e auth_journey.py"
+  },
+  "LoginPage:button:verifying-portal-login": {
+    "status": "mapped",
+    "to": "ui2/features/auth/LoginForm.tsx; e2e auth_journey.py"
+  },
+  "PhoneField:input:start-with-and-the-country-code-for-exam": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "CheckGroup:input:ontoggle-o": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "CheckGroup:input:other": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "CheckGroup:input:other:2": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:form:i-m-applying-as-trial-student-interview-": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:SearchSelect:value-requestedtype": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:student-first-name": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:student-last-name": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:value-name": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:SearchSelect:value-gender": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:SearchSelect:value-location": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:PhoneField:44-7000-000000": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:value-email": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:PhoneField:phone-international": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:value-parentemail": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:value-schoolname": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:enter-name": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:value-couponcode": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:scoreastar": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:textarea:value-whydivergencie": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:input:e-setresume-e-target-files-0-null": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "RegisterForm:button:submitting-submit-submit-application": {
+    "status": "mapped",
+    "to": "ui2/features/auth/RegisterForm.tsx + registerLogic.ts; registerLogic.test.ts; e2e auth_journey.py (student path; interview path unit tested)"
+  },
+  "Body:button:weekly": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:button:calendar": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:button:list": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:button:schedule-image": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:SearchSelect:value-schedulerange": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:button:log": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:a:pay-online": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:a:pdf": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Student; e2e portals_journey.py"
+  },
+  "Body:button:marking-mark-as-received": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Teacher; e2e portals_journey.py"
+  },
+  "Body:input:e-setshowpastschedule-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Staff; e2e portals_journey.py"
+  },
+  "Body:AttendanceForm:status-hrs-logattendance-s-scheduleid-st": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Staff; e2e portals_journey.py"
+  },
+  "AttendanceForm:form:status-present-absent-late-hours-logging": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Staff; e2e portals_journey.py"
+  },
+  "AttendanceForm:SearchSelect:value-status": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Staff; e2e portals_journey.py"
+  },
+  "AttendanceForm:input:value-hrs": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Staff; e2e portals_journey.py"
+  },
+  "AttendanceForm:button:logging-log": {
+    "status": "mapped",
+    "to": "ui2/features/portal/RolePortal.tsx role=Staff; e2e portals_journey.py"
+  },
+  "ChildCard:button:weekly": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "ChildCard:button:calendar": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "ChildCard:button:list": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "ChildCard:button:schedule-image": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "ChildCard:input:e-setshowpastschedule-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "ChildCard:a:pay-online": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "ChildCard:a:pdf": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ParentPortal.tsx; e2e portals_journey.py"
+  },
+  "Body:FeedbackForm:fb-submitfeedback-t-trialid-fb": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx TrialPortal; e2e portals_journey.py"
+  },
+  "Body:SearchSelect:service": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx TrialPortal; e2e portals_journey.py"
+  },
+  "Body:button:requesting-request-trial": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx TrialPortal; e2e portals_journey.py"
+  },
+  "FeedbackForm:form:submitting-submit": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx TrialPortal; e2e portals_journey.py"
+  },
+  "FeedbackForm:input:trial-feedback": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx TrialPortal; e2e portals_journey.py"
+  },
+  "FeedbackForm:button:submitting-submit": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx TrialPortal; e2e portals_journey.py"
+  },
+  "Body:TaskForm:link-submittask-it-interviewid-link": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:a:open-offer-letter": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:button:accepting-accept-offer": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:a:open-offer-letter:2": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:TrialFeedbackForm:fb-submittrialfeedback-t-trialid-fb": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:button:requesting-request-interview": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:SearchSelect:trial-service": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "TaskForm:form:submitting-submit": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "TaskForm:input:task-submission-link": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "TaskForm:button:submitting-submit": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "TrialFeedbackForm:form:submitting-submit": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "TrialFeedbackForm:input:trial-feedback": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "TrialFeedbackForm:button:submitting-submit": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "PersonalInfoCard:form:name-email-whatsapp-number-country-timez": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "PersonalInfoCard:input:value-user-name": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "PersonalInfoCard:input:value-email": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "PersonalInfoCard:input:value-whatsappnumber": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "PersonalInfoCard:SearchSelect:value-timezone": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "PersonalInfoCard:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "DocumentsCard:form:resume-required-google-drive-link-cover-": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "DocumentsCard:input:https-drive-google-com": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "DocumentsCard:input:https-drive-google-com:2": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "DocumentsCard:input:portfolio-link": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "DocumentsCard:button:add-another-link": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "DocumentsCard:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/portal/TrialInterviewPortals.tsx InterviewPortal; e2e portals_journey.py"
+  },
+  "Body:button:back": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ResourceFeature.tsx; e2e portals_journey.py"
+  },
+  "Body:a:access": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ResourceFeature.tsx; e2e portals_journey.py"
+  },
+  "DriveFolderGrid:a:x": {
+    "status": "mapped",
+    "to": "ui2/features/portal/ResourceFeature.tsx; e2e portals_journey.py"
+  },
+  "ReportIssueButton:button:report-an-issue": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:div:report-an-issue": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:div:report-an-issue:2": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:button:close": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:textarea:what-went-wrong": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:input:attachment-url-optional": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "ReportIssueButton:button:sending-send": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "DashboardShell:button:returning-stop-impersonating": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "DashboardShell:button:sign-out": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx + ReportIssue.tsx; e2e portals_journey.py (shell test: report issue, stop impersonating)"
+  },
+  "InstallAppButton:button:install-app": {
+    "status": "mapped",
+    "to": "ui2/components/InstallApp.tsx (browser prompt path needs a real installable browser; iOS help dialog shares the code)"
+  },
+  "InstallAppButton:div:install-divergencie-tap-the-share-button": {
+    "status": "mapped",
+    "to": "ui2/components/InstallApp.tsx (browser prompt path needs a real installable browser; iOS help dialog shares the code)"
+  },
+  "InstallAppButton:div:install-divergencie-tap-the-share-button:2": {
+    "status": "mapped",
+    "to": "ui2/components/InstallApp.tsx (browser prompt path needs a real installable browser; iOS help dialog shares the code)"
+  },
+  "InstallAppButton:button:got-it": {
+    "status": "mapped",
+    "to": "ui2/components/InstallApp.tsx (browser prompt path needs a real installable browser; iOS help dialog shares the code)"
+  },
+  "FilterBar:button:filter": {
+    "status": "mapped",
+    "to": "search boxes of each card (Cards.tsx, BillsCard.tsx, ScheduleCard.tsx); e2e portals_journey.py"
+  },
+  "FilterBar:input:expr": {
+    "status": "mapped",
+    "to": "search boxes of each card (Cards.tsx, BillsCard.tsx, ScheduleCard.tsx); e2e portals_journey.py"
+  },
+  "FilterBar:button:clear": {
+    "status": "mapped",
+    "to": "search boxes of each card (Cards.tsx, BillsCard.tsx, ScheduleCard.tsx); e2e portals_journey.py"
+  },
+  "FilterBar:button:hide": {
+    "status": "mapped",
+    "to": "search boxes of each card (Cards.tsx, BillsCard.tsx, ScheduleCard.tsx); e2e portals_journey.py"
+  },
+  "GuidesSection:a:x": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx GuidesCard; e2e portals_journey.py"
+  },
+  "InvoicePaidControl:a:view-proof": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx InvoicePaid; e2e portals_journey.py"
+  },
+  "InvoicePaidControl:button:mark-as-unpaid": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx InvoicePaid; e2e portals_journey.py"
+  },
+  "InvoicePaidControl:button:mark-as-paid": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx InvoicePaid; e2e portals_journey.py"
+  },
+  "InvoicePaidControl:input:e-setfile-e-target-files-0-null": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx InvoicePaid; e2e portals_journey.py"
+  },
+  "InvoicePaidControl:button:uploading-confirm-payment": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx InvoicePaid; e2e portals_journey.py"
+  },
+  "InvoicePaidControl:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx InvoicePaid; e2e portals_journey.py"
+  },
+  "MyInfo:a:x": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx MyInfoCard; e2e portals_journey.py"
+  },
+  "MyInfo:a:x:2": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx MyInfoCard; e2e portals_journey.py"
+  },
+  "MyInfo:a:x:3": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx MyInfoCard; e2e portals_journey.py"
+  },
+  "MyInfo:a:x:4": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx MyInfoCard; e2e portals_journey.py"
+  },
+  "RescheduleControl:input:value-date": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx SuggestReschedule; e2e portals_journey.py (student: request sent)"
+  },
+  "RescheduleControl:input:value-time": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx SuggestReschedule; e2e portals_journey.py (student: request sent)"
+  },
+  "RescheduleControl:button:send": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx SuggestReschedule; e2e portals_journey.py (student: request sent)"
+  },
+  "RescheduleControl:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx SuggestReschedule; e2e portals_journey.py (student: request sent)"
+  },
+  "RescheduleControl:button:suggest-reschedule": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Controls.tsx SuggestReschedule; e2e portals_journey.py (student: request sent)"
+  },
+  "ResourcesSection:a:syllabus-viewer": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx ResourcesCard; e2e portals_journey.py"
+  },
+  "ResourcesSection:a:dc-question-solver": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx ResourcesCard; e2e portals_journey.py"
+  },
+  "ScheduleImage:a:download-png": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx ScheduleImageView; e2e portals_journey.py"
+  },
+  "SearchSelect:button:open-setopen-false-openpanel": {
+    "status": "mapped",
+    "to": "ui2/components/Combobox.tsx; used in every journey"
+  },
+  "SearchSelect:input:expr": {
+    "status": "mapped",
+    "to": "ui2/components/Combobox.tsx; used in every journey"
+  },
+  "SearchSelect:input:search-options": {
+    "status": "mapped",
+    "to": "ui2/components/Combobox.tsx; used in every journey"
+  },
+  "SearchSelect:div:choose-o": {
+    "status": "mapped",
+    "to": "ui2/components/Combobox.tsx; used in every journey"
+  },
+  "SortableTh:th:onsort-sortkeyname": {
+    "status": "mapped",
+    "to": "ui2/components/DataTable.tsx sortable headers; every table journey"
+  },
+  "StaffResources:a:x": {
+    "status": "mapped",
+    "to": "ui2/features/portal/Cards.tsx StaffResourcesCard; e2e portals_journey.py"
   }
 }
