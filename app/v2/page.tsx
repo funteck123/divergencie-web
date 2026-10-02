@@ -1,35 +1,20 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { RequireUser } from "@/ui2/components/RequireUser";
-import { AppShell } from "@/ui2/components/AppShell";
-import styles from "./home.module.css";
 
+/** The new UI home is the user's own area. Management has the dashboard; other roles arrive as their phase ships. */
 export default function V2Home() {
+  const router = useRouter();
   return (
     <RequireUser>
-      {(user) => (
-        <AppShell user={user}>
-          <section className={styles.card}>
-            <h1>New UI</h1>
-            <dl className={styles.facts}>
-              <div>
-                <dt>Signed in as</dt>
-                <dd>{user.Name}</dd>
-              </div>
-              <div>
-                <dt>Interface</dt>
-                <dd>New UI (Beta)</dd>
-              </div>
-              <div>
-                <dt>Built so far</dt>
-                <dd>Foundations</dd>
-              </div>
-            </dl>
-            <Link href="/v2/system">Component gallery</Link>
-          </section>
-        </AppShell>
-      )}
+      {(user) => <Redirect to={user.UserType === "Management" ? "/v2/management/accounts" : "/dashboard"} go={router.replace} />}
     </RequireUser>
   );
+}
+
+function Redirect({ to, go }: { to: string; go: (href: string) => void }) {
+  useEffect(() => go(to), [to, go]);
+  return <div className="u2-skeleton" style={{ height: "var(--u2-bar-height)" }} aria-busy="true" />;
 }

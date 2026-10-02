@@ -1,0 +1,36 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-table__wrap {
+    /* Its own scroll box: the header stays pinned inside it, and a table wider than the box scrolls sideways here, never the page. */
+    overflow: auto; max-height: calc(100vh - var(--u2-sticky-top, var(--u2-bar-height)) - 150px); min-height: 200px;
+    background: var(--u2-color-surface);
+    border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md);
+  }
+  .u2-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--u2-text-xs); }
+  .u2-table th, .u2-table td {
+    padding: 0 6px; height: 36px; text-align: left; vertical-align: middle;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    border-bottom: 1px solid var(--u2-color-border);
+  }
+  .u2-table thead th {
+    position: sticky; top: 0; z-index: 1;
+    background: var(--u2-color-bg-subtle); font-weight: var(--u2-weight-semibold); font-size: var(--u2-text-xs);
+    color: var(--u2-color-text); text-transform: none; letter-spacing: 0; border-bottom: 1px solid var(--u2-color-border-strong);
+  }
+  .u2-table tbody tr:hover { background: var(--u2-color-bg-subtle); }
+  .u2-table__row--selected { background: var(--u2-color-selected); }
+  .u2-table__row--active { background: var(--u2-color-info-bg); }
+  .u2-table__num { text-align: right; font-variant-numeric: tabular-nums; }
+  .u2-table__center { text-align: center; padding-left: 2px; padding-right: 2px; }
+  .u2-table__right { text-align: right; }
+  .u2-table__check { text-align: center; padding: 0; }
+  .u2-table__sort {
+    all: unset; text-transform: none; cursor: pointer; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+    font-weight: var(--u2-weight-semibold);
+  }
+  .u2-table__sort:focus-visible { box-shadow: 0 0 0 2px var(--u2-color-bg), 0 0 0 4px var(--u2-color-focus); }
+  .u2-table__skeleton-row { height: 36px; margin: var(--u2-space-1) var(--u2-space-2); }
+  .u2-table__empty { padding: var(--u2-space-8) var(--u2-space-4); text-align: center; color: var(--u2-color-text-muted); }
+  .u2-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--u2-space-2); }
+  .u2-cards__item { background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); padding: var(--u2-space-3); }
+}

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function V2Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="u2">
+    <div className="u2" style={{ minHeight: "100vh" }}>
       <QueryProvider>{children}</QueryProvider>
     </div>
   );

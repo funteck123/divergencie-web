@@ -1,20 +1,32 @@
 /* Specificity lift: the site's flattened Tailwind preflight (postcss cascade-layers, TKT-0262) outranks plain
-   class selectors, so every selector here is prefixed with two :not(#\#) (each counts as an id). */
-:global(:not(#\#):not(#\#)) .bar {
+   class selectors, so every selector here is prefixed with six :not(#\#) (each counts as an id). */
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .bar {
   position: sticky; top: 0; z-index: var(--u2-z-bar);
   display: flex; align-items: center; gap: var(--u2-space-4);
   height: var(--u2-bar-height); padding: 0 var(--u2-space-4);
   background: var(--u2-color-brand); color: var(--u2-color-on-brand);
 }
-:global(:not(#\#):not(#\#)) .brand { display: flex; align-items: center; gap: var(--u2-space-2); }
-:global(:not(#\#):not(#\#)) .beta {
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .brand { display: flex; align-items: center; gap: var(--u2-space-2); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .beta {
   background: var(--u2-color-accent); color: var(--u2-color-on-accent);
   border-radius: var(--u2-radius-xl); padding: 2px var(--u2-space-2);
   font-size: var(--u2-text-xs); font-weight: var(--u2-weight-bold); text-transform: uppercase; letter-spacing: 0.04em;
 }
-:global(:not(#\#):not(#\#)) .who { display: flex; flex-direction: column; line-height: 1.2; margin-left: auto; text-align: right; }
-:global(:not(#\#):not(#\#)) .name { font-weight: var(--u2-weight-semibold); font-size: var(--u2-text-md); }
-:global(:not(#\#):not(#\#)) .type { font-size: var(--u2-text-xs); opacity: 0.85; }
-:global(:not(#\#):not(#\#)) .actions { display: flex; align-items: center; gap: var(--u2-space-2); }
-:global(:not(#\#):not(#\#)) .main { padding: var(--u2-space-6) var(--u2-space-4); max-width: 1320px; margin: 0 auto; }
-@media (max-width: 767px) { :global(:not(#\#):not(#\#)) .who { display: none; } :global(:not(#\#):not(#\#)) .actions { margin-left: auto; } }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: flex; flex-direction: column; line-height: 1.2; margin-left: auto; text-align: right; }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .name { font-weight: var(--u2-weight-semibold); font-size: var(--u2-text-md); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .type { font-size: var(--u2-text-xs); opacity: 0.85; }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { display: flex; align-items: center; gap: var(--u2-space-2); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .main { padding: var(--u2-space-6) var(--u2-space-4); max-width: 1320px; margin: 0 auto; }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tabs {
+  position: sticky; top: var(--u2-bar-height); z-index: var(--u2-z-bar);
+  display: flex; gap: var(--u2-space-1); height: 44px; align-items: stretch; padding: 0 var(--u2-space-4);
+  background: var(--u2-color-surface); border-bottom: 1px solid var(--u2-color-border);
+  overflow-x: auto; scrollbar-width: none;
+}
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab {
+  display: inline-flex; align-items: center; flex-shrink: 0; padding: 0 var(--u2-space-3);
+  color: var(--u2-color-text); text-decoration: none; font-weight: var(--u2-weight-medium); border-bottom: 3px solid transparent;
+}
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab:hover { background: var(--u2-color-bg-subtle); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab[aria-current="page"] { color: var(--u2-color-brand); font-weight: var(--u2-weight-bold); border-bottom-color: var(--u2-color-accent); }
+@media (max-width: 767px) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: none; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { margin-left: auto; } }

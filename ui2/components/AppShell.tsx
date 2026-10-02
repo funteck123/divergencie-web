@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { apiFetch } from "@/ui2/queries/client";
 import { logout, setCurrentUser, roleHomePath } from "@/lib/client";
@@ -13,8 +14,14 @@ import styles from "./AppShell.module.css";
  * Phase 0 skeleton of the two-tier shell (sketch 1A): the pinned top bar with the logo, the Beta marker, the
  * switch back to classic and Sign out. Phase 1 adds the section tabs as the second tier.
  */
-export function AppShell({ user, children }: { user: SessionUser; children: ReactNode }) {
+export interface ShellTab {
+  href: string;
+  label: string;
+}
+
+export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: readonly ShellTab[]; children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [leaving, setLeaving] = useState(false);
 
   async function backToClassic() {
@@ -60,7 +67,19 @@ export function AppShell({ user, children }: { user: SessionUser; children: Reac
           </Button>
         </div>
       </header>
-      <main id="u2-main" className={styles.main}>
+      {tabs && (
+        <nav className={styles.tabs} aria-label="Sections">
+          {tabs.map((t) => {
+            const current = pathname === t.href || pathname.startsWith(t.href + "/");
+            return (
+              <Link key={t.href} href={t.href} className={styles.tab} aria-current={current ? "page" : undefined}>
+                {t.label}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
+      <main id="u2-main" className={styles.main} style={{ ["--u2-sticky-top" as string]: tabs ? "calc(var(--u2-bar-height) + 44px)" : "var(--u2-bar-height)" }}>
         {children}
       </main>
     </>

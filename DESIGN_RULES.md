@@ -42,12 +42,14 @@ Source documents: Brand Design Guidelines v1.0 (BDG), Mockup Guide v2 (MU), `pla
 ## CSS specificity lift (found 2026-10-02)
 
 The site flattens Tailwind's `@layer` blocks (`postcss.config.mjs`, TKT-0262). After flattening, Tailwind's preflight
-rules (`h1`, `button`, `a`, and so on) have specificity (2,0,1) and beat any plain class selector. Every new-UI
+rules (`h1`, `button`, `a`, and so on) have specificity (2,0,1), and the classic `globals.css` element rules (`th`, `td`, `table`, `a`, ...) are flattened up to five stacked ids, so both beat any plain class selector. Every new-UI
 stylesheet therefore raises its own specificity:
 
-- Plain CSS (`ui2/styles/base.css`): nest everything under `:not(#\#):not(#\#) { ... }`. Each `:not(#\#)` counts as an id.
-- CSS modules: prefix each selector with `:global(:not(#\#):not(#\#))`.
+- Plain CSS (`ui2/styles/base.css`): nest everything under six stacked `:not(#\#)` (`:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { ... }`). Each one counts as an id.
+- CSS modules: prefix each selector with `:global(` the same six `:not(#\#)` `)`.
 - Element resets that a component must override use `:where(.u2) :where(button)` so they stay below component classes.
 - `@keyframes` stay outside the wrapper.
 
 Symptom if forgotten: headings and buttons render with browser defaults inside `.u2`.
+
+Why six: the flattened classic rules reach five ids. Six beats them whatever their classes. Classic element rules also leak in (for example `th { text-transform: uppercase }`), so a new table, link or heading must set the properties it cares about, not rely on browser defaults.

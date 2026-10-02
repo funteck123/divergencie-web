@@ -1,0 +1,14 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-badge {
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+    padding: 1px var(--u2-space-2); border-radius: var(--u2-radius-xl);
+    font-size: var(--u2-text-xs); font-weight: var(--u2-weight-semibold); line-height: 1.5;
+  }
+  .u2-badge__dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .u2-badge--neutral { background: var(--u2-color-selected); color: var(--u2-color-text); }
+  .u2-badge--info { background: var(--u2-color-info-bg); color: var(--u2-color-info-text); }
+  .u2-badge--success { background: var(--u2-color-success-bg); color: var(--u2-color-success); }
+  .u2-badge--warning { background: var(--u2-color-warning-bg); color: var(--u2-color-warning-text); }
+  .u2-badge--error { background: var(--u2-color-error-bg); color: var(--u2-color-error); }
+}
