@@ -70,7 +70,8 @@ def main():
         out["bulk_rows_gone"] = s.page.locator("tbody tr", has_text="STU-1004").count() + s.page.locator("tbody tr", has_text="STU-1005").count()
         s.page.screenshot(path="snapshots/v2-accounts-phase2.png")
         out["calls"] = [(m, p, b) for m, p, b in s.calls]
-        out["errors"] = s.errors[:5]
+        # the delete refusal above is a deliberate 409, which the browser logs as a console error
+        out["errors"] = [e for e in s.errors if "status of 409" not in e][:5]
     for k, v in out.items(): print(k, v)
 
 if __name__ == "__main__":

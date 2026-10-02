@@ -46,7 +46,9 @@ def main():
         out["filtered_total_text"] = s.page.get_by_text(re.compile("of 43$")).count()
         s.goto("/v2/management/guides")
         s.page.get_by_text("Handbook").wait_for(timeout=60000)
-        s.page.get_by_label("Syllabus", exact=True).check()
+        # The switch updates after a tick (optimistic update), so assert the end state instead of check()'s instant one.
+        from playwright.sync_api import expect
+        s.page.get_by_label("Syllabus", exact=True).click(); expect(s.page.get_by_label("Syllabus", exact=True)).to_be_checked()
         s.page.wait_for_timeout(500)
         s.page.get_by_label("Extraction service tunnel URL").fill("https://new.trycloudflare.com")
         s.page.get_by_role("button", name="Save", exact=True).click(); s.page.get_by_text("Saved.").wait_for()
