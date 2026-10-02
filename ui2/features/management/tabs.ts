@@ -2,8 +2,8 @@ import type { ShellTab } from "@/ui2/components/AppShell";
 
 /** The ten Management sections, in the classic order. `built` flips as each phase ships. */
 export const MANAGEMENT_SECTIONS = [
-  { slug: "applications", label: "Applications", built: false },
-  { slug: "pipeline", label: "Pipeline", built: false },
+  { slug: "applications", label: "Applications", built: true },
+  { slug: "pipeline", label: "Pipeline", built: true },
   { slug: "accounts", label: "Accounts", built: true },
   { slug: "services", label: "Services", built: true },
   { slug: "schedule", label: "Schedule", built: true },

@@ -209,3 +209,45 @@ export interface RosterPerson {
   name: string;
   userType: string;
 }
+
+export interface RegForm {
+  RegFormID: string;
+  Name: string;
+  RequestedType: string;
+  Status: string;
+  Username?: string;
+  Email?: string;
+  WhatsAppNumber?: string;
+  ParentContactNumber?: string;
+  ParentEmail?: string;
+  Gender?: string;
+  Location?: string;
+  SchoolName?: string;
+  Studying?: string;
+  HelpWanted?: string;
+  Subjects?: string;
+  ReferrerName?: string;
+  HeardAbout?: string;
+  CouponCode?: string;
+  ScoreAStar?: string;
+  [key: string]: unknown;
+}
+
+export interface LeadRecord {
+  LeadID: string;
+  Name: string;
+  Email: string;
+  WhatsAppNumber?: string;
+  Country?: string;
+  Notes?: string;
+  CreatedAt: string;
+}
+
+export interface PendingRequest {
+  TrialID?: string;
+  InterviewID?: string;
+  ServiceID: string;
+  RequesterName: string;
+  RequesterType?: string;
+  [key: string]: unknown;
+}

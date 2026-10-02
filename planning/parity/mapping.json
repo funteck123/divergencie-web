@@ -1406,5 +1406,137 @@
   "SessionAttendance:MiniAttendanceForm:status-hrs-log-person-userid-status-hrs": {
     "status": "mapped",
     "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "Applications:input:toggleautoapprove": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/ApplicationsView.tsx; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "Applications:button:working-approve": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/ApplicationsView.tsx; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "Applications:button:working-reject": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/ApplicationsView.tsx; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:SearchSelect:value-scheduleid": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:button:approving-approve": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:button:new-slot-instead": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:input:value-date": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:input:value-time": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:input:hrs": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:input:instructor": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:button:creating-create-approve": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewSlotAssign:button:use-existing-slot-instead": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx SlotAssign; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewOutcomeForm:input:feedback-on-task": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OutcomeForm; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewOutcomeForm:input:offer-letter-link": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OutcomeForm; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewOutcomeForm:button:sending-send-offer": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OutcomeForm; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewOutcomeForm:button:waitlist": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OutcomeForm; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "InterviewOutcomeForm:button:reject": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OutcomeForm; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "OfferSentControls:input:feedback-on-task": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OfferSentControls; e2e pipeline_journey.py (edit and unsend); pipelineLogic.test.ts"
+  },
+  "OfferSentControls:input:offer-letter-link": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OfferSentControls; e2e pipeline_journey.py (edit and unsend); pipelineLogic.test.ts"
+  },
+  "OfferSentControls:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OfferSentControls; e2e pipeline_journey.py (edit and unsend); pipelineLogic.test.ts"
+  },
+  "OfferSentControls:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OfferSentControls; e2e pipeline_journey.py (edit and unsend); pipelineLogic.test.ts"
+  },
+  "OfferSentControls:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OfferSentControls; e2e pipeline_journey.py (edit and unsend); pipelineLogic.test.ts"
+  },
+  "OfferSentControls:button:unsending-unsend": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineParts.tsx OfferSentControls; e2e pipeline_journey.py (edit and unsend); pipelineLogic.test.ts"
+  },
+  "AccountCell:button:converting-convert": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "AccountCell:button:copied-copy-trial-message": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "AccountCell:button:adding-add-service": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "AccountCell:a:link": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "AccountCell:a:link:2": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "AccountCell:button:send-task": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "AccountCell:button:working-reject": {
+    "status": "mapped",
+    "to": "ui2/features/pipeline/PipelineView.tsx accountCell; e2e pipeline_journey.py; pipelineLogic.test.ts"
+  },
+  "ConfirmButton:button:async-setbusy-true-try-await-onconfirm": {
+    "status": "mapped",
+    "to": "ui2/components/ConfirmDialog.tsx (modal confirm replaces the inline two-step; delete service, enrollment, invoice, paycheck, guide, ticket-less deletes); e2e services, enrollments, billing, audit_guides journeys"
+  },
+  "ConfirmButton:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/components/ConfirmDialog.tsx (modal confirm replaces the inline two-step; delete service, enrollment, invoice, paycheck, guide, ticket-less deletes); e2e services, enrollments, billing, audit_guides journeys"
+  },
+  "ConfirmButton:button:setconfirming-true": {
+    "status": "mapped",
+    "to": "ui2/components/ConfirmDialog.tsx (modal confirm replaces the inline two-step; delete service, enrollment, invoice, paycheck, guide, ticket-less deletes); e2e services, enrollments, billing, audit_guides journeys"
   }
 }

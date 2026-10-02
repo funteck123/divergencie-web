@@ -50,3 +50,8 @@
   .u2-bulk .u2-linkbtn { color: var(--u2-color-on-brand); margin-left: auto; }
   .u2-namelist { margin: 0 0 var(--u2-space-2); padding-left: var(--u2-space-4); max-height: 180px; overflow-y: auto; }
 }
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-details > summary { cursor: pointer; color: var(--u2-color-link); }
+  .u2-details > div { white-space: normal; padding: var(--u2-space-1) 0; }
+  .u2-table .u2-details { overflow: visible; }
+}
