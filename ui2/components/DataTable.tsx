@@ -60,8 +60,8 @@ interface RowProps<T> {
   position: number;
 }
 
-/** Above this many rows only the rows near the viewport are in the page (the rest is a spacer), so sorting and filtering stay fast. */
-export const WINDOW_AFTER = 200;
+/** Above this many rows (measured: drawing 125 rows took 300 ms on a loaded machine, 45 rows is fast) only the rows near the viewport are in the page (the rest is a spacer), so sorting and filtering stay fast. */
+export const WINDOW_AFTER = 60;
 const OVERSCAN = 12;
 /** First and last row to draw for a scroll position. Pure, so it is tested without a browser. */
 export function visibleRange(total: number, top: number, viewHeight: number, rowHeight: number, overscan = OVERSCAN): [number, number] {

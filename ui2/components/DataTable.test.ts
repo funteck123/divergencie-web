@@ -16,5 +16,5 @@ describe("visibleRange", () => {
     const [a, b] = visibleRange(500, 17000, 0, 35, 0);
     expect(b).toBeGreaterThan(a);
   });
-  it("keeps small tables whole", () => expect(WINDOW_AFTER).toBeGreaterThanOrEqual(200));
+  it("keeps small tables whole", () => expect(WINDOW_AFTER).toBeGreaterThanOrEqual(50));
 });

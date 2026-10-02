@@ -366,3 +366,7 @@ Still open (the stated default applies if unanswered):
 1. User answers the open items in section 8 (defaults apply to anything unanswered).
 2. Create the tickets in section 9.
 3. Start Phase 0. Nothing is pushed without the user's approval.
+
+## 12. Status (2026-10-02)
+
+Phases 0 to 9 are built. Evidence, budgets met and missed, and open decisions are in `planning/new-ui-final-report.md`.
