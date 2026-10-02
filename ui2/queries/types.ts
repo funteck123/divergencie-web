@@ -164,3 +164,48 @@ export interface TicketRecord {
   Notes?: TicketNote[];
   [key: string]: unknown;
 }
+
+export interface ScheduleItem {
+  ScheduleID: string;
+  ServiceID?: string;
+  ServiceName?: string;
+  ServiceType?: string;
+  ServiceGroup?: string | string[];
+  Date: string;
+  Time: string;
+  Timezone?: string;
+  Duration: number | string;
+  Facilitator?: string;
+  OccuranceID?: string | null;
+  RescheduledDate?: string;
+  RescheduledTime?: string;
+  [key: string]: unknown;
+}
+
+export interface AttendanceItem {
+  AttendanceID: string;
+  ScheduleItemID: string;
+  UserID: string;
+  Status: string;
+  LoggedDuration: number | string;
+  LoggedBy: string;
+  LoggedAt?: string;
+  AcceptedForBilling?: boolean;
+  TopicName?: string;
+  RecordingLink?: string;
+}
+
+export interface RescheduleRequest {
+  RescheduleRequestID: string;
+  ScheduleItemID: string;
+  RequesterName: string;
+  RequestedDate: string;
+  RequestedTime: string;
+  Slot?: ScheduleItem;
+}
+
+export interface RosterPerson {
+  userId: string;
+  name: string;
+  userType: string;
+}

@@ -1198,5 +1198,213 @@
   "TicketRow:button:reopening-reopen": {
     "status": "mapped",
     "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "SchedulePool:button:close-resolve": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:working-approve": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:working-reject": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:form:slot-type-select-service-ist-india-offer": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:SearchSelect:value-servicetype": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:SearchSelect:value-serviceid": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:input:value-date": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:input:value-time": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:input:duration-hrs": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:input:instructor": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:offering-offer-slot": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:list": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:calendar": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:list:2": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:calendar:2": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:weekly-schedule-image": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:input:e-setshowpastschedule-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:input:e-setconflictsonly-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:a:download-png": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SchedulePool:button:logged-none": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleView.tsx (conflicts, pending requests, offer slot, pool list and calendar, service schedule agenda/list/calendar/image); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:working-approve": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:working-reject": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:input:value-date": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:input:value-time": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:clearing-clear": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "RescheduleCell:button:reschedule": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/RescheduleCell.tsx; e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:button:e-e-stoppropagation-if-clickable-setexpa": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:div:e-e-stoppropagation": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:MiniAttendanceForm:status-hrs-onlogattendance-s-scheduleid-": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:button:goprev": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:button:today": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:button:gonext": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:div:inmonth-sessions-length-0-setdaymodaldat": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:button:more": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:div:close": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:div:close:2": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "ScheduleCalendar:button:close": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/ScheduleCalendar.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "MiniAttendanceForm:form:status-present-absent-late-hours-logging": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/MiniAttendanceForm.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "MiniAttendanceForm:SearchSelect:value-status": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/MiniAttendanceForm.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "MiniAttendanceForm:input:value-hrs": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/MiniAttendanceForm.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "MiniAttendanceForm:button:logging-log": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/MiniAttendanceForm.tsx (shared); e2e schedule_journey.py; scheduleLogic.test.ts"
+  },
+  "SessionAttendance:button:dismiss": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:input:e-g-quadratic-equations-factorising": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:input:https": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:a:recording": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:button:mark-correct": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:MiniAttendanceForm:status-hrs-saveedit-r-attendanceid-statu": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
+  },
+  "SessionAttendance:MiniAttendanceForm:status-hrs-log-person-userid-status-hrs": {
+    "status": "mapped",
+    "to": "ui2/features/schedule/SessionAttendance.tsx (shared, all roles); e2e schedule_journey.py (Management paths); teacher and student paths tested in Phase 6"
   }
 }

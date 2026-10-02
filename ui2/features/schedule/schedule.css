@@ -1,0 +1,35 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-attform { display: grid; grid-template-columns: minmax(110px, 1fr) 90px auto; gap: var(--u2-space-2); align-items: end; }
+  .u2-att__rec { display: grid; gap: var(--u2-space-1); }
+  .u2-cal { display: grid; gap: var(--u2-space-2); }
+  .u2-cal__nav { display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-3); flex-wrap: wrap; }
+  .u2-cal__title { margin: 0; font-size: var(--u2-text-lg); }
+  .u2-cal__legend { display: flex; gap: var(--u2-space-3); flex-wrap: wrap; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
+  .u2-cal__legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+  .u2-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+  .u2-cal__dow { text-align: center; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
+  .u2-cal__cell { min-height: 92px; max-height: 150px; overflow: hidden; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); cursor: default; }
+  .u2-cal__cell--out { background: transparent; opacity: 0.4; }
+  .u2-cal__cell--today { border-color: var(--u2-color-brand); box-shadow: inset 0 0 0 1px var(--u2-color-brand); }
+  .u2-cal__day { font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
+  .u2-cal__cell--today .u2-cal__day { color: var(--u2-color-brand); font-weight: var(--u2-weight-bold); }
+  .u2-chip { display: block; width: 100%; text-align: left; border: 0; border-radius: var(--u2-radius-sm); padding: 2px 6px; font-size: var(--u2-text-xs); font-weight: var(--u2-weight-semibold); cursor: pointer; line-height: 1.35; }
+  .u2-chip:disabled { cursor: default; }
+  .u2-chip--cut { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .u2-chip--info { background: var(--u2-color-info-bg); color: var(--u2-color-info-text); }
+  .u2-chip--good { background: var(--u2-color-success-bg); color: var(--u2-color-success); }
+  .u2-chip--late { background: var(--u2-color-warning-bg); color: var(--u2-color-warning-text); }
+  .u2-chip--bad { background: var(--u2-color-error-bg); color: var(--u2-color-error); }
+  .u2-chip--solid { color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45); }
+  .u2-chip__panel { margin-top: 4px; padding: var(--u2-space-2); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius-sm); }
+  .u2-agenda { display: grid; gap: var(--u2-space-3); }
+  .u2-agenda__day { display: grid; gap: var(--u2-space-1); }
+  .u2-agenda__date { margin: 0; font-size: var(--u2-text-md); font-weight: var(--u2-weight-bold); }
+  .u2-agenda__row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 70px minmax(0, 160px) auto; gap: var(--u2-space-2); align-items: center; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); font-size: var(--u2-text-sm); }
+  @media (max-width: 767px) { .u2-cal__cell { min-height: 60px; } .u2-agenda__row { grid-template-columns: 1fr; } }
+}
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+  .u2-imagebox { position: relative; width: 100%; height: 700px; border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); background: var(--u2-color-surface); }
+}
