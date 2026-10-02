@@ -104,10 +104,10 @@ export function ResourcesCard({ services, user, showExternalTools = false }: { s
           return <Link key={f.slug} className="u2-pill" href={`/v2/resources/${f.slug}${ext ? `?${new URLSearchParams({ link: ext })}` : ""}`}>{f.label}</Link>;
         })}
         {showExternalTools && syllabus.data && (
-          <a className="u2-pill" href={`${syllabus.data}?${new URLSearchParams({ account: user.UserID, name: user.Name })}`} target="_blank" rel="noopener noreferrer">Syllabus Viewer</a>
+          <Link className="u2-pill" href="/v2/syllabus">Syllabus Viewer</Link>
         )}
         {showExternalTools && (
-          <a className="u2-pill" href={`/mcq-digitizer/index.html?${new URLSearchParams({ account: user.UserID, name: user.Name })}`} target="_blank" rel="noopener noreferrer">DC Question Solver</a>
+          <Link className="u2-pill" href="/v2/question-solver">DC Question Solver</Link>
         )}
       </div>
       {services.length === 0 ? (
