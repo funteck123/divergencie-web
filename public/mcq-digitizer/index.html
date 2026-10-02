@@ -2842,6 +2842,7 @@ document.getElementById("mistakeSubjectSelect").addEventListener("change", rende
   var valueDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value");
   var idxDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "selectedIndex");
   var openPanel = null;
+  var openWidth = 0; // window width when the panel opened, see the resize handler below
   function closePanel() { if (openPanel) { openPanel.remove(); openPanel = null; } }
   document.addEventListener("pointerdown", function (e) { if (openPanel && !openPanel.contains(e.target) && !e.target.closest(".ss-trigger")) closePanel(); });
 
@@ -2897,6 +2898,7 @@ document.getElementById("mistakeSubjectSelect").addEventListener("change", rende
       panel.appendChild(input); panel.appendChild(list);
       document.body.appendChild(panel);
       openPanel = panel;
+      openWidth = window.innerWidth;
       var r = trig.getBoundingClientRect();
       var below = window.innerHeight - r.bottom, up = below < 260 && r.top > below;
       panel.style.left = r.left + "px"; panel.style.width = Math.max(r.width, 180) + "px";
@@ -2939,15 +2941,22 @@ document.getElementById("mistakeSubjectSelect").addEventListener("change", rende
       });
       render();
       if (!seed) { var cur = visible.map(function (o) { return o.index; }).indexOf(sel.selectedIndex); if (cur > 0) { active = cur; render(); } }
-      input.focus();
-      input.setSelectionRange(input.value.length, input.value.length);
+      // On a phone, focusing the search box raises the keyboard. Do that only when the student started typing (seed) or
+      // taps the box themselves: a plain tap on the select should just show the list.
+      if (seed || !window.matchMedia("(pointer: coarse)").matches) {
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+      }
     }
     trig.addEventListener("click", function () { if (openPanel) closePanel(); else open(""); });
     trig.addEventListener("keydown", function (e) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") { e.preventDefault(); open(""); }
       else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); open(e.key); }
     });
-    window.addEventListener("resize", closePanel);
+    // The on-screen keyboard shrinks the window HEIGHT only. Closing on every resize made the list vanish the moment the
+    // search box was focused on a phone (students could not change an option). Close only when the width changes
+    // (rotation, window resize), since that is when the panel's position is really wrong.
+    window.addEventListener("resize", function () { if (openPanel && window.innerWidth !== openWidth) closePanel(); });
   }
   Array.prototype.forEach.call(document.querySelectorAll("select"), enhance);
 })();
