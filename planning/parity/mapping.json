@@ -1106,5 +1106,97 @@
   "GuideRow:button:edit": {
     "status": "mapped",
     "to": "ui2/features/guides/GuidesView.tsx GuideRow; e2e audit_guides.py"
+  },
+  "ServiceUptimePanel:button:checking-check-uptime": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx UptimePanel; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "Tickets:input:e-setshowonhold-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "Tickets:input:e-setshowclosed-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:textarea:value-draft": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:textarea:add-a-note": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:saving-add-note": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:cancel:2": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:note": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:a:link": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:textarea:resolution-note-optional": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:saving-save-note-confirm-close": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:cancel:3": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:textarea:why-is-this-on-hold-optional": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:saving-confirm-hold": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:cancel:4": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:close": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:resuming-resume": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:hold": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:edit-note-add-note": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
+  },
+  "TicketRow:button:reopening-reopen": {
+    "status": "mapped",
+    "to": "ui2/features/tickets/TicketsView.tsx CloseQuick + Thread sheet; e2e tickets_journey.py; ticketLogic.test.ts"
   }
 }

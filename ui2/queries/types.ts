@@ -145,3 +145,22 @@ export interface GuideRecord {
   Url: string;
   UserTypes?: string[];
 }
+
+export interface TicketNote {
+  By: string;
+  At: string;
+  Text: string;
+}
+export interface TicketRecord {
+  TicketID: string;
+  SenderUserID: string;
+  Message: string;
+  AttachmentURL?: string;
+  CreatedAt: string;
+  ClosedAt?: string;
+  CloseMessage?: string;
+  OnHold?: boolean;
+  OnHoldReason?: string;
+  Notes?: TicketNote[];
+  [key: string]: unknown;
+}

@@ -10,7 +10,7 @@ export const MANAGEMENT_SECTIONS = [
   { slug: "enrollments", label: "Enrollments", built: true },
   { slug: "billing", label: "Billing", built: true },
   { slug: "guides", label: "Guides", built: true },
-  { slug: "tickets", label: "Tickets", built: false },
+  { slug: "tickets", label: "Tickets", built: true },
   { slug: "audit-log", label: "Audit Log", built: true },
 ] as const;
 
