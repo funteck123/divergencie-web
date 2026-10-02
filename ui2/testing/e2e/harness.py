@@ -35,11 +35,15 @@ class Session:
         req = route.request
         path = req.url.split(BASE.split("//")[1], 1)[1] if BASE.split("//")[1] in req.url else req.url
         body = None
-        if req.post_data:
+        try:
+            raw = req.post_data
+        except Exception:
+            raw = "<binary upload>"  # a multipart file body is not text
+        if raw:
             try:
-                body = json.loads(req.post_data)
+                body = json.loads(raw)
             except Exception:
-                body = req.post_data
+                body = raw
         if req.method != "GET":
             self.calls.append((req.method, path, body))
         for rx, fn in self.handlers:

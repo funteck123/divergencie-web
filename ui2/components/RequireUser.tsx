@@ -36,11 +36,11 @@ function parseUser(raw: string | null | undefined): SessionUser | null | undefin
  * Same guard as the classic dashboards: the stored user decides, the API enforces the real permission.
  * Not signed in goes to /login; an account type the new UI does not cover yet goes to its classic home.
  */
-export function RequireUser({ children }: { children: (user: SessionUser) => ReactNode }) {
+export function RequireUser({ allow, children }: { allow?: readonly string[]; children: (user: SessionUser) => ReactNode }) {
   const router = useRouter();
   const raw = useSyncExternalStore(subscribe, readStored, readOnServer);
   const user = useMemo(() => parseUser(raw), [raw]);
-  const allowed = !!user && newUiAvailableFor(user.UserType);
+  const allowed = !!user && newUiAvailableFor(user.UserType) && (!allow || allow.includes(user.UserType));
 
   useEffect(() => {
     if (user === undefined) return;

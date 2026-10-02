@@ -190,6 +190,7 @@ export interface AttendanceItem {
   LoggedDuration: number | string;
   LoggedBy: string;
   LoggedAt?: string;
+  Date?: string;
   AcceptedForBilling?: boolean;
   TopicName?: string;
   RecordingLink?: string;
@@ -250,4 +251,27 @@ export interface PendingRequest {
   RequesterName: string;
   RequesterType?: string;
   [key: string]: unknown;
+}
+
+/** What GET /api/me?userId= returns. Which parts are filled depends on the account type. */
+export interface MeBundle {
+  user: UserRecord;
+  enrollments?: EnrollmentRecord[];
+  services?: ServiceRecord[];
+  scheduleItems?: ScheduleItem[];
+  attendanceItems?: AttendanceItem[];
+  rescheduleRequests?: RescheduleRequest[];
+  invoices?: BillRecord[];
+  paychecks?: BillRecord[];
+  guides?: GuideRecord[];
+  children?: {
+    student?: UserRecord;
+    schedule: ScheduleItem[];
+    attendance: AttendanceItem[];
+    invoices: BillRecord[];
+    enrollments: EnrollmentRecord[];
+    rescheduleRequests?: RescheduleRequest[];
+  }[];
+  trialItems?: import("@/ui2/features/pipeline/pipelineLogic").TrialItem[];
+  interviewItems?: import("@/ui2/features/pipeline/pipelineLogic").InterviewItem[];
 }

@@ -30,3 +30,7 @@
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab:hover { background: var(--u2-color-bg-subtle); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tab[aria-current="page"] { color: var(--u2-color-brand); font-weight: var(--u2-weight-bold); border-bottom-color: var(--u2-color-accent); }
 @media (max-width: 767px) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: none; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { margin-left: auto; } }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .imp {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-3); flex-wrap: wrap;
+  padding: var(--u2-space-2) var(--u2-space-4); background: #92400e; color: #fff; font-size: var(--u2-text-sm);
+}
