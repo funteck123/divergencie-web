@@ -44,6 +44,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       className={clsx(styles.btn, styles[variant], size === "sm" && styles.sm, onDark && styles.onDark, disabled && styles.isDisabled, loading && styles.isLoading, className)}
       aria-disabled={blocked || undefined}
       aria-busy={loading || undefined}
+      // aria-description (ARIA 1.3) is valid on every role; the lint rule only knows ARIA 1.2.
+      // eslint-disable-next-line jsx-a11y/role-supports-aria-props
       aria-description={disabled && disabledReason ? disabledReason : undefined}
       title={disabled && disabledReason ? disabledReason : rest.title}
       data-force={forceState}
