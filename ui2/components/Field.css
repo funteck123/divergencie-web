@@ -18,5 +18,6 @@
   .u2-checks { display: flex; flex-wrap: wrap; gap: var(--u2-space-2) var(--u2-space-4); }
   .u2-inline { display: flex; gap: var(--u2-space-2); align-items: flex-start; }
   .u2-inline > .u2-input { flex: 1; min-width: 0; }
+  .u2-inline > * { min-width: 0; }
   .u2-muted { color: var(--u2-color-text-muted); margin: 0; }
 }

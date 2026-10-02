@@ -1,6 +1,6 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-accounts { display: grid; gap: var(--u2-space-3); }
+  .u2-accounts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--u2-space-3); } /* minmax(0,1fr): a long unbreakable value must not widen the page */
   .u2-seg { display: flex; gap: var(--u2-space-1); overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
   .u2-seg__btn {
     display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-shrink: 0; height: 32px; padding: 0 var(--u2-space-3);
@@ -36,9 +36,9 @@
   .u2-import { display: grid; gap: var(--u2-space-3); }
   .u2-import__body { display: grid; gap: var(--u2-space-3); }
   .u2-import__facts { display: grid; gap: var(--u2-space-1); margin: 0; }
-  .u2-import__facts > div { display: grid; grid-template-columns: 150px 1fr; gap: var(--u2-space-2); }
+  .u2-import__facts > div { display: grid; grid-template-columns: minmax(96px, 150px) minmax(0, 1fr); gap: var(--u2-space-2); }
   .u2-import__facts dt { color: var(--u2-color-text-muted); }
-  .u2-import__facts dd { margin: 0; }
+  .u2-import__facts dd { margin: 0; overflow-wrap: anywhere; }
   .u2-import__targets { display: grid; gap: var(--u2-space-2); }
   .u2-import__fill { display: grid; gap: var(--u2-space-1); font-size: var(--u2-text-sm); }
   .u2-import__fill p { margin: 0; }

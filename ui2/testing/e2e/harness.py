@@ -4,6 +4,9 @@ import json, os, re
 from playwright.sync_api import sync_playwright
 
 BASE = os.environ.get("U2_BASE", "http://localhost:3111")
+# U2_WIDTH overrides a journey's viewport width. U2_AXE=<file> appends accessibility violations (axe-core, WCAG 2.x A and AA) to that file.
+AXE_OUT = os.environ.get("U2_AXE")
+AXE_SRC = os.path.join(os.path.dirname(__file__), "../../../node_modules/axe-core/axe.min.js")
 MGMT = {"UserID": "MGT-0001", "UserType": "Management", "Name": "Test Admin", "UiPreference": "next"}
 
 
@@ -11,7 +14,7 @@ class Session:
     def __init__(self, user=None, width=1280, height=800, state=None, anon=False):
         self.anon = anon
         self.user = user or MGMT
-        self.size = {"width": width, "height": height}
+        self.size = {"width": int(os.environ.get("U2_WIDTH", width)), "height": height}
         self.state = state if state is not None else {}
         self.calls = []  # (method, path, body)
         self.errors = []
@@ -58,10 +61,49 @@ class Session:
 
     def goto(self, path, wait="networkidle"):
         self.page.goto(BASE + path, wait_until=wait, timeout=180000)
+        self.axe("load")
+
+    def axe(self, when):
+        """Scan the page as it is now. Does nothing unless U2_AXE is set; never fails a journey."""
+        if not AXE_OUT:
+            return
+        try:
+            self.page.evaluate(open(AXE_SRC).read())
+            res = self.page.evaluate("async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(v => ({ id: v.id, impact: v.impact, help: v.help, count: v.nodes.length, target: v.nodes[0].target.join(' '), html: v.nodes[0].html.slice(0, 160) }))")
+            with open(AXE_OUT, "a") as f:
+                for v in res:
+                    f.write(json.dumps({**v, "when": when, "url": self.page.url.replace(BASE, ""), "width": self.size["width"], "hscroll": self.hscroll()}) + "\n")
+            if self.hscroll() > 0:
+                with open(AXE_OUT, "a") as f:
+                    f.write(json.dumps({"id": "hscroll", "impact": "none", "help": "page scrolls sideways", "count": 0, "when": when, "url": self.page.url.replace(BASE, ""), "width": self.size["width"], "hscroll": self.hscroll(), "culprits": self.overflow_culprits()}) + "\n")
+        except Exception as e:  # a page that navigated away mid-scan is not a finding
+            with open(AXE_OUT, "a") as f:
+                f.write(json.dumps({"id": "scan-failed", "impact": "none", "help": str(e)[:120], "count": 0, "when": when, "url": self.page.url.replace(BASE, ""), "width": self.size["width"]}) + "\n")
+
+    def overflow_culprits(self, limit=4):
+        """The widest elements poking out past the right edge: where a sideways scroll comes from."""
+        return self.page.evaluate("""(limit) => {
+          const w = document.documentElement.clientWidth, out = [];
+          for (const el of document.querySelectorAll('body *')) {
+            const r = el.getBoundingClientRect();
+            if (r.width > 0 && r.right > w + 1) {
+              let inScroller = false;
+              for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden') { inScroller = true; break; } }
+              if (!inScroller) out.push({ sel: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\\s+/).slice(0, 2).join('.') : ''), right: Math.round(r.right), width: Math.round(r.width) });
+            }
+          }
+          // Which element forces the width? The deepest offender that is not itself inside a wider offender's own box.
+          let chain = [];
+          const offenders = [...document.querySelectorAll('body *')].filter((el) => el.getBoundingClientRect().right > w + 1 && el.children.length === 0);
+          if (offenders[0]) for (let el = offenders[0]; el && el !== document.body; el = el.parentElement) { const c = getComputedStyle(el); chain.push(el.tagName.toLowerCase() + '.' + String(el.className).split(' ').slice(0,2).join('.') + ' w=' + Math.round(el.getBoundingClientRect().width) + ' ' + c.display + (c.display.includes('grid') ? ' cols=' + c.gridTemplateColumns.slice(0, 50) : '') + (c.minWidth !== 'auto' && c.minWidth !== '0px' ? ' min=' + c.minWidth : '')); }
+          return [chain.slice(0, 9), ...out.sort((a, b) => b.right - a.right).slice(0, limit)];
+        }""", limit)
 
     def hscroll(self):
         return self.page.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
 
     def __exit__(self, *a):
+        if a[0] is None:
+            self.axe("end")
         self.browser.close()
         self._p.stop()

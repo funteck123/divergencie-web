@@ -140,7 +140,7 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
 
   const fixed = columns.reduce((sum, c) => sum + (c.width ?? 0), 0) + (selectable ? 28 : 0);
   return (
-    <div className="u2-table__wrap">
+    <div className="u2-table__wrap" tabIndex={0} role="region" aria-label={caption}>
       <table className="u2-table" style={{ minWidth: fixed }}>
         <caption className="u2-visually-hidden">{caption}</caption>
         <colgroup>

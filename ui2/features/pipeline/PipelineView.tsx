@@ -268,7 +268,7 @@ export function PipelineView() {
 
 function Lanes<T extends { _name: string; _service: string }>({ rows, steps, indexOf, keyOf, deadEnd }: { rows: T[]; steps: readonly string[]; indexOf: (r: T) => number; keyOf: (r: T) => string; deadEnd: (r: T) => string | null | undefined }) {
   return (
-    <div className="u2-pipeline-lanes">
+    <div className="u2-pipeline-lanes" tabIndex={0} role="region" aria-label="Pipeline lanes">
       {[...steps, "Rejected / waitlisted"].map((label, li) => {
         const inLane = rows.filter((r) => (li === steps.length ? !!deadEnd(r) : !deadEnd(r) && indexOf(r) === li));
         return (

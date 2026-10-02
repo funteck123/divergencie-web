@@ -3,6 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useMemo, useState, type ReactNode } from "react";
 import { GROUP_COLORS, groupGradient, normalizeGroup } from "@/lib/client";
+import { readableText } from "@/ui2/lib/contrast";
 import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 import { Button } from "@/ui2/components/Button";
 import type { AttendanceItem, ScheduleItem } from "@/ui2/queries/types";
@@ -52,7 +53,7 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
     const tone = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "late" : "bad";
     const clickable = renderExpanded ? true : !readOnly && !att;
     const groups = normalizeGroup(s.ServiceGroup) as string[];
-    const style = colorByGroup ? { background: groupGradient(groups) as string, color: "#fff" } : portalColor ? { background: portalColor, color: "#fff" } : undefined;
+    const style = colorByGroup ? { background: groupGradient(groups) as string, color: readableText(groups.map((g) => (GROUP_COLORS as Record<string, string>)[g] ?? "#6b7280")) } : portalColor ? { background: portalColor, color: readableText([portalColor]) } : undefined;
     const label = `${s.Time} ${tzAbbrFor(s.Date, viewerTz || normalizeTimezone(s.Timezone))} ${s.ServiceName ?? ""}${occ.get(s.ScheduleID) ? ` #${occ.get(s.ScheduleID)}` : ""}${s.Facilitator ? ` · ${s.Facilitator}` : ""}${att ? ` · ${att.Status}` : ""}`;
     return (
       <div key={s.ScheduleID}>

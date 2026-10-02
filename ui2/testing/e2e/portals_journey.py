@@ -94,7 +94,10 @@ def ambassador(s):
 
 def shell(s):
     o = {}
-    s.page.get_by_role("button", name="Report an Issue").click()
+    if s.size["width"] < 768:  # on a phone the shell actions live in the Menu
+        s.page.get_by_role("button", name="Menu").click(); s.page.get_by_role("menuitem", name="Report an Issue").click()
+    else:
+        s.page.get_by_role("button", name="Report an Issue").click()
     s.page.get_by_label("What went wrong?").fill("Page is slow"); s.page.get_by_label("Attachment URL (optional)").fill("https://shot")
     s.page.get_by_role("button", name="Send", exact=True).click(); s.page.get_by_text("Sent. Thanks, we'll take a look.").wait_for()
     s.page.get_by_role("button", name="Close").first.click()

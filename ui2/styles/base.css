@@ -56,6 +56,13 @@
   border-radius: var(--u2-radius-sm);
 }
 
+/* Toasts (sonner): readable text on each type's tint. Sonner's own rich colours fail WCAG contrast. */
+.u2 [data-sonner-toast][data-type="success"] { background: var(--u2-color-success-bg); color: #0B3D24; border-color: var(--u2-color-success); }
+.u2 [data-sonner-toast][data-type="error"] { background: var(--u2-color-error-bg); color: #7A1F15; border-color: var(--u2-color-error); }
+.u2 [data-sonner-toast][data-type="info"] { background: var(--u2-color-info-bg); color: #1F4A6B; border-color: var(--u2-color-info); }
+.u2 [data-sonner-toast][data-type="warning"] { background: var(--u2-color-warning-bg); color: #4A3F12; border-color: var(--u2-color-warning); }
+.u2 [data-sonner-toast] [data-title] { color: inherit; }
+
 /* Respect reduced motion: no animation, instant transitions. */
 @media (prefers-reduced-motion: reduce) {
   .u2 *, .u2 *::before, .u2 *::after {
