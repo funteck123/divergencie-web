@@ -730,5 +730,321 @@
   "EnrollmentRow:button:edit": {
     "status": "mapped",
     "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "Billing:input:value-year": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillingView.tsx + MonthlyActions.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "Billing:input:value-month": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillingView.tsx + MonthlyActions.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "Billing:button:generating-generate-drafts-for-this-mont": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillingView.tsx + MonthlyActions.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "Billing:ManualBillingForm:create-paycheck": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillingView.tsx + MonthlyActions.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "RebuildDrafts:input:value-year": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx RebuildPanel; e2e billing_journey.py; billingLogic.test.ts (summary wording tested; rebuild request covered by unit test of rebuildSummary)"
+  },
+  "RebuildDrafts:input:value-month": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx RebuildPanel; e2e billing_journey.py; billingLogic.test.ts (summary wording tested; rebuild request covered by unit test of rebuildSummary)"
+  },
+  "RebuildDrafts:input:toggle-p-userid": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx RebuildPanel; e2e billing_journey.py; billingLogic.test.ts (summary wording tested; rebuild request covered by unit test of rebuildSummary)"
+  },
+  "RebuildDrafts:button:rebuild-selected": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx RebuildPanel; e2e billing_journey.py; billingLogic.test.ts (summary wording tested; rebuild request covered by unit test of rebuildSummary)"
+  },
+  "RebuildDrafts:button:rebuilding-yes-rebuild": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx RebuildPanel; e2e billing_journey.py; billingLogic.test.ts (summary wording tested; rebuild request covered by unit test of rebuildSummary)"
+  },
+  "RebuildDrafts:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx RebuildPanel; e2e billing_journey.py; billingLogic.test.ts (summary wording tested; rebuild request covered by unit test of rebuildSummary)"
+  },
+  "ManualInvoiceForm:form:select-student-creating-create-draft-s": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualInvoiceForm:SearchSelect:student": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualInvoiceForm:input:year": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualInvoiceForm:input:month": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualInvoiceForm:input:e-setchecked-prev-prev-s-serviceid-e-tar": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualInvoiceForm:input:amount": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualInvoiceForm:button:creating-create-draft-s": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualInvoicePanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:form:select-select-service-creating-create-dr": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:SearchSelect:expr": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:SearchSelect:service": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:input:year": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:input:month": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:input:amount": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ManualBillingForm:button:creating-create-draft": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx ManualPaycheckPanel; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "BillingFilterBar:button:filter": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx toolbar + filters (value and range); applyFilters tests; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "BillingFilterBar:input:expr": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx toolbar + filters (value and range); applyFilters tests; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "BillingFilterBar:SearchSelect:value-statusfilter": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx toolbar + filters (value and range); applyFilters tests; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "BillingFilterBar:button:clear": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx toolbar + filters (value and range); applyFilters tests; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "BillingFilterBar:button:hide": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx toolbar + filters (value and range); applyFilters tests; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ReminderCopyMenu:button:copied-copy-reminder": {
+    "status": "mapped",
+    "to": "ui2/features/billing/billActions.ts copyItems in RowMenu; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ReminderCopyMenu:div:setopen-false": {
+    "status": "mapped",
+    "to": "ui2/features/billing/billActions.ts copyItems in RowMenu; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ReminderCopyMenu:button:details-not-set-up-yet": {
+    "status": "mapped",
+    "to": "ui2/features/billing/billActions.ts copyItems in RowMenu; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "CopyButton:button:copied": {
+    "status": "mapped",
+    "to": "ui2/features/billing/billActions.ts (acknowledgement item); billingLogic.test.ts"
+  },
+  "InvoiceBillingTable:td:invoice-s": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx (Table, By person, By month, By due date, By status); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:input:value-customdue": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:button:marking-confirm": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:button:back": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:button:marking-full": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:button:partial": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "ApprovePaymentControl:button:mark-paid": {
+    "status": "mapped",
+    "to": "ui2/features/billing/ApprovePayment.tsx; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:subject-s": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:input:value-inrdue": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:save": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:a:proof": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:edit-due": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:discount": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:working-send": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:working-unsend": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:a:pdf": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:input:value-dpercent": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:input:value-dcustom": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:input:value-dcode": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:input:value-dcouponpercent": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:save-discount": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "InvoiceRow:button:cancel:2": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx actions + BillSheet.tsx (due, discount, send, PDF, reminder, delete); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "LineItemRow:input:value-scheduledhours": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "LineItemRow:input:value-attendedhours": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "LineItemRow:input:value-amount": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "LineItemRow:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "LineItemRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "LineItemRow:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckBillingTable:td:paycheck-s": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:button:subject-s": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:input:value-inrdue": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:button:save": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:button:edit-due": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:button:working-send": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:button:working-unsend": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckRow:a:pdf": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillTable.tsx + BillSheet.tsx kind=paycheck; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckLineItemRow:input:value-scheduledhours": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow (shared); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckLineItemRow:input:value-attendedhours": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow (shared); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckLineItemRow:input:value-amount": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow (shared); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckLineItemRow:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow (shared); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckLineItemRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow (shared); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "PaycheckLineItemRow:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/billing/BillSheet.tsx LineItemRow (shared); e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "SummaryMessage:button:hide-show-skipped-items": {
+    "status": "mapped",
+    "to": "ui2/features/billing/MonthlyActions.tsx Summary; generateSummary tests; e2e billing_journey.py; billingLogic.test.ts"
   }
 }

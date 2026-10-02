@@ -105,3 +105,36 @@ export interface EnrollmentRecord {
   EndDate?: string;
   [key: string]: unknown;
 }
+
+export interface BillLineItem {
+  ServiceID: string;
+  BatchID?: string;
+  ScheduledHours?: number | string | null;
+  AttendedHours?: number | string | null;
+  Amount: number | string;
+  Currency?: string;
+  Note?: string;
+}
+
+/** An invoice (student) or a paycheck (staff). Both share this shape; the person and paid-flag keys differ. */
+export interface BillRecord {
+  Status: string;
+  Year: number;
+  Month: number;
+  Amount: number | string;
+  INRAmount: number | string;
+  INRDue: number | string;
+  Currency?: string;
+  SentAt?: string;
+  PaidAt?: string;
+  ReceivedAt?: string;
+  PaymentProofPath?: string;
+  LineItems?: BillLineItem[];
+  ServiceID?: string;
+  BatchID?: string;
+  DiscountPercent?: number;
+  CustomDiscount?: number;
+  CouponCode?: string;
+  CouponPercent?: number;
+  [key: string]: unknown;
+}

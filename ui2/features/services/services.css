@@ -34,6 +34,5 @@
   .u2-svcline__batch { display: grid; grid-template-columns: minmax(100px, 1fr) 1fr 1fr; gap: var(--u2-space-2); padding: 2px var(--u2-space-2); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius-sm); }
   .u2-expand__list { margin: 4px 0 0; padding-left: var(--u2-space-3); }
   .u2-danger-text { color: var(--u2-color-error); }
-  .u2-seg__btn[data-on="true"] { background: var(--u2-color-brand); border-color: var(--u2-color-brand); color: var(--u2-color-on-brand); }
   @media (max-width: 1023px) { .u2-svcline { grid-template-columns: 28px 84px 1fr auto; } .u2-svcline > :nth-child(n+4):not(:last-child) { display: none; } }
 }

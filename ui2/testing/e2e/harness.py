@@ -22,7 +22,7 @@ class Session:
     def __enter__(self):
         self._p = sync_playwright().start()
         self.browser = self._p.chromium.launch()
-        ctx = self.browser.new_context(viewport=self.size)
+        ctx = self.browser.new_context(viewport=self.size, permissions=["clipboard-read", "clipboard-write"])
         ctx.add_init_script("localStorage.setItem('dcp1_user', %s)" % json.dumps(json.dumps(self.user)))
         self.page = ctx.new_page()
         self.page.set_default_timeout(30000)
