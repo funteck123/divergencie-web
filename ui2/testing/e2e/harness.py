@@ -68,6 +68,8 @@ class Session:
         if not AXE_OUT:
             return
         try:
+            if self.page.locator('[data-sonner-toast]').count():
+                self.page.wait_for_timeout(800)  # a toast fading in has blended colours: scan it once settled
             self.page.evaluate(open(AXE_SRC).read())
             res = self.page.evaluate("async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(v => ({ id: v.id, impact: v.impact, help: v.help, count: v.nodes.length, target: v.nodes[0].target.join(' '), html: v.nodes[0].html.slice(0, 160) }))")
             with open(AXE_OUT, "a") as f:

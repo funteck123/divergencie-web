@@ -9,7 +9,7 @@
   .u2-cal__legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
   .u2-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
   .u2-cal__dow { text-align: center; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
-  .u2-cal__cell { min-width: 0; min-height: 92px; max-height: 150px; overflow: hidden; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); cursor: default; }
+  .u2-cal__cell { min-width: 0; grid-template-columns: minmax(0, 1fr); min-height: 92px; max-height: 150px; overflow: hidden; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); cursor: default; }
   .u2-cal__cell--out { background: transparent; opacity: 0.4; }
   .u2-cal__cell--today { border-color: var(--u2-color-brand); box-shadow: inset 0 0 0 1px var(--u2-color-brand); }
   .u2-cal__day { font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }

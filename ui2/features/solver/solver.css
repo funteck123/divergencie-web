@@ -31,7 +31,7 @@
   .u2-qstrip button[data-flagged="true"]::after { content: "⚑"; font-size: 10px; margin-left: 2px; color: var(--u2-color-error); }
   .u2-qcard { display: grid; gap: var(--u2-space-3); padding: var(--u2-space-4); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
   .u2-qcard img { max-width: 100%; height: auto; border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); }
-  .u2-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--u2-color-border); }
+  .u2-tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--u2-color-border); }
   .u2-tabs button { padding: 8px 14px; border: 0; background: transparent; color: var(--u2-color-text); font-weight: var(--u2-weight-semibold); border-bottom: 3px solid transparent; cursor: pointer; }
   .u2-tabs button[aria-selected="true"] { color: var(--u2-color-brand); border-bottom-color: var(--u2-color-accent); }
   .u2-letters { display: flex; gap: var(--u2-space-2); flex-wrap: wrap; }

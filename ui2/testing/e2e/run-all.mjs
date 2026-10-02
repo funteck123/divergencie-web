@@ -9,8 +9,12 @@ import { fileURLToPath } from "url";
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const only = process.argv[2];
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".py") && f !== "harness.py" && (!only || f.includes(only))).sort();
+// Tables become card lists on a phone (by design), so journeys that drive the table run from 768px up. Their pages are still scanned at phone width by the sweep.
+const DESKTOP_ONLY = new Set(["accounts_import.py", "accounts_journey.py", "accounts_phase2.py", "billing_journey.py"]);
+const narrow = Number(process.env.U2_WIDTH || 1280) < 768;
 let failed = 0;
 for (const f of files) {
+  if (narrow && DESKTOP_ONLY.has(f)) { console.log(`SKIP  ${f}  (desktop only)`); continue; }
   const t = Date.now();
   const run = () => {
     const r = spawnSync("python3", [path.join(dir, f)], { encoding: "utf8", timeout: 10 * 60 * 1000 });
@@ -25,5 +29,6 @@ for (const f of files) {
   if (!r.ok) { failed++; console.log(r.out.split("\n").slice(-25).join("\n")); }
   console.log(`${r.ok ? (flaky ? "FLAKY" : "PASS") : "FAIL"}  ${f}  ${Math.round((Date.now() - t) / 1000)}s${r.bad.length ? `  page errors: ${r.bad[0][1].slice(0, 160)}` : ""}`);
 }
-console.log(`\n${files.length - failed}/${files.length} journeys passed`);
+const ran = files.filter((f) => !(narrow && DESKTOP_ONLY.has(f))).length;
+console.log(`\n${ran - failed}/${ran} journeys passed`);
 process.exit(failed ? 1 : 0);
