@@ -138,3 +138,10 @@ export interface BillRecord {
   CouponPercent?: number;
   [key: string]: unknown;
 }
+
+export interface GuideRecord {
+  GuideID: string;
+  Name: string;
+  Url: string;
+  UserTypes?: string[];
+}

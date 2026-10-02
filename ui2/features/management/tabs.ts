@@ -9,9 +9,9 @@ export const MANAGEMENT_SECTIONS = [
   { slug: "schedule", label: "Schedule", built: false },
   { slug: "enrollments", label: "Enrollments", built: true },
   { slug: "billing", label: "Billing", built: true },
-  { slug: "guides", label: "Guides", built: false },
+  { slug: "guides", label: "Guides", built: true },
   { slug: "tickets", label: "Tickets", built: false },
-  { slug: "audit-log", label: "Audit Log", built: false },
+  { slug: "audit-log", label: "Audit Log", built: true },
 ] as const;
 
 export const MANAGEMENT_TABS: readonly ShellTab[] = MANAGEMENT_SECTIONS.map((s) => ({ href: `/v2/management/${s.slug}`, label: s.label }));

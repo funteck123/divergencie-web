@@ -1046,5 +1046,65 @@
   "SummaryMessage:button:hide-show-skipped-items": {
     "status": "mapped",
     "to": "ui2/features/billing/MonthlyActions.tsx Summary; generateSummary tests; e2e billing_journey.py; billingLogic.test.ts"
+  },
+  "AuditLog:SearchSelect:entity-type": {
+    "status": "mapped",
+    "to": "ui2/features/audit/AuditView.tsx; e2e audit_guides.py"
+  },
+  "AuditLog:button:previous": {
+    "status": "mapped",
+    "to": "ui2/features/audit/AuditView.tsx; e2e audit_guides.py"
+  },
+  "AuditLog:button:next": {
+    "status": "mapped",
+    "to": "ui2/features/audit/AuditView.tsx; e2e audit_guides.py"
+  },
+  "ResourceToggles:input:e-flip-key-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx ResourceToggles (optimistic); e2e audit_guides.py"
+  },
+  "McqExtractionUrlConfig:input:extraction-service-tunnel-url": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx McqConfig; e2e audit_guides.py"
+  },
+  "McqExtractionUrlConfig:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx McqConfig; e2e audit_guides.py"
+  },
+  "Guides:GuideForm:create": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx; e2e audit_guides.py"
+  },
+  "GuideForm:form:show-on-saving": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideForm; e2e audit_guides.py"
+  },
+  "GuideForm:input:button-name-e-g-student-handbook": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideForm; e2e audit_guides.py"
+  },
+  "GuideForm:input:https": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideForm; e2e audit_guides.py"
+  },
+  "GuideForm:input:toggleaudience-a-key": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideForm; e2e audit_guides.py"
+  },
+  "GuideForm:button:saving": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideForm; e2e audit_guides.py"
+  },
+  "GuideRow:GuideForm:async-name-url-usertypes-await-onupdate-": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideRow; e2e audit_guides.py"
+  },
+  "GuideRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideRow; e2e audit_guides.py"
+  },
+  "GuideRow:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/guides/GuidesView.tsx GuideRow; e2e audit_guides.py"
   }
 }
