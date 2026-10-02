@@ -2047,5 +2047,189 @@
   "StaffResources:a:x": {
     "status": "mapped",
     "to": "ui2/features/portal/Cards.tsx StaffResourcesCard; e2e portals_journey.py"
+  },
+  "html:select:x": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:pickboard": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:picksubject": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:pickcomponent": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:mistakesmodebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:pickpapertype": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:pickyear": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:picksession": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:pickpaper": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:fetchanddigitizebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:input:qppdf": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:input:mspdf": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:digitizebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:startpracticebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:starttestbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:timertogglebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:cancelquizbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:input:instantchecktoggle": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:submitquizbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:finishpracticebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:restartbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:progresssubjectselect": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:progresschapterselect": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:mistakesubjectselect": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:lbsubjectselect": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:lbchapterselect": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:lbpaperselect": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredstartpracticebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredstarttestbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredtimertogglebtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredcancelquizbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredsubmittestbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredfinishbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:structuredrestartbtn": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:textarea:write-your-full-working-here-step-by-ste": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:x": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:x:2": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:x:3": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:input:x": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:x:4": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:input:x:2": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:x:5": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:x:6": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:escapehtml-paperid": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:button:escapehtml-paperid:2": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:select:x:2": {
+    "status": "mapped",
+    "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
   }
 }
