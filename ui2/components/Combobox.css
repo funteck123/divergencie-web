@@ -1,0 +1,23 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-combo__trigger {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-2); width: 100%; min-height: 36px;
+    padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm);
+    background: var(--u2-color-bg); color: var(--u2-color-text); font-size: var(--u2-text-md); text-align: left; cursor: pointer;
+  }
+  .u2-combo__trigger[disabled] { opacity: 0.55; cursor: not-allowed; }
+  .u2-combo__placeholder { color: var(--u2-color-text-muted); }
+  .u2-combo__panel {
+    z-index: var(--u2-z-popover); width: var(--radix-popover-trigger-width); min-width: 220px; padding: var(--u2-space-1);
+    background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); box-shadow: var(--u2-shadow-md);
+  }
+  .u2-combo__search { width: 100%; height: 34px; padding: 0 var(--u2-space-2); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm); background: var(--u2-color-bg); font-size: var(--u2-text-md); }
+  .u2-combo__list { max-height: 260px; overflow-y: auto; margin-top: var(--u2-space-1); }
+  .u2-combo__empty { padding: var(--u2-space-3); color: var(--u2-color-text-muted); text-align: center; }
+  .u2-combo__item { padding: var(--u2-space-2) var(--u2-space-3); border-radius: var(--u2-radius-sm); cursor: pointer; font-size: var(--u2-text-md); }
+  .u2-combo__item[data-selected="true"] { background: var(--u2-color-selected); }
+  .u2-combo__item[data-checked="true"] { font-weight: var(--u2-weight-bold); }
+  .u2-combo__item[data-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+  .u2-combo__item--empty { color: var(--u2-color-text-muted); }
+  .u2-combo__group [cmdk-group-heading] { padding: var(--u2-space-2) var(--u2-space-3) var(--u2-space-1); font-size: var(--u2-text-xs); font-weight: var(--u2-weight-bold); color: var(--u2-color-text-muted); }
+}

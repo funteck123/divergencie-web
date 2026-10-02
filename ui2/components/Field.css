@@ -1,0 +1,22 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-field { display: grid; gap: var(--u2-space-1); min-width: 0; }
+  .u2-field__label { font-size: var(--u2-text-sm); font-weight: var(--u2-weight-semibold); color: var(--u2-color-text); }
+  .u2-field__hint { margin: 0; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
+  .u2-field__error { margin: 0; font-size: var(--u2-text-sm); color: var(--u2-color-error); }
+  .u2-input {
+    width: 100%; min-height: 36px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm);
+    background: var(--u2-color-bg); color: var(--u2-color-text); font-size: var(--u2-text-md);
+  }
+  .u2-input--area { padding: var(--u2-space-2) var(--u2-space-3); resize: vertical; line-height: 1.4; }
+  .u2-input[aria-invalid="true"] { border-color: var(--u2-color-error); }
+  .u2-check { display: inline-flex; align-items: center; gap: var(--u2-space-2); font-size: var(--u2-text-md); }
+  .u2-fieldgroup { display: grid; gap: var(--u2-space-3); margin: 0; padding: 0; border: 0; min-width: 0; }
+  .u2-fieldgroup__legend { padding: 0; margin-bottom: var(--u2-space-2); font-weight: var(--u2-weight-bold); }
+}
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-checks { display: flex; flex-wrap: wrap; gap: var(--u2-space-2) var(--u2-space-4); }
+  .u2-inline { display: flex; gap: var(--u2-space-2); align-items: flex-start; }
+  .u2-inline > .u2-input { flex: 1; min-width: 0; }
+  .u2-muted { color: var(--u2-color-text-muted); margin: 0; }
+}

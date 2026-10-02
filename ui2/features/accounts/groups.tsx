@@ -52,7 +52,7 @@ function mark(id: string, header: string, title: string, on: (u: UserRecord) => 
     id,
     header,
     title,
-    width: 26,
+    width: 30,
     align: "center",
     sortValue: (u) => (on(u) ? 1 : 0),
     cell: (u) => (
@@ -67,7 +67,7 @@ function link(id: string, header: string, title: string, url: (u: UserRecord) =>
     id,
     header,
     title,
-    width: 26,
+    width: 30,
     align: "center",
     sortValue: (u) => (url(u) ? 1 : 0),
     cell: (u) => {
@@ -110,7 +110,7 @@ export const ACCOUNT_GROUPS: readonly AccountGroup[] = [
         id: "notes",
         header: "Nt",
         title: "Notes",
-        width: 26,
+        width: 30,
         align: "center",
         sortValue: (u) => u.Notes ?? "",
         tip: (u) => u.Notes,

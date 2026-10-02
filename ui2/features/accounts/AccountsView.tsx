@@ -15,6 +15,10 @@ import { apiFetch } from "@/ui2/queries/client";
 import { keys } from "@/ui2/queries/keys";
 import type { Credentials, UserRecord } from "@/ui2/queries/types";
 import { usePatchUser, useUsers } from "@/ui2/queries/users";
+import { AccountSheet } from "./AccountSheet";
+import { BulkBar } from "./BulkBar";
+import { CreateSheet } from "./CreateSheet";
+import { DeleteAccountDialog } from "./DeleteAccountDialog";
 import { useIssued } from "@/ui2/features/management/IssuedCredentials";
 import { ACCOUNT_GROUPS, CONVERT_LABEL, type AccountGroup } from "./groups";
 import "./accounts.css";
@@ -34,6 +38,11 @@ function convertEligibility(acc: UserRecord, bundle: MeBundle | undefined): bool
   return true;
 }
 
+const DEFAULT_CREATE_TYPE: Record<string, string> = {
+  students: "Student", teachers: "Teacher", staff: "Staff", management: "Management", parents: "Parent", ambassadors: "Ambassador",
+  "pending-trial": "TrialAcc", "pending-TeacherInterviewAcc": "TeacherInterviewAcc", "pending-StaffInterviewAcc": "StaffInterviewAcc", "pending-AmbassadorInterviewAcc": "AmbassadorInterviewAcc",
+};
+
 function statusKind(status: string) {
   return status === "Converted" ? "info" : status === "Inactive" ? "error" : "success";
 }
@@ -50,6 +59,10 @@ export function AccountsView() {
   const deferredSearch = useDeferredValue(search);
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
   const [resetTarget, setResetTarget] = useState<UserRecord | null>(null);
+  const [editId, setEditId] = useQueryState("edit", parseAsString);
+  const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<UserRecord | null>(null);
+  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
 
   const group: AccountGroup = ACCOUNT_GROUPS.find((g) => g.id === groupId) ?? ACCOUNT_GROUPS[0]!;
   const all = useMemo(() => users ?? [], [users]);
@@ -144,7 +157,7 @@ export function AccountsView() {
       if (u.Status === "Active" || u.Status === "Inactive") items.push({ label: u.Status === "Active" ? "Deactivate" : "Activate", onSelect: () => void toggleStatus(u) });
       if (u.Username && !u.ConvertedToUserID) items.push({ label: "Reset password", onSelect: () => setResetTarget(u) });
       if (group.showSchedule) items.push({ label: "Download schedule PNG", href: `/api/schedule/image?userId=${u.UserID}&download=1`, download: `DC_Schedule_${u.Name}.png` });
-      items.push({ label: "Delete", danger: true, disabled: true, disabledReason: "Delete arrives in the next build step. Use the classic UI for now." });
+      items.push({ label: "Delete", danger: true, onSelect: () => setDeleteTarget(u) });
       return items;
     };
     const actions: Column<UserRecord> = {
@@ -166,7 +179,7 @@ export function AccountsView() {
                   Convert to {CONVERT_LABEL[u.UserType]}
                 </Button>
               ))}
-            <button type="button" className="u2-iconbtn" aria-disabled="true" aria-label={`Edit ${u.Name} (next build step)`} title="Edit arrives in the next build step. Use the classic UI for now.">
+            <button type="button" className="u2-iconbtn" aria-label={`Edit ${u.Name}`} title="Edit" onClick={() => void setEditId(u.UserID)}>
               ✎
             </button>
             {canLogIn && (
@@ -210,7 +223,7 @@ export function AccountsView() {
     return [idCol, nameCol, statusCol, ...group.columns({ users: all }), ...(isStudent ? [] : [usernameCol]), actions];
     // toggleStatus/resetPassword/impersonate/convert close over stable hooks; busy and eligibility drive the cells.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [group, all, busy, eligibleOf]);
+  }, [group, all, busy, eligibleOf, setEditId]);
 
   const issuedEntries = Object.entries(issued);
   const mobileCard = (u: UserRecord) => (
@@ -253,7 +266,7 @@ export function AccountsView() {
 
       <div className="u2-seg" role="tablist" aria-label="Account type">
         {ACCOUNT_GROUPS.map((g) => (
-          <button key={g.id} type="button" role="tab" aria-selected={g.id === group.id} className="u2-seg__btn" onClick={() => void setGroupId(g.id)}>
+          <button key={g.id} type="button" role="tab" aria-selected={g.id === group.id} className="u2-seg__btn" onClick={() => { setSelected(new Set()); void setGroupId(g.id); }}>
             {g.label}
             <span className="u2-seg__count">{countByGroup.get(g.id) ?? 0}</span>
           </button>
@@ -293,7 +306,12 @@ export function AccountsView() {
         <span className="u2-muted" aria-live="polite">
           {rows.length === groupRows.length ? `${groupRows.length} accounts` : `${rows.length} of ${groupRows.length}`}
         </span>
+        <Button variant="primary" className="u2-toolbar__new" onClick={() => setCreating(true)}>
+          New account
+        </Button>
       </div>
+
+      {selected.size > 0 && <BulkBar selected={all.filter((u) => selected.has(u.UserID))} onClear={() => setSelected(new Set())} />}
 
       {error ? (
         <div role="alert" className="u2-errorbox">
@@ -312,8 +330,15 @@ export function AccountsView() {
           initialSort={{ id: "name", dir: "asc" }}
           emptyText={groupRows.length === 0 ? "None yet." : "No matches."}
           card={mobileCard}
+          selected={selected}
+          onSelectedChange={setSelected}
+          activeKey={editId}
         />
       )}
+
+      <AccountSheet user={editId ? (all.find((u) => u.UserID === editId) ?? null) : null} users={all} onClose={() => void setEditId(null)} />
+      <CreateSheet open={creating} defaultType={DEFAULT_CREATE_TYPE[group.id] ?? "Student"} users={all} onClose={() => setCreating(false)} />
+      <DeleteAccountDialog user={deleteTarget} onClose={() => setDeleteTarget(null)} />
 
       <ConfirmDialog
         open={!!resetTarget}

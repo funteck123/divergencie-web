@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useId, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from "react";
+import { forwardRef, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { clsx } from "clsx";
 import styles from "./Button.module.css";
 
@@ -29,7 +29,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   { variant = "secondary", size = "md", loading = false, disabled = false, disabledReason, onDark = false, forceState, icon, className, children, onClick, type = "button", ...rest },
   ref,
 ) {
-  const reasonId = useId();
   const blocked = disabled || loading;
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (blocked) {
@@ -45,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       className={clsx(styles.btn, styles[variant], size === "sm" && styles.sm, onDark && styles.onDark, disabled && styles.isDisabled, loading && styles.isLoading, className)}
       aria-disabled={blocked || undefined}
       aria-busy={loading || undefined}
-      aria-describedby={disabled && disabledReason ? reasonId : undefined}
+      aria-description={disabled && disabledReason ? disabledReason : undefined}
       title={disabled && disabledReason ? disabledReason : rest.title}
       data-force={forceState}
       onClick={handleClick}
@@ -56,11 +55,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         {children}
       </span>
       {loading && <span className={styles.spinner} aria-hidden="true" />}
-      {disabled && disabledReason && (
-        <span id={reasonId} className="u2-visually-hidden">
-          {disabledReason}
-        </span>
-      )}
     </button>
   );
 });

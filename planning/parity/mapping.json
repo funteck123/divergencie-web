@@ -1,0 +1,338 @@
+{
+  "Accounts:a:open": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/groups.tsx link columns (Ts, Pt, Work Folder, Timesheet); ui2/testing/e2e/accounts_journey.py"
+  },
+  "Accounts:a:open:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/groups.tsx link columns (Ts, Pt, Work Folder, Timesheet); ui2/testing/e2e/accounts_journey.py"
+  },
+  "Accounts:a:open:3": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/groups.tsx link columns (Ts, Pt, Work Folder, Timesheet); ui2/testing/e2e/accounts_journey.py"
+  },
+  "Accounts:a:open:4": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/groups.tsx link columns (Ts, Pt, Work Folder, Timesheet); ui2/testing/e2e/accounts_journey.py"
+  },
+  "AccountGroupTable:a:download-png": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx row actions and menu; e2e accounts_journey.py + accounts_phase2.py"
+  },
+  "AccountGroupTable:button:converting-convert-to": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx row actions and menu; e2e accounts_journey.py + accounts_phase2.py"
+  },
+  "AccountGroupTable:button:working-deactivate-activate": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx row actions and menu; e2e accounts_journey.py + accounts_phase2.py"
+  },
+  "AccountGroupTable:button:logging-in-log-in-as": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx row actions and menu; e2e accounts_journey.py + accounts_phase2.py"
+  },
+  "AccountGroupTable:button:resetting-reset-password": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx row actions and menu; e2e accounts_journey.py + accounts_phase2.py"
+  },
+  "AccountGroupTable:button:close-edit": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx row actions and menu; e2e accounts_journey.py + accounts_phase2.py"
+  },
+  "CreateAccount:form:account-type-currency-creating-create-ac": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:SearchSelect:value-usertype": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:name": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:SearchSelect:value-currency": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:togglestudent-s-userid": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:role-e-g-sm-assistant": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:whatsapp-number": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:email": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:passport-ic-number": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:SearchSelect:value-department": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:work-folder-url-google-drive": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:timesheet-url": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:batch": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:course": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:input:batch:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:TimezoneSelect:settimezone": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "CreateAccount:button:creating-create-account": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/CreateSheet.tsx + accountForm.buildCreateBody (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:form:name-username-new-password-leave-blank-t": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-name": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:SearchSelect:value-status": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-username": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-password": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:SearchSelect:value-currency": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-role": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-passportnumber": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-whatsappnumber": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-email": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:SearchSelect:value-department": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-workfolderurl": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-timesheeturl": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-course": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-whatsappnumber:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-parentwhatsappnumber": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-parentemail": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-email:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-school": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-location": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:SearchSelect:value-gender": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-helpwanted": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-subjects": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:FacilitatorInput:facilitator-facilitatoruserid-setreferre": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-heardabout": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:SearchSelect:value-scoreastar": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:textarea:value-notes": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-timesheeturl:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:button:generating-generate-timesheet-url": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-progresstrackerurl": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:button:generating-generate-progress-tracker-url": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:e-setgroupsent-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:e-setgcrsent-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:e-setschedulesent-e-target-checked": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:value-batch": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:TimezoneSelect:settimezone": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:input:togglestudent-s-userid": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "EditAccountForm:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountSheet.tsx + AccountFields.tsx + accountForm.buildPatchFields (unit tested); e2e accounts_phase2.py"
+  },
+  "ImportAccount:button:import-from-form-import-from-form": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "ImportAccount:textarea:paste-the-cognito-forms-entry-name-email": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "ImportAccount:input:import-target": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "ImportAccount:input:import-target:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "ImportAccount:input:import-target:3": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "ImportAccount:SearchSelect:add-to-an-existing-account": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "ImportAccount:button:saving-add-info-to-create-account-from-f": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/ImportPanel.tsx (same lib/accountImport logic); e2e accounts_import.py"
+  },
+  "DeleteAccountButton:button:delete": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:deleting-yes-delete": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:force-delete-cascade": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:cancel:2": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:close": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:input:expr": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:deleting-force-delete": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "DeleteAccountButton:button:cancel:3": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/DeleteAccountDialog.tsx; e2e accounts_phase2.py"
+  },
+  "CopyCredentialsButton:button:copied-copy": {
+    "status": "mapped",
+    "to": "ui2/features/accounts/AccountsView.tsx CopyButton in the issued-credentials box"
+  },
+  "Body:button:settab-t": {
+    "status": "mapped",
+    "to": "ui2/components/AppShell.tsx section tabs (second tier)"
+  }
+}

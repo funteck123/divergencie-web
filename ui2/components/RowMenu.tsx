@@ -38,9 +38,8 @@ export function RowMenu({ label, items, trigger = "⋯" }: { label: string; item
                 </Menu.Item>
               );
             return (
-              <Menu.Item key={it.label} className={cls} disabled={it.disabled} title={title} onSelect={() => it.onSelect?.()}>
+              <Menu.Item key={it.label} className={cls} disabled={it.disabled} title={title} aria-description={title} onSelect={() => it.onSelect?.()}>
                 {it.label}
-                {it.disabled && it.disabledReason && <span className="u2-visually-hidden"> ({it.disabledReason})</span>}
               </Menu.Item>
             );
           })}

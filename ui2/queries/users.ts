@@ -50,3 +50,30 @@ export function usePatchUser() {
     },
   });
 }
+
+export interface CreateResult {
+  user: UserRecord;
+  credentials: Credentials;
+}
+
+/** POST /api/users. The reply has the credentials apart from the record, so they are joined the way GET /api/users does. */
+export function useCreateUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: Record<string, unknown>) => apiFetch<CreateResult>("/api/users", { method: "POST", body }),
+    onSuccess: (res) => {
+      qc.setQueryData<UserRecord[]>(keys.users, (rows) => [...(rows ?? []), { ...res.user, Username: res.credentials.username, Password: res.credentials.password }]);
+    },
+  });
+}
+
+/** DELETE /api/users. Without `force` the server refuses an account that has history; `force` cascades after a backup. */
+export function useDeleteUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ userId, force }: { userId: string; force: boolean }) => apiFetch<{ backupId?: string }>("/api/users", { method: "DELETE", body: { userId, force } }),
+    onSuccess: (_res, { userId }) => {
+      qc.setQueryData<UserRecord[]>(keys.users, (rows) => rows?.filter((u) => u.UserID !== userId));
+    },
+  });
+}
