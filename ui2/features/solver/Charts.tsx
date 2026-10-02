@@ -15,14 +15,14 @@ const fmtDay = (ms: number) => new Date(ms).toLocaleDateString(undefined, { day:
  * Score % per attempt against date (dates on the axis, 0 to 100 %). The student's own line is bold with points you can focus
  * and hover for the paper and score; other students are faint lines that can be switched off. One scale places every mark.
  */
-export function LineChart({ series, emptyText }: { series: readonly Series[]; emptyText: string }) {
+export function LineChart({ series, emptyText, kind = "score" }: { series: readonly Series[]; emptyText: string; /** score: percent against date. count: a running total against completion order (the syllabus tracker). */ kind?: "score" | "count" }) {
   const id = useId();
   const [showOthers, setShowOthers] = useState(true);
   const [tip, setTip] = useState<{ x: number; y: number; text: string } | null>(null);
   const mine = series.find((s) => s.emphasis);
   const others = series.filter((s) => !s.emphasis);
 
-  const { xAt, yAt, ticks } = useMemo(() => {
+  const { xAt, yAt, ticks, yMax } = useMemo(() => {
     const xs = series.flatMap((s) => s.points.map((p) => p.x));
     const min = Math.min(...xs);
     const max = Math.max(...xs);
@@ -30,12 +30,16 @@ export function LineChart({ series, emptyText }: { series: readonly Series[]; em
     const plotW = W - pad.l - pad.r;
     const plotH = H - pad.t - pad.b;
     const count = Math.min(5, Math.max(1, new Set(xs).size));
+    const yMax = kind === "count" ? Math.max(1, ...series.flatMap((s) => s.points.map((p) => p.y))) : 100;
     return {
+      yMax,
       xAt: (x: number) => pad.l + (max === min ? plotW / 2 : ((x - min) / span) * plotW),
-      yAt: (pct: number) => pad.t + plotH - (pct / 100) * plotH,
+      yAt: (v: number) => pad.t + plotH - (v / yMax) * plotH,
       ticks: Array.from({ length: count }, (_, i) => (count === 1 ? min : min + (span * i) / (count - 1))),
     };
-  }, [series]);
+  }, [series, kind]);
+  const fmtX = (t: number) => (kind === "count" ? String(Math.round(t)) : fmtDay(t));
+  const yTicks = [...new Set([0, Math.round(yMax / 2), yMax])];
 
   if (!mine || mine.points.length === 0) return <p className="u2-muted">{emptyText}</p>;
   const path = (pts: Point[]) => pts.map((p, i) => `${i === 0 ? "M" : "L"}${xAt(p.x).toFixed(1)},${yAt(p.y).toFixed(1)}`).join(" ");
@@ -43,15 +47,15 @@ export function LineChart({ series, emptyText }: { series: readonly Series[]; em
   return (
     <figure className="u2-chart">
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby={`${id}-t`} onMouseLeave={() => setTip(null)}>
-        <title id={`${id}-t`}>Score per attempt over time</title>
-        {[0, 50, 100].map((v) => (
+        <title id={`${id}-t`}>{kind === "count" ? "Topics completed over time" : "Score per attempt over time"}</title>
+        {yTicks.map((v) => (
           <g key={v}>
             <line x1={pad.l} x2={W - pad.r} y1={yAt(v)} y2={yAt(v)} className="u2-chart__grid" />
-            <text x={pad.l - 6} y={yAt(v) + 4} textAnchor="end" className="u2-chart__tick">{v}%</text>
+            <text x={pad.l - 6} y={yAt(v) + 4} textAnchor="end" className="u2-chart__tick">{v}{kind === "count" ? "" : "%"}</text>
           </g>
         ))}
         {ticks.map((t) => (
-          <text key={t} x={xAt(t)} y={H - pad.b + 18} textAnchor="middle" className="u2-chart__tick">{fmtDay(t)}</text>
+          <text key={t} x={xAt(t)} y={H - pad.b + 18} textAnchor="middle" className="u2-chart__tick">{fmtX(t)}</text>
         ))}
         {showOthers && others.map((s) => <path key={s.id} d={path(s.points)} className="u2-chart__other"><title>{s.label}</title></path>)}
         <path d={path(mine.points)} className="u2-chart__mine" />

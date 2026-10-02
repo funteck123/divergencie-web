@@ -2231,5 +2231,17 @@
   "html:select:x:2": {
     "status": "mapped",
     "to": "ui2/features/solver/*; app/v2/question-solver; e2e solver_journey.py (library, practice, test, upload, mistakes mode, written answers, progress, history, leaderboard)"
+  },
+  "html:input:search": {
+    "status": "mapped",
+    "to": "ui2/features/syllabus/*; app/v2/syllabus; e2e syllabus_journey.py (subjects, filter, outline, tags, Completed sync, export, raw JSON, progress, leaderboard)"
+  },
+  "html:button:exportbtn": {
+    "status": "mapped",
+    "to": "ui2/features/syllabus/*; app/v2/syllabus; e2e syllabus_journey.py (subjects, filter, outline, tags, Completed sync, export, raw JSON, progress, leaderboard)"
+  },
+  "html:button:rawtoggle": {
+    "status": "mapped",
+    "to": "ui2/features/syllabus/*; app/v2/syllabus; e2e syllabus_journey.py (subjects, filter, outline, tags, Completed sync, export, raw JSON, progress, leaderboard)"
   }
 }
