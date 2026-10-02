@@ -626,5 +626,109 @@
   "TimezoneSelect:SearchSelect:value-value": {
     "status": "mapped",
     "to": "ui2/components/Combobox.tsx with timezone options (AccountFields, ServiceFormFields); e2e accounts_phase2.py"
+  },
+  "EnrollmentGroup:form:select-add-another-service-start-date-op": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:SearchSelect:value-userid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:button:remove": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:SearchSelect:value-row-serviceid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:SearchSelect:value-row-batchid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:SearchSelect:value-row-rateid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:SearchSelect:value-customratedraft-currency": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:input:amount": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:SearchSelect:value-customratedraft-billingtype": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:input:description-optional": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:button:adding-add-rate": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:button:new-rate-for-this-service": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:button:add-another-service": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:input:value-startdate": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:input:value-enddate": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentGroup:button:enrolling-enroll-into-service": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollSheet.tsx (enroll form incl. custom rate) + EnrollmentsView.tsx table; enrollLogic.test.ts; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:SearchSelect:value-userid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:SearchSelect:value-serviceid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:SearchSelect:value-batchid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:SearchSelect:value-rateid": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:input:value-startdate": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:input:value-enddate": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:button:saving-save": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
+  },
+  "EnrollmentRow:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/enrollments/EnrollmentEditSheet.tsx + row actions; e2e enrollments_journey.py"
   }
 }

@@ -93,3 +93,15 @@ export interface ServiceRecord {
   OccuranceList?: ServiceOccurrence[];
   [key: string]: unknown;
 }
+
+export interface EnrollmentRecord {
+  EnrolmentID: string;
+  UserID: string;
+  ServiceID: string;
+  BatchID?: string;
+  RateID?: string;
+  Currency?: string;
+  StartDate?: string;
+  EndDate?: string;
+  [key: string]: unknown;
+}

@@ -76,4 +76,5 @@ def main():
         out["errors"] = [e for e in s.errors if "409" not in e][:4]
     for k, v in out.items(): print(k, v)
 
-main()
+if __name__ == "__main__":
+    main()
