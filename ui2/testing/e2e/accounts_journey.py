@@ -49,7 +49,7 @@ def main():
         results["sorted_course_first"] = s.page.locator("tbody tr").first.locator("td").nth(3).inner_text()
         # search
         s.page.get_by_label("Search Student Accounts").fill("hassan")
-        s.page.wait_for_timeout(400)
+        s.page.wait_for_function("document.querySelectorAll('tbody tr').length < 240", timeout=15000)
         results["search_rows"] = s.page.locator("tbody tr").count()
         results["url_q"] = "q=hassan" in s.page.url
         s.page.get_by_label("Search Student Accounts").fill("")

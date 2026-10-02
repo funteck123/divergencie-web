@@ -3,6 +3,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import { Command } from "cmdk";
 import { useId, useMemo, useState } from "react";
+import { useFieldControl } from "./Field";
 import "./Combobox.css";
 
 export interface ComboOption {
@@ -24,6 +25,8 @@ export interface ComboboxProps {
   disabled?: boolean;
   /** Placeholder text of the search box. */
   searchPlaceholder?: string;
+  /** The person may type a value that is not in the list (offered as a "Use ..." row). */
+  allowCustom?: boolean;
 }
 
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
@@ -32,8 +35,10 @@ const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "bas
  * A select you can narrow by typing. Same rule as the classic SearchSelect: options are always listed A to Z
  * (ungrouped first, then each group A to Z), the empty choice stays on top. Arrow keys, Enter and Escape work.
  */
-export function Combobox({ value, onChange, options, placeholder, id, disabled, searchPlaceholder = "Type to search…", ...aria }: ComboboxProps) {
+export function Combobox({ value, onChange, options, placeholder, id, disabled, searchPlaceholder = "Type to search…", allowCustom, ...aria }: ComboboxProps) {
+  const field = useFieldControl();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const listId = useId();
 
   const { ungrouped, groups } = useMemo(() => {
@@ -49,20 +54,28 @@ export function Combobox({ value, onChange, options, placeholder, id, disabled, 
   const pick = (v: string) => {
     onChange(v);
     setOpen(false);
+    setSearch("");
   };
+  const typed = search.trim();
+  const offerCustom = !!allowCustom && typed !== "" && !options.some((o) => o.label.toLowerCase() === typed.toLowerCase());
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger id={id} type="button" disabled={disabled} className="u2-combo__trigger" role="combobox" aria-expanded={open} aria-controls={listId} aria-label={aria["aria-label"]}>
+    <Popover.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
+      <Popover.Trigger id={id ?? field.id} aria-describedby={field["aria-describedby"]} type="button" disabled={disabled} className="u2-combo__trigger" role="combobox" aria-expanded={open} aria-controls={listId} aria-label={aria["aria-label"]}>
         <span className={selected || value ? "" : "u2-combo__placeholder"}>{shown || "Select…"}</span>
         <span aria-hidden="true">▾</span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content className="u2-portal u2-combo__panel" align="start" sideOffset={4} onOpenAutoFocus={(e) => e.stopPropagation()}>
           <Command label={aria["aria-label"] ?? "Options"} filter={(itemValue, search) => (itemValue.toLowerCase().includes(search.trim().toLowerCase()) ? 1 : 0)}>
-            <Command.Input className="u2-combo__search" placeholder={searchPlaceholder} autoFocus />
+            <Command.Input className="u2-combo__search" placeholder={searchPlaceholder} autoFocus value={search} onValueChange={setSearch} />
             <Command.List id={listId} className="u2-combo__list">
-              <Command.Empty className="u2-combo__empty">No match.</Command.Empty>
+              {!offerCustom && <Command.Empty className="u2-combo__empty">No match.</Command.Empty>}
+              {offerCustom && (
+                <Command.Item forceMount value={`__custom ${typed}`} className="u2-combo__item" onSelect={() => pick(typed)}>
+                  Use &quot;{typed}&quot;
+                </Command.Item>
+              )}
               {placeholder !== undefined && (
                 <Command.Item value={`__empty ${placeholder}`} className="u2-combo__item u2-combo__item--empty" onSelect={() => pick("")} data-checked={value === ""}>
                   {placeholder}

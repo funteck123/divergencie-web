@@ -6,6 +6,7 @@ import { TIMEZONE_GROUPS } from "@/lib/timezones";
 import { Button } from "@/ui2/components/Button";
 import { Combobox, type ComboOption } from "@/ui2/components/Combobox";
 import { CheckField, Field, FieldGroup, TextArea, TextInput } from "@/ui2/components/Field";
+import { PersonLink } from "@/ui2/components/PersonLink";
 import { apiFetch } from "@/ui2/queries/client";
 import type { UserRecord } from "@/ui2/queries/types";
 import { TIMEZONE_TYPES, type FormValues } from "./accountForm";
@@ -182,27 +183,9 @@ export function AccountFields({ mode, userType, user, values: v, set, users }: A
   );
 }
 
-/** Link to an account (name follows the account) or type a free name. Picking the empty choice clears the link and the name, as the classic form does. */
 function ReferrerField({ selfId, users, name, userId, onChange }: { selfId: string; users: readonly UserRecord[]; name: string; userId: string; onChange: (name: string, id: string) => void }) {
-  const options: ComboOption[] = useMemo(() => users.filter((u) => u.UserID !== selfId).map((u) => ({ value: u.UserID, label: `${u.Name} (${u.UserType})` })), [users, selfId]);
-  return (
-    <FieldGroup legend="Referrer">
-      <Field label="Linked account">
-        <Combobox
-          value={userId}
-          placeholder="Not linked (type a name below)"
-          options={options}
-          onChange={(id) => {
-            const picked = users.find((u) => u.UserID === id);
-            onChange(picked?.Name ?? "", picked?.UserID ?? "");
-          }}
-        />
-      </Field>
-      <Field label="Referrer name" hint={userId ? "Follows the linked account." : undefined}>
-        <TextInput value={name} disabled={!!userId} onChange={(e) => onChange(e.target.value, "")} />
-      </Field>
-    </FieldGroup>
-  );
+  const people = useMemo(() => users.filter((u) => u.UserID !== selfId).map((u) => ({ id: u.UserID, name: u.Name, suffix: u.UserType })), [users, selfId]);
+  return <PersonLink legend="Referrer" nameLabel="Referrer name" people={people} name={name} userId={userId} onChange={onChange} />;
 }
 
 /** A URL field with a button that creates the Drive file (idempotent per account on the server) and fills the field. Does not save the account. */

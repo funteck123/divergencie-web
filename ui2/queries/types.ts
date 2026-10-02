@@ -36,3 +36,60 @@ export interface Credentials {
   username: string;
   password: string;
 }
+
+export interface ServiceRate {
+  RateID: string;
+  Currency: string;
+  Rate: number | string;
+  Description?: string;
+  BillingType?: string;
+  Group?: string;
+}
+export interface ServiceOccurrence {
+  OccuranceID: string;
+  Day: string;
+  Time: string;
+  Duration: number | string;
+  Facilitator: string;
+  FacilitatorUserID?: string;
+  Timezone?: string;
+}
+export interface ServiceBatch {
+  BatchID: string;
+  BatchName?: string;
+  StartDate?: string;
+  EndDate?: string;
+  Rates?: ServiceRate[];
+  OccuranceList?: ServiceOccurrence[];
+}
+export interface ServiceComponent {
+  ComponentID: string;
+  ComponentName?: string;
+  Batches?: ServiceBatch[];
+}
+/** A service as GET /api/services returns it. Cohort services (Student, Teacher) carry components with batches; role services carry flat Rates and OccuranceList. */
+export interface ServiceRecord {
+  ServiceID: string;
+  Name: string;
+  Type: string;
+  Group: string | string[];
+  Board?: string;
+  Course?: string;
+  SubjectCode?: string;
+  SubjectName?: string;
+  RecordingsLink?: string;
+  SyllabusLink?: string;
+  WorksheetsLink?: string;
+  GCRLink?: string;
+  StartDate?: string;
+  EndDate?: string;
+  Role?: string;
+  Department?: string;
+  University?: string;
+  Country?: string;
+  Links?: { LinkID: string; Name: string; Url: string }[];
+  OptionalComponents?: ServiceComponent[];
+  Rates?: ServiceRate[];
+  OccuranceList?: ServiceOccurrence[];
+  [key: string]: unknown;
+}

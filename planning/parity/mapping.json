@@ -334,5 +334,297 @@
   "Body:button:settab-t": {
     "status": "mapped",
     "to": "ui2/components/AppShell.tsx section tabs (second tier)"
+  },
+  "Services:form:suggest-open-to-trial-books-student-open": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:service-name": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:suggest": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:togglegroup-g": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:EditableCombobox:type": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:role-job-title": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-department": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:country-e-g-uk": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:university": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:curriculum-board-e-g-cambridge": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:course-e-g-igcse-a-level-sat": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:subject-code": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:subject-name": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:recordings-link": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:syllabus-link": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:worksheets-link": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:google-classroom-link": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:value-servicestartdate": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:value-serviceenddate": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:link-name-e-g-answers": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:url": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:removelink-li": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-link": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-r-currency": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:rate": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:description": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-r-billingtype": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:removeflatrate-ri": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-rate": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-o-day": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:value-o-time": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:hrs": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:FacilitatorInput:facilitator-facilitatoruserid-updateflat": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:TimezoneSelect:v-updateflatocc-oi-timezone-v": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:removeflatocc-oi": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-occurrence": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:component-name-optional-e-g-pure-mathema": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:component": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:EditableCombobox:academic-session-e-g-fall-2026": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:batch-name-e-g-b14": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:value-b-startdate": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:value-b-enddate": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:batch": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-r-currency:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:rate:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:description:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-r-billingtype:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-r-group": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:removerate-ci-bi-ri": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-rate:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:SearchSelect:value-o-day:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:value-o-time:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:hrs:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:FacilitatorInput:facilitator-facilitatoruserid-updateocc-": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:TimezoneSelect:v-updateocc-ci-bi-oi-timezone-v": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:removeocc-ci-bi-oi": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-occurrence:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-batch": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:add-optional-component": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:saving-save-changes-create-service": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:button:cancel": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "Services:input:search-by-name": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServicesView.tsx + ServiceSheet.tsx + ServiceFormFields.tsx; serviceForm.test.ts; e2e services_journey.py"
+  },
+  "ServiceGroupTable:button:togglein-setexpandedservices-row-service": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServiceTree.tsx and ServicesView.tsx table view; e2e services_journey.py"
+  },
+  "ServiceGroupTable:button:togglein-setexpandedservices-row-service:2": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServiceTree.tsx and ServicesView.tsx table view; e2e services_journey.py"
+  },
+  "ServiceGroupTable:button:edit": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServiceTree.tsx and ServicesView.tsx table view; e2e services_journey.py"
+  },
+  "ServiceGroupTable:button:togglein-setexpandedcomponents-c-key": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServiceTree.tsx and ServicesView.tsx table view; e2e services_journey.py"
+  },
+  "ExpandableCell:button:setopen-o-o": {
+    "status": "mapped",
+    "to": "ui2/features/services/ExpandList.tsx; e2e services_journey.py"
+  },
+  "GroupRow:button:ontoggle": {
+    "status": "mapped",
+    "to": "ui2/features/services/ServiceTree.tsx Node (Type, Board, Course, Subject); e2e services_journey.py"
+  },
+  "EditableCombobox:input:expr": {
+    "status": "mapped",
+    "to": "ui2/components/Combobox.tsx allowCustom; e2e services_journey.py"
+  },
+  "FacilitatorInput:SearchSelect:account": {
+    "status": "mapped",
+    "to": "ui2/components/PersonLink.tsx (accounts referrer, service instructor); e2e accounts_phase2.py (referrer fields), services_journey.py"
+  },
+  "FacilitatorInput:input:expr": {
+    "status": "mapped",
+    "to": "ui2/components/PersonLink.tsx (accounts referrer, service instructor); e2e accounts_phase2.py (referrer fields), services_journey.py"
+  },
+  "FacilitatorInput:SearchSelect:link-to-an-account": {
+    "status": "mapped",
+    "to": "ui2/components/PersonLink.tsx (accounts referrer, service instructor); e2e accounts_phase2.py (referrer fields), services_journey.py"
+  },
+  "TimezoneSelect:SearchSelect:value-value": {
+    "status": "mapped",
+    "to": "ui2/components/Combobox.tsx with timezone options (AccountFields, ServiceFormFields); e2e accounts_phase2.py"
   }
 }

@@ -1,0 +1,39 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-rows { display: grid; gap: var(--u2-space-3); }
+  .u2-row { display: grid; gap: var(--u2-space-2); align-items: end; padding: var(--u2-space-2); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); }
+  .u2-row--rate { grid-template-columns: 110px 100px minmax(120px, 1fr) 130px minmax(120px, 160px) auto; }
+  .u2-row--occ { grid-template-columns: 130px 110px 90px minmax(140px, 1fr) auto; }
+  .u2-row--link { grid-template-columns: minmax(120px, 200px) 1fr auto; }
+  .u2-row__wide { grid-column: 1 / -1; }
+  .u2-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--u2-space-3); }
+  .u2-grid3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--u2-space-3); }
+  .u2-box { display: grid; gap: var(--u2-space-3); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
+  .u2-box--inner { background: var(--u2-color-bg-subtle); }
+  @media (max-width: 767px) {
+    .u2-row--rate, .u2-row--occ, .u2-row--link, .u2-grid2, .u2-grid3 { grid-template-columns: 1fr; }
+  }
+}
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-tree, .u2-tree__children { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .u2-tree__children { padding-left: var(--u2-space-4); }
+  .u2-tree__node > .u2-tree__toggle { font-weight: var(--u2-weight-semibold); }
+  .u2-tree__toggle {
+    all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: var(--u2-space-2); padding: 6px var(--u2-space-2);
+    border-radius: var(--u2-radius-sm); color: var(--u2-color-text);
+  }
+  .u2-tree__toggle:hover { background: var(--u2-color-selected); }
+  .u2-tree__toggle:focus-visible { box-shadow: 0 0 0 2px var(--u2-color-bg), 0 0 0 4px var(--u2-color-focus); }
+  .u2-tree__empty { padding: var(--u2-space-2) var(--u2-space-3); }
+  .u2-tree__service { background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); }
+  .u2-svcline { display: grid; grid-template-columns: 28px 84px minmax(160px, 1.6fr) 110px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.2fr) auto; gap: var(--u2-space-2); align-items: center; padding: 4px var(--u2-space-2); font-size: var(--u2-text-sm); }
+  .u2-svcline > * { min-width: 0; }
+  .u2-svcline--head { font-weight: var(--u2-weight-semibold); color: var(--u2-color-text-muted); padding: 4px var(--u2-space-2); }
+  .u2-svcline__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .u2-svcline__batches { list-style: none; margin: 0; padding: 0 var(--u2-space-2) var(--u2-space-2) 40px; display: grid; gap: 2px; font-size: var(--u2-text-sm); }
+  .u2-svcline__batch { display: grid; grid-template-columns: minmax(100px, 1fr) 1fr 1fr; gap: var(--u2-space-2); padding: 2px var(--u2-space-2); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius-sm); }
+  .u2-expand__list { margin: 4px 0 0; padding-left: var(--u2-space-3); }
+  .u2-danger-text { color: var(--u2-color-error); }
+  .u2-seg__btn[data-on="true"] { background: var(--u2-color-brand); border-color: var(--u2-color-brand); color: var(--u2-color-on-brand); }
+  @media (max-width: 1023px) { .u2-svcline { grid-template-columns: 28px 84px 1fr auto; } .u2-svcline > :nth-child(n+4):not(:last-child) { display: none; } }
+}

@@ -1,44 +1,60 @@
 "use client";
 
-import { cloneElement, isValidElement, useId, type InputHTMLAttributes, type ReactElement, type ReactNode, type TextareaHTMLAttributes } from "react";
+import { createContext, useContext, useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from "react";
 import { clsx } from "clsx";
 import "./Field.css";
 
+interface FieldCtx {
+  id: string;
+  describedBy: string | undefined;
+  invalid: boolean;
+}
+const FieldContext = createContext<FieldCtx | null>(null);
+
+/** The id and aria wiring of the surrounding Field, for controls that are not a plain input (for example the Combobox trigger). */
+export function useFieldControl(): { id?: string; "aria-describedby"?: string; "aria-invalid"?: boolean } {
+  const c = useContext(FieldContext);
+  return c ? { id: c.id, "aria-describedby": c.describedBy, "aria-invalid": c.invalid || undefined } : {};
+}
+
 /**
  * A control with a caption that is always visible (a placeholder disappears once the field has a value).
- * The label, hint and error are wired to the control with ids, so a screen reader reads them with it.
+ * The label, hint and error are wired to the first control inside through context, so a screen reader reads them with it,
+ * even when the control sits inside a row with a button next to it.
  */
-export function Field({ label, hint, error, children, wide }: { label: string; hint?: string; error?: string; children: ReactElement<{ id?: string; "aria-describedby"?: string; "aria-invalid"?: boolean }>; wide?: boolean }) {
+export function Field({ label, hint, error, children, wide }: { label: string; hint?: string; error?: string; children: ReactNode; wide?: boolean }) {
   const id = useId();
   const hintId = `${id}-hint`;
   const errId = `${id}-err`;
   const describedBy = [hint ? hintId : "", error ? errId : ""].filter(Boolean).join(" ") || undefined;
   return (
-    <div className={clsx("u2-field", wide && "u2-field--wide")}>
-      <label htmlFor={id} className="u2-field__label">
-        {label}
-      </label>
-      {isValidElement(children) ? cloneElement(children, { id, "aria-describedby": describedBy, "aria-invalid": error ? true : undefined }) : children}
-      {hint && (
-        <p id={hintId} className="u2-field__hint">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={errId} role="alert" className="u2-field__error">
-          {error}
-        </p>
-      )}
-    </div>
+    <FieldContext.Provider value={{ id, describedBy, invalid: !!error }}>
+      <div className={clsx("u2-field", wide && "u2-field--wide")}>
+        <label htmlFor={id} className="u2-field__label">
+          {label}
+        </label>
+        {children}
+        {hint && (
+          <p id={hintId} className="u2-field__hint">
+            {hint}
+          </p>
+        )}
+        {error && (
+          <p id={errId} role="alert" className="u2-field__error">
+            {error}
+          </p>
+        )}
+      </div>
+    </FieldContext.Provider>
   );
 }
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} className={clsx("u2-input", props.className)} />;
+  return <input {...useFieldControl()} {...props} className={clsx("u2-input", props.className)} />;
 }
 
 export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea rows={3} {...props} className={clsx("u2-input u2-input--area", props.className)} />;
+  return <textarea rows={3} {...useFieldControl()} {...props} className={clsx("u2-input u2-input--area", props.className)} />;
 }
 
 export function CheckField({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
