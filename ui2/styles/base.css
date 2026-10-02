@@ -1,3 +1,7 @@
+@keyframes u2-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+/* Specificity lift: the site's flattened Tailwind preflight (postcss cascade-layers, TKT-0262) outranks plain
+   class selectors, so everything here nests under two :not(#\#) (each counts as an id). */
+:not(#\#):not(#\#) {
 /* New UI base styles. Everything is scoped under .u2 so nothing here can change a classic page. */
 .u2 {
   background: var(--u2-color-bg-subtle);
@@ -16,8 +20,8 @@
 .u2 h3 { font-size: var(--u2-text-lg); }
 .u2 p { margin: 0; }
 .u2 a { color: var(--u2-color-link); text-decoration: underline; text-underline-offset: 2px; }
-.u2 button, .u2 input, .u2 select, .u2 textarea { font: inherit; color: inherit; }
-.u2 button { cursor: pointer; }
+:where(.u2) :where(button, input, select, textarea) { font: inherit; color: inherit; } /* :where keeps these below component classes */
+:where(.u2) :where(button) { cursor: pointer; }
 .u2 button:disabled, .u2 [aria-disabled="true"] { cursor: not-allowed; opacity: 0.55; }
 
 /* Focus: a navy ring with a white gap, visible on light and on navy surfaces. */
@@ -48,7 +52,6 @@
   animation: u2-shimmer 1.2s linear infinite;
   border-radius: var(--u2-radius-sm);
 }
-@keyframes u2-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 
 /* Respect reduced motion: no animation, instant transitions. */
 @media (prefers-reduced-motion: reduce) {
@@ -58,4 +61,5 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
 }

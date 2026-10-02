@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { getCurrentUser, roleHomePath } from "@/lib/client";
+import { roleHomePath } from "@/lib/client";
 import { newUiAvailableFor } from "@/lib/uiPreference";
 
 export interface SessionUser {
@@ -12,19 +12,42 @@ export interface SessionUser {
   UiPreference?: string;
 }
 
+const STORAGE_KEY = "dcp1_user"; // same key the classic client uses (lib/client.js)
+
+function subscribe(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
+}
+const readStored = () => window.localStorage.getItem(STORAGE_KEY);
+// undefined = still on the server or hydrating: nothing is known yet.
+const readOnServer = () => undefined;
+
+function parseUser(raw: string | null | undefined): SessionUser | null | undefined {
+  if (raw === undefined) return undefined;
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as SessionUser;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Same guard as the classic dashboards: the stored user decides, the API enforces the real permission.
  * Not signed in goes to /login; an account type the new UI does not cover yet goes to its classic home.
  */
 export function RequireUser({ children }: { children: (user: SessionUser) => ReactNode }) {
   const router = useRouter();
-  const [user, setUser] = useState<SessionUser | null | undefined>(undefined); // undefined = checking
+  const raw = useSyncExternalStore(subscribe, readStored, readOnServer);
+  const user = useMemo(() => parseUser(raw), [raw]);
+  const allowed = !!user && newUiAvailableFor(user.UserType);
+
   useEffect(() => {
-    const u = getCurrentUser() as SessionUser | null;
-    if (!u) router.replace("/login");
-    else if (!newUiAvailableFor(u.UserType)) router.replace(roleHomePath(u.UserType));
-    else setUser(u);
-  }, [router]);
-  if (!user) return <div className="u2-skeleton" style={{ height: "var(--u2-bar-height)" }} aria-busy="true" />;
+    if (user === undefined) return;
+    if (!user) router.replace("/login");
+    else if (!allowed) router.replace(roleHomePath(user.UserType));
+  }, [user, allowed, router]);
+
+  if (!user || !allowed) return <div className="u2-skeleton" style={{ height: "var(--u2-bar-height)" }} aria-busy="true" />;
   return <>{children(user)}</>;
 }

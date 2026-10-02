@@ -1,11 +1,13 @@
-.page { display: grid; gap: var(--u2-space-8); }
-.page section { display: grid; gap: var(--u2-space-3); }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--u2-space-3); }
-.pair { display: grid; gap: var(--u2-space-1); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
-.pair span { font-size: var(--u2-text-sm); }
-.typeRow { margin: 0; }
-.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-3); }
-.space { background: var(--u2-color-brand); }
-.radius { width: 72px; height: 48px; display: grid; place-items: center; background: var(--u2-color-surface-tint); font-size: var(--u2-text-sm); }
-.logoDark { background: var(--u2-color-brand); padding: var(--u2-space-3); border-radius: var(--u2-radius-md); }
-.logoLight { background: var(--u2-color-bg); border: 1px solid var(--u2-color-border); padding: var(--u2-space-3); border-radius: var(--u2-radius-md); }
+/* Specificity lift: the site's flattened Tailwind preflight (postcss cascade-layers, TKT-0262) outranks plain
+   class selectors, so every selector here is prefixed with two :not(#\#) (each counts as an id). */
+:global(:not(#\#):not(#\#)) .page { display: grid; gap: var(--u2-space-8); }
+:global(:not(#\#):not(#\#)) .page section { display: grid; gap: var(--u2-space-3); }
+:global(:not(#\#):not(#\#)) .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--u2-space-3); }
+:global(:not(#\#):not(#\#)) .pair { display: grid; gap: var(--u2-space-1); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
+:global(:not(#\#):not(#\#)) .pair span { font-size: var(--u2-text-sm); }
+:global(:not(#\#):not(#\#)) .typeRow { margin: 0; }
+:global(:not(#\#):not(#\#)) .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-3); }
+:global(:not(#\#):not(#\#)) .space { background: var(--u2-color-brand); }
+:global(:not(#\#):not(#\#)) .radius { width: 72px; height: 48px; display: grid; place-items: center; background: var(--u2-color-surface-tint); font-size: var(--u2-text-sm); }
+:global(:not(#\#):not(#\#)) .logoDark { background: var(--u2-color-brand); padding: var(--u2-space-3); border-radius: var(--u2-radius-md); }
+:global(:not(#\#):not(#\#)) .logoLight { background: var(--u2-color-bg); border: 1px solid var(--u2-color-border); padding: var(--u2-space-3); border-radius: var(--u2-radius-md); }

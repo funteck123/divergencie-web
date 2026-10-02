@@ -1,5 +1,7 @@
-.card { background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); padding: var(--u2-space-6); display: grid; gap: var(--u2-space-4); max-width: 560px; }
-.facts { display: grid; gap: var(--u2-space-3); margin: 0; }
-.facts div { display: grid; grid-template-columns: 140px 1fr; gap: var(--u2-space-2); }
-.facts dt { color: var(--u2-color-text-muted); }
-.facts dd { margin: 0; font-weight: var(--u2-weight-semibold); }
+/* Specificity lift: the site's flattened Tailwind preflight (postcss cascade-layers, TKT-0262) outranks plain
+   class selectors, so every selector here is prefixed with two :not(#\#) (each counts as an id). */
+:global(:not(#\#):not(#\#)) .card { background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); padding: var(--u2-space-6); display: grid; gap: var(--u2-space-4); max-width: 560px; }
+:global(:not(#\#):not(#\#)) .facts { display: grid; gap: var(--u2-space-3); margin: 0; }
+:global(:not(#\#):not(#\#)) .facts div { display: grid; grid-template-columns: 140px 1fr; gap: var(--u2-space-2); }
+:global(:not(#\#):not(#\#)) .facts dt { color: var(--u2-color-text-muted); }
+:global(:not(#\#):not(#\#)) .facts dd { margin: 0; font-weight: var(--u2-weight-semibold); }
