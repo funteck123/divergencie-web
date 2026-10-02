@@ -61,6 +61,8 @@ def main():
         s.page.wait_for_timeout(500)
         results["status_after"] = s.page.locator("tbody tr", has_text="STU-1001").locator("td").nth(2).inner_text()
         # reset password
+        # more than 200 rows: only the rows near the top are in the page, so find this one the way a person would
+        s.page.get_by_label("Search Student Accounts").fill("STU-1002")
         row = s.page.locator("tbody tr", has_text="STU-1002")
         row.get_by_role("button", name=re.compile("More actions")).click()
         s.page.get_by_role("menuitem", name="Reset password").click()

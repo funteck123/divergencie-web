@@ -94,10 +94,14 @@ class Session:
               if (!inScroller) out.push({ sel: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\\s+/).slice(0, 2).join('.') : ''), right: Math.round(r.right), width: Math.round(r.width) });
             }
           }
-          // Which element forces the width? The deepest offender that is not itself inside a wider offender's own box.
-          let chain = [];
-          const offenders = [...document.querySelectorAll('body *')].filter((el) => el.getBoundingClientRect().right > w + 1 && el.children.length === 0);
-          if (offenders[0]) for (let el = offenders[0]; el && el !== document.body; el = el.parentElement) { const c = getComputedStyle(el); chain.push(el.tagName.toLowerCase() + '.' + String(el.className).split(' ').slice(0,2).join('.') + ' w=' + Math.round(el.getBoundingClientRect().width) + ' ' + c.display + (c.display.includes('grid') ? ' cols=' + c.gridTemplateColumns.slice(0, 50) : '') + (c.minWidth !== 'auto' && c.minWidth !== '0px' ? ' min=' + c.minWidth : '')); }
+          // Which element forces the width? The ones whose removal shrinks the page (hide each in turn).
+          const base = document.documentElement.scrollWidth, chain = [];
+          for (const el of document.querySelectorAll('body *')) {
+            const d = el.style.display; el.style.display = 'none';
+            if (document.documentElement.scrollWidth < base) { const c = getComputedStyle(el.parentElement); chain.push(el.tagName.toLowerCase() + '.' + String(el.className).split(' ').slice(0, 2).join('.') + ' in ' + el.parentElement.tagName.toLowerCase() + ' ' + c.display); }
+            el.style.display = d;
+            if (chain.length > 7) break;
+          }
           return [chain.slice(0, 9), ...out.sort((a, b) => b.right - a.right).slice(0, limit)];
         }""", limit)
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { clsx } from "clsx";
 import { useMediaQuery } from "@/ui2/lib/useMediaQuery";
 import "./DataTable.css";
@@ -56,11 +56,24 @@ interface RowProps<T> {
   checked: boolean | null;
   active: boolean;
   onToggle: ((id: string) => void) | null;
+  /** 1-based position in the whole table, for screen readers when only part of the rows is on the page. */
+  position: number;
 }
 
-function RowInner<T>({ row, id, columns, checked, active, onToggle }: RowProps<T>) {
+/** Above this many rows only the rows near the viewport are in the page (the rest is a spacer), so sorting and filtering stay fast. */
+export const WINDOW_AFTER = 200;
+const OVERSCAN = 12;
+/** First and last row to draw for a scroll position. Pure, so it is tested without a browser. */
+export function visibleRange(total: number, top: number, viewHeight: number, rowHeight: number, overscan = OVERSCAN): [number, number] {
+  if (total === 0 || rowHeight <= 0) return [0, total];
+  const start = Math.max(0, Math.min(total - 1, Math.floor(top / rowHeight) - overscan));
+  const end = Math.min(total, Math.ceil((top + viewHeight) / rowHeight) + overscan);
+  return [start, Math.max(end, start + 1)];
+}
+
+function RowInner<T>({ row, id, columns, checked, active, onToggle, position }: RowProps<T>) {
   return (
-    <tr className={clsx(active && "u2-table__row--active", checked && "u2-table__row--selected")} data-row-id={id}>
+    <tr className={clsx(active && "u2-table__row--active", checked && "u2-table__row--selected")} data-row-id={id} aria-rowindex={position}>
       {onToggle && (
         <td className="u2-table__check">
           <input type="checkbox" checked={!!checked} onChange={() => onToggle(id)} aria-label={`Select ${id}`} />
@@ -75,6 +88,13 @@ function RowInner<T>({ row, id, columns, checked, active, onToggle }: RowProps<T
   );
 }
 const Row = memo(RowInner) as typeof RowInner;
+function Spacer({ height, span }: { height: number; span: number }) {
+  return (
+    <tr aria-hidden="true" className="u2-table__spacer">
+      <td colSpan={span} style={{ height, padding: 0, border: 0 }} />
+    </tr>
+  );
+}
 
 /**
  * One-line-per-row table. Fixed layout so long text is cut with an ellipsis (full text on hover) instead of
@@ -101,6 +121,29 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
       return sign * compare(av, bv);
     });
   }, [rows, columns, sort]);
+
+  // Windowing: measured row height (average of the rows on the page), scroll position of the table's own scroll box.
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLTableSectionElement>(null);
+  const [view, setView] = useState({ top: 0, height: 700 });
+  const [rowH, setRowH] = useState(37);
+  const windowed = !phone && sorted.length > WINDOW_AFTER;
+  const onScroll = useCallback(() => {
+    const el = wrapRef.current;
+    if (el) setView((v) => (Math.abs(v.top - el.scrollTop) < 1 && v.height === el.clientHeight ? v : { top: el.scrollTop, height: el.clientHeight }));
+  }, []);
+  useEffect(() => {
+    if (windowed) onScroll();
+  }, [windowed, onScroll]);
+  const [from, to] = windowed ? visibleRange(sorted.length, view.top, view.height, rowH) : [0, sorted.length];
+  useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (!windowed || !body) return;
+    const real = [...body.querySelectorAll<HTMLElement>("tr[data-row-id]")];
+    if (real.length < 5) return;
+    const h = real.reduce((t, r) => t + r.offsetHeight, 0) / real.length;
+    if (h > 10 && Math.abs(h - rowH) > 0.5) setRowH(h);
+  }, [windowed, rowH, from, to]);
 
   const selectable = !!onSelectedChange;
   const toggle = (id: string) => {
@@ -140,8 +183,8 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
 
   const fixed = columns.reduce((sum, c) => sum + (c.width ?? 0), 0) + (selectable ? 28 : 0);
   return (
-    <div className="u2-table__wrap" tabIndex={0} role="region" aria-label={caption}>
-      <table className="u2-table" style={{ minWidth: fixed }}>
+    <div className="u2-table__wrap" tabIndex={0} role="region" aria-label={caption} ref={wrapRef} onScroll={windowed ? onScroll : undefined}>
+      <table className="u2-table" style={{ minWidth: fixed }} aria-rowcount={windowed ? sorted.length + 1 : undefined}>
         <caption className="u2-visually-hidden">{caption}</caption>
         <colgroup>
           {selectable && <col style={{ width: 28 }} />}
@@ -186,11 +229,13 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
             })}
           </tr>
         </thead>
-        <tbody>
-          {sorted.map((r) => {
+        <tbody ref={bodyRef}>
+          {windowed && from > 0 && <Spacer height={from * rowH} span={columns.length + (selectable ? 1 : 0)} />}
+          {sorted.slice(from, to).map((r, i) => {
             const id = rowKey(r);
-            return <Row key={id} row={r} id={id} columns={columns} checked={selectable ? !!selected?.has(id) : null} active={activeKey === id} onToggle={selectable ? toggle : null} />;
+            return <Row key={id} row={r} id={id} position={from + i + 2} columns={columns} checked={selectable ? !!selected?.has(id) : null} active={activeKey === id} onToggle={selectable ? toggle : null} />;
           })}
+          {windowed && to < sorted.length && <Spacer height={(sorted.length - to) * rowH} span={columns.length + (selectable ? 1 : 0)} />}
         </tbody>
       </table>
     </div>

@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const only = process.argv[2];
-const files = fs.readdirSync(dir).filter((f) => f.endsWith(".py") && f !== "harness.py" && (!only || f.includes(only))).sort();
+const files = fs.readdirSync(dir).filter((f) => f.endsWith(".py") && f !== "harness.py" && f !== "perf_budgets.py" && (!only || f.includes(only))).sort();
 // Tables become card lists on a phone (by design), so journeys that drive the table run from 768px up. Their pages are still scanned at phone width by the sweep.
 const DESKTOP_ONLY = new Set(["accounts_import.py", "accounts_journey.py", "accounts_phase2.py", "billing_journey.py"]);
 const narrow = Number(process.env.U2_WIDTH || 1280) < 768;

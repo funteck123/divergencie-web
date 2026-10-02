@@ -2,6 +2,7 @@
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-table__wrap {
     /* Its own scroll box: the header stays pinned inside it, and a table wider than the box scrolls sideways here, never the page. */
+    position: relative; /* contains absolutely placed cell content (screen-reader text) so it cannot widen the page */
     overflow: auto; max-height: calc(100vh - var(--u2-sticky-top, var(--u2-bar-height)) - 150px); min-height: 200px;
     background: var(--u2-color-surface);
     border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md);
