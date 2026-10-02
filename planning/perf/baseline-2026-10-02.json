@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-02",
+  "baseUrl": "https://www.divergencie.co.uk",
+  "runs": 3,
+  "rows": [
+    {
+      "path": "/api/me",
+      "status": 404,
+      "medianMs": 290,
+      "minMs": 287,
+      "maxMs": 412,
+      "bytes": 27
+    },
+    {
+      "path": "/api/users",
+      "status": 200,
+      "medianMs": 252,
+      "minMs": 244,
+      "maxMs": 267,
+      "bytes": 16050
+    },
+    {
+      "path": "/api/services",
+      "status": 200,
+      "medianMs": 255,
+      "minMs": 250,
+      "maxMs": 271,
+      "bytes": 70334
+    },
+    {
+      "path": "/api/enrollments",
+      "status": 200,
+      "medianMs": 250,
+      "minMs": 246,
+      "maxMs": 251,
+      "bytes": 6777
+    },
+    {
+      "path": "/api/invoices",
+      "status": 200,
+      "medianMs": 250,
+      "minMs": 240,
+      "maxMs": 263,
+      "bytes": 13163
+    },
+    {
+      "path": "/api/paychecks",
+      "status": 200,
+      "medianMs": 262,
+      "minMs": 256,
+      "maxMs": 270,
+      "bytes": 10237
+    },
+    {
+      "path": "/api/schedule",
+      "status": 200,
+      "medianMs": 284,
+      "minMs": 277,
+      "maxMs": 487,
+      "bytes": 222284
+    },
+    {
+      "path": "/api/tickets",
+      "status": 200,
+      "medianMs": 654,
+      "minMs": 460,
+      "maxMs": 831,
+      "bytes": 253352
+    },
+    {
+      "path": "/api/auditlog?limit=50",
+      "status": 200,
+      "medianMs": 288,
+      "minMs": 285,
+      "maxMs": 297,
+      "bytes": 43309
+    },
+    {
+      "path": "/api/regforms",
+      "status": 200,
+      "medianMs": 272,
+      "minMs": 252,
+      "maxMs": 318,
+      "bytes": 7140
+    },
+    {
+      "path": "/api/leads",
+      "status": 200,
+      "medianMs": 238,
+      "minMs": 238,
+      "maxMs": 243,
+      "bytes": 1043
+    },
+    {
+      "path": "/api/guides",
+      "status": 200,
+      "medianMs": 253,
+      "minMs": 245,
+      "maxMs": 260,
+      "bytes": 687
+    }
+  ]
+}
