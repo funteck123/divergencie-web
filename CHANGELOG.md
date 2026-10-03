@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [commit
 
 ## [Unreleased]
 
+### Fixed
+- Question Solver dropdowns on a phone (students reported they could not change an option; the list closed at once or the keyboard vanished): the option list used to close on any window resize, and showing the keyboard resizes the window. It now closes only when the width changes (rotation), and a plain tap on a dropdown no longer opens the keyboard (typing, or tapping the search box, still does). Regression script: `scripts/test-solver-select.py`.
+
 ### Changed
 - New UI, Syllabus Viewer (TKT-0322, Beta): subject list with filter, the digitized topic outline with the six tags (Completed, Revise, Memorised, Doubt, Practice, Critical; same browser storage as classic), Completed saved to your account, export of tagged topics, raw JSON view, and a progress page with a topic chart, history and leaderboards. New same-origin proxy `/api/syllabus/*` to the Syllabus Viewer service (session required; progress and ticks always use the signed-in account; image paths cannot climb out). Route `/v2/syllabus`; the classic link is unchanged.
 - New UI, Question Solver (TKT-0322, Beta): library picker in one column (board, subject, component, paper type, year and session, paper) with the load button pinned on phones, upload your own paper, Practice and Test modes, Mistakes Mode, written answers graded one by one, a timer with pause, autosave and resume (same storage key as classic), results with mark-by-mark feedback, and a progress page (score over time, history with saved answers, mistakes per chapter, leaderboards). Same `/api/mcq/*` calls and bodies as classic, so progress shows in both UIs. Quiz rules are a tested state machine. Route `/v2/question-solver`; classic is unchanged.
