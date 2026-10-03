@@ -21,6 +21,7 @@ export const CLASSIC = [
 export const HOOKS = {
   "components/DashboardShell.jsx": { maxAdded: 45, maxDeleted: 6, why: "one switch button" },
   "lib/client.js": { maxAdded: 30, maxDeleted: 6, why: "post-login redirect honours the UI preference" },
+  "components/ResourcesSection.jsx": { maxAdded: 2, maxDeleted: 2, why: "the Syllabus Viewer and Question Solver buttons open the new views (ticket from the user, 2026-10-03)" },
 };
 
 /**

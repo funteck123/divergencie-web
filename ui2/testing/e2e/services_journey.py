@@ -43,7 +43,7 @@ def main():
         s.page.get_by_role("button", name=re.compile("^Physics")).click()
         out["service_line"] = s.page.get_by_text("Cambridge IGCSE 0625 Physics").count()
         s.page.get_by_role("button", name=re.compile("Show 2 batches")).click()
-        out["batch_rows"] = s.page.locator(".u2-svcline__batch").count()
+        out["batch_rows"] = s.page.locator(".u2-batch").count()
         s.page.screenshot(path="snapshots/v2-services-tree.png")
         # edit: save unchanged -> body must keep ids and batch dates
         s.page.get_by_role("button", name="Edit").first.click()

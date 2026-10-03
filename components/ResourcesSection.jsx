@@ -87,7 +87,7 @@ export default function ResourcesSection({ services, user, showExternalTools = f
         {showExternalTools && user && syllabusViewerUrl && (
           <a
             className="btn-ghost"
-            href={`${syllabusViewerUrl}?${new URLSearchParams({ account: user.UserID, name: user.Name }).toString()}`}
+            href="/v2/syllabus"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -97,7 +97,7 @@ export default function ResourcesSection({ services, user, showExternalTools = f
         {showExternalTools && user && (
           <a
             className="btn-ghost"
-            href={`/mcq-digitizer/index.html?${new URLSearchParams({ account: user.UserID, name: user.Name }).toString()}`}
+            href="/v2/question-solver"
             target="_blank"
             rel="noopener noreferrer"
           >

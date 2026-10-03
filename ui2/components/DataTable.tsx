@@ -3,6 +3,8 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { clsx } from "clsx";
 import { useMediaQuery } from "@/ui2/lib/useMediaQuery";
+import { TableTools } from "./TableTools";
+import { GROUPS_START_OPEN_UNDER, applyFilters, groupRows, type Cell, type Filters } from "./tableTools";
 import "./DataTable.css";
 
 export interface Column<T> {
@@ -19,6 +21,9 @@ export interface Column<T> {
   tip?: (row: T) => string | undefined;
   align?: "left" | "center" | "right";
   numeric?: boolean;
+  /** What the Filter and Group tools use for this column. Defaults to sortValue. Set `filterable: false` to leave a column out. */
+  filterValue?: (row: T) => string | number | null | undefined;
+  filterable?: boolean;
 }
 
 export interface DataTableProps<T> {
@@ -105,7 +110,22 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
   const [sort, setSort] = useState(initialSort ?? null);
   const phone = useMediaQuery("(max-width: 767px)");
 
+  const [filters, setFilters] = useState<Filters>({});
+  const [groupBy, setGroupBy] = useState("");
+  const [flipped, setFlipped] = useState<ReadonlySet<string>>(new Set()); // groups the person opened or closed against the default
+  const getters = useMemo(() => {
+    const g: Record<string, (r: T) => Cell> = {};
+    for (const c of columns) {
+      const get = c.filterValue ?? c.sortValue;
+      if (get && c.filterable !== false) g[c.id] = get;
+    }
+    return g;
+  }, [columns]);
+  const toolColumns = useMemo(() => columns.filter((c) => getters[c.id]).map((c) => ({ id: c.id, header: c.header, get: getters[c.id] as (r: T) => Cell })), [columns, getters]);
+  const filtered = useMemo(() => applyFilters(rows, getters, filters), [rows, getters, filters]);
+
   const sorted = useMemo(() => {
+    const rows = filtered;
     if (!sort) return rows;
     const col = columns.find((c) => c.id === sort.id);
     if (!col?.sortValue) return rows;
@@ -120,14 +140,19 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
       if (aEmpty || bEmpty) return compare(av, bv);
       return sign * compare(av, bv);
     });
-  }, [rows, columns, sort]);
+  }, [filtered, columns, sort]);
 
   // Windowing: measured row height (average of the rows on the page), scroll position of the table's own scroll box.
   const wrapRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLTableSectionElement>(null);
   const [view, setView] = useState({ top: 0, height: 700 });
   const [rowH, setRowH] = useState(37);
-  const windowed = !phone && sorted.length > WINDOW_AFTER;
+  const grouping = groupBy && getters[groupBy] ? groupBy : "";
+  const groups = useMemo(() => (grouping ? groupRows(sorted, getters[grouping] as (r: T) => Cell) : null), [sorted, grouping, getters]);
+  const groupsStartOpen = sorted.length <= GROUPS_START_OPEN_UNDER;
+  const groupOpen = (key: string) => groupsStartOpen !== flipped.has(key);
+  const flipGroup = (key: string) => setFlipped((f) => { const n = new Set(f); if (n.has(key)) n.delete(key); else n.add(key); return n; });
+  const windowed = !phone && !grouping && sorted.length > WINDOW_AFTER;
   const onScroll = useCallback(() => {
     const el = wrapRef.current;
     if (el) setView((v) => (Math.abs(v.top - el.scrollTop) < 1 && v.height === el.clientHeight ? v : { top: el.scrollTop, height: el.clientHeight }));
@@ -167,22 +192,51 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
       </div>
     );
   }
-  if (sorted.length === 0) return <p className="u2-table__empty">{emptyText}</p>;
+  const tools = toolColumns.length > 0 && rows.length > 1 ? (
+    <TableTools caption={caption} columns={toolColumns} rows={rows} filters={filters} onFilters={setFilters} group={grouping} onGroup={(id) => { setGroupBy(id); setFlipped(new Set()); }} shown={sorted.length} />
+  ) : null;
+
+  if (sorted.length === 0) {
+    return (
+      <>
+        {tools}
+        <p className="u2-table__empty">{rows.length > 0 ? "No rows match the filters." : emptyText}</p>
+      </>
+    );
+  }
 
   if (phone && card) {
+    const cardItem = (r: T) => (
+      <li key={rowKey(r)} className="u2-cards__item">
+        {card(r)}
+      </li>
+    );
     return (
-      <ul className="u2-cards" aria-label={caption}>
-        {sorted.map((r) => (
-          <li key={rowKey(r)} className="u2-cards__item">
-            {card(r)}
-          </li>
-        ))}
-      </ul>
+      <>
+        {tools}
+        {groups ? (
+          groups.map((g) => (
+            <section key={g.key} className="u2-group">
+              <GroupHeader label={`${columns.find((c) => c.id === grouping)?.header}: ${g.key}`} count={g.rows.length} open={groupOpen(g.key)} onToggle={() => flipGroup(g.key)} />
+              {groupOpen(g.key) && <ul className="u2-cards" aria-label={`${caption}, ${g.key}`}>{g.rows.map(cardItem)}</ul>}
+            </section>
+          ))
+        ) : (
+          <ul className="u2-cards" aria-label={caption}>{sorted.map(cardItem)}</ul>
+        )}
+      </>
     );
   }
 
   const fixed = columns.reduce((sum, c) => sum + (c.width ?? 0), 0) + (selectable ? 28 : 0);
+  const span = columns.length + (selectable ? 1 : 0);
+  const renderRow = (r: T, position: number) => {
+    const id = rowKey(r);
+    return <Row key={id} row={r} id={id} position={position} columns={columns} checked={selectable ? !!selected?.has(id) : null} active={activeKey === id} onToggle={selectable ? toggle : null} />;
+  };
   return (
+    <>
+    {tools}
     <div className="u2-table__wrap" tabIndex={0} role="region" aria-label={caption} ref={wrapRef} onScroll={windowed ? onScroll : undefined}>
       <table className="u2-table" style={{ minWidth: fixed }} aria-rowcount={windowed ? sorted.length + 1 : undefined}>
         <caption className="u2-visually-hidden">{caption}</caption>
@@ -230,14 +284,43 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
           </tr>
         </thead>
         <tbody ref={bodyRef}>
-          {windowed && from > 0 && <Spacer height={from * rowH} span={columns.length + (selectable ? 1 : 0)} />}
-          {sorted.slice(from, to).map((r, i) => {
-            const id = rowKey(r);
-            return <Row key={id} row={r} id={id} position={from + i + 2} columns={columns} checked={selectable ? !!selected?.has(id) : null} active={activeKey === id} onToggle={selectable ? toggle : null} />;
-          })}
-          {windowed && to < sorted.length && <Spacer height={(sorted.length - to) * rowH} span={columns.length + (selectable ? 1 : 0)} />}
+          {groups ? (
+            groups.map((g) => (
+              <GroupRows key={g.key} span={span} label={`${columns.find((c) => c.id === grouping)?.header}: ${g.key}`} count={g.rows.length} open={groupOpen(g.key)} onToggle={() => flipGroup(g.key)}>
+                {groupOpen(g.key) ? g.rows.map((r, i) => renderRow(r, i + 2)) : null}
+              </GroupRows>
+            ))
+          ) : (
+            <>
+              {windowed && from > 0 && <Spacer height={from * rowH} span={span} />}
+              {sorted.slice(from, to).map((r, i) => renderRow(r, from + i + 2))}
+              {windowed && to < sorted.length && <Spacer height={(sorted.length - to) * rowH} span={span} />}
+            </>
+          )}
         </tbody>
       </table>
     </div>
+    </>
+  );
+}
+
+function GroupHeader({ label, count, open, onToggle }: { label: string; count: number; open: boolean; onToggle: () => void }) {
+  return (
+    <button type="button" className="u2-group__head" aria-expanded={open} onClick={onToggle}>
+      <span className="u2-topic__arrow" aria-hidden="true">▶</span> {label} <span className="u2-muted">({count})</span>
+    </button>
+  );
+}
+
+function GroupRows({ span, label, count, open, onToggle, children }: { span: number; label: string; count: number; open: boolean; onToggle: () => void; children: ReactNode }) {
+  return (
+    <>
+      <tr className="u2-table__group">
+        <td colSpan={span}>
+          <GroupHeader label={label} count={count} open={open} onToggle={onToggle} />
+        </td>
+      </tr>
+      {children}
+    </>
   );
 }

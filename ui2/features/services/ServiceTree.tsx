@@ -134,17 +134,25 @@ function ServiceLine({ s, cohort, showRole, onEdit, onDelete }: { s: ServiceReco
         </span>
       </div>
       {open && !single && (
-        <ul className="u2-svcline__batches">
+        <ul className="u2-batchlist" aria-label={`Batches of ${s.Name}`}>
           {leaves.map((l) => (
-            <Fragment key={l.key}>
-              <li className="u2-svcline__batch">
-                <span>{[l.componentName, l.batchName].filter(Boolean).join(" / ") || "—"}</span>
-                <ExpandList items={l.rates.map(rateText)} label="rates" />
-                <span className="u2-muted">
-                  <ExpandList items={l.occurrences.map(occurrenceText)} label="occurrences" />
-                </span>
-              </li>
-            </Fragment>
+            <li key={l.key} className="u2-batch">
+              <h4 className="u2-batch__title">{[l.componentName, l.batchName].filter(Boolean).join(" / ") || "Batch"}</h4>
+              <dl className="u2-batch__facts">
+                <div>
+                  <dt>Rates ({l.rates.length})</dt>
+                  <dd>
+                    {l.rates.length === 0 ? <span className="u2-muted">None</span> : <ul>{l.rates.map((r, i) => <li key={i}>{rateText(r)}</li>)}</ul>}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Occurrences ({l.occurrences.length})</dt>
+                  <dd>
+                    {l.occurrences.length === 0 ? <span className="u2-muted">None</span> : <ul>{l.occurrences.map((o, i) => <li key={i}>{occurrenceText(o)}</li>)}</ul>}
+                  </dd>
+                </div>
+              </dl>
+            </li>
           ))}
         </ul>
       )}
