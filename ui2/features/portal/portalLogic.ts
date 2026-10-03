@@ -13,6 +13,10 @@ export interface MyOccurrence {
 export interface EnrolledService extends ServiceRecord {
   _myRate: { Currency: string; Rate: number | string; Description?: string } | undefined;
   _myOccurrences: MyOccurrence[];
+  /** The batch the person is enrolled in, when it has a name (TKT-0330). */
+  _myBatch: string;
+  /** One per enrollment: a person can hold several batches of the same service. */
+  _key: string;
 }
 
 export function enrolledServices(enrollments: readonly EnrollmentRecord[] = [], services: readonly ServiceRecord[] = []): EnrolledService[] {
@@ -20,10 +24,10 @@ export function enrolledServices(enrollments: readonly EnrollmentRecord[] = [], 
   for (const e of enrollments) {
     const s = services.find((x) => x.ServiceID === e.ServiceID);
     if (!s) continue;
-    const batches = batchesOf(s) as { BatchID: string; OccuranceList?: MyOccurrence[] }[];
+    const batches = batchesOf(s) as { BatchID: string; BatchName?: string; OccuranceList?: MyOccurrence[] }[];
     const myBatch = e.BatchID ? batches.find((b) => b.BatchID === e.BatchID) : batches[0];
     const mine = batches.length > 0 ? myBatch?.OccuranceList ?? [] : ((s.OccuranceList as unknown as MyOccurrence[] | undefined) ?? []);
-    out.push({ ...s, _myRate: rateById(s, e.BatchID, e.RateID), _myOccurrences: mine });
+    out.push({ ...s, _myRate: rateById(s, e.BatchID, e.RateID), _myOccurrences: mine, _myBatch: myBatch?.BatchName?.trim() ?? "", _key: e.EnrolmentID || `${e.ServiceID}:${e.BatchID ?? ""}` });
   }
   return out;
 }
@@ -81,7 +85,7 @@ export function weekly(services: readonly EnrolledService[]) {
   const byDay = new Map<string, (MyOccurrence & { serviceLabel: string })[]>();
   let unscheduled = 0;
   for (const s of services) {
-    const label = s.Code ? `${s.Code as string} · ${s.Name}` : s.Name;
+    const label = `${s.Code ? `${s.Code as string} · ${s.Name}` : s.Name}${s._myBatch ? ` (${s._myBatch})` : ""}`;
     for (const o of s._myOccurrences) {
       if (!o.Day || !o.Time) {
         unscheduled++;

@@ -62,6 +62,8 @@ export function EnrollmentsCard({ services }: { services: readonly EnrolledServi
   const rows = useMemo(() => services.filter((s) => !q.trim() || (s.Name || "").toLowerCase().includes(q.trim().toLowerCase())), [services, q]);
   const cols: Column<EnrolledService>[] = [
     { id: "name", header: "Service", sortValue: (s) => s.Name, tip: (s) => s.Name, cell: (s) => s.Name },
+    // Only when it applies: a service with no named batch (a role, a booklet) has nothing to show.
+    ...(services.some((s) => s._myBatch) ? [{ id: "batch", header: "Batch", width: 90, sortValue: (s: EnrolledService) => s._myBatch, cell: (s: EnrolledService) => s._myBatch || "—" }] : []),
     { id: "type", header: "Type", width: 100, cell: (s) => s.Type },
     { id: "rate", header: "Rate", width: 130, cell: (s) => formatRate(s._myRate) as string },
     { id: "occ", header: "Occurrences", tip: (s) => occurrencesText(s), cell: (s) => <span className="u2-muted">{occurrencesText(s)}</span> },
@@ -69,7 +71,7 @@ export function EnrollmentsCard({ services }: { services: readonly EnrolledServi
   return (
     <Card title="My Enrollments">
       <input type="search" className="u2-search" placeholder="Search service…" aria-label="Search enrollments" value={q} onChange={(e) => setQ(e.target.value)} />
-      <DataTable caption="My enrollments" rows={rows} columns={cols} rowKey={(s) => s.ServiceID} initialSort={{ id: "name", dir: "asc" }} emptyText={services.length === 0 ? "No enrollments yet. Ask Management to enroll you in a Service." : "No matches."} />
+      <DataTable caption="My enrollments" rows={rows} columns={cols} rowKey={(s) => s._key} initialSort={{ id: "name", dir: "asc" }} emptyText={services.length === 0 ? "No enrollments yet. Ask Management to enroll you in a Service." : "No matches."} />
     </Card>
   );
 }
@@ -115,8 +117,8 @@ export function ResourcesCard({ services, user, showExternalTools = false }: { s
       ) : (
         <div className="u2-rows">
           {services.map((s) => (
-            <div key={s.ServiceID} className="u2-box u2-box--inner">
-              <strong className="u2-strong">{s.Name}</strong>
+            <div key={s._key} className="u2-box u2-box--inner">
+              <strong className="u2-strong">{s.Name}{s._myBatch ? ` · ${s._myBatch}` : ""}</strong>
               <div className="u2-checks">
                 {SERVICE_FEATURES.filter((f) => t[f.toggleKey]).map((f) => {
                   const ext = (s[f.linkField] as string | undefined) || "";

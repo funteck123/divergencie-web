@@ -103,7 +103,13 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
         </div>
         <div className={styles.actions}>
           {phone ? (
-            <RowMenu label="Menu" trigger="Menu ▾" items={menu} />
+            <>
+              {/* One tap, not two (TKT-0329): reporting a problem must not hide inside the menu. */}
+              <Button variant="ghost" size="sm" onDark onClick={() => setReporting(true)}>
+                Report issue
+              </Button>
+              <RowMenu label="Menu" trigger="Menu ▾" items={menu.filter((i) => i.label !== "Report an Issue")} />
+            </>
           ) : (
             <>
               <Button variant="ghost" size="sm" onDark onClick={() => setReporting(true)}>

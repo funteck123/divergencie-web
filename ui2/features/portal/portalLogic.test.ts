@@ -20,6 +20,16 @@ describe("enrolled services", () => {
     const [s] = enrolledServices([{ EnrolmentID: "E", UserID: "U", ServiceID: "S1", BatchID: "B1", RateID: "R1" }], [svc]);
     expect(occurrencesText(s!)).toBe("Tuesday 17:00 (1.5h) · Ms T");
   });
+  it("names the batch and gives each enrollment its own key (TKT-0330)", () => {
+    const out = enrolledServices([{ EnrolmentID: "E1", UserID: "U", ServiceID: "S1", BatchID: "B1", RateID: "R1" }, { EnrolmentID: "E2", UserID: "U", ServiceID: "S1", BatchID: "B2", RateID: "R2" }], [svc]);
+    expect(out.map((s) => s._myBatch)).toEqual(["B14", "B15"]);
+    expect(new Set(out.map((s) => s._key)).size).toBe(2);
+    expect([...weekly(out).byDay.values()].flat().map((i) => i.serviceLabel)).toEqual(["Physics (B14)"]);
+  });
+  it("has no batch label when the service has no named batch", () => {
+    const flat: ServiceRecord = { ServiceID: "S9", Name: "Role", Type: "Staff", Group: ["Staff"], OccuranceList: [] } as unknown as ServiceRecord;
+    expect(enrolledServices([{ EnrolmentID: "E", UserID: "U", ServiceID: "S9" }], [flat])[0]!._myBatch).toBe("");
+  });
   it("skips an enrollment whose service is gone", () => expect(enrolledServices([{ EnrolmentID: "E", UserID: "U", ServiceID: "NOPE" }], [svc])).toEqual([]));
 });
 

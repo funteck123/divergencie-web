@@ -256,6 +256,12 @@ export function AccountsView() {
             Reset password
           </Button>
         )}
+        <Button size="sm" variant="ghost" onClick={() => void setEditId(u.UserID)}>
+          Edit
+        </Button>
+        <Button size="sm" variant="danger" onClick={() => setDeleteTarget(u)}>
+          Delete
+        </Button>
       </div>
     </div>
   );
