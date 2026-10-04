@@ -1,6 +1,7 @@
 "use client";
 
-import { forwardRef, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from "react";
+import Link from "next/link";
+import { forwardRef, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { clsx } from "clsx";
 import styles from "./Button.module.css";
 
@@ -75,3 +76,35 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
     </Button>
   );
 });
+
+export interface LinkButtonProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
+  href: string;
+  variant?: ButtonVariant;
+  size?: "sm" | "md";
+  onDark?: boolean;
+  icon?: ReactNode;
+}
+
+/**
+ * A real link (opens a page, a file or a download) that looks and sizes like Button. The new UI has no bare text links:
+ * anything you can follow is drawn as a button. Same-site paths use client navigation, everything else a plain anchor.
+ */
+export function LinkButton({ href, variant = "ghost", size = "sm", onDark = false, icon, className, children, ...rest }: LinkButtonProps) {
+  const cls = clsx(styles.btn, styles[variant], size === "sm" && styles.sm, onDark && styles.onDark, styles.asLink, className);
+  const inner = (
+    <span className={styles.label}>
+      {icon}
+      {children}
+    </span>
+  );
+  const internal = href.startsWith("/") && !href.startsWith("/api/") && !rest.download && rest.target !== "_blank";
+  return internal ? (
+    <Link href={href} className={cls} {...rest}>
+      {inner}
+    </Link>
+  ) : (
+    <a href={href} className={cls} {...(rest.target === "_blank" ? { rel: "noopener noreferrer" } : {})} {...rest}>
+      {inner}
+    </a>
+  );
+}

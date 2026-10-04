@@ -291,9 +291,9 @@ export function AccountsView() {
                   {c.username} / {c.password}
                 </span>
                 <CopyButton text={`${c.username} / ${c.password}`} />
-                <button type="button" className="u2-linkbtn" onClick={() => forget(id)}>
+                <Button size="sm" variant="ghost" onClick={() => forget(id)}>
                   Hide
-                </button>
+                </Button>
               </div>
             );
           })}

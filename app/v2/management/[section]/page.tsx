@@ -1,3 +1,4 @@
+import { LinkButton } from "@/ui2/components/Button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MANAGEMENT_SECTIONS } from "@/ui2/features/management/tabs";
@@ -16,7 +17,7 @@ export default async function NotBuiltYet({ params }: { params: Promise<{ sectio
       <h1>{found.label}</h1>
       <p>This section is not in the new UI yet. It works as before in the classic UI.</p>
       <p>
-        <Link href="/dashboard/management">Open the classic {found.label} page</Link>, then pick &quot;{found.label}&quot;.
+        <LinkButton href="/dashboard/management">Open the classic {found.label} page</LinkButton>, then pick &quot;{found.label}&quot;.
       </p>
     </section>
   );

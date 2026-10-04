@@ -1,3 +1,4 @@
+import { LinkButton } from "@/ui2/components/Button";
 import type { ReactNode } from "react";
 import { formatInternationalNumber } from "@/lib/countryCodes";
 import { timezoneLabel, tzAbbrFor } from "@/lib/timezones";
@@ -73,9 +74,9 @@ function link(id: string, header: string, title: string, url: (u: UserRecord) =>
     cell: (u) => {
       const href = url(u);
       return href ? (
-        <a href={href} target="_blank" rel="noreferrer" aria-label={`Open ${title.toLowerCase()} of ${u.Name}`} title={title}>
+        <LinkButton href={href} target="_blank" aria-label={`Open ${title.toLowerCase()} of ${u.Name}`} title={title}>
           ↗
-        </a>
+        </LinkButton>
       ) : (
         <span aria-label={`No ${title.toLowerCase()}`}>–</span>
       );

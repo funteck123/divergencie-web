@@ -30,8 +30,16 @@ def main():
         s.goto("/v2/question-solver")
         s.page.get_by_role("button", name=re.compile("Digitize|Fetch|Load|Start", re.I)).first.wait_for(timeout=60000)
         out["picker"] = s.page.get_by_text("Choose a paper from the library").count()
+        # the first paper request drops (a flaky connection): the page retries and the paper still opens
+        drops = {"n": 0}
+        def drop_once(route):
+            if drops["n"] == 0:
+                drops["n"] += 1; return route.abort("failed")
+            return route.fallback()
+        s.page.route("**/api/mcq/fetch-and-digitize", drop_once)
         s.page.get_by_role("button", name=re.compile("Digitize|Fetch|Load|Start", re.I)).first.click()
         s.page.get_by_role("button", name="Test Mode").click()
+        out["retried_after_drop"] = drops["n"]
         # a mobile keyboard resize must not close anything: pick answers by radio
         for q in ("1", "2", "3"):
             s.page.get_by_role("radiogroup", name=f"Answer for question {q}").locator("label", has_text="A").click()
@@ -53,7 +61,8 @@ def main():
         out["bars"] = s.page.get_by_text("Mistakes per chapter").count() or s.page.locator("svg").count()
         s.page.get_by_role("tab", name="Leaderboard").click()
         out["lb_you"] = s.page.get_by_text("(you)").count()
-        out["errors"] = s.errors[:3]
+        # the one dropped request above is deliberate and shows as a console error
+        out["errors"] = [e for e in s.errors if "ERR_FAILED" not in e][:3]
         out["hscroll"] = s.hscroll()
 
     # ---- second paper: practice, upload, mistakes mode, written answers ----

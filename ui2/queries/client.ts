@@ -22,17 +22,36 @@ export interface ApiOptions {
   /** Plain objects are sent as JSON. A FormData body is sent untouched. */
   body?: unknown;
   signal?: AbortSignal;
+  /** Retry once when the connection drops. Reads always do; set it on a POST that only reads or processes (never on one that creates something). */
+  retry?: boolean;
+}
+
+function networkError(e: unknown, path: string): Error {
+  if (e instanceof DOMException && e.name === "AbortError") return e;
+  return new ApiError("Could not reach the server. Check your connection and try again.", 0, path);
 }
 
 export async function apiFetch<T = unknown>(path: string, options: ApiOptions = {}): Promise<T> {
-  const { body, method = "GET", signal } = options;
+  const { body, method = "GET", signal, retry = method === "GET" } = options;
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
   const init: RequestInit = { method };
   if (signal) init.signal = signal;
   if (!isFormData) init.headers = { "Content-Type": "application/json" };
   if (body !== undefined) init.body = isFormData ? (body as FormData) : typeof body === "string" ? body : JSON.stringify(body);
 
-  const res = await fetch(path, init);
+  let res: Response;
+  try {
+    res = await fetch(path, init);
+  } catch (e) {
+    // A dropped connection ("Failed to fetch") on a read is retried once; writes are never repeated on their own.
+    if (!retry || (signal && signal.aborted)) throw networkError(e, path);
+    try {
+      await new Promise((r) => setTimeout(r, 800));
+      res = await fetch(path, init);
+    } catch (e2) {
+      throw networkError(e2, path);
+    }
+  }
 
   if (res.status === 401 && path !== "/api/login" && typeof window !== "undefined") {
     try {

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { formatInternationalNumber } from "@/lib/countryCodes";
 import { formatDate } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Combobox } from "@/ui2/components/Combobox";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { Sheet } from "@/ui2/components/Sheet";
@@ -167,8 +167,8 @@ export function PipelineView() {
       ),
     },
     { id: "when", header: "Scheduled", width: 170, sortValue: (i) => i._at, tip: (i) => { const s = slotOf(i.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}, ${s.Facilitator || "no instructor set"}` : undefined; }, cell: (i) => { const s = slotOf(i.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}` : "—"; } },
-    { id: "task", header: "Task", width: 56, cell: (i) => (i.TaskSubmissionLink ? <a href={i.TaskSubmissionLink} target="_blank" rel="noreferrer">link</a> : "—") },
-    { id: "offerlink", header: "Offer", width: 56, cell: (i) => (i.OfferLetterLink ? <a href={i.OfferLetterLink} target="_blank" rel="noreferrer">link</a> : "—") },
+    { id: "task", header: "Task", width: 84, cell: (i) => (i.TaskSubmissionLink ? <LinkButton href={i.TaskSubmissionLink} target="_blank">Open</LinkButton> : "—") },
+    { id: "offerlink", header: "Offer", width: 84, cell: (i) => (i.OfferLetterLink ? <LinkButton href={i.OfferLetterLink} target="_blank">Open</LinkButton> : "—") },
     { id: "account", header: "Account", width: 190, cell: (i) => accountCell(i.InterviewAccID) },
     {
       id: "actions", header: "", title: "Actions", width: 130,

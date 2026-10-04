@@ -38,3 +38,5 @@
   position: absolute; width: 16px; height: 16px; border-radius: 50%;
   border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.7s linear infinite;
 }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .asLink { text-decoration: none; }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .asLink:visited { color: inherit; }

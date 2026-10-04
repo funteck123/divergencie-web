@@ -1,3 +1,4 @@
+import { LinkButton } from "@/ui2/components/Button";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -11,7 +12,7 @@ export function AuthFrame({ title, intro, children, footer }: { title: string; i
         <Link href="/" aria-label="DivergenCIE home">
           <Image src="/ui2/logo/logo-white-160.webp" alt="DivergenCIE Coaching" width={120} height={44} priority unoptimized />
         </Link>
-        <Link href="/" className="u2-auth__back">← Back to site</Link>
+        <LinkButton href="/">← Back to site</LinkButton>
       </header>
       <main className="u2-auth__main">
         <section className="u2-auth__card">

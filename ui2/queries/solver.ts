@@ -22,8 +22,8 @@ export async function loadLibraryBundle(hasAccount: boolean): Promise<LibraryBun
   return { library, yearly, meta, titles: titles.titles ?? {}, subjectsById: titles.subjects ?? {} };
 }
 
-export const fetchAndDigitize = (qpId: string, msId: string) => apiFetch<DigitizeResult>("/api/mcq/fetch-and-digitize", { method: "POST", body: { qpId, msId } });
-export const yearlyDigitizeMcq = (paperId: string) => apiFetch<DigitizeResult>("/api/mcq/yearly-digitize", { method: "POST", body: { paperId } });
+export const fetchAndDigitize = (qpId: string, msId: string) => apiFetch<DigitizeResult>("/api/mcq/fetch-and-digitize", { method: "POST", body: { qpId, msId }, retry: true });
+export const yearlyDigitizeMcq = (paperId: string) => apiFetch<DigitizeResult>("/api/mcq/yearly-digitize", { method: "POST", body: { paperId }, retry: true });
 export const getPaper = (qpId: string) => apiFetch<{ questions: DigitizeResult["questions"] }>(`/api/mcq/paper?qpId=${encodeURIComponent(qpId)}`);
 
 const toBase64 = (file: File) =>
@@ -42,7 +42,7 @@ export async function digitizeUpload(qp: File, ms: File) {
 export interface StructuredPayload { questions: { questionNumber: string; image: string }[]; answers?: { questionNumber: string; image: string }[] }
 /** Structured papers load once, and once more after five seconds when the service answers 502 or 503 (it restarts at times). */
 export async function loadStructured(paper: { paperId?: string; qpId?: string; msId?: string }, onRetry?: () => void): Promise<StructuredPayload> {
-  const once = () => (paper.paperId ? apiFetch<StructuredPayload>("/api/mcq/yearly-digitize", { method: "POST", body: { paperId: paper.paperId } }) : apiFetch<StructuredPayload>("/api/mcq/digitize-structured", { method: "POST", body: { qpId: paper.qpId, msId: paper.msId } }));
+  const once = () => (paper.paperId ? apiFetch<StructuredPayload>("/api/mcq/yearly-digitize", { method: "POST", body: { paperId: paper.paperId }, retry: true }) : apiFetch<StructuredPayload>("/api/mcq/digitize-structured", { method: "POST", body: { qpId: paper.qpId, msId: paper.msId }, retry: true }));
   try {
     return await once();
   } catch (e) {

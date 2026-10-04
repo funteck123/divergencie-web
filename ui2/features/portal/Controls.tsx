@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Field, TextInput } from "@/ui2/components/Field";
 import { apiFetch } from "@/ui2/queries/client";
 import type { BillRecord, RescheduleRequest, ScheduleItem } from "@/ui2/queries/types";
@@ -75,7 +75,7 @@ export function InvoicePaid({ invoice, onMarkUnpaid, onConfirmPaid }: { invoice:
       <span className="u2-rows" style={{ gap: 2 }}>
         <span className="u2-rowactions" style={{ flexWrap: "wrap" }}>
           <Badge kind="success">Paid ✓</Badge>
-          {invoice.PaymentProofPath && <a href={`/api/invoices/proof?invoiceId=${id}`} target="_blank" rel="noreferrer">View proof</a>}
+          {invoice.PaymentProofPath && <LinkButton href={`/api/invoices/proof?invoiceId=${id}`} target="_blank">View proof</LinkButton>}
           <Button size="sm" variant="ghost" onClick={() => void onMarkUnpaid(id)}>Mark as unpaid</Button>
         </span>
         {invoice.PaidAt && <span className="u2-muted">Paid {formatDate(invoice.PaidAt) as string}</span>}

@@ -7,7 +7,7 @@ import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 import { discountBreakdown } from "@/lib/invoiceDiscount";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { ConfirmDialog } from "@/ui2/components/ConfirmDialog";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { Field, TextInput } from "@/ui2/components/Field";
@@ -118,9 +118,9 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
       sortValue: (r) => (Array.isArray(r.LineItems) ? r.LineItems.length : 0),
       tip: (r) => (Array.isArray(r.LineItems) ? r.LineItems.map((li) => nameOfService(li.ServiceID, li.BatchID)).join(", ") : nameOfService(String(r.ServiceID), r.BatchID)),
       cell: (r) => (Array.isArray(r.LineItems) ? (
-        <button type="button" className="u2-linkbtn" onClick={() => setOpenId(idOf(r))}>
+        <Button size="sm" variant="ghost" onClick={() => setOpenId(idOf(r))}>
           {r.LineItems.length} subject{r.LineItems.length === 1 ? "" : "s"}
-        </button>
+        </Button>
       ) : nameOfService(String(r.ServiceID), r.BatchID)),
     },
     { id: "period", header: "Period", width: 76, sortValue: (r) => periodKey(r), cell: (r) => `${r.Month}/${r.Year}` },
@@ -149,7 +149,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
       ),
     },
     {
-      id: "paid", header: kind === "invoice" ? "Paid" : "Received", width: 110, sortValue: (r) => Number(!!(r as Record<string, unknown>)[k.paidKey]),
+      id: "paid", header: kind === "invoice" ? "Paid" : "Received", width: 150, sortValue: (r) => Number(!!(r as Record<string, unknown>)[k.paidKey]),
       cell: (r) => {
         const flag = !!(r as Record<string, unknown>)[k.paidKey];
         const at = r[k.paidAtKey] as string | undefined;
@@ -157,9 +157,9 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           <>
             <Badge kind={flag ? "success" : "neutral"}>{flag ? k.paidLabel : k.unpaidLabel}</Badge>
             {kind === "invoice" && r.PaymentProofPath && (
-              <a className="u2-sub" href={`/api/invoices/proof?invoiceId=${idOf(r)}`} target="_blank" rel="noreferrer">
+              <LinkButton href={`/api/invoices/proof?invoiceId=${idOf(r)}`} target="_blank" title="View payment proof">
                 Proof
-              </a>
+              </LinkButton>
             )}
             {at && <span className="u2-sub">{formatDate(at) as string}</span>}
             {needsApproval(r, k) && <span className="u2-sub u2-sub--warn">Needs approval</span>}
@@ -203,9 +203,9 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           Filters{nActive > 0 ? ` (${nActive})` : ""}
         </Button>
         {nActive > 0 && (
-          <button type="button" className="u2-linkbtn" onClick={() => { setFilters(emptyFilters()); void setQ(null); void setStatus(null); }}>
+          <Button size="sm" variant="ghost" onClick={() => { setFilters(emptyFilters()); void setQ(null); void setStatus(null); }}>
             Clear
-          </button>
+          </Button>
         )}
         <span className="u2-muted" aria-live="polite">{rows.length === all.length ? `${all.length}` : `${rows.length} of ${all.length}`} {k.noun}s</span>
         <div className="u2-seg" role="group" aria-label="View" style={{ marginLeft: "auto" }}>

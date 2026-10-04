@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { CheckField, TextArea } from "@/ui2/components/Field";
 import { pdfUrl, yearlyAudioUrl } from "@/ui2/queries/solver";
 import { formatTimer } from "./solverLogic";
@@ -111,8 +111,8 @@ export function QuizStage(p: QuizStageProps) {
         )}
         {p.pdfLinks && !p.pdfLinks.qpId.startsWith("upload") && practice && (
           <span className="u2-rowactions">
-            <a className="u2-linkbtn" href={pdfUrl(p.pdfLinks.qpId, `${p.pdfLinks.title} QP`)}>📄 View QP PDF</a>
-            {p.pdfLinks.msId && <a className="u2-linkbtn" href={pdfUrl(p.pdfLinks.msId, `${p.pdfLinks.title} MS`)}>📄 View MS PDF</a>}
+            <LinkButton href={pdfUrl(p.pdfLinks.qpId, `${p.pdfLinks.title} QP`)}>📄 View QP PDF</LinkButton>
+            {p.pdfLinks.msId && <LinkButton href={pdfUrl(p.pdfLinks.msId, `${p.pdfLinks.title} MS`)}>📄 View MS PDF</LinkButton>}
           </span>
         )}
         <nav className="u2-qstrip" aria-label="Questions">

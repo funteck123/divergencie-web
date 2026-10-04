@@ -6,7 +6,7 @@ import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 import { discountBreakdown } from "@/lib/invoiceDiscount";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { ConfirmDialog } from "@/ui2/components/ConfirmDialog";
 import { Field, TextInput } from "@/ui2/components/Field";
 import { RowMenu } from "@/ui2/components/RowMenu";
@@ -72,9 +72,9 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
         {bill.SentAt && <span className="u2-muted">Sent {formatDate(bill.SentAt) as string}</span>}
         {(bill[k.paidAtKey] as string | undefined) && <span className="u2-muted">{k.paidLabel} {formatDate(bill[k.paidAtKey] as string) as string}</span>}
         {kind === "invoice" && bill.PaymentProofPath && (
-          <a href={`/api/invoices/proof?invoiceId=${id}`} target="_blank" rel="noreferrer">
+          <LinkButton href={`/api/invoices/proof?invoiceId=${id}`} target="_blank">
             Payment proof
-          </a>
+          </LinkButton>
         )}
       </div>
 
@@ -96,9 +96,9 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
             Unsend
           </Button>
         )}
-        <a className="u2-linkbtn" href={k.pdf(id)} download>
+        <LinkButton href={k.pdf(id)} download>
           PDF
-        </a>
+        </LinkButton>
         {kind === "invoice" && <RowMenu label="Copy message" trigger="Copy ▾" items={copyItems(bill, person, services, options.data, settled)} />}
         <Button variant="ghost" className="u2-danger-text" onClick={() => setDeleting(true)}>
           Delete

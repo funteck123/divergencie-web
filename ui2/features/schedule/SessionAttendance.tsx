@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { formatDateTime } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Field, TextInput } from "@/ui2/components/Field";
 import { useLogAttendance, usePatchAttendance, useSessionAttendance } from "@/ui2/queries/schedule";
 import { MiniAttendanceForm } from "./MiniAttendanceForm";
@@ -57,9 +57,9 @@ export function SessionAttendance({ scheduleId, duration, viewerUserId, viewerTy
       {error && (
         <p role="alert" className="u2-form__error">
           {error}{" "}
-          <button type="button" className="u2-linkbtn" onClick={() => setError("")}>
+          <Button size="sm" variant="ghost" onClick={() => setError("")}>
             Dismiss
-          </button>
+          </Button>
         </p>
       )}
       {isTeacher && (
@@ -97,9 +97,9 @@ export function SessionAttendance({ scheduleId, duration, viewerUserId, viewerTy
                   {r.LoggedAt && <span className="u2-muted">{formatDateTime(r.LoggedAt) as string}</span>}
                   {r.TopicName && <span className="u2-muted">Topic: {r.TopicName}</span>}
                   {r.RecordingLink && /^https?:\/\//i.test(r.RecordingLink) && (
-                    <a href={r.RecordingLink} target="_blank" rel="noopener noreferrer">
+                    <LinkButton href={r.RecordingLink} target="_blank">
                       Recording
-                    </a>
+                    </LinkButton>
                   )}
                   {isManagement && r.AcceptedForBilling === false && (
                     <Button size="sm" variant="ghost" onClick={() => void run(() => patch.mutateAsync({ attendanceId: r.AttendanceID }))}>

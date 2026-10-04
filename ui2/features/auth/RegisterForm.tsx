@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { INTAKE_COUNTRIES } from "@/lib/cognitoCountries";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Combobox } from "@/ui2/components/Combobox";
 import { CheckField, Field, FieldGroup, TextArea, TextInput } from "@/ui2/components/Field";
 import { apiFetch } from "@/ui2/queries/client";
@@ -64,7 +64,7 @@ export function RegisterForm() {
     );
 
   return (
-    <AuthFrame title="Apply" intro="Tell us a little about you. Management reviews every application." footer={<>Already have an account? <Link href="/v2/login">Sign in</Link></>}>
+    <AuthFrame title="Apply" intro="Tell us a little about you. Management reviews every application." footer={<>Already have an account? <LinkButton href="/v2/login">Sign in</LinkButton></>}>
       <form className="u2-form" onSubmit={submit}>
         <Field label="I'm applying as"><Combobox value={v.requestedType} onChange={(x) => set("requestedType", x)} options={APPLY_AS} /></Field>
         {student ? (

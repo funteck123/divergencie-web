@@ -84,7 +84,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   }
 
   if (loading) return <div className="u2-skeleton" style={{ height: 260 }} aria-busy="true" aria-label="Loading the library" />;
-  if (error) return <p role="alert" className="u2-errorbox">Library unavailable: {error}</p>;
+  if (error && !bundle) return <p role="alert" className="u2-errorbox">Library unavailable: {error}</p>;
 
   return (
     <section className="u2-solver-picker" aria-label="Choose a paper from the library">
@@ -112,13 +112,14 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
         <Combobox value={pk} onChange={setPaperKey} options={paperOptions} />
       </Field>
       {status && <p className="u2-muted" role="status">{status}</p>}
+      {error && bundle && <p role="alert" className="u2-errorbox">{error} Your choices are kept. Press the button again to retry.</p>}
       <div className="u2-solver-picker__go">
         <Button variant="primary" loading={busy} disabled={disabled} disabledReason={missingMs ? "This paper has no mark scheme." : "Choose a paper first."} onClick={go}>{fetchButtonLabel(c)}</Button>
       </div>
       <p className="u2-muted" style={{ margin: 0 }}>
-        <button type="button" className="u2-linkbtn" onClick={onUpload}>Or upload your own QP + MS PDFs instead</button>
+        <Button size="sm" variant="ghost" onClick={onUpload}>Or upload your own QP + MS PDFs instead</Button>
         {" · "}
-        <button type="button" className="u2-linkbtn" onClick={onProgress}>View my progress &amp; the leaderboard</button>
+        <Button size="sm" variant="ghost" onClick={onProgress}>View my progress &amp; the leaderboard</Button>
       </p>
     </section>
   );

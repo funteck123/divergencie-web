@@ -21,7 +21,6 @@
   .u2-sent i { width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--u2-color-border-strong); }
   .u2-sent i.on { background: var(--u2-color-brand); border-color: var(--u2-color-brand); }
   .u2-rowactions { display: inline-flex; align-items: center; gap: var(--u2-space-1); }
-  .u2-linkbtn { all: unset; cursor: pointer; text-decoration: underline; color: var(--u2-color-link); }
   .u2-issued { display: grid; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-warning-bg); border: 1px solid var(--u2-color-warning); border-radius: var(--u2-radius-md); }
   .u2-issued__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-3); }
   .u2-errorbox { padding: var(--u2-space-3); background: var(--u2-color-error-bg); color: var(--u2-color-error); border-radius: var(--u2-radius-md); }
@@ -47,7 +46,6 @@
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-bulk { position: sticky; top: calc(var(--u2-sticky-top, var(--u2-bar-height)) + var(--u2-space-2)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-2); padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-brand); color: var(--u2-color-on-brand); border-radius: var(--u2-radius-md); box-shadow: var(--u2-shadow-md); }
-  .u2-bulk .u2-linkbtn { color: var(--u2-color-on-brand); margin-left: auto; }
   .u2-namelist { margin: 0 0 var(--u2-space-2); padding-left: var(--u2-space-4); max-height: 180px; overflow-y: auto; }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {

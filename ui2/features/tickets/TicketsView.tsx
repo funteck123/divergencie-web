@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { formatDateTime } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { CheckField, Field, TextArea } from "@/ui2/components/Field";
 import { Sheet } from "@/ui2/components/Sheet";
@@ -42,9 +42,9 @@ export function TicketsView() {
       ),
     },
     { id: "sender", header: "Sender", width: 190, sortValue: (t) => label(t.SenderUserID), tip: (t) => label(t.SenderUserID), cell: (t) => label(t.SenderUserID) },
-    { id: "message", header: "Message", tip: (t) => t.Message, cell: (t) => <button type="button" className="u2-linkbtn" onClick={() => setOpenId(t.TicketID)}>{t.Message.split("\n")[0]}</button> },
+    { id: "message", header: "Message", tip: (t) => t.Message, cell: (t) => <Button size="sm" variant="ghost" onClick={() => setOpenId(t.TicketID)}>{t.Message.split("\n")[0]}</Button> },
     { id: "notes", header: "Notes", width: 56, align: "center", sortValue: (t) => t.Notes?.length ?? 0, cell: (t) => t.Notes?.length || "—" },
-    { id: "attachment", header: "Attachment", width: 90, cell: (t) => (t.AttachmentURL ? <a href={t.AttachmentURL} target="_blank" rel="noreferrer">Link</a> : "—") },
+    { id: "attachment", header: "Attachment", width: 90, cell: (t) => (t.AttachmentURL ? <LinkButton href={t.AttachmentURL} target="_blank">Link</LinkButton> : "—") },
     { id: "created", header: "Created", width: 130, sortValue: (t) => t.CreatedAt, cell: (t) => formatDateTime(t.CreatedAt) as string },
     { id: "closed", header: "Closed", width: 130, sortValue: (t) => t.ClosedAt ?? "", cell: (t) => (t.ClosedAt ? (formatDateTime(t.ClosedAt) as string) : "—") },
     {
@@ -156,7 +156,7 @@ function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }
       <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
         {t.ClosedAt ? <Badge kind="success">Closed {formatDateTime(t.ClosedAt) as string}</Badge> : t.OnHold ? <Badge kind="neutral">On hold</Badge> : <Badge kind="warning">Open</Badge>}
         <span className="u2-muted">Created {formatDateTime(t.CreatedAt) as string}</span>
-        {t.AttachmentURL && <a href={t.AttachmentURL} target="_blank" rel="noreferrer">Attachment</a>}
+        {t.AttachmentURL && <LinkButton href={t.AttachmentURL} target="_blank">Attachment</LinkButton>}
       </div>
       {t.OnHold && !t.ClosedAt && t.OnHoldReason && <p className="u2-warnbox" style={{ whiteSpace: "pre-wrap" }}>On hold: {t.OnHoldReason}</p>}
       {t.CloseMessage && <p className="u2-bill-hint" style={{ whiteSpace: "pre-wrap" }}>Resolution: {t.CloseMessage}</p>}

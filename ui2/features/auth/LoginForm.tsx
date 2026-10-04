@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { roleHomePath, setCurrentUser, setImpersonatorInfo } from "@/lib/client";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Field, TextInput } from "@/ui2/components/Field";
 import { apiFetch } from "@/ui2/queries/client";
 import { AuthFrame } from "./AuthFrame";
@@ -34,14 +34,14 @@ export function LoginForm() {
   }
 
   return (
-    <AuthFrame title="Welcome back" intro="Sign in to your DivergenCIE portal." footer={<>Don&apos;t have an account? <Link href="/v2/register">Apply for a trial or interview</Link></>}>
+    <AuthFrame title="Welcome back" intro="Sign in to your DivergenCIE portal." footer={<>Don&apos;t have an account? <LinkButton href="/v2/register">Apply for a trial or interview</LinkButton></>}>
       <form className="u2-form" onSubmit={submit}>
         <Field label="Username"><TextInput autoFocus required autoComplete="username" placeholder="your-username" value={username} onChange={(e) => setUsername(e.target.value)} /></Field>
         {/* Never masked (TKT-0157): staff read passwords out to people, so it is plain text, no toggle. */}
         <Field label="Password" hint="Shown as you type.">
           <TextInput required autoComplete="current-password" placeholder="your-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        <p style={{ margin: 0 }}><a href="mailto:divergenCIE@outlook.com" title="Forgot Password">Forgot your password?</a></p>
+        <p style={{ margin: 0 }}><LinkButton href="mailto:divergenCIE@outlook.com" title="Forgot Password">Forgot your password?</LinkButton></p>
         {error && <p role="alert" className="u2-form__error">{error}</p>}
         <Button type="submit" variant="primary" loading={loading}>Portal Login</Button>
       </form>

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { groupGradient, groupMatches, normalizeGroup } from "@/lib/client";
 import { formatDate } from "@/lib/formatDate";
 import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { Combobox } from "@/ui2/components/Combobox";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { CheckField, Field, TextInput } from "@/ui2/components/Field";
@@ -202,7 +202,7 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
     { id: "time", header: "Time", width: 92, sortValue: (s) => s.Time, cell: when },
     { id: "hrs", header: "Hrs", width: 44, numeric: true, sortValue: (s) => Number(s.Duration), cell: (s) => s.Duration },
     { id: "who", header: "Instructor", width: 110, sortValue: (s) => s.Facilitator ?? "", tip: (s) => s.Facilitator, cell: (s) => s.Facilitator },
-    { id: "att", header: "Attendance", width: 104, cell: (s) => <button type="button" className="u2-linkbtn" onClick={() => onOpen(s.ScheduleID)}>{count(s.ScheduleID) > 0 ? `${count(s.ScheduleID)} logged` : "None"}{conflictIds.has(s.ScheduleID) ? " ⚠" : ""}</button> },
+    { id: "att", header: "Attendance", width: 104, cell: (s) => <Button size="sm" variant="ghost" onClick={() => onOpen(s.ScheduleID)}>{count(s.ScheduleID) > 0 ? `${count(s.ScheduleID)} logged` : "None"}{conflictIds.has(s.ScheduleID) ? " ⚠" : ""}</Button> },
     { id: "resched", header: "Reschedule", width: 210, cell: (s) => <RescheduleCell slot={s} pending={requests.find((r) => r.ScheduleItemID === s.ScheduleID)} /> },
   ];
 
@@ -229,9 +229,9 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
             {/* unoptimized: the route needs the caller's own session cookie, which the Next image optimizer would not forward. */}
             <Image src="/api/schedule/admin-image" alt="Weekly schedule" fill style={{ objectFit: "contain" }} unoptimized />
           </div>
-          <a className="u2-linkbtn" href="/api/schedule/admin-image?download=1" download="DC_Admin_Weekly_Schedule.png">
+          <LinkButton href="/api/schedule/admin-image?download=1" download="DC_Admin_Weekly_Schedule.png">
             Download PNG
-          </a>
+          </LinkButton>
         </div>
       ) : view === "calendar" ? (
         <ScheduleCalendar scheduleItems={slots} attendanceItems={attendance} readOnly colorByGroup renderExpanded={(id, s) => <SessionAttendance scheduleId={id} duration={s.Duration} isManagement />} />
@@ -249,7 +249,7 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
                     <strong className="u2-strong">{swatch(s)}{s.ServiceName}</strong>
                     <span className="u2-muted">{s.Duration}h</span>
                     <span className="u2-muted">{s.Facilitator}</span>
-                    <button type="button" className="u2-linkbtn" onClick={() => onOpen(s.ScheduleID)}>{count(s.ScheduleID) > 0 ? `${count(s.ScheduleID)} logged` : "Attendance"}{conflictIds.has(s.ScheduleID) ? " ⚠" : ""}</button>
+                    <Button size="sm" variant="ghost" onClick={() => onOpen(s.ScheduleID)}>{count(s.ScheduleID) > 0 ? `${count(s.ScheduleID)} logged` : "Attendance"}{conflictIds.has(s.ScheduleID) ? " ⚠" : ""}</Button>
                   </div>
                 ))}
               </section>

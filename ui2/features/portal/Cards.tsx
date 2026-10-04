@@ -5,7 +5,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { formatInternationalNumber } from "@/lib/countryCodes";
 import { formatRate } from "@/lib/client";
 import { timezoneLabel } from "@/lib/timezones";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/ui2/queries/client";
@@ -26,7 +26,7 @@ export function Card({ title, children, actions }: { title: string; children: Re
   );
 }
 
-const link = (url?: string) => (url ? <a href={url} target="_blank" rel="noreferrer">{url}</a> : "—");
+const link = (url?: string) => (url ? <LinkButton href={url} target="_blank" title={url}>Open ↗</LinkButton> : "—");
 
 /** The person's own details. Which rows show depends on the account type, as in classic. */
 export function MyInfoCard({ user, linkedChildren }: { user: UserRecord; linkedChildren?: readonly UserRecord[] }) {
@@ -177,7 +177,7 @@ export function ScheduleImageView({ userId, userName }: { userId: string; userNa
         {/* eslint-disable-next-line @next/next/no-img-element -- the route needs the caller's own session cookie; the Next image optimizer would not forward it */}
         <img src={`/api/schedule/image?userId=${userId}`} alt={`${userName}'s schedule`} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
       </div>
-      <a className="u2-linkbtn" href={`/api/schedule/image?userId=${userId}&download=1`} download={`DC_Schedule_${userName}.png`}>Download PNG</a>
+      <LinkButton href={`/api/schedule/image?userId=${userId}&download=1`} download={`DC_Schedule_${userName}.png`}>Download PNG</LinkButton>
     </div>
   );
 }

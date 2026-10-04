@@ -86,7 +86,7 @@ function History({ rows, account, attempts, titleOf }: { rows: HistoryRow[]; acc
     { id: "pct", header: "%", width: 56, numeric: true, cell: (r) => r.percent },
     { id: "time", header: "Time", width: 60, numeric: true, cell: (r) => r.time },
     { id: "when", header: "When", width: 150, cell: (r) => r.when },
-    { id: "view", header: "Answers", width: 80, cell: (r) => (r.canView ? <button type="button" className="u2-linkbtn" aria-expanded={open === r.id} onClick={() => setOpen(open === r.id ? null : (r.id as string))}>{open === r.id ? "Hide" : "View"}</button> : "—") },
+    { id: "view", header: "Answers", width: 80, cell: (r) => (r.canView ? <Button size="sm" variant="ghost" aria-expanded={open === r.id} onClick={() => setOpen(open === r.id ? null : (r.id as string))}>{open === r.id ? "Hide" : "View"}</Button> : "—") },
   ];
   const openRow = rows.find((r) => r.id === open);
   return (

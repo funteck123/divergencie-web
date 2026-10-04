@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { amountDueInOwnCurrency } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
-import { Button } from "@/ui2/components/Button";
+import { Button, LinkButton } from "@/ui2/components/Button";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import type { BillRecord, ServiceRecord } from "@/ui2/queries/types";
 import { InvoicePaid } from "./Controls";
@@ -68,7 +68,7 @@ export function BillsCard({ kind, title, bills, services, currency, email, compa
           <span className="u2-rowactions" style={{ flexWrap: "wrap" }}>
             {pay && <a className="u2-pill" href={pay} target="_blank" rel="noreferrer">Pay online</a>}
             {compact && b.Status === "Sent" && <InvoicePaid invoice={b} onMarkUnpaid={onMarkUnpaid!} onConfirmPaid={onConfirmPaid!} />}
-            {!compact && <a className="u2-linkbtn" href={kind === "invoice" ? `/api/invoices/pdf?invoiceId=${idOf(b)}` : `/api/paychecks/pdf?paycheckId=${idOf(b)}`} download>PDF</a>}
+            {!compact && <LinkButton href={kind === "invoice" ? `/api/invoices/pdf?invoiceId=${idOf(b)}` : `/api/paychecks/pdf?paycheckId=${idOf(b)}`} download>PDF</LinkButton>}
           </span>
         );
       },

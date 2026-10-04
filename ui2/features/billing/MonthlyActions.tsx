@@ -47,9 +47,9 @@ function Summary({ summary }: { summary: { text: string; skippedItems: string[] 
       <p style={{ margin: 0 }}>{summary.text}</p>
       {summary.skippedItems.length > 0 && (
         <>
-          <button type="button" className="u2-linkbtn" aria-expanded={show} onClick={() => setShow((v) => !v)}>
+          <Button size="sm" variant="ghost" aria-expanded={show} onClick={() => setShow((v) => !v)}>
             {show ? "▾ Hide" : "▸ Show"} skipped items ({summary.skippedItems.length})
-          </button>
+          </Button>
           {show && (
             <ul>
               {summary.skippedItems.map((s, i) => (

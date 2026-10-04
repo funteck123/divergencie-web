@@ -75,9 +75,9 @@ export function BulkBar({ selected, onClear }: { selected: readonly UserRecord[]
       <Button size="sm" variant="danger" disabled={tooMany} disabledReason={reason} onClick={() => setPending("delete")}>
         Delete
       </Button>
-      <button type="button" className="u2-linkbtn" onClick={onClear}>
+      <Button size="sm" variant="ghost" onClick={onClear}>
         Clear selection
-      </button>
+      </Button>
 
       <ConfirmDialog
         open={pending === "reset"}
