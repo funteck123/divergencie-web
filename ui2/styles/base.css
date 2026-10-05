@@ -18,7 +18,7 @@
 .u2 h2 { font-size: var(--u2-text-xl); }
 .u2 h3 { font-size: var(--u2-text-lg); }
 .u2 p { margin: 0; }
-.u2 a { color: var(--u2-color-link); text-decoration: underline; text-underline-offset: 2px; }
+.u2 a { color: var(--u2-color-link); text-decoration: none; } /* no underlined text anywhere: anything you can follow is drawn as a button */
 :where(.u2) :where(button, input, select, textarea) { font: inherit; color: inherit; } /* :where keeps these below component classes */
 :where(.u2) :where(button) { cursor: pointer; }
 .u2 button:disabled, .u2 [aria-disabled="true"] { cursor: not-allowed; opacity: 0.55; }

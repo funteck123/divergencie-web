@@ -142,7 +142,7 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
           })}
         </nav>
       )}
-      <main id="u2-main" className={styles.main} style={{ ["--u2-sticky-top" as string]: tabs ? "calc(var(--u2-bar-height) + 44px)" : "var(--u2-bar-height)" }}>
+      <main id="u2-main" className={styles.main} style={{ ["--u2-sticky-top" as string]: tabs ? "calc(var(--u2-bar-height) + 53px)" : "var(--u2-bar-height)" }}>
         {children}
       </main>
       <ReportIssueDialog open={reporting} onOpenChange={setReporting} />
