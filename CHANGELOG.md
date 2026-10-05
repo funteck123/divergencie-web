@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [commit
 - Question Solver dropdowns on a phone (students reported they could not change an option; the list closed at once or the keyboard vanished): the option list used to close on any window resize, and showing the keyboard resizes the window. It now closes only when the width changes (rotation), and a plain tap on a dropdown no longer opens the keyboard (typing, or tapping the search box, still does). Regression script: `scripts/test-solver-select.py`.
 
 ### Changed
+- New UI, Schedule (TKT-0324, TKT-0314): an Instructor timeline view (one row per instructor across a day in India time, overlapping sessions in red with a Resolve action that moves the session), and the Weekly Schedule Image can now show any one account's own schedule, with a Download PNG for it.
 - New UI, one corner radius: every control, card, chip, tab, dialog and toast uses a single `--u2-radius` token (6px). Only the status dots are round.
 - New UI design cleanup (TKT-0322): 14 new design tokens, a Skeleton component and layout utility classes replace raw colours, sizes, radii and 91 inline styles; dead CSS removed; `npm run lint:design` (run by `npm test`) fails on any raw colour, font size or radius outside the tokens. `npm run audit:design` prints the consistency numbers.
 - New UI, no underlined text (TKT-0331): the section tabs are buttons (the current one filled), and no link or text on any new page is underlined.

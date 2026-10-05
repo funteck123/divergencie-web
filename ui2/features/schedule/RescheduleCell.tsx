@@ -9,10 +9,10 @@ import { useDirectReschedule, useReviewReschedule } from "@/ui2/queries/schedule
 import type { RescheduleRequest, ScheduleItem } from "@/ui2/queries/types";
 
 /** The four states of a session's reschedule cell: a request waiting for a decision, being edited, already moved, or untouched. */
-export function RescheduleCell({ slot, pending }: { slot: ScheduleItem; pending?: RescheduleRequest }) {
+export function RescheduleCell({ slot, pending, startEditing = false }: { slot: ScheduleItem; pending?: RescheduleRequest; startEditing?: boolean }) {
   const direct = useDirectReschedule();
   const review = useReviewReschedule();
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(startEditing);
   const [date, setDate] = useState(slot.RescheduledDate || "");
   const [time, setTime] = useState(slot.RescheduledTime || "");
 

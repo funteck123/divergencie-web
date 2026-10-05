@@ -22,6 +22,8 @@ import "@/ui2/features/services/services.css";
 import { RescheduleCell } from "./RescheduleCell";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { SessionAttendance } from "./SessionAttendance";
+import { ScheduleImage } from "./ScheduleImage";
+import { TimelineView } from "./TimelineView";
 import { agenda, conflictingScheduleIds, dropPast, matchesSearch, openPoolSlots, serviceSlots } from "./scheduleLogic";
 import "./schedule.css";
 
@@ -179,8 +181,8 @@ function OfferSlot({ items, openIds, services, loading }: { items: readonly Sche
   );
 }
 
-type View = "agenda" | "list" | "calendar" | "image";
-const VIEWS: { id: View; label: string }[] = [{ id: "agenda", label: "Agenda" }, { id: "list", label: "List" }, { id: "calendar", label: "Calendar" }, { id: "image", label: "Weekly Schedule Image" }];
+type View = "agenda" | "list" | "calendar" | "timeline" | "image";
+const VIEWS: { id: View; label: string }[] = [{ id: "agenda", label: "Agenda" }, { id: "list", label: "List" }, { id: "calendar", label: "Calendar" }, { id: "timeline", label: "Instructor timeline" }, { id: "image", label: "Weekly Schedule Image" }];
 
 function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds, loading, onOpen }: { items: readonly ScheduleItem[]; attendance: readonly import("@/ui2/queries/types").AttendanceItem[]; enrollments: readonly import("@/ui2/queries/types").EnrollmentRecord[]; requests: readonly RescheduleRequest[]; conflictIds: ReadonlySet<string>; loading: boolean; onOpen: (id: string) => void }) {
   const [viewParam, setView] = useQueryState("view", parseAsString.withDefault("agenda"));
@@ -223,16 +225,10 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
           <CheckField label={`Conflicts only${conflictIds.size > 0 ? ` (${conflictIds.size})` : ""}`} checked={conflictsOnly} onChange={setConflictsOnly} />
         </div>
       )}
-      {view === "image" ? (
-        <div className="u2-rows">
-          <div className="u2-imagebox">
-            {/* unoptimized: the route needs the caller's own session cookie, which the Next image optimizer would not forward. */}
-            <Image src="/api/schedule/admin-image" alt="Weekly schedule" fill style={{ objectFit: "contain" }} unoptimized />
-          </div>
-          <LinkButton href="/api/schedule/admin-image?download=1" download="DC_Admin_Weekly_Schedule.png">
-            Download PNG
-          </LinkButton>
-        </div>
+      {view === "timeline" ? (
+        <TimelineView items={slots} requests={requests} />
+      ) : view === "image" ? (
+        <ScheduleImage />
       ) : view === "calendar" ? (
         <ScheduleCalendar scheduleItems={slots} attendanceItems={attendance} readOnly colorByGroup renderExpanded={(id, s) => <SessionAttendance scheduleId={id} duration={s.Duration} isManagement />} />
       ) : view === "agenda" ? (
