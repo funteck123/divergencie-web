@@ -1,15 +1,15 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm); background: var(--u2-color-surface); color: var(--u2-color-brand); font-weight: var(--u2-weight-semibold); text-decoration: none; }
+  .u2-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-brand); font-weight: var(--u2-weight-semibold); text-decoration: none; }
   .u2-pill:hover { background: var(--u2-color-selected); }
   .u2-pill--off { opacity: 0.5; cursor: not-allowed; }
   .u2-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-  .u2-week__day { min-height: 90px; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); }
+  .u2-week__day { min-height: 90px; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-week__day .u2-chip { cursor: default; }
   @media (max-width: 767px) { .u2-week { grid-template-columns: 1fr; } .u2-week__day { min-height: 0; } }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-filegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--u2-space-3); }
-  .u2-filecard { display: grid; justify-items: center; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius-md); text-align: center; font-size: var(--u2-text-sm); color: var(--u2-color-text); text-decoration: none; }
+  .u2-filecard { display: grid; justify-items: center; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius); text-align: center; font-size: var(--u2-text-sm); color: var(--u2-color-text); text-decoration: none; }
   .u2-filecard:hover { background: var(--u2-color-selected); }
 }

@@ -34,7 +34,7 @@
 .u2 :focus-visible, .u2-portal :focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--u2-color-bg), 0 0 0 4px var(--u2-color-focus);
-  border-radius: var(--u2-radius-sm);
+  border-radius: var(--u2-radius);
 }
 .u2 .u2-on-dark :focus-visible { box-shadow: 0 0 0 2px var(--u2-color-brand), 0 0 0 4px var(--u2-color-bg); }
 
@@ -42,7 +42,7 @@
 .u2 .u2-skip {
   position: absolute; left: var(--u2-space-2); top: -48px; z-index: var(--u2-z-toast);
   background: var(--u2-color-brand); color: var(--u2-color-on-brand);
-  padding: var(--u2-space-2) var(--u2-space-3); border-radius: var(--u2-radius-sm);
+  padding: var(--u2-space-2) var(--u2-space-3); border-radius: var(--u2-radius);
 }
 .u2 .u2-skip:focus { top: var(--u2-space-2); }
 
@@ -56,7 +56,7 @@
   background: linear-gradient(90deg, var(--u2-color-bg-subtle) 25%, var(--u2-color-surface-tint) 50%, var(--u2-color-bg-subtle) 75%);
   background-size: 200% 100%;
   animation: u2-shimmer 1.2s linear infinite;
-  border-radius: var(--u2-radius-sm);
+  border-radius: var(--u2-radius);
 }
 
 /* Toasts (sonner): readable text on each type's tint. Sonner's own rich colours fail WCAG contrast. */

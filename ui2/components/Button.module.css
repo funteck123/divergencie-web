@@ -4,7 +4,7 @@
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--u2-space-2);
   min-height: 36px; padding: 0 var(--u2-space-4);
-  border: 1px solid transparent; border-radius: var(--u2-radius-sm);
+  border: 1px solid transparent; border-radius: var(--u2-radius);
   font-size: var(--u2-text-md); font-weight: var(--u2-weight-semibold); line-height: 1; white-space: nowrap;
   transition: background-color var(--u2-motion-fast) var(--u2-ease-out), border-color var(--u2-motion-fast) var(--u2-ease-out),
     box-shadow var(--u2-motion-fast) var(--u2-ease-out), transform var(--u2-motion-fast) var(--u2-ease-out);

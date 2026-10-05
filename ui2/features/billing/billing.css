@@ -1,24 +1,24 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-approve { z-index: var(--u2-z-popover); display: grid; gap: var(--u2-space-2); padding: var(--u2-space-3); min-width: 200px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); box-shadow: var(--u2-shadow-md); }
+  .u2-approve { z-index: var(--u2-z-popover); display: grid; gap: var(--u2-space-2); padding: var(--u2-space-3); min-width: 200px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); box-shadow: var(--u2-shadow-md); }
   .u2-approve__row { display: flex; gap: var(--u2-space-2); }
   .u2-approve__label { display: grid; gap: var(--u2-space-1); font-size: var(--u2-text-sm); font-weight: var(--u2-weight-semibold); }
-  .u2-bill-hint { margin: 0; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-info-bg); color: var(--u2-color-info-text); border-radius: var(--u2-radius-sm); font-size: var(--u2-text-sm); }
-  .u2-warnbox { margin: 0; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-warning-bg); color: var(--u2-color-warning-text); border: 1px solid var(--u2-color-warning); border-radius: var(--u2-radius-sm); }
+  .u2-bill-hint { margin: 0; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-info-bg); color: var(--u2-color-info-text); border-radius: var(--u2-radius); font-size: var(--u2-text-sm); }
+  .u2-warnbox { margin: 0; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-warning-bg); color: var(--u2-color-warning-text); border: 1px solid var(--u2-color-warning); border-radius: var(--u2-radius); }
   .u2-group { display: grid; gap: var(--u2-space-2); margin-top: var(--u2-space-2); }
   .u2-group__head { display: flex; align-items: center; gap: var(--u2-space-2); flex-wrap: wrap; }
   .u2-group__head .u2-tree__toggle { font-weight: var(--u2-weight-bold); }
   .u2-lanes { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: var(--u2-space-3); overflow-x: auto; align-items: start; }
-  .u2-lane { display: grid; gap: var(--u2-space-2); background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); padding: var(--u2-space-2); min-width: 0; }
+  .u2-lane { display: grid; gap: var(--u2-space-2); background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); padding: var(--u2-space-2); min-width: 0; }
   .u2-lane__title { display: flex; justify-content: space-between; font-weight: var(--u2-weight-bold); }
-  .u2-card { display: grid; gap: var(--u2-space-1); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); padding: var(--u2-space-2) var(--u2-space-3); font-size: var(--u2-text-sm); }
+  .u2-card { display: grid; gap: var(--u2-space-1); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); padding: var(--u2-space-2) var(--u2-space-3); font-size: var(--u2-text-sm); }
   .u2-card__top { display: flex; justify-content: space-between; gap: var(--u2-space-2); }
   .u2-card__actions { display: flex; gap: var(--u2-space-1); flex-wrap: wrap; margin-top: var(--u2-space-1); }
   .u2-money { font-variant-numeric: tabular-nums; text-align: right; }
   .u2-sub { display: block; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); line-height: 1.2; }
   .u2-sub--good { color: var(--u2-color-success); }
   .u2-sub--warn { color: var(--u2-color-warning-text); font-weight: var(--u2-weight-semibold); }
-  .u2-filters { display: flex; flex-wrap: wrap; gap: var(--u2-space-3); align-items: end; padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
+  .u2-filters { display: flex; flex-wrap: wrap; gap: var(--u2-space-3); align-items: end; padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-filters .u2-field { min-width: 130px; }
   .u2-lineitems { width: 100%; border-collapse: collapse; font-size: var(--u2-text-sm); }
   .u2-lineitems th, .u2-lineitems td { padding: var(--u2-space-1) var(--u2-space-2); text-align: left; border-bottom: 1px solid var(--u2-color-border); }

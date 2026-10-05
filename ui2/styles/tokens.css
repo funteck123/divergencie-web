@@ -48,12 +48,7 @@
   --u2-space-8: 32px;
   --u2-space-12: 48px;
   --u2-space-16: 64px;
-  --u2-radius-xs: 2px;
-  --u2-radius-sm: 4px;
-  --u2-radius-md: 8px;
-  --u2-radius-lg: 12px;
-  --u2-radius-xl: 20px;
-  --u2-radius-full: 9999px;
+  --u2-radius: 6px;
   --u2-radius-round: 50%;
   --u2-font-sans: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
   --u2-text-2xs: 11px;

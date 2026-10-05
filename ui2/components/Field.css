@@ -5,7 +5,7 @@
   .u2-field__hint { margin: 0; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
   .u2-field__error { margin: 0; font-size: var(--u2-text-sm); color: var(--u2-color-error); }
   .u2-input {
-    width: 100%; min-height: 36px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm);
+    width: 100%; min-height: 36px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius);
     background: var(--u2-color-bg); color: var(--u2-color-text); font-size: var(--u2-text-md);
   }
   .u2-input--area { padding: var(--u2-space-2) var(--u2-space-3); resize: vertical; line-height: 1.4; }

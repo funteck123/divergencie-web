@@ -4,7 +4,7 @@
   .u2-seg { display: flex; gap: var(--u2-space-1); overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
   .u2-seg__btn {
     display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-shrink: 0; height: 32px; padding: 0 var(--u2-space-3);
-    border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-xl); background: var(--u2-color-surface); color: var(--u2-color-text);
+    border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-text);
     font-weight: var(--u2-weight-medium); cursor: pointer;
   }
   .u2-seg__btn[aria-selected="true"] { background: var(--u2-color-brand); border-color: var(--u2-color-brand); color: var(--u2-color-on-brand); }
@@ -12,7 +12,7 @@
   .u2-seg__count { font-size: var(--u2-text-xs); opacity: 0.85; font-variant-numeric: tabular-nums; }
   .u2-toolbar__new { margin-left: auto; }
   .u2-toolbar { display: flex; align-items: center; gap: var(--u2-space-3); flex-wrap: wrap; }
-  .u2-search { height: 36px; min-width: 260px; flex: 0 1 360px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm); background: var(--u2-color-bg); }
+  .u2-search { height: 36px; min-width: 260px; flex: 0 1 360px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-bg); }
   .u2-muted { color: var(--u2-color-text-muted); }
   .u2-mono { font-variant-numeric: tabular-nums; letter-spacing: 0; }
   .u2-strong { font-weight: var(--u2-weight-semibold); }
@@ -21,9 +21,9 @@
   .u2-sent i { width: 7px; height: 7px; border-radius: var(--u2-radius-round); border: 1px solid var(--u2-color-border-strong); }
   .u2-sent i.on { background: var(--u2-color-brand); border-color: var(--u2-color-brand); }
   .u2-rowactions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-1); }
-  .u2-issued { display: grid; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-warning-bg); border: 1px solid var(--u2-color-warning); border-radius: var(--u2-radius-md); }
+  .u2-issued { display: grid; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-warning-bg); border: 1px solid var(--u2-color-warning); border-radius: var(--u2-radius); }
   .u2-issued__row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-3); }
-  .u2-errorbox { padding: var(--u2-space-3); background: var(--u2-color-error-bg); color: var(--u2-color-error); border-radius: var(--u2-radius-md); }
+  .u2-errorbox { padding: var(--u2-space-3); background: var(--u2-color-error-bg); color: var(--u2-color-error); border-radius: var(--u2-radius); }
   .u2-acctcard { display: grid; gap: var(--u2-space-1); }
   .u2-acctcard__top { display: flex; justify-content: space-between; align-items: center; gap: var(--u2-space-2); }
   .u2-acctcard__actions { display: flex; flex-wrap: wrap; gap: var(--u2-space-2); margin-top: var(--u2-space-1); }
@@ -45,7 +45,7 @@
   .u2-input--mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: var(--u2-text-sm); }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-bulk { position: sticky; top: calc(var(--u2-sticky-top, var(--u2-bar-height)) + var(--u2-space-2)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-2); padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-brand); color: var(--u2-color-on-brand); border-radius: var(--u2-radius-md); box-shadow: var(--u2-shadow-md); }
+  .u2-bulk { position: sticky; top: calc(var(--u2-sticky-top, var(--u2-bar-height)) + var(--u2-space-2)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-2); padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-brand); color: var(--u2-color-on-brand); border-radius: var(--u2-radius); box-shadow: var(--u2-shadow-md); }
   .u2-namelist { margin: 0 0 var(--u2-space-2); padding-left: var(--u2-space-4); max-height: 180px; overflow-y: auto; }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {

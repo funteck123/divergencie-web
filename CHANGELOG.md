@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. See [commit
 - Question Solver dropdowns on a phone (students reported they could not change an option; the list closed at once or the keyboard vanished): the option list used to close on any window resize, and showing the keyboard resizes the window. It now closes only when the width changes (rotation), and a plain tap on a dropdown no longer opens the keyboard (typing, or tapping the search box, still does). Regression script: `scripts/test-solver-select.py`.
 
 ### Changed
+- New UI, one corner radius: every control, card, chip, tab, dialog and toast uses a single `--u2-radius` token (6px). Only the status dots are round.
 - New UI design cleanup (TKT-0322): 14 new design tokens, a Skeleton component and layout utility classes replace raw colours, sizes, radii and 91 inline styles; dead CSS removed; `npm run lint:design` (run by `npm test`) fails on any raw colour, font size or radius outside the tokens. `npm run audit:design` prints the consistency numbers.
 - New UI, no underlined text (TKT-0331): the section tabs are buttons (the current one filled), and no link or text on any new page is underlined.
 - New UI, links and Question Solver reliability (TKT-0322): there are no text links any more. Everything you can follow (PDFs, downloads, proofs, attachments, sign in, back to site) is a button. A dropped connection on a read, or on opening a Question Solver paper, is retried once, and a failed paper shows a message above the picker instead of replacing it.

@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 
 // Sonner's default "rich" colours fail WCAG contrast (white on mid green and red). Same look, readable text.
 const style = {
+  "--border-radius": "var(--u2-radius)",
   "--success-bg": "var(--u2-color-success-bg)", "--success-text": "var(--u2-color-on-success-bg)", "--success-border": "var(--u2-color-success)",
   "--error-bg": "var(--u2-color-error-bg)", "--error-text": "var(--u2-color-on-error-bg)", "--error-border": "var(--u2-color-error)",
   "--info-bg": "var(--u2-color-info-bg)", "--info-text": "var(--u2-color-on-info-bg)", "--info-border": "var(--u2-color-info)",

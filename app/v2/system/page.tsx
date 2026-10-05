@@ -17,7 +17,7 @@ const PAIRS: { bg: string; fg: string; label: string }[] = [
 ];
 const TYPE = ["xs", "sm", "md", "lg", "xl", "2xl", "3xl"];
 const SPACE = ["1", "2", "3", "4", "6", "8", "12", "16"];
-const RADIUS = ["sm", "md", "lg", "xl"];
+const RADIUS = ["", "-round"] as const; // the one corner radius, and the circle for dots
 
 export default function SystemGallery() {
   return (
@@ -57,7 +57,7 @@ export default function SystemGallery() {
         <div className={styles.row}>
           {RADIUS.map((r) => (
             <div key={r} className={styles.radius} style={{ borderRadius: `var(--u2-radius-${r})` }}>
-              {r}
+              {r === "" ? "radius (all controls)" : "radius-round (dots only)"}
             </div>
           ))}
         </div>

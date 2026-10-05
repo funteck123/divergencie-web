@@ -2,7 +2,7 @@
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-badge {
     display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-    padding: 1px var(--u2-space-2); border-radius: var(--u2-radius-xl);
+    padding: 1px var(--u2-space-2); border-radius: var(--u2-radius);
     font-size: var(--u2-text-xs); font-weight: var(--u2-weight-semibold); line-height: 1.5;
   }
   .u2-badge__dot { width: 7px; height: 7px; border-radius: var(--u2-radius-round); background: currentColor; }

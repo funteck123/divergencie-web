@@ -5,7 +5,7 @@
     position: relative; /* contains absolutely placed cell content (screen-reader text) so it cannot widen the page */
     overflow: auto; max-height: calc(100vh - var(--u2-sticky-top, var(--u2-bar-height)) - 150px); min-height: 200px;
     background: var(--u2-color-surface);
-    border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md);
+    border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius);
   }
   .u2-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--u2-text-xs); }
   .u2-table th, .u2-table td {
@@ -33,15 +33,15 @@
   .u2-table__skeleton-row { height: 36px; margin: var(--u2-space-1) var(--u2-space-2); }
   .u2-table__empty { padding: var(--u2-space-8) var(--u2-space-4); text-align: center; color: var(--u2-color-text-muted); }
   .u2-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--u2-space-2); }
-  .u2-cards__item { background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); padding: var(--u2-space-3); }
+  .u2-cards__item { background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); padding: var(--u2-space-3); }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-tt { display: flex; align-items: center; gap: var(--u2-space-2); flex-wrap: wrap; margin-bottom: var(--u2-space-2); }
   .u2-tt__group { display: inline-flex; align-items: center; gap: var(--u2-space-2); font-size: var(--u2-text-sm); }
   .u2-tt__group select { min-height: 32px; width: auto; }
   .u2-tt__count { margin-left: auto; color: var(--u2-color-text-muted); font-size: var(--u2-text-sm); }
-  .u2-tt__chip { min-height: 28px; padding: 2px 10px; border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-full); background: var(--u2-color-info-bg); color: var(--u2-color-info-text); font-size: var(--u2-text-sm); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .u2-tt__panel { z-index: var(--u2-z-popover); width: min(360px, calc(100vw - 24px)); max-height: min(70vh, 520px); display: grid; grid-template-rows: minmax(0, 1fr) auto; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); box-shadow: var(--u2-shadow-md); }
+  .u2-tt__chip { min-height: 28px; padding: 2px 10px; border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-info-bg); color: var(--u2-color-info-text); font-size: var(--u2-text-sm); max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .u2-tt__panel { z-index: var(--u2-z-popover); width: min(360px, calc(100vw - 24px)); max-height: min(70vh, 520px); display: grid; grid-template-rows: minmax(0, 1fr) auto; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); box-shadow: var(--u2-shadow-md); }
   .u2-tt__sections { overflow-y: auto; padding: var(--u2-space-2); display: grid; gap: 2px; }
   .u2-tt__sections summary { cursor: pointer; padding: 8px 6px; font-weight: var(--u2-weight-semibold); }
   .u2-tt__values { display: grid; gap: 2px; padding: 0 6px 8px; }

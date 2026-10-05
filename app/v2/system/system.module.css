@@ -3,11 +3,11 @@
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .page { display: grid; gap: var(--u2-space-8); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .page section { display: grid; gap: var(--u2-space-3); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--u2-space-3); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .pair { display: grid; gap: var(--u2-space-1); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .pair { display: grid; gap: var(--u2-space-1); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .pair span { font-size: var(--u2-text-sm); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .typeRow { margin: 0; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-3); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .space { background: var(--u2-color-brand); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .radius { width: 72px; height: 48px; display: grid; place-items: center; background: var(--u2-color-surface-tint); font-size: var(--u2-text-sm); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .logoDark { background: var(--u2-color-brand); padding: var(--u2-space-3); border-radius: var(--u2-radius-md); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .logoLight { background: var(--u2-color-bg); border: 1px solid var(--u2-color-border); padding: var(--u2-space-3); border-radius: var(--u2-radius-md); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .logoDark { background: var(--u2-color-brand); padding: var(--u2-space-3); border-radius: var(--u2-radius); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .logoLight { background: var(--u2-color-bg); border: 1px solid var(--u2-color-border); padding: var(--u2-space-3); border-radius: var(--u2-radius); }

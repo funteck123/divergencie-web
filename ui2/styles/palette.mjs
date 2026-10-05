@@ -105,12 +105,7 @@ export const TOKENS = {
   "space-12": "48px",
   "space-16": "64px",
   // radius
-  "radius-xs": "2px",
-  "radius-sm": "4px",
-  "radius-md": "8px",
-  "radius-lg": "12px",
-  "radius-xl": "20px",
-  "radius-full": "9999px",
+  "radius": "6px", // the one corner radius for every control, card, chip and panel
   "radius-round": "50%",
   // type (dense UI scale inside the guideline family)
   "font-sans": 'var(--font-inter), Inter, Arial, Helvetica, sans-serif',
