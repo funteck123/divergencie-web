@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { groupMatches } from "@/lib/client";
@@ -32,7 +33,7 @@ function InlineForm({ label: aria, placeholder, submitLabel, busyLabel, onSubmit
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   return (
-    <form className="u2-inline" style={{ alignItems: "center" }} onSubmit={async (e) => { e.preventDefault(); if (!text.trim()) return; setBusy(true); try { await onSubmit(text); setText(""); } catch (err) { toast.error(err instanceof Error ? err.message : "Could not submit."); } finally { setBusy(false); } }}>
+    <form className="u2-inline u2-inline--center" onSubmit={async (e) => { e.preventDefault(); if (!text.trim()) return; setBusy(true); try { await onSubmit(text); setText(""); } catch (err) { toast.error(err instanceof Error ? err.message : "Could not submit."); } finally { setBusy(false); } }}>
       <TextInput aria-label={aria} placeholder={placeholder} value={text} onChange={(e) => setText(e.target.value)} />
       <Button type="submit" variant="primary" loading={busy} aria-label={busy ? busyLabel : undefined}>{submitLabel}</Button>
     </form>
@@ -45,9 +46,9 @@ function RequestBox({ title, intro, services, requested, ariaLabel, buttonLabel,
   const options: ComboOption[] = services.map((s) => ({ value: s.ServiceID, label: `${label(s)}${requested.has(s.ServiceID) ? " (already requested)" : ""}`, disabled: requested.has(s.ServiceID) }));
   return (
     <Card title={title}>
-      <p className="u2-muted" style={{ margin: 0 }}>{intro}</p>
-      <div className="u2-inline" style={{ alignItems: "center" }}>
-        <div style={{ flex: 1 }}><Combobox aria-label={ariaLabel} value={serviceId} onChange={setServiceId} placeholder="Select a service…" options={options} /></div>
+      <p className="u2-muted">{intro}</p>
+      <div className="u2-inline u2-inline--center">
+        <div className="u2-grow"><Combobox aria-label={ariaLabel} value={serviceId} onChange={setServiceId} placeholder="Select a service…" options={options} /></div>
         <Button variant="primary" loading={busy} disabled={!serviceId} disabledReason="Select a service first." onClick={async () => { setBusy(true); try { await onRequest(serviceId); setServiceId(""); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not request."); } finally { setBusy(false); } }}>{buttonLabel}</Button>
       </div>
     </Card>
@@ -64,7 +65,7 @@ function TrialList({ trials, slots, services, onFeedback, withTz, emptyText }: {
         const name = services?.find((s) => s.ServiceID === t.ServiceID)?.Name;
         return (
           <div key={t.TrialID} className="u2-box u2-box--inner">
-            <p style={{ margin: 0 }}>{name ? `${name}${slot ? ", " : ""}` : ""}{slot ? when(slot, t.ScheduleItemID, withTz, withTz) : name ? "" : t.ScheduleItemID} <Badge kind="info">{t.Status}</Badge></p>
+            <p>{name ? `${name}${slot ? ", " : ""}` : ""}{slot ? when(slot, t.ScheduleItemID, withTz, withTz) : name ? "" : t.ScheduleItemID} <Badge kind="info">{t.Status}</Badge></p>
             {t.Status === "Pending" && <p className="u2-muted">Your booking is being reviewed.</p>}
             {t.Status === "Rejected" && <p className="u2-form__error">This request was rejected.</p>}
             {t.Status === "Scheduled" && <InlineForm label="Trial feedback" placeholder="Leave feedback about your trial…" submitLabel="Submit" busyLabel="Submitting…" onSubmit={(fb) => onFeedback(t.TrialID, fb)} />}
@@ -83,7 +84,7 @@ export function TrialPortal({ user }: { user: SessionUser }) {
   const actions = useBillActions(user.UserID);
   const data = me.data;
   if (me.error) return <p role="alert" className="u2-errorbox">Could not load your dashboard: {me.error.message}</p>;
-  if (!data) return <div className="u2-skeleton" style={{ height: 240 }} aria-busy="true" />;
+  if (!data) return <Skeleton height={240} />;
   const eligible = (data.services ?? []).filter((s) => (groupMatches(s.Group, "Student") as boolean) && s.Type !== "Book");
   const requested = new Set((data.trialItems ?? []).filter((t) => t.Status !== "Rejected").map((t) => t.ServiceID));
   return (
@@ -109,7 +110,7 @@ export function InterviewPortal({ user }: { user: SessionUser }) {
   const data = me.data;
   const teacherTrack = user.UserType === "TeacherInterviewAcc";
   if (me.error) return <p role="alert" className="u2-errorbox">Could not load your dashboard: {me.error.message}</p>;
-  if (!data) return <div className="u2-skeleton" style={{ height: 240 }} aria-busy="true" />;
+  if (!data) return <Skeleton height={240} />;
   const services = data.services ?? [];
   const eligible = services.filter((s) => groupMatches(s.Group, INTERVIEW_GROUP[user.UserType] || "Staff") as boolean);
   const requested = new Set((data.interviewItems ?? []).filter((i) => i.Status !== "Rejected").map((i) => i.ServiceID));
@@ -128,7 +129,7 @@ export function InterviewPortal({ user }: { user: SessionUser }) {
           const name = services.find((s) => s.ServiceID === it.ServiceID)?.Name || it.ServiceID;
           return (
             <div key={it.InterviewID} className="u2-box u2-box--inner">
-              <p style={{ margin: 0 }}>{name}{slot ? `, ${formatDate(slot.Date) as string} at ${slot.Time}` : ""} <Badge kind="info">{it.Status}</Badge></p>
+              <p>{name}{slot ? `, ${formatDate(slot.Date) as string} at ${slot.Time}` : ""} <Badge kind="info">{it.Status}</Badge></p>
               {it.Status === "Pending" && <p className="u2-muted">Your request is being reviewed. A slot will be assigned once approved.</p>}
               {it.Status === "Rejected" && <p className="u2-form__error">This request was rejected.</p>}
               {it.Status === "Waitlisted" && <p className="u2-warnbox">You&apos;ve been added to the waitlist. We&apos;ll follow up soon.</p>}
@@ -160,7 +161,7 @@ export function InterviewPortal({ user }: { user: SessionUser }) {
       <PersonalInfo user={data.user} onSave={save} />
       <Documents user={data.user} onSave={save} />
       <Card title="Request an Interview">
-        <p className="u2-muted" style={{ margin: 0 }}>Pick the service you&apos;re interviewing for. No need to choose a time. A slot will be assigned once your request is approved.</p>
+        <p className="u2-muted">Pick the service you&apos;re interviewing for. No need to choose a time. A slot will be assigned once your request is approved.</p>
         {!data.user.ResumeURL ? (
           <p className="u2-form__error">Upload a Resume in Documents above before requesting an interview.</p>
         ) : (
@@ -178,8 +179,8 @@ function RequestInline(props: { services: readonly ServiceRecord[]; requested: R
   const [serviceId, setServiceId] = useState("");
   const [busy, setBusy] = useState(false);
   return (
-    <div className="u2-inline" style={{ alignItems: "center" }}>
-      <div style={{ flex: 1 }}><Combobox aria-label={props.ariaLabel} value={serviceId} onChange={setServiceId} placeholder="Select a service…" options={props.services.map((s) => ({ value: s.ServiceID, label: `${label(s)}${props.requested.has(s.ServiceID) ? " (already requested)" : ""}`, disabled: props.requested.has(s.ServiceID) }))} /></div>
+    <div className="u2-inline u2-inline--center">
+      <div className="u2-grow"><Combobox aria-label={props.ariaLabel} value={serviceId} onChange={setServiceId} placeholder="Select a service…" options={props.services.map((s) => ({ value: s.ServiceID, label: `${label(s)}${props.requested.has(s.ServiceID) ? " (already requested)" : ""}`, disabled: props.requested.has(s.ServiceID) }))} /></div>
       <Button variant="primary" loading={busy} disabled={!serviceId} disabledReason="Select a service first." onClick={async () => { setBusy(true); try { await props.onRequest(serviceId); setServiceId(""); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not request."); } finally { setBusy(false); } }}>{props.buttonLabel}</Button>
     </div>
   );

@@ -44,7 +44,7 @@ function Summary({ summary }: { summary: { text: string; skippedItems: string[] 
   const [show, setShow] = useState(false);
   return (
     <div role="status" className="u2-bill-hint">
-      <p style={{ margin: 0 }}>{summary.text}</p>
+      <p>{summary.text}</p>
       {summary.skippedItems.length > 0 && (
         <>
           <Button size="sm" variant="ghost" aria-expanded={show} onClick={() => setShow((v) => !v)}>
@@ -78,8 +78,8 @@ function GeneratePanel({ onDone }: { onDone: (s: { text: string; skippedItems: s
   }
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Generate Drafts</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>
+      <h2>Generate Drafts</h2>
+      <p className="u2-muted">
         Use for: the normal monthly run.{" "}
         <span title="Amount is auto-calculated: (Service monthly cost ÷ scheduled hours) × attended hours. INR Amount is auto-converted using the exchange rate as of the 1st of the invoice/paycheck's own month, only INR Due is manually adjustable, for tracking partial payments." style={{ textDecoration: "underline dotted", cursor: "help" }}>
           How amounts are calculated
@@ -107,8 +107,8 @@ function RebuildPanel({ users, onDone }: { users: readonly UserRecord[]; onDone:
   const toggle = (id: string, on: boolean) => setSelected((p) => { const n = new Set(p); if (on) n.add(id); else n.delete(id); return n; });
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Rebuild Drafts</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>
+      <h2>Rebuild Drafts</h2>
+      <p className="u2-muted">
         Use for: fixing stale drafts after a correction, never touches a Sent record.{" "}
         <span title="Deletes the selected people's existing DRAFT invoices/paychecks for this month and regenerates them fresh with current attendance/rate data. Won't catch anyone new, Generate Drafts already covers them." style={{ textDecoration: "underline dotted", cursor: "help" }}>
           Details
@@ -183,8 +183,8 @@ function ManualInvoicePanel({ people, services, enrollments }: { people: readonl
   }
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Create Invoice</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>Use for: one-off exceptions Generate Drafts won&apos;t create.</p>
+      <h2>Create Invoice</h2>
+      <p className="u2-muted">Use for: one-off exceptions Generate Drafts won&apos;t create.</p>
       <form onSubmit={submit} className="u2-form">
         <Field label="Student">
           <Combobox value={personId} onChange={selectPerson} placeholder="Select Student…" options={people.map((p) => ({ value: p.UserID, label: p.Name }))} />
@@ -194,7 +194,7 @@ function ManualInvoicePanel({ people, services, enrollments }: { people: readonl
           <div className="u2-rows">
             {enrolled.length === 0 && <p className="u2-muted">No enrollments for this student.</p>}
             {enrolled.map((s) => (
-              <div key={s.ServiceID} className="u2-inline" style={{ alignItems: "center" }}>
+              <div key={s.ServiceID} className="u2-inline u2-inline--center">
                 <CheckField label={s.Name} checked={!!checked[s.ServiceID]} onChange={(on) => setChecked((p) => ({ ...p, [s.ServiceID]: on }))} />
                 <TextInput type="number" aria-label={`Amount for ${s.Name}`} placeholder="Amount" style={{ maxWidth: 110 }} disabled={!checked[s.ServiceID]} value={amounts[s.ServiceID] || ""} onChange={(e) => setAmounts((p) => ({ ...p, [s.ServiceID]: e.target.value }))} />
               </div>
@@ -237,8 +237,8 @@ function ManualPaycheckPanel({ people, services }: { people: readonly UserRecord
   }
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Create Paycheck</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>Use for: one-off exceptions Generate Drafts won&apos;t create.</p>
+      <h2>Create Paycheck</h2>
+      <p className="u2-muted">Use for: one-off exceptions Generate Drafts won&apos;t create.</p>
       <form onSubmit={submit} className="u2-form">
         <Field label="Staff">
           <Combobox value={personId} onChange={setPersonId} placeholder="Select Staff…" options={people.map((p) => ({ value: p.UserID, label: p.Name }))} />

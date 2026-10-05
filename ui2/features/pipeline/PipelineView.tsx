@@ -195,34 +195,34 @@ export function PipelineView() {
       <h1>Pipeline</h1>
 
       <section className="u2-box">
-        <div className="u2-toolbar"><h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Trial Pipeline</h2><ModeSwitch mode={modeTrial} onChange={setModeTrial} /></div>
+        <div className="u2-toolbar"><h2>Trial Pipeline</h2><ModeSwitch mode={modeTrial} onChange={setModeTrial} /></div>
         <div className="u2-toolbar">
           <input type="search" className="u2-search" placeholder="Search name or service…" aria-label="Search trials" value={tSearch} onChange={(e) => setTSearch(e.target.value)} />
-          <div style={{ minWidth: 200 }}><Combobox aria-label="Trial status" value={tStatus} onChange={setTStatus} options={Object.entries(TRIAL_STATUS_FILTER_LABEL).map(([value, label]) => ({ value, label }))} /></div>
+          <div className="u2-minw"><Combobox aria-label="Trial status" value={tStatus} onChange={setTStatus} options={Object.entries(TRIAL_STATUS_FILTER_LABEL).map(([value, label]) => ({ value, label }))} /></div>
         </div>
         {modeTrial === "lanes" ? <Lanes<TRow> rows={trialRows} steps={TRIAL_STEPS} indexOf={trialStepIndex} keyOf={(t) => t.TrialID} deadEnd={trialDeadEnd} /> : <DataTable caption="Trial pipeline" rows={trialRows} columns={trialCols} rowKey={(t) => t.TrialID} initialSort={{ id: "name", dir: "asc" }} emptyText={trialItems.length === 0 ? "No trial bookings yet." : "No matches."} />}
       </section>
 
       <section className="u2-box">
-        <div className="u2-toolbar"><h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Interview Pipeline</h2><ModeSwitch mode={modeInterview} onChange={setModeInterview} /></div>
+        <div className="u2-toolbar"><h2>Interview Pipeline</h2><ModeSwitch mode={modeInterview} onChange={setModeInterview} /></div>
         <div className="u2-toolbar">
           <input type="search" className="u2-search" placeholder="Search name or service…" aria-label="Search interviews" value={iSearch} onChange={(e) => setISearch(e.target.value)} />
-          <div style={{ minWidth: 200 }}><Combobox aria-label="Interview status" value={iStatus} onChange={setIStatus} options={Object.entries(INTERVIEW_STATUS_FILTER_LABEL).map(([value, label]) => ({ value, label }))} /></div>
+          <div className="u2-minw"><Combobox aria-label="Interview status" value={iStatus} onChange={setIStatus} options={Object.entries(INTERVIEW_STATUS_FILTER_LABEL).map(([value, label]) => ({ value, label }))} /></div>
         </div>
         {modeInterview === "lanes" ? <Lanes<IRow> rows={interviewRows} steps={INTERVIEW_STEPS} indexOf={interviewStepIndex} keyOf={(i) => i.InterviewID} deadEnd={interviewDeadEnd} /> : <DataTable caption="Interview pipeline" rows={interviewRows} columns={interviewCols} rowKey={(i) => i.InterviewID} initialSort={{ id: "name", dir: "asc" }} emptyText={interviewItems.length === 0 ? "No interview bookings yet." : "No matches."} />}
       </section>
 
       <section className="u2-box">
-        <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Pending Requests</h2>
+        <h2>Pending Requests</h2>
         {pendingRows.length === 0 && <p className="u2-muted">No pending requests.</p>}
         <div className="u2-rows">
           {pendingRows.map((row) => (
             <div key={row._id} className="u2-box u2-box--inner">
-              <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+              <div className="u2-rowactions">
                 <Badge kind="info">{row._type}</Badge>
                 <strong className="u2-strong">{row.RequesterName}</strong>
                 <span className="u2-muted">{serviceName(row.ServiceID)}</span>
-                <Button size="sm" variant="ghost" className="u2-danger-text" style={{ marginLeft: "auto" }} loading={busy.has(row._id)} onClick={() => void withBusy(row._id, () => decide(row, "reject"), "Rejected.")}>Reject</Button>
+                <Button size="sm" variant="ghost" className="u2-danger-text u2-push" loading={busy.has(row._id)} onClick={() => void withBusy(row._id, () => decide(row, "reject"), "Rejected.")}>Reject</Button>
               </div>
               <SlotAssign
                 serviceId={row.ServiceID}
@@ -241,7 +241,7 @@ export function PipelineView() {
       </section>
 
       <section className="u2-box">
-        <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Inquiries</h2>
+        <h2>Inquiries</h2>
         <DataTable
           caption="Inquiries" rows={[...(leads.data ?? [])].reverse()} rowKey={(l) => l.LeadID} loading={leads.isPending} emptyText="No inquiries yet."
           columns={[

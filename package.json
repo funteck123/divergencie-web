@@ -20,6 +20,8 @@
     "parity:extract": "node ui2/testing/extract-classic.mjs",
     "parity:check": "node ui2/testing/extract-classic.mjs --check",
     "parity": "node ui2/testing/parity-report.mjs",
+    "lint:design": "node scripts/lint-design.mjs",
+    "audit:design": "node scripts/design-audit.mjs",
     "e2e:ui2": "node ui2/testing/e2e/run-all.mjs",
     "a11y:ui2": "node ui2/testing/e2e/a11y-sweep.mjs",
     "typecheck:ui2": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p ui2/tsconfig.json",

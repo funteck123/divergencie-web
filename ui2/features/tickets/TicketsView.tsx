@@ -71,7 +71,7 @@ export function TicketsView() {
       <h1>Tickets</h1>
       <UptimePanel />
       <div className="u2-toolbar">
-        <h2 style={{ margin: 0, fontSize: "var(--u2-text-lg)" }}>
+        <h2>
           {open > 0 && <Badge kind="warning">{open} open</Badge>} {hold > 0 && <Badge kind="neutral">{hold} on hold</Badge>}
         </h2>
         <input type="search" className="u2-search" placeholder="Search sender or message…" aria-label="Search tickets" value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -153,26 +153,26 @@ function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }
 
   return (
     <div className="u2-form">
-      <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+      <div className="u2-rowactions">
         {t.ClosedAt ? <Badge kind="success">Closed {formatDateTime(t.ClosedAt) as string}</Badge> : t.OnHold ? <Badge kind="neutral">On hold</Badge> : <Badge kind="warning">Open</Badge>}
         <span className="u2-muted">Created {formatDateTime(t.CreatedAt) as string}</span>
         {t.AttachmentURL && <LinkButton href={t.AttachmentURL} target="_blank">Attachment</LinkButton>}
       </div>
-      {t.OnHold && !t.ClosedAt && t.OnHoldReason && <p className="u2-warnbox" style={{ whiteSpace: "pre-wrap" }}>On hold: {t.OnHoldReason}</p>}
-      {t.CloseMessage && <p className="u2-bill-hint" style={{ whiteSpace: "pre-wrap" }}>Resolution: {t.CloseMessage}</p>}
+      {t.OnHold && !t.ClosedAt && t.OnHoldReason && <p className="u2-warnbox u2-prewrap">On hold: {t.OnHoldReason}</p>}
+      {t.CloseMessage && <p className="u2-bill-hint u2-prewrap">Resolution: {t.CloseMessage}</p>}
 
       {mode === "edit" ? (
         <Field label="Message">
           <TextArea rows={5} value={draft} onChange={(e) => setDraft(e.target.value)} />
         </Field>
       ) : (
-        <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{t.Message}</p>
+        <p className="u2-prewrap">{t.Message}</p>
       )}
 
       {Array.isArray(t.Notes) && t.Notes.length > 0 && (
         <div className="u2-rows">
           {t.Notes.map((n, i) => (
-            <div key={i} className="u2-box u2-box--inner" style={{ whiteSpace: "pre-wrap" }}>
+            <div key={i} className="u2-box u2-box--inner u2-prewrap">
               <span className="u2-muted">{label(n.By)} · {formatDateTime(n.At) as string}</span>
               <span>{n.Text}</span>
             </div>
@@ -192,7 +192,7 @@ function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }
       )}
       {error && <p role="alert" className="u2-form__error">{error}</p>}
 
-      <div className="u2-form__actions" style={{ flexWrap: "wrap" }}>
+      <div className="u2-form__actions">
         {mode === "edit" && (
           <>
             <Button variant="primary" loading={patch.isPending} onClick={() => (draft.trim() ? void run("edit", { message: draft }, "Message saved.") : setError("Message can't be empty."))}>Save</Button>
@@ -252,8 +252,8 @@ function UptimePanel() {
     <section className="u2-box">
       <div className="u2-toolbar">
         <div>
-          <h2 style={{ margin: 0, fontSize: "var(--u2-text-lg)" }}>Prototype Service Status</h2>
-          <p className="u2-muted" style={{ margin: 0 }}>DC Question Solver &amp; Syllabus Viewer. Live check, not the daily automated alert.</p>
+          <h2>Prototype Service Status</h2>
+          <p className="u2-muted">DC Question Solver &amp; Syllabus Viewer. Live check, not the daily automated alert.</p>
         </div>
         <Button variant="ghost" className="u2-toolbar__new" loading={check.isPending} onClick={() => check.mutate()}>
           Check Uptime

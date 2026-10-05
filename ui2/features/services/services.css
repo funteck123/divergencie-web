@@ -30,8 +30,6 @@
   .u2-svcline > * { min-width: 0; }
   .u2-svcline--head { font-weight: var(--u2-weight-semibold); color: var(--u2-color-text-muted); padding: 4px var(--u2-space-2); }
   .u2-svcline__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .u2-svcline__batches { list-style: none; margin: 0; padding: 0 var(--u2-space-2) var(--u2-space-2) 40px; display: grid; gap: 2px; font-size: var(--u2-text-sm); }
-  .u2-svcline__batch { display: grid; grid-template-columns: minmax(100px, 1fr) 1fr 1fr; gap: var(--u2-space-2); padding: 2px var(--u2-space-2); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius-sm); }
   .u2-batchlist { list-style: none; margin: 0; padding: var(--u2-space-2) var(--u2-space-3) var(--u2-space-3) 40px; display: grid; gap: var(--u2-space-2); }
   .u2-batch { padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-left: 4px solid var(--u2-color-brand); border-radius: var(--u2-radius-sm); font-size: var(--u2-text-md); }
   .u2-batch__title { margin: 0 0 var(--u2-space-2); font-size: var(--u2-text-md); font-weight: var(--u2-weight-bold); }

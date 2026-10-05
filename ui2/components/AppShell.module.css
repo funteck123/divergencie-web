@@ -33,5 +33,5 @@
 @media (max-width: 767px) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .who { display: none; } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { margin-left: auto; } }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .imp {
   display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-3); flex-wrap: wrap;
-  padding: var(--u2-space-2) var(--u2-space-4); background: #92400e; color: #fff; font-size: var(--u2-text-sm);
+  padding: var(--u2-space-2) var(--u2-space-4); background: var(--u2-color-impersonate); color: var(--u2-color-on-brand); font-size: var(--u2-text-sm);
 }

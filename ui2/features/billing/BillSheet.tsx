@@ -65,7 +65,7 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
 
   return (
     <div className="u2-form">
-      <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+      <div className="u2-rowactions">
         <Badge kind={bill.Status === "Sent" ? "success" : "neutral"}>{bill.Status}</Badge>
         <Badge kind={(bill as Record<string, unknown>)[k.paidKey] ? "success" : "neutral"}>{(bill as Record<string, unknown>)[k.paidKey] ? k.paidLabel : k.unpaidLabel}</Badge>
         {approval && <Badge kind="warning">Needs approval</Badge>}
@@ -85,7 +85,7 @@ function Body({ kind, bill, person, services, onClose }: { kind: BillKind; bill:
         <div><dt>INR due</dt><dd>{Number(bill.INRDue).toFixed(2)}</dd></div>
       </dl>
 
-      <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+      <div className="u2-rowactions">
         {approval && <ApprovePayment onApprove={(v) => run({ inrDue: v }, "Payment recorded.")} />}
         {isDraft ? (
           <Button variant="primary" loading={patch.isPending} onClick={() => void run({ status: "Sent" }, "Sent.")}>

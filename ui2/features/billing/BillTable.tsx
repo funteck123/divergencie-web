@@ -196,7 +196,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
       )}
       <div className="u2-toolbar">
         <input type="search" className="u2-search" placeholder={`Search ${k.personHeader.toLowerCase()}…`} aria-label={`Search ${k.personHeader}`} value={q} onChange={(e) => void setQ(e.target.value || null)} />
-        <div style={{ minWidth: 190 }}>
+        <div className="u2-minw">
           <Combobox aria-label="Status" value={f.status} onChange={(v) => void setStatus(v === "all" ? null : v)} options={(Object.entries(STATUS_FILTER_LABEL) as [string, string][]).map(([value, label]) => ({ value, label }))} />
         </div>
         <Button variant="ghost" aria-expanded={showFilters} onClick={() => setShowFilters((s) => !s)}>
@@ -208,7 +208,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           </Button>
         )}
         <span className="u2-muted" aria-live="polite">{rows.length === all.length ? `${all.length}` : `${rows.length} of ${all.length}`} {k.noun}s</span>
-        <div className="u2-seg" role="group" aria-label="View" style={{ marginLeft: "auto" }}>
+        <div className="u2-seg u2-push" role="group" aria-label="View">
           {MODES.map((m) => (
             <button key={m} type="button" className="u2-seg__btn" aria-pressed={mode === m} data-on={mode === m} onClick={() => void setMode(m === "table" ? null : m)}>
               {MODE_LABEL[m]}

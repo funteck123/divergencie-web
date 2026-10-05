@@ -33,6 +33,9 @@ export interface ScheduleCalendarProps {
 }
 
 /** Month grid. Up to three sessions per day, "+N more" opens the whole day. Chips are real buttons with a full-text label. */
+/** Same grey the classic UI uses for a group with no colour of its own (lib/client.js groupGradient). Data colour, not a theme colour. */
+const GROUP_FALLBACK_COLOR = "#6b7280"; // design-lint: allow
+
 export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendance, readOnly = false, colorByGroup = false, portalColor, renderExpanded, viewerTz }: ScheduleCalendarProps) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
@@ -53,7 +56,7 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
     const tone = !att ? "info" : att.Status === "Present" ? "good" : att.Status === "Late" ? "late" : "bad";
     const clickable = renderExpanded ? true : !readOnly && !att;
     const groups = normalizeGroup(s.ServiceGroup) as string[];
-    const style = colorByGroup ? { background: groupGradient(groups) as string, color: readableText(groups.map((g) => (GROUP_COLORS as Record<string, string>)[g] ?? "#6b7280")) } : portalColor ? { background: portalColor, color: readableText([portalColor]) } : undefined;
+    const style = colorByGroup ? { background: groupGradient(groups) as string, color: readableText(groups.map((g) => (GROUP_COLORS as Record<string, string>)[g] ?? GROUP_FALLBACK_COLOR)) } : portalColor ? { background: portalColor, color: readableText([portalColor]) } : undefined;
     const label = `${s.Time} ${tzAbbrFor(s.Date, viewerTz || normalizeTimezone(s.Timezone))} ${s.ServiceName ?? ""}${occ.get(s.ScheduleID) ? ` #${occ.get(s.ScheduleID)}` : ""}${s.Facilitator ? ` · ${s.Facilitator}` : ""}${att ? ` · ${att.Status}` : ""}`;
     return (
       <div key={s.ScheduleID}>

@@ -3,16 +3,16 @@
   .u2-chart { margin: 0; display: grid; gap: var(--u2-space-2); }
   .u2-chart svg { width: 100%; height: auto; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
   .u2-chart__grid { stroke: var(--u2-color-border); stroke-width: 1; }
-  .u2-chart__tick { fill: var(--u2-color-text-muted); font-size: 11px; }
+  .u2-chart__tick { fill: var(--u2-color-text-muted); font-size: var(--u2-text-2xs); }
   .u2-chart__mine { fill: none; stroke: var(--u2-color-brand); stroke-width: 3; stroke-linejoin: round; }
   .u2-chart__other { fill: none; stroke: var(--u2-color-text-muted); stroke-width: 1.5; opacity: 0.3; }
   .u2-chart__dot { fill: var(--u2-color-accent); stroke: var(--u2-color-brand); stroke-width: 2; cursor: pointer; }
   .u2-chart__dot:focus { outline: none; stroke-width: 4; }
   .u2-chart__bar { fill: var(--u2-color-coral); }
   .u2-chart__tipbg { fill: var(--u2-color-brand); }
-  .u2-chart__tiptext { fill: var(--u2-color-on-brand); font-size: 12px; }
+  .u2-chart__tiptext { fill: var(--u2-color-on-brand); font-size: var(--u2-text-xs); }
   .u2-chart__legend { display: flex; gap: var(--u2-space-4); align-items: center; flex-wrap: wrap; font-size: var(--u2-text-sm); }
-  .u2-chart__key { display: inline-block; width: 18px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .u2-chart__key { display: inline-block; width: 18px; height: 4px; border-radius: var(--u2-radius-xs); margin-right: 6px; vertical-align: middle; }
   .u2-chart__key--mine { background: var(--u2-color-brand); height: 5px; }
   .u2-chart__key--other { background: var(--u2-color-text-muted); opacity: 0.4; }
 }
@@ -28,7 +28,7 @@
   .u2-qstrip button { flex: 0 0 auto; min-width: 34px; height: 30px; border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius-sm); background: var(--u2-color-surface); color: var(--u2-color-text); font-weight: var(--u2-weight-semibold); cursor: pointer; }
   .u2-qstrip button[aria-current="true"] { background: var(--u2-color-brand); color: var(--u2-color-on-brand); border-color: var(--u2-color-brand); }
   .u2-qstrip button[data-answered="true"]:not([aria-current="true"]) { background: var(--u2-color-info-bg); }
-  .u2-qstrip button[data-flagged="true"]::after { content: "⚑"; font-size: 10px; margin-left: 2px; color: var(--u2-color-error); }
+  .u2-qstrip button[data-flagged="true"]::after { content: "⚑"; font-size: var(--u2-text-2xs); margin-left: 2px; color: var(--u2-color-error); }
   .u2-qcard { display: grid; gap: var(--u2-space-3); padding: var(--u2-space-4); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); }
   .u2-qcard img { max-width: 100%; height: auto; border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); }
   .u2-tabs { display: flex; flex-wrap: wrap; gap: 2px; border-bottom: 1px solid var(--u2-color-border); }
@@ -43,7 +43,7 @@
   .u2-verdict--correct { color: var(--u2-color-success); }
   .u2-verdict--incorrect { color: var(--u2-color-error); }
   .u2-banner { display: grid; gap: 2px; padding: var(--u2-space-4); background: var(--u2-color-brand); color: var(--u2-color-on-brand); border-radius: var(--u2-radius-md); text-align: center; }
-  .u2-banner__big { font-size: 32px; font-weight: var(--u2-weight-bold); }
+  .u2-banner__big { font-size: var(--u2-text-display); font-weight: var(--u2-weight-bold); }
   .u2-review { display: grid; gap: var(--u2-space-2); }
   .u2-review__row { display: grid; grid-template-columns: 70px 100px 1fr; gap: var(--u2-space-2); align-items: start; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-left-width: 4px; border-radius: var(--u2-radius-sm); }
   .u2-review__row--correct { border-left-color: var(--u2-color-success); }
@@ -53,7 +53,6 @@
   .u2-feedback__step { padding: var(--u2-space-2); border-radius: var(--u2-radius-sm); background: var(--u2-color-bg-subtle); }
   .u2-feedback__step--bad { background: var(--u2-color-error-bg); }
   .u2-verbatim { white-space: pre-wrap; padding: var(--u2-space-2); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius-sm); }
-  .u2-solver-tabs { display: flex; gap: var(--u2-space-1); overflow-x: auto; }
   @media (max-width: 767px) {
     .u2-qbar { top: auto; bottom: 0; position: fixed; left: 0; right: 0; border-radius: 0; z-index: 30; }
     .u2-solver { padding-bottom: 120px; }

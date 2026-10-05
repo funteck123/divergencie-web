@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/ui2/components/Button";
@@ -45,7 +46,7 @@ export function SyllabusView({ user }: { user: SessionUser }) {
       <aside className="u2-syl__list" aria-label="Subjects">
         <TextInput type="search" aria-label="Filter subjects" placeholder="Filter subjects…" value={query} onChange={(e) => setQuery(e.target.value)} />
         <Button variant="ghost" size="sm" onClick={() => setView("progress")}>My progress &amp; leaderboard</Button>
-        {listQ.isPending && <div className="u2-skeleton" style={{ height: 160 }} aria-busy="true" />}
+        {listQ.isPending && <Skeleton height={160} />}
         {listQ.error && <p role="alert" className="u2-form__error">Couldn&apos;t load subjects ({listQ.error.message}).</p>}
         {groupByLevel(list, query).map((g) => (
           <div key={g.level}>
@@ -180,7 +181,7 @@ function SyllabusProgress({ account, list, onBack }: { account: string; list: re
   const board = data ? leaderboardScope(data.leaderboard, { subject: lbSubject, chapter: lbChapter }) : [];
   const lbChapters = data && lbSubject ? Object.keys(data.leaderboard.byChapter[lbSubject] ?? {}) : [];
 
-  if (q.isPending) return <div className="u2-skeleton" style={{ height: 300 }} aria-busy="true" />;
+  if (q.isPending) return <Skeleton height={300} />;
   if (q.error) return <p role="alert" className="u2-errorbox">Couldn&apos;t load progress/leaderboard data ({q.error.message}). <Button size="sm" variant="ghost" onClick={() => void q.refetch()}>Try again</Button></p>;
   return (
     <div className="u2-solver">

@@ -6,7 +6,7 @@
   .u2-cal__nav { display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-3); flex-wrap: wrap; }
   .u2-cal__title { margin: 0; font-size: var(--u2-text-lg); }
   .u2-cal__legend { display: flex; gap: var(--u2-space-3); flex-wrap: wrap; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
-  .u2-cal__legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+  .u2-cal__legend i { display: inline-block; width: 10px; height: 10px; border-radius: var(--u2-radius-xs); }
   .u2-cal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
   .u2-cal__dow { text-align: center; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); }
   .u2-cal__cell { min-width: 0; grid-template-columns: minmax(0, 1fr); min-height: 92px; max-height: 150px; overflow: hidden; display: grid; align-content: start; gap: 3px; padding: 4px; background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-sm); cursor: default; }
@@ -30,6 +30,6 @@
   @media (max-width: 767px) { .u2-cal__cell { min-height: 60px; } .u2-agenda__row { grid-template-columns: 1fr; } }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+  .u2-swatch { display: inline-block; width: 10px; height: 10px; border-radius: var(--u2-radius-xs); margin-right: 6px; }
   .u2-imagebox { position: relative; width: 100%; height: 700px; border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-md); background: var(--u2-color-surface); }
 }

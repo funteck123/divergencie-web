@@ -47,7 +47,7 @@ export function RescheduleCell({ slot, pending }: { slot: ScheduleItem; pending?
     );
   if (editing)
     return (
-      <div className="u2-inline" style={{ alignItems: "end", flexWrap: "wrap" }}>
+      <div className="u2-inline u2-inline--wrap u2-inline--end">
         <Field label="New date"><TextInput type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
         <Field label="New time"><TextInput type="time" value={time} onChange={(e) => setTime(e.target.value)} /></Field>
         <Button size="sm" variant="primary" loading={direct.isPending} onClick={() => void move(date, time, "Session moved.")}>Save</Button>

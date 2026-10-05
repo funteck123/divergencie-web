@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo } from "react";
 import { formatDate } from "@/lib/formatDate";
 import { Badge } from "@/ui2/components/Badge";
@@ -22,7 +23,7 @@ export function ParentPortal({ user }: { user: SessionUser }) {
   const actions = useBillActions(user.UserID);
   const data = me.data;
   if (me.error) return <p role="alert" className="u2-errorbox">Could not load your dashboard: {me.error.message}</p>;
-  if (!data) return <div className="u2-skeleton" style={{ height: 240 }} aria-busy="true" />;
+  if (!data) return <Skeleton height={240} />;
   const children = data.children ?? [];
   return (
     <div className="u2-accounts">

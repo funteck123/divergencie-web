@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RequireUser } from "@/ui2/components/RequireUser";
@@ -21,5 +22,5 @@ export default function V2Home() {
 
 function Redirect({ to, go }: { to: string; go: (href: string) => void }) {
   useEffect(() => go(to), [to, go]);
-  return <div className="u2-skeleton" style={{ height: "var(--u2-bar-height)" }} aria-busy="true" />;
+  return <Skeleton height="var(--u2-bar-height)" />;
 }

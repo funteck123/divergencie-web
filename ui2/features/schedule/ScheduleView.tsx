@@ -78,13 +78,13 @@ export function ScheduleView() {
 
       {conflictItems.length > 0 && (
         <section className="u2-box">
-          <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Attendance Conflicts ({conflictItems.length})</h2>
+          <h2>Attendance Conflicts ({conflictItems.length})</h2>
           <DataTable caption="Attendance conflicts" rows={conflictItems} columns={conflictColumns} rowKey={(s) => s.ScheduleID} initialSort={{ id: "date", dir: "asc" }} />
         </section>
       )}
       {reqs.length > 0 && (
         <section className="u2-box">
-          <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Pending Reschedule Requests ({reqs.length})</h2>
+          <h2>Pending Reschedule Requests ({reqs.length})</h2>
           <DataTable caption="Pending reschedule requests" rows={reqs} columns={reqColumns} rowKey={(r) => r.RescheduleRequestID} initialSort={{ id: "requested", dir: "asc" }} />
         </section>
       )}
@@ -140,8 +140,8 @@ function OfferSlot({ items, openIds, services, loading }: { items: readonly Sche
 
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Offer a Trial / Interview Slot</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>Open pool: any Trial or Interview account can request a slot; several requests on the same slot are fine. Management approves one, which locks the slot and (for Trial) bills one month in advance for that service.</p>
+      <h2>Offer a Trial / Interview Slot</h2>
+      <p className="u2-muted">Open pool: any Trial or Interview account can request a slot; several requests on the same slot are fine. Management approves one, which locks the slot and (for Trial) bills one month in advance for that service.</p>
       <form onSubmit={submit} className="u2-form">
         <Field label="Slot type">
           <Combobox value={serviceType} onChange={(v) => { setServiceType(v); setServiceId(""); }} options={BOOKING_TYPES.map((t) => ({ value: t, label: BOOKING_LABEL[t] ?? t }))} />
@@ -161,7 +161,7 @@ function OfferSlot({ items, openIds, services, loading }: { items: readonly Sche
         </div>
       </form>
       <div className="u2-toolbar">
-        <h3 style={{ margin: 0 }}>Open pool slots</h3>
+        <h3>Open pool slots</h3>
         <div className="u2-seg" role="group" aria-label="Pool view">
           <button type="button" className="u2-seg__btn" aria-pressed={view === "list"} data-on={view === "list"} onClick={() => setView("list")}>List</button>
           <button type="button" className="u2-seg__btn" aria-pressed={view === "calendar"} data-on={view === "calendar"} onClick={() => setView("calendar")}>Calendar</button>
@@ -208,7 +208,7 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
 
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Service Schedule (auto-generated)</h2>
+      <h2>Service Schedule (auto-generated)</h2>
       <div className="u2-seg" role="group" aria-label="Schedule view">
         {VIEWS.map((v) => (
           <button key={v.id} type="button" className="u2-seg__btn" aria-pressed={view === v.id} data-on={view === v.id} onClick={() => void setView(v.id === "agenda" ? null : v.id)}>

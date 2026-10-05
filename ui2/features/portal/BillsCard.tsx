@@ -65,7 +65,7 @@ export function BillsCard({ kind, title, bills, services, currency, email, compa
       cell: (b) => {
         const pay = kind === "invoice" && !(b as Record<string, unknown>)[flag] ? stripeLink(gateway, idOf(b), email) : null;
         return (
-          <span className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+          <span className="u2-rowactions">
             {pay && <a className="u2-pill" href={pay} target="_blank" rel="noreferrer">Pay online</a>}
             {compact && b.Status === "Sent" && <InvoicePaid invoice={b} onMarkUnpaid={onMarkUnpaid!} onConfirmPaid={onConfirmPaid!} />}
             {!compact && <LinkButton href={kind === "invoice" ? `/api/invoices/pdf?invoiceId=${idOf(b)}` : `/api/paychecks/pdf?paycheckId=${idOf(b)}`} download>PDF</LinkButton>}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo } from "react";
 import { useBillActions } from "@/ui2/queries/portalActions";
 import { useMe, useReloadMe } from "@/ui2/queries/me";
@@ -20,7 +21,7 @@ export function RolePortal({ role, user }: { role: PortalRole; user: SessionUser
   const services = useMemo(() => enrolledServices(data?.enrollments, data?.services), [data]);
 
   if (me.error) return <p role="alert" className="u2-errorbox">Could not load your dashboard: {me.error.message}</p>;
-  if (!data) return <div className="u2-skeleton" style={{ height: 240 }} aria-busy="true" />;
+  if (!data) return <Skeleton height={240} />;
   const u = data.user;
   const student = role === "Student";
   const allServices = data.services ?? [];

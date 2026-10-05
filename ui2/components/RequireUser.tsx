@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "./Skeleton";
 import { useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { roleHomePath } from "@/lib/client";
@@ -48,6 +49,6 @@ export function RequireUser({ allow, children }: { allow?: readonly string[]; ch
     else if (!allowed) router.replace(roleHomePath(user.UserType));
   }, [user, allowed, router]);
 
-  if (!user || !allowed) return <div className="u2-skeleton" style={{ height: "var(--u2-bar-height)" }} aria-busy="true" />;
+  if (!user || !allowed) return <Skeleton height="var(--u2-bar-height)" />;
   return <>{children(user)}</>;
 }

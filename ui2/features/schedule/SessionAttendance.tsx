@@ -87,7 +87,7 @@ export function SessionAttendance({ scheduleId, duration, viewerUserId, viewerTy
             {records.length === 0 && <p className="u2-muted">Not logged yet.</p>}
             {records.map((r) => (
               <div key={r.AttendanceID} className="u2-att__rec">
-                <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+                <div className="u2-rowactions">
                   <Badge kind={r.Status === "Present" ? "success" : r.Status === "Late" ? "warning" : "error"}>{r.Status}</Badge>
                   <span>{r.LoggedDuration}h</span>
                   <span className="u2-muted">

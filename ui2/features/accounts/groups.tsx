@@ -68,13 +68,13 @@ function link(id: string, header: string, title: string, url: (u: UserRecord) =>
     id,
     header,
     title,
-    width: 30,
+    width: 34,
     align: "center",
     sortValue: (u) => (url(u) ? 1 : 0),
     cell: (u) => {
       const href = url(u);
       return href ? (
-        <LinkButton href={href} target="_blank" aria-label={`Open ${title.toLowerCase()} of ${u.Name}`} title={title}>
+        <LinkButton href={href} target="_blank" className="u2-linkicon" aria-label={`Open ${title.toLowerCase()} of ${u.Name}`} title={title}>
           ↗
         </LinkButton>
       ) : (

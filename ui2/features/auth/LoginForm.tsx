@@ -41,7 +41,7 @@ export function LoginForm() {
         <Field label="Password" hint="Shown as you type.">
           <TextInput required autoComplete="current-password" placeholder="your-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        <p style={{ margin: 0 }}><LinkButton href="mailto:divergenCIE@outlook.com" title="Forgot Password">Forgot your password?</LinkButton></p>
+        <p><LinkButton href="mailto:divergenCIE@outlook.com" title="Forgot Password">Forgot your password?</LinkButton></p>
         {error && <p role="alert" className="u2-form__error">{error}</p>}
         <Button type="submit" variant="primary" loading={loading}>Portal Login</Button>
       </form>

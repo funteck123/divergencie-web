@@ -117,7 +117,7 @@ export function ScheduleCard({ user, services, scheduleItems, attendance, resche
       {view === "list" && (
         <div className="u2-toolbar">
           {rangeMode === "select" ? (
-            <div style={{ minWidth: 170 }}><Combobox aria-label="Date range" value={range} onChange={(v) => setRange(v as Range)} options={RANGES} /></div>
+            <div className="u2-minw"><Combobox aria-label="Date range" value={range} onChange={(v) => setRange(v as Range)} options={RANGES} /></div>
           ) : (
             <CheckField label="Show past" checked={showPast} onChange={setShowPast} />
           )}

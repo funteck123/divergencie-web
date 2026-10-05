@@ -33,11 +33,11 @@ export function GuidesView() {
         <McqConfig />
       </div>
       <section className="u2-box">
-        <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Add a Guide</h2>
+        <h2>Add a Guide</h2>
         <GuideForm submitLabel="Add Guide" onSubmit={async (v) => { setError(""); try { await create.mutateAsync(v); toast.success(`Added ${v.name}.`); } catch (e) { setError(e instanceof Error ? e.message : "Could not add."); throw e; } }} resetOnSave />
       </section>
       <section className="u2-box">
-        <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Existing Guides</h2>
+        <h2>Existing Guides</h2>
         {(guides.data ?? []).length === 0 ? (
           <p className="u2-muted">{guides.isPending ? "Loading…" : "No guides yet. Add one above."}</p>
         ) : (
@@ -62,8 +62,8 @@ function ResourceToggles() {
   const [busyKey, setBusyKey] = useState<string | null>(null);
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Student Resources Tools</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>Turn any Resources button on or off for every student at once, without a code change.</p>
+      <h2>Student Resources Tools</h2>
+      <p className="u2-muted">Turn any Resources button on or off for every student at once, without a code change.</p>
       {toggles.error && <p role="alert" className="u2-form__error">{toggles.error.message}</p>}
       {!toggles.data ? (
         <p className="u2-muted">Loading…</p>
@@ -96,8 +96,8 @@ function McqConfig() {
   const url = draft ?? saved;
   return (
     <section className="u2-box">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>MCQ Digitizer Extraction Service</h2>
-      <p className="u2-muted" style={{ margin: 0 }}>Current Cloudflare tunnel URL for the extraction service. Update this whenever the tunnel restarts. Every student request routes through this one value, no redeploy needed.</p>
+      <h2>MCQ Digitizer Extraction Service</h2>
+      <p className="u2-muted">Current Cloudflare tunnel URL for the extraction service. Update this whenever the tunnel restarts. Every student request routes through this one value, no redeploy needed.</p>
       <Field label="Extraction service tunnel URL" error={error}>
         <div className="u2-inline">
           <TextInput placeholder="https://random-words.trycloudflare.com" value={url} onChange={(e) => setDraft(e.target.value)} />

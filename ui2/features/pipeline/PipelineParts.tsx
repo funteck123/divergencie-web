@@ -47,8 +47,8 @@ export function SlotAssign({ serviceId, openSlots, onApprove, onCreateAndApprove
 
   if (mode === "existing")
     return (
-      <div className="u2-inline" style={{ flexWrap: "wrap", alignItems: "center" }}>
-        <div style={{ minWidth: 230, flex: 1 }}>
+      <div className="u2-inline u2-inline--wrap u2-inline--center">
+        <div className="u2-grow">
           <Combobox aria-label="Open slot" value={scheduleId} onChange={setScheduleId} placeholder="Select an open slot…" options={candidates.map((s) => ({ value: s.ScheduleID, label: `${formatDate(s.Date) as string} at ${s.Time} ${tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}${s.BatchName ? ` · ${s.BatchName as string}` : ""} (${s.Facilitator || "no instructor set"})` }))} />
         </div>
         <Button size="sm" variant="primary" loading={saving} disabled={!scheduleId} disabledReason="Select a slot first." onClick={() => void run(() => onApprove(scheduleId))}>Approve</Button>
@@ -57,7 +57,7 @@ export function SlotAssign({ serviceId, openSlots, onApprove, onCreateAndApprove
       </div>
     );
   return (
-    <div className="u2-inline" style={{ flexWrap: "wrap", alignItems: "end" }}>
+    <div className="u2-inline u2-inline--wrap u2-inline--end">
       <Field label="Date"><TextInput type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
       <Field label="Time"><TextInput type="time" value={time} onChange={(e) => setTime(e.target.value)} /></Field>
       <Field label="Hours"><TextInput type="number" step="0.5" min="0.5" value={duration} onChange={(e) => setDuration(e.target.value)} /></Field>

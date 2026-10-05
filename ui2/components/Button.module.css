@@ -21,8 +21,8 @@
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .ghost:hover, :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .ghost[data-force="hover"] { background: var(--u2-color-selected); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .danger { background: var(--u2-color-error); color: var(--u2-color-text-inverse); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .danger:hover, :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .danger[data-force="hover"] { box-shadow: var(--u2-shadow-sm); filter: brightness(0.94); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .onDark.ghost { color: var(--u2-color-on-brand); border-color: rgba(255, 255, 255, 0.55); }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .onDark.ghost:hover { background: rgba(255, 255, 255, 0.12); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .onDark.ghost { color: var(--u2-color-on-brand); border-color: var(--u2-color-on-brand-line); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .onDark.ghost:hover { background: var(--u2-color-on-brand-wash); }
 
 @media (hover: hover) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .btn:not(.isDisabled):active { transform: scale(0.98); } }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .btn[data-force="focus"] { box-shadow: 0 0 0 2px var(--u2-color-bg), 0 0 0 4px var(--u2-color-focus); }
@@ -35,7 +35,7 @@
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .label { display: inline-flex; align-items: center; gap: var(--u2-space-2); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .isLoading .label { visibility: hidden; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .spinner {
-  position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  position: absolute; width: 16px; height: 16px; border-radius: var(--u2-radius-round);
   border: 2px solid currentColor; border-right-color: transparent; animation: spin 0.7s linear infinite;
 }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .asLink { text-decoration: none; }

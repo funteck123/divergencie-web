@@ -18,7 +18,7 @@ export function Card({ title, children, actions }: { title: string; children: Re
   return (
     <section className="u2-box">
       <div className="u2-toolbar">
-        <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>{title}</h2>
+        <h2>{title}</h2>
         {actions && <span className="u2-toolbar__new">{actions}</span>}
       </div>
       {children}

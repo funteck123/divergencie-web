@@ -1,0 +1,17 @@
+
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* layout utilities: what pages used to say with inline styles */
+  .u2-inline--center { align-items: center; }
+  .u2-inline--end { align-items: flex-end; }
+  .u2-inline--stretch { align-items: stretch; }
+  .u2-inline--wrap { flex-wrap: wrap; }
+  .u2-grow { flex: 1; min-width: 0; }
+  .u2-minw { min-width: 200px; }
+  .u2-push { margin-left: auto; }
+  .u2-prewrap { white-space: pre-wrap; }
+  .u2-clickable { cursor: pointer; }
+  .u2-fill { width: 100%; }
+  .u2-contain { object-fit: contain; max-width: 100%; }
+}
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { .u2-page { min-height: 100vh; } }
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { .u2-linkicon { min-width: 22px; width: 22px; padding: 0; } }

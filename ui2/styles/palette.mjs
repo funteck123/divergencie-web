@@ -67,6 +67,17 @@ export const TOKENS = {
   "color-accent-hover": mix(BRAND.gold, BRAND.navy, 0.12),
   "color-on-accent": BRAND.navy, // guideline says white text: 2.08:1 fails, navy text is 5.44:1
   "color-link": BRAND.navy, // guideline says sky blue: 2.92:1 fails; links are navy and underlined
+  // text on the tinted status backgrounds (toasts, banners): each passes AA on its tint
+  "color-on-success-bg": "#0B3D24",
+  "color-on-error-bg": "#7A1F15",
+  "color-on-info-bg": "#1F4A6B",
+  "color-on-warning-bg": "#4A3F12",
+  // impersonation bar, scrims behind dialogs and sheets, outlines on navy
+  "color-impersonate": "#92400E",
+  "color-scrim": "rgba(26, 26, 26, 0.45)",
+  "color-scrim-light": "rgba(26, 26, 26, 0.35)",
+  "color-on-brand-line": "rgba(255, 255, 255, 0.55)",
+  "color-on-brand-wash": "rgba(255, 255, 255, 0.12)",
   // status
   "color-info": BRAND.sky, // fill, dot, icon (never small text)
   "color-info-text": mix(BRAND.sky, BRAND.navy, 0.55),
@@ -94,13 +105,16 @@ export const TOKENS = {
   "space-12": "48px",
   "space-16": "64px",
   // radius
+  "radius-xs": "2px",
   "radius-sm": "4px",
   "radius-md": "8px",
   "radius-lg": "12px",
   "radius-xl": "20px",
   "radius-full": "9999px",
+  "radius-round": "50%",
   // type (dense UI scale inside the guideline family)
   "font-sans": 'var(--font-inter), Inter, Arial, Helvetica, sans-serif',
+  "text-2xs": "11px",
   "text-xs": "12px",
   "text-sm": "13px",
   "text-md": "14px",
@@ -108,6 +122,7 @@ export const TOKENS = {
   "text-xl": "20px",
   "text-2xl": "24px",
   "text-3xl": "28px",
+  "text-display": "32px",
   "weight-regular": "400",
   "weight-medium": "500",
   "weight-semibold": "600",
@@ -169,6 +184,11 @@ export const REQUIRED_PAIRS = [
   ["color-success", "color-success-bg", 4.5, "success text on success background"],
   ["color-warning-text", "color-bg", 4.5, "warning text"],
   ["color-warning-text", "color-warning-bg", 4.5, "warning text on warning background"],
+  ["color-on-success-bg", "color-success-bg", 4.5, "toast text on success tint"],
+  ["color-on-error-bg", "color-error-bg", 4.5, "toast text on error tint"],
+  ["color-on-info-bg", "color-info-bg", 4.5, "toast text on info tint"],
+  ["color-on-warning-bg", "color-warning-bg", 4.5, "toast text on warning tint"],
+  ["color-on-brand", "color-impersonate", 4.5, "text on the impersonation bar"],
   ["color-error", "color-bg", 4.5, "error text"],
   ["color-error", "color-error-bg", 4.5, "error text on error background"],
   ["color-error", "color-surface-warm", 4.5, "error text on warm"],

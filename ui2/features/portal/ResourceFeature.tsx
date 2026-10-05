@@ -23,7 +23,7 @@ export function ResourceFeature() {
     <div className="u2-accounts">
       <div><Button variant="ghost" onClick={() => router.back()}>← Back</Button></div>
       <Card title={`${label}${serviceName ? ` — ${serviceName}` : ""}`}>
-        <p className="u2-muted" style={{ margin: 0 }}>In-app {label} is coming soon.</p>
+        <p className="u2-muted">In-app {label} is coming soon.</p>
         <div><a className="u2-pill" href={target} target="_blank" rel="noreferrer">Access {label}</a></div>
       </Card>
       {feature === "worksheets" && <DriveFiles link={link} />}

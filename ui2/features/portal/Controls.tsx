@@ -73,7 +73,7 @@ export function InvoicePaid({ invoice, onMarkUnpaid, onConfirmPaid }: { invoice:
   if (invoice.StudentPaidFlag)
     return (
       <span className="u2-rows" style={{ gap: 2 }}>
-        <span className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+        <span className="u2-rowactions">
           <Badge kind="success">Paid ✓</Badge>
           {invoice.PaymentProofPath && <LinkButton href={`/api/invoices/proof?invoiceId=${id}`} target="_blank">View proof</LinkButton>}
           <Button size="sm" variant="ghost" onClick={() => void onMarkUnpaid(id)}>Mark as unpaid</Button>
@@ -83,8 +83,8 @@ export function InvoicePaid({ invoice, onMarkUnpaid, onConfirmPaid }: { invoice:
     );
   if (!confirming) return <Button size="sm" variant="ghost" onClick={() => setConfirming(true)}>Mark as paid</Button>;
   return (
-    <span className="u2-rowactions" style={{ flexWrap: "wrap" }}>
-      <label htmlFor={fileId} className="u2-pill" style={{ cursor: "pointer" }}>Upload payment proof</label>
+    <span className="u2-rowactions">
+      <label htmlFor={fileId} className="u2-pill u2-clickable">Upload payment proof</label>
       <input id={fileId} type="file" accept="image/*,application/pdf" className="u2-visually-hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       <span className="u2-muted" aria-live="polite">{file ? file.name : "Receipt or screenshot, none selected yet"}</span>
       <Button

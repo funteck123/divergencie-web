@@ -90,7 +90,7 @@ export function QuizStage(p: QuizStageProps) {
       {p.audio && (
         <div className="u2-box u2-box--inner">
           <label className="u2-muted" htmlFor="u2-audio">Listening audio</label>
-          {p.audio.audioPath ? <audio id="u2-audio" controls preload="metadata" src={yearlyAudioUrl(p.audio.paperId)} style={{ width: "100%" }} /> : <p className="u2-muted">The audio track for this paper isn&apos;t available yet, so the questions can&apos;t be answered here. Ask your teacher for the recording.</p>}
+          {p.audio.audioPath ? <audio id="u2-audio" controls preload="metadata" src={yearlyAudioUrl(p.audio.paperId)} className="u2-fill" /> : <p className="u2-muted">The audio track for this paper isn&apos;t available yet, so the questions can&apos;t be answered here. Ask your teacher for the recording.</p>}
         </div>
       )}
 
@@ -167,7 +167,7 @@ function McqCard({ q, state: s, dispatch, tab, setTab, checked, onCheck }: { q: 
       <div className="u2-rowactions">
         <strong>Question {q.questionNumber}</strong>
         {!practice && (
-          <label className="u2-check" style={{ marginLeft: "auto" }}>
+          <label className="u2-check u2-push">
             <input type="checkbox" checked={flagged} onChange={() => dispatch({ type: "flag", q: q.questionNumber })} /> 🚩 Flag to come back to this one
           </label>
         )}

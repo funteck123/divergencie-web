@@ -1,6 +1,6 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-sheet__overlay { position: fixed; inset: 0; z-index: var(--u2-z-sheet); background: rgba(26, 26, 26, 0.35); }
+  .u2-sheet__overlay { position: fixed; inset: 0; z-index: var(--u2-z-sheet); background: var(--u2-color-scrim-light); }
   .u2-sheet {
     position: fixed; z-index: var(--u2-z-sheet); top: 0; right: 0; bottom: 0; width: min(560px, 100vw);
     display: grid; grid-template-rows: auto 1fr auto; background: var(--u2-color-surface); color: var(--u2-color-text); box-shadow: var(--u2-shadow-lg);

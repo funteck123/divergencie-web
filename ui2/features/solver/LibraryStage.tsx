@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
 import { Button } from "@/ui2/components/Button";
 import { Combobox, type ComboOption } from "@/ui2/components/Combobox";
@@ -83,17 +84,17 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
     onPick({ source: "topical", paper: topicalPaper, structured, meta: { subject: `${b} ${s}`, chapter: chapterKey(topicalPaper.title), paperId: topicalPaper.qpId } }, c);
   }
 
-  if (loading) return <div className="u2-skeleton" style={{ height: 260 }} aria-busy="true" aria-label="Loading the library" />;
+  if (loading) return <Skeleton height={260} label="Loading the library" />;
   if (error && !bundle) return <p role="alert" className="u2-errorbox">Library unavailable: {error}</p>;
 
   return (
     <section className="u2-solver-picker" aria-label="Choose a paper from the library">
-      <h2 style={{ margin: 0, fontSize: "var(--u2-text-xl)" }}>Choose a paper from the library</h2>
+      <h2>Choose a paper from the library</h2>
       <Field label="Board"><Combobox value={b} onChange={setBoard} options={boards.map(opt)} /></Field>
       <Field label="Subject"><Combobox value={s} onChange={setSubject} options={subjects.map(opt)} /></Field>
       <Field label="Component">
-        <div className="u2-inline" style={{ alignItems: "stretch" }}>
-          <div style={{ flex: 1 }}><Combobox value={c} onChange={setComponent} options={components.map(opt)} /></div>
+        <div className="u2-inline u2-inline--stretch">
+          <div className="u2-grow"><Combobox value={c} onChange={setComponent} options={components.map(opt)} /></div>
           {canMistakes && type === "topical" && topical.length > 0 && <Button variant="ghost" onClick={() => onMistakes(b, s, c)}>Mistakes Mode</Button>}
         </div>
       </Field>
@@ -116,7 +117,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
       <div className="u2-solver-picker__go">
         <Button variant="primary" loading={busy} disabled={disabled} disabledReason={missingMs ? "This paper has no mark scheme." : "Choose a paper first."} onClick={go}>{fetchButtonLabel(c)}</Button>
       </div>
-      <p className="u2-muted" style={{ margin: 0 }}>
+      <p className="u2-muted">
         <Button size="sm" variant="ghost" onClick={onUpload}>Or upload your own QP + MS PDFs instead</Button>
         {" · "}
         <Button size="sm" variant="ghost" onClick={onProgress}>View my progress &amp; the leaderboard</Button>

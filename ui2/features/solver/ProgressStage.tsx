@@ -1,5 +1,6 @@
 "use client";
 
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/ui2/components/Button";
@@ -46,7 +47,7 @@ export function ProgressStage({ account, titles, names, onBack }: { account: str
   const avg = completed.length ? Math.round(completed.reduce((t, a) => t + pctOf(a), 0) / completed.length) : null;
   const rank = data?.leaderboard.overall.findIndex((e) => e.accountId === account) ?? -1;
 
-  if (q.isPending) return <div className="u2-skeleton" style={{ height: 320 }} aria-busy="true" />;
+  if (q.isPending) return <Skeleton height={320} />;
   if (q.error) return <p role="alert" className="u2-errorbox">Couldn&apos;t load progress and leaderboard data ({q.error.message}). <Button size="sm" variant="ghost" onClick={() => void q.refetch()}>Try again</Button></p>;
 
   return (
@@ -120,7 +121,7 @@ function Answers({ account, attemptId, paperId }: { account: string; attemptId: 
     <div className="u2-rows">
       {responses.map((r) => (
         <div key={r.question_number} className="u2-box u2-box--inner">
-          <div className="u2-rowactions" style={{ flexWrap: "wrap" }}>
+          <div className="u2-rowactions">
             <strong>Question {r.question_number}</strong>
             {r.marks_awarded != null && <span>{r.marks_awarded} / {r.marks_available}</span>}
             {r.remark && <span className="u2-muted">{r.remark}</span>}
@@ -134,7 +135,7 @@ function Answers({ account, attemptId, paperId }: { account: string; attemptId: 
             if (v === "error") return <p key={k} className="u2-form__error">Couldn&apos;t load the {k === "ms" ? "mark scheme" : "question"}.</p>;
             if (v === "" || v === "loading") return <p key={k} className="u2-muted">Loading…</p>;
             // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
-            return <img key={k} src={v} alt={`${k === "ms" ? "Mark scheme" : "Question"} ${r.question_number}`} style={{ maxWidth: "100%" }} />;
+            return <img key={k} src={v} alt={`${k === "ms" ? "Mark scheme" : "Question"} ${r.question_number}`} className="u2-contain" />;
           })}
           <Feedback answer={r.student_answer} correctAnswer={r.correct_answer ?? undefined} lineFeedback={r.line_feedback} markBreakdown={r.mark_breakdown} styleChecklist={r.style_checklist} fullMarkAnswer={r.full_mark_answer} />
         </div>
@@ -148,7 +149,7 @@ function Mistakes({ chart, subject, setSubject, label }: { chart: Record<string,
   const shown = subject ? [subject] : subjects;
   return (
     <div className="u2-rows">
-      <p className="u2-muted" style={{ margin: 0 }}>One bar per chapter: total mistakes ever made there, including ones you&apos;ve since fixed. This is history, not your current weak spots.</p>
+      <p className="u2-muted">One bar per chapter: total mistakes ever made there, including ones you&apos;ve since fixed. This is history, not your current weak spots.</p>
       <Field label="Subject"><Combobox value={subject} onChange={setSubject} placeholder="All subjects" options={opts(subjects)} /></Field>
       {shown.length === 0 && <p className="u2-muted">No mistakes recorded yet.</p>}
       {shown.map((s) => (
@@ -182,7 +183,7 @@ function Board({ lb, account, titles, attempts, names }: { lb: Leaderboard; acco
   );
   return (
     <div className="u2-rows">
-      <p className="u2-muted" style={{ margin: 0 }}>&quot;Overall&quot; counts attempts and questions answered only. Comparing accuracy across subjects isn&apos;t fair, so average % appears once you pick a subject, chapter or paper.</p>
+      <p className="u2-muted">&quot;Overall&quot; counts attempts and questions answered only. Comparing accuracy across subjects isn&apos;t fair, so average % appears once you pick a subject, chapter or paper.</p>
       <div className="u2-grid3">
         <Field label="Subject"><Combobox value={subject} onChange={(v) => { setSubject(v); setChapter(""); setPaper(""); }} placeholder="Overall (all subjects)" options={opts(Object.keys(lb.bySubject ?? {}))} /></Field>
         <Field label="Chapter"><Combobox value={chapter} onChange={(v) => { setChapter(v); setPaper(""); }} placeholder="All chapters" disabled={!subject} options={opts(chapters, (c) => chapterLabel(names, subject, c))} /></Field>
@@ -190,14 +191,14 @@ function Board({ lb, account, titles, attempts, names }: { lb: Leaderboard; acco
       </div>
       {subject ? (
         <>
-          <h3 style={{ margin: 0 }}>By average score</h3>
+          <h3>By average score</h3>
           {rank(scope?.byAvgPercent, "avgPercent", "%")}
-          <h3 style={{ margin: 0 }}>By total correct</h3>
+          <h3>By total correct</h3>
           {rank(scope?.byTotalCorrect, "totalCorrect")}
         </>
       ) : (
         <>
-          <h3 style={{ margin: 0 }}>By volume</h3>
+          <h3>By volume</h3>
           <DataTable
             caption="By volume" rows={(lb.overall ?? []).slice(0, 10)} rowKey={(e) => e.accountId} emptyText="No attempts yet."
             columns={[

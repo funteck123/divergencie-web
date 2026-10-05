@@ -43,10 +43,10 @@ export function AuditView() {
     <section className="u2-accounts">
       <h1>Audit Log</h1>
       <div className="u2-toolbar">
-        <div style={{ minWidth: 200 }}>
+        <div className="u2-minw">
           <Combobox aria-label="Entity type" value={entityType} onChange={(v) => { void setEntityType(v || null); void setOffset(null); }} placeholder="All entity types" options={ENTITY_TYPES.map((t) => ({ value: t, label: t }))} />
         </div>
-        <div style={{ minWidth: 220 }}>
+        <div className="u2-minw">
           <Combobox aria-label="Actor" value={actor} onChange={(v) => { void setActor(v || null); void setOffset(null); }} placeholder="Any actor" options={(users.data ?? []).filter((u) => u.UserType === "Management" || u.UserType === "Staff").map((u) => ({ value: u.UserID, label: u.Name }))} />
         </div>
         <label className="u2-muted" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>

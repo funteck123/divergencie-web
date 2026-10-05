@@ -31,3 +31,16 @@ The new UI defines 31 colour tokens, 7 text sizes, 5 radii and 8 spacing steps i
 4. **Classic.** The new UI is the answer. Moving every role to it, with parity already 595 of 595, retires the 593 overrides instead of patching them.
 
 A visual pass (three directions, pick one, rebuild) is a separate decision. The new UI already has one system and one component set, so the case for redesigning from scratch is weaker here than for classic.
+
+## Cleanup done (new UI only), same day
+| Measure | Before | After |
+|---|---|---|
+| Raw colours in styles | 24 | 15, all in the allow-listed syllabus export, the contrast helper and one data-colour fallback |
+| Raw font sizes | 10 | 6 (syllabus export only) |
+| Raw radii | 5 | 2 (syllabus export only) |
+| Inline `style={{}}` | 121 in 35 files | 30 in 19 files, all computed values (a row height, a swatch colour, a CSS variable) |
+| Dead CSS classes | 4 | 0 |
+
+What changed: 14 new tokens (status text tints, impersonation bar, scrims, outlines on navy, `radius-xs`, `radius-round`, `text-2xs`, `text-display`) with contrast tests; `Skeleton` component; layout utility classes in `utilities.css`; redundant heading and paragraph styles removed (the base styles already set them); wrap moved into `u2-rowactions` and `u2-form__actions`.
+
+The guard: `npm run lint:design` (also part of `npm test`) fails on any raw colour, font size or corner radius in `ui2` or `app/v2` outside the allow-list in `scripts/lint-design.mjs`. A line can opt out with the comment `design-lint: allow` and a reason.
