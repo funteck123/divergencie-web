@@ -3337,6 +3337,32 @@ def parse_theory_ms(pdf_path):
     return blocks
 
 
+PAPER3_TOTAL_MARKS = 40
+
+def apply_equal_marks(blocks, qp_text, total=PAPER3_TOTAL_MARKS):
+    """A Level Practical (Paper 3) question papers from 2007 to 2010 print no marks at all: the body has no [N] and the
+    "For Examiner's Use" box is blank. The cover only says "All questions in this paper carry equal marks", and the paper is
+    always `total` (40) marks. So when no question has a printed mark, that sentence is present and `total` divides evenly by
+    the number of questions, each question gets total / N. Anything else is left untouched (a wrong guess is worse than
+    refusing: the autograder refuses a paper whose question marks do not add up to 40)."""
+    if not blocks or any(b.get("marks") for b in blocks):
+        return blocks
+    if not re.search(r"all\s+questions\s+in\s+this\s+paper\s+carry\s+equal\s+marks", qp_text or "", re.IGNORECASE):
+        return blocks
+    if total % len(blocks) != 0:
+        return blocks
+    each = total // len(blocks)
+    return [{**b, "marks": each} for b in blocks]
+
+
+def _cover_text(pdf_path):
+    doc = fitz.open(pdf_path)
+    try:
+        return "\n".join(doc[i].get_text() for i in range(min(2, doc.page_count)))
+    finally:
+        doc.close()
+
+
 def main():
     if len(sys.argv) == 4 and sys.argv[1] == "--theory":
         qp_path, ms_path = sys.argv[2], sys.argv[3]
@@ -3362,6 +3388,7 @@ def main():
             if common and (len(common) < len(questions) or len(common) < len(answers)):
                 questions = parse_structured(qp_path, subject, component, common)
                 answers = parse_structured(ms_path, subject, component, common)
+            questions = apply_equal_marks(questions, _cover_text(qp_path))
         print(json.dumps({"questions": questions, "answers": answers}))
         return
     if len(sys.argv) != 3:
