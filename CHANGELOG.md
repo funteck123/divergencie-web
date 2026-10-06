@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. See [commit
 ## [Unreleased]
 
 ### Fixed
+- Question Solver, marks read short on some written papers (TKT-0305): a mark printed where the text layer cannot be read (for example a graph part) left a question below its printed total (9701_s14_53 read 28 instead of 30). A printed `[Total: N]` is now used when it is larger than the sum of the `[N]` marks. A scan of 1,557 A Level papers shows only 18 question blocks in 17 papers change, each a genuine correction (including 9701_s14_51 and 52).
 - Question Solver, A Level Physics Paper 3 from 2007 to 2010 (TKT-0307): these papers print no marks per question, only "All questions in this paper carry equal marks", so the autograder read 0 and refused 17 of them. The parser now splits the fixed 40 marks equally when no mark is printed and that sentence is present (20 + 20 for the two-question papers). Every Physics Paper 3 paper from 2007 onward (182) now totals 40; papers that print marks are untouched. Unit tests in `prototypes/mcq-digitizer/test_equal_marks.py`.
 - Question Solver dropdowns on a phone (students reported they could not change an option; the list closed at once or the keyboard vanished): the option list used to close on any window resize, and showing the keyboard resizes the window. It now closes only when the width changes (rotation), and a plain tap on a dropdown no longer opens the keyboard (typing, or tapping the search box, still does). Regression script: `scripts/test-solver-select.py`.
 

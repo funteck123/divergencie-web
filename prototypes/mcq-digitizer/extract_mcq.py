@@ -2854,6 +2854,16 @@ STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT = {
 }
 
 
+def marks_from_text(text):
+    """Marks of one question block: the sum of its printed [N] allocations, or the printed "[Total: N]" when that is larger.
+    The bracket sum can come up short when a mark is printed where the text layer cannot be read (9701_s14_53 Q2(b), a
+    graph page: brackets add to 13, printed total 15). A printed total smaller than the sum is ignored: the sum wins."""
+    text = text or ""
+    total = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
+    printed = [int(m) for m in re.findall(r'\[\s*Total\s*:?\s*(\d+)\s*(?:marks?)?\s*\]', text, re.IGNORECASE)]
+    return max(total, printed[-1]) if printed and printed[-1] > total else total
+
+
 def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
     """One image + one text block per question/answer block, cropped
     exactly like a real MCQ question (reuses render_question_image) but
@@ -2929,7 +2939,7 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None):
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)
-        marks = sum(int(m) for m in re.findall(r'\[(\d+)\]', text))
+        marks = marks_from_text(text)
         blocks.append({
             "questionNumber": s["number"],
             "image": image_b64,
