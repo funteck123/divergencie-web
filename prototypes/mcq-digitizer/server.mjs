@@ -214,7 +214,20 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: AS Level Structured Questions",
   "Paper 4: A Level Structured Questions (A Level)",
   "Paper 5: Planning, Analysis and Evaluation (A Level)",
+  // TKT-0304/0337: A Level Mathematics 9709. Question paper marks read exactly (every sampled paper totals its fixed 75 or 50
+  // with no zero-mark question); mark scheme marks do not (0, partial or doubled), so gradeYearlyQuestion uses the QP marks.
+  "Paper 1: Pure Mathematics 1",
+  "Paper 2: Pure Mathematics 2",
+  "Paper 3: Pure Mathematics 3",
+  "Paper 4: Mechanics",
+  "Paper 5: Probability & Statistics 1",
+  "Paper 6: Probability & Statistics 2",
 ]);
+// Fixed paper totals for 9709 (all years): Papers 1 and 3 are 75 marks, the other four are 50.
+const MATHS_9709_TOTALS = {
+  "Paper 1: Pure Mathematics 1": 75, "Paper 2: Pure Mathematics 2": 50, "Paper 3: Pure Mathematics 3": 75,
+  "Paper 4: Mechanics": 50, "Paper 5: Probability & Statistics 1": 50, "Paper 6: Probability & Statistics 2": 50,
+};
 // Yearly components that are real A-D multiple choice: digitized through
 // extract_mcq.py's MCQ path (with answer-key grading), not the structured
 // question cropper. Matches subjectComponents.mjs's per-subject mcqComponent.
@@ -1057,8 +1070,17 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
     if (answer && as.length && sum(as, "marks") === 40 && as.every((a) => a.marks > 0)) return answer.marks;
     return 0;
   };
+  // A Level Maths: trust the question paper marks only when the paper adds up to its fixed total, else refuse (never the MS marks).
+  const mathsMarks = () => {
+    const total = MATHS_9709_TOTALS[paper.component];
+    const qs = digitized.questions || [];
+    const sum = qs.reduce((t, x) => t + (x.marks || 0), 0);
+    return question && total && qs.length && sum === total && qs.every((q) => q.marks > 0) ? question.marks : 0;
+  };
   const marks = /Advanced Practical Skills/.test(paper.component)
     ? paper3Marks()
+    : MATHS_9709_TOTALS[paper.component] && paper.board === "A Levels"
+    ? mathsMarks()
     : (answer && answer.marks)
     || (maxTotal && Number(maxTotal[1]))
     || totalTag(answer && answer.text)

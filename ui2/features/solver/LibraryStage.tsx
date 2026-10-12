@@ -7,7 +7,7 @@ import { Combobox, type ComboOption } from "@/ui2/components/Combobox";
 import { Field } from "@/ui2/components/Field";
 import type { LibraryBundle } from "@/ui2/queries/solver";
 import { yearlyPdfUrl } from "@/ui2/queries/solver";
-import { boardsOf, chapterKey, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, paperTypes, sessionsOf, subjectsOf, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
+import { boardsOf, chapterKey, chapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, paperTypes, sessionsOf, subjectOffersBothTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
 import type { AttemptMeta, TopicalPaper, YearlyPaper } from "./solverTypes";
 import "./solver.css";
 
@@ -15,6 +15,7 @@ export type PickedPaper =
   | { source: "topical"; paper: TopicalPaper; structured: boolean; meta: AttemptMeta }
   | { source: "yearly"; paper: YearlyPaper; structured: boolean; meta: AttemptMeta };
 
+const OTHER_CHAPTER = "~"; // worksheets whose title has no chapter number
 const opt = (v: string): ComboOption => ({ value: v, label: v });
 
 /**
@@ -42,6 +43,7 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const [year, setYear] = useState("");
   const [session, setSession] = useState("");
   const [paperKey, setPaperKey] = useState("");
+  const [chapterPick, setChapterPick] = useState("");
 
   // Every choice falls back to the first valid one, so the picker is always in a usable state (derived, not stored).
   const boards = boardsOf(lib, yearly);
@@ -52,7 +54,10 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const c = components.includes(component) ? component : (components[0] ?? "");
   const topical = lib[b]?.[s]?.[c] ?? [];
   const yearlyPapers = yearly[b]?.[s]?.[c] ?? [];
-  const types = paperTypes(topical, yearlyPapers);
+  const base = paperTypes(topical, yearlyPapers);
+  // Show the Topical or Yearly choice whenever the subject has both kinds somewhere, even when this component has only one.
+  const both = subjectOffersBothTypes(lib, yearly, b, s);
+  const types: typeof base = both ? { show: true, options: ["topical", "yearly"], value: base.options.length === 1 ? base.value : "topical" } : base;
   const type: PaperType = typeChoice && types.options.includes(typeChoice) ? typeChoice : types.value;
   const reading = type === "yearly" && yearlyPapers.length > 0 && isReadingComponent(c);
   const years = yearsOf(yearlyPapers).map(String);
@@ -60,9 +65,11 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const sessions = sessionsOf(yearlyPapers, Number(y));
   const se = sessions.includes(session) ? session : (sessions[0] ?? "");
 
+  const chapters = type === "topical" ? topicalChapters(topical) : [];
+  const chap = chapters.some((c) => c.key === chapterPick) ? chapterPick : "";
   const paperOptions: ComboOption[] =
     type === "topical"
-      ? topical.map((p, i) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}` }))
+      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (chapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}` }))
       : reading
         ? yearlyPapers.map((p) => ({ value: p.paperId, label: p.title }))
         : yearlyPapers.filter((p) => p.year === Number(y) && p.session === se).map((p) => ({ value: p.paperId, label: yearlyPaperLabel(p) }));
@@ -109,6 +116,12 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
           <Field label="Session"><Combobox value={se} onChange={setSession} options={sessions.map(opt)} /></Field>
         </div>
       )}
+      {type === "topical" && chapters.length > 1 && (
+        <Field label="Chapter" hint={`${chapters.length} chapters. Leave on All chapters to see every worksheet.`}>
+          <Combobox value={chap} onChange={(v) => { setChapterPick(v); setPaperKey(""); }} placeholder="All chapters" options={chapters.map((c) => ({ value: c.key, label: `${c.label} (${c.count})` }))} />
+        </Field>
+      )}
+      {paperOptions.length === 0 && <p className="u2-muted" role="status">{type === "topical" ? "No topical worksheets for this paper yet. Switch Paper Type to Yearly past papers." : "No yearly past papers for this paper yet."}</p>}
       <Field label="Paper" hint={missingMs ? "No matching mark scheme was found in the library for this paper. It can't be auto-graded." : undefined}>
         <Combobox value={pk} onChange={setPaperKey} options={paperOptions} />
       </Field>

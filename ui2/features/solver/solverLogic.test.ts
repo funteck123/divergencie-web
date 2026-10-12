@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, paperTypes, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { AUTOSAVE_MAX_AGE_MS, subjectOffersBothTypes, topicalChapters, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, paperTypes, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { AttemptRow, Library, McqQuestion, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
@@ -86,5 +86,27 @@ describe("autosave", () => {
     expect(resumable(rec, "mcq", "A", meta, 1_000_000 + AUTOSAVE_MAX_AGE_MS + 1)).toBe(false);
     expect(resumable(null, "mcq", "A", meta)).toBe(false);
     expect(resumable(rec, "mcq", "A", null, 1_001_000)).toBe(false);
+  });
+});
+
+describe("picker helpers (TKT-0336, TKT-0337)", () => {
+  const papers = [
+    { qpId: "a", title: "CAIE A Level Maths Ch1.2 Functions (P1) Worksheet 2" }, { qpId: "b", title: "CAIE A Level Maths Ch1.1 Quadratics (P1) Worksheet 1" },
+    { qpId: "c", title: "CAIE A Level Maths Ch1.2 Functions (P1) Worksheet 1" }, { qpId: "d", title: "Mixed revision" },
+  ];
+  it("lists each chapter once, in chapter order, with a count", () => {
+    expect(topicalChapters(papers)).toEqual([
+      { key: "1.1", label: "Ch 1.1: Quadratics", count: 1 }, { key: "1.2", label: "Ch 1.2: Functions", count: 2 }, { key: "~", label: "Other worksheets", count: 1 },
+    ]);
+  });
+  it("sorts chapter 10 after chapter 9", () => {
+    expect(topicalChapters([{ qpId: "x", title: "Ch10 A (P1) Worksheet 1" }, { qpId: "y", title: "Ch9 B (P1) Worksheet 1" }]).map((c) => c.key)).toEqual(["9", "10"]);
+  });
+  it("offers the paper type choice when a subject has both kinds anywhere", () => {
+    const lib = { B: { S: { "Paper 1": [{ qpId: "1", title: "t" }], "Paper 2": [] } } };
+    const yearly = { B: { S: { "Paper 2": [{ paperId: "p", year: 2020, session: "s", title: "t" }] } } };
+    expect(subjectOffersBothTypes(lib, yearly, "B", "S")).toBe(true);
+    expect(subjectOffersBothTypes(lib, {}, "B", "S")).toBe(false);
+    expect(subjectOffersBothTypes({}, yearly, "B", "S")).toBe(false);
   });
 });

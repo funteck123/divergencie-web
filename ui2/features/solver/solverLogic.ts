@@ -76,6 +76,27 @@ export function paperTypes(topical: readonly unknown[], yearly: readonly unknown
   if (topical.length === 0) return { show: false, value: "yearly", options: ["yearly"] };
   return { show: true, value: "topical", options: ["topical", "yearly"] };
 }
+/**
+ * Should the Paper Type dropdown (Topical worksheets or Yearly past papers) be shown? Yes whenever the subject has both kinds
+ * of paper somewhere, even if the chosen component has only one: the student then sees why the other list is empty and can
+ * switch, instead of the choice being missing (TKT-0337).
+ */
+export function subjectOffersBothTypes(lib: Library, yearly: YearlyLibrary, board: string, subject: string): boolean {
+  const has = (o: Record<string, readonly unknown[]> | undefined) => Object.values(o ?? {}).some((l) => l.length > 0);
+  return has(lib[board]?.[subject]) && has(yearly[board]?.[subject]);
+}
+/** The chapters of a component's topical worksheets in chapter order, each with how many worksheets it has (TKT-0336). */
+export function topicalChapters(papers: readonly TopicalPaper[]): { key: string; label: string; count: number }[] {
+  const m = new Map<string, { key: string; label: string; count: number; sort: number }>();
+  for (const p of papers) {
+    const num = chapterOf(p.title);
+    const key = num ?? "~"; // "~" groups worksheets with no chapter number
+    const cur = m.get(key) ?? { key, label: num ? (chapterNameOf(p.title) ? `Ch ${num}: ${chapterNameOf(p.title)}` : `Ch ${num}`) : "Other worksheets", count: 0, sort: num ? parseFloat(num) : Infinity };
+    cur.count += 1;
+    m.set(key, cur);
+  }
+  return [...m.values()].sort((a, b) => a.sort - b.sort).map(({ key, label, count }) => ({ key, label, count }));
+}
 /** The reading-only components open a PDF instead of starting a quiz. */
 export const isReadingComponent = (component: string) => component === "Examiner Report" || component.startsWith("ZNotes: ") || component.startsWith("Sample Response: ");
 export function fetchButtonLabel(component: string): string {
