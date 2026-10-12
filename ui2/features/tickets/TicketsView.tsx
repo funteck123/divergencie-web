@@ -15,7 +15,7 @@ import { useUsers } from "@/ui2/queries/users";
 import "@/ui2/features/accounts/accounts.css";
 import "@/ui2/features/billing/billing.css";
 import "@/ui2/features/services/services.css";
-import { onHoldCount, openCount, senderLabel, visibleTickets } from "./ticketLogic";
+import { ageLabel, onHoldCount, openCount, senderLabel, ticketAgeDays, visibleTickets } from "./ticketLogic";
 
 export function TicketsView() {
   const tickets = useTickets();
@@ -46,6 +46,7 @@ export function TicketsView() {
     { id: "notes", header: "Notes", width: 56, align: "center", sortValue: (t) => t.Notes?.length ?? 0, cell: (t) => t.Notes?.length || "—" },
     { id: "attachment", header: "Attachment", width: 90, cell: (t) => (t.AttachmentURL ? <LinkButton href={t.AttachmentURL} target="_blank">Link</LinkButton> : "—") },
     { id: "created", header: "Created", width: 130, sortValue: (t) => t.CreatedAt, cell: (t) => formatDateTime(t.CreatedAt) as string },
+    { id: "age", header: "Age", width: 78, numeric: true, tip: (t) => (t.ClosedAt ? "Days from created to closed" : "Days open so far"), sortValue: (t) => ticketAgeDays(t), cell: (t) => <span className={!t.ClosedAt && ticketAgeDays(t) >= 7 ? "u2-form__error" : undefined}>{ageLabel(ticketAgeDays(t))}</span> },
     { id: "closed", header: "Closed", width: 130, sortValue: (t) => t.ClosedAt ?? "", cell: (t) => (t.ClosedAt ? (formatDateTime(t.ClosedAt) as string) : "—") },
     {
       id: "actions", header: "", title: "Actions", width: 150,

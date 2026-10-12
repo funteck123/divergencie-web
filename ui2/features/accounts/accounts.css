@@ -1,9 +1,9 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-accounts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--u2-space-3); } /* minmax(0,1fr): a long unbreakable value must not widen the page */
-  .u2-seg { display: flex; gap: var(--u2-space-1); overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+  .u2-seg { display: flex; gap: var(--u2-space-1); overflow-x: auto; scrollbar-width: none; }
   .u2-seg__btn {
-    display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-shrink: 0; height: 32px; padding: 0 var(--u2-space-3);
+    display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-shrink: 0; height: 36px; padding: 0 var(--u2-space-3);
     border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-text);
     font-weight: var(--u2-weight-medium); cursor: pointer;
   }

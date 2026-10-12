@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
+import { DefaultViewButton, useDefaultView } from "@/ui2/lib/defaultView";
 import { toast } from "sonner";
 import { amountDueInOwnCurrency, lineItemName } from "@/lib/billing";
 import { formatDate } from "@/lib/formatDate";
@@ -36,6 +37,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
   const [modeParam, setMode] = useQueryState(`${kind}Mode`, parseAsString.withDefault("table"));
   const mode: Mode = (MODES as string[]).includes(modeParam) ? (modeParam as Mode) : "table";
   const [q, setQ] = useQueryState(`${kind}Q`, parseAsString.withDefault(""));
+  const defaultView = useDefaultView(`billing-${kind}`, mode, "table", (v) => void setMode(v === "table" ? null : v));
   const [status, setStatus] = useQueryState(`${kind}Status`, parseAsString.withDefault("all"));
   const [filters, setFilters] = useState<BillFilters>(emptyFilters);
   const [showFilters, setShowFilters] = useState(false);
@@ -215,6 +217,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
             </button>
           ))}
         </div>
+        <DefaultViewButton state={defaultView} />
       </div>
 
       {showFilters && (

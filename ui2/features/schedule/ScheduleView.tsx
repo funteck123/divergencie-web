@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
+import { DefaultViewButton, useDefaultView } from "@/ui2/lib/defaultView";
 import { toast } from "sonner";
 import { groupGradient, groupMatches, normalizeGroup } from "@/lib/client";
 import { formatDate } from "@/lib/formatDate";
@@ -187,6 +188,7 @@ const VIEWS: { id: View; label: string }[] = [{ id: "agenda", label: "Agenda" },
 function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds, loading, onOpen }: { items: readonly ScheduleItem[]; attendance: readonly import("@/ui2/queries/types").AttendanceItem[]; enrollments: readonly import("@/ui2/queries/types").EnrollmentRecord[]; requests: readonly RescheduleRequest[]; conflictIds: ReadonlySet<string>; loading: boolean; onOpen: (id: string) => void }) {
   const [viewParam, setView] = useQueryState("view", parseAsString.withDefault("agenda"));
   const view: View = (VIEWS.some((v) => v.id === viewParam) ? viewParam : "agenda") as View;
+  const defaultView = useDefaultView("schedule", view, "agenda", (v) => void setView(v === "agenda" ? null : v));
   const [showPast, setShowPast] = useState(false);
   const [conflictsOnly, setConflictsOnly] = useState(false);
   const [q, setQ] = useState("");
@@ -218,6 +220,7 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
           </button>
         ))}
       </div>
+      <div><DefaultViewButton state={defaultView} /></div>
       {(view === "list" || view === "agenda") && (
         <div className="u2-toolbar">
           <input type="search" className="u2-search" placeholder="Search service or instructor…" aria-label="Search schedule" value={q} onChange={(e) => setQ(e.target.value)} />

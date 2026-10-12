@@ -10,7 +10,7 @@
     box-shadow var(--u2-motion-fast) var(--u2-ease-out), transform var(--u2-motion-fast) var(--u2-ease-out);
   position: relative;
 }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .sm { min-height: 28px; padding: 0 var(--u2-space-3); font-size: var(--u2-text-sm); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .sm { min-height: 36px; padding: 0 var(--u2-space-3); font-size: var(--u2-text-sm); }
 @media (pointer: coarse) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .btn { min-height: var(--u2-touch-target); } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .iconOnly { min-width: var(--u2-touch-target); } }
 
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .primary { background: var(--u2-color-accent); color: var(--u2-color-on-accent); }

@@ -50,6 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       aria-description={disabled && disabledReason ? disabledReason : undefined}
       title={disabled && disabledReason ? disabledReason : rest.title}
       data-force={forceState}
+      data-size={size}
       onClick={handleClick}
       {...rest}
     >

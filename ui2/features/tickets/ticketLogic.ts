@@ -23,3 +23,12 @@ export function visibleTickets(tickets: readonly TicketRecord[], f: TicketFilter
 
 export const openCount = (tickets: readonly TicketRecord[]) => tickets.filter((t) => !t.ClosedAt && !t.OnHold).length;
 export const onHoldCount = (tickets: readonly TicketRecord[]) => tickets.filter((t) => !t.ClosedAt && t.OnHold).length;
+
+/** Whole days a ticket has been open: from creation to now, or to the day it was closed. */
+export function ticketAgeDays(t: Pick<TicketRecord, "CreatedAt" | "ClosedAt">, now = Date.now()): number {
+  const start = Date.parse(t.CreatedAt);
+  if (Number.isNaN(start)) return 0;
+  const end = t.ClosedAt ? Date.parse(t.ClosedAt) : now;
+  return Math.max(0, Math.floor(((Number.isNaN(end) ? now : end) - start) / 86_400_000));
+}
+export const ageLabel = (days: number) => (days === 0 ? "today" : days === 1 ? "1 day" : `${days} days`);

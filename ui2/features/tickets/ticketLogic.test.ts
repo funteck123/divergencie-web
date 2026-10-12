@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { onHoldCount, openCount, visibleTickets } from "./ticketLogic";
+import { ageLabel, onHoldCount, openCount, ticketAgeDays, visibleTickets } from "./ticketLogic";
 import type { TicketRecord } from "@/ui2/queries/types";
 
 const t = (o: Partial<TicketRecord>): TicketRecord => ({ TicketID: "T", SenderUserID: "U1", Message: "hello", CreatedAt: "2026-10-01T00:00:00Z", ...o });
@@ -13,4 +13,21 @@ describe("ticket list rules", () => {
   it("closed tickets appear when asked, even if flagged on hold", () => expect(ids(visibleTickets(list, { showClosed: true, showOnHold: false, search: "" }, label))).toEqual(["C", "A"]));
   it("search matches sender label and message", () => expect(ids(visibleTickets(list, { showClosed: true, showOnHold: true, search: "name of u1" }, label)).length).toBe(3));
   it("counts", () => { expect(openCount(list)).toBe(1); expect(onHoldCount(list)).toBe(1); });
+});
+
+describe("ticket age (TKT-0340)", () => {
+  const now = Date.parse("2026-10-13T12:00:00Z");
+  it("counts whole days open so far", () => {
+    expect(ticketAgeDays({ CreatedAt: "2026-10-13T08:00:00Z" }, now)).toBe(0);
+    expect(ticketAgeDays({ CreatedAt: "2026-10-12T11:00:00Z" }, now)).toBe(1);
+    expect(ticketAgeDays({ CreatedAt: "2026-10-03T12:00:00Z" }, now)).toBe(10);
+  });
+  it("stops counting at the day it was closed", () => {
+    expect(ticketAgeDays({ CreatedAt: "2026-10-01T00:00:00Z", ClosedAt: "2026-10-04T00:00:00Z" }, now)).toBe(3);
+  });
+  it("copes with bad dates and clocks that run backwards", () => {
+    expect(ticketAgeDays({ CreatedAt: "nope" }, now)).toBe(0);
+    expect(ticketAgeDays({ CreatedAt: "2026-10-20T00:00:00Z" }, now)).toBe(0);
+  });
+  it("words", () => { expect(ageLabel(0)).toBe("today"); expect(ageLabel(1)).toBe("1 day"); expect(ageLabel(9)).toBe("9 days"); });
 });

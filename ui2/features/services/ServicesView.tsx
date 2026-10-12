@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
+import { DefaultViewButton, useDefaultView } from "@/ui2/lib/defaultView";
 import { toast } from "sonner";
 import { Button } from "@/ui2/components/Button";
 import { ConfirmDialog } from "@/ui2/components/ConfirmDialog";
@@ -24,6 +25,7 @@ export function ServicesView() {
   const [group, setGroup] = useQueryState("group", parseAsString.withDefault("Student"));
   const [view, setView] = useQueryState("view", parseAsString.withDefault("tree"));
   const [q, setQ] = useQueryState("q", parseAsString.withDefault(""));
+  const defaultView = useDefaultView("services", view, "tree", (v) => void setView(v));
   const deferredQ = useDeferredValue(q);
   const [sheet, setSheet] = useState<SheetTarget>(null);
   const [deleting, setDeleting] = useState<ServiceRecord | null>(null);
@@ -93,6 +95,7 @@ export function ServicesView() {
             Table
           </button>
         </div>
+        <DefaultViewButton state={defaultView} />
         <Button variant="primary" className="u2-toolbar__new" onClick={() => setSheet({ mode: "create" })}>
           New service
         </Button>

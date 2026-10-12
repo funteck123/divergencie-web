@@ -44,14 +44,14 @@ export function TimelineView({ items, requests }: { items: readonly ScheduleItem
         <div className="u2-tl" role="table" aria-label={`Instructor timeline, ${date}`}>
           <div className="u2-tl__row u2-tl__row--head" role="row">
             <span role="columnheader" className="u2-tl__name">Instructor</span>
-            <span role="columnheader" className="u2-tl__axis">
+            <span role="columnheader" className="u2-tl__axis" style={{ ["--tl-hours" as string]: tl.toHour - tl.fromHour }}>
               {hours.map((h) => <span key={h} className="u2-tl__tick" style={{ left: `${((h - tl.fromHour) / (tl.toHour - tl.fromHour)) * 100}%` }}>{String(h).padStart(2, "0")}:00</span>)}
             </span>
           </div>
           {tl.rows.map((row) => (
             <div key={row.name} className="u2-tl__row" role="row">
               <span role="rowheader" className="u2-tl__name" title={row.name}>{row.name}</span>
-              <span role="cell" className="u2-tl__lane">
+              <span role="cell" className="u2-tl__lane" style={{ ["--tl-hours" as string]: tl.toHour - tl.fromHour }}>
                 {row.bars.map((b) => (
                   <span
                     key={b.id}
