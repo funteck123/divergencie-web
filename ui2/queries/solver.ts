@@ -98,5 +98,5 @@ export const getQuestionResponses = (account: string, attemptId: string) => apiF
 export const getQuestionImage = (paperId: string, questionNumber: string, kind: "qp" | "ms") => apiFetch<{ image: string }>(`/api/mcq/question-image?paperId=${encodeURIComponent(paperId)}&questionNumber=${encodeURIComponent(questionNumber)}&kind=${kind}`);
 
 export const pdfUrl = (fileId: string, filename: string) => `/api/mcq/pdf?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`;
-export const yearlyPdfUrl = (paperId: string) => `/api/mcq/yearly-pdf?paperId=${encodeURIComponent(paperId)}`;
+export const yearlyPdfUrl = (paperId: string, kind?: "qp" | "ms") => `/api/mcq/yearly-pdf?paperId=${encodeURIComponent(paperId)}${kind ? `&kind=${kind}` : ""}`;
 export const yearlyAudioUrl = (paperId: string) => `/api/mcq/yearly-audio?paperId=${encodeURIComponent(paperId)}`;

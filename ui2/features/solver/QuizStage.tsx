@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, LinkButton } from "@/ui2/components/Button";
 import { CheckField, TextArea } from "@/ui2/components/Field";
-import { pdfUrl, yearlyAudioUrl } from "@/ui2/queries/solver";
+import { pdfUrl, yearlyAudioUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
 import { formatTimer } from "./solverLogic";
 import { needsCancelConfirm, unansweredQuestions, type QuizAction, type QuizState } from "./quizMachine";
 import type { McqQuestion, StructuredItem, YearlyPaper } from "./solverTypes";
@@ -43,7 +43,7 @@ export interface QuizStageProps {
   mcq: readonly McqQuestion[];
   structured: readonly StructuredItem[];
   title: string;
-  pdfLinks?: { qpId: string; msId?: string; title: string } | null;
+  pdfLinks?: { qpId: string; msId?: string; title: string; yearlyId?: string } | null;
   audio?: YearlyPaper | null;
   grading: Readonly<Record<string, GradingStatus>>;
   onGrade: (questionNumber: string) => void;
@@ -111,8 +111,8 @@ export function QuizStage(p: QuizStageProps) {
         )}
         {p.pdfLinks && !p.pdfLinks.qpId.startsWith("upload") && practice && (
           <span className="u2-rowactions">
-            <LinkButton href={pdfUrl(p.pdfLinks.qpId, `${p.pdfLinks.title} QP`)}>📄 View QP PDF</LinkButton>
-            {p.pdfLinks.msId && <LinkButton href={pdfUrl(p.pdfLinks.msId, `${p.pdfLinks.title} MS`)}>📄 View MS PDF</LinkButton>}
+            <LinkButton href={p.pdfLinks.yearlyId ? yearlyPdfUrl(p.pdfLinks.yearlyId, "qp") : pdfUrl(p.pdfLinks.qpId, `${p.pdfLinks.title} QP`)}>📄 View QP PDF</LinkButton>
+            {p.pdfLinks.msId && <LinkButton href={p.pdfLinks.yearlyId ? yearlyPdfUrl(p.pdfLinks.yearlyId, "ms") : pdfUrl(p.pdfLinks.msId, `${p.pdfLinks.title} MS`)}>📄 View MS PDF</LinkButton>}
           </span>
         )}
         <nav className="u2-qstrip" aria-label="Questions">

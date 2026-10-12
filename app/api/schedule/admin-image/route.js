@@ -6,6 +6,7 @@ import { drawAdminSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
 import { normalizeGroup } from "@/lib/scheduleGen";
 import { batchesOf } from "@/lib/billing";
+import { isEnrollmentLiveThisWeek, todayString } from "@/lib/enrollmentDates";
 
 // Flattens every Service's Batches' OccuranceList into one flat list — the
 // whole week's recurring pattern across every service/batch at once, not
@@ -20,7 +21,9 @@ function buildAllEntries(db) {
   // Same rule as the Schedule tab's List/Calendar views (see SchedulePool
   // in app/dashboard/management/page.js) — a Batch nobody's enrolled in
   // isn't a real class, so it shouldn't appear on the weekly image either.
-  const enrolledBatchKeys = new Set(db.enrollments.map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
+  // TKT-0346: ...and only counts enrollments that are live this week, so a batch whose enrollments have all ended is not drawn.
+  const today = todayString();
+  const enrolledBatchKeys = new Set(db.enrollments.filter((e) => isEnrollmentLiveThisWeek(e, today)).map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
   for (const s of db.services) {
     const batches = batchesOf(s);
     const effective = batches.length > 0 ? batches : [{ BatchID: "", OccuranceList: s.OccuranceList || [] }];

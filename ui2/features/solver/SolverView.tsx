@@ -16,7 +16,7 @@ import type { AttemptMeta, GradeResult, McqQuestion, StructuredItem, YearlyPaper
 import "./solver.css";
 
 type Stage = "library" | "upload" | "mode" | "quiz" | "results" | "progress";
-type Paper = { title: string; meta: AttemptMeta | null; pdf: { qpId: string; msId?: string; title: string } | null; audio: YearlyPaper | null; ref: { paperId?: string; qpId?: string; msId?: string } };
+type Paper = { title: string; meta: AttemptMeta | null; pdf: { qpId: string; msId?: string; title: string; yearlyId?: string } | null; audio: YearlyPaper | null; ref: { paperId?: string; qpId?: string; msId?: string } };
 
 const readSave = (): AutosaveRecord | null => {
   try { return JSON.parse(window.localStorage.getItem(AUTOSAVE_KEY) || "null"); } catch { return null; }
@@ -82,7 +82,7 @@ export function SolverView({ user }: { user: SessionUser }) {
     setBusy(true); setError(""); setStatus("Loading questions…");
     const title = p.paper.title;
     const ref = p.source === "yearly" ? { paperId: p.paper.paperId } : { qpId: p.paper.qpId, msId: p.paper.msId };
-    const pdf = p.source === "topical" ? { qpId: p.paper.qpId, msId: p.paper.msId, title } : null;
+    const pdf = p.source === "topical" ? { qpId: p.paper.qpId, msId: p.paper.msId, title } : { qpId: p.paper.paperId, msId: p.paper.paperId, title, yearlyId: p.paper.paperId };
     const audio = p.source === "yearly" && p.paper.audioPath !== undefined ? p.paper : null;
     try {
       if (p.structured) {

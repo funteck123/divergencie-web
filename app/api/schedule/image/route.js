@@ -6,6 +6,7 @@ import { drawSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
 import { normalizeTimezone, convertWeeklyTime } from "@/lib/timezones";
 import { requireSelfOrParentOrManagement } from "@/lib/authz";
 import { batchesOf } from "@/lib/billing";
+import { isEnrollmentLiveThisWeek, todayString } from "@/lib/enrollmentDates";
 
 // Only the specific Batch each enrollment points to — a Service can now have
 // several Batches, and an enrollment only grants a seat in one of them.
@@ -19,7 +20,9 @@ import { batchesOf } from "@/lib/billing";
 // stored Day/Time was shown as-is, mislabeled under the viewer's own
 // timezone even when the occurrence was set in a different one.
 function buildEntries(db, userId, viewerTimezone) {
-  const myEnrollments = db.enrollments.filter((e) => e.UserID === userId);
+  // TKT-0346: only enrollments live this week; an ended one (or one not started yet) is not part of the weekly picture.
+  const today = todayString();
+  const myEnrollments = db.enrollments.filter((e) => e.UserID === userId && isEnrollmentLiveThisWeek(e, today));
   const entries = [];
   for (const e of myEnrollments) {
     const service = db.services.find((s) => s.ServiceID === e.ServiceID);

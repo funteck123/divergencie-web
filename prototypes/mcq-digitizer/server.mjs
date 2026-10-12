@@ -346,7 +346,30 @@ async function digitizeFromPaths(qpPath, msPath) {
 // see STRUCTURED_CHAIN_BY_SUBJECT_COMPONENT in extract_mcq.py. Omitted for
 // a topical paper (no such metadata readily threaded through that call
 // path yet) -- falls back to the same universal chain as before.
-async function digitizeStructuredFromPaths(qpPath, msPath, subject, component) {
+// On-disk cache for yearly past papers (TKT-0348). Cutting a paper into question images takes 5 to 15 seconds, and the in-memory
+// cache only holds the last 20 papers and is lost on every restart, so a student opening a paper nobody had opened recently waited
+// that long. The cache key covers both source files (path, size, modified time), the subject and component, and the extractor's
+// own size and modified time, so editing extract_mcq.py or replacing a PDF makes the old entry unreachable. Only yearly papers use
+// it (their files are a fixed archive); topical downloads and uploads are temporary files and never cached.
+const DIGITIZE_CACHE_DIR = path.join(REPO_ROOT, "data", "mcq-digitizer", "digitize-cache");
+function digitizeCacheFile(qpPath, msPath, subject, component) {
+  try {
+    const stamp = (p) => { const st = fs.statSync(p); return `${p}|${st.size}|${Math.floor(st.mtimeMs)}`; };
+    const ex = fs.statSync(path.join(__dirname, "extract_mcq.py"));
+    const key = [stamp(qpPath), stamp(msPath), subject || "", component || "", `${ex.size}|${Math.floor(ex.mtimeMs)}`].join("\n");
+    return path.join(DIGITIZE_CACHE_DIR, crypto.createHash("sha1").update(key).digest("hex") + ".json");
+  } catch {
+    return null; // a source file is missing: let the normal path report it
+  }
+}
+
+async function digitizeStructuredFromPaths(qpPath, msPath, subject, component, { cache = false } = {}) {
+  const cacheFile = cache ? digitizeCacheFile(qpPath, msPath, subject, component) : null;
+  if (cacheFile) {
+    try {
+      return JSON.parse(fs.readFileSync(cacheFile, "utf8"));
+    } catch { /* no entry yet, or an unreadable one: build it again */ }
+  }
   let stdout;
   try {
     const args = [path.join(__dirname, "extract_mcq.py"), "--structured", qpPath, msPath];
@@ -362,7 +385,16 @@ async function digitizeStructuredFromPaths(qpPath, msPath, subject, component) {
     }
     throw new Error("Failed to process the uploaded PDFs.");
   }
-  return JSON.parse(stdout);
+  const result = JSON.parse(stdout);
+  if (cacheFile && Array.isArray(result.questions) && result.questions.length > 0) {
+    try {
+      fs.mkdirSync(DIGITIZE_CACHE_DIR, { recursive: true });
+      const tmp = `${cacheFile}.${process.pid}.tmp`;
+      fs.writeFileSync(tmp, stdout);
+      fs.renameSync(tmp, cacheFile); // atomic: a reader never sees a half-written file
+    } catch { /* the cache is an optimisation; failing to write it never fails the request */ }
+  }
+  return result;
 }
 
 // Own cache, own file, deliberately never touching DATABASE_PATH (the
@@ -1044,7 +1076,7 @@ async function gradeYearlyQuestion(paperId, questionNumber, studentAnswer) {
   }
   let digitized = yearlyDigitizeCache.get(paperId);
   if (!digitized) {
-    digitized = await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
+    digitized = await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component, { cache: true });
     rememberYearlyDigitize(paperId, digitized);
   }
   const answer = (digitized.answers || []).find((a) => String(a.questionNumber) === questionNumber);
@@ -1862,7 +1894,7 @@ const server = http.createServer(async (req, res) => {
         // Shared with gradeYearlyQuestion, so the first "Submit answer" does
         // not re-run the Python extractor (seconds, on top of grading time).
         result = yearlyDigitizeCache.get(body.paperId)
-          || await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component);
+          || await digitizeStructuredFromPaths(paper.qpPath, paper.msPath, paper.subject, paper.component, { cache: true });
         rememberYearlyDigitize(body.paperId, result);
       }
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -1891,14 +1923,17 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const paper = findYearlyPaperById(paperId);
-      const rawPath = paper && (paper.erPath || paper.znotesPath || paper.sampleResponsePath);
+      // kind=qp or kind=ms serves the paper's own question paper or mark scheme (TKT-0343). The path comes only from the library
+      // entry, never from the request.
+      const kind = url.searchParams.get("kind");
+      const rawPath = paper && (kind === "qp" ? paper.qpPath : kind === "ms" ? paper.msPath : paper.erPath || paper.znotesPath || paper.sampleResponsePath);
       if (!paper || !rawPath || !isYearlyReadyComponent(paper.component)) {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "Unknown or not-yet-supported paperId." }));
         return;
       }
       const buf = fs.readFileSync(rawPath);
-      const safeName = paper.title.replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150);
+      const safeName = `${paper.title}${kind === "qp" ? " QP" : kind === "ms" ? " MS" : ""}`.replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150);
       res.writeHead(200, {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="${safeName}.pdf"`,
