@@ -88,6 +88,21 @@ const ALEVEL_SCIENCE_COMPONENT_BY_DIGIT = {
   "5": "Paper 5: Planning, Analysis and Evaluation (A Level)",
 };
 
+// 9709 Mathematics (TKT-0304, TKT-0336, TKT-0337). The paper numbers changed in 2020, so the same digit means a different
+// paper before and after (the TKT-0275 trap), confirmed from the printed cover title of real papers:
+//   up to 2019:  4 Mechanics 1, 5 Mechanics 2, 6 Probability & Statistics 1, 7 Probability & Statistics 2
+//   from 2020:   4 Mechanics,   5 Probability & Statistics 1, 6 Probability & Statistics 2
+// Papers 1 to 3 are the same in both. Mechanics 2 (old Paper 5) has no component in the picker, so it is left out.
+const MATHS9709_FIRST_NEW_YEAR = 2020;
+const MATHS9709_COMPONENT = {
+  "1": "Paper 1: Pure Mathematics 1",
+  "2": "Paper 2: Pure Mathematics 2",
+  "3": "Paper 3: Pure Mathematics 3",
+};
+const MATHS9709_OLD = { ...MATHS9709_COMPONENT, "4": "Paper 4: Mechanics", "6": "Paper 5: Probability & Statistics 1", "7": "Paper 6: Probability & Statistics 2" };
+const MATHS9709_NEW = { ...MATHS9709_COMPONENT, "4": "Paper 4: Mechanics", "5": "Paper 5: Probability & Statistics 1", "6": "Paper 6: Probability & Statistics 2" };
+const maths9709Component = (digit, year) => (year >= MATHS9709_FIRST_NEW_YEAR ? MATHS9709_NEW : MATHS9709_OLD)[digit];
+
 // Subject registry: code, board-visible name, component map, and the
 // real root folders to search (found by direct listing, not assumed --
 // deliberately NOT a blind recursive walk of the whole subject dir).
@@ -135,6 +150,10 @@ const SUBJECTS = [
   {
     board: "A Levels", code: "9701", subject: "Chemistry", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
     roots: ["A Levels/Chemistry/Past Papers"],
+  },
+  {
+    board: "A Levels", code: "9709", subject: "Mathematics", componentByDigit: maths9709Component,
+    roots: ["A Levels/Maths/9709 Past Papers 01-22 Yearly"],
   },
   {
     board: "A Levels", code: "9700", subject: "Biology", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
@@ -198,9 +217,9 @@ function crawlSubject(subjectDef) {
   for (const [, entry] of byKey) {
     if (!entry.qpPath || !entry.msPath) continue; // an orphan qp or ms with no matching pair -- can't build a graded quiz from half a pair
     const paperDigit = entry.paperDigit;
-    const component = subjectDef.componentByDigit ? subjectDef.componentByDigit[paperDigit] : `Paper ${paperDigit}`;
-    if (!component) continue; // a paper-digit this subject's map doesn't recognize (e.g. Core tier) -- not in scope yet
     const year = Number(entry.yy) >= 90 ? 1900 + Number(entry.yy) : 2000 + Number(entry.yy);
+    const component = typeof subjectDef.componentByDigit === "function" ? subjectDef.componentByDigit(paperDigit, year) : subjectDef.componentByDigit ? subjectDef.componentByDigit[paperDigit] : `Paper ${paperDigit}`;
+    if (!component) continue; // a paper-digit this subject's map doesn't recognize (e.g. Core tier) -- not in scope yet
     const variant = `${entry.paperDigit}${entry.variantDigit}`;
     papers.push({
       board,
