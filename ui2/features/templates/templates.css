@@ -1,0 +1,8 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-tpl { display: grid; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-tpl--form { background: var(--u2-color-bg-subtle); }
+  .u2-tpl__head { display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-3); flex-wrap: wrap; }
+  .u2-tpl__head h3 { margin: 0; font-size: var(--u2-text-md); }
+  .u2-tpl__body { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--u2-color-text); }
+}

@@ -139,6 +139,14 @@ export interface BillRecord {
   [key: string]: unknown;
 }
 
+export interface TemplateRecord {
+  TemplateID: string;
+  Name: string;
+  Body: string;
+  UpdatedAt?: string;
+  UpdatedBy?: string;
+}
+
 export interface GuideRecord {
   GuideID: string;
   Name: string;

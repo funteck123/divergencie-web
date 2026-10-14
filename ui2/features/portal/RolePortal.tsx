@@ -9,6 +9,7 @@ import { BillsCard } from "./BillsCard";
 import { EnrollmentsCard, GuidesCard, MyInfoCard, ResourcesCard, StaffResourcesCard } from "./Cards";
 import { enrolledServices } from "./portalLogic";
 import { ScheduleCard } from "./ScheduleCard";
+import { TemplatesCard } from "./TemplatesCard";
 
 export type PortalRole = "Student" | "Teacher" | "Staff" | "Ambassador";
 
@@ -32,6 +33,7 @@ export function RolePortal({ role, user }: { role: PortalRole; user: SessionUser
       <EnrollmentsCard services={services} />
       {role === "Staff" ? <StaffResourcesCard user={u} /> : <ResourcesCard services={services} user={u} showExternalTools={student} />}
       <GuidesCard guides={data.guides} />
+      {(role === "Teacher" || role === "Staff") && <TemplatesCard />}
       <ScheduleCard
         user={{ UserID: user.UserID, Name: user.Name, UserType: role, Timezone: u.Timezone }}
         services={services}

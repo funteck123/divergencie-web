@@ -34,7 +34,7 @@ def main():
         out["next_day"] = s.page.get_by_text("No sessions on this day.").count()
         # weekly image of one account
         s.page.get_by_role("button", name="Weekly Schedule Image").click()
-        s.page.get_by_label("Show the schedule of").click()
+        s.page.get_by_label("Or one account").click()
         s.page.get_by_role("option", name=re.compile(r"STU-1002\)")).click()
         out["image_src"] = s.page.locator(".u2-imagebox img").get_attribute("src")
         out["download"] = s.page.get_by_role("link", name="Download PNG").get_attribute("href")
