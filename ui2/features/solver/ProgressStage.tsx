@@ -1,9 +1,10 @@
 "use client";
 
-import { Skeleton } from "@/ui2/components/Skeleton";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Badge } from "@/ui2/components/Badge";
 import { Button } from "@/ui2/components/Button";
+import { Skeleton } from "@/ui2/components/Skeleton";
 import { Combobox } from "@/ui2/components/Combobox";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { Field } from "@/ui2/components/Field";
@@ -106,40 +107,61 @@ function Answers({ account, attemptId, paperId }: { account: string; attemptId: 
     if (images[key] && images[key] !== "error") return setImages((p) => { const { [key]: _x, ...rest } = p; return rest; });
     setImages((p) => ({ ...p, [key]: "loading" }));
     try {
-      setImages((p) => ({ ...p, [key]: "" }));
       const r = await getQuestionImage(paperId, qn, kind);
       setImages((p) => ({ ...p, [key]: r.image }));
     } catch {
       setImages((p) => ({ ...p, [key]: "error" }));
     }
   }
-  if (q.isPending) return <p className="u2-muted">Loading…</p>;
+  if (q.isPending) return <Skeleton height={160} label="Loading your answers" />;
   if (q.error) return <p role="alert" className="u2-form__error">Couldn&apos;t load answers: {q.error.message}</p>;
   const responses = [...(q.data.responses ?? [])].sort((a, b) => naturalQuestionSort(a.question_number, b.question_number));
   if (responses.length === 0) return <p className="u2-muted">No saved answers for this attempt.</p>;
+  const verdictOf = (r: (typeof responses)[number]): { kind: "success" | "error" | "warning" | "neutral"; text: string } => {
+    if (r.marks_awarded != null) return r.marks_awarded === r.marks_available ? { kind: "success", text: `${r.marks_awarded} / ${r.marks_available}` } : r.marks_awarded > 0 ? { kind: "warning", text: `${r.marks_awarded} / ${r.marks_available}` } : { kind: "error", text: `0 / ${r.marks_available}` };
+    if (!r.student_answer) return { kind: "neutral", text: "Not answered" };
+    if (!r.correct_answer) return { kind: "neutral", text: "Not graded" };
+    return r.student_answer === r.correct_answer ? { kind: "success", text: "Correct" } : { kind: "error", text: "Incorrect" };
+  };
   return (
-    <div className="u2-rows">
-      {responses.map((r) => (
-        <div key={r.question_number} className="u2-box u2-box--inner">
-          <div className="u2-rowactions">
-            <strong>Question {r.question_number}</strong>
-            {r.marks_awarded != null && <span>{r.marks_awarded} / {r.marks_available}</span>}
-            {r.remark && <span className="u2-muted">{r.remark}</span>}
-            {r.flagged && <span title="Flagged for review while answering">🚩 Flagged for review</span>}
-            <Button size="sm" variant="ghost" onClick={() => void show(r.question_number, "qp")}>Question</Button>
-            {r.marks_awarded != null && <Button size="sm" variant="ghost" onClick={() => void show(r.question_number, "ms")}>Mark scheme</Button>}
+    <div className="u2-ans" role="list" aria-label="Your answers">
+      <div className="u2-ans__row u2-ans__row--head" aria-hidden="true">
+        <span>Q</span><span>Your answer</span><span>Correct answer</span><span>Result</span><span />
+      </div>
+      {responses.map((r) => {
+        const v = verdictOf(r);
+        const n = r.question_number;
+        const written = r.marks_awarded != null;
+        return (
+          <div key={n} role="listitem" className="u2-ans__item">
+            <div className="u2-ans__row">
+              <strong>{n}</strong>
+              <span className="u2-ans__val">{written ? <span className="u2-muted">{r.student_answer ? "Written answer (see feedback)" : "—"}</span> : r.student_answer || "—"}{r.flagged && <span title="You flagged this question while answering"> 🚩</span>}</span>
+              <span className="u2-ans__val">{written ? "—" : r.correct_answer || "—"}</span>
+              <Badge kind={v.kind}>{v.text}</Badge>
+              <span className="u2-rowactions u2-push">
+                <Button size="sm" variant="ghost" aria-pressed={images[`${n}:qp`] !== undefined} onClick={() => void show(n, "qp")}>Question</Button>
+                <Button size="sm" variant="ghost" aria-pressed={images[`${n}:ms`] !== undefined} onClick={() => void show(n, "ms")}>Mark scheme</Button>
+              </span>
+            </div>
+            {(["qp", "ms"] as const).map((k) => {
+              const img = images[`${n}:${k}`];
+              if (img === undefined) return null;
+              if (img === "error") return <p key={k} className="u2-form__error">Couldn&apos;t load the {k === "ms" ? "mark scheme" : "question"}. Press the button to try again.</p>;
+              if (img === "loading") return <Skeleton key={k} height={120} label={`Loading ${k === "ms" ? "mark scheme" : "question"} ${n}`} />;
+              // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
+              return <img key={k} src={img} alt={`${k === "ms" ? "Mark scheme" : "Question"} ${n}`} className="u2-contain u2-ans__img" />;
+            })}
+            {r.remark && <p className="u2-muted u2-ans__note">{r.remark}</p>}
+            {written && (
+              <details className="u2-ans__more">
+                <summary>Feedback</summary>
+                <Feedback answer={r.student_answer} correctAnswer={r.correct_answer ?? undefined} lineFeedback={r.line_feedback} markBreakdown={r.mark_breakdown} styleChecklist={r.style_checklist} fullMarkAnswer={r.full_mark_answer} />
+              </details>
+            )}
           </div>
-          {(["qp", "ms"] as const).map((k) => {
-            const v = images[`${r.question_number}:${k}`];
-            if (v === undefined) return null;
-            if (v === "error") return <p key={k} className="u2-form__error">Couldn&apos;t load the {k === "ms" ? "mark scheme" : "question"}.</p>;
-            if (v === "" || v === "loading") return <p key={k} className="u2-muted">Loading…</p>;
-            // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
-            return <img key={k} src={v} alt={`${k === "ms" ? "Mark scheme" : "Question"} ${r.question_number}`} className="u2-contain" />;
-          })}
-          <Feedback answer={r.student_answer} correctAnswer={r.correct_answer ?? undefined} lineFeedback={r.line_feedback} markBreakdown={r.mark_breakdown} styleChecklist={r.style_checklist} fullMarkAnswer={r.full_mark_answer} />
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

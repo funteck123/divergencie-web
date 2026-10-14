@@ -68,6 +68,7 @@ def main():
         import re
         s.page.get_by_role("button", name=re.compile("Digitize|Fetch|Load|Start", re.I)).first.click()
         s.page.get_by_role("button", name="Test Mode").click()
+        s.page.get_by_role("button", name="One at a time").click()
         s.page.get_by_role("button", name="Next →").wait_for()
         ts = []
         for _ in range(8):

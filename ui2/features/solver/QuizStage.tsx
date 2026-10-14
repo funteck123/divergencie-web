@@ -57,12 +57,21 @@ export interface QuizStageProps {
  * The quiz: a pinned bar (timer, pause, cancel, jump numbers, submit; bottom of the screen on a phone) and one question card
  * at a time. The next question's image is loaded ahead, so moving on shows it at once. All state lives in the reducer.
  */
+const LAYOUT_KEY = "u2-quiz-layout";
+/** One page with every question (default, students asked for it, TKT-0344 and TKT-0338), or one at a time. Remembered in this browser. */
+function readLayout(): boolean {
+  try { return window.localStorage.getItem(LAYOUT_KEY) !== "one"; } catch { return true; }
+}
+function writeLayout(onePage: boolean) {
+  try { window.localStorage.setItem(LAYOUT_KEY, onePage ? "page" : "one"); } catch { /* private mode: lasts for this visit only */ }
+}
+
 export function QuizStage(p: QuizStageProps) {
   const { state: s, dispatch } = p;
   const items = s.kind === "mcq" ? p.mcq : p.structured;
   const cur = items[s.index];
-  const [tab, setTab] = useState<"question" | "answer">("question");
   const [checked, setChecked] = useState<ReadonlySet<string>>(new Set());
+  const [page, setPage] = useState<boolean>(() => readLayout());
   const q = cur?.questionNumber ?? "";
   const practice = s.mode === "practice";
 
@@ -81,9 +90,10 @@ export function QuizStage(p: QuizStageProps) {
     p.onCancel();
   };
   const selectQuestion = (i: number) => {
-    setTab("question");
     dispatch({ type: "goto", index: i });
+    if (page) document.getElementById(`u2-q-${items[i]?.questionNumber}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+  const chooseLayout = (onePage: boolean) => { setPage(onePage); writeLayout(onePage); };
 
   return (
     <div className="u2-solver">
@@ -109,6 +119,10 @@ export function QuizStage(p: QuizStageProps) {
         {s.kind === "mcq" && s.mode !== "practice" && (
           <CheckField label="Show if I'm right after each question" checked={s.instantCheck} onChange={(on) => dispatch({ type: "instantCheck", on })} />
         )}
+        <div className="u2-seg" role="group" aria-label="Question layout">
+          <button type="button" className="u2-seg__btn" aria-pressed={page} data-on={page} onClick={() => chooseLayout(true)}>All on one page</button>
+          <button type="button" className="u2-seg__btn" aria-pressed={!page} data-on={!page} onClick={() => chooseLayout(false)}>One at a time</button>
+        </div>
         {p.pdfLinks && !p.pdfLinks.qpId.startsWith("upload") && practice && (
           <span className="u2-rowactions">
             <LinkButton href={p.pdfLinks.yearlyId ? yearlyPdfUrl(p.pdfLinks.yearlyId, "qp") : pdfUrl(p.pdfLinks.qpId, `${p.pdfLinks.title} QP`)}>📄 View QP PDF</LinkButton>
@@ -126,17 +140,33 @@ export function QuizStage(p: QuizStageProps) {
         </nav>
       </div>
 
-      {cur && s.kind === "mcq" && (
-        <McqCard key={q} q={cur as McqQuestion} state={s} dispatch={dispatch} tab={tab} setTab={setTab} checked={checked.has(q)} onCheck={() => setChecked((c) => new Set(c).add(q))} />
+      {page ? (
+        <div className="u2-allq">
+          {items.map((it, i) => {
+            const n = it.questionNumber;
+            return (
+              <div key={n} id={`u2-q-${n}`} className="u2-allq__item" data-current={i === s.index}>
+                {s.kind === "mcq"
+                  ? <McqCard q={it as McqQuestion} state={s} dispatch={dispatch} checked={checked.has(n)} onCheck={() => setChecked((c) => new Set(c).add(n))} />
+                  : <StructuredCard item={it as StructuredItem} state={s} dispatch={dispatch} status={p.grading[n]} onGrade={() => p.onGrade(n)} />}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <>
+          {cur && s.kind === "mcq" && (
+            <McqCard key={q} q={cur as McqQuestion} state={s} dispatch={dispatch} checked={checked.has(q)} onCheck={() => setChecked((c) => new Set(c).add(q))} />
+          )}
+          {cur && s.kind === "structured" && (
+            <StructuredCard key={q} item={cur as StructuredItem} state={s} dispatch={dispatch} status={p.grading[q]} onGrade={() => p.onGrade(q)} />
+          )}
+          <div className="u2-rowactions">
+            <Button variant="ghost" disabled={s.index === 0} onClick={() => selectQuestion(s.index - 1)}>← Previous</Button>
+            <Button variant="ghost" disabled={s.index >= items.length - 1} onClick={() => selectQuestion(s.index + 1)}>Next →</Button>
+          </div>
+        </>
       )}
-      {cur && s.kind === "structured" && (
-        <StructuredCard key={q} item={cur as StructuredItem} state={s} dispatch={dispatch} tab={tab} setTab={setTab} status={p.grading[q]} onGrade={() => p.onGrade(q)} />
-      )}
-
-      <div className="u2-rowactions">
-        <Button variant="ghost" disabled={s.index === 0} onClick={() => selectQuestion(s.index - 1)}>← Previous</Button>
-        <Button variant="ghost" disabled={s.index >= items.length - 1} onClick={() => selectQuestion(s.index + 1)}>Next →</Button>
-      </div>
       {s.kind === "structured" && s.mode === "test" && (
         <details className="u2-box u2-box--inner">
           <summary>📐 Answering with a table or diagram? Click for the text template</summary>
@@ -157,7 +187,8 @@ function TabBar({ tab, setTab }: { tab: "question" | "answer"; setTab: (t: "ques
   );
 }
 
-function McqCard({ q, state: s, dispatch, tab, setTab, checked, onCheck }: { q: McqQuestion; state: QuizState; dispatch: (a: QuizAction) => void; tab: "question" | "answer"; setTab: (t: "question" | "answer") => void; checked: boolean; onCheck: () => void }) {
+function McqCard({ q, state: s, dispatch, checked, onCheck }: { q: McqQuestion; state: QuizState; dispatch: (a: QuizAction) => void; checked: boolean; onCheck: () => void }) {
+  const [tab, setTab] = useState<"question" | "answer">("question");
   const practice = s.mode === "practice";
   const picked = s.answers[q.questionNumber];
   const flagged = s.flags.includes(q.questionNumber);
@@ -175,7 +206,7 @@ function McqCard({ q, state: s, dispatch, tab, setTab, checked, onCheck }: { q: 
       {practice && <TabBar tab={tab} setTab={setTab} />}
       {(!practice || tab === "question") && (
         // eslint-disable-next-line @next/next/no-img-element -- the image is a data URL made by the solver service
-        <img src={q.image} alt={`Question ${q.questionNumber}`} />
+        <img src={q.image} alt={`Question ${q.questionNumber}`} loading="lazy" />
       )}
       {practice && tab === "answer" && (q.correctAnswer ? <p>Correct answer: <strong className="u2-verdict u2-verdict--correct">{q.correctAnswer}</strong></p> : <p className="u2-muted">No clear-cut answer was found in the mark scheme for this question.</p>)}
       {!practice && !q.correctAnswer && <p className="u2-warnbox">This question&apos;s mark scheme wasn&apos;t clear-cut enough to auto-grade. Answer it if you like, but it won&apos;t count toward your score.</p>}
@@ -201,7 +232,8 @@ function McqCard({ q, state: s, dispatch, tab, setTab, checked, onCheck }: { q: 
   );
 }
 
-function StructuredCard({ item, state: s, dispatch, tab, setTab, status, onGrade }: { item: StructuredItem; state: QuizState; dispatch: (a: QuizAction) => void; tab: "question" | "answer"; setTab: (t: "question" | "answer") => void; status?: GradingStatus; onGrade: () => void }) {
+function StructuredCard({ item, state: s, dispatch, status, onGrade }: { item: StructuredItem; state: QuizState; dispatch: (a: QuizAction) => void; status?: GradingStatus; onGrade: () => void }) {
+  const [tab, setTab] = useState<"question" | "answer">("question");
   const practice = s.mode === "practice";
   const n = item.questionNumber;
   const text = s.texts[n] ?? "";
@@ -212,7 +244,7 @@ function StructuredCard({ item, state: s, dispatch, tab, setTab, status, onGrade
       {practice && <TabBar tab={tab} setTab={setTab} />}
       {(!practice || tab === "question") && (
         // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service
-        <img src={item.qImage} alt={`Question ${n}`} />
+        <img src={item.qImage} alt={`Question ${n}`} loading="lazy" />
       )}
       {practice && tab === "answer" && (item.msImage ? (
         // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service

@@ -43,7 +43,7 @@ def main():
         # a mobile keyboard resize must not close anything: pick answers by radio
         for q in ("1", "2", "3"):
             s.page.get_by_role("radiogroup", name=f"Answer for question {q}").locator("label", has_text="A").click()
-            if q != "3": s.page.get_by_role("button", name="Next →").click()
+        out["all_questions_on_one_page"] = s.page.locator(".u2-allq__item").count()   # the default layout: no Next button needed
         out["autosave"] = s.page.evaluate("() => !!localStorage.getItem('mcqTestAutosave.v1')")
         s.page.get_by_role("button", name="Submit quiz").click()
         s.page.get_by_role("status").filter(has_text="Score").first.wait_for()
@@ -56,7 +56,7 @@ def main():
         s.page.get_by_role("tab", name="History").click()
         out["history_rows"] = s.page.get_by_role("row").count()
         s.page.get_by_role("button", name="View").click()
-        s.page.get_by_text("Question 1").first.wait_for()
+        s.page.get_by_role("list", name="Your answers").wait_for()
         s.page.get_by_role("tab", name="Mistakes").click()
         out["bars"] = s.page.get_by_text("Mistakes per chapter").count() or s.page.locator("svg").count()
         s.page.get_by_role("tab", name="Leaderboard").click()
@@ -90,7 +90,7 @@ def main():
         # practice: no radios, Question/Answer tabs, finishing records a practice attempt
         s.page.get_by_role("button", name=go).first.click()
         s.page.get_by_role("button", name="Practice Mode").click()
-        s.page.get_by_role("tab", name="Answer").click()
+        s.page.get_by_role("tab", name="Answer").first.click()
         s.page.get_by_text("Correct answer:").first.wait_for(); out["practice_answer"] = s.page.get_by_text("Correct answer:").count()
         s.page.get_by_role("button", name="Pause").click(); s.page.get_by_role("button", name="Resume").click()
         s.page.get_by_role("button", name="Done practicing").click()
