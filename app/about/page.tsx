@@ -4,6 +4,12 @@ import { ShieldCheck, Award, Globe, Zap, Users, GraduationCap, Star, CheckCircle
 import Link from "next/link";
 import Image from "next/image";
 
+export const metadata = {
+  title: 'About Us | DivergenCIE Coaching',
+  description: 'Meet the teachers, examiners and past Cambridge country and world toppers behind DivergenCIE Coaching.',
+  alternates: { canonical: '/about' },
+};
+
 // TKT-0182: real active teachers, from data/DC Database 2026_Cleaned_2026-06-12.xlsx
 // (Team sheet, Status=Active, Type=teacher) cross-referenced against the
 // Recruits sheet for real subject lists. No photos -- a generic person

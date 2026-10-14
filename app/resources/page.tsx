@@ -3,6 +3,12 @@ import Footer from "@/components/Footer";
 import { Lock, FileText, Book, Target, Calculator, MessageSquare, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+export const metadata = {
+  title: 'Study Resources | DivergenCIE Coaching',
+  description: 'Topical and yearly past papers, predicted papers, chapter summaries and prep guides for IGCSE, A Level, AP, SAT and IELTS.',
+  alternates: { canonical: '/resources' },
+};
+
 const materials = [
   {
     title: "Topical Past Papers",
