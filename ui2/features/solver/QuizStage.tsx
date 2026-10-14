@@ -19,6 +19,7 @@ const DIAGRAM_HINT = `Tables -- use pipes, header row then dashes:
 Graphs -- state axes, then the line/points:
 AXES: x = Time (s), 0-10 | y = Distance (m), 0-20
 LINE: straight, from (0,0) to (10,20)
+POINT: P at (4, 8)   (to mark a point on the graph)
 
 Circuits -- chain components, // for parallel branches:
 [Cell 6V] -- [Switch] -- [Ammeter] -- [Resistor 10R] -- back to [Cell]

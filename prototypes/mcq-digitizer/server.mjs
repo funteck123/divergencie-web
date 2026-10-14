@@ -514,11 +514,11 @@ Some questions are subjective (summaries, letters, articles, notes, form-filling
 
 Some questions require a table, graph, circuit diagram, ray/force/field diagram, or labelled diagram as part (or all) of the answer. The student is typing into a plain text box, so they represent these using this text notation instead of drawing them -- treat every one of these as fully equivalent to a real hand-drawn diagram or table, not as a lesser substitute:
 - TABLE: a markdown-style pipe table ("| Column | Column |" with a "|---|---|" divider row).
-- GRAPH: a line stating the axes ("AXES: x = <label> (<unit>), <min>-<max> | y = <label> (<unit>), <min>-<max>") followed by a description of the line/curve/points ("LINE: ..." or a list of (x,y) points).
+- GRAPH: a line stating the axes ("AXES: x = <label> (<unit>), <min>-<max> | y = <label> (<unit>), <min>-<max>") followed by a description of the line/curve/points ("LINE: ..." or a list of (x,y) points). A marked point is written "POINT: <label> at (<x>, <y>)" (for example "POINT: P at (3.0, 240)"). Award a "mark a point / draw a line / plot" mark point when the described coordinates or shape satisfy the condition the mark scheme states (for example "P at t >= 2.0 s" is satisfied by a point at t = 3.0 s). Never withhold it because the point was described and not drawn, and never withhold it for a value the scheme does not constrain: judge only the conditions the scheme actually states.
 - CIRCUIT: components chained with "--" in the order current flows (e.g. "[Cell 6V] -- [Switch] -- [Resistor 10R] -- back to [Cell]"), with "( A // B )" meaning A and B are in parallel with each other.
 - RAY / FORCE / FIELD DIAGRAM: "-->" arrows between labelled points or components (e.g. "Object --> [Lens f=5cm] --> Image (real, inverted)"), with magnitudes/directions given in words or with "<--"/"-->" showing which way each arrow points.
 - LABELLED DIAGRAM (apparatus, biological structures, etc.): an indented list of parts, each with its position in brackets (e.g. "- delivery tube (from stopper, into beaker)").
-Grade the STRUCTURE, LABELS, VALUES, and RELATIONSHIPS these text representations convey against exactly what the mark scheme's diagram/table/graph mark points actually require, the same way you would grade a real drawn one -- correct content in this notation earns the mark. Only award zero for a diagram/table/graph mark point when the required content itself (a label, a value, a connection, a shape, an axis) is genuinely missing or wrong -- never simply because the student wrote it as text instead of drawing it. When your own correctAlternative, markBreakdown evidence/whatWasNeeded, or fullMarkAnswer needs to show a diagram/table/graph, write it using this exact same text notation so it stays something the student could actually type back.
+Grade the STRUCTURE, LABELS, VALUES, and RELATIONSHIPS these text representations convey against exactly what the mark scheme's diagram/table/graph mark points actually require, the same way you would grade a real drawn one -- correct content in this notation earns the mark. CONSISTENCY RULE: if your own reasoning for a mark point says the student's content meets the scheme's condition, that mark point MUST be awarded true; never write that a condition is met and then mark it not awarded. Only award zero for a diagram/table/graph mark point when the required content itself (a label, a value, a connection, a shape, an axis) is genuinely missing or wrong -- never simply because the student wrote it as text instead of drawing it. When your own correctAlternative, markBreakdown evidence/whatWasNeeded, or fullMarkAnswer needs to show a diagram/table/graph, write it using this exact same text notation so it stays something the student could actually type back.
 
 Break the student's working into its individual lines/steps (however the student actually wrote it -- a numbered list, separate sentences, separate calculation lines) and mark EACH one, not just the final answer as a whole. For a step that's wrong, give the specific mistake AND the correct step that should replace it -- an alternative correct working line the student could have written instead, not just "this is wrong."
 
@@ -918,6 +918,7 @@ async function gradeViaOpenRouter(imageB64, mimeType, marksAvailable, studentAns
         body: JSON.stringify({
           model: STRUCTURED_GRADING_VISION_MODEL,
           max_tokens: GRADING_MAX_TOKENS,
+          temperature: 0, // TKT-0339: the same answer must get the same marks every time
           messages: [
             { role: "system", content: STRUCTURED_QUESTION_GRADING_SYSTEM_PROMPT + (extraInstructions || "") },
             { role: "user", content: userContent },
@@ -1343,6 +1344,7 @@ async function gradeStructuredAnswer(qpId, msId, studentAnswer) {
     body: JSON.stringify({
       model: GRADING_MODEL,
       max_tokens: GRADING_MAX_TOKENS,
+      temperature: 0,
       messages: [
         { role: "system", content: STRUCTURED_GRADING_SYSTEM_PROMPT },
         { role: "user", content: userContent },
