@@ -78,6 +78,8 @@ def main():
         out["batch_options"] = opts
         s.page.get_by_role("option").nth(1).click()
         out["batch_img_src"] = s.page.get_by_role("img", name=re.compile("Weekly schedule: Batch")).get_attribute("src")
+        s.page.get_by_label("Show times in").click(); s.page.get_by_role("option").nth(1).click()
+        out["batch_img_src_tz"] = s.page.get_by_role("img", name=re.compile("Weekly schedule: Batch")).get_attribute("src")
         out["batch_download"] = s.page.get_by_role("link", name="Download PNG").get_attribute("href")
         out["hscroll"] = s.hscroll()
         out["calls"] = [(m, p, {k: v for k, v in (b or {}).items()}) for m, p, b in s.calls]

@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import sharp from "sharp";
 import { readDB } from "@/lib/db";
-import { drawAdminSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
+import { drawAdminSchedule, drawSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
 import { normalizeGroup } from "@/lib/scheduleGen";
 import { todayString } from "@/lib/enrollmentDates";
-import { buildScheduleEntries } from "@/lib/adminScheduleEntries";
+import { buildBatchPicture, buildScheduleEntries } from "@/lib/adminScheduleEntries";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -18,19 +18,21 @@ export async function GET(req) {
   const batch = (searchParams.get("batch") || "").trim().slice(0, 40);
 
   const db = await readDB();
-  const entries = buildScheduleEntries(db, todayString(), batch).map((e) => ({ ...e, group: normalizeGroup(e.group) }));
+  // A batch picture is drawn like a student's own schedule, in one timezone that the picture's header names (?tz= overrides).
+  const batchPicture = batch ? buildBatchPicture(db, todayString(), batch, searchParams.get("tz") || "") : null;
+  const entries = batchPicture ? batchPicture.entries : buildScheduleEntries(db, todayString(), batch).map((e) => ({ ...e, group: normalizeGroup(e.group) }));
 
   // Same fix as app/api/schedule/image/route.js: was "no-store", forcing a
   // full canvas re-render + full re-transfer of this PNG on every view of
   // the Schedule tab's admin image, even when the underlying schedule
   // hadn't changed since the last view. ETag over exactly the rendered
   // inputs lets the browser revalidate cheaply (304) instead.
-  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ style: SCHEDULE_IMAGE_STYLE, entries, batch })).digest("hex").slice(0, 32)}"`;
+  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ style: SCHEDULE_IMAGE_STYLE, entries, batch, entity: batchPicture?.entity })).digest("hex").slice(0, 32)}"`;
   if (!download && req.headers.get("if-none-match") === etag) {
     return new NextResponse(null, { status: 304, headers: { "Cache-Control": "private, max-age=0, must-revalidate", ETag: etag } });
   }
 
-  const pngBuffer = await drawAdminSchedule(entries, batch ? { title: `Batch ${batch} Weekly Schedule`, subtitle: "every subject in this batch" } : undefined);
+  const pngBuffer = batchPicture ? await drawSchedule(batchPicture.entity, entries) : await drawAdminSchedule(entries);
 
   // Same WebP re-encode as app/api/schedule/image/route.js — download
   // stays PNG for compatibility, inline view gets WebP (quality 90,
