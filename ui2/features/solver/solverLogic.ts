@@ -185,11 +185,23 @@ export function seriesByAccount(all: readonly AttemptRow[], s: ProgressScope, me
   return { mine, others };
 }
 export interface HistoryRow { id: string | undefined; paperId: string; mode: "Practice" | "Test"; score: string; percent: string; time: string; when: string; chapter: string; canView: boolean }
+const YEARLY_SESSION: Record<string, string> = { m: "Feb/Mar", s: "May/Jun", w: "Oct/Nov" };
+/**
+ * A yearly past paper has no chapter, so it is named by the paper: "Past paper Oct/Nov 2024, Paper 22" (TKT-0350, it used to read
+ * "Unknown chapter"). Same rule as prototypes/mcq-digitizer/paperLabel.mjs, which does it for the mistakes chart on the server.
+ * Null when the id is not a yearly paper id (a topical worksheet id is a Drive file id).
+ */
+export function yearlyPaperName(paperId: string | null | undefined): string | null {
+  const m = /^(\d{4})_([smw])(\d{2})_(\d{1,2})$/i.exec(String(paperId ?? ""));
+  if (!m) return null;
+  const yy = Number(m[3]);
+  return `Past paper ${YEARLY_SESSION[(m[2] as string).toLowerCase()]} ${yy >= 90 ? 1900 + yy : 2000 + yy}, Paper ${m[4]}`;
+}
 export function historyRows(mine: readonly AttemptRow[], chapter: (subject: string, ch: string | null) => string): HistoryRow[] {
   return [...mine].reverse().map((a) => {
     const practice = a.mode === "practice" || a.score == null;
     return {
-      id: a.id, paperId: a.paper_id, mode: practice ? "Practice" : "Test", chapter: chapter(a.subject, a.chapter), canView: !practice && !!a.id,
+      id: a.id, paperId: a.paper_id, mode: practice ? "Practice" : "Test", chapter: a.chapter ? chapter(a.subject, a.chapter) : (yearlyPaperName(a.paper_id) ?? "—"), canView: !practice && !!a.id,
       score: practice ? "—" : `${a.score} / ${a.total_questions}`, percent: practice ? "—" : `${Math.round(((a.score as number) / a.total_questions) * 1000) / 10}%`,
       time: a.time_taken_seconds != null ? formatTimer(a.time_taken_seconds) : "—", when: a.submitted_at ? new Date(a.submitted_at).toLocaleString() : "",
     };

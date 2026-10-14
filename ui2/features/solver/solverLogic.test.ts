@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, subjectOffersBothTypes, topicalChapters, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, paperTypes, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import { AUTOSAVE_MAX_AGE_MS, subjectOffersBothTypes, topicalChapters, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, paperTypes, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { AttemptRow, Library, McqQuestion, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
@@ -108,5 +108,19 @@ describe("picker helpers (TKT-0336, TKT-0337)", () => {
     expect(subjectOffersBothTypes(lib, yearly, "B", "S")).toBe(true);
     expect(subjectOffersBothTypes(lib, {}, "B", "S")).toBe(false);
     expect(subjectOffersBothTypes({}, yearly, "B", "S")).toBe(false);
+  });
+});
+
+describe("yearly papers have no chapter (TKT-0350)", () => {
+  it("names a yearly paper by session, year and paper", () => {
+    expect(yearlyPaperName("9618_w24_22")).toBe("Past paper Oct/Nov 2024, Paper 22");
+    expect(yearlyPaperName("0625_m26_42")).toBe("Past paper Feb/Mar 2026, Paper 42");
+    expect(yearlyPaperName("0510_s16_21")).toBe("Past paper May/Jun 2016, Paper 21");
+  });
+  it("leaves a topical worksheet id alone", () => { expect(yearlyPaperName("1Z-aYRcmB70ZiQWhLipoxvKcMEeMNAefk")).toBeNull(); expect(yearlyPaperName(null)).toBeNull(); });
+  it("History shows the paper in the Chapter column when there is no chapter, and the chapter when there is", () => {
+    const row = (paper_id: string, chapter: string | null) => ({ id: "a", account_id: "S", subject: "A Levels Computer Science", chapter, paper_id, mode: "test", score: 3, total_questions: 6, time_taken_seconds: 60, submitted_at: "2026-10-14T00:00:00Z" });
+    const rows = historyRows([row("9618_w24_22", null), row("abc", null), row("xyz", "5")], (_s, ch) => `Ch ${ch}`);
+    expect(rows.map((r) => r.chapter).reverse()).toEqual(["Past paper Oct/Nov 2024, Paper 22", "—", "Ch 5"]);
   });
 });

@@ -12,6 +12,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
+import { mistakeBucket } from "./paperLabel.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.join(__dirname, "..", "..");
@@ -368,13 +369,13 @@ export async function getMistakeChartData(accountId) {
   const c = requireClient();
   const { data, error } = await c
     .from(MISTAKES_TABLE)
-    .select("subject, chapter")
+    .select("subject, chapter, paper_id")
     .eq("account_id", accountId);
   if (error) throw new Error(`Could not load mistake chart data: ${error.message}`);
 
   const bySubject = {};
   for (const row of data) {
-    const chapter = row.chapter || "Unknown chapter";
+    const chapter = mistakeBucket(row.chapter, row.paper_id); // TKT-0350: a yearly paper has no chapter, so it is named by the paper
     bySubject[row.subject] = bySubject[row.subject] || {};
     bySubject[row.subject][chapter] = (bySubject[row.subject][chapter] || 0) + 1;
   }
