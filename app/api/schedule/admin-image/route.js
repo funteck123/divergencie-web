@@ -15,7 +15,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const download = searchParams.get("download") === "1";
   // TKT-0345: ?batch=B8 draws only that batch, every subject it attends.
-  const batch = (searchParams.get("batch") || "").trim();
+  const batch = (searchParams.get("batch") || "").trim().slice(0, 40);
 
   const db = await readDB();
   const entries = buildScheduleEntries(db, todayString(), batch).map((e) => ({ ...e, group: normalizeGroup(e.group) }));
@@ -30,7 +30,7 @@ export async function GET(req) {
     return new NextResponse(null, { status: 304, headers: { "Cache-Control": "private, max-age=0, must-revalidate", ETag: etag } });
   }
 
-  const pngBuffer = await drawAdminSchedule(entries);
+  const pngBuffer = await drawAdminSchedule(entries, batch ? { title: `Batch ${batch} Weekly Schedule`, subtitle: "every subject in this batch" } : undefined);
 
   // Same WebP re-encode as app/api/schedule/image/route.js — download
   // stays PNG for compatibility, inline view gets WebP (quality 90,
