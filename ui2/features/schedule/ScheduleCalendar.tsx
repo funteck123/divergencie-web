@@ -8,7 +8,7 @@ import { normalizeTimezone, tzAbbrFor } from "@/lib/timezones";
 import { Button } from "@/ui2/components/Button";
 import type { AttendanceItem, ScheduleItem } from "@/ui2/queries/types";
 import { MiniAttendanceForm } from "./MiniAttendanceForm";
-import { attendanceFor, occurrenceNumbers } from "./scheduleLogic";
+import { attendanceFor, attendanceMark, chipText, occurrenceNumbers } from "./scheduleLogic";
 import "@/ui2/components/ConfirmDialog.css";
 import "./schedule.css";
 
@@ -57,7 +57,10 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
     const clickable = renderExpanded ? true : !readOnly && !att;
     const groups = normalizeGroup(s.ServiceGroup) as string[];
     const style = colorByGroup ? { background: groupGradient(groups) as string, color: readableText(groups.map((g) => (GROUP_COLORS as Record<string, string>)[g] ?? GROUP_FALLBACK_COLOR)) } : portalColor ? { background: portalColor, color: readableText([portalColor]) } : undefined;
-    const label = `${s.Time} ${tzAbbrFor(s.Date, viewerTz || normalizeTimezone(s.Timezone))} ${s.ServiceName ?? ""}${occ.get(s.ScheduleID) ? ` #${occ.get(s.ScheduleID)}` : ""}${s.Facilitator ? ` · ${s.Facilitator}` : ""}${att ? ` · ${att.Status}` : ""}`;
+    const tz = tzAbbrFor(s.Date, viewerTz || normalizeTimezone(s.Timezone));
+    const parts = { time: s.Time, tz, name: s.ServiceName, occurrence: occ.get(s.ScheduleID), facilitator: s.Facilitator };
+    const label = chipText({ mark: attendanceMark(att?.Status), ...parts });
+    const fullLabel = `${chipText({ mark: "", ...parts })}${att ? ` · ${att.Status}` : ""}`;
     return (
       <div key={s.ScheduleID}>
         <button
@@ -65,7 +68,8 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
           className={`u2-chip u2-chip--${style ? "solid" : tone}${truncate ? " u2-chip--cut" : ""}`}
           style={style}
           disabled={!clickable}
-          title={`${s.ServiceName} — ${groups.join(" + ")}`}
+          title={`${fullLabel} — ${groups.join(" + ")}`}
+          aria-label={fullLabel}
           aria-expanded={clickable ? expandedId === s.ScheduleID : undefined}
           onClick={(e) => {
             e.stopPropagation();

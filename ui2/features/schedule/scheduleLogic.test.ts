@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { agenda, attendanceFor, conflictingScheduleIds, dropPast, matchesSearch, occurrenceNumbers, serviceSlots, dayTimeline } from "./scheduleLogic";
+import { agenda, attendanceFor, conflictingScheduleIds, dropPast, matchesSearch, occurrenceNumbers, serviceSlots, dayTimeline, attendanceMark, chipText } from "./scheduleLogic";
 import type { AttendanceItem, ScheduleItem } from "@/ui2/queries/types";
 
 const a = (o: Partial<AttendanceItem>): AttendanceItem => ({ AttendanceID: "A", ScheduleItemID: "S1", UserID: "U1", Status: "Present", LoggedDuration: 1, LoggedBy: "U1", ...o });
@@ -66,5 +66,20 @@ describe("day timeline (TKT-0324)", () => {
     const t = dayTimeline([mk("a", "Amy", "16:00", 1)], "2026-10-06");
     expect(t.fromHour).toBe(15); expect(t.toHour).toBeGreaterThanOrEqual(21);
     expect(dayTimeline([], "2026-10-06")).toMatchObject({ rows: [], fromHour: 8, toHour: 20 });
+  });
+});
+
+describe("calendar chip text (TKT-0333)", () => {
+  it("puts the attendance mark first so truncation cannot hide it", () => {
+    expect(attendanceMark("Present")).toBe("✓");
+    expect(attendanceMark("Late")).toBe("◷");
+    expect(attendanceMark("Absent")).toBe("✕");
+    expect(attendanceMark(undefined)).toBe("");
+    const text = chipText({ mark: "✓", time: "10:00", tz: "IST", name: "A Level Physics", occurrence: 3, facilitator: "Ms Rao" });
+    expect(text).toBe("✓ 10:00 IST A Level Physics #3 · Ms Rao");
+    expect(text.startsWith("✓")).toBe(true);
+  });
+  it("has no leading space when there is no mark", () => {
+    expect(chipText({ mark: "", time: "10:00", tz: "IST", name: "Maths" })).toBe("10:00 IST Maths");
   });
 });

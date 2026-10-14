@@ -67,6 +67,10 @@ def main():
         s.page.get_by_role("button", name="Offer slot").click(); s.page.get_by_text("Slot offered.").wait_for()
         # calendar view + image view
         s.page.get_by_role("button", name="Calendar").last.click(); out["calendar_title"] = s.page.locator(".u2-cal__title").count()
+        # TKT-0333: the attendance mark leads the chip text, so a long title cut at the cell edge never hides it
+        marked = s.page.evaluate("[...document.querySelectorAll('.u2-cal__cell .u2-chip[aria-label*=\" · Present\"],.u2-cal__cell .u2-chip[aria-label*=\" · Late\"],.u2-cal__cell .u2-chip[aria-label*=\" · Absent\"]')].map(c=>[c.innerText.trim().charAt(0), c.getAttribute('aria-label').split(' · ').pop()])")
+        out["attendance_marks"] = marked
+        assert all(m[0] == {"Present": "✓", "Late": "◷", "Absent": "✕"}[m[1]] for m in marked), marked
         s.page.get_by_role("button", name="Weekly Schedule Image").click(); out["image_link"] = s.page.get_by_role("link", name="Download PNG").get_attribute("href")
         # batch picture (TKT-0345): picking a batch points the picture at ?batch=<name>
         s.page.get_by_label("Batch (every subject in it)").click()

@@ -105,3 +105,13 @@ export function dayTimeline(items: readonly ScheduleItem[], date: string, zone =
   const toHour = all.length ? Math.min(24, Math.max(fromHour + 6, Math.ceil(Math.max(...all.map((b) => b.end)) / 60) + 1)) : 20;
   return { rows: out, fromHour, toHour, conflicts };
 }
+
+/** The mark drawn first on a calendar chip, so a long title cut by the cell edge can never hide it (TKT-0333). */
+export function attendanceMark(status: string | undefined): string {
+  return status === "Present" ? "✓" : status === "Late" ? "◷" : status ? "✕" : "";
+}
+
+/** Chip text: mark, time, title. Status words are left out of the visible text (the mark and colour carry them) and go in the accessible name. */
+export function chipText({ mark, time, tz, name, occurrence, facilitator }: { mark: string; time: string; tz: string; name?: string; occurrence?: number; facilitator?: string }): string {
+  return `${mark ? `${mark} ` : ""}${time} ${tz} ${name ?? ""}${occurrence ? ` #${occurrence}` : ""}${facilitator ? ` · ${facilitator}` : ""}`;
+}
