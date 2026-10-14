@@ -15,6 +15,7 @@ import { apiFetch } from "@/ui2/queries/client";
 import { keys } from "@/ui2/queries/keys";
 import type { Credentials, UserRecord } from "@/ui2/queries/types";
 import { usePatchUser, useUsers } from "@/ui2/queries/users";
+import { AccountDetails } from "./AccountDetails";
 import { AccountSheet } from "./AccountSheet";
 import { BulkBar } from "./BulkBar";
 import { CreateSheet } from "./CreateSheet";
@@ -60,6 +61,7 @@ export function AccountsView() {
   const [busy, setBusy] = useState<ReadonlySet<string>>(new Set());
   const [resetTarget, setResetTarget] = useState<UserRecord | null>(null);
   const [editId, setEditId] = useQueryState("edit", parseAsString);
+  const [viewId, setViewId] = useQueryState("view", parseAsString);
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<UserRecord | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
@@ -199,7 +201,11 @@ export function AccountsView() {
       width: isStudent ? 100 : undefined,
       sortValue: (u) => u.Name,
       tip: (u) => u.Name,
-      cell: (u) => <strong className="u2-strong">{u.Name}</strong>,
+      cell: (u) => (
+        <button type="button" className="u2-namebtn" title={`Show all details for ${u.Name}`} onClick={() => void setViewId(u.UserID)}>
+          {u.Name}
+        </button>
+      ),
     };
     const statusCol: Column<UserRecord> = {
       id: "status",
@@ -223,13 +229,15 @@ export function AccountsView() {
     return [idCol, nameCol, statusCol, ...group.columns({ users: all }), ...(isStudent ? [] : [usernameCol]), actions];
     // toggleStatus/resetPassword/impersonate/convert close over stable hooks; busy and eligibility drive the cells.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [group, all, busy, eligibleOf, setEditId]);
+  }, [group, all, busy, eligibleOf, setEditId, setViewId]);
 
   const issuedEntries = Object.entries(issued);
   const mobileCard = (u: UserRecord) => (
     <div className="u2-acctcard">
       <div className="u2-acctcard__top">
-        <strong className="u2-strong">{u.Name}</strong>
+        <button type="button" className="u2-namebtn" onClick={() => void setViewId(u.UserID)}>
+          {u.Name}
+        </button>
         <Badge kind={statusKind(u.Status)} dot>
           {u.Status}
         </Badge>
@@ -342,6 +350,7 @@ export function AccountsView() {
         />
       )}
 
+      <AccountDetails user={viewId ? (all.find((u) => u.UserID === viewId) ?? null) : null} onClose={() => void setViewId(null)} onEdit={(id) => void setEditId(id)} />
       <AccountSheet user={editId ? (all.find((u) => u.UserID === editId) ?? null) : null} users={all} onClose={() => void setEditId(null)} />
       <CreateSheet open={creating} defaultType={DEFAULT_CREATE_TYPE[group.id] ?? "Student"} users={all} onClose={() => setCreating(false)} />
       <DeleteAccountDialog user={deleteTarget} onClose={() => setDeleteTarget(null)} />

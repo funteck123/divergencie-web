@@ -15,6 +15,12 @@
   .u2-search { height: 36px; min-width: 260px; flex: 0 1 360px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-bg); }
   .u2-muted { color: var(--u2-color-text-muted); }
   .u2-mono { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+  .u2-namebtn { padding: 0; border: 0; background: none; font: inherit; font-weight: var(--u2-weight-semibold); color: var(--u2-color-text); cursor: pointer; text-align: left; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .u2-namebtn:hover { color: var(--u2-color-brand); }
+  .u2-details { display: grid; gap: 0; margin: 0; }
+  .u2-details__row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: var(--u2-space-3); padding: var(--u2-space-2) 0; border-bottom: 1px solid var(--u2-color-border); }
+  .u2-details__row dt { color: var(--u2-color-text-muted); font-size: var(--u2-text-sm); }
+  .u2-details__row dd { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
   .u2-strong { font-weight: var(--u2-weight-semibold); }
   .u2-mark { color: var(--u2-color-brand); }
   .u2-sent { display: inline-flex; gap: 3px; align-items: center; }

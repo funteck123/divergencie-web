@@ -5,40 +5,8 @@ import { readDB } from "@/lib/db";
 import { drawAdminSchedule, SCHEDULE_IMAGE_STYLE } from "@/lib/scheduleImage";
 import { requireManagement } from "@/lib/authz";
 import { normalizeGroup } from "@/lib/scheduleGen";
-import { batchesOf } from "@/lib/billing";
-import { isEnrollmentLiveThisWeek, todayString } from "@/lib/enrollmentDates";
-
-// Flattens every Service's Batches' OccuranceList into one flat list — the
-// whole week's recurring pattern across every service/batch at once, not
-// any one person's. A Staff-role Service (Role/Department, no Batches — see
-// applyStaffRoleFields in app/api/services/route.js) contributes its
-// OccuranceList directly via the same pseudo-batch batchesOf already
-// returns nothing for, so it's handled as a fallback below. See
-// drawAdminSchedule (lib/scheduleImage.js) for how same-slot conflicts (two
-// occurrences sharing a day+time) are rendered without overlapping.
-function buildAllEntries(db) {
-  const entries = [];
-  // Same rule as the Schedule tab's List/Calendar views (see SchedulePool
-  // in app/dashboard/management/page.js) — a Batch nobody's enrolled in
-  // isn't a real class, so it shouldn't appear on the weekly image either.
-  // TKT-0346: ...and only counts enrollments that are live this week, so a batch whose enrollments have all ended is not drawn.
-  const today = todayString();
-  const enrolledBatchKeys = new Set(db.enrollments.filter((e) => isEnrollmentLiveThisWeek(e, today)).map((e) => `${e.ServiceID}::${e.BatchID || ""}`));
-  for (const s of db.services) {
-    const batches = batchesOf(s);
-    const effective = batches.length > 0 ? batches : [{ BatchID: "", OccuranceList: s.OccuranceList || [] }];
-    for (const b of effective) {
-      if (!enrolledBatchKeys.has(`${s.ServiceID}::${b.BatchID || ""}`)) continue;
-      for (const o of b.OccuranceList || []) {
-        // An occurrence with no Day/Time set yet (e.g. a resource-only
-        // service pending a real schedule) has nothing to draw — skip it.
-        if (!o.Day || !o.Time) continue;
-        entries.push({ serviceName: s.Name, day: o.Day, time: o.Time, duration: o.Duration, facilitator: o.Facilitator, group: normalizeGroup(s.Group) });
-      }
-    }
-  }
-  return entries;
-}
+import { todayString } from "@/lib/enrollmentDates";
+import { buildScheduleEntries } from "@/lib/adminScheduleEntries";
 
 export async function GET(req) {
   const { error } = requireManagement(req);
@@ -46,16 +14,18 @@ export async function GET(req) {
 
   const { searchParams } = new URL(req.url);
   const download = searchParams.get("download") === "1";
+  // TKT-0345: ?batch=B8 draws only that batch, every subject it attends.
+  const batch = (searchParams.get("batch") || "").trim();
 
   const db = await readDB();
-  const entries = buildAllEntries(db);
+  const entries = buildScheduleEntries(db, todayString(), batch).map((e) => ({ ...e, group: normalizeGroup(e.group) }));
 
   // Same fix as app/api/schedule/image/route.js: was "no-store", forcing a
   // full canvas re-render + full re-transfer of this PNG on every view of
   // the Schedule tab's admin image, even when the underlying schedule
   // hadn't changed since the last view. ETag over exactly the rendered
   // inputs lets the browser revalidate cheaply (304) instead.
-  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ style: SCHEDULE_IMAGE_STYLE, entries })).digest("hex").slice(0, 32)}"`;
+  const etag = `"${crypto.createHash("sha256").update(JSON.stringify({ style: SCHEDULE_IMAGE_STYLE, entries, batch })).digest("hex").slice(0, 32)}"`;
   if (!download && req.headers.get("if-none-match") === etag) {
     return new NextResponse(null, { status: 304, headers: { "Cache-Control": "private, max-age=0, must-revalidate", ETag: etag } });
   }
@@ -70,7 +40,7 @@ export async function GET(req) {
     return new NextResponse(pngBuffer, {
       headers: {
         "Content-Type": "image/png",
-        "Content-Disposition": `attachment; filename="DC_Admin_Weekly_Schedule.png"`,
+        "Content-Disposition": `attachment; filename="${batch ? `DC_Batch_${batch.replace(/\W+/g, "_")}_Schedule` : "DC_Admin_Weekly_Schedule"}.png"`,
         "Cache-Control": "private, max-age=0, must-revalidate",
         ETag: etag,
       },

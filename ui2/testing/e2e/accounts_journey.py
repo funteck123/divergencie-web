@@ -41,9 +41,21 @@ def main():
         results["rows"] = s.page.locator("tbody tr").count()
         results["hscroll_1280"] = s.hscroll()
         results["table_overflow_1280"] = s.page.evaluate("(()=>{const w=document.querySelector('.u2-table__wrap');return w.scrollWidth-w.clientWidth})()")
-        results["one_line_rows"] = s.page.evaluate("[...document.querySelectorAll('tbody tr')].slice(0,30).every(r=>r.getBoundingClientRect().height<=37)")
+        results["one_line_rows"] = s.page.evaluate("[...document.querySelectorAll('tbody tr')].slice(0,30).filter(r=>r.querySelector('td:nth-child(2)')).every(r=>r.getBoundingClientRect().height<=37)")
+        results["row_heights"] = s.page.evaluate("[...new Set([...document.querySelectorAll('tbody tr')].slice(0,30).map(r=>Math.round(r.getBoundingClientRect().height)))]")
         results["headers"] = s.page.locator("thead th").all_inner_texts()
         s.page.screenshot(path="snapshots/v2-accounts-1280.png")
+        # details: the name opens a read-only panel with every field (TKT-0341), secrets hidden
+        s.page.locator("tbody tr").first.locator(".u2-namebtn").click()
+        dlg = s.page.get_by_role("dialog")
+        dlg.get_by_text("International School of Somewhere Very Long Name").wait_for()
+        results["details_has_school"] = True
+        results["details_labels"] = [t for t in dlg.locator("dt").all_inner_texts() if t in ("School", "Parent email", "Password")]
+        s.page.screenshot(path="snapshots/v2-account-details.png")
+        dlg.get_by_role("button", name="Edit").click()
+        s.page.get_by_role("dialog").get_by_role("button", name="Save").wait_for()
+        results["details_to_edit"] = True
+        s.page.keyboard.press("Escape")
         # sort
         s.page.get_by_role("button", name="Course").click()
         results["sorted_course_first"] = s.page.locator("tbody tr").first.locator("td").nth(3).inner_text()

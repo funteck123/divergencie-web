@@ -68,6 +68,13 @@ def main():
         # calendar view + image view
         s.page.get_by_role("button", name="Calendar").last.click(); out["calendar_title"] = s.page.locator(".u2-cal__title").count()
         s.page.get_by_role("button", name="Weekly Schedule Image").click(); out["image_link"] = s.page.get_by_role("link", name="Download PNG").get_attribute("href")
+        # batch picture (TKT-0345): picking a batch points the picture at ?batch=<name>
+        s.page.get_by_label("Batch (every subject in it)").click()
+        opts = [o.inner_text() for o in s.page.get_by_role("option").all()]
+        out["batch_options"] = opts
+        s.page.get_by_role("option").nth(1).click()
+        out["batch_img_src"] = s.page.get_by_role("img", name=re.compile("Weekly schedule: Batch")).get_attribute("src")
+        out["batch_download"] = s.page.get_by_role("link", name="Download PNG").get_attribute("href")
         out["hscroll"] = s.hscroll()
         out["calls"] = [(m, p, {k: v for k, v in (b or {}).items()}) for m, p, b in s.calls]
         out["errors"] = [e for e in s.errors if "admin-image" not in e][:4]
