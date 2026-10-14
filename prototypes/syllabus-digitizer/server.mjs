@@ -20,6 +20,7 @@
 //
 // No API key needed anywhere in this prototype -- unlike quiz-digitizer /
 // mcq-digitizer, there's no grading/answer-resolution step here at all.
+import { tidyTree } from "./tidyTree.mjs";
 import http from "http";
 import fs from "fs";
 import path from "path";
@@ -122,6 +123,10 @@ async function extractSyllabusLive(filename) {
 }
 
 async function getSyllabus(filename) {
+  return tidyTree(await getSyllabusRaw(filename));
+}
+
+async function getSyllabusRaw(filename) {
   const db = loadDatabase();
   if (db?.subjects?.[filename]) return db.subjects[filename];
   // Not in the pre-built database yet -- most likely a PDF added to the
