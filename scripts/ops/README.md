@@ -16,3 +16,13 @@ Setup on the host (WSL, systemd enabled):
    otherwise nothing runs after a Windows reboot.
 
 Logs: `journalctl --user -u question-solver`; per-service logs in `~/.local/state/question-solver/`.
+
+## Reconnect Google (TKT-0321)
+
+The app creates Drive files and sends Gmail as the DivergenCIE Gmail account through a stored refresh token. When that token
+expires (Google expires them after 7 days while the OAuth consent screen is in Testing mode) the app shows "The Google login
+DivergenCIE uses ... has expired" and writes one entry to the app log.
+
+1. In Google Cloud, set the OAuth consent screen's publishing status to **In production** (stops the 7 day expiry).
+2. As the account owner, on a computer with a browser: `node --env-file=.env.local scripts/ops/google-reauth.mjs`, open the link, sign in.
+3. Put the printed value into `GOOGLE_OAUTH_REFRESH_TOKEN` in Vercel (Production) and `.env.local`, then redeploy.
