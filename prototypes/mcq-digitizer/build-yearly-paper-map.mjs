@@ -23,6 +23,15 @@ const ARCHIVE_ROOT = "/mnt/e/CIE/IGCSE";
 // SUBJECT_COMPONENTS labels already used for the topical library -- no
 // new mapping invented here, just reused).
 const FILENAME_RE = /^(\d{4})_([smw])(\d{2})_(qp|ms)_(\d)(\d)\.pdf$/i;
+// TKT-0302: before 2009 Cambridge printed one paper digit and no variant ("9702_s02_qp_1.pdf"). Only the A Level Physics and
+// Chemistry papers that kept the same format are taken (Paper 1 multiple choice, Paper 2 AS structured, Paper 4 A Level
+// structured, up to 2008). Papers 3, 5 and 6 of that era are practical papers in an older format and stay out.
+const FILENAME_LEGACY_RE = /^(\d{4})_([smw])(\d{2})_(qp|ms)_(\d)\.pdf$/i;
+const LEGACY_LAST_YEAR = 2008;
+const LEGACY_PAPER_DIGITS = new Set(["1", "2", "4"]);
+// Checked by parsing every one of them (2026-10-14): Paper 1 gives 40 questions, Paper 2 totals 60, Paper 4 totals 60 up to
+// 2006 and 100 from 2007 (the old Paper 4 was a 60-mark paper). These two do not parse cleanly and stay out.
+const LEGACY_EXCLUDED = new Set(["9702_s07_1" /* Q1 is not found */, "9701_w02_4" /* scanned mark scheme, no readable text */]);
 
 // Examiner reports (TKT-0251, 2026-09-18): a real standalone document per
 // (subject, session, year) -- NOT per paper variant, so it gets its own
@@ -144,11 +153,11 @@ const SUBJECTS = [
     roots: ["A Levels/Computer Science/Past Papers Years"],
   },
   {
-    board: "A Levels", code: "9702", subject: "Physics", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
+    board: "A Levels", code: "9702", subject: "Physics", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT, legacyOneDigit: true,
     roots: ["A Levels/Physics/Past Papers", "A Levels/Physics/Past Papers Years"],
   },
   {
-    board: "A Levels", code: "9701", subject: "Chemistry", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT,
+    board: "A Levels", code: "9701", subject: "Chemistry", componentByDigit: ALEVEL_SCIENCE_COMPONENT_BY_DIGIT, legacyOneDigit: true,
     roots: ["A Levels/Chemistry/Past Papers"],
   },
   {
@@ -198,7 +207,11 @@ function crawlSubject(subjectDef) {
   const skippedNonQpMs = [];
   for (const filePath of files) {
     const base = path.basename(filePath);
-    const m = FILENAME_RE.exec(base);
+    let m = FILENAME_RE.exec(base);
+    if (!m && subjectDef.legacyOneDigit) {
+      const lm = FILENAME_LEGACY_RE.exec(base);
+      if (lm && 2000 + Number(lm[3]) <= LEGACY_LAST_YEAR && LEGACY_PAPER_DIGITS.has(lm[5]) && !LEGACY_EXCLUDED.has(`${lm[1]}_${lm[2]}${lm[3]}_${lm[5]}`)) m = [lm[0], lm[1], lm[2], lm[3], lm[4], lm[5], ""];
+    }
     if (!m) continue;
     const [, code, session, yy, kind, paperDigit, variantDigit] = m;
     if (code !== subjectDef.code) continue; // a stray file from a different subject's code left in a shared folder
