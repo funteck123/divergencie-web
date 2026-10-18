@@ -36,14 +36,21 @@ export function detailRows(user: UserRecord): { key: string; label: string; valu
 }
 
 /** Read-only view of one account, so staff can see everything without opening the edit form. */
-export function AccountDetails({ user, onClose, onEdit }: { user: UserRecord | null; onClose: () => void; onEdit: (id: string) => void }) {
+export function AccountDetails({ user, onClose, onEdit, onExportAttendance }: { user: UserRecord | null; onClose: () => void; onEdit: (id: string) => void; onExportAttendance?: (id: string) => void }) {
   return (
     <Sheet
       open={!!user}
       onOpenChange={(o) => !o && onClose()}
       title={user ? user.Name : "Account details"}
       subtitle={user ? `${user.UserID} · ${user.UserType}` : undefined}
-      footer={user && <Button variant="primary" onClick={() => { onClose(); onEdit(user.UserID); }}>Edit</Button>}
+      footer={
+        user && (
+          <span className="u2-rowactions">
+            <Button variant="primary" onClick={() => { onClose(); onEdit(user.UserID); }}>Edit</Button>
+            {onExportAttendance && <Button variant="ghost" onClick={() => { onClose(); onExportAttendance(user.UserID); }}>Export attendance</Button>}
+          </span>
+        )
+      }
     >
       {user && (
         <dl className="u2-details">

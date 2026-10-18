@@ -15,6 +15,7 @@ import { apiFetch } from "@/ui2/queries/client";
 import { keys } from "@/ui2/queries/keys";
 import type { Credentials, UserRecord } from "@/ui2/queries/types";
 import { usePatchUser, useUsers } from "@/ui2/queries/users";
+import { ExportAttendanceSheet } from "@/ui2/features/attendanceExport/ExportAttendanceSheet";
 import { AccountDetails } from "./AccountDetails";
 import { AccountSheet } from "./AccountSheet";
 import { BulkBar } from "./BulkBar";
@@ -48,6 +49,9 @@ function statusKind(status: string) {
   return status === "Converted" ? "info" : status === "Inactive" ? "error" : "success";
 }
 
+/** Account types that have attendance records. */
+const ATTENDANCE_TYPES = ["Student", "Teacher", "Staff"];
+
 export function AccountsView() {
   const router = useRouter();
   const qc = useQueryClient();
@@ -62,6 +66,7 @@ export function AccountsView() {
   const [resetTarget, setResetTarget] = useState<UserRecord | null>(null);
   const [editId, setEditId] = useQueryState("edit", parseAsString);
   const [viewId, setViewId] = useQueryState("view", parseAsString);
+  const [attId, setAttId] = useQueryState("attendance", parseAsString);
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<UserRecord | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
@@ -157,6 +162,7 @@ export function AccountsView() {
     const menuItems = (u: UserRecord): RowMenuItem[] => {
       const items: RowMenuItem[] = [];
       if (u.Status === "Active" || u.Status === "Inactive") items.push({ label: u.Status === "Active" ? "Deactivate" : "Activate", onSelect: () => void toggleStatus(u) });
+      if (ATTENDANCE_TYPES.includes(u.UserType)) items.push({ label: "Export attendance", onSelect: () => void setAttId(u.UserID) });
       if (u.Username && !u.ConvertedToUserID) items.push({ label: "Reset password", onSelect: () => setResetTarget(u) });
       if (group.showSchedule) items.push({ label: "Download schedule PNG", href: `/api/schedule/image?userId=${u.UserID}&download=1`, download: `DC_Schedule_${u.Name}.png` });
       items.push({ label: "Delete", danger: true, onSelect: () => setDeleteTarget(u) });
@@ -229,7 +235,7 @@ export function AccountsView() {
     return [idCol, nameCol, statusCol, ...group.columns({ users: all }), ...(isStudent ? [] : [usernameCol]), actions];
     // toggleStatus/resetPassword/impersonate/convert close over stable hooks; busy and eligibility drive the cells.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [group, all, busy, eligibleOf, setEditId, setViewId]);
+  }, [group, all, busy, eligibleOf, setEditId, setViewId, setAttId]);
 
   const issuedEntries = Object.entries(issued);
   const mobileCard = (u: UserRecord) => (
@@ -350,7 +356,8 @@ export function AccountsView() {
         />
       )}
 
-      <AccountDetails user={viewId ? (all.find((u) => u.UserID === viewId) ?? null) : null} onClose={() => void setViewId(null)} onEdit={(id) => void setEditId(id)} />
+      <ExportAttendanceSheet user={attId ? (all.find((u) => u.UserID === attId) ?? null) : null} onClose={() => void setAttId(null)} />
+      <AccountDetails user={viewId ? (all.find((u) => u.UserID === viewId) ?? null) : null} onClose={() => void setViewId(null)} onEdit={(id) => void setEditId(id)} onExportAttendance={ATTENDANCE_TYPES.includes(all.find((u) => u.UserID === viewId)?.UserType ?? "") ? (id) => void setAttId(id) : undefined} />
       <AccountSheet user={editId ? (all.find((u) => u.UserID === editId) ?? null) : null} users={all} onClose={() => void setEditId(null)} />
       <CreateSheet open={creating} defaultType={DEFAULT_CREATE_TYPE[group.id] ?? "Student"} users={all} onClose={() => setCreating(false)} />
       <DeleteAccountDialog user={deleteTarget} onClose={() => setDeleteTarget(null)} />
