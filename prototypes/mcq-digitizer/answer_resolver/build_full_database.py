@@ -47,7 +47,7 @@ MS_AUDIT_PDFS = os.path.join(REPO_ROOT, "data/mcq-digitizer/ms-audit/pdfs")
 FULL_LIB = os.path.join(REPO_ROOT, "data/mcq-digitizer/full-library")
 PDFS_DIR = os.path.join(FULL_LIB, "pdfs")
 IMAGES_DIR = os.path.join(FULL_LIB, "images")
-DATABASE_PATH = os.path.join(FULL_LIB, "database.json")
+DATABASE_PATH = os.environ.get("FULL_DATABASE_PATH") or os.path.join(FULL_LIB, "database.json")  # a staged copy is built first, then swapped in (plan step 2)
 CACHE_PATH = os.path.join(REPO_ROOT, "data/mcq-digitizer/answer-cache/cache.json")
 
 os.makedirs(PDFS_DIR, exist_ok=True)
