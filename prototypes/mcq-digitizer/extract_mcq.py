@@ -3271,8 +3271,6 @@ def parse_theory_qp(pdf_path):
             end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
         else:
             end_page, end_y = doc.page_count - 1, None
-        if notes_page is not None and end_page >= notes_page:
-            end_page, end_y = notes_page - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         blocks.append({"questionNumber": s["number"], "image": image_b64})
@@ -3315,8 +3313,6 @@ def parse_theory_ms(pdf_path):
             end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
         else:
             end_page, end_y = doc.page_count - 1, None
-        if notes_page is not None and end_page >= notes_page:
-            end_page, end_y = notes_page - 1, None
         image_bytes = render_question_image(doc, s["page"], s["y0"], end_page, end_y)
         image_b64 = "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")
         text = extract_block_text(lines, s["page"], s["y0"], end_page, end_y)

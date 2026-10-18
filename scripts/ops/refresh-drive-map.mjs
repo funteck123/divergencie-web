@@ -5,6 +5,8 @@
 //   node --env-file=.env.local scripts/ops/refresh-drive-map.mjs            dry run: prints old and new counts, writes nothing
 //   node --env-file=.env.local scripts/ops/refresh-drive-map.mjs --write    backs up the map, then writes it
 //   --dump <file>  also writes the new map to that file (for checking it before --write)
+//   --include-mcq  also replace the multiple-choice buckets. Left alone by default: new multiple-choice worksheets need the answer-key
+//                  rebuild (prototypes/mcq-digitizer/answer_resolver/build_full_database.py) before they are fit to show.
 //   add --force to write even when files that were in the old map are gone from Drive
 //
 // The service reads the map on every /api/library request, so a written map is live at once (no restart).
@@ -17,6 +19,7 @@ const ROOT = "1KZBDpoIOf7KQcxX1Qa63WllHVRXAQb00"; // DC Course Materials
 const MAP = path.join(process.cwd(), "data", "mcq-digitizer", "drive-map", "drive-map.json");
 const WRITE = process.argv.includes("--write");
 const FORCE = process.argv.includes("--force");
+const INCLUDE_MCQ = process.argv.includes("--include-mcq");
 const DUMP = process.argv.includes("--dump") ? process.argv[process.argv.indexOf("--dump") + 1] : "";
 const FOLDER = "application/vnd.google-apps.folder";
 if (!KEY) { console.error("GOOGLE_DRIVE_API_KEY is not set. Run with: node --env-file=.env.local scripts/ops/refresh-drive-map.mjs"); process.exit(1); }
@@ -59,6 +62,7 @@ for (const [key, folders] of Object.entries(BUCKETS)) {
   next[board][subject] ||= {};
   const fresh = {}; // bucket -> { QP: [], MS: [] }
   for (const [folderName, target] of Object.entries(folders)) {
+    if (target === "MCQ" && !INCLUDE_MCQ) { notes.push(`${board}/${subject}/MCQ: left as it was (add --include-mcq after the answer-key rebuild)`); continue; }
     const catId = await childFolder(worksheets, folderName);
     if (!catId) { notes.push(`${board}/${subject}/${folderName}: folder missing on Drive`); continue; }
     for (const kind of ["QP", "MS"]) {
@@ -79,20 +83,31 @@ for (const [key, folders] of Object.entries(BUCKETS)) {
   }
 }
 
-// old buckets that the new rules replaced (the A Level theory bucket is now split in two, so its old entry is overwritten above)
+// "Gone from Drive" means an old file id that is in NO bucket of the new map (a worksheet that moved between buckets, for example
+// from the A Level Paper 4 list to the new AS Paper 2 list, is not gone).
+const allNewIds = new Set();
+for (const board of Object.keys(next)) for (const subject of Object.keys(next[board])) for (const files of Object.values(next[board][subject])) for (const f of [...(files.QP || files.qp || []), ...(files.MS || files.ms || [])]) allNewIds.add(f.id);
 const rows = [];
-let removedTotal = 0, oldTotal = 0;
+let removedTotal = 0, oldTotal = 0, moved = 0;
+for (const board of Object.keys(old)) for (const subject of Object.keys(old[board])) for (const bucket of Object.keys(old[board][subject])) {
+  const files = old[board][subject][bucket];
+  for (const f of [...(files.QP || files.qp || []), ...(files.MS || files.ms || [])]) {
+    oldTotal++;
+    if (!allNewIds.has(f.id)) { removedTotal++; (removedList ||= []).push(`${board}/${subject}/${bucket}: ${f.name}`); }
+  }
+}
 for (const board of Object.keys(next)) for (const subject of Object.keys(next[board])) for (const bucket of Object.keys(next[board][subject])) {
   const o = old[board]?.[subject]?.[bucket] || {};
   const n = next[board][subject][bucket];
   const qp = diffBuckets(o.QP || o.qp, n.QP || n.qp), ms = diffBuckets(o.MS || o.ms, n.MS || n.ms);
   const oq = (o.QP || o.qp || []).length, om = (o.MS || o.ms || []).length;
-  oldTotal += oq + om; removedTotal += qp.removed + ms.removed;
-  if (qp.added || qp.removed || ms.added || ms.removed || !old[board]?.[subject]?.[bucket]) rows.push(`${board} / ${subject} / ${bucket}: QP ${oq} -> ${(n.QP || []).length}, MS ${om} -> ${(n.MS || []).length}  (+${qp.added}/-${qp.removed} QP, +${ms.added}/-${ms.removed} MS)`);
+  if (qp.added || qp.removed || ms.added || ms.removed || !old[board]?.[subject]?.[bucket]) rows.push(`${board} / ${subject} / ${bucket}: QP ${oq} -> ${(n.QP || []).length}, MS ${om} -> ${(n.MS || []).length}`);
 }
+var removedList;
 console.log(rows.join("\n") || "No changes.");
 if (notes.length) console.log("\nNotes:\n" + notes.map((n) => "  " + n).join("\n"));
-console.log(`\nFiles in the old map that are gone from Drive: ${removedTotal} of ${oldTotal}.`);
+console.log(`\nFiles in the old map that are in no bucket of the new map (gone from Drive): ${removedTotal} of ${oldTotal}.`);
+if (removedList) console.log(removedList.slice(0, 12).map((x) => "  " + x).join("\n") + (removedList.length > 12 ? `\n  ... and ${removedList.length - 12} more` : ""));
 if (DUMP) fs.writeFileSync(DUMP, JSON.stringify(next, null, 2));
 if (!WRITE) { console.log("Dry run: nothing written. Add --write to apply."); process.exit(0); }
 if (removedTotal > oldTotal * 0.05 && !FORCE) { console.error("Refusing to write: more than 5% of the old files are gone from Drive. Check the notes, then add --force."); process.exit(2); }

@@ -100,7 +100,8 @@ loadDotEnv();
 
 const PORT = process.env.PORT || 5178;
 const REPO_ROOT = path.join(__dirname, "..", "..");
-const DRIVE_MAP_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "drive-map", "drive-map.json");
+// DRIVE_MAP_PATH lets a spare instance serve a candidate map (scripts/ops/refresh-drive-map.mjs checks a new map this way before it goes live).
+const DRIVE_MAP_PATH = process.env.DRIVE_MAP_PATH || path.join(REPO_ROOT, "data", "mcq-digitizer", "drive-map", "drive-map.json");
 const ANSWER_CACHE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "answer-cache", "cache.json");
 const DATABASE_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "full-library", "database.json");
 // Separate on-disk cache for structured (non-MCQ) papers -- own
