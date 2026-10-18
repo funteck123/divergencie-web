@@ -1,10 +1,11 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-combo__trigger {
-    display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-2); width: 100%; min-height: 36px;
+    display: flex; align-items: center; justify-content: space-between; gap: var(--u2-space-2); width: 100%; min-width: 0; height: 36px; min-height: 36px;
     padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius);
     background: var(--u2-color-bg); color: var(--u2-color-text); font-size: var(--u2-text-md); text-align: left; cursor: pointer;
   }
+  .u2-combo__trigger > span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* long names are cut with an ellipsis, never wrapped: every select stays 36 px */
   .u2-combo__trigger[disabled] { opacity: 0.55; cursor: not-allowed; }
   .u2-combo__placeholder { color: var(--u2-color-text-muted); }
   .u2-combo__panel {

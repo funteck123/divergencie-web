@@ -62,7 +62,7 @@ export function Combobox({ value, onChange, options, placeholder, id, disabled, 
   return (
     <Popover.Root open={open} onOpenChange={(o) => { setOpen(o); if (!o) setSearch(""); }}>
       <Popover.Trigger id={id ?? field.id} aria-describedby={field["aria-describedby"]} type="button" disabled={disabled} className="u2-combo__trigger" role="combobox" aria-expanded={open} aria-controls={listId} aria-label={aria["aria-label"]}>
-        <span className={selected || value ? "" : "u2-combo__placeholder"}>{shown || "Select…"}</span>
+        <span className={selected || value ? "" : "u2-combo__placeholder"} title={selected || value ? shown : undefined}>{shown || "Select…"}</span>
         <span aria-hidden="true">▾</span>
       </Popover.Trigger>
       <Popover.Portal>

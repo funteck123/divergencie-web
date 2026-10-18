@@ -34,7 +34,7 @@ class Session:
         self.page = ctx.new_page()
         self.page.set_default_timeout(30000)
         self.page.on("pageerror", lambda e: self.errors.append(str(e)[:300]))
-        self.page.on("console", lambda m: self.errors.append("console:" + m.text[:300]) if m.type == "error" and "favicon" not in m.text else None)
+        self.page.on("console", lambda m: self.errors.append("console:" + m.text[:300]) if m.type == "error" and "favicon" not in m.text and "sentry.io" not in (m.location or {}).get("url", "") else None)  # the blocked Sentry requests are ours, not the page's
         self.page.route(BASE + "/api/**", self._route)
         return self
 

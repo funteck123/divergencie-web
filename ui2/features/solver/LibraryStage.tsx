@@ -130,11 +130,10 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
       <div className="u2-solver-picker__go">
         <Button variant="primary" loading={busy} disabled={disabled} disabledReason={missingMs ? "This paper has no mark scheme." : "Choose a paper first."} onClick={go}>{fetchButtonLabel(c)}</Button>
       </div>
-      <p className="u2-muted">
+      <div className="u2-cluster">
         <Button size="sm" variant="ghost" onClick={onUpload}>Or upload your own QP + MS PDFs instead</Button>
-        {" · "}
         <Button size="sm" variant="ghost" onClick={onProgress}>View my progress &amp; the leaderboard</Button>
-      </p>
+      </div>
     </section>
   );
 }

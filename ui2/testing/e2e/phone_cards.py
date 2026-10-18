@@ -1,8 +1,8 @@
-"""Tickets, Audit Log and Guides on a phone: one card per row, and a card's action button is on screen without scrolling sideways."""
+"""Tickets, Audit Log, Guides, the student portal and the Solver picker on a phone: one card per row, and a card's action button is on screen without scrolling sideways."""
 import re, sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
-import accounts_journey as A, tickets_journey as T, audit_guides as AG, portals_journey as P
+import accounts_journey as A, tickets_journey as T, audit_guides as AG, portals_journey as P, solver_phone_last_question as SQ
 
 def main():
     out = {}
@@ -41,8 +41,17 @@ def main():
         out["student_service_visible"] = s.page.get_by_text("Cambridge IGCSE 0625 Physics").first.is_visible()
         out["student_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1")
         out["errors"] += s.errors[:3]
+    # the Solver picker: long paper and component names are cut with an ellipsis, so every select stays one height
+    long_title = "CAIE A Level Maths Ch3.1 Algebra - Binomial Negative & Fractional (P3) Worksheet 1"
+    lib = {"A Levels": {"Mathematics": {"Paper 1: Pure Mathematics 1": [{"qpId": "qp1", "msId": "ms1", "title": long_title}]}}}
+    with Session(user=SQ.stu, state={}, width=390, height=900) as s:
+        s.on(r"^/api/mcq", lambda m, p, b, st: (200, lib) if p.startswith("/api/mcq/library") else SQ.h(m, p, b, st)); s.goto("/v2/question-solver")
+        s.page.get_by_role("button", name="Fetch this paper and start").wait_for(timeout=60000); s.page.wait_for_timeout(800)
+        out["solver_select_heights"] = s.page.evaluate("[...document.querySelectorAll('.u2-combo__trigger')].map((e) => Math.round(e.getBoundingClientRect().height))")
+        out["solver_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1 || document.body.scrollWidth > document.body.clientWidth + 1 || [...document.querySelectorAll('main *')].some((e) => e.getBoundingClientRect().right > window.innerWidth + 1)")
+        out["errors"] += s.errors[:3]
     print(json.dumps(out))
-    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and out["student_tables_left"] == 0 and out["student_pay_on_screen"] and out["student_service_visible"] and not out["student_scrolls_sideways"] and not out["errors"]
+    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and out["student_tables_left"] == 0 and out["student_pay_on_screen"] and out["student_service_visible"] and not out["student_scrolls_sideways"] and len(set(out["solver_select_heights"])) == 1 and out["solver_select_heights"] and not out["solver_scrolls_sideways"] and not out["errors"]
     sys.exit(0 if ok else 1)
 
 if __name__ == "__main__":
