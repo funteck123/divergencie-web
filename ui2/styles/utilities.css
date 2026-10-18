@@ -16,4 +16,4 @@
   .u2-contain { object-fit: contain; max-width: 100%; }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { .u2-page { min-height: 100vh; } }
-:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { .u2-linkicon { min-width: 22px; width: 22px; padding: 0; } }
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { .u2-linkicon { min-width: 28px; width: 28px; padding: 0; } /* a 28 px square, like the other icon buttons */ }

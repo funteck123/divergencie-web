@@ -68,7 +68,7 @@ function link(id: string, header: string, title: string, url: (u: UserRecord) =>
     id,
     header,
     title,
-    width: 34,
+    width: 42,
     align: "center",
     sortValue: (u) => (url(u) ? 1 : 0),
     cell: (u) => {
