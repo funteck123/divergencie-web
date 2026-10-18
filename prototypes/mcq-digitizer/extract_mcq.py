@@ -3278,6 +3278,28 @@ def parse_theory_qp(pdf_path):
     return blocks
 
 
+
+def qp_question_marks(pdf_path):
+    """Marks printed in a Theory question paper, per question: the sum of the "[N]" brackets between one question's heading and the next.
+    Same question starts as parse_theory_qp. Returns [(questionNumber, marks)] in paper order; a question with no bracket has 0.
+    Used to cross-check a worksheet against the total printed on its cover (scripts/ops/sanitise_worksheet_marks.py)."""
+    doc = fitz.open(pdf_path)
+    lines = extract_lines(doc)
+    starts = find_bare_number_question_starts(lines)
+    doc.close()
+    totals = [0] * len(starts)
+    for line in lines:
+        at = None
+        for i, st in enumerate(starts):
+            if (line["page"], line["y0"]) >= (st["page"], st["y0"]):
+                at = i
+            else:
+                break
+        if at is not None:
+            totals[at] += sum(int(n) for n in re.findall(r"\[(\d{1,2})\]", line.get("text", "")))
+    return [(st["number"], totals[i]) for i, st in enumerate(starts)]
+
+
 def parse_theory_ms(pdf_path):
     """MS side of a Theory paper -- delimited by find_ms_question_starts,
     paired to the QP's questions BY NUMBER. Marks-per-question notation
