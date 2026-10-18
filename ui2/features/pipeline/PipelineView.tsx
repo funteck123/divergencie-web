@@ -124,9 +124,9 @@ export function PipelineView() {
   const trialCols: Column<TRow>[] = [
     { id: "name", header: "Name", width: 150, sortValue: (t) => t._name, tip: (t) => t._name, cell: (t) => <strong className="u2-strong">{t._name}</strong> },
     { id: "service", header: "Service", sortValue: (t) => t._service, tip: (t) => t._service, cell: (t) => t._service },
-    { id: "progress", header: "Progress", width: 290, sortValue: (t) => t.Status, cell: (t) => <StepIndicator steps={TRIAL_STEPS} currentIndex={trialStepIndex(t)} deadEnd={trialDeadEnd(t)} /> },
-    { id: "when", header: "Scheduled", width: 170, sortValue: (t) => t._at, tip: (t) => { const s = slotOf(t.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}, ${s.Facilitator || "no instructor set"}` : undefined; }, cell: (t) => { const s = slotOf(t.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}` : "—"; } },
-    { id: "feedback", header: "Feedback", width: 140, tip: (t) => t.Feedback, cell: (t) => t.Feedback || "—" },
+    { id: "progress", header: "Progress", width: 330, sortValue: (t) => t.Status, cell: (t) => <StepIndicator steps={TRIAL_STEPS} currentIndex={trialStepIndex(t)} deadEnd={trialDeadEnd(t)} /> },
+    { id: "when", header: "Scheduled", width: 150, sortValue: (t) => t._at, tip: (t) => { const s = slotOf(t.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}, ${s.Facilitator || "no instructor set"}` : undefined; }, cell: (t) => { const s = slotOf(t.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}` : "—"; } },
+    { id: "feedback", header: "Feedback", width: 120, tip: (t) => t.Feedback, cell: (t) => t.Feedback || "—" },
     { id: "invoice", header: "Invoice", width: 76, cell: (t) => { const inv = invoiceFor(t); return inv ? <Badge kind={inv.Status === "Sent" || inv.Status === "Paid" ? "success" : "neutral"}>{inv.Status}</Badge> : "—"; } },
     { id: "account", header: "Account", width: 190, cell: (t) => accountCell(t.TrialAccID) },
     {
@@ -157,7 +157,7 @@ export function PipelineView() {
     { id: "name", header: "Name", width: 150, sortValue: (i) => i._name, tip: (i) => i._name, cell: (i) => <strong className="u2-strong">{i._name}</strong> },
     { id: "service", header: "Service", sortValue: (i) => i._service, tip: (i) => i._service, cell: (i) => i._service },
     {
-      id: "progress", header: "Progress", width: 330, sortValue: (i) => i.Status,
+      id: "progress", header: "Progress", width: 450, sortValue: (i) => i.Status,
       cell: (i) => (
         <>
           <StepIndicator steps={INTERVIEW_STEPS} currentIndex={interviewStepIndex(i)} deadEnd={interviewDeadEnd(i)} />
@@ -166,10 +166,10 @@ export function PipelineView() {
         </>
       ),
     },
-    { id: "when", header: "Scheduled", width: 170, sortValue: (i) => i._at, tip: (i) => { const s = slotOf(i.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}, ${s.Facilitator || "no instructor set"}` : undefined; }, cell: (i) => { const s = slotOf(i.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}` : "—"; } },
+    { id: "when", header: "Scheduled", width: 150, sortValue: (i) => i._at, tip: (i) => { const s = slotOf(i.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}, ${s.Facilitator || "no instructor set"}` : undefined; }, cell: (i) => { const s = slotOf(i.ScheduleItemID); return s ? `${formatDate(s.Date) as string} at ${s.Time}` : "—"; } },
     { id: "task", header: "Task", width: 84, cell: (i) => (i.TaskSubmissionLink ? <LinkButton href={i.TaskSubmissionLink} target="_blank">Open</LinkButton> : "—") },
     { id: "offerlink", header: "Offer", width: 84, cell: (i) => (i.OfferLetterLink ? <LinkButton href={i.OfferLetterLink} target="_blank">Open</LinkButton> : "—") },
-    { id: "account", header: "Account", width: 190, cell: (i) => accountCell(i.InterviewAccID) },
+    { id: "account", header: "Account", width: 140, cell: (i) => accountCell(i.InterviewAccID) },
     {
       id: "actions", header: "", title: "Actions", width: 130,
       cell: (i) => (

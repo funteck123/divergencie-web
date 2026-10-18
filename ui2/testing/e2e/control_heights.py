@@ -38,11 +38,13 @@ def main():
         for path in ["/v2/management/accounts", "/v2/management/services", "/v2/management/schedule", "/v2/management/schedule?view=timeline", "/v2/management/tickets", "/v2/management/pipeline", "/v2/management/enrollments", "/v2/management/billing", "/v2/management/guides", "/v2/management/templates", "/v2/management/audit-log", "/v2/management/applications"]:
             s.goto(path); s.page.wait_for_timeout(900)
             for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append((path, *r)); print(path, r)
-    # pages whose rows only appear with data: Applications (Approve and Reject must stay on one line), at desktop width
-    with Session(state=PJ.mk_state()) as s:
-        s.on(r"^/api/", PJ.handler)
-        s.goto("/v2/management/applications"); s.page.wait_for_timeout(1200)
-        for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append(("/v2/management/applications (with data)", *r)); print("applications", r)
+    # pages whose rows only appear with data (Applications: Approve and Reject on one line; Pipeline: step lists on one line, tables not scrolling sideways), at desktop width
+    STEPS_JS = """() => [...document.querySelectorAll('.u2-table .u2-steps')].filter((o) => { const t = [...o.children].map((l) => Math.round(l.getBoundingClientRect().top)); return Math.max(...t) - Math.min(...t) > 4; }).map((o) => ['wrapped steps', o.textContent.trim().slice(0, 40), 0]).concat([...document.querySelectorAll('.u2-table .u2-steps')].filter((o) => o.scrollWidth > o.parentElement.clientWidth + 1).map((o) => ['clipped steps', o.textContent.trim().slice(0, 40), o.scrollWidth - o.parentElement.clientWidth])).concat([...document.querySelectorAll('.u2-table__wrap')].filter((w) => w.scrollWidth > w.clientWidth + 1).map((w) => ['table scrolls sideways', (w.getAttribute('aria-label') || '').trim().slice(0, 30), w.scrollWidth - w.clientWidth]))"""
+    for path in ["/v2/management/applications", "/v2/management/pipeline"]:
+        with Session(state=PJ.mk_state()) as s:
+            s.on(r"^/api/", PJ.handler)
+            s.goto(path); s.page.wait_for_timeout(1200)
+            for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS) + s.page.evaluate(STEPS_JS): bad.append((path + " (with data)", *r)); print(path, r)
     # the shell header on a phone: "Report issue" and the "Menu" trigger share one row and one height
     with Session(state={"users": A.mk_users(), "services": SV.mk_services(), "enrollments": []}, width=390, height=900) as s:
         s.on(r"^/api/users", lambda m, p, b, st: (200, {"users": st["users"]}) if m == "GET" else None)

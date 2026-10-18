@@ -47,14 +47,16 @@ export function SlotAssign({ serviceId, openSlots, onApprove, onCreateAndApprove
 
   if (mode === "existing")
     return (
-      <div className="u2-inline u2-inline--wrap u2-inline--center">
-        <div className="u2-grow">
-          <Combobox aria-label="Open slot" value={scheduleId} onChange={setScheduleId} placeholder="Select an open slot…" options={candidates.map((s) => ({ value: s.ScheduleID, label: `${formatDate(s.Date) as string} at ${s.Time} ${tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}${s.BatchName ? ` · ${s.BatchName as string}` : ""} (${s.Facilitator || "no instructor set"})` }))} />
+      <>
+        <div className="u2-inline u2-inline--wrap u2-inline--center">
+          <div className="u2-slotpick">
+            <Combobox aria-label="Open slot" value={scheduleId} onChange={setScheduleId} placeholder="Select an open slot…" options={candidates.map((s) => ({ value: s.ScheduleID, label: `${formatDate(s.Date) as string} at ${s.Time} ${tzAbbrFor(s.Date, normalizeTimezone(s.Timezone))}${s.BatchName ? ` · ${s.BatchName as string}` : ""} (${s.Facilitator || "no instructor set"})` }))} />
+          </div>
+          <Button size="sm" variant="primary" loading={saving} disabled={!scheduleId} disabledReason="Select a slot first." onClick={() => void run(() => onApprove(scheduleId))}>Approve</Button>
+          <Button size="sm" variant="ghost" onClick={() => setMode("new")}>+ New slot instead</Button>
         </div>
-        <Button size="sm" variant="primary" loading={saving} disabled={!scheduleId} disabledReason="Select a slot first." onClick={() => void run(() => onApprove(scheduleId))}>Approve</Button>
-        <Button size="sm" variant="ghost" onClick={() => setMode("new")}>+ New slot instead</Button>
         {candidates.length === 0 && <span className="u2-muted">No open slots for this service yet.</span>}
-      </div>
+      </>
     );
   return (
     <div className="u2-inline u2-inline--wrap u2-inline--end">

@@ -5,6 +5,7 @@
   .u2-steps__done { color: var(--u2-color-success); }
   .u2-steps__now { color: var(--u2-color-text); font-weight: var(--u2-weight-bold); }
   .u2-steps__next { color: var(--u2-color-text-muted); }
-  .u2-table .u2-steps { white-space: nowrap; }
+  .u2-table .u2-steps { white-space: nowrap; flex-wrap: nowrap; }
+  .u2-slotpick { flex: 1 1 240px; min-width: 0; } /* wraps to its own line on a phone instead of shrinking to a sliver */
   .u2-pipeline-lanes { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: var(--u2-space-3); overflow-x: auto; align-items: start; }
 }
