@@ -37,7 +37,7 @@ export function useDefaultView(key: string, current: string, fallback: string, a
 export function DefaultViewButton({ state }: { state: ReturnType<typeof useDefaultView> }) {
   const pinned = state.saved !== null && state.isDefault;
   return (
-    <Button size="sm" variant="ghost" aria-pressed={pinned} title={pinned ? "This is your default view. Press to go back to the standard one." : "Open this view every time you come back"} onClick={pinned ? state.clear : state.set}>
+    <Button variant="ghost" aria-pressed={pinned} title={pinned ? "This is your default view. Press to go back to the standard one." : "Open this view every time you come back"} onClick={pinned ? state.clear : state.set}>
       {pinned ? "Default view ✓" : "Make default"}
     </Button>
   );

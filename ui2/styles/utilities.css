@@ -8,6 +8,8 @@
   .u2-grow { flex: 1; min-width: 0; }
   .u2-minw { min-width: 200px; }
   .u2-push { margin-left: auto; }
+  .u2-cluster { display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-wrap: wrap; min-width: 0; max-width: 100%; } /* controls that belong together wrap as one unit */
+  .u2-cluster > * { min-width: 0; max-width: 100%; } /* a scrolling view switch inside it shrinks and scrolls instead of widening the page */
   .u2-prewrap { white-space: pre-wrap; }
   .u2-clickable { cursor: pointer; }
   .u2-fill { width: 100%; }

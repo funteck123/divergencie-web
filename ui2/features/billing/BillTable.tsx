@@ -127,7 +127,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     },
     { id: "period", header: "Period", width: 76, sortValue: (r) => periodKey(r), cell: (r) => `${r.Month}/${r.Year}` },
     {
-      id: "amount", header: "Amount", width: 110, numeric: true, sortValue: (r) => Number(r.Amount),
+      id: "amount", header: "Amount", width: 134, numeric: true, sortValue: (r) => Number(r.Amount),
       cell: (r) => {
         const d = (discountBreakdown(r) as { total: number }).total;
         return (
@@ -202,7 +202,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           <Combobox aria-label="Status" value={f.status} onChange={(v) => void setStatus(v === "all" ? null : v)} options={(Object.entries(STATUS_FILTER_LABEL) as [string, string][]).map(([value, label]) => ({ value, label }))} />
         </div>
         <Button variant="ghost" aria-expanded={showFilters} onClick={() => setShowFilters((s) => !s)}>
-          Filters{nActive > 0 ? ` (${nActive})` : ""}
+          Range filters{nActive > 0 ? ` (${nActive})` : ""}
         </Button>
         {nActive > 0 && (
           <Button size="sm" variant="ghost" onClick={() => { setFilters(emptyFilters()); void setQ(null); void setStatus(null); }}>
@@ -210,14 +210,16 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
           </Button>
         )}
         <span className="u2-muted" aria-live="polite">{rows.length === all.length ? `${all.length}` : `${rows.length} of ${all.length}`} {k.noun}s</span>
-        <div className="u2-seg u2-push" role="group" aria-label="View">
-          {MODES.map((m) => (
-            <button key={m} type="button" className="u2-seg__btn" aria-pressed={mode === m} data-on={mode === m} onClick={() => void setMode(m === "table" ? null : m)}>
-              {MODE_LABEL[m]}
-            </button>
-          ))}
+        <div className="u2-cluster u2-push">
+          <div className="u2-seg" role="group" aria-label="View">
+            {MODES.map((m) => (
+              <button key={m} type="button" className="u2-seg__btn" aria-pressed={mode === m} data-on={mode === m} onClick={() => void setMode(m === "table" ? null : m)}>
+                {MODE_LABEL[m]}
+              </button>
+            ))}
+          </div>
+          <DefaultViewButton state={defaultView} />
         </div>
-        <DefaultViewButton state={defaultView} />
       </div>
 
       {showFilters && (

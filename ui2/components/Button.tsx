@@ -100,11 +100,11 @@ export function LinkButton({ href, variant = "ghost", size = "sm", onDark = fals
   );
   const internal = href.startsWith("/") && !href.startsWith("/api/") && !rest.download && rest.target !== "_blank";
   return internal ? (
-    <Link href={href} className={cls} {...rest}>
+    <Link href={href} className={cls} data-size={size} {...rest}>
       {inner}
     </Link>
   ) : (
-    <a href={href} className={cls} {...(rest.target === "_blank" ? { rel: "noopener noreferrer" } : {})} {...rest}>
+    <a href={href} className={cls} data-size={size} {...(rest.target === "_blank" ? { rel: "noopener noreferrer" } : {})} {...rest}>
       {inner}
     </a>
   );

@@ -1,7 +1,7 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-iconbtn {
-    display: inline-grid; place-items: center; min-width: 26px; height: 24px; padding: 0 4px;
+    display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px; /* the same height as a small button, so they line up in one row */
     border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius);
     background: var(--u2-color-surface); color: var(--u2-color-brand); font-size: var(--u2-text-sm); line-height: 1;
   }

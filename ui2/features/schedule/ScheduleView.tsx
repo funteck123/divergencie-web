@@ -213,14 +213,16 @@ function ServiceSchedule({ items, attendance, enrollments, requests, conflictIds
   return (
     <section className="u2-box">
       <h2>Service Schedule (auto-generated)</h2>
-      <div className="u2-seg" role="group" aria-label="Schedule view">
-        {VIEWS.map((v) => (
-          <button key={v.id} type="button" className="u2-seg__btn" aria-pressed={view === v.id} data-on={view === v.id} onClick={() => void setView(v.id === "agenda" ? null : v.id)}>
-            {v.label}
-          </button>
-        ))}
+      <div className="u2-cluster">
+        <div className="u2-seg" role="group" aria-label="Schedule view">
+          {VIEWS.map((v) => (
+            <button key={v.id} type="button" className="u2-seg__btn" aria-pressed={view === v.id} data-on={view === v.id} onClick={() => void setView(v.id === "agenda" ? null : v.id)}>
+              {v.label}
+            </button>
+          ))}
+        </div>
+        <DefaultViewButton state={defaultView} />
       </div>
-      <div><DefaultViewButton state={defaultView} /></div>
       {(view === "list" || view === "agenda") && (
         <div className="u2-toolbar">
           <input type="search" className="u2-search" placeholder="Search service or instructor…" aria-label="Search schedule" value={q} onChange={(e) => setQ(e.target.value)} />

@@ -6,7 +6,7 @@ import accounts_journey as A, services_journey as SV, schedule_journey as SJ, bi
 
 JS = """() => {
   const out = [];
-  const ctl = (e) => e.matches('button, a[class*=btn], select, .u2-seg, .u2-search, input:not([type=checkbox]):not([type=radio]):not([type=file]), [role=combobox]') && !e.closest('table, .u2-cards, .u2-tl, .u2-cal, .u2-week, .u2-qstrip, .u2-tag, .u2-letters') && e.getBoundingClientRect().height > 0;
+  const ctl = (e) => e.matches('button, a[class*=btn], select, .u2-seg, .u2-search, input:not([type=checkbox]):not([type=radio]):not([type=file]), [role=combobox]') && !e.closest('.u2-cards, .u2-tl, .u2-cal, .u2-week, .u2-qstrip, .u2-tag, .u2-letters') && e.getBoundingClientRect().height > 0;
   for (const p of document.querySelectorAll('main *')) {
     const kids = [...p.children].filter(ctl);
     if (kids.length < 2) continue;
@@ -25,6 +25,8 @@ def main():
         s.on(r"^/api/services", lambda m, p, b, st: (200, {"services": st["services"]}) if m == "GET" else None)
         s.on(r"^/api/enrollments", lambda m, p, b, st: (200, {"enrollments": st["enrollments"]}) if m == "GET" else None)
         s.on(r"^/api/(schedule|attendance)", SJ.handler)
+        s.state["invoices"] = B.mk_invoices(); s.state["paychecks"] = B.mk_paychecks()
+        s.on(r"^/api/(invoices|paychecks|payment-details)", B.handler)
         for path in ["/v2/management/accounts", "/v2/management/services", "/v2/management/schedule", "/v2/management/schedule?view=timeline", "/v2/management/tickets", "/v2/management/pipeline", "/v2/management/enrollments", "/v2/management/billing", "/v2/management/guides", "/v2/management/templates", "/v2/management/audit-log", "/v2/management/applications"]:
             s.goto(path); s.page.wait_for_timeout(900)
             for r in s.page.evaluate(JS): bad.append((path, *r)); print(path, r)

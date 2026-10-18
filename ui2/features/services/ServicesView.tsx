@@ -87,15 +87,17 @@ export function ServicesView() {
       </div>
       <div className="u2-toolbar">
         <input type="search" className="u2-search" placeholder="Search services by name…" aria-label="Search services" value={q} onChange={(e) => void setQ(e.target.value || null)} />
-        <div className="u2-seg" role="group" aria-label="View">
-          <button type="button" className="u2-seg__btn" aria-pressed={view !== "table"} data-on={view !== "table"} onClick={() => void setView("tree")}>
-            Tree
-          </button>
-          <button type="button" className="u2-seg__btn" aria-pressed={view === "table"} data-on={view === "table"} onClick={() => void setView("table")}>
-            Table
-          </button>
+        <div className="u2-cluster">
+          <div className="u2-seg" role="group" aria-label="View">
+            <button type="button" className="u2-seg__btn" aria-pressed={view !== "table"} data-on={view !== "table"} onClick={() => void setView("tree")}>
+              Tree
+            </button>
+            <button type="button" className="u2-seg__btn" aria-pressed={view === "table"} data-on={view === "table"} onClick={() => void setView("table")}>
+              Table
+            </button>
+          </div>
+          <DefaultViewButton state={defaultView} />
         </div>
-        <DefaultViewButton state={defaultView} />
         <Button variant="primary" className="u2-toolbar__new" onClick={() => setSheet({ mode: "create" })}>
           New service
         </Button>
