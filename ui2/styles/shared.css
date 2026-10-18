@@ -20,6 +20,7 @@
   .u2-sent { display: inline-flex; gap: 3px; align-items: center; }
   .u2-sent i { width: 7px; height: 7px; border-radius: var(--u2-radius-round); border: 1px solid var(--u2-color-border-strong); }
   .u2-sent i.on { background: var(--u2-color-brand); border-color: var(--u2-color-brand); }
+  .u2-lead { min-width: 76px; } /* the first button of a row's actions (Send, Unsend): same width, so the icon buttons after it line up */
   .u2-rowactions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-1); }
   .u2-errorbox { padding: var(--u2-space-3); background: var(--u2-color-error-bg); color: var(--u2-color-error); border-radius: var(--u2-radius); }
   .u2-form { display: grid; gap: var(--u2-space-4); }
@@ -41,7 +42,7 @@
   .u2-muted { color: var(--u2-color-text-muted); margin: 0; }
   /* from ui2/features/billing/billing.css */
   .u2-warnbox { margin: 0; padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-warning-bg); color: var(--u2-color-warning-text); border: 1px solid var(--u2-color-warning); border-radius: var(--u2-radius); }
-  .u2-sub { display: block; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); line-height: 1.2; }
+  .u2-sub { display: block; font-size: var(--u2-text-xs); color: var(--u2-color-text-muted); line-height: 1.2; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .u2-sub--good { color: var(--u2-color-success); }
   .u2-sub--warn { color: var(--u2-color-warning-text); font-weight: var(--u2-weight-semibold); }
   .u2-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--u2-space-4); align-items: start; }

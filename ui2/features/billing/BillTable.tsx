@@ -85,11 +85,11 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
     return (
       <span className="u2-rowactions">
         {r.Status === "Draft" ? (
-          <Button size="sm" variant="primary" loading={busy} onClick={() => void run(r, { status: "Sent" }, "Sent.")}>
+          <Button size="sm" variant="primary" className="u2-lead" loading={busy} onClick={() => void run(r, { status: "Sent" }, "Sent.")}>
             Send
           </Button>
         ) : (
-          <Button size="sm" variant="ghost" loading={busy} onClick={() => void run(r, { status: "Draft" }, "Moved back to draft.")}>
+          <Button size="sm" variant="ghost" className="u2-lead" loading={busy} onClick={() => void run(r, { status: "Draft" }, "Moved back to draft.")}>
             Unsend
           </Button>
         )}
@@ -133,7 +133,7 @@ export function BillTable({ kind, users, services }: { kind: BillKind; users: re
         return (
           <>
             {r.Currency || "INR"} {Number(r.Amount).toFixed(2)}
-            {kind === "invoice" && d > 0 && <span className="u2-sub u2-sub--good">{`-${d.toFixed(2)} discount${r.CouponCode ? ` (${r.CouponCode})` : ""}`}</span>}
+            {kind === "invoice" && d > 0 && <span className="u2-sub u2-sub--good" title={r.CouponCode ? `Coupon ${r.CouponCode}` : undefined}>{`-${d.toFixed(2)} discount`}</span>}
           </>
         );
       },
