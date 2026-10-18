@@ -9,6 +9,12 @@ Same layout, same coordinates, same fields as the notebook. Output goes to a sta
 
   python3 scripts/ops/format_worksheets.py m1-qp --tracker <tracker.csv> --src "<raw QP folder>" --logo <logo.jpg> --out <staging folder> [--limit N]
 
+Sets "s1" and "s2" (no tracker rows exist for them): pair every QP with the MS that has the same Save My Exams number, read time and marks from
+page 1 of the raw files, number the chapter from the 9709 syllabus table below, and format both sides. A pair is skipped when the
+two page-1 sheets disagree on time or marks.
+
+  python3 scripts/ops/format_worksheets.py s1 --qp-dir <raw QP folder> --ms-dir <raw MS folder> --logo <logo.jpg> --out <staging folder>
+
 Set "m1-qp": pairs every raw Mechanics QP (file name starts with the Save My Exams number, e.g. 25.3-...) with the tracker row of the
 Mechanics mark scheme that starts with the same number, and reuses that row's fields (course, marks, time, chapter, version).
 The output name is the file name of the row's "Output MS Path" with "MS" replaced by "QP".
@@ -135,6 +141,72 @@ def format_pdf(src, out, info, label, logo):
     return True, f"{note}, {n} pages, size x{ratio:.2f}"
 
 
+INSTRUCTOR = "Mr. Mohammad Shahid Akhtar"
+GRADE = "A*>90%, A>80%, B>70%, C>60%"
+VERSION = "2"
+# 9709 syllabus chapters per paper (the same numbering the owner used for Mechanics: Ch4.1 Forces ..., Ch4.5 Energy ...).
+# SME number -> (chapter number, chapter title, sub topic). Sub topics come from the mark scheme file names: the sub topic printed on the Save My Exams
+# covers is unreliable ("Booklet", or a stale "Descrete Random Variables" on binomial and normal papers).
+SETS = {
+    "s1": {"code": "S1", "chapters": {
+        "37": ("5.1", "Representation of Data", "Diagrams"), "38": ("5.1", "Representation of Data", "Central Tendency & Variation"),
+        "39": ("5.2", "Permutations and Combinations", ""), "40": ("5.3", "Probability", ""),
+        "41": ("5.4", "Discrete Random Variables", "Probability Distribution Table"),
+        "42": ("5.5", "The Binomial and Geometric Distributions", "Binomial Distribution"), "43": ("5.6", "The Normal Distribution", "")}},
+    "s2": {"code": "S2", "chapters": {
+        "44": ("6.1", "The Poisson Distribution", ""), "45": ("6.2", "Linear Combinations of Random Variables", ""),
+        "46": ("6.3", "Continuous Random Variables", ""), "47": ("6.4", "Sampling and Estimation", "Samples"),
+        "48": ("6.4", "Sampling and Estimation", "Population"), "49": ("6.5", "Hypothesis Tests", "")}},
+}
+SMALL = {"and", "of", "in", "the", "a", "to", "for", "on"}
+
+
+def title_case(s):
+    out = []
+    for i, w in enumerate(re.sub(r"\s+", " ", s.replace("_", " ")).strip().split(" ")):
+        out.append(w.lower() if i > 0 and w.lower() in SMALL else (w if w.isupper() and len(w) > 1 else w[:1].upper() + w[1:].lower()))
+    return " ".join(out)
+
+
+def raw_cover(pdf):
+    """Fields printed on page 1 of a raw Save My Exams paper."""
+    t = fitz.open(pdf)[0].get_text()
+    g = lambda pat: (re.search(pat, t) or [None, ""])[1].strip() if re.search(pat, t) else ""
+    return {"time": g(r"Time Allowed:\s*(\d+)\s*minutes"), "marks": g(r"Score:\s*/\s*(\d+)"), "topic": g(r"\nTopic\s*\n([^\n]*)"),
+            "sub": g(r"\nSub Topic\s*\n([^\n]*)\n(?!Booklet)") or ""}
+
+
+def sme_number(filename):
+    m = re.match(r"^(\d+)\.(\d+)", filename)
+    return (m.group(1), int(m.group(2))) if m else None
+
+
+def sme_jobs(setname, qp_dir, ms_dir):
+    """[(label, source path, output name, info or None, problem)] for every QP and MS of the set."""
+    cfg = SETS[setname]
+    def index(d):
+        return {sme_number(f): f for f in sorted(os.listdir(d)) if f.lower().endswith(".pdf") and sme_number(f)}
+    qps, mss = index(qp_dir), index(ms_dir)
+    jobs = []
+    for key in sorted(set(qps) | set(mss)):
+        chapter, chapter_title, sub = cfg["chapters"].get(key[0], (None, None, None))
+        n = key[1]
+        if key not in qps or key not in mss or not chapter:
+            jobs.append(("?", qps.get(key) or mss.get(key), None, None, "unpaired or unknown chapter " + ".".join(map(str, key)))); continue
+        cq, cm = raw_cover(os.path.join(qp_dir, qps[key])), raw_cover(os.path.join(ms_dir, mss[key]))
+        problem = "" if (cq["time"], cq["marks"]) == (cm["time"], cm["marks"]) and cq["time"] and cq["marks"] else f"QP {cq['time']} min /{cq['marks']} vs MS {cm['time']} min /{cm['marks']}"
+        stem = f"CAIE A Level Maths Ch{chapter} {chapter_title}" + (f" - {sub}" if sub else "") + f" ({cfg['code']}) Worksheet {n}"
+        base = {"course_name": "A Level Maths", "board": "CAIE", "subject_code": "9709", "instructor": INSTRUCTOR, "time_allowed": f"{cq['time']} minutes", "maximum_marks": cq["marks"],
+                "grade_threshold": GRADE, "chapter_num": chapter, "chapter_name": sentence_case(chapter_title), "version": VERSION}
+        jobs.append(("QP", os.path.join(qp_dir, qps[key]), f"{stem} QP.pdf", dict(base, display_name=f"{stem} QP"), problem))
+        jobs.append(("MS", os.path.join(ms_dir, mss[key]), f"{stem} MS.pdf", dict(base, display_name=f"{stem} MS"), problem))
+    return jobs
+
+
+def sentence_case(s):
+    return s[:1].upper() + s[1:].lower() if s else s
+
+
 def m1_qp_jobs(tracker, src_dir):
     rows = list(csv.DictReader(open(tracker, encoding="utf8", errors="replace")))
     ms_rows = {}
@@ -178,21 +250,25 @@ def pairing_problem(pdf, info):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("set", choices=["m1-qp"])
-    ap.add_argument("--tracker", required=True); ap.add_argument("--src", required=True); ap.add_argument("--logo", required=True); ap.add_argument("--out", required=True)
+    ap.add_argument("set", choices=["m1-qp", "s1", "s2"])
+    ap.add_argument("--tracker"); ap.add_argument("--src"); ap.add_argument("--qp-dir"); ap.add_argument("--ms-dir")
+    ap.add_argument("--logo", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--limit", type=int)
     a = ap.parse_args()
-    jobs = m1_qp_jobs(a.tracker, a.src)
+    if a.set == "m1-qp":
+        jobs = []
+        for f, qp_name, info in m1_qp_jobs(a.tracker, a.src):
+            problem = "no matching mark scheme row" if not info else pairing_problem(os.path.join(a.src, f), info)
+            jobs.append(("QP", os.path.join(a.src, f), qp_name, info, problem))
+    else:
+        jobs = sme_jobs(a.set, a.qp_dir, a.ms_dir)
     if a.limit: jobs = jobs[: a.limit]
     bad = 0
-    for f, qp_name, info in jobs:
-        if not info:
-            print("NO MATCHING MARK SCHEME ROW:", f); bad += 1; continue
-        problem = pairing_problem(os.path.join(a.src, f), info)
-        if problem:
-            print("PAIRING MISMATCH, skipped:", f, "|", problem); bad += 1; continue
-        ok, note = format_pdf(os.path.join(a.src, f), os.path.join(a.out, qp_name), info, "QP", a.logo)
-        print(("OK  " if ok else "FAIL"), qp_name[:80], "|", note); bad += 0 if ok else 1
+    for label, src, name, info, problem in jobs:
+        if problem or not info:
+            print("SKIPPED:", os.path.basename(src or "?"), "|", problem); bad += 1; continue
+        ok, note = format_pdf(src, os.path.join(a.out, label, name), info, label, a.logo)
+        print(("OK  " if ok else "FAIL"), name[:85], "|", note); bad += 0 if ok else 1
     print(f"{len(jobs) - bad} of {len(jobs)} formatted")
     sys.exit(1 if bad else 0)
 
