@@ -1,7 +1,12 @@
 import { apiFetch } from "./client";
 import type { Completion, SyllabusData, SyllabusLeaderboard, SyllabusMeta } from "@/ui2/features/syllabus/syllabusLogic";
 
-export const listSyllabi = () => apiFetch<SyllabusMeta[]>("/api/syllabus/syllabi");
+export const listSyllabi = async () => {
+  const list = await apiFetch<SyllabusMeta[]>("/api/syllabus/syllabi");
+  // The viewer service answers with an object such as { error } when it is busy; a list is what every caller expects.
+  if (!Array.isArray(list)) throw new Error("The Syllabus Viewer did not answer properly. Wait a minute and try again.");
+  return list;
+};
 /** Digitizing a booklet can take a while on the first request: the service caches it after that. */
 export const getSyllabus = (filename: string) => apiFetch<SyllabusData>(`/api/syllabus/syllabi/${encodeURIComponent(filename)}`);
 

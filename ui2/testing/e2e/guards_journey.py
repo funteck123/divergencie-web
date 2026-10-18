@@ -19,6 +19,20 @@ def main():
     url, menu = landed(MGMT, "/v2/management/accounts")
     out["management_url"] = url; out["management_sees_menu"] = menu
     assert "management/accounts" in url and menu > 0
+    # a broken server reply must show a message, never crash the page (Sentry showed "x is not iterable" and "_.find is not a function")
+    for name, utype, path in [("teacher", "Teacher", "/v2/teacher"), ("parent", "Parent", "/v2/parent"), ("student", "Student", "/v2/student")]:
+        user = {"UserID": "U1", "UserType": utype, "Name": "U", "UiPreference": "next"}
+        with Session(user=user, state={}) as s:
+            s.on(r"^/api/me", lambda m, p, b, st: (200, {}))
+            s.goto(path); s.page.wait_for_timeout(1500)
+            out[f"{name}_empty_me_message"] = s.page.get_by_role("alert").count() > 0
+            out[f"{name}_empty_me_errors"] = [e for e in s.errors if not e.startswith("console:")][:2]
+            assert out[f"{name}_empty_me_message"] and not out[f"{name}_empty_me_errors"], (name, out)
+    with Session(user={"UserID": "STU-1", "UserType": "Student", "Name": "L", "UiPreference": "next"}, state={}) as s:
+        s.on(r"^/api/syllabus/syllabi$", lambda m, p, b, st: (200, {"error": "busy"}))
+        s.goto("/v2/syllabus"); s.page.wait_for_timeout(1500)
+        out["syllabus_object_reply_errors"] = [e for e in s.errors if not e.startswith("console:")][:2]
+        assert not out["syllabus_object_reply_errors"], out
     for k, v in out.items(): print(k, v)
 
 if __name__ == "__main__":
