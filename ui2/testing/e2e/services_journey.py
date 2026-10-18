@@ -44,6 +44,13 @@ def main():
         out["service_line"] = s.page.get_by_text("Cambridge IGCSE 0625 Physics").count()
         s.page.get_by_role("button", name=re.compile("Show 2 batches")).click()
         out["batch_rows"] = s.page.locator(".u2-batch").count()
+        # the service row sits under the column headers however deep the tree is (it used to shift right by 16px per level)
+        out["tree_column_offsets"] = s.page.evaluate("""() => {
+          const head = [...document.querySelectorAll('.u2-svcline--head > *')];
+          const row = [...document.querySelector('.u2-tree__service .u2-svcline').children];
+          return head.slice(1, 6).map((h, i) => Math.round(row[i + 1].getBoundingClientRect().left - h.getBoundingClientRect().left));
+        }""")
+        assert all(abs(x) <= 3 for x in out["tree_column_offsets"]), out["tree_column_offsets"]
         s.page.screenshot(path="snapshots/v2-services-tree.png")
         # edit: save unchanged -> body must keep ids and batch dates
         s.page.get_by_role("button", name="Edit").first.click()

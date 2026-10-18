@@ -10,7 +10,8 @@
   }}
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-tree, .u2-tree__children { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-  .u2-tree__children { padding-left: var(--u2-space-4); }
+  /* Only the group titles are indented (by depth); the service rows stay full width so their columns line up under the column headers. */
+  .u2-tree__node > .u2-tree__toggle { margin-left: calc(var(--depth, 0) * var(--u2-space-4)); }
   .u2-tree__node > .u2-tree__toggle { font-weight: var(--u2-weight-semibold); }
   .u2-tree__toggle {
     all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: var(--u2-space-2); padding: 6px var(--u2-space-2);
