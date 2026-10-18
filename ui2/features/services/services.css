@@ -1,19 +1,13 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-rows { display: grid; gap: var(--u2-space-3); }
   .u2-row { display: grid; gap: var(--u2-space-2); align-items: end; padding: var(--u2-space-2); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-row--rate { grid-template-columns: 110px 100px minmax(120px, 1fr) 130px minmax(120px, 160px) auto; }
   .u2-row--occ { grid-template-columns: 130px 110px 90px minmax(140px, 1fr) auto; }
   .u2-row--link { grid-template-columns: minmax(120px, 200px) 1fr auto; }
   .u2-row__wide { grid-column: 1 / -1; }
-  .u2-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--u2-space-3); }
-  .u2-grid3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--u2-space-3); }
-  .u2-box { display: grid; gap: var(--u2-space-3); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
-  .u2-box--inner { background: var(--u2-color-bg-subtle); }
   @media (max-width: 767px) {
     .u2-row--rate, .u2-row--occ, .u2-row--link, .u2-grid2, .u2-grid3 { grid-template-columns: 1fr; }
-  }
-}
+  }}
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-tree, .u2-tree__children { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
   .u2-tree__children { padding-left: var(--u2-space-4); }
@@ -38,6 +32,4 @@
   .u2-batch__facts dd { margin: 0; }
   .u2-batch__facts ul { margin: 0; padding-left: 1.1em; display: grid; gap: 2px; color: var(--u2-color-text); }
   .u2-expand__list { margin: 4px 0 0; padding-left: var(--u2-space-3); font-size: var(--u2-text-md); color: var(--u2-color-text); }
-  .u2-danger-text { color: var(--u2-color-error); }
-  @media (max-width: 1023px) { .u2-svcline { grid-template-columns: 28px 84px 1fr auto; } .u2-svcline > :nth-child(n+4):not(:last-child) { display: none; } }
-}
+  @media (max-width: 1023px) { .u2-svcline { grid-template-columns: 28px 84px 1fr auto; } .u2-svcline > :nth-child(n+4):not(:last-child) { display: none; } }}

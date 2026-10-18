@@ -4,6 +4,7 @@ import { QueryProvider } from "@/ui2/queries/QueryProvider";
 import "@/ui2/styles/tokens.css";
 import "@/ui2/styles/base.css";
 import "@/ui2/styles/utilities.css";
+import "@/ui2/styles/shared.css";
 
 // The experimental new UI (TKT-0322). Opt-in Beta, never indexed. Everything is scoped under .u2.
 export const metadata: Metadata = {

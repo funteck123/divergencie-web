@@ -10,7 +10,7 @@ import { MANAGEMENT_TABS } from "@/ui2/features/management/tabs";
 
 export default function ManagementLayout({ children }: { children: ReactNode }) {
   return (
-    <RequireUser>
+    <RequireUser allow={["Management"]}>
       {(user) => (
         <NuqsAdapter>
           <IssuedProvider>
