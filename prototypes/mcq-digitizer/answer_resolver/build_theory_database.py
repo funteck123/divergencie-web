@@ -47,7 +47,7 @@ import extract_mcq as em
 STRUCTURED_LIB = os.path.join(REPO_ROOT, "data/mcq-digitizer/structured-library")
 PDFS_DIR = os.path.join(STRUCTURED_LIB, "pdfs")
 IMAGES_DIR = os.path.join(STRUCTURED_LIB, "images")
-DATABASE_PATH = os.path.join(STRUCTURED_LIB, "database.json")
+DATABASE_PATH = os.environ.get("STRUCTURED_DATABASE_PATH") or os.path.join(STRUCTURED_LIB, "database.json")  # a staged copy is built first, then swapped in
 FAILURES_PATH = os.path.join(STRUCTURED_LIB, "theory_failures.json")
 
 os.makedirs(PDFS_DIR, exist_ok=True)
