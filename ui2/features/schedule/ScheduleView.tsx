@@ -92,7 +92,7 @@ export function ScheduleView() {
         </section>
       )}
 
-      <div className="u2-split">
+      <div className="u2-split u2-split--top">
         <OfferSlot items={items} openIds={sched.data?.openPoolSlotIds ?? []} services={services.data ?? []} loading={sched.isPending} />
         <ServiceSchedule items={items} attendance={att} enrollments={enrollments.data ?? []} requests={reqs} conflictIds={conflicts} loading={sched.isPending} onOpen={setResolveId} />
       </div>
