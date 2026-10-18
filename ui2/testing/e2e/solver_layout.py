@@ -28,9 +28,12 @@ def main():
         s.page.on("dialog", lambda d: d.accept())
         s.on(r"^/api/mcq", h)
         s.goto("/v2/question-solver")
+        edge = "(sel) => { const e = document.querySelector(sel); return e ? Math.round(e.getBoundingClientRect().left) : null; }"
+        out["edge_title_picker"] = [s.page.evaluate(edge, "main h1"), s.page.evaluate(edge, ".u2-solver-picker")]
         s.page.get_by_role("button", name=re.compile("Digitize|Fetch|Load|Start", re.I)).first.click()
         s.page.get_by_role("button", name="Test Mode").click()
         s.page.get_by_role("button", name="Submit quiz").wait_for()
+        out["edge_title_quiz"] = [s.page.evaluate(edge, "main h1"), s.page.evaluate(edge, ".u2-solver")]
         out["default_is_one_page"] = s.page.locator(".u2-allq__item").count()
         # question 6 is far down the page: answer it without any navigation, then jump with the number strip
         s.page.get_by_role("button", name="Question 8", exact=True).click()
@@ -52,6 +55,7 @@ def main():
         s.page.get_by_role("tab", name="History").click()
         s.page.get_by_role("button", name="View").click()
         s.page.get_by_role("list", name="Your answers").wait_for()
+        out["edge_title_progress"] = [s.page.evaluate(edge, "main h1"), s.page.evaluate(edge, ".u2-solver")]
         out["answer_rows"] = s.page.locator(".u2-ans__item").count()
         out["badges"] = [b.inner_text() for b in s.page.locator(".u2-ans .u2-badge").all()]
         out["mcq_has_no_mark_scheme_button"] = s.page.get_by_role("button", name="Mark scheme").count() == 0   # TKT-0351: MCQ papers have no mark scheme picture
@@ -60,6 +64,8 @@ def main():
         s.page.screenshot(path="snapshots/v2-history-answers.png", full_page=True)
         out["errors"] = s.errors[:3]
         out["hscroll"] = s.hscroll()
+    for k in ("edge_title_picker", "edge_title_quiz", "edge_title_progress"):
+        assert out[k][0] == out[k][1], (k, out[k])   # the title and the content share one left edge
     for k, v in out.items(): print(k, v)
 
 if __name__ == "__main__":

@@ -17,8 +17,9 @@
   .u2-chart__key--other { background: var(--u2-color-text-muted); opacity: 0.4; }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
-  .u2-solver { display: grid; gap: var(--u2-space-4); max-width: 880px; margin: 0 auto; }
-  .u2-solver-picker { display: grid; gap: var(--u2-space-3); padding: var(--u2-space-4); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  /* One content column for every stage, left-aligned with the page title (a centered column left the title and the content on different edges). */
+  .u2-solver { display: grid; gap: var(--u2-space-4); max-width: var(--u2-solver-width, 960px); margin: 0; }
+  .u2-solver-picker { max-width: var(--u2-solver-width, 960px); display: grid; gap: var(--u2-space-3); padding: var(--u2-space-4); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-solver-picker__go { position: sticky; bottom: 0; padding: var(--u2-space-2) 0; background: var(--u2-color-surface); }
   .u2-solver-picker__go > button { width: 100%; }
   .u2-qbar { position: sticky; top: var(--u2-bar-height); z-index: 20; display: grid; gap: var(--u2-space-2); padding: var(--u2-space-2) var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); box-shadow: var(--u2-shadow-sm); }
