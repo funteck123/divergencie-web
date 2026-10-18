@@ -42,7 +42,7 @@ import llm_composite as llmc
 import fitz
 import requests
 
-DRIVE_MAP_PATH = os.path.join(REPO_ROOT, "data/mcq-digitizer/drive-map/drive-map.json")
+DRIVE_MAP_PATH = os.environ.get("DRIVE_MAP_PATH") or os.path.join(REPO_ROOT, "data/mcq-digitizer/drive-map/drive-map.json")
 MS_AUDIT_PDFS = os.path.join(REPO_ROOT, "data/mcq-digitizer/ms-audit/pdfs")
 FULL_LIB = os.path.join(REPO_ROOT, "data/mcq-digitizer/full-library")
 PDFS_DIR = os.path.join(FULL_LIB, "pdfs")
@@ -160,8 +160,16 @@ def _find_ms_match(qp_name, ms_list, ms_by_key):
             return prefix_matches[0]
     return None
 
+# This database holds multiple-choice papers only. Theory and structured components have their own builders
+# (build_theory_database.py, build_structured_database.py); running one of them through this file wrote junk records (2026-10-19).
+MCQ_CATEGORY = "MCQ"
+
+
 def build_pairs():
-    raw = json.load(open(DRIVE_MAP_PATH))
+    return mcq_pairs_from_map(json.load(open(DRIVE_MAP_PATH)))
+
+
+def mcq_pairs_from_map(raw):
     pairs = []
     # A Levels first: resolves almost entirely via text-parsing, banks
     # fast real progress before the Gemini-hungry IGCSE files.
@@ -171,6 +179,8 @@ def build_pairs():
             continue
         for subject, cats in raw[board].items():
             for category, files in cats.items():
+                if category != MCQ_CATEGORY:
+                    continue
                 qp_list = files.get("QP", [])
                 ms_list = files.get("MS", [])
                 ms_by_key = {normalize_title(f["name"]): f for f in ms_list}
