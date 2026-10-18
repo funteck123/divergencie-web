@@ -19,7 +19,12 @@ export interface EnrolledService extends ServiceRecord {
   _key: string;
 }
 
-export function enrolledServices(enrollments: readonly EnrollmentRecord[] = [], services: readonly ServiceRecord[] = []): EnrolledService[] {
+/** Anything that is not a list (null, an error object) counts as empty: a reply without a list must not crash the page. */
+const asList = <T,>(v: unknown): readonly T[] => (Array.isArray(v) ? (v as T[]) : []);
+
+export function enrolledServices(enrollmentsIn?: readonly EnrollmentRecord[] | null, servicesIn?: readonly ServiceRecord[] | null): EnrolledService[] {
+  const enrollments = asList<EnrollmentRecord>(enrollmentsIn);
+  const services = asList<ServiceRecord>(servicesIn);
   const out: EnrolledService[] = [];
   for (const e of enrollments) {
     const s = services.find((x) => x.ServiceID === e.ServiceID);
@@ -54,7 +59,7 @@ export function myAttendance(attendance: readonly AttendanceItem[], scheduleId: 
 }
 
 /** Bills the person can see: a draft is the admin's work in progress and is never shown. */
-export const visibleBills = (bills: readonly BillRecord[] = []) => bills.filter((b) => b.Status !== "Draft");
+export const visibleBills = (bills?: readonly BillRecord[] | null) => asList<BillRecord>(bills).filter((b) => b.Status !== "Draft");
 
 export const billPeriod = (b: BillRecord) => b.Year * 100 + b.Month;
 

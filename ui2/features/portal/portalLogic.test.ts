@@ -64,3 +64,14 @@ describe("links and weekly view", () => {
     expect(w.unscheduled).toBe(0);
   });
 });
+
+describe("enrolledServices with a bad reply", () => {
+  it("treats null, an object or nothing as an empty list instead of crashing", () => {
+    expect(enrolledServices(null, null)).toEqual([]);
+    expect(enrolledServices({} as never, [] as never)).toEqual([]);
+    expect(enrolledServices(undefined, {} as never)).toEqual([]);
+    expect(enrolledServices([{ EnrolmentID: "E1", UserID: "U", ServiceID: "S9" }], null)).toEqual([]);
+    expect(visibleBills(null)).toEqual([]);
+    expect(visibleBills({} as never)).toEqual([]);
+  });
+});
