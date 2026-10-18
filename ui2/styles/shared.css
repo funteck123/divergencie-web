@@ -20,6 +20,11 @@
   .u2-sent { display: inline-flex; gap: 3px; align-items: center; }
   .u2-sent i { width: 7px; height: 7px; border-radius: var(--u2-radius-round); border: 1px solid var(--u2-color-border-strong); }
   .u2-sent i.on { background: var(--u2-color-brand); border-color: var(--u2-color-brand); }
+  /* a row as a card (phone tables, Tickets, Audit Log): see DataTable */
+  .u2-card { display: grid; gap: var(--u2-space-1); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); padding: var(--u2-space-2) var(--u2-space-3); font-size: var(--u2-text-sm); }
+  .u2-card__top { display: flex; justify-content: space-between; gap: var(--u2-space-2); }
+  .u2-card__actions { display: flex; gap: var(--u2-space-1); flex-wrap: wrap; margin-top: var(--u2-space-1); }
+  .u2-cards__item > .u2-card { border: 0; padding: 0; background: transparent; border-radius: 0; } /* the list item is the box, not the card inside it */
   .u2-lead { min-width: 76px; } /* the first button of a row's actions (Send, Unsend): same width, so the icon buttons after it line up */
   .u2-rowactions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-1); }
   .u2-errorbox { padding: var(--u2-space-3); background: var(--u2-color-error-bg); color: var(--u2-color-error); border-radius: var(--u2-radius); }

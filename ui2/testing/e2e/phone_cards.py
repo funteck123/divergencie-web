@@ -2,7 +2,7 @@
 import re, sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
-import accounts_journey as A, tickets_journey as T, audit_guides as AG
+import accounts_journey as A, tickets_journey as T, audit_guides as AG, portals_journey as P
 
 def main():
     out = {}
@@ -29,8 +29,20 @@ def main():
         out["tunnel_field_width"] = round(s.page.get_by_label("Extraction service tunnel URL").bounding_box()["width"])
         out["guides_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1")
         out["errors"] = s.errors[:3]
+    # the student portal: no table is left on the page, and the invoice buttons are on screen without sideways scrolling
+    user = {"UserID": "STU-1", "UserType": "Student", "Name": "Test Student", "UiPreference": "next"}
+    with Session(user=user, state={}, width=390, height=900) as s:
+        s.on(r"^/api/", P.handler_for(user, "student")); s.goto("/v2/student"); s.page.get_by_role("heading", name="My Invoices").wait_for(timeout=60000)
+        s.page.wait_for_timeout(1200)
+        out["student_tables_left"] = s.page.locator(".u2-table__wrap").count()
+        pay = s.page.get_by_role("button", name=re.compile("Mark as paid|Pay online")).first
+        box = pay.bounding_box() if pay.count() else None
+        out["student_pay_on_screen"] = bool(box) and box["x"] >= 0 and box["x"] + box["width"] <= 390
+        out["student_service_visible"] = s.page.get_by_text("Cambridge IGCSE 0625 Physics").first.is_visible()
+        out["student_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1")
+        out["errors"] += s.errors[:3]
     print(json.dumps(out))
-    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and not out["errors"]
+    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and out["student_tables_left"] == 0 and out["student_pay_on_screen"] and out["student_service_visible"] and not out["student_scrolls_sideways"] and not out["errors"]
     sys.exit(0 if ok else 1)
 
 if __name__ == "__main__":

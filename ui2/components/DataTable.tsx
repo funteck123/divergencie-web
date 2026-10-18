@@ -34,12 +34,34 @@ export interface DataTableProps<T> {
   initialSort?: { id: string; dir: "asc" | "desc" };
   loading?: boolean;
   emptyText?: string;
-  /** Phone layout (under 768 px): one card per row. Without it the table scrolls sideways inside its own box. */
+  /** Phone layout (under 768 px): one card per row. Without it a card is built from the columns (see DefaultCard), so no table needs sideways scrolling to reach a value or a button. */
   card?: (row: T) => ReactNode;
   selected?: ReadonlySet<string>;
   onSelectedChange?: (next: Set<string>) => void;
   /** Sets row highlight, for the row whose sheet is open. */
   activeKey?: string | null;
+}
+
+/**
+ * The card of a row when a table gives none (see DefaultCard): the first column is the title, every other column a "Header: value" line, and the columns without a
+ * header (the actions) sit at the bottom. Nothing is hidden, so a value or button that is reachable on a desktop is reachable on a phone.
+ */
+export function DefaultCard<T>({ columns, row }: { columns: readonly Column<T>[]; row: T }) {
+  const [first, ...rest] = columns;
+  const actions = rest.filter((c) => c.header === "");
+  const lines = rest.filter((c) => c.header !== "");
+  return (
+    <div className="u2-card">
+      {first && <strong className="u2-strong u2-card__title">{first.cell(row)}</strong>}
+      {lines.map((c) => (
+        <div key={c.id} className="u2-cardrow">
+          <span className="u2-muted">{c.title ?? c.header}</span>
+          <span>{c.cell(row)}</span>
+        </div>
+      ))}
+      {actions.length > 0 && <div className="u2-card__actions">{actions.map((c) => <span key={c.id}>{c.cell(row)}</span>)}</div>}
+    </div>
+  );
 }
 
 const collator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
@@ -205,10 +227,11 @@ export function DataTable<T>({ rows, columns, rowKey, caption, initialSort, load
     );
   }
 
-  if (phone && card) {
+  if (phone) {
+    const render = card ?? ((r: T) => <DefaultCard columns={columns} row={r} />);
     const cardItem = (r: T) => (
       <li key={rowKey(r)} className="u2-cards__item">
-        {card(r)}
+        {render(r)}
       </li>
     );
     return (

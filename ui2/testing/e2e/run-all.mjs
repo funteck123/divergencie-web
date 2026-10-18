@@ -10,7 +10,11 @@ const dir = path.dirname(fileURLToPath(import.meta.url));
 const only = process.argv[2];
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".py") && f !== "harness.py" && f !== "perf_budgets.py" && (!only || f.includes(only))).sort();
 // Tables become card lists on a phone (by design), so journeys that drive the table run from 768px up. Their pages are still scanned at phone width by the sweep.
-const DESKTOP_ONLY = new Set(["accounts_import.py", "accounts_journey.py", "accounts_phase2.py", "billing_journey.py"]);
+const DESKTOP_ONLY = new Set([
+  "accounts_import.py", "accounts_journey.py", "accounts_phase2.py", "billing_journey.py",
+  // since every table has a phone card (DataTable's default card), these click table rows and so need 768 px or more; phone_cards.py and the width sweeps cover the phone side
+  "attendance_export_journey.py", "audit_guides.py", "control_heights.py", "enrollments_journey.py", "pipeline_journey.py", "schedule_journey.py", "services_journey.py", "syllabus_journey.py", "table_tools.py", "tickets_journey.py",
+]);
 const narrow = Number(process.env.U2_WIDTH || 1280) < 768;
 let failed = 0;
 for (const f of files) {

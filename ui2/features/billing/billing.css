@@ -10,9 +10,6 @@
   .u2-lanes { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: var(--u2-space-3); overflow-x: auto; align-items: start; }
   .u2-lane { display: grid; gap: var(--u2-space-2); background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); padding: var(--u2-space-2); min-width: 0; }
   .u2-lane__title { display: flex; justify-content: space-between; font-weight: var(--u2-weight-bold); }
-  .u2-card { display: grid; gap: var(--u2-space-1); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); padding: var(--u2-space-2) var(--u2-space-3); font-size: var(--u2-text-sm); }
-  .u2-card__top { display: flex; justify-content: space-between; gap: var(--u2-space-2); }
-  .u2-card__actions { display: flex; gap: var(--u2-space-1); flex-wrap: wrap; margin-top: var(--u2-space-1); }
   .u2-money { font-variant-numeric: tabular-nums; text-align: right; }
   .u2-filters { display: flex; flex-wrap: wrap; gap: var(--u2-space-3); align-items: end; padding: var(--u2-space-3); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-filters .u2-field { min-width: 130px; }
