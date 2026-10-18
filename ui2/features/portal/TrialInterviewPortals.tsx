@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useBillActions } from "@/ui2/queries/portalActions";
 import type { ScheduleItem, ServiceRecord, UserRecord } from "@/ui2/queries/types";
 import { BillsCard } from "./BillsCard";
-import { Card, GuidesCard } from "./Cards";
+import { Card, GuidesCard, PortalTitle } from "./Cards";
 import "@/ui2/features/accounts/accounts.css";
 
 const useSlots = () => useQuery({ queryKey: ["schedule-by-id"] as const, queryFn: async () => new Map((await apiFetch<{ scheduleItems: ScheduleItem[] }>("/api/schedule")).scheduleItems.map((s) => [s.ScheduleID, s] as const)) });
@@ -89,6 +89,7 @@ export function TrialPortal({ user }: { user: SessionUser }) {
   const requested = new Set((data.trialItems ?? []).filter((t) => t.Status !== "Rejected").map((t) => t.ServiceID));
   return (
     <div className="u2-accounts">
+      <PortalTitle />
       <GuidesCard guides={data.guides} />
       <Card title="My Trial Sessions">
         <TrialList trials={data.trialItems} slots={slots.data} withTz onFeedback={async (id, fb) => { await apiFetch("/api/trial-feedback", { method: "POST", body: { trialId: id, feedback: fb } }); await reload(); }} emptyText="No trial requested yet. Request one below." />
@@ -121,6 +122,7 @@ export function InterviewPortal({ user }: { user: SessionUser }) {
 
   return (
     <div className="u2-accounts">
+      <PortalTitle />
       <GuidesCard guides={data.guides} />
       <Card title="My Interview">
         {(data.interviewItems ?? []).length === 0 && <p className="u2-muted">No interview requested yet, request one below.</p>}

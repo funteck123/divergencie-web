@@ -6,7 +6,7 @@ import { useBillActions } from "@/ui2/queries/portalActions";
 import { useMe, useReloadMe } from "@/ui2/queries/me";
 import type { SessionUser } from "@/ui2/components/RequireUser";
 import { BillsCard } from "./BillsCard";
-import { EnrollmentsCard, GuidesCard, MyInfoCard, ResourcesCard, StaffResourcesCard } from "./Cards";
+import { PortalTitle, EnrollmentsCard, GuidesCard, MyInfoCard, ResourcesCard, StaffResourcesCard } from "./Cards";
 import { enrolledServices } from "./portalLogic";
 import { ScheduleCard } from "./ScheduleCard";
 import { TemplatesCard } from "./TemplatesCard";
@@ -29,6 +29,7 @@ export function RolePortal({ role, user }: { role: PortalRole; user: SessionUser
 
   return (
     <div className="u2-accounts">
+      <PortalTitle />
       <MyInfoCard user={u} />
       <EnrollmentsCard services={services} />
       {role === "Staff" ? <StaffResourcesCard user={u} /> : <ResourcesCard services={services} user={u} showExternalTools={student} />}

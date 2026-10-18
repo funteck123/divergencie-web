@@ -50,4 +50,9 @@
   .u2-pill:hover { background: var(--u2-color-selected); }
   /* from ui2/features/schedule/schedule.css */
   .u2-imagebox { position: relative; width: 100%; height: 700px; border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); background: var(--u2-color-surface); }
+  /* Label and value pairs (My Info): as many columns as fit, so a long list of short values does not run down the page. */
+  .u2-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: var(--u2-space-1) var(--u2-space-5); margin: 0; }
+  .u2-facts > div { display: grid; grid-template-columns: minmax(96px, 150px) minmax(0, 1fr); gap: var(--u2-space-2); align-content: start; }
+  .u2-facts dt { color: var(--u2-color-text-muted); }
+  .u2-facts dd { margin: 0; overflow-wrap: anywhere; }
 }

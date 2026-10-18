@@ -14,6 +14,11 @@ import { occurrencesText, weekly, type EnrolledService } from "./portalLogic";
 import "@/ui2/features/accounts/accounts.css";
 import "./portal.css";
 
+/** The page title every portal shows first, as every Management page does (one h1 per page, and screen readers get a page heading). */
+export function PortalTitle({ children = "My Dashboard" }: { children?: ReactNode }) {
+  return <h1>{children}</h1>;
+}
+
 export function Card({ title, children, actions }: { title: string; children: ReactNode; actions?: ReactNode }) {
   return (
     <section className="u2-box">
@@ -45,7 +50,7 @@ export function MyInfoCard({ user, linkedChildren }: { user: UserRecord; linkedC
   if (linkedChildren) rows.push(["Linked children", linkedChildren.length ? linkedChildren.map((c) => `${c.Name} (${c.UserID})`).join(", ") : "—"]);
   return (
     <Card title="My Info">
-      <dl className="u2-import__facts">
+      <dl className="u2-facts">
         {rows.map(([k, v], i) => (
           <div key={`${k}${i}`}>
             <dt>{k}</dt>

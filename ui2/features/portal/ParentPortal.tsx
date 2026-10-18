@@ -10,7 +10,7 @@ import { useMe, useReloadMe } from "@/ui2/queries/me";
 import type { SessionUser } from "@/ui2/components/RequireUser";
 import type { AttendanceItem, MeBundle } from "@/ui2/queries/types";
 import { BillsCard } from "./BillsCard";
-import { Card, GuidesCard, MyInfoCard } from "./Cards";
+import { Card, GuidesCard, MyInfoCard, PortalTitle } from "./Cards";
 import { enrolledServices } from "./portalLogic";
 import { ScheduleCard } from "./ScheduleCard";
 
@@ -27,6 +27,7 @@ export function ParentPortal({ user }: { user: SessionUser }) {
   const children = data.children ?? [];
   return (
     <div className="u2-accounts">
+      <PortalTitle />
       <MyInfoCard user={data.user} linkedChildren={children.map((c) => c.student).filter((s): s is NonNullable<typeof s> => !!s)} />
       <GuidesCard guides={data.guides} />
       {children.length === 0 ? <Card title="Children"><p className="u2-muted">No children linked to this account yet.</p></Card> : children.map((c) => <ChildSection key={c.student?.UserID} child={c} data={data} parent={user} actions={actions} onChanged={() => void reload()} />)}
