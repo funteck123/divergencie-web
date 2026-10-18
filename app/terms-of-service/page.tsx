@@ -4,7 +4,7 @@ import LegalPage, { LegalSection, COMPANY, CONTACT_EMAIL } from "@/components/Le
 export const metadata: Metadata = {
   title: "Terms of Service | DivergenCIE Coaching",
   description: "The rules for using the DivergenCIE website, portal, Question Solver and study materials, plus our copyright and trademark notices.",
-  alternates: { canonical: "/terms-of-service" },
+  alternates: { canonical: "/tos" },
 };
 
 export default function TermsOfServicePage() {

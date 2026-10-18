@@ -4,7 +4,7 @@ import LegalPage, { LegalSection, COMPANY, CONTACT_EMAIL, CONTACT_WHATSAPP } fro
 export const metadata: Metadata = {
   title: "Privacy Policy | DivergenCIE Coaching",
   description: "What personal information DivergenCIE Coaching collects from students, parents and staff, why, who handles it for us, and how to ask us to see, correct or delete it.",
-  alternates: { canonical: "/privacy-policy" },
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPolicyPage() {

@@ -36,6 +36,14 @@ const nextConfig = {
   // keep it external to the server bundle rather than letting webpack try
   // to bundle its .node binary.
   serverExternalPackages: ["canvas"],
+  // TKT-0355: short public addresses for the legal pages (Google's consent screen and sign-up forms ask for a plain link). They
+  // serve the page itself, with no redirect; the footer keeps linking the long names, which keep working.
+  async rewrites() {
+    return [
+      { source: "/privacy", destination: "/privacy-policy" },
+      { source: "/tos", destination: "/terms-of-service" },
+    ];
+  },
 };
 
 export default nextConfig;
