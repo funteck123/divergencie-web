@@ -42,7 +42,11 @@ export function TicketsView() {
       ),
     },
     { id: "sender", header: "Sender", width: 190, sortValue: (t) => label(t.SenderUserID), tip: (t) => label(t.SenderUserID), cell: (t) => label(t.SenderUserID) },
-    { id: "message", header: "Message", tip: (t) => t.Message, cell: (t) => <Button size="sm" variant="ghost" onClick={() => setOpenId(t.TicketID)}>{t.Message.split("\n")[0]}</Button> },
+    { id: "message", header: "Message", tip: (t) => t.Message, cell: (t) => (
+      <button type="button" className="u2-namebtn" title="Open this ticket" onClick={() => setOpenId(t.TicketID)}>
+        {t.Message.split("\n")[0]}
+      </button>
+    ) },
     { id: "notes", header: "Notes", width: 56, align: "center", sortValue: (t) => t.Notes?.length ?? 0, cell: (t) => t.Notes?.length || "—" },
     { id: "attachment", header: "Attachment", width: 90, cell: (t) => (t.AttachmentURL ? <LinkButton href={t.AttachmentURL} target="_blank">Link</LinkButton> : "—") },
     { id: "created", header: "Created", width: 130, sortValue: (t) => t.CreatedAt, cell: (t) => formatDateTime(t.CreatedAt) as string },

@@ -18,6 +18,14 @@ JS = """() => {
   return out;
 }"""
 
+# A group of action buttons that has wrapped onto two lines (a column that is too narrow for its buttons) doubles the row height.
+WRAPPED_JS = """() => [...document.querySelectorAll('main .u2-rowactions')].filter((g) => {
+  const kids = [...g.children].filter((k) => k.getBoundingClientRect().height > 0);
+  const tops = kids.map((k) => Math.round(k.getBoundingClientRect().top));
+  return kids.length > 1 && Math.max(...tops) - Math.min(...tops) > 12 && !g.closest('.u2-cards');
+}).map((g) => ['wrapped actions', g.textContent.trim().slice(0, 40), Math.round(g.getBoundingClientRect().height)])"""
+
+
 def main():
     bad = []
     with Session(state={"users": A.mk_users(), "services": SV.mk_services(), "items": SJ.mk_items(), "att": [], "requests": [], "enrollments": [{"EnrolmentID": "E1", "UserID": "STU-1001", "ServiceID": "SVC-1"}]}) as s:
@@ -29,14 +37,14 @@ def main():
         s.on(r"^/api/(invoices|paychecks|payment-details)", B.handler)
         for path in ["/v2/management/accounts", "/v2/management/services", "/v2/management/schedule", "/v2/management/schedule?view=timeline", "/v2/management/tickets", "/v2/management/pipeline", "/v2/management/enrollments", "/v2/management/billing", "/v2/management/guides", "/v2/management/templates", "/v2/management/audit-log", "/v2/management/applications"]:
             s.goto(path); s.page.wait_for_timeout(900)
-            for r in s.page.evaluate(JS): bad.append((path, *r)); print(path, r)
+            for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append((path, *r)); print(path, r)
     # the four portals with their own data, at desktop and phone width
     for width in (1280, 390):
         for kind, utype, path in [("student", "Student", "/v2/student"), ("teacher", "Teacher", "/v2/teacher"), ("staff", "Staff", "/v2/staff"), ("parent", "Parent", "/v2/parent")]:
             user = {"UserID": {"student": "STU-1", "teacher": "T", "staff": "STF-1", "parent": "PAR-1"}[kind], "UserType": utype, "Name": f"Test {utype}", "UiPreference": "next"}
             with Session(user=user, state={}, width=width, height=900) as s:
                 s.on(r"^/api/", P.handler_for(user, kind)); s.goto(path); s.page.wait_for_timeout(1200)
-                for r in s.page.evaluate(JS): bad.append((f"{path}@{width}", *r)); print(path, width, r)
+                for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append((f"{path}@{width}", *r)); print(path, width, r)
     print("mismatched rows:", len(bad))
     sys.exit(1 if bad else 0)
 

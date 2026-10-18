@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, LinkButton } from "@/ui2/components/Button";
 import { CheckField, TextArea } from "@/ui2/components/Field";
 import { pdfUrl, yearlyAudioUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
@@ -96,8 +96,23 @@ export function QuizStage(p: QuizStageProps) {
   };
   const chooseLayout = (onePage: boolean) => { setPage(onePage); writeLayout(onePage); };
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  // On a phone the bar is fixed to the bottom of the screen. Its height changes (wrapping title, question strip), so the room left
+  // under the last question follows the measured height; a fixed guess once hid the last question under the bar (TKT-0356).
+  useEffect(() => {
+    const root = rootRef.current;
+    const bar = barRef.current;
+    if (!root || !bar) return;
+    const apply = () => root.style.setProperty("--u2-qbar-h", `${Math.ceil(bar.getBoundingClientRect().height)}px`);
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(bar);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <div className="u2-solver">
+    <div className="u2-solver" ref={rootRef}>
       {p.audio && (
         <div className="u2-box u2-box--inner">
           <label className="u2-muted" htmlFor="u2-audio">Listening audio</label>
@@ -105,7 +120,7 @@ export function QuizStage(p: QuizStageProps) {
         </div>
       )}
 
-      <div className="u2-qbar" role="region" aria-label="Quiz controls">
+      <div className="u2-qbar" role="region" aria-label="Quiz controls" ref={barRef}>
         <div className="u2-qbar__row">
           <strong>{p.title}</strong>
           <span className="u2-qbar__timer" role="timer" aria-live="off">{formatTimer(s.elapsed)}</span>
@@ -117,6 +132,19 @@ export function QuizStage(p: QuizStageProps) {
             <Button size="sm" variant="primary" loading={p.submitting} className="u2-toolbar__new" onClick={p.onFinishPractice}>Done practicing</Button>
           )}
         </div>
+        <nav className="u2-qstrip" aria-label="Questions">
+          {items.map((it, i) => {
+            const n = it.questionNumber;
+            const answered = s.kind === "mcq" ? n in s.answers : !!(s.texts[n] ?? "").trim();
+            return (
+              <button key={n} type="button" aria-current={i === s.index} data-answered={answered} data-flagged={s.flags.includes(n)} aria-label={`Question ${n}${answered ? ", answered" : ""}${s.flags.includes(n) ? ", flagged" : ""}`} onClick={() => selectQuestion(i)}>{n}</button>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Not part of the fixed bar: on a phone the bar must stay small, or it covers the last question. */}
+      <div className="u2-qopts">
         {s.kind === "mcq" && s.mode !== "practice" && (
           <CheckField label="Show if I'm right after each question" checked={s.instantCheck} onChange={(on) => dispatch({ type: "instantCheck", on })} />
         )}
@@ -130,15 +158,6 @@ export function QuizStage(p: QuizStageProps) {
             {p.pdfLinks.msId && <LinkButton href={p.pdfLinks.yearlyId ? yearlyPdfUrl(p.pdfLinks.yearlyId, "ms") : pdfUrl(p.pdfLinks.msId, `${p.pdfLinks.title} MS`)}>📄 View MS PDF</LinkButton>}
           </span>
         )}
-        <nav className="u2-qstrip" aria-label="Questions">
-          {items.map((it, i) => {
-            const n = it.questionNumber;
-            const answered = s.kind === "mcq" ? n in s.answers : !!(s.texts[n] ?? "").trim();
-            return (
-              <button key={n} type="button" aria-current={i === s.index} data-answered={answered} data-flagged={s.flags.includes(n)} aria-label={`Question ${n}${answered ? ", answered" : ""}${s.flags.includes(n) ? ", flagged" : ""}`} onClick={() => selectQuestion(i)}>{n}</button>
-            );
-          })}
-        </nav>
       </div>
 
       {page ? (

@@ -61,7 +61,7 @@ export function BillsCard({ kind, title, bills, services, currency, email, compa
             ),
         }] satisfies Column<BillRecord>[])),
     {
-      id: "actions", header: "", title: "Actions", width: compact ? 260 : 150,
+      id: "actions", header: "", title: "Actions", width: compact ? 260 : 180,
       cell: (b) => {
         const pay = kind === "invoice" && !(b as Record<string, unknown>)[flag] ? stripeLink(gateway, idOf(b), email) : null;
         return (

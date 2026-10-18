@@ -55,4 +55,7 @@
   .u2-facts > div { display: grid; grid-template-columns: minmax(96px, 150px) minmax(0, 1fr); gap: var(--u2-space-2); align-content: start; }
   .u2-facts dt { color: var(--u2-color-text-muted); }
   .u2-facts dd { margin: 0; overflow-wrap: anywhere; }
+  /* A table cell that opens a record (an account name, a ticket message): plain text, no box, so a row is not full of buttons. */
+  .u2-namebtn { padding: 0; border: 0; background: none; font: inherit; font-weight: var(--u2-weight-semibold); color: var(--u2-color-text); cursor: pointer; text-align: left; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .u2-namebtn:hover { color: var(--u2-color-brand); }
 }

@@ -69,7 +69,7 @@ export function EnrollmentsView() {
       { id: "start", header: "Start", width: 110, numeric: true, sortValue: (r) => r.StartDate ?? "", cell: (r) => (r.StartDate ? (formatDate(r.StartDate) as string) : "—") },
       { id: "end", header: "End", width: 110, numeric: true, sortValue: (r) => r.EndDate ?? "", cell: (r) => (r.EndDate ? (formatDate(r.EndDate) as string) : "—") },
       {
-        id: "actions", header: "", title: "Actions", width: 130,
+        id: "actions", header: "", title: "Actions", width: 156,
         cell: (r) => (
           <span className="u2-rowactions">
             <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>

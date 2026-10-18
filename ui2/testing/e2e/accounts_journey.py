@@ -43,6 +43,7 @@ def main():
         results["table_overflow_1280"] = s.page.evaluate("(()=>{const w=document.querySelector('.u2-table__wrap');return w.scrollWidth-w.clientWidth})()")
         results["one_line_rows"] = s.page.evaluate("[...document.querySelectorAll('tbody tr')].slice(0,30).filter(r=>r.querySelector('td:nth-child(2)')).every(r=>r.getBoundingClientRect().height<=37)")
         results["row_heights"] = s.page.evaluate("[...new Set([...document.querySelectorAll('tbody tr')].slice(0,30).map(r=>Math.round(r.getBoundingClientRect().height)))]")
+        assert results["one_line_rows"], ("Accounts rows must stay on one line", results["row_heights"])
         results["headers"] = s.page.locator("thead th").all_inner_texts()
         s.page.screenshot(path="snapshots/v2-accounts-1280.png")
         # details: the name opens a read-only panel with every field (TKT-0341), secrets hidden

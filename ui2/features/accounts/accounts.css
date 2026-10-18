@@ -1,8 +1,6 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) { /* minmax(0,1fr): a long unbreakable value must not widen the page */
   .u2-seg__count { font-size: var(--u2-text-xs); opacity: 0.85; font-variant-numeric: tabular-nums; }
-  .u2-namebtn { padding: 0; border: 0; background: none; font: inherit; font-weight: var(--u2-weight-semibold); color: var(--u2-color-text); cursor: pointer; text-align: left; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-  .u2-namebtn:hover { color: var(--u2-color-brand); }
   .u2-details { display: grid; gap: 0; margin: 0; }
   .u2-details__row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: var(--u2-space-3); padding: var(--u2-space-2) 0; border-bottom: 1px solid var(--u2-color-border); }
   .u2-details__row dt { color: var(--u2-color-text-muted); font-size: var(--u2-text-sm); }

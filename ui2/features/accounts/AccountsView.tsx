@@ -158,7 +158,8 @@ export function AccountsView() {
 
   const columns = useMemo<Column<UserRecord>[]>(() => {
     const isStudent = group.id === "students";
-    const actionsWidth = isStudent ? 100 : group.showConvert ? 240 : 108;
+    // Three 28px icon buttons (edit, log in as, more) need 3 x 28 + 2 x 4 + the cell padding; narrower and they wrap and the row doubles in height.
+    const actionsWidth = isStudent ? 120 : group.showConvert ? 260 : 120;
     const menuItems = (u: UserRecord): RowMenuItem[] => {
       const items: RowMenuItem[] = [];
       if (u.Status === "Active" || u.Status === "Inactive") items.push({ label: u.Status === "Active" ? "Deactivate" : "Activate", onSelect: () => void toggleStatus(u) });
