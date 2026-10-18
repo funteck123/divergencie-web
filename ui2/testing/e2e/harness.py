@@ -27,6 +27,8 @@ class Session:
         self._p = sync_playwright().start()
         self.browser = self._p.chromium.launch()
         ctx = self.browser.new_context(viewport=self.size, permissions=["clipboard-read", "clipboard-write"])
+        # Journeys send broken replies on purpose. Their crash reports must never reach the production Sentry project.
+        ctx.route(re.compile(r"https?://[^/]*sentry\.io/.*"), lambda route: route.abort())
         if not self.anon:
             ctx.add_init_script("localStorage.setItem('dcp1_user', %s)" % json.dumps(json.dumps(self.user)))
         self.page = ctx.new_page()

@@ -27,6 +27,10 @@ Sentry.init({
   beforeSend(event) {
     if (isFromBrowserExtension(event)) return null;
 
+    // Test runs and developers' machines (localhost) are not users: their crash reports (some are deliberate, from
+    // journeys that send broken replies) would drown real ones. Seen 2026-10-18: 6 issues, all HeadlessChrome on localhost:3111.
+    if (typeof location !== "undefined" && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) return null;
+
     // Student/staff names or emails can appear in a form field's value
     // captured alongside a validation error — strip the DOM breadcrumb
     // "value" attributes some tools attach by default; message/stack text
