@@ -1,13 +1,13 @@
 "use client";
 
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import { keys } from "./keys";
 import type { Credentials, LeadRecord, PendingRequest, RegForm, ScheduleItem, UserRecord } from "./types";
 import type { InterviewItem, TrialItem } from "@/ui2/features/pipeline/pipelineLogic";
 
 export function useRegForms() {
-  return useQuery({ queryKey: ["regforms"] as const, queryFn: async () => (await apiFetch<{ regForms: RegForm[] }>("/api/regforms")).regForms });
+  return useQuery({ queryKey: ["regforms"] as const, queryFn: async () => await apiList<RegForm>("/api/regforms", "regForms") });
 }
 export function useAutoApprove() {
   return useQuery({ queryKey: ["register-settings"] as const, queryFn: async () => (await apiFetch<{ autoApprove: boolean }>("/api/register-settings")).autoApprove });
@@ -39,7 +39,7 @@ export function useActOnRegForm() {
 }
 
 export function useLeads() {
-  return useQuery({ queryKey: ["leads"] as const, queryFn: async () => (await apiFetch<{ leads: LeadRecord[] }>("/api/leads")).leads });
+  return useQuery({ queryKey: ["leads"] as const, queryFn: async () => await apiList<LeadRecord>("/api/leads", "leads") });
 }
 export function usePendingRequests() {
   return useQuery({ queryKey: ["schedule-requests"] as const, queryFn: () => apiFetch<{ pendingTrials: PendingRequest[]; pendingInterviews: PendingRequest[] }>("/api/schedule/requests") });

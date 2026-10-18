@@ -1,14 +1,14 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import { keys } from "./keys";
 import type { ServiceRecord } from "./types";
 
 export function useServices() {
   return useQuery({
     queryKey: keys.services,
-    queryFn: async () => (await apiFetch<{ services: ServiceRecord[] }>("/api/services")).services,
+    queryFn: async () => await apiList<ServiceRecord>("/api/services", "services"),
   });
 }
 

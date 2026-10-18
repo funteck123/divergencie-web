@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import type { GuideRecord } from "./types";
 
 const GUIDES = ["guides"] as const;
@@ -9,7 +9,7 @@ const TOGGLES = ["resource-toggles"] as const;
 const MCQ = ["mcq-config"] as const;
 
 export function useGuides() {
-  return useQuery({ queryKey: GUIDES, queryFn: async () => (await apiFetch<{ guides: GuideRecord[] }>("/api/guides")).guides });
+  return useQuery({ queryKey: GUIDES, queryFn: async () => await apiList<GuideRecord>("/api/guides", "guides") });
 }
 export function useCreateGuide() {
   const qc = useQueryClient();

@@ -29,8 +29,14 @@ for (const f of files) {
   let r = run();
   let flaky = false;
   // A browser test on a busy machine can lose a race with page hydration. One retry; a pass on retry is reported as FLAKY, not hidden.
-  if (!r.ok) { const again = run(); if (again.ok) { flaky = true; r = again; } else r = again; }
+  let firstFailure = "";
+  if (!r.ok) {
+    firstFailure = r.out.trim().split("\n").slice(-4).join(" | ").slice(0, 400);
+    const again = run();
+    if (again.ok) { flaky = true; r = again; } else r = again;
+  }
   if (!r.ok) { failed++; console.log(r.out.split("\n").slice(-25).join("\n")); }
+  if (flaky) console.log(`      first attempt failed: ${firstFailure}`);
   console.log(`${r.ok ? (flaky ? "FLAKY" : "PASS") : "FAIL"}  ${f}  ${Math.round((Date.now() - t) / 1000)}s${r.bad.length ? `  page errors: ${r.bad[0][1].slice(0, 160)}` : ""}`);
 }
 const ran = files.filter((f) => !(narrow && DESKTOP_ONLY.has(f))).length;

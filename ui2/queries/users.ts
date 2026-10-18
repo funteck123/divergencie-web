@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import { keys } from "./keys";
 import { applyOptimistic } from "./optimistic";
 import type { Credentials, UserRecord } from "./types";
@@ -10,7 +10,7 @@ import type { Credentials, UserRecord } from "./types";
 export function useUsers() {
   return useQuery({
     queryKey: keys.users,
-    queryFn: async () => (await apiFetch<{ users: UserRecord[] }>("/api/users")).users,
+    queryFn: async () => await apiList<UserRecord>("/api/users", "users"),
   });
 }
 

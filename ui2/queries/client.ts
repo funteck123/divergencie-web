@@ -67,3 +67,15 @@ export async function apiFetch<T = unknown>(path: string, options: ApiOptions = 
   if (!res.ok) throw new ApiError(data.error || `Request to ${path} failed`, res.status, path);
   return data as T;
 }
+
+
+/**
+ * GET a path whose reply is `{ [key]: T[] }` and return the list. A reply without that list is a broken reply, not an empty one: it fails with a message
+ * a person can read ("The server reply is missing the "templates" list.") instead of TanStack Query's "data is undefined".
+ */
+export async function apiList<T>(path: string, key: string): Promise<T[]> {
+  const reply = await apiFetch<Record<string, unknown> | null>(path);
+  const list = reply?.[key];
+  if (!Array.isArray(list)) throw new Error(`The server reply is missing the "${key}" list. Reload the page; if it keeps happening, report an issue.`);
+  return list as T[];
+}

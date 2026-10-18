@@ -31,6 +31,7 @@ def handler_for(user, kind):
         if path.startswith("/api/me"): return 200, bundle(user, kind)
         if path.startswith("/api/resource-toggles"): return 200, {"toggles": {"recordings": True, "syllabus": True, "worksheets": True, "gcr": True, "timesheet": True, "progressTracker": True}}
         if path.startswith("/api/syllabus-config"): return 200, {"url": "https://syl.example/"}
+        if path.startswith("/api/templates"): return 200, {"templates": [{"TemplateID": "TPL-0001", "Name": "Payment acknowledged", "Body": "Thank you, we have received your payment.", "UpdatedBy": "MGT-0001"}]}
         if path.startswith("/api/schedule/image") or path.startswith("/api/invoices/pdf"): return 200, {}
         if path.startswith("/api/schedule?") or path == "/api/schedule": return 200, {"scheduleItems": [SLOT], "openPoolSlotIds": []}
         if path.startswith("/api/attendance") and method == "GET": return 200, {"roster": [{"userId": user["UserID"], "name": user["Name"], "userType": user["UserType"]}, {"userId": "STU-1", "name": "Leo Child", "userType": "Student"}], "attendanceItems": []}

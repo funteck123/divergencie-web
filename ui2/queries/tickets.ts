@@ -1,12 +1,12 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import { keys } from "./keys";
 import type { TicketRecord } from "./types";
 
 export function useTickets() {
-  return useQuery({ queryKey: keys.tickets, queryFn: async () => (await apiFetch<{ tickets: TicketRecord[] }>("/api/tickets")).tickets });
+  return useQuery({ queryKey: keys.tickets, queryFn: async () => await apiList<TicketRecord>("/api/tickets", "tickets") });
 }
 
 export type TicketAction = "close" | "reopen" | "edit" | "hold" | "unhold" | "note";

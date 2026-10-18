@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import { keys } from "./keys";
 import type { BillRecord } from "./types";
 import { KINDS, type BillKind, type PaymentOption } from "@/ui2/features/billing/billingLogic";
@@ -106,6 +106,6 @@ export function usePaymentOptions() {
   return useQuery({
     queryKey: ["payment-details"] as const,
     staleTime: 10 * 60_000,
-    queryFn: async () => (await apiFetch<{ options: PaymentOption[] }>("/api/payment-details")).options,
+    queryFn: async () => await apiList<PaymentOption>("/api/payment-details", "options"),
   });
 }

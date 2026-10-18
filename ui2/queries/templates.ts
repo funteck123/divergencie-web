@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import type { TemplateRecord } from "./types";
 
 const TEMPLATES = ["templates"] as const;
@@ -9,7 +9,7 @@ const byName = (rows: TemplateRecord[]) => [...rows].sort((a, b) => a.Name.local
 
 /** Management, Staff and Teachers may read. Anyone else gets a 403, which shows as the error. */
 export function useTemplates() {
-  return useQuery({ queryKey: TEMPLATES, retry: false, queryFn: async () => (await apiFetch<{ templates: TemplateRecord[] }>("/api/templates")).templates });
+  return useQuery({ queryKey: TEMPLATES, retry: false, queryFn: async () => await apiList<TemplateRecord>("/api/templates", "templates") });
 }
 export function useSaveTemplate() {
   const qc = useQueryClient();

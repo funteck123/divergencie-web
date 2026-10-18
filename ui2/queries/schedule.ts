@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiFetch } from "./client";
+import { apiFetch, apiList } from "./client";
 import { keys } from "./keys";
 import type { AttendanceItem, RescheduleRequest, RosterPerson, ScheduleItem } from "./types";
 
@@ -15,10 +15,10 @@ export function useSchedule() {
   return useQuery({ queryKey: keys.schedule, queryFn: () => apiFetch<ScheduleData>("/api/schedule") });
 }
 export function useRescheduleRequests() {
-  return useQuery({ queryKey: ["reschedule-requests"] as const, queryFn: async () => (await apiFetch<{ rescheduleRequests: RescheduleRequest[] }>("/api/schedule/reschedule-requests")).rescheduleRequests });
+  return useQuery({ queryKey: ["reschedule-requests"] as const, queryFn: async () => await apiList<RescheduleRequest>("/api/schedule/reschedule-requests", "rescheduleRequests") });
 }
 export function useAllAttendance() {
-  return useQuery({ queryKey: ["attendance", "all"] as const, queryFn: async () => (await apiFetch<{ attendanceItems: AttendanceItem[] }>("/api/attendance")).attendanceItems });
+  return useQuery({ queryKey: ["attendance", "all"] as const, queryFn: async () => await apiList<AttendanceItem>("/api/attendance", "attendanceItems") });
 }
 
 /** Everyone in one session and what was logged for them. */
