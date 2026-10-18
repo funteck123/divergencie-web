@@ -44,7 +44,7 @@ def main():
         out["download"] = d.value.suggested_filename
         txt = open(d.value.path()).read()
         out["export_has"] = ["Revise" in txt, "Motion" in txt, "Completed" in txt]
-        s.page.get_by_role("button", name="view raw JSON").click()
+        s.page.get_by_role("button", name="View raw JSON").click()
         out["raw"] = s.page.get_by_label("Raw JSON").count()
         s.page.get_by_role("button", name=re.compile("My progress")).click()
         s.page.get_by_text("Completed topics").first.wait_for()

@@ -91,7 +91,7 @@ function Outline({ filename, meta, data, tags, setTag, raw, setRaw }: { filename
         </div>
         <div className="u2-rowactions">
           <Button variant="ghost" onClick={exportTagged}>Export tagged topics</Button>
-          <Button variant="ghost" aria-pressed={raw} onClick={() => setRaw(!raw)}>{raw ? "hide raw JSON" : "view raw JSON"}</Button>
+          <Button variant="ghost" aria-pressed={raw} onClick={() => setRaw(!raw)}>{raw ? "Hide raw JSON" : "View raw JSON"}</Button>
         </div>
       </div>
       {data.sectionGuessed && <p className="u2-warnbox" role="status">This subject has no chapter literally titled &quot;Subject content&quot;. Showing chapter 3 as a best guess instead. Check it looks right.</p>}
