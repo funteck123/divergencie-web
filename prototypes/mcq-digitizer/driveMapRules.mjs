@@ -37,7 +37,7 @@ export const BUCKETS = {
   "A Levels|Physics": { MCQ: "MCQ", Theory: (name) => aLevelTheoryComponent("Physics", name) },
   "A Levels|Chemistry": { MCQ: "MCQ", Theory: (name) => aLevelTheoryComponent("Chemistry", name) },
   "A Levels|Biology": { MCQ: "MCQ", Theory: (name) => aLevelTheoryComponent("Biology", name) },
-  "A Levels|Mathematics": { P1: "Paper 1: Pure Mathematics 1", M1: "Paper 4: Mechanics", S1: "Paper 5: Probability & Statistics 1", S2: "Paper 6: Probability & Statistics 2" },
+  "A Levels|Mathematics": { P1: "Paper 1: Pure Mathematics 1", M1: "Paper 4: Mechanics", S1: "Paper 5: Probability & Statistics 1", S2: "Paper 6: Probability & Statistics 2", P3: "Paper 3: Pure Mathematics 3" },
 };
 /** The Drive folder name of each mapped subject where it differs from the solver's subject name. */
 export const DRIVE_SUBJECT_NAME = { Mathematics: "Maths" };
@@ -47,4 +47,20 @@ export function diffBuckets(oldFiles = [], newFiles = []) {
   const o = new Set(oldFiles.map((f) => f.id));
   const n = new Set(newFiles.map((f) => f.id));
   return { added: [...n].filter((id) => !o.has(id)).length, removed: [...o].filter((id) => !n.has(id)).length };
+}
+
+/**
+ * A theory worksheet whose question paper was cut into no questions, or into one while its mark scheme has several or none, is a failed split
+ * (seen 2026-10-19 on Paper 3 booklets with a different layout): the student would get one giant picture to "practise". Such worksheets stay out of
+ * the list until the parser handles their layout. Questions that merely have fewer blocks than the mark scheme (marks split into parts) are fine.
+ */
+export function isBrokenSplit(record) {
+  const q = (record?.questions || []).length;
+  const a = (record?.answers || []).length;
+  return q === 0 || (q === 1 && a !== 1);
+}
+
+/** "CAIE ... Worksheet 3 QP.pdf" and "CAIE ... Worksheet 3 MS.pdf" share this name. */
+export function pairBaseName(fileName) {
+  return String(fileName).replace(/\s*(QP|MS)\.pdf$/i, "");
 }

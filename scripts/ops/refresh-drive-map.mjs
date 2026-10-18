@@ -12,7 +12,7 @@
 // The service reads the map on every /api/library request, so a written map is live at once (no restart).
 import fs from "fs";
 import path from "path";
-import { BUCKETS, DRIVE_SUBJECT_NAME, diffBuckets } from "../../prototypes/mcq-digitizer/driveMapRules.mjs";
+import { BUCKETS, DRIVE_SUBJECT_NAME, diffBuckets, isBrokenSplit, pairBaseName } from "../../prototypes/mcq-digitizer/driveMapRules.mjs";
 
 const KEY = process.env.GOOGLE_DRIVE_API_KEY;
 const ROOT = "1KZBDpoIOf7KQcxX1Qa63WllHVRXAQb00"; // DC Course Materials
@@ -50,6 +50,9 @@ const isPdf = (f) => f.mimeType !== FOLDER && /\.pdf$/i.test(f.name);
 
 const old = JSON.parse(fs.readFileSync(MAP, "utf8"));
 const next = JSON.parse(JSON.stringify(old));
+// question papers already built into the structured database, by file id (for the split-quality check)
+const STRUCTURED_DB = path.join(process.cwd(), "data", "mcq-digitizer", "structured-library", "database.json");
+const byQp = new Map(fs.existsSync(STRUCTURED_DB) ? JSON.parse(fs.readFileSync(STRUCTURED_DB, "utf8")).map((r) => [r.qpId, r]) : []);
 const tops = Object.fromEntries((await list(ROOT)).filter((f) => f.mimeType === FOLDER).map((f) => [f.name, f.id]));
 const notes = [];
 
@@ -78,6 +81,14 @@ for (const [key, folders] of Object.entries(BUCKETS)) {
     for (const b of buckets) fresh[b] ||= { QP: [], MS: [] };
   }
   for (const [bucket, files] of Object.entries(fresh)) {
+    if (bucket !== "MCQ") {
+      // keep out worksheets whose question paper was split into no or one question (see isBrokenSplit); their pair goes with them
+      const broken = new Set(files.QP.filter((f) => byQp.has(f.id) && isBrokenSplit(byQp.get(f.id))).map((f) => pairBaseName(f.name)));
+      if (broken.size) {
+        notes.push(`${board}/${subject}/${bucket}: ${broken.size} worksheet(s) not listed, their question paper split into too few questions: ${[...broken].slice(0, 3).join("; ")}${broken.size > 3 ? "; ..." : ""}`);
+        for (const kind of ["QP", "MS"]) files[kind] = files[kind].filter((f) => !broken.has(pairBaseName(f.name)));
+      }
+    }
     for (const kind of ["QP", "MS"]) files[kind].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     next[board][subject][bucket] = files;
   }

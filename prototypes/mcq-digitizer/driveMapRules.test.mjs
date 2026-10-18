@@ -36,3 +36,18 @@ test("diffBuckets counts files by id", () => {
   assert.deepEqual(diffBuckets([{ id: "a" }, { id: "b" }], [{ id: "b" }, { id: "c" }, { id: "d" }]), { added: 2, removed: 1 });
   assert.deepEqual(diffBuckets(undefined, [{ id: "x" }]), { added: 1, removed: 0 });
 });
+
+import { isBrokenSplit, pairBaseName } from "./driveMapRules.mjs";
+test("a worksheet cut into no question, or one question against several answers, is a failed split", () => {
+  const rec = (q, a) => ({ questions: Array(q).fill({}), answers: Array(a).fill({}) });
+  assert.equal(isBrokenSplit(rec(0, 4)), true);
+  assert.equal(isBrokenSplit(rec(1, 7)), true);
+  assert.equal(isBrokenSplit(rec(1, 0)), true);
+  assert.equal(isBrokenSplit(rec(1, 1)), false);
+  assert.equal(isBrokenSplit(rec(3, 7)), false, "fewer questions than answer blocks is normal when marks are split into parts");
+  assert.equal(isBrokenSplit(rec(5, 5)), false);
+  assert.equal(isBrokenSplit(undefined), true);
+});
+test("a QP and its MS share a base name", () => {
+  assert.equal(pairBaseName("CAIE A Level Maths Ch3.1 Algebra (P3) Worksheet 2 QP.pdf"), pairBaseName("CAIE A Level Maths Ch3.1 Algebra (P3) Worksheet 2 MS.pdf"));
+});
