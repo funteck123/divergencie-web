@@ -38,6 +38,15 @@ def main():
         for path in ["/v2/management/accounts", "/v2/management/services", "/v2/management/schedule", "/v2/management/schedule?view=timeline", "/v2/management/tickets", "/v2/management/pipeline", "/v2/management/enrollments", "/v2/management/billing", "/v2/management/guides", "/v2/management/templates", "/v2/management/audit-log", "/v2/management/applications"]:
             s.goto(path); s.page.wait_for_timeout(900)
             for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append((path, *r)); print(path, r)
+    # the shell header on a phone: "Report issue" and the "Menu" trigger share one row and one height
+    with Session(state={"users": A.mk_users(), "services": SV.mk_services(), "enrollments": []}, width=390, height=900) as s:
+        s.on(r"^/api/users", lambda m, p, b, st: (200, {"users": st["users"]}) if m == "GET" else None)
+        s.on(r"^/api/services", lambda m, p, b, st: (200, {"services": st["services"]}) if m == "GET" else None)
+        s.on(r"^/api/enrollments", lambda m, p, b, st: (200, {"enrollments": []}) if m == "GET" else None)
+        s.goto("/v2/management/enrollments"); s.page.wait_for_timeout(900)
+        for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append(("/v2/management/enrollments@390", *r)); print("phone", r)
+        hs = s.page.evaluate("""() => [...document.querySelectorAll('header button, header [aria-label=Menu]')].map((b) => Math.round(b.getBoundingClientRect().height))""")
+        if len(set(hs)) > 1: bad.append(("phone header", "button heights", str(hs))); print("phone header heights", hs)
     # the four portals with their own data, at desktop and phone width
     for width in (1280, 390):
         for kind, utype, path in [("student", "Student", "/v2/student"), ("teacher", "Teacher", "/v2/teacher"), ("staff", "Staff", "/v2/staff"), ("parent", "Parent", "/v2/parent")]:

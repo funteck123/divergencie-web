@@ -16,6 +16,8 @@
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .name { font-weight: var(--u2-weight-semibold); font-size: var(--u2-text-md); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .type { font-size: var(--u2-text-xs); opacity: 0.85; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions { display: flex; align-items: center; gap: var(--u2-space-2); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions :global(.u2-iconbtn) { height: 36px; padding: 0 var(--u2-space-3); background: transparent; color: var(--u2-color-on-brand); border-color: var(--u2-color-on-brand-line); font-weight: var(--u2-weight-semibold); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .actions :global(.u2-iconbtn):hover { background: var(--u2-color-on-brand-wash); }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .main { padding: var(--u2-space-6) var(--u2-space-4); max-width: 1320px; margin: 0 auto; }
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .tabs {
   position: sticky; top: var(--u2-bar-height); z-index: var(--u2-z-bar);
