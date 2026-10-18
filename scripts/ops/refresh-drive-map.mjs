@@ -50,6 +50,8 @@ const isPdf = (f) => f.mimeType !== FOLDER && /\.pdf$/i.test(f.name);
 
 const old = JSON.parse(fs.readFileSync(MAP, "utf8"));
 const next = JSON.parse(JSON.stringify(old));
+// components kept out of the list on purpose, with the reason (scripts/ops/map-held.json); remove an entry once its worksheets parse correctly
+const HELD = fs.existsSync(path.join(process.cwd(), "scripts", "ops", "map-held.json")) ? JSON.parse(fs.readFileSync(path.join(process.cwd(), "scripts", "ops", "map-held.json"), "utf8")) : {};
 // question papers already built into the structured database, by file id (for the split-quality check)
 const STRUCTURED_DB = path.join(process.cwd(), "data", "mcq-digitizer", "structured-library", "database.json");
 const byQp = new Map(fs.existsSync(STRUCTURED_DB) ? JSON.parse(fs.readFileSync(STRUCTURED_DB, "utf8")).map((r) => [r.qpId, r]) : []);
@@ -81,6 +83,11 @@ for (const [key, folders] of Object.entries(BUCKETS)) {
     for (const b of buckets) fresh[b] ||= { QP: [], MS: [] };
   }
   for (const [bucket, files] of Object.entries(fresh)) {
+    const heldReason = HELD[`${board}/${subject}/${bucket}`];
+    if (heldReason) {
+      notes.push(`${board}/${subject}/${bucket}: ${files.QP.length} worksheet(s) held back on purpose. ${heldReason}`);
+      files.QP = []; files.MS = [];
+    }
     if (bucket !== "MCQ") {
       // keep out worksheets whose question paper was split into no or one question (see isBrokenSplit); their pair goes with them
       const broken = new Set(files.QP.filter((f) => byQp.has(f.id) && isBrokenSplit(byQp.get(f.id))).map((f) => pairBaseName(f.name)));

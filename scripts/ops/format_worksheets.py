@@ -9,6 +9,8 @@ Same layout, same coordinates, same fields as the notebook. Output goes to a sta
 
   python3 scripts/ops/format_worksheets.py m1-qp --tracker <tracker.csv> --src "<raw QP folder>" --logo <logo.jpg> --out <staging folder> [--limit N]
 
+Set "p2" is the Pure 2 part of the Pure 3 booklets (see P2_CODES); "p3" is all of them.
+
 Sets "s1" and "s2" (no tracker rows exist for them): pair every QP with the MS that has the same Save My Exams number, read time and marks from
 page 1 of the raw files, number the chapter from the 9709 syllabus table below, and format both sides. A pair is skipped when the
 two page-1 sheets disagree on time or marks.
@@ -215,6 +217,12 @@ def sme_jobs(setname, qp_dir, ms_dir):
 P3_CHAPTERS = {"A1": ("3.1", "Algebra"), "A2": ("3.2", "Logarithmic and Exponential Functions"), "A3": ("3.3", "Trigonometry"), "A4": ("3.4", "Differentiation"),
                "A5": ("3.5", "Integration"), "A6": ("3.6", "Numerical Solution of Equations"), "A7": ("3.7", "Vectors"), "A8": ("3.8", "Differential Equations"),
                "A9": ("3.9", "Complex Numbers")}
+# Pure 2 is the part of the Pure 3 booklets that the 9709 syllabus puts in Paper 2. Booklet codes (A1.1 ...) that are Paper 3 only are left out: partial fractions
+# (A1.4), negative and fractional binomial (A1.5), parametric and implicit differentiation (A4.6, A4.7), integration by parts, substitution and partial fractions
+# (A5.5 to A5.7), vectors, differential equations and complex numbers (A7 to A9). The chapter-level "Hard" booklets (A1, A3, A5 ...) mix both papers, so they stay in Paper 3.
+P2_CHAPTERS = {"A1": ("2.1", "Algebra"), "A2": ("2.2", "Logarithmic and Exponential Functions"), "A3": ("2.3", "Trigonometry"), "A4": ("2.4", "Differentiation"),
+               "A5": ("2.5", "Integration"), "A6": ("2.6", "Numerical Solution of Equations")}
+P2_CODES = {"A1.1", "A1.2", "A1.3", "A2.2", "A2.3", "A2.4", "A3.5", "A3.6", "A3.7", "A4.1", "A4.2", "A4.3", "A4.4", "A5.2", "A5.3", "A6.2"}
 DIFFICULTY_ORDER = {"easy": 0, "medium": 1, "hard": 2}
 P3_QP = re.compile(r"^(a\d+(?:[.-]\d+)?)-(.*?)-topic-booklet-(\d+)-+(easy|medium|hard)", re.I)
 P3_MS = re.compile(r"^(a\d+(?:[.-]\d+)?)-(.*?)-mark-scheme-(\d+)-+(easy|medium|hard)", re.I)
@@ -241,7 +249,7 @@ def p3_index(folder, pattern):
     return out, other
 
 
-def p3_jobs(qp_dir, ms_dir):
+def p3_jobs(qp_dir, ms_dir, paper="P3"):
     qps, qp_other = p3_index(qp_dir, P3_QP)
     mss, ms_other = p3_index(ms_dir, P3_MS)
     jobs = [("?", f, None, None, "ignored: not a Paper 3 question paper booklet") for f in qp_other]
@@ -250,7 +258,9 @@ def p3_jobs(qp_dir, ms_dir):
     for key in sorted(set(qps) | set(mss), key=lambda k: (k[0], DIFFICULTY_ORDER[k[2]], k[1])):
         by_code.setdefault(key[0], []).append(key)
     for code, keys in by_code.items():
-        chapter, title = P3_CHAPTERS[code.split(".")[0]]
+        if paper == "P2" and code not in P2_CODES:
+            continue  # a Paper 3 only booklet
+        chapter, title = (P2_CHAPTERS if paper == "P2" else P3_CHAPTERS)[code.split(".")[0]]
         for n, key in enumerate(keys, 1):
             if key not in qps or key not in mss:
                 jobs.append(("?", (qps.get(key) or mss.get(key))[0], None, None, "unpaired booklet " + "/".join(map(str, key)))); continue
@@ -259,7 +269,7 @@ def p3_jobs(qp_dir, ms_dir):
             # Paper 3 booklets print marks but often no time: marks must match, and a time must match when either sheet has one
             problem = "" if cq["marks"] and cq["marks"] == cm["marks"] and (cq["time"] == cm["time"] or not (cq["time"] and cm["time"])) else f"QP {cq['time'] or '-'} min /{cq['marks'] or '-'} vs MS {cm['time'] or '-'} min /{cm['marks'] or '-'}"
             sub_text = sub if "." in code else ""  # chapter-level (Hard) booklets have no sub topic of their own
-            stem = f"CAIE A Level Maths Ch{chapter} {title}" + (f" - {sub_text}" if sub_text else "") + f" (P3) Worksheet {n}"
+            stem = f"CAIE A Level Maths Ch{chapter} {title}" + (f" - {sub_text}" if sub_text else "") + f" ({paper}) Worksheet {n}"
             base = {"course_name": "A Level Maths", "board": "CAIE", "subject_code": "9709", "instructor": INSTRUCTOR, "time_allowed": f"{cq['time'] or cm['time']} minutes" if (cq["time"] or cm["time"]) else "", "maximum_marks": cq["marks"],
                     "grade_threshold": GRADE, "chapter_num": chapter, "chapter_name": sentence_case(title), "version": VERSION}
             jobs.append(("QP", os.path.join(qp_dir, qf), f"{stem} QP.pdf", dict(base, display_name=f"{stem} QP"), problem))
@@ -314,7 +324,7 @@ def pairing_problem(pdf, info):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("set", choices=["m1-qp", "s1", "s2", "p3"])
+    ap.add_argument("set", choices=["m1-qp", "s1", "s2", "p3", "p2"])
     ap.add_argument("--tracker"); ap.add_argument("--src"); ap.add_argument("--qp-dir"); ap.add_argument("--ms-dir")
     ap.add_argument("--logo", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--limit", type=int)
@@ -324,8 +334,8 @@ def main():
         for f, qp_name, info in m1_qp_jobs(a.tracker, a.src):
             problem = "no matching mark scheme row" if not info else pairing_problem(os.path.join(a.src, f), info)
             jobs.append(("QP", os.path.join(a.src, f), qp_name, info, problem))
-    elif a.set == "p3":
-        jobs = p3_jobs(a.qp_dir, a.ms_dir)
+    elif a.set in ("p3", "p2"):
+        jobs = p3_jobs(a.qp_dir, a.ms_dir, a.set.upper())
     else:
         jobs = sme_jobs(a.set, a.qp_dir, a.ms_dir)
     if a.limit: jobs = jobs[: a.limit]

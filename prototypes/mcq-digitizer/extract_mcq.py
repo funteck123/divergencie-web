@@ -3296,7 +3296,7 @@ def qp_question_marks(pdf_path):
             else:
                 break
         if at is not None:
-            totals[at] += sum(int(n) for n in re.findall(r"\[(\d{1,2})\]", line.get("text", "")))
+            totals[at] += sum(int(n) for n in re.findall(r"\[\s*(\d{1,2})\s*\]", line.get("text", "")))
     return [(st["number"], totals[i]) for i, st in enumerate(starts)]
 
 
