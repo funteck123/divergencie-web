@@ -2,7 +2,7 @@
 import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
-import accounts_journey as A, services_journey as SV, schedule_journey as SJ, billing_journey as B, portals_journey as P
+import accounts_journey as A, services_journey as SV, schedule_journey as SJ, billing_journey as B, portals_journey as P, pipeline_journey as PJ
 
 JS = """() => {
   const out = [];
@@ -38,6 +38,11 @@ def main():
         for path in ["/v2/management/accounts", "/v2/management/services", "/v2/management/schedule", "/v2/management/schedule?view=timeline", "/v2/management/tickets", "/v2/management/pipeline", "/v2/management/enrollments", "/v2/management/billing", "/v2/management/guides", "/v2/management/templates", "/v2/management/audit-log", "/v2/management/applications"]:
             s.goto(path); s.page.wait_for_timeout(900)
             for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append((path, *r)); print(path, r)
+    # pages whose rows only appear with data: Applications (Approve and Reject must stay on one line), at desktop width
+    with Session(state=PJ.mk_state()) as s:
+        s.on(r"^/api/", PJ.handler)
+        s.goto("/v2/management/applications"); s.page.wait_for_timeout(1200)
+        for r in s.page.evaluate(JS) + s.page.evaluate(WRAPPED_JS): bad.append(("/v2/management/applications (with data)", *r)); print("applications", r)
     # the shell header on a phone: "Report issue" and the "Menu" trigger share one row and one height
     with Session(state={"users": A.mk_users(), "services": SV.mk_services(), "enrollments": []}, width=390, height=900) as s:
         s.on(r"^/api/users", lambda m, p, b, st: (200, {"users": st["users"]}) if m == "GET" else None)

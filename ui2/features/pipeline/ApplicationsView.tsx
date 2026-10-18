@@ -69,7 +69,7 @@ export function ApplicationsView() {
       },
     },
     {
-      id: "actions", header: "", title: "Actions", width: 150,
+      id: "actions", header: "", title: "Actions", width: 190,
       cell: (r) =>
         r.Status === "Pending" ? (
           <span className="u2-rowactions">
