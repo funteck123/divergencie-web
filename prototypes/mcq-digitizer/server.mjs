@@ -2456,6 +2456,27 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
+      // TKT-0351: a yearly past paper is not in either database above; its pictures come from the same digitize result the quiz
+      // used (disk-cached, so this is quick). A yearly multiple-choice paper has question pictures only.
+      const yearly = findYearlyPaperById(paperId);
+      if (yearly && isYearlyReadyComponent(yearly.component)) {
+        const isMcq = YEARLY_MCQ_COMPONENTS.has(yearly.component);
+        if (!(isMcq && kind === "ms")) {
+          let digitized = yearlyDigitizeCache.get(paperId);
+          if (!digitized) {
+            digitized = isMcq ? await digitizeFromPaths(yearly.qpPath, yearly.msPath) : await digitizeStructuredFromPaths(yearly.qpPath, yearly.msPath, yearly.subject, yearly.component, { cache: true });
+            if (!isMcq) rememberYearlyDigitize(paperId, digitized);
+          }
+          const list = (kind === "ms" ? digitized.answers : digitized.questions) || [];
+          const item = list.find((q) => String(q.questionNumber) === questionNumber);
+          if (item && item.image) {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ image: item.image }));
+            return;
+          }
+        }
+      }
+
       res.writeHead(404, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: kind === "ms" ? "No mark-scheme crop exists for this question (MCQ papers don't have one)." : "Question not found in either database." }));
     } catch (e) {

@@ -8,6 +8,7 @@ import { Skeleton } from "@/ui2/components/Skeleton";
 import { Combobox } from "@/ui2/components/Combobox";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { Field } from "@/ui2/components/Field";
+import { ApiError } from "@/ui2/queries/client";
 import { getQuestionImage, getQuestionResponses, loadProgress } from "@/ui2/queries/solver";
 import { BarChart, LineChart, type Series } from "./Charts";
 import { Feedback } from "./Feedback";
@@ -101,7 +102,7 @@ function History({ rows, account, attempts, titleOf }: { rows: HistoryRow[]; acc
 
 function Answers({ account, attemptId, paperId }: { account: string; attemptId: string; paperId: string; count: number }) {
   const q = useQuery({ queryKey: ["solver-responses", account, attemptId] as const, queryFn: () => getQuestionResponses(account, attemptId) });
-  const [images, setImages] = useState<Record<string, string | "loading" | "error">>({});
+  const [images, setImages] = useState<Record<string, string | "loading" | "error" | "missing">>({});
   async function show(qn: string, kind: "qp" | "ms") {
     const key = `${qn}:${kind}`;
     if (images[key] && images[key] !== "error") return setImages((p) => { const { [key]: _x, ...rest } = p; return rest; });
@@ -109,8 +110,9 @@ function Answers({ account, attemptId, paperId }: { account: string; attemptId: 
     try {
       const r = await getQuestionImage(paperId, qn, kind);
       setImages((p) => ({ ...p, [key]: r.image }));
-    } catch {
-      setImages((p) => ({ ...p, [key]: "error" }));
+    } catch (e) {
+      // 404 = the picture does not exist (retrying cannot help); anything else may pass on a second try.
+      setImages((p) => ({ ...p, [key]: e instanceof ApiError && e.status === 404 ? "missing" : "error" }));
     }
   }
   if (q.isPending) return <Skeleton height={160} label="Loading your answers" />;
@@ -141,12 +143,13 @@ function Answers({ account, attemptId, paperId }: { account: string; attemptId: 
               <Badge kind={v.kind}>{v.text}</Badge>
               <span className="u2-rowactions u2-push">
                 <Button size="sm" variant="ghost" aria-pressed={images[`${n}:qp`] !== undefined} onClick={() => void show(n, "qp")}>Question</Button>
-                <Button size="sm" variant="ghost" aria-pressed={images[`${n}:ms`] !== undefined} onClick={() => void show(n, "ms")}>Mark scheme</Button>
+                {written && <Button size="sm" variant="ghost" aria-pressed={images[`${n}:ms`] !== undefined} onClick={() => void show(n, "ms")}>Mark scheme</Button>}
               </span>
             </div>
             {(["qp", "ms"] as const).map((k) => {
               const img = images[`${n}:${k}`];
               if (img === undefined) return null;
+              if (img === "missing") return <p key={k} className="u2-muted u2-ans__note">There is no {k === "ms" ? "mark scheme" : "question"} picture for this question.</p>;
               if (img === "error") return <p key={k} className="u2-form__error">Couldn&apos;t load the {k === "ms" ? "mark scheme" : "question"}. Press the button to try again.</p>;
               if (img === "loading") return <Skeleton key={k} height={120} label={`Loading ${k === "ms" ? "mark scheme" : "question"} ${n}`} />;
               // eslint-disable-next-line @next/next/no-img-element -- data URL from the solver service

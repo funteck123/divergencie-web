@@ -54,6 +54,7 @@ def main():
         s.page.get_by_role("list", name="Your answers").wait_for()
         out["answer_rows"] = s.page.locator(".u2-ans__item").count()
         out["badges"] = [b.inner_text() for b in s.page.locator(".u2-ans .u2-badge").all()]
+        out["mcq_has_no_mark_scheme_button"] = s.page.get_by_role("button", name="Mark scheme").count() == 0   # TKT-0351: MCQ papers have no mark scheme picture
         s.page.locator(".u2-ans__item").nth(1).get_by_role("button", name="Question").click()
         s.page.locator(".u2-ans__item").nth(1).locator("img").wait_for()
         s.page.screenshot(path="snapshots/v2-history-answers.png", full_page=True)
