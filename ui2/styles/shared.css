@@ -47,6 +47,7 @@
   .u2-sub--warn { color: var(--u2-color-warning-text); font-weight: var(--u2-weight-semibold); }
   .u2-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--u2-space-4); align-items: stretch; /* cards in one row share a height */ }
   .u2-split--top { align-items: start; } /* a main panel beside a short side panel: each keeps its own height */
+  @media (max-width: 767px) { .u2-split { grid-template-columns: minmax(0, 1fr); } } /* side-by-side boxes stack on a phone */
   /* from ui2/features/portal/portal.css */
   .u2-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-brand); font-weight: var(--u2-weight-semibold); text-decoration: none; }
   .u2-pill:hover { background: var(--u2-color-selected); }

@@ -1,4 +1,4 @@
-"""Tickets and Audit Log on a phone: one card per row, and a card's action button is on screen without scrolling sideways."""
+"""Tickets, Audit Log and Guides on a phone: one card per row, and a card's action button is on screen without scrolling sideways."""
 import re, sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
@@ -22,9 +22,15 @@ def main():
         out["audit_table_rows"] = s.page.locator("tbody tr").count()
         out["audit_summary_visible"] = s.page.get_by_text("Changed the rate of service X-1", exact=True).first.is_visible()
         out["audit_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1")
+        # boxes side by side on desktop stack on a phone: the tunnel URL field of the Guides page keeps a usable width
+        s.on(r"^/api/(guides|resource-toggles|mcq-config)", AG.guides_handler)
+        st["toggles"] = {"recordings": True}; st["mcq"] = "https://x.trycloudflare.com"; st["guides"] = []
+        s.goto("/v2/management/guides"); s.page.get_by_label("Extraction service tunnel URL").wait_for(timeout=60000)
+        out["tunnel_field_width"] = round(s.page.get_by_label("Extraction service tunnel URL").bounding_box()["width"])
+        out["guides_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1")
         out["errors"] = s.errors[:3]
     print(json.dumps(out))
-    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and not out["errors"]
+    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and not out["errors"]
     sys.exit(0 if ok else 1)
 
 if __name__ == "__main__":
