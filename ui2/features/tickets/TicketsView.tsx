@@ -31,6 +31,35 @@ export function TicketsView() {
   const open = openCount(all);
   const hold = onHoldCount(all);
 
+  const actions = (t: TicketRecord) => (
+    <span className="u2-rowactions">
+      {!t.ClosedAt ? (
+        <CloseQuick ticket={t} onClose={async (message) => { await patch.mutateAsync({ ticketId: t.TicketID, action: "close", extra: { closeMessage: message } }); toast.success(`Closed ${t.TicketID}.`); }} />
+      ) : (
+        <Button size="sm" variant="ghost" onClick={async () => { try { await patch.mutateAsync({ ticketId: t.TicketID, action: "reopen" }); toast.success(`Reopened ${t.TicketID}.`); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not reopen."); } }}>
+          Reopen
+        </Button>
+      )}
+      <Button size="sm" variant="ghost" onClick={() => setOpenId(t.TicketID)}>
+        Open
+      </Button>
+    </span>
+  );
+
+  const card = (t: TicketRecord) => (
+    <div className="u2-card">
+      <div className="u2-card__top">
+        <span className="u2-mono">{t.TicketID}{t.OnHold && !t.ClosedAt ? " · on hold" : ""}</span>
+        <span className="u2-muted">{formatDateTime(t.CreatedAt) as string}</span>
+      </div>
+      <button type="button" className="u2-namebtn" title="Open this ticket" onClick={() => setOpenId(t.TicketID)}>
+        {t.Message.split("\n")[0]}
+      </button>
+      <span className="u2-muted">{label(t.SenderUserID)}</span>
+      <div className="u2-card__actions">{actions(t)}</div>
+    </div>
+  );
+
   const columns: Column<TicketRecord>[] = [
     {
       id: "id", header: "Ticket #", width: 110, sortValue: (t) => t.TicketID,
@@ -52,23 +81,7 @@ export function TicketsView() {
     { id: "created", header: "Created", width: 130, sortValue: (t) => t.CreatedAt, cell: (t) => formatDateTime(t.CreatedAt) as string },
     { id: "age", header: "Age", width: 78, numeric: true, tip: (t) => (t.ClosedAt ? "Days from created to closed" : "Days open so far"), sortValue: (t) => ticketAgeDays(t), cell: (t) => <span className={!t.ClosedAt && ticketAgeDays(t) >= 7 ? "u2-form__error" : undefined}>{ageLabel(ticketAgeDays(t))}</span> },
     { id: "closed", header: "Closed", width: 130, sortValue: (t) => t.ClosedAt ?? "", cell: (t) => (t.ClosedAt ? (formatDateTime(t.ClosedAt) as string) : "—") },
-    {
-      id: "actions", header: "", title: "Actions", width: 150,
-      cell: (t) => (
-        <span className="u2-rowactions">
-          {!t.ClosedAt ? (
-            <CloseQuick ticket={t} onClose={async (message) => { await patch.mutateAsync({ ticketId: t.TicketID, action: "close", extra: { closeMessage: message } }); toast.success(`Closed ${t.TicketID}.`); }} />
-          ) : (
-            <Button size="sm" variant="ghost" onClick={async () => { try { await patch.mutateAsync({ ticketId: t.TicketID, action: "reopen" }); toast.success(`Reopened ${t.TicketID}.`); } catch (e) { toast.error(e instanceof Error ? e.message : "Could not reopen."); } }}>
-              Reopen
-            </Button>
-          )}
-          <Button size="sm" variant="ghost" onClick={() => setOpenId(t.TicketID)}>
-            Open
-          </Button>
-        </span>
-      ),
-    },
+    { id: "actions", header: "", title: "Actions", width: 150, cell: actions },
   ];
 
   return (
@@ -89,7 +102,7 @@ export function TicketsView() {
           <Button size="sm" variant="ghost" onClick={() => void tickets.refetch()}>Try again</Button>
         </div>
       ) : (
-        <DataTable caption="Tickets" rows={rows} columns={columns} rowKey={(t) => t.TicketID} loading={tickets.isPending} initialSort={{ id: "created", dir: "desc" }} emptyText={`No ${showClosed ? "" : "open "}tickets.`} />
+        <DataTable caption="Tickets" rows={rows} columns={columns} rowKey={(t) => t.TicketID} card={card} loading={tickets.isPending} initialSort={{ id: "created", dir: "desc" }} emptyText={`No ${showClosed ? "" : "open "}tickets.`} />
       )}
       <ThreadSheet ticketId={openId} label={label} onClose={() => setOpenId(null)} />
     </section>

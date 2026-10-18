@@ -36,6 +36,16 @@ export function AuditView() {
     { id: "entity", header: "Entity", width: 190, tip: (e) => `${e.EntityType}${e.EntityID ? ` · ${e.EntityID}` : ""}`, cell: (e) => `${e.EntityType}${e.EntityID ? ` · ${e.EntityID}` : ""}` },
     { id: "summary", header: "Summary", tip: (e) => e.Summary, cell: (e) => e.Summary },
   ];
+  const card = (e: AuditEntry) => (
+    <div className="u2-card">
+      <div className="u2-card__top">
+        <strong className="u2-strong">{e.Action} · {e.EntityType}{e.EntityID ? ` ${e.EntityID}` : ""}</strong>
+        <span className="u2-muted">{formatDateTime(e.Timestamp) as string}</span>
+      </div>
+      <span>{e.Summary}</span>
+      <span className="u2-muted">{nameOf(e.ActorUserID)}</span>
+    </div>
+  );
   const from = total === 0 ? 0 : offset + 1;
   const to = Math.min(offset + limit, total);
 
@@ -64,7 +74,7 @@ export function AuditView() {
           <Button size="sm" variant="ghost" onClick={() => void log.refetch()}>Try again</Button>
         </div>
       ) : (
-        <DataTable caption="Audit log" rows={entries} columns={columns} rowKey={(e) => e.AuditID} loading={log.isPending} emptyText="No entries." />
+        <DataTable caption="Audit log" rows={entries} columns={columns} rowKey={(e) => e.AuditID} card={card} loading={log.isPending} emptyText="No entries." />
       )}
       <div className="u2-toolbar">
         <span className="u2-muted" aria-live="polite">{total === 0 ? "0" : `${from}–${to}`} of {total}</span>
