@@ -104,14 +104,21 @@ def build_cover(info, logo_path, resource_type):
     return doc
 
 
-def banner_rect(page):
+def banner_rect(page, pad_top=5, booklet=False):
+    """The strip with the Save My Exams banner. The colab's version is full width and starts pad_top 5 above the first hit. The Pure 2 and Pure 3 booklets
+    (booklet=True) have a "Question N" heading in the same band as the banner text, which the full-width strip redacted (and with it every question start),
+    so there the strip covers only the banner text itself: hits in the top 70 pt, over their own width."""
     hits = [r for frag in SME_FRAGMENTS for r in page.search_for(frag)]
+    if booklet:
+        hits = [r for r in hits if r.y1 < 70]
     if not hits:
         return None
-    return fitz.Rect(0, max(0, min(r.y0 for r in hits) - 5), page.rect.width, max(r.y1 for r in hits) + 5)
+    if booklet:
+        return fitz.Rect(min(r.x0 for r in hits) - 2, max(0, min(r.y0 for r in hits)), max(r.x1 for r in hits) + 2, max(r.y1 for r in hits) + 2)
+    return fitz.Rect(0, max(0, min(r.y0 for r in hits) - pad_top), page.rect.width, max(r.y1 for r in hits) + 5)
 
 
-def format_pdf(src, out, info, label, logo):
+def format_pdf(src, out, info, label, logo, booklet=False):
     """Returns (ok, note). Cover replaces page 1; banner redacted on all later pages; output checked for page count and size."""
     resource = "Worksheet – Question Paper" if label == "QP" else "Worksheet – Mark Scheme"
     source = fitz.open(src)
@@ -124,7 +131,7 @@ def format_pdf(src, out, info, label, logo):
         dest.insert_pdf(source, from_page=1, to_page=n - 1)
     note = "no banner found"
     if dest.page_count > SEARCH_PAGE_INDEX:
-        rect = banner_rect(dest[SEARCH_PAGE_INDEX])
+        rect = banner_rect(dest[SEARCH_PAGE_INDEX], booklet=booklet)
         if rect:
             for i in range(1, dest.page_count):
                 dest[i].add_redact_annot(rect, fill=(1, 1, 1)); dest[i].apply_redactions()
@@ -140,7 +147,7 @@ def format_pdf(src, out, info, label, logo):
     if not ok:
         os.remove(out)
         return False, f"page count {n} became {check.page_count}"
-    if ratio > MAX_SIZE_RATIO and extra > 150 * 1024:  # a tiny source plus the logo cover can pass 1.5x; only real bloat is rejected
+    if ratio > MAX_SIZE_RATIO and extra > (400 if booklet else 150) * 1024:  # a small source plus the logo cover can pass 1.5x; only real bloat is rejected
         os.remove(out)
         return False, f"size grew {ratio:.2f}x (+{extra // 1024} KB)"
     return True, f"{note}, {n} pages, size x{ratio:.2f}"
@@ -343,7 +350,7 @@ def main():
     for label, src, name, info, problem in jobs:
         if problem or not info:
             print("SKIPPED:", os.path.basename(src or "?"), "|", problem); bad += 1; continue
-        ok, note = format_pdf(src, os.path.join(a.out, label, name), info, label, a.logo)
+        ok, note = format_pdf(src, os.path.join(a.out, label, name), info, label, a.logo, booklet=a.set in ("p2", "p3"))
         print(("OK  " if ok else "FAIL"), name[:85], "|", note); bad += 0 if ok else 1
     print(f"{len(jobs) - bad} of {len(jobs)} formatted")
     sys.exit(1 if bad else 0)

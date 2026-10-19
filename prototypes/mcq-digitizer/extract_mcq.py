@@ -3259,9 +3259,111 @@ def llm_verify_ms_headings(candidates, ordered):
     return [c for i, c in enumerate(candidates) if i in first]
 
 
+# ---- Save My Exams "topic booklet" layout (A Level Maths Pure 2 and Pure 3) -------------------------------------------------------------------
+# Page 0 is a cover. Every other page has a logo banner at the top (about 0 to 50 pt), a page-number footer at the bottom (about 766 pt) and, in the
+# banner, a "Question N" heading for the question that starts on that page (one question per page), or an inline heading in the middle of a page
+# with question 1 unlabeled at the top of page 1. The bare-number parser took the footer numbers for question numbers (first question missing, every
+# crop one page out of step, logo visible), so these booklets use their own start detection and crops.
+BOOKLET_BODY_TOP = 58
+BOOKLET_FOOTER_TOP = 758
+
+
+def booklet_labels(doc):
+    """[(number, page, y0)] for each "Question N" heading line (size 13 or more; spaces ignored) on the pages after the cover."""
+    out = []
+    for pi in range(1, doc.page_count):
+        for block in doc[pi].get_text("dict")["blocks"]:
+            for line in block.get("lines", []):
+                size = max((sp["size"] for sp in line["spans"]), default=0)
+                text = re.sub(r"[\s\xa0]+", "", "".join(sp["text"] for sp in line["spans"])).lower()
+                m = re.fullmatch(r"question(\d+)", text)
+                if m and size >= 13:
+                    out.append((m.group(1), pi, line["bbox"][1]))
+    return out
+
+
+def find_booklet_question_starts(doc):
+    """[{number, page, y0, header}] in paper order, or [] when the document is not a booklet. y0 is where the question's crop begins."""
+    labels = booklet_labels(doc)
+    if not labels:
+        return []
+    starts = [{"number": n, "page": pi, "y0": BOOKLET_BODY_TOP if y < BOOKLET_BODY_TOP else max(BOOKLET_BODY_TOP, y - 6), "header": y < BOOKLET_BODY_TOP} for n, pi, y in labels]
+    has_first = any(st["number"] == "1" for st in starts) or any(st["page"] == 1 and st["header"] for st in starts)
+    if not has_first:
+        starts.append({"number": "1", "page": 1, "y0": BOOKLET_BODY_TOP, "header": True})
+    starts.sort(key=lambda st: (st["page"], st["y0"]))
+    return starts
+
+
+def booklet_segments(starts, page_count):
+    """For each start, [(page, top, bottom)]: the pieces of page body that belong to the question (banner and footer left out)."""
+    out = []
+    for i, st in enumerate(starts):
+        if i + 1 < len(starts):
+            nxt = starts[i + 1]
+            end_page, end_y = (nxt["page"], nxt["y0"]) if not nxt["header"] else (nxt["page"] - 1, BOOKLET_FOOTER_TOP)
+        else:
+            end_page, end_y = page_count - 1, BOOKLET_FOOTER_TOP
+        end_page = max(end_page, st["page"])
+        segs = []
+        for pg in range(st["page"], end_page + 1):
+            top = st["y0"] if pg == st["page"] else BOOKLET_BODY_TOP
+            bottom = end_y if pg == end_page else BOOKLET_FOOTER_TOP
+            if bottom - top > 8:
+                segs.append((pg, top, bottom))
+        out.append(segs)
+    return out
+
+
+def render_booklet_segments(doc, segments):
+    images = []
+    for pg, top, bottom in segments:
+        page = doc[pg]
+        rect = fitz.Rect(0, max(0, top - 2), page.rect.width, min(page.rect.height, bottom))
+        images.append(page.get_pixmap(clip=rect, matrix=fitz.Matrix(2, 2)).tobytes("png"))
+    return autocrop_trailing_white_rows(stitch_images_vertically(images))
+
+
+def _lines_in_segments(lines, segments):
+    return [l for l in lines if any(l["page"] == pg and top <= l["y0"] < bottom for pg, top, bottom in segments)]
+
+
+def _booklet_marks(lines, segments):
+    """Marks of one booklet question or mark scheme block: a "[Total: N]" if there is one, else the sum of the "[N]" brackets (spaces allowed inside)."""
+    text = "\n".join(l["text"] for l in _lines_in_segments(lines, segments))
+    total = re.search(r"\[\s*Total\s*:?\s*(\d+)\s*\]", text, re.IGNORECASE)
+    if total:
+        return int(total.group(1))
+    return sum(int(n) for n in re.findall(r"\[\s*(\d{1,2})\s*\]", text))
+
+
+def parse_booklet(pdf_path, with_marks):
+    """Blocks of a Save My Exams topic booklet (question paper or mark scheme), or None when the document is not one."""
+    doc = fitz.open(pdf_path)
+    starts = find_booklet_question_starts(doc)
+    if not starts:
+        doc.close()
+        return None
+    lines = extract_lines(doc)
+    blocks = []
+    for st, segs in zip(starts, booklet_segments(starts, doc.page_count)):
+        if not segs:
+            continue
+        image_b64 = "data:image/png;base64," + base64.b64encode(render_booklet_segments(doc, segs)).decode("ascii")
+        block = {"questionNumber": st["number"], "image": image_b64}
+        if with_marks:
+            block["marks"] = _booklet_marks(lines, segs)
+        blocks.append(block)
+    doc.close()
+    return blocks
+
+
 def parse_theory_qp(pdf_path):
     """QP side of a Theory paper -- bare-number headings, cropped exactly
     like parse_structured's blocks."""
+    booklet = parse_booklet(pdf_path, with_marks=False)
+    if booklet is not None:
+        return booklet
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     starts = find_bare_number_question_starts(lines)
@@ -3284,6 +3386,12 @@ def qp_question_marks(pdf_path):
     Same question starts as parse_theory_qp. Returns [(questionNumber, marks)] in paper order; a question with no bracket has 0.
     Used to cross-check a worksheet against the total printed on its cover (scripts/ops/sanitise_worksheet_marks.py)."""
     doc = fitz.open(pdf_path)
+    bstarts = find_booklet_question_starts(doc)
+    if bstarts:
+        lines = extract_lines(doc)
+        out = [(st["number"], _booklet_marks(lines, segs)) for st, segs in zip(bstarts, booklet_segments(bstarts, doc.page_count)) if segs]
+        doc.close()
+        return out
     lines = extract_lines(doc)
     starts = find_bare_number_question_starts(lines)
     doc.close()
@@ -3306,6 +3414,9 @@ def parse_theory_ms(pdf_path):
     varies by vendor section (bracketed "[N]" in prose, a bare standalone
     digit in a table's own Marks column) so both are summed; a real block
     only ever uses one convention, so this never double-counts."""
+    booklet = parse_booklet(pdf_path, with_marks=True)
+    if booklet is not None:
+        return booklet
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     candidates, ordered = find_ms_heading_candidates(lines)

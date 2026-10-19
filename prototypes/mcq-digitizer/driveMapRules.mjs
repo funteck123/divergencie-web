@@ -50,14 +50,17 @@ export function diffBuckets(oldFiles = [], newFiles = []) {
 }
 
 /**
- * A theory worksheet whose question paper was cut into no questions, or into one while its mark scheme has several or none, is a failed split
+ * A theory worksheet whose question paper was cut into no questions, or into one while its mark scheme has several or none, or whose mark scheme repeats a question number, is a failed split
  * (seen 2026-10-19 on Paper 3 booklets with a different layout): the student would get one giant picture to "practise". Such worksheets stay out of
  * the list until the parser handles their layout. Questions that merely have fewer blocks than the mark scheme (marks split into parts) are fine.
  */
 export function isBrokenSplit(record) {
   const q = (record?.questions || []).length;
-  const a = (record?.answers || []).length;
-  return q === 0 || (q === 1 && a !== 1);
+  const answers = record?.answers || [];
+  const a = answers.length;
+  // the same question number on two mark scheme blocks cannot be graded without guessing which block is meant
+  const duplicated = new Set(answers.map((x) => String(x.questionNumber))).size !== a;
+  return q === 0 || (q === 1 && a !== 1) || duplicated;
 }
 
 /** "CAIE ... Worksheet 3 QP.pdf" and "CAIE ... Worksheet 3 MS.pdf" share this name. */

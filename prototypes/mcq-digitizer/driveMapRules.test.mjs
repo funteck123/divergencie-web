@@ -39,7 +39,7 @@ test("diffBuckets counts files by id", () => {
 
 import { isBrokenSplit, pairBaseName } from "./driveMapRules.mjs";
 test("a worksheet cut into no question, or one question against several answers, is a failed split", () => {
-  const rec = (q, a) => ({ questions: Array(q).fill({}), answers: Array(a).fill({}) });
+  const rec = (q, a) => ({ questions: Array(q).fill({}), answers: Array.from({ length: a }, (_, i) => ({ questionNumber: String(i + 1) })) });
   assert.equal(isBrokenSplit(rec(0, 4)), true);
   assert.equal(isBrokenSplit(rec(1, 7)), true);
   assert.equal(isBrokenSplit(rec(1, 0)), true);
@@ -47,6 +47,8 @@ test("a worksheet cut into no question, or one question against several answers,
   assert.equal(isBrokenSplit(rec(3, 7)), false, "fewer questions than answer blocks is normal when marks are split into parts");
   assert.equal(isBrokenSplit(rec(5, 5)), false);
   assert.equal(isBrokenSplit(undefined), true);
+  const dup = { questions: [{}, {}, {}], answers: [{ questionNumber: "1" }, { questionNumber: "2" }, { questionNumber: "2" }] };
+  assert.equal(isBrokenSplit(dup), true, "a repeated mark scheme number is ambiguous");
 });
 test("a QP and its MS share a base name", () => {
   assert.equal(pairBaseName("CAIE A Level Maths Ch3.1 Algebra (P3) Worksheet 2 QP.pdf"), pairBaseName("CAIE A Level Maths Ch3.1 Algebra (P3) Worksheet 2 MS.pdf"));
