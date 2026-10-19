@@ -160,13 +160,20 @@ def main():
     os.makedirs(os.path.dirname(out), exist_ok=True)
     intros = json.load(open("data/youtube/intros.json")) if os.path.exists("data/youtube/intros.json") else {}
     ledger = json.load(open("data/youtube/ledger.json")) if os.path.exists("data/youtube/ledger.json") else {}
+    first_name = {}  # the name a file had before any rename (docs/recording-rename-history.csv)
+    if os.path.exists("docs/recording-rename-history.csv"):
+        for h in csv.DictReader(open("docs/recording-rename-history.csv", encoding="utf8")):
+            if h["status"] == "renamed":
+                first_name.setdefault(h["driveId"], h["before"])
     rows = []
     for v in list_videos():
+        v = dict(v); original = first_name.get(v["id"], v["name"]); current = v["name"]; v["name"] = original  # parse the original name: it carries date, batch and Zoom room
         rec = parse(v, folder_path(v["parents"][0]) if v.get("parents") else "", intros.get(v["id"]))
+        rec["originalName"], rec["currentName"] = original, current
         rec["youtubeId"] = (ledger.get(v["id"]) or {}).get("youtubeId"); rec["youtubePrivacy"] = (ledger.get(v["id"]) or {}).get("privacyStatus")
         rows.append(rec)
     for r in rows:
-        r["filePath"] = (r["folder"] + "/" + r["fileName"]).replace("//", "/")
+        r["filePath"] = (r["folder"] + "/" + r["currentName"]).replace("//", "/")
     seen = {}
     for r in rows:  # same size and length = the same video stored twice
         key = (r["sizeMB"], r["durationMin"]) if r["sizeMB"] > 1 else None

@@ -73,7 +73,7 @@ def main():
     already = {fid for fid, st in latest.items() if st == "renamed"}
     n = 0
     for r in rows:
-        if r["driveId"] in already or r["fileName"] == r["proposedName"]:
+        if r["driveId"] in already or r["currentName"] == r["proposedName"]:
             continue
         if limit is not None and n >= limit:
             break
@@ -81,12 +81,12 @@ def main():
             current = call(r["driveId"])["name"]
         except Exception as e:
             print("cannot read", r["driveId"], str(e)[:80]); continue
-        if current != r["fileName"]:
+        if current != r["currentName"]:
             print("skip (name changed since the dataset):", r["driveId"], current[:60]); continue
-        print(f"{r['fileName'][:70]}\n   -> {r['proposedName']}")
+        print(f"{r['currentName'][:70]}\n   -> {r['proposedName']}")
         if dry:
             n += 1; continue
-        row = {"driveId": r["driveId"], "before": r["fileName"], "after": r["proposedName"], "time": time.strftime("%Y-%m-%dT%H:%M:%S"), "status": "renamed"}
+        row = {"driveId": r["driveId"], "before": r["currentName"], "after": r["proposedName"], "time": time.strftime("%Y-%m-%dT%H:%M:%S"), "status": "renamed"}
         append(dict(row, status="planned"))  # written before the call: a crash leaves a trace
         call(r["driveId"], "PATCH", r["proposedName"])
         append(row); n += 1
