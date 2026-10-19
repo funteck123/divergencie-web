@@ -13,8 +13,9 @@ import http from "http";
 const SAVE = process.argv.includes("--save");
 const PORT = Number(process.env.REAUTH_PORT || 8765);
 const REDIRECT = `http://localhost:${PORT}`;
-// What the app actually calls: Drive (create and copy files), Sheets (timesheets and trackers), Gmail send (notifications).
-const SCOPES = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/gmail.send"];
+// What the app actually calls: Drive (create and copy files), Sheets (timesheets and trackers), Gmail send (notifications),
+// YouTube upload (TKT-0358: class recordings as unlisted videos; sign in as the owner of the DivergenCIE channel).
+const SCOPES = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/gmail.send", "https://www.googleapis.com/auth/youtube.upload"];
 
 const { GOOGLE_OAUTH_CLIENT_ID: clientId, GOOGLE_OAUTH_CLIENT_SECRET: clientSecret } = process.env;
 if (!clientId || !clientSecret) {
