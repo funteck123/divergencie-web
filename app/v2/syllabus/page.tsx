@@ -11,8 +11,10 @@ export default function SyllabusPage() {
       {(user) => (
         <PortalChrome>
           <AppShell user={user}>
-            <h1>Syllabus Viewer</h1>
-            <SyllabusView user={user} />
+            <div className="u2-accounts">
+              <h1>Syllabus Viewer</h1>
+              <SyllabusView user={user} />
+            </div>
           </AppShell>
         </PortalChrome>
       )}

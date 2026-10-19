@@ -50,8 +50,15 @@ def main():
         out["solver_select_heights"] = s.page.evaluate("[...document.querySelectorAll('.u2-combo__trigger')].map((e) => Math.round(e.getBoundingClientRect().height))")
         out["solver_scrolls_sideways"] = s.page.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth + 1 || document.body.scrollWidth > document.body.clientWidth + 1 || [...document.querySelectorAll('main *')].some((e) => e.getBoundingClientRect().right > window.innerWidth + 1)")
         out["errors"] += s.errors[:3]
+    # the Solver progress chart: every label of the drawing sits inside it (the last date label used to be cut by the right edge)
+    att = [{"id": f"a{i}", "account_id": "STU-2", "subject": "CIE Physics", "chapter": "1", "paper_id": "qp1", "mode": "test", "score": 10 + i, "total_questions": 17, "time_taken_seconds": 600, "submitted_at": f"2026-10-{10 + i:02d}T10:00:00Z"} for i in range(4)]
+    with Session(user=SQ.stu, state={}, width=390, height=900) as s:
+        s.on(r"^/api/mcq", lambda m, p, b, st: (200, {"attempts": att}) if p.startswith("/api/mcq/progress") else SQ.h(m, p, b, st)); s.goto("/v2/question-solver")
+        s.page.get_by_role("button", name=re.compile("progress", re.I)).first.click(); s.page.wait_for_timeout(1500)
+        out["chart_labels_outside"] = s.page.evaluate("""() => { const svg = document.querySelector('figure.u2-chart svg'); if (!svg) return -1; const vb = svg.viewBox.baseVal; return [...svg.querySelectorAll('text')].filter((t) => { const b = t.getBBox(); return b.x < -0.5 || b.x + b.width > vb.width + 0.5; }).length; }""")
+        out["errors"] += s.errors[:3]
     print(json.dumps(out))
-    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and out["student_tables_left"] == 0 and out["student_pay_on_screen"] and out["student_service_visible"] and not out["student_scrolls_sideways"] and len(set(out["solver_select_heights"])) == 1 and out["solver_select_heights"] and not out["solver_scrolls_sideways"] and not out["errors"]
+    ok = out["tickets_table_rows"] == 0 and out["close_on_screen"] and not out["page_scrolls_sideways"] and out["audit_table_rows"] == 0 and out["audit_summary_visible"] and not out["audit_scrolls_sideways"] and out["tunnel_field_width"] >= 200 and not out["guides_scrolls_sideways"] and out["student_tables_left"] == 0 and out["student_pay_on_screen"] and out["student_service_visible"] and not out["student_scrolls_sideways"] and len(set(out["solver_select_heights"])) == 1 and out["solver_select_heights"] and not out["solver_scrolls_sideways"] and out["chart_labels_outside"] == 0 and not out["errors"]
     sys.exit(0 if ok else 1)
 
 if __name__ == "__main__":

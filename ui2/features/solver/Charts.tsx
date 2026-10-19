@@ -55,7 +55,7 @@ export function LineChart({ series, emptyText, kind = "score" }: { series: reado
           </g>
         ))}
         {ticks.map((t) => (
-          <text key={t} x={xAt(t)} y={H - pad.b + 18} textAnchor="middle" className="u2-chart__tick">{fmtX(t)}</text>
+          <text key={t} x={xAt(t)} y={H - pad.b + 18} textAnchor={xAt(t) > W - 40 ? "end" : "middle"} className="u2-chart__tick">{fmtX(t)}</text>
         ))}
         {showOthers && others.map((s) => <path key={s.id} d={path(s.points)} className="u2-chart__other"><title>{s.label}</title></path>)}
         <path d={path(mine.points)} className="u2-chart__mine" />

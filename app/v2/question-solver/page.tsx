@@ -11,8 +11,10 @@ export default function QuestionSolverPage() {
       {(user) => (
         <PortalChrome>
           <AppShell user={user}>
-            <h1>Question Solver</h1>
-            <SolverView user={user} />
+            <div className="u2-accounts">
+              <h1>Question Solver</h1>
+              <SolverView user={user} />
+            </div>
           </AppShell>
         </PortalChrome>
       )}
