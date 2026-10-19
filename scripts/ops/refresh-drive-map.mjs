@@ -12,7 +12,7 @@
 // The service reads the map on every /api/library request, so a written map is live at once (no restart).
 import fs from "fs";
 import path from "path";
-import { BUCKETS, DRIVE_SUBJECT_NAME, diffBuckets, isBrokenSplit, pairBaseName } from "../../prototypes/mcq-digitizer/driveMapRules.mjs";
+import { BUCKETS, DRIVE_SUBJECT_NAME, diffBuckets, isBrokenSplit, isIncompleteMcq, pairBaseName } from "../../prototypes/mcq-digitizer/driveMapRules.mjs";
 
 const KEY = process.env.GOOGLE_DRIVE_API_KEY;
 const ROOT = "1KZBDpoIOf7KQcxX1Qa63WllHVRXAQb00"; // DC Course Materials
@@ -54,6 +54,8 @@ const next = JSON.parse(JSON.stringify(old));
 const HELD = fs.existsSync(path.join(process.cwd(), "scripts", "ops", "map-held.json")) ? JSON.parse(fs.readFileSync(path.join(process.cwd(), "scripts", "ops", "map-held.json"), "utf8")) : {};
 // question papers already built into the structured database, by file id (for the split-quality check)
 const STRUCTURED_DB = path.join(process.cwd(), "data", "mcq-digitizer", "structured-library", "database.json");
+const FULL_DB = path.join(process.cwd(), "data", "mcq-digitizer", "full-library", "database.json");
+const byQpMcq = new Map(fs.existsSync(FULL_DB) ? JSON.parse(fs.readFileSync(FULL_DB, "utf8")).map((r) => [r.qpId, r]) : []);
 const byQp = new Map(fs.existsSync(STRUCTURED_DB) ? JSON.parse(fs.readFileSync(STRUCTURED_DB, "utf8")).map((r) => [r.qpId, r]) : []);
 const tops = Object.fromEntries((await list(ROOT)).filter((f) => f.mimeType === FOLDER).map((f) => [f.name, f.id]));
 const notes = [];
@@ -87,6 +89,14 @@ for (const [key, folders] of Object.entries(BUCKETS)) {
     if (heldReason) {
       notes.push(`${board}/${subject}/${bucket}: ${files.QP.length} worksheet(s) held back on purpose. ${heldReason}`);
       files.QP = []; files.MS = [];
+    }
+    if (bucket === "MCQ") {
+      // multiple choice: keep out worksheets that declare how many questions they should have and have fewer (see isIncompleteMcq)
+      const short = new Set(files.QP.filter((f) => byQpMcq.has(f.id) && isIncompleteMcq(byQpMcq.get(f.id))).map((f) => pairBaseName(f.name)));
+      if (short.size) {
+        notes.push(`${board}/${subject}/MCQ: ${short.size} worksheet(s) not listed, fewer questions than the marks on their cover: ${[...short].slice(0, 3).join("; ")}${short.size > 3 ? "; ..." : ""}`);
+        for (const kind of ["QP", "MS"]) files[kind] = files[kind].filter((f) => !short.has(pairBaseName(f.name)));
+      }
     }
     if (bucket !== "MCQ") {
       // keep out worksheets whose question paper was split into no or one question (see isBrokenSplit); their pair goes with them

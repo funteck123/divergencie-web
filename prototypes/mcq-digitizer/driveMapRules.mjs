@@ -67,3 +67,12 @@ export function isBrokenSplit(record) {
 export function pairBaseName(fileName) {
   return String(fileName).replace(/\s*(QP|MS)\.pdf$/i, "");
 }
+
+/**
+ * A multiple-choice worksheet that records how many questions it should have (`expectedQuestions`, from the marks on its cover) is listed only when it
+ * has exactly that many: a question the parser dropped must not be published as a complete worksheet. Records without the field are never judged.
+ */
+export function isIncompleteMcq(record) {
+  const expected = record?.expectedQuestions;
+  return Number.isInteger(expected) && (record?.questions || []).length !== expected;
+}

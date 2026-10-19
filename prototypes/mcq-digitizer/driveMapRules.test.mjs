@@ -37,7 +37,7 @@ test("diffBuckets counts files by id", () => {
   assert.deepEqual(diffBuckets(undefined, [{ id: "x" }]), { added: 1, removed: 0 });
 });
 
-import { isBrokenSplit, pairBaseName } from "./driveMapRules.mjs";
+import { isBrokenSplit, isIncompleteMcq, pairBaseName } from "./driveMapRules.mjs";
 test("a worksheet cut into no question, or one question against several answers, is a failed split", () => {
   const rec = (q, a) => ({ questions: Array(q).fill({}), answers: Array.from({ length: a }, (_, i) => ({ questionNumber: String(i + 1) })) });
   assert.equal(isBrokenSplit(rec(0, 4)), true);
@@ -52,4 +52,12 @@ test("a worksheet cut into no question, or one question against several answers,
 });
 test("a QP and its MS share a base name", () => {
   assert.equal(pairBaseName("CAIE A Level Maths Ch3.1 Algebra (P3) Worksheet 2 QP.pdf"), pairBaseName("CAIE A Level Maths Ch3.1 Algebra (P3) Worksheet 2 MS.pdf"));
+});
+
+test("a multiple-choice worksheet with a short question count is incomplete only when it declares its expected count", () => {
+  const qs = (n) => Array.from({ length: n }, (_, i) => ({ questionNumber: String(i + 1) }));
+  assert.equal(isIncompleteMcq({ expectedQuestions: 50, questions: qs(49) }), true);
+  assert.equal(isIncompleteMcq({ expectedQuestions: 50, questions: qs(50) }), false);
+  assert.equal(isIncompleteMcq({ questions: qs(12) }), false, "records that declare nothing are never judged");
+  assert.equal(isIncompleteMcq(undefined), false);
 });

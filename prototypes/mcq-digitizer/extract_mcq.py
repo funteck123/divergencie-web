@@ -2029,6 +2029,26 @@ def parse_ms_table(lines):
     return answers, True
 
 
+def parse_ms_answer_list(lines):
+    """Fast path for a plain answer key: one line per question, "12. C" (or "12) C"), numbers 1, 2, 3 ... without a gap, nothing else on the line.
+    The elimination parser below read the key of the Save My Exams topic booklets with questions 2 and 3 missing (about two unresolved answers per
+    paper, 2026-10-19). Fires only when at least 5 such lines exist and the numbers are unique and run from 1 up. Returns (answers, True) or (None, False)."""
+    found = {}
+    for line in lines:
+        m = re.fullmatch(r"\s*(\d{1,3})\s*[.)]\s*([A-D])\s*", line["text"])
+        if m:
+            n = m.group(1)
+            if n in found:
+                return None, False  # a repeated number: not a plain key
+            found[n] = m.group(2)
+    if len(found) < 5:
+        return None, False
+    nums = sorted(int(n) for n in found)
+    if nums != list(range(1, len(nums) + 1)):
+        return None, False
+    return found, True
+
+
 def parse_ms(pdf_path):
     """Returns (answers: {questionNumber: letter}, ambiguous: [questionNumber]).
     Tries the simple direct-answer format first (a bare letter right after
@@ -2044,6 +2064,11 @@ def parse_ms(pdf_path):
     if is_table_format:
         doc.close()
         return table_answers, []
+
+    list_answers, is_answer_list = parse_ms_answer_list(lines)
+    if is_answer_list:
+        doc.close()
+        return list_answers, []
 
     starts, _quasi = find_question_starts(lines, doc)
 

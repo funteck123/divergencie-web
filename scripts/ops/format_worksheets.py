@@ -17,6 +17,8 @@ two page-1 sheets disagree on time or marks.
 
   python3 scripts/ops/format_worksheets.py s1 --qp-dir <raw QP folder> --ms-dir <raw MS folder> --logo <logo.jpg> --out <staging folder>
 
+Set "bio-as-mcq-qp" does the same for the 37 A Level Biology AS multiple-choice mark schemes in the tracker (question papers only).
+
 Set "m1-qp": pairs every raw Mechanics QP (file name starts with the Save My Exams number, e.g. 25.3-...) with the tracker row of the
 Mechanics mark scheme that starts with the same number, and reuses that row's fields (course, marks, time, chapter, version).
 The output name is the file name of the row's "Output MS Path" with "MS" replaced by "QP".
@@ -288,19 +290,19 @@ def sentence_case(s):
     return s[:1].upper() + s[1:].lower() if s else s
 
 
-def m1_qp_jobs(tracker, src_dir):
+def m1_qp_jobs(tracker, src_dir, marker="/M1_MS/"):
     rows = list(csv.DictReader(open(tracker, encoding="utf8", errors="replace")))
     ms_rows = {}
     for r in rows:
         p = r["Mark Scheme Path"]
-        if "/M1_MS/" in p:
-            ms_rows[os.path.basename(p).split("-", 1)[0]] = r
+        if marker in p:
+            ms_rows[re.match(r"^(\d+(?:\.\d+)?)", os.path.basename(p)).group(1)] = r
     jobs = []
     for f in sorted(os.listdir(src_dir)):
         if not f.lower().endswith(".pdf"):
             continue
-        key = re.match(r"^(\d+\.\d+)", f).group(1)
-        r = ms_rows.get(key)
+        km = re.match(r"^(\d+(?:\.\d+)?)", f)
+        r = ms_rows.get(km.group(1)) if km else None
         if not r:
             jobs.append((f, None, None)); continue
         name = os.path.basename(r["Output MS Path"]).strip()  # the final file name, with the "CAIE A Level Maths" prefix
@@ -320,25 +322,29 @@ def raw_time_and_marks(pdf):
 
 
 def pairing_problem(pdf, info):
-    """A QP is only paired with a mark scheme row when the time and marks on its own page 1 equal the row's. Returns a message or ''."""
-    t, m = raw_time_and_marks(pdf)
-    want_t = int(re.search(r"\d+", str(info["time_allowed"])).group()) if re.search(r"\d+", str(info["time_allowed"])) else None
-    want_m = int(re.search(r"\d+", str(info["maximum_marks"])).group()) if re.search(r"\d+", str(info["maximum_marks"])) else None
-    if t is not None and want_t is not None and t != want_t: return f"time {t} min on the paper, {want_t} in the tracker"
-    if m is not None and want_m is not None and m != want_m: return f"marks {m} on the paper, {want_m} in the tracker"
+    """A QP is only paired with a mark scheme row when the time and marks on its own page 1 equal the row's. Returns a message or ''. A paper whose cover
+    has no readable time or marks cannot be verified and is refused too (matching by section number alone is not enough)."""
+    cover = raw_cover(pdf)
+    want_t = re.search(r"\d+", str(info["time_allowed"]))
+    want_m = re.search(r"\d+", str(info["maximum_marks"]))
+    if not cover["time"] or not cover["marks"]:
+        return "the cover of the paper has no readable time or marks, so the pairing cannot be verified"
+    if want_t and int(cover["time"]) != int(want_t.group()): return f"time {cover['time']} min on the paper, {want_t.group()} in the tracker"
+    if want_m and int(cover["marks"]) != int(want_m.group()): return f"marks {cover['marks']} on the paper, {want_m.group()} in the tracker"
     return ""
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("set", choices=["m1-qp", "s1", "s2", "p3", "p2"])
+    ap.add_argument("set", choices=["m1-qp", "bio-as-mcq-qp", "s1", "s2", "p3", "p2"])
     ap.add_argument("--tracker"); ap.add_argument("--src"); ap.add_argument("--qp-dir"); ap.add_argument("--ms-dir")
     ap.add_argument("--logo", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--limit", type=int)
     a = ap.parse_args()
-    if a.set == "m1-qp":
+    if a.set in ("m1-qp", "bio-as-mcq-qp"):
         jobs = []
-        for f, qp_name, info in m1_qp_jobs(a.tracker, a.src):
+        marker = "/M1_MS/" if a.set == "m1-qp" else "/A Levels/Biology/SME/MCQ/MS/"
+        for f, qp_name, info in m1_qp_jobs(a.tracker, a.src, marker):
             problem = "no matching mark scheme row" if not info else pairing_problem(os.path.join(a.src, f), info)
             jobs.append(("QP", os.path.join(a.src, f), qp_name, info, problem))
     elif a.set in ("p3", "p2"):
