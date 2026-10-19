@@ -174,12 +174,20 @@ def add_local(rows):
     def norm(n):  # letters and digits only: local copies have a Drive-id prefix and glued words ("IGCSEEnglish SLEmail")
         return re.sub(r"[^a-z0-9]", "", re.sub(r"\.\w+$", "", n.lower()))
     drive = [(norm(n), r) for r in rows if r["location"] == "Google Drive" for n in {r["originalName"], r["currentName"]}]  # a renamed local copy matches the new name
+    moved = {}  # a local file renamed by rename_local_videos.py: the search list still holds its old path
+    if os.path.exists("docs/recording-local-rename-history.csv"):
+        for h in csv.DictReader(open("docs/recording-local-rename-history.csv", encoding="utf8")):
+            if h["status"] == "renamed":
+                moved[h["before"]] = h["after"]
     left_out = new = matched = 0
     for line in open("data/youtube/local_videos.tsv", encoding="utf8"):
         fields = line.rstrip("\n").split("\t")
         if len(fields) != 3 or not fields[1].isdigit():
             continue  # a line still being written by the search, or a path with a line break in it
         path, size, mtime = fields
+        path = moved.get(path, path)
+        if not os.path.exists(path):
+            continue  # deleted or moved since the search
         base = os.path.basename(path)
         nb = norm(base)
         hit = [r for nr, r in drive if nr and (nb.endswith(nr) or nr.endswith(nb)) and abs(int(r["sizeMB"] * 1e6) - int(size)) < 2e6]
