@@ -9,7 +9,7 @@ The sheet is private to the account that creates it. Needs GOOGLE_OAUTH_* in the
 import json, os, sys, time, urllib.parse, urllib.request
 
 CID, CSEC, RT = (os.environ[k] for k in ("GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_OAUTH_REFRESH_TOKEN"))
-COLS = [("Status", None), ("Location", "location"), ("File path", "filePath"), ("Current name", "currentName"), ("Original name", "originalName"), ("Proposed name", "proposedName"),
+COLS = [("Status", None), ("Location", "location"), ("File path", "filePath"), ("Local copies (C/D/E)", "localPaths"), ("Current name", "currentName"), ("Original name", "originalName"), ("Proposed name", "proposedName"),
         ("Level", "level"), ("Subject", "subject"), ("Subject code", "subjectCode"), ("Component", "component"), ("Chapter", "chapter"), ("Topic", "topic"),
         ("Session type", "sessionType"), ("Session no.", "sessionNumber"), ("Date", "date"), ("Batch", "batch"), ("Recording no.", "recordingNumber"), ("Instructor", "instructor"),
         ("Duration (min)", "durationMin"), ("Size (MB)", "sizeMB"), ("Category", "category"), ("Upload", "upload"), ("YouTube id", "youtubeId"), ("YouTube privacy", "youtubePrivacy"),
@@ -54,6 +54,8 @@ def main():
     if not sid:
         sheet = api("https://sheets.googleapis.com/v4/spreadsheets", {"properties": {"title": "DivergenCIE Recordings Dataset"}, "sheets": [{"properties": {"title": "Videos", "gridProperties": {"frozenRowCount": 1}}}]}, "POST")
         sid = sheet["spreadsheetId"]
+    if "--sheet" in sys.argv:  # rewrite, do not append to what is there
+        api(f"https://sheets.googleapis.com/v4/spreadsheets/{sid}/values/Videos!A:ZZ:clear", {}, "POST")
     api(f"https://sheets.googleapis.com/v4/spreadsheets/{sid}/values/Videos!A1:append?valueInputOption=RAW", {"values": values}, "POST")
     meta = api(f"https://sheets.googleapis.com/v4/spreadsheets/{sid}?fields=sheets.properties.sheetId")
     gid = meta["sheets"][0]["properties"]["sheetId"]

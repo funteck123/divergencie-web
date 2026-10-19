@@ -153,6 +153,36 @@ def parse(row, path, intro):
     return out
 
 
+def add_local(rows):
+    """Videos found on the C, D and E drives (data/youtube/local_videos.tsv: path, bytes, date). A local copy whose name and size match a Drive recording is added to that row's
+    localPaths; a class-looking local file with no Drive match becomes its own row (location "Local"). Phone backups and project footage are not class videos and are left out."""
+    if not os.path.exists("data/youtube/local_videos.tsv"):
+        return
+    def norm(n):  # letters and digits only: local copies have a Drive-id prefix and glued words ("IGCSEEnglish SLEmail")
+        return re.sub(r"[^a-z0-9]", "", re.sub(r"\.\w+$", "", n.lower()))
+    drive = [(norm(n), r) for r in rows if r["location"] == "Google Drive" for n in {r["originalName"], r["currentName"]}]  # a renamed local copy matches the new name
+    left_out = new = matched = 0
+    for line in open("data/youtube/local_videos.tsv", encoding="utf8"):
+        fields = line.rstrip("\n").split("\t")
+        if len(fields) != 3 or not fields[1].isdigit():
+            continue  # a line still being written by the search, or a path with a line break in it
+        path, size, mtime = fields
+        base = os.path.basename(path)
+        nb = norm(base)
+        hit = [r for nr, r in drive if nr and (nb.endswith(nr) or nr.endswith(nb)) and abs(int(r["sizeMB"] * 1e6) - int(size)) < 2e6]
+        if hit:
+            if path not in hit[0]["localPaths"]:
+                hit[0]["localPaths"].append(path)
+            matched += 1; continue
+        if not (NAME.match(re.sub(r"\.\w+$", "", base)) or re.match(r"^\d{4}\s+.+-\s*\d{8}", base)) or PRIVATE.search(base):
+            left_out += 1; continue
+        fake = {"id": None, "name": base, "size": size, "createdTime": mtime, "videoMediaMetadata": {}}
+        rec = parse(fake, os.path.dirname(path), None)
+        rec.update({"location": "Local", "filePath": path, "originalName": base, "currentName": base, "youtubeId": None, "youtubePrivacy": None, "localPaths": [path]})
+        rows.append(rec); new += 1
+    print(f"local files: {matched} match a Drive recording, {new} are not in Drive, {left_out} are other videos (phone backups, project footage) and left out")
+
+
 def main():
     out = "data/youtube/video_dataset"
     if "--out" in sys.argv:
@@ -173,7 +203,8 @@ def main():
         rec["youtubeId"] = (ledger.get(v["id"]) or {}).get("youtubeId"); rec["youtubePrivacy"] = (ledger.get(v["id"]) or {}).get("privacyStatus")
         rows.append(rec)
     for r in rows:
-        r["filePath"] = (r["folder"] + "/" + r["currentName"]).replace("//", "/")
+        r["filePath"] = (r["folder"] + "/" + r["currentName"]).replace("//", "/"); r["localPaths"] = []
+    add_local(rows)
     seen = {}
     for r in rows:  # same size and length = the same video stored twice
         key = (r["sizeMB"], r["durationMin"]) if r["sizeMB"] > 1 else None
@@ -192,7 +223,7 @@ def main():
                 r["needsReview"].append("same proposed name as another file"); r["proposedName"] = None; r["titleProposal"] = None
     rows.sort(key=lambda r: (r["date"] or "9999", r["fileName"]))
     json.dump(rows, open(out + ".json", "w"), indent=1, ensure_ascii=False)
-    cols = [c for c in rows[0] if c not in ("source", "needsReview", "introText")] + ["needsReview", "introText"]
+    cols = [c for c in rows[0] if c not in ("source", "needsReview", "introText", "localPaths")] + ["localPaths", "needsReview", "introText"]
     with open(out + ".csv", "w", newline="", encoding="utf8") as f:
         w = csv.writer(f); w.writerow(cols)
         for r in rows:
