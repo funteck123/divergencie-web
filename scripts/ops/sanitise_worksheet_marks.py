@@ -12,7 +12,11 @@ printed on its branded question paper cover ("Maximum Marks: 44"). Per record, i
   3. otherwise                                                              -> every answers[].marks = 0, "marksUnreliable": true
                                                                                (the solver says the mark allocation could not be read; Practice mode is unaffected)
 
-  python3 scripts/ops/sanitise_worksheet_marks.py <database.json> <out database.json> <folder of branded QP pdfs> [<another folder> ...]
+  python3 scripts/ops/sanitise_worksheet_marks.py <database.json> <out database.json> <folder of branded QP pdfs> [<another folder> ...] [--per-question]
+
+--per-question is for book chapters that have no printed total (the Computer Science books): a question keeps its mark scheme marks only where the marks read from
+the question paper are the same number and above 0; every other question gets 0 (the solver then says that question's marks could not be read). The worksheet is
+practice only when no question agrees.
 
 Never edits the input file. Prints a summary.
 """
@@ -53,8 +57,22 @@ def decide(record, total, qp_marks):
     return None, None
 
 
+def per_question(record, qp_marks):
+    """Returns the number of questions that keep their marks."""
+    paper = dict(qp_marks)
+    kept = 0
+    for x in record["answers"]:
+        ms, qp = int(x.get("marks") or 0), paper.get(str(x["questionNumber"]), 0)
+        if ms > 0 and ms == qp:
+            kept += 1
+        else:
+            x["marks"] = 0
+    return kept
+
+
 def main():
-    src, dst, *folders = sys.argv[1:]
+    per_q = "--per-question" in sys.argv
+    src, dst, *folders = [a for a in sys.argv[1:] if a != "--per-question"]
     papers = branded_papers(folders)
     db = json.load(open(src))
     counts = {"mark scheme": 0, "question paper": 0, "practice only": 0, "untouched": 0}
@@ -63,6 +81,13 @@ def main():
         if hit is None:
             counts["untouched"] += 1; continue
         path, total = hit
+        if per_q:
+            kept = per_question(r, em.qp_question_marks(path))
+            if kept:
+                r["marksSource"] = "per question"; r.pop("marksUnreliable", None); counts["per question"] = counts.get("per question", 0) + 1
+            else:
+                r["marksUnreliable"] = True; r.pop("marksSource", None); counts["practice only"] += 1
+            continue
         source, marks = decide(r, total, em.qp_question_marks(path))
         if source == "mark scheme":
             r["marksSource"] = source; r.pop("marksUnreliable", None)

@@ -340,6 +340,7 @@ def main():
     ap.add_argument("--tracker"); ap.add_argument("--src"); ap.add_argument("--qp-dir"); ap.add_argument("--ms-dir")
     ap.add_argument("--logo", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--accept-mismatch", action="append", default=[], metavar="TEXT", help="build a pair whose paper and mark scheme disagree on time or marks when its file name contains TEXT (the owner decided to follow Save My Exams as it stands); repeatable")
     a = ap.parse_args()
     if a.set in ("m1-qp", "bio-as-mcq-qp"):
         jobs = []
@@ -354,6 +355,12 @@ def main():
     if a.limit: jobs = jobs[: a.limit]
     bad = 0
     for label, src, name, info, problem in jobs:
+        if problem and info and any(t in (name or "") or t in os.path.basename(src or "") for t in a.accept_mismatch):
+            print("ACCEPTED MISMATCH (owner decision):", os.path.basename(src), "|", problem); problem = ""
+            if label == "QP":  # the paper's own cover wins over the tracker row of the mark scheme
+                c = raw_cover(src)
+                if c["time"]: info["time_allowed"] = f"{c['time']} minutes"
+                if c["marks"]: info["maximum_marks"] = c["marks"]
         if problem or not info:
             print("SKIPPED:", os.path.basename(src or "?"), "|", problem); bad += 1; continue
         ok, note = format_pdf(src, os.path.join(a.out, label, name), info, label, a.logo, booklet=a.set in ("p2", "p3"))

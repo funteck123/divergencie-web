@@ -38,6 +38,7 @@ export const BUCKETS = {
   "A Levels|Chemistry": { MCQ: "MCQ", Theory: (name) => aLevelTheoryComponent("Chemistry", name) },
   "A Levels|Biology": { MCQ: "MCQ", Theory: (name) => aLevelTheoryComponent("Biology", name) },
   "A Levels|Mathematics": { P1: "Paper 1: Pure Mathematics 1", M1: "Paper 4: Mechanics", S1: "Paper 5: Probability & Statistics 1", S2: "Paper 6: Probability & Statistics 2", P3: "Paper 3: Pure Mathematics 3", P2: "Paper 2: Pure Mathematics 2" },
+  "A Levels|Computer Science": { P1: "Paper 1: Theory Fundamentals (AS Level)" },
 };
 /** The Drive folder name of each mapped subject where it differs from the solver's subject name. */
 export const DRIVE_SUBJECT_NAME = { Mathematics: "Maths" };

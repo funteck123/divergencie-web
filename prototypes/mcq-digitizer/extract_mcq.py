@@ -3408,12 +3408,83 @@ def parse_booklet(pdf_path, with_marks):
     return blocks
 
 
+# ---- Question bars ("Q4  2015-June, P12, Q1" in a grey bar before each question) ----------------------------------------------------------------
+# The owner's compiled topical books (E:/CIE/A Levels/Computer Science: "DivergenCIE Topical Past Papers") start every question with a wide grey bar that
+# holds "Q<number> <year-session>, P<paper>...". It is a drawn rectangle with text on top, so it is found from the drawings, not from the text order.
+BAR_REF_RE = re.compile(r"^Q\s*(\d+)\s+(\d{4}\s*-\s*[A-Za-z]+.*)$")
+BAR_QP_TOP, BAR_MS_TOP, BAR_BOTTOM = 36, 60, 802   # question pages: content from about 36 pt; answer pages: author header band above 60 pt; footers below 802 pt
+
+
+def find_bar_question_starts(doc):
+    """[{number, page, y0, header, ref}] in paper order, or [] unless there are at least 3 bars with distinct numbers."""
+    found = {}
+    for pi in range(doc.page_count):
+        page = doc[pi]
+        words = None
+        for dr in page.get_drawings():
+            r, fill = dr["rect"], dr.get("fill")
+            if not fill or r.width < 300 or not 8 < r.height < 30:
+                continue
+            if not (fill[0] < 0.6 and abs(fill[0] - fill[1]) < 0.05 and abs(fill[1] - fill[2]) < 0.05):
+                continue
+            if words is None:
+                words = page.get_text("words")
+            inside = [w for w in words if w[1] >= r.y0 - 1.5 and w[3] <= r.y1 + 1.5 and w[0] >= r.x0 - 2 and w[2] <= r.x1 + 2]
+            m = BAR_REF_RE.match(" ".join(w[4] for w in sorted(inside, key=lambda w: w[0])))
+            if m and m.group(1) not in found:
+                found[m.group(1)] = {"number": m.group(1), "page": pi, "y0": r.y0, "header": False, "ref": m.group(2).strip()}
+    starts = sorted(found.values(), key=lambda st: (st["page"], st["y0"]))
+    return starts if len(starts) >= 3 else []
+
+
+def bar_segments(starts, page_count, top, bottom=BAR_BOTTOM):
+    """Like booklet_segments, for bars: a question runs from its bar to the next bar (on the same page or a later one)."""
+    out = []
+    for i, st in enumerate(starts):
+        if i + 1 < len(starts):
+            end_page, end_y = starts[i + 1]["page"], starts[i + 1]["y0"]
+        else:
+            end_page, end_y = page_count - 1, bottom
+        segs = []
+        for pg in range(st["page"], end_page + 1):
+            t = st["y0"] if pg == st["page"] else top
+            b = end_y if pg == end_page else bottom
+            if b - t > 8:
+                segs.append((pg, t, b))
+        out.append(segs)
+    return out
+
+
+def parse_bars(pdf_path, with_marks):
+    """Blocks of a bar-layout document (question book or answer book chapter), or None when the document has no question bars."""
+    doc = fitz.open(pdf_path)
+    starts = find_bar_question_starts(doc)
+    if not starts:
+        doc.close()
+        return None
+    lines = extract_lines(doc)
+    blocks = []
+    for st, segs in zip(starts, bar_segments(starts, doc.page_count, BAR_MS_TOP if with_marks else BAR_QP_TOP)):
+        if not segs:
+            continue
+        image_b64 = "data:image/png;base64," + base64.b64encode(render_booklet_segments(doc, segs)).decode("ascii")
+        block = {"questionNumber": st["number"], "image": image_b64, "ref": st["ref"]}
+        if with_marks:
+            block["marks"] = _booklet_marks(lines, segs)
+        blocks.append(block)
+    doc.close()
+    return blocks
+
+
 def parse_theory_qp(pdf_path):
     """QP side of a Theory paper -- bare-number headings, cropped exactly
     like parse_structured's blocks."""
     booklet = parse_booklet(pdf_path, with_marks=False)
     if booklet is not None:
         return booklet
+    barred = parse_bars(pdf_path, with_marks=False)
+    if barred is not None:
+        return barred
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     starts = find_bare_number_question_starts(lines)
@@ -3442,6 +3513,12 @@ def qp_question_marks(pdf_path):
         out = [(st["number"], _booklet_marks(lines, segs)) for st, segs in zip(bstarts, booklet_segments(bstarts, doc.page_count)) if segs]
         doc.close()
         return out
+    bar_starts = find_bar_question_starts(doc)
+    if bar_starts:
+        lines = extract_lines(doc)
+        out = [(st["number"], _booklet_marks(lines, segs)) for st, segs in zip(bar_starts, bar_segments(bar_starts, doc.page_count, BAR_QP_TOP)) if segs]
+        doc.close()
+        return out
     lines = extract_lines(doc)
     starts = find_bare_number_question_starts(lines)
     doc.close()
@@ -3467,6 +3544,9 @@ def parse_theory_ms(pdf_path):
     booklet = parse_booklet(pdf_path, with_marks=True)
     if booklet is not None:
         return booklet
+    barred = parse_bars(pdf_path, with_marks=True)
+    if barred is not None:
+        return barred
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     candidates, ordered = find_ms_heading_candidates(lines)
