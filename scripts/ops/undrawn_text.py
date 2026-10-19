@@ -6,7 +6,7 @@ lines have no letters and are never judged. repair() draws each such line again 
 page reads again without needing the source file (the raw files on the E drive are other versions and are not a safe replacement).
 
   python3 scripts/ops/undrawn_text.py scan <folder or pdf> [...]        lists files with undrawn lines
-  python3 scripts/ops/undrawn_text.py repair <in.pdf> <out.pdf>         writes a repaired copy and prints what was redrawn
+  python3 scripts/ops/undrawn_text.py repair <in.pdf> <out.pdf> [text ...]       writes a repaired copy and prints what was redrawn
 """
 import os, re, sys
 import fitz
@@ -56,12 +56,14 @@ def scan_file(path):
     return [(i, t[:60]) for i in range(1, min(doc.page_count, 60)) for t, _, _ in undrawn_lines(doc[i])]
 
 
-def repair(src, dst):
+def repair(src, dst, only=None):
     doc = fitz.open(src)
     fixed = []
     for i in range(1, doc.page_count):
         page = doc[i]
         for text, r, sp in undrawn_lines(page):
+            if only and not any(o in text for o in only):
+                continue  # the scan also flags text that overlaps a picture on purpose; redraw only what the caller confirmed as a hole
             page.insert_text((sp["origin"][0], sp["origin"][1]), text, fontname=_fontname(sp["font"], sp["flags"]), fontsize=sp["size"], color=(0, 0, 0))
             fixed.append((i, text[:60]))
     doc.save(dst, garbage=1, deflate=True)
@@ -81,7 +83,7 @@ def main():
                     total += 1; print(os.path.basename(f), hits[:3], flush=True)
         print("files with undrawn text:", total)
     elif cmd == "repair":
-        for page, t in repair(sys.argv[2], sys.argv[3]): print("redrew page", page, ":", t)
+        for page, t in repair(sys.argv[2], sys.argv[3], sys.argv[4:] or None): print("redrew page", page, ":", t)
 
 
 if __name__ == "__main__":
