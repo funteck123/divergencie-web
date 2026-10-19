@@ -1780,10 +1780,35 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
     return autocrop_trailing_white_rows(stitch_images_vertically(images))
 
 
+def fill_picture_only_questions(starts, doc):
+    """A question whose number and stem are part of a picture has no text heading, so find_question_starts never sees it (seen on Biology AS booklets:
+    "11 The diagram shows ..." is an image), and the question before it silently swallows its page. When numbers a and b = a + k + 1 are found and exactly k
+    whole pages lie between their pages, those pages are the missing questions a+1 ... a+k, in order. Anything less clear (a different count, a gap inside
+    one page, a blank page) is left alone."""
+    out = list(starts)
+    added = []
+    ordered = sorted(starts, key=lambda st: (st["page"], st["y0"]))
+    for a, b in zip(ordered, ordered[1:]):
+        if not (a["number"].isdigit() and b["number"].isdigit()):
+            continue
+        k = int(b["number"]) - int(a["number"]) - 1
+        pages = list(range(a["page"] + 1, b["page"]))
+        if k < 1 or len(pages) != k:
+            continue
+        if not all(doc[pg].get_text().strip() or doc[pg].get_image_info() for pg in pages):
+            continue
+        for offset, pg in enumerate(pages, 1):
+            added.append({"number": str(int(a["number"]) + offset), "inlineText": "", "page": pg, "y0": 30.0, "isStatementFormat": False, "viaExplicitPreamble": False})
+    out.extend(added)
+    out.sort(key=lambda st: (st["page"], st["y0"]))
+    return out
+
+
 def parse_qp(pdf_path):
     doc = fitz.open(pdf_path)
     lines = extract_lines(doc)
     starts, quasi = find_question_starts(lines, doc)
+    starts = fill_picture_only_questions(starts, doc)
     quasi_pos = sorted(_pos(q["page"], q["y0"]) for q in quasi)
 
     questions = []
