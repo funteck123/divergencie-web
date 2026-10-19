@@ -14,7 +14,10 @@ Sources, per field (each row keeps a "source" note and a "needsReview" list inst
 A video that looks private (interview, trial class, feedback, testimonial, recruitment) is kept in the file with "category": "private" and "upload": false.
 Needs GOOGLE_OAUTH_* in the environment (Drive scope).
 """
-import csv, json, os, re, sys, urllib.parse, urllib.request
+import csv, json, os, re, sys, urllib.error, urllib.parse, urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import recording_syllabus as rs
 
 CID, CSEC, RT = (os.environ[k] for k in ("GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_OAUTH_REFRESH_TOKEN"))
 _tok = {}
@@ -28,7 +31,14 @@ def token():
 
 
 def api(url):
-    return json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": "Bearer " + token()}), timeout=120))
+    import time
+    for attempt in range(5):  # Google answers 500/503 now and then; the request is a read, so it is safe to repeat
+        try:
+            return json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": "Bearer " + token()}), timeout=120))
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or attempt == 4:
+                raise
+            time.sleep(2 ** attempt)
 
 
 def list_videos():
@@ -204,6 +214,79 @@ def add_local(rows):
     print(f"local files: {matched} match a Drive recording, {new} are not in Drive, {left_out} are other videos (phone backups, project footage) and left out")
 
 
+LEVEL_LABEL = {"IGCSE": "IGCSE", "AS Level": "AS Level", "A Level": "A Level", "AS/A Level": "AS/A Level"}
+MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
+
+
+def subject_from_text(text):
+    """When the syllabus match finds nothing, the subject can still be read from words like "python" or "chemistry" in the intro. Returns a subject name or None."""
+    low = (text or "").lower()
+    hits = [(len(re.findall(rx, low)), sub) for sub, rx in rs.SUBJECT_WORDS.items() if re.search(rx, low)]
+    return max(hits)[1] if hits else None
+
+
+def enrich(rows):
+    """Chapter, component and YouTube title for every class row (TKT-0358). A chapter comes from the syllabus (recording_syllabus.match): from the topic for named
+    recordings, from the spoken intro for Zoom exports. Revision, test and past-paper sessions with no matching chapter are labelled "Exam practice (mixed)"."""
+    for r in rows:
+        r.update({"chapterTitle": None, "chapterConfidence": None, "chapterAlternatives": None, "youtubeTitle": None, "youtubeDescription": None})
+        if r["category"] != "class" or not r["upload"]:
+            continue
+        if r["level"] in ("SAT", "Qudrat"):
+            r["component"] = "Qudrat/SAT (no CAIE syllabus)"; continue
+        from_intro = r["location"] == "Local (Zoom)" or not r["topic"]
+        text = (r["introText"] or "")[:700] if from_intro else r["topic"]
+        level = "IGCSE" if r["level"] == "IGCSE" else ("A Level" if r["level"] in ("AS Level", "A Level", "AS/A Level") else rs.level_hint(text))
+        if not level and from_intro:
+            level = "IGCSE"; r["needsReview"].append("level assumed IGCSE: the intro does not say")  # most classes are IGCSE; A Level syllabus text would otherwise win on length
+        m = rs.match(text, code=r["subjectCode"], subject=None if r["subjectCode"] else r["subject"], level=level) if text else None
+        generic = bool(rs.GENERIC.search(r["topic"] or "")) or r["sessionType"] in ("past paper practice", "quiz", "revision", "crash course")
+        if m and (m["confidence"] != "low" or not generic):
+            r["subject"] = r["subject"] or m["subject"]; r["subjectCode"] = r["subjectCode"] or m["code"]; r["level"] = r["level"] or m["level"]
+            r["component"] = m["component"]; r["chapter"] = m["chapter"]; r["chapterTitle"] = m["chapterTitle"]
+            r["chapterConfidence"] = m["confidence"]; r["chapterAlternatives"] = "; ".join(m["alternatives"])
+            if m["confidence"] == "low":
+                r["needsReview"].append("chapter is a weak match: check it")
+            if from_intro:
+                r["source"]["chapter"] = "syllabus match on the spoken intro"
+                if m["confidence"] != "high":
+                    r["needsReview"].append("subject and chapter come from the intro: check them")
+            else:
+                r["source"]["chapter"] = "syllabus match on the topic"
+        elif generic:
+            r["component"] = r["component"] or ("IGCSE" if r["subjectCode"] and r["subjectCode"][0] == "0" else None)
+            r["chapter"], r["chapterTitle"], r["chapterConfidence"] = "X", "Exam practice (mixed chapters)", "n/a"
+        else:
+            sub = r["subject"] or (subject_from_text(text) if from_intro else None)
+            if sub and not r["subject"]:
+                r["subject"] = sub; r["needsReview"].append("subject guessed from words in the intro")
+            r["needsReview"].append("no syllabus chapter found: assign by hand")
+        r["youtubeTitle"], r["youtubeDescription"] = youtube_text(r)
+
+
+def youtube_text(r):
+    """Title (100 characters at most) and description for the YouTube upload. Title: "IGCSE Chemistry 0620 | Ch 4 Electrochemistry | Acids and Bases 2 | 24 Aug 2023 | B4,14"."""
+    if not r["subject"]:
+        return None, None
+    lvl = LEVEL_LABEL.get(r["level"], r["level"] or "")
+    d = r["date"]; nice = f"{int(d[8:])} {MONTHS[int(d[5:7]) - 1]} {d[:4]}" if d else None
+    chap = (f"Ch {r['chapter']} {r['chapterTitle']}" if r["chapter"] not in (None, "X") and r["chapterTitle"] else r["chapterTitle"]) if r["chapterTitle"] else None
+    topic = r["topic"] if r["topic"] and r["chapterTitle"] and r["topic"].lower() not in (r["chapterTitle"] or "").lower() else None
+    if topic and r["sessionNumber"]:
+        topic += f" {r['sessionNumber']}"
+    if r["recordingNumber"] and r["recordingNumber"] > 1:
+        topic = (topic or "") + f" (Part {r['recordingNumber']})"
+    parts = [" ".join(x for x in [lvl, r["subject"], r["subjectCode"]] if x), chap, topic, nice, r["batch"]]
+    title = " | ".join(p for p in parts if p)
+    while len(title) > 100 and len(parts) > 3:  # drop the least important parts first: batch, then the topic
+        parts.pop(); title = " | ".join(p for p in parts if p)
+    desc = " ".join(x for x in [
+        f"DivergenCIE class recording. {lvl} {r['subject']}" + (f" ({r['subjectCode']})" if r["subjectCode"] else "") + ".",
+        f"Component: {r['component']}." if r["component"] else "", f"Chapter {r['chapter']}: {r['chapterTitle']}." if r["chapter"] not in (None, "X") and r["chapterTitle"] else (f"{r['chapterTitle']}." if r["chapterTitle"] else ""),
+        f"Date: {nice}." if nice else "", f"Batch: {r['batch']}." if r["batch"] else "", f"Taught by {r['instructor']}." if r["instructor"] else ""] if x)
+    return title[:100], desc
+
+
 def duration_min(path):
     import subprocess
     try:
@@ -299,6 +382,7 @@ def main():
     for r in rows:
         if r["location"] == "Local (Zoom)" and r["filePath"] in intros:
             r["introText"] = intros[r["filePath"]]["text"]
+    enrich(rows)
     rows.sort(key=lambda r: (r["date"] or "9999", r["fileName"]))
     json.dump(rows, open(out + ".json", "w"), indent=1, ensure_ascii=False)
     keys = list(dict.fromkeys(k for r in rows for k in r))  # not every row has every field (Zoom rows add zoomTimeUTC)
