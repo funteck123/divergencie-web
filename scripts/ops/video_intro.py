@@ -4,7 +4,7 @@
 ffmpeg reads the Drive file over HTTP with the OAuth header and stops after SECONDS of audio, so only the start of each video is fetched, not the whole file.
 faster-whisper (CPU, "base" model) turns that audio into text. Results go to a JSON file keyed by Drive id; a rerun skips ids already in it.
 
-  python3 scripts/ops/video_intro.py <drive id> [<drive id> ...] [--out data/youtube/intros.json] [--seconds 120]
+  python3 scripts/ops/video_intro.py <drive id or local path> [...] [--out data/youtube/intros.json] [--seconds 120]
 
 Needs GOOGLE_OAUTH_* in the environment (Drive scope) and ffmpeg on PATH.
 """
@@ -20,9 +20,13 @@ def token():
     return r["access_token"]
 
 
-def audio_clip(file_id, seconds, path):
-    url = f"https://www.googleapis.com/drive/v3/files/{file_id}?alt=media&supportsAllDrives=true"
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-headers", f"Authorization: Bearer {token()}\r\n", "-i", url, "-t", str(seconds), "-vn", "-ac", "1", "-ar", "16000", path]
+def audio_clip(source, seconds, path):
+    """source is a Drive file id, or a local file path (starts with "/")."""
+    if source.startswith("/"):
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", source, "-t", str(seconds), "-vn", "-ac", "1", "-ar", "16000", path]
+    else:
+        url = f"https://www.googleapis.com/drive/v3/files/{source}?alt=media&supportsAllDrives=true"
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-headers", f"Authorization: Bearer {token()}\r\n", "-i", url, "-t", str(seconds), "-vn", "-ac", "1", "-ar", "16000", path]
     subprocess.run(cmd, check=True, timeout=600)
 
 

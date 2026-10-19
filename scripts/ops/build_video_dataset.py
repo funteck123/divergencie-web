@@ -86,10 +86,23 @@ def standard_name(o, file_name):
     return f"{lead} {topic}{num} - {ddmmyyyy} {o['batch']}{part}{ext}"
 
 
+PREFIX = re.compile(r"^[A-Za-z0-9_-]{20,40}_(?=\S)")  # Drive-id prefix some copies carry in their name
+GLUED = re.compile(r"^(IGCSE|iGCSE)(?=[A-Z])")
+GLUED_SUBJECT = re.compile(r"^((?:IGCSE|iGCSE)\s+)(English SL|Maths|Physics|Chemistry|Biology|ICT|Accounting|Economics|Computer Science)(?=[A-Z0-9])")
+
+
+def clean_name(n):
+    """Undo the Drive-id prefix and the missing spaces some copies have ("<id>_IGCSEBiologyPlant Nutrition 1" -> "IGCSE Biology Plant Nutrition 1")."""
+    n = PREFIX.sub("", n)
+    n = GLUED.sub(r"\1 ", n)
+    return GLUED_SUBJECT.sub(r"\1\2 ", n)
+
+
 def parse(row, path, intro):
+    row = dict(row, name=clean_name(row["name"]))
     name = re.sub(r"\.(mp4|tmp|mov|mkv)+$", "", row["name"], flags=re.I).strip()
     name = re.sub(r"\.mp4$", "", name, flags=re.I)
-    out = {"driveId": row["id"], "fileName": row["name"], "folder": path, "sizeMB": round(int(row.get("size") or 0) / 1e6, 1),
+    out = {"driveId": row["id"], "fileName": row["name"], "folder": path, "sizeBytes": int(row.get("size") or 0), "sizeMB": round(int(row.get("size") or 0) / 1e6, 1),
            "durationMin": round(int(row.get("videoMediaMetadata", {}).get("durationMillis") or 0) / 60000, 1), "createdTime": row.get("createdTime", "")[:10],
            "level": None, "subject": None, "subjectCode": None, "component": None, "chapter": None, "topic": None, "sessionType": None, "sessionNumber": None,
            "date": None, "batch": None, "recordingNumber": None, "instructor": None, "category": "class", "upload": True, "introText": (intro or {}).get("text"),
@@ -183,6 +196,54 @@ def add_local(rows):
     print(f"local files: {matched} match a Drive recording, {new} are not in Drive, {left_out} are other videos (phone backups, project footage) and left out")
 
 
+def duration_min(path):
+    import subprocess
+    try:
+        out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path], capture_output=True, text=True, timeout=60).stdout.strip()
+        return round(float(out) / 60, 1)
+    except Exception:
+        return 0.0
+
+
+def add_zoom(rows):
+    """Zoom exports found on the C and D drives (data/youtube/zoom_local.tsv, from a search for Zoom file and folder names). A file with exactly the size of a Drive recording
+    joins that row's localPaths; any other becomes a row with location "Local (Zoom)". Zoom names carry the date and time (GMT20221015-152608_Recording..., UTC) and the host
+    ("Shahid Akhtar's Personal Meeting Room"), never subject, topic or batch: those come from the intro text (video_intro.py)."""
+    if not os.path.exists("data/youtube/zoom_local.tsv"):
+        return
+    by_size = {}
+    for r in rows:
+        if r["location"] == "Google Drive" and r["sizeBytes"]:
+            by_size.setdefault(r["sizeBytes"], []).append(r)
+    cache_path = "data/youtube/zoom_durations.json"
+    durations = json.load(open(cache_path)) if os.path.exists(cache_path) else {}
+    joined = new = 0
+    for line in open("data/youtube/zoom_local.tsv", encoding="utf8"):
+        fields = line.rstrip("\n").split("\t")
+        if len(fields) != 3 or not fields[1].isdigit() or not re.search(r"\.(mp4|mov|mkv)$", fields[0], re.I):
+            continue
+        path, size, mtime = fields[0], int(fields[1]), fields[2]
+        hit = by_size.get(size)
+        if hit:
+            if path not in hit[0]["localPaths"]:
+                hit[0]["localPaths"].append(path)
+            joined += 1; continue
+        if path not in durations:
+            durations[path] = duration_min(path)
+        base = os.path.basename(path)
+        g = re.match(r"GMT(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})", base)
+        who = "Shahid Akhtar" if "shahid akhtar" in base.lower() else None
+        rec = {"driveId": None, "fileName": base, "folder": os.path.dirname(path), "sizeBytes": size, "sizeMB": round(size / 1e6, 1), "durationMin": durations[path], "createdTime": mtime,
+               "level": None, "subject": None, "subjectCode": None, "component": None, "chapter": None, "topic": None, "sessionType": None, "sessionNumber": None,
+               "date": f"{g.group(1)}-{g.group(2)}-{g.group(3)}" if g else None, "zoomTimeUTC": f"{g.group(4)}:{g.group(5)}:{g.group(6)}" if g else None, "batch": None, "recordingNumber": None,
+               "instructor": who, "category": "class", "upload": True, "introText": None, "proposedName": None, "titleProposal": None, "filePath": path, "location": "Local (Zoom)",
+               "duplicateOf": None, "needsReview": ["Zoom export: identify subject, topic and batch from the intro text"], "source": {"date": "Zoom file name"} if g else {},
+               "originalName": base, "currentName": base, "youtubeId": None, "youtubePrivacy": None, "localPaths": [path]}
+        rows.append(rec); new += 1
+    json.dump(durations, open(cache_path, "w"))
+    print(f"Zoom exports on C/D: {joined} are the same file as a Drive recording, {new} are only on this computer")
+
+
 def main():
     out = "data/youtube/video_dataset"
     if "--out" in sys.argv:
@@ -205,13 +266,19 @@ def main():
     for r in rows:
         r["filePath"] = (r["folder"] + "/" + r["currentName"]).replace("//", "/"); r["localPaths"] = []
     add_local(rows)
+    add_zoom(rows)
     seen = {}
-    for r in rows:  # same size and length = the same video stored twice
-        key = (r["sizeMB"], r["durationMin"]) if r["sizeMB"] > 1 else None
-        if key and key in seen:
-            r["duplicateOf"] = seen[key]; r["needsReview"].append("duplicate of " + seen[key][:8])
-        elif key:
-            seen[key] = r["driveId"]
+    def dup_key(r):
+        base = re.sub(r"[^a-z0-9]", "", clean_name(r["originalName"]).lower())
+        return (base, round(r["sizeMB"])) if r["sizeMB"] > 1 else None
+    for r in sorted(rows, key=lambda r: (PREFIX.match(r["originalName"]) is not None, r["driveId"] or "")):  # a file without the Drive-id prefix is the one kept
+        key = dup_key(r)
+        if not key:
+            continue
+        if key in seen:
+            r["duplicateOf"] = seen[key]; r["needsReview"].append("duplicate of " + seen[key][:8]); r["proposedName"] = None; r["titleProposal"] = None
+        else:
+            seen[key] = r["driveId"] or r["filePath"]
     names = {}
     for r in rows:  # two files must never get the same new name
         n = r["proposedName"]
@@ -221,13 +288,17 @@ def main():
         if len(group) > 1:
             for r in group:
                 r["needsReview"].append("same proposed name as another file"); r["proposedName"] = None; r["titleProposal"] = None
+    for r in rows:
+        if r["location"] == "Local (Zoom)" and r["filePath"] in intros:
+            r["introText"] = intros[r["filePath"]]["text"]
     rows.sort(key=lambda r: (r["date"] or "9999", r["fileName"]))
     json.dump(rows, open(out + ".json", "w"), indent=1, ensure_ascii=False)
-    cols = [c for c in rows[0] if c not in ("source", "needsReview", "introText", "localPaths")] + ["localPaths", "needsReview", "introText"]
+    keys = list(dict.fromkeys(k for r in rows for k in r))  # not every row has every field (Zoom rows add zoomTimeUTC)
+    cols = [c for c in keys if c not in ("source", "needsReview", "introText", "localPaths")] + ["localPaths", "needsReview", "introText"]
     with open(out + ".csv", "w", newline="", encoding="utf8") as f:
         w = csv.writer(f); w.writerow(cols)
         for r in rows:
-            w.writerow([("; ".join(r[c]) if isinstance(r[c], list) else r[c]) for c in cols])
+            w.writerow([("; ".join(r.get(c) or []) if isinstance(r.get(c), list) else r.get(c)) for c in cols])
     ok = sum(1 for r in rows if r["upload"] and r["proposedName"] and not r["needsReview"]); review = sum(1 for r in rows if r["upload"] and not (r["proposedName"] and not r["needsReview"]))
     print(f"{len(rows)} videos: {ok} complete, {review} need review, {sum(1 for r in rows if not r['upload'])} private (not for upload) -> {out}.json / .csv")
 

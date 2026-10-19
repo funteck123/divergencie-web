@@ -11,7 +11,7 @@ import json, os, sys, time, urllib.parse, urllib.request
 CID, CSEC, RT = (os.environ[k] for k in ("GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_OAUTH_REFRESH_TOKEN"))
 COLS = [("Status", None), ("Location", "location"), ("File path", "filePath"), ("Local copies (C/D/E)", "localPaths"), ("Current name", "currentName"), ("Original name", "originalName"), ("Proposed name", "proposedName"),
         ("Level", "level"), ("Subject", "subject"), ("Subject code", "subjectCode"), ("Component", "component"), ("Chapter", "chapter"), ("Topic", "topic"),
-        ("Session type", "sessionType"), ("Session no.", "sessionNumber"), ("Date", "date"), ("Batch", "batch"), ("Recording no.", "recordingNumber"), ("Instructor", "instructor"),
+        ("Session type", "sessionType"), ("Session no.", "sessionNumber"), ("Date", "date"), ("Zoom time (UTC)", "zoomTimeUTC"), ("Batch", "batch"), ("Recording no.", "recordingNumber"), ("Instructor", "instructor"),
         ("Duration (min)", "durationMin"), ("Size (MB)", "sizeMB"), ("Category", "category"), ("Upload", "upload"), ("YouTube id", "youtubeId"), ("YouTube privacy", "youtubePrivacy"),
         ("Needs review", "needsReview"), ("Intro (spoken)", "introText"), ("Drive id", "driveId")]
 _tok = {"v": None, "e": 0}
