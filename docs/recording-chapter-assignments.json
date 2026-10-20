@@ -1,0 +1,2290 @@
+{
+ "about": "Hand-made chapter assignments for the recordings dataset (TKT-0358), written by reading each topic or spoken intro. topics: the exact 'subject code|topic' of a named recording to a syllabus chapter (X = mixed exam practice, O = outside the syllabuses on file, R/W/L/S = English skills). files: one entry per file, keyed by Zoom file name or Drive id. No pattern matching is used to assign a chapter.",
+ "topics": {
+  "0417|chapter 1 revision": {
+   "code": "0417",
+   "chapter": "1"
+  },
+  "0417|types and components of computer systems": {
+   "code": "0417",
+   "chapter": "1"
+  },
+  "0417|ch2 input and output devices": {
+   "code": "0417",
+   "chapter": "2"
+  },
+  "0417|input and output devices revision": {
+   "code": "0417",
+   "chapter": "2"
+  },
+  "0417|storage devices and media": {
+   "code": "0417",
+   "chapter": "3"
+  },
+  "0417|ch4 - networks and effects": {
+   "code": "0417",
+   "chapter": "4"
+  },
+  "0417|network and effect": {
+   "code": "0417",
+   "chapter": "4"
+  },
+  "0417|effects of using it": {
+   "code": "0417",
+   "chapter": "5"
+  },
+  "0417|ict application": {
+   "code": "0417",
+   "chapter": "6"
+  },
+  "0417|ict applications": {
+   "code": "0417",
+   "chapter": "6"
+  },
+  "0417|ict applications past paper practice": {
+   "code": "0417",
+   "chapter": "6"
+  },
+  "0417|database": {
+   "code": "0417",
+   "chapter": "18"
+  },
+  "0417|database past paper session s20_qp22": {
+   "code": "0417",
+   "chapter": "18"
+  },
+  "0417|presentation practice": {
+   "code": "0417",
+   "chapter": "19"
+  },
+  "0417|presentation revision": {
+   "code": "0417",
+   "chapter": "19"
+  },
+  "0417|presentations past paper session w22_qp22": {
+   "code": "0417",
+   "chapter": "19"
+  },
+  "0417|past paper sessions spreadsheets": {
+   "code": "0417",
+   "chapter": "20"
+  },
+  "0417|spreadsheet": {
+   "code": "0417",
+   "chapter": "20"
+  },
+  "0417|spreadsheets": {
+   "code": "0417",
+   "chapter": "20"
+  },
+  "0417|spreadsheets practice": {
+   "code": "0417",
+   "chapter": "20"
+  },
+  "0417|spreadsheets practice and correction": {
+   "code": "0417",
+   "chapter": "20"
+  },
+  "0417|june summer test": {
+   "code": "0417",
+   "chapter": "X"
+  },
+  "0417|past paper session ch1-4": {
+   "code": "0417",
+   "chapter": "X"
+  },
+  "0452|class 1-intro to accounting": {
+   "code": "0452",
+   "chapter": "1"
+  },
+  "0452|purchase ledger": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "0452|sales ledger": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "0452|class 2- general journal": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "0452|class 3-ledger": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "0452|class 4-accounting principles": {
+   "code": "0452",
+   "chapter": "7"
+  },
+  "0452|class6-accounting concepts,mp4": {
+   "code": "0452",
+   "chapter": "7"
+  },
+  "0510|arcticle writing practice": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing discussion": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing exam practice": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing full revision": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing practice and correction": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing revision": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|article writing past paper session": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|descriptive writing": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|email correction helping someone": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|email writing": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|email writing 2 - practice": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|email writing practice and correction": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|report": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|report writing": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|report writing 5, correction": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|report writing correction": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|review practice": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|review writing correction 1 - martial arts course": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|review writing and correction rawan": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|style and language grammar": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|style and language grammar,idioms, phrasal verbs and imagery": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|writing skills": {
+   "code": "0510",
+   "chapter": "W"
+  },
+  "0510|listening exam revision": {
+   "code": "0510",
+   "chapter": "L"
+  },
+  "0510|listening past paper practice w19_qp42": {
+   "code": "0510",
+   "chapter": "L"
+  },
+  "0510|listening past paper session": {
+   "code": "0510",
+   "chapter": "L"
+  },
+  "0510|listening past papers session": {
+   "code": "0510",
+   "chapter": "L"
+  },
+  "0510|literature reading": {
+   "code": "0510",
+   "chapter": "R"
+  },
+  "0510|speaking skills": {
+   "code": "0510",
+   "chapter": "S"
+  },
+  "0510|august summer test": {
+   "code": "0510",
+   "chapter": "X"
+  },
+  "0510|august summer test (retake)": {
+   "code": "0510",
+   "chapter": "X"
+  },
+  "0510|june summer test": {
+   "code": "0510",
+   "chapter": "X"
+  },
+  "0510|listening and writing skills": {
+   "code": "0510",
+   "chapter": "X"
+  },
+  "0510|fl 0500 narrative writing": {
+   "code": "0500",
+   "chapter": "W"
+  },
+  "0510|fl descriptive writing": {
+   "code": "0500",
+   "chapter": "W"
+  },
+  "0510|fl directed writing": {
+   "code": "0500",
+   "chapter": "W"
+  },
+  "0510|fl summary writing": {
+   "code": "0500",
+   "chapter": "W"
+  },
+  "0510|fl paper 1 writer's effect 2, past paper session": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl paper 1 writer's effect 3, past paper session": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl reading 1, literary devices": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl reading 2, directed writing": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl reading passage": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl reading passage summarising": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl reading unseen passage practice": {
+   "code": "0500",
+   "chapter": "R"
+  },
+  "0510|fl first lesson": {
+   "code": "0500",
+   "chapter": "X"
+  },
+  "0580|money and finances": {
+   "code": "0580",
+   "chapter": "1"
+  },
+  "0580|ratio and proportions past paper practice": {
+   "code": "0580",
+   "chapter": "1"
+  },
+  "0580|algebra exam revision 1, equations and inequalities": {
+   "code": "0580",
+   "chapter": "2"
+  },
+  "0580|chpter 13 equations and inequalities": {
+   "code": "0580",
+   "chapter": "2"
+  },
+  "0580|equations and inequalities": {
+   "code": "0580",
+   "chapter": "2"
+  },
+  "0580|equations and inequalities revision": {
+   "code": "0580",
+   "chapter": "2"
+  },
+  "0580|graphs and functions past paper session": {
+   "code": "0580",
+   "chapter": "2"
+  },
+  "0580|sequences full revision": {
+   "code": "0580",
+   "chapter": "2"
+  },
+  "0580|coordinate geometry": {
+   "code": "0580",
+   "chapter": "3"
+  },
+  "0580|finding a point on a line divided in a given ratio": {
+   "code": "0580",
+   "chapter": "3"
+  },
+  "0580|int maths co-ordinate geometry and straight line graphs": {
+   "code": "0580",
+   "chapter": "3"
+  },
+  "0580|angle properties revision": {
+   "code": "0580",
+   "chapter": "4"
+  },
+  "0580|angle properties and circle theorems": {
+   "code": "0580",
+   "chapter": "4"
+  },
+  "0580|circle theorems revision": {
+   "code": "0580",
+   "chapter": "4"
+  },
+  "0580|geometrical vocabulary and constructions": {
+   "code": "0580",
+   "chapter": "4"
+  },
+  "0580|similarity and congruence": {
+   "code": "0580",
+   "chapter": "4"
+  },
+  "0580|mensuration": {
+   "code": "0580",
+   "chapter": "5"
+  },
+  "0580|mensuration 3, past paper practice": {
+   "code": "0580",
+   "chapter": "5"
+  },
+  "0580|mensuration 4, past paper practice": {
+   "code": "0580",
+   "chapter": "5"
+  },
+  "0580|mensuration 5, past paper practice": {
+   "code": "0580",
+   "chapter": "5"
+  },
+  "0580|trignometry": {
+   "code": "0580",
+   "chapter": "6"
+  },
+  "0580|transformations": {
+   "code": "0580",
+   "chapter": "7"
+  },
+  "0580|vectors": {
+   "code": "0580",
+   "chapter": "7"
+  },
+  "0580|vectors 2 past paper practice": {
+   "code": "0580",
+   "chapter": "7"
+  },
+  "0580|probability exam revision": {
+   "code": "0580",
+   "chapter": "8"
+  },
+  "0580|probability full revision": {
+   "code": "0580",
+   "chapter": "8"
+  },
+  "0580|probability practice": {
+   "code": "0580",
+   "chapter": "8"
+  },
+  "0580|probability revision": {
+   "code": "0580",
+   "chapter": "8"
+  },
+  "0580|statistics": {
+   "code": "0580",
+   "chapter": "9"
+  },
+  "0580|statistics 2 - constructing diagrams and cumulative frequency": {
+   "code": "0580",
+   "chapter": "9"
+  },
+  "0580|statistics past paper practice": {
+   "code": "0580",
+   "chapter": "9"
+  },
+  "0580|april spring test": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|august summer test": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|ch1-8 past paper practice": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|june summer test": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|past paper practice session": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|past paper session": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|test revision doubts, algebra, factorization, probability, fractions, etc": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|test revision session 1 , similarity,sets,algebra,straight lines,sequences": {
+   "code": "0580",
+   "chapter": "X"
+  },
+  "0580|int maths logarithms": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "0580|int. maths logarithms": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "0580|logarithms practice": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "0580|linear programming": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "0580|linear programming past paper practice": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "0580|forces and moments": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "0610|biotechnology": {
+   "code": "0610",
+   "chapter": "21"
+  },
+  "0610|conservation": {
+   "code": "0610",
+   "chapter": "20"
+  },
+  "0610|human influences on ecosystem": {
+   "code": "0610",
+   "chapter": "20"
+  },
+  "0610|coordination and response full revision": {
+   "code": "0610",
+   "chapter": "14"
+  },
+  "0610|homeostatis": {
+   "code": "0610",
+   "chapter": "14"
+  },
+  "0610|human nutrition": {
+   "code": "0610",
+   "chapter": "7"
+  },
+  "0610|plant nutrition practice": {
+   "code": "0610",
+   "chapter": "6"
+  },
+  "0610|quiz": {
+   "code": "0610",
+   "chapter": "X"
+  },
+  "0620|acids and bases": {
+   "code": "0620",
+   "chapter": "7"
+  },
+  "0620|acids and bases past paper practice": {
+   "code": "0620",
+   "chapter": "7"
+  },
+  "0620|acids and bases summary revision": {
+   "code": "0620",
+   "chapter": "7"
+  },
+  "0620|preparation of salts": {
+   "code": "0620",
+   "chapter": "7"
+  },
+  "0620|preparation of salts exam revision": {
+   "code": "0620",
+   "chapter": "7"
+  },
+  "0620|atomic structure": {
+   "code": "0620",
+   "chapter": "2"
+  },
+  "0620|bonding": {
+   "code": "0620",
+   "chapter": "2"
+  },
+  "0620|chemical bonding exam revision": {
+   "code": "0620",
+   "chapter": "2"
+  },
+  "0620|balancing equations": {
+   "code": "0620",
+   "chapter": "3"
+  },
+  "0620|ch4 chemical formulae and reaction": {
+   "code": "0620",
+   "chapter": "3"
+  },
+  "0620|stoichiometry": {
+   "code": "0620",
+   "chapter": "3"
+  },
+  "0620|chemical energetics": {
+   "code": "0620",
+   "chapter": "5"
+  },
+  "0620|chemical energetics practice": {
+   "code": "0620",
+   "chapter": "5"
+  },
+  "0620|energetics practice": {
+   "code": "0620",
+   "chapter": "5"
+  },
+  "0620|chemistry of our environment past paper practice": {
+   "code": "0620",
+   "chapter": "10"
+  },
+  "0620|chemistry of our environment": {
+   "code": "0620",
+   "chapter": "10"
+  },
+  "0620|electrochemistry": {
+   "code": "0620",
+   "chapter": "4"
+  },
+  "0620|electrochemistry 3 past papers practice": {
+   "code": "0620",
+   "chapter": "4"
+  },
+  "0620|electrochemistry revision": {
+   "code": "0620",
+   "chapter": "4"
+  },
+  "0620|electrolysis exam practice": {
+   "code": "0620",
+   "chapter": "4"
+  },
+  "0620|experimental design and separation techniques": {
+   "code": "0620",
+   "chapter": "12"
+  },
+  "0620|paper 6 may june 2021 practice": {
+   "code": "0620",
+   "chapter": "12"
+  },
+  "0620|metals": {
+   "code": "0620",
+   "chapter": "9"
+  },
+  "0620|organic chemistry revision": {
+   "code": "0620",
+   "chapter": "11"
+  },
+  "0620|organic chemistry summary revision": {
+   "code": "0620",
+   "chapter": "11"
+  },
+  "0620|organic chemsitry practice": {
+   "code": "0620",
+   "chapter": "11"
+  },
+  "0620|organic chemistry exam revision": {
+   "code": "0620",
+   "chapter": "11"
+  },
+  "0620|periodic table": {
+   "code": "0620",
+   "chapter": "8"
+  },
+  "0620|the periodic table": {
+   "code": "0620",
+   "chapter": "8"
+  },
+  "0620|the periodic table exam revision": {
+   "code": "0620",
+   "chapter": "8"
+  },
+  "0620|rates of reaction": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|rates of reaction 3, past paper practice": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|redox reactions": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|redox reactions 2, past paper practice": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|reversible reactions": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|reversible reactions and equilibria": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|reversible reactions and equilibrium 5, fertilizers": {
+   "code": "0620",
+   "chapter": "6"
+  },
+  "0620|states of matter": {
+   "code": "0620",
+   "chapter": "1"
+  },
+  "0620|june summer test": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|past paper chemical bonding, electrochemistry practice": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|past paper session , stoichiometry and electrochemistry": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|past paper session ch1-ch5": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|past paper session s22 qp43,42,41": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|past paper session": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|past paper session 1 , ch 1 to ch": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|quiz electrochemistry, chemical energetic july week": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|specimen paper 2023": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0620|weekly test, reversible reactionns, electrolysis": {
+   "code": "0620",
+   "chapter": "X"
+  },
+  "0625|alternative to practical": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|april spring test": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|forces and motion, thermal physics and waves": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|past paper octnov 2020": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|past paper session 2 ch1-3": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|past paper session 2 ch1-3 forces and motion": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|past paper session ch1 - ch3": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|past papers session 1, 0625_s23_qp41": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|practical exam revision": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|quiz": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|syllabus booklet doubts": {
+   "code": "0625",
+   "chapter": "X"
+  },
+  "0625|electricity exam revision": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|electricity practice": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|electricity revision": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnestism past paper practice questions types": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnestism past papers practice skill-wise": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnestism test revision , past paper practice": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnetism": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnetism practice": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnetism past paper practice questions types": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|magnetism past papers practice questions type": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|past paper session, electricity and magnetism": {
+   "code": "0625",
+   "chapter": "4"
+  },
+  "0625|forces and energy practice 1 full revision": {
+   "code": "0625",
+   "chapter": "1"
+  },
+  "0625|forces and energy practice 2 full revision": {
+   "code": "0625",
+   "chapter": "1"
+  },
+  "0625|forces and pressure test revision": {
+   "code": "0625",
+   "chapter": "1"
+  },
+  "0625|general physics": {
+   "code": "0625",
+   "chapter": "1"
+  },
+  "0625|nuclear physics": {
+   "code": "0625",
+   "chapter": "5"
+  },
+  "0625|nuclear physics 5, fission and fusion": {
+   "code": "0625",
+   "chapter": "5"
+  },
+  "0625|nuclear physics past paper practice": {
+   "code": "0625",
+   "chapter": "5"
+  },
+  "0625|nuclear physics exam past papers session": {
+   "code": "0625",
+   "chapter": "5"
+  },
+  "0625|space physics past paper practice": {
+   "code": "0625",
+   "chapter": "6"
+  },
+  "0625|past paper session, thermal physics": {
+   "code": "0625",
+   "chapter": "2"
+  },
+  "0625|thermal physics": {
+   "code": "0625",
+   "chapter": "2"
+  },
+  "0625|past paper session, waves": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "0625|waves": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "0625|waves 1 practice": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "0625|waves exam revision": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "0625|waves exam revision 2 - 28042023 b9 and 4 - recording 1 - shahid_akhtars_personal_meeting_room_apr_28_2023_1127_am": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "0625|waves full revision": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "0625|waves past paper practice": {
+   "code": "0625",
+   "chapter": "3"
+  },
+  "9618|chapter 11 21 april 2022": {
+   "code": "9618",
+   "chapter": "11"
+  },
+  "0495|culture, identity and socialization": {
+   "code": "0495",
+   "chapter": "2"
+  },
+  "0495|subcultures": {
+   "code": "0495",
+   "chapter": "2"
+  },
+  "0495|subcultures and diversity": {
+   "code": "0495",
+   "chapter": "2"
+  },
+  "0495|multiculturalism": {
+   "code": "0495",
+   "chapter": "2"
+  },
+  "0495|social construction": {
+   "code": "0495",
+   "chapter": "2"
+  },
+  "0495|inadequate socialization and nature nurture debate": {
+   "code": "0495",
+   "chapter": "2"
+  },
+  "0495|social stratification": {
+   "code": "0495",
+   "chapter": "3"
+  },
+  "0495|wealth and income": {
+   "code": "0495",
+   "chapter": "3"
+  },
+  "0495|social stratification - measuring class": {
+   "code": "0495",
+   "chapter": "3"
+  },
+  "0495|unit": {
+   "code": "0495",
+   "chapter": "3"
+  },
+  "0495|rewards and sanctions": {
+   "code": "0495",
+   "chapter": "6"
+  },
+  "0495|introduction to sociology": {
+   "code": "0495",
+   "chapter": "X"
+  },
+  "None|purchase ledger": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "None|sales ledger": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "None|class 2- general journal": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "None|class 3-ledger": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "None|debit vs credit": {
+   "code": "0452",
+   "chapter": "2"
+  },
+  "None|class 1-intro to accounting": {
+   "code": "0452",
+   "chapter": "1"
+  },
+  "None|class 4-accounting principles": {
+   "code": "0452",
+   "chapter": "7"
+  },
+  "None|class6-accounting concepts,mp4": {
+   "code": "0452",
+   "chapter": "7"
+  },
+  "None|int maths co-ordinate geometry and straight line graphs": {
+   "code": "0580",
+   "chapter": "3"
+  },
+  "None|int maths logarithms": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "None|int. maths logarithms": {
+   "code": "0580",
+   "chapter": "O"
+  },
+  "None|macro economic policies": {
+   "code": "9708",
+   "chapter": "5"
+  },
+  "None|question paper solving": {
+   "code": "9708",
+   "chapter": "X"
+  },
+  "None|chapter 1 end of chapter questions 18th april": {
+   "code": "0417",
+   "chapter": "1"
+  },
+  "None|maximum prices": {
+   "code": "9708",
+   "chapter": "3"
+  },
+  "None|taxes": {
+   "code": "9708",
+   "chapter": "3"
+  }
+ },
+ "files": {
+  "GMT20221015-152608_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Metals revision 1"
+  },
+  "GMT20221016-132404_Recording_1294x1030.mp4": {
+   "code": "0625",
+   "chapter": "3",
+   "topic": "Light waves: lenses and reflection, past paper practice"
+  },
+  "GMT20221016-143158_Recording_1294x1030.mp4": {
+   "code": "0510",
+   "chapter": "R",
+   "topic": "Note making 1 (English, type to check)"
+  },
+  "GMT20221016-161712_Recording_1280x1030.mp4": {
+   "code": "0417",
+   "chapter": "2",
+   "topic": "Input and output devices 2"
+  },
+  "GMT20221017-113242_Recording_1920x1030.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: sorting lists"
+  },
+  "GMT20221017-122509_Recording_1608x1030.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics 3: half-life and radioactive decay"
+  },
+  "GMT20221017-142337_Recording_1726x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Similarity: area and volume scale factors"
+  },
+  "GMT20221017-161355_Recording_1278x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Extraction of metals 1"
+  },
+  "GMT20221018-112919_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: lists 2"
+  },
+  "GMT20221018-122751_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "6",
+   "topic": "Reversible reactions and equilibrium 2"
+  },
+  "GMT20221018-142247_Recording_1294x1030.mp4": {
+   "code": "0610",
+   "chapter": "17",
+   "topic": "Inheritance 2"
+  },
+  "GMT20221018-160824_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "2",
+   "topic": "Thermal physics: thermal radiation and transfer of heat"
+  },
+  "GMT20221019-111425_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: project review"
+  },
+  "GMT20221019-122515_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics: uses of radioactivity, atom structure and safety"
+  },
+  "GMT20221019-142756_Recording_1724x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Extraction of metals 2"
+  },
+  "GMT20221019-162829_Recording_1918x1030.mp4": {
+   "code": "0610",
+   "chapter": "17",
+   "topic": "Inheritance practice 3"
+  },
+  "GMT20221020-112416_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: libraries 1"
+  },
+  "GMT20221020-121301_Recording_1292x1030.mp4": {
+   "code": "0620",
+   "chapter": "6",
+   "topic": "Reversible reactions and equilibrium 3"
+  },
+  "GMT20221020-133305_Recording_1294x1030.mp4": {
+   "code": "0417",
+   "chapter": "21",
+   "topic": "Website authoring: CSS"
+  },
+  "GMT20221020-144301_Recording_1722x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Circle theorems 1"
+  },
+  "GMT20221020-162149_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Extraction of metals 3"
+  },
+  "GMT20221021-112033_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: turtle graphics and loops"
+  },
+  "GMT20221021-162122_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Extraction of metals practice 1"
+  },
+  "GMT20221022-165527_Recording_1920x1080.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Metals revision: reactivity series"
+  },
+  "GMT20221023-142557_Recording_1280x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Email writing"
+  },
+  "GMT20221024-112235_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: turtle graphics 3"
+  },
+  "GMT20221024-122539_Recording_1278x1030.mp4": {
+   "code": "0625",
+   "chapter": "2",
+   "topic": "Thermal physics revision"
+  },
+  "GMT20221024-133410_Recording_1278x1030.mp4": {
+   "code": "0417",
+   "chapter": "8",
+   "topic": "Safety and security 1"
+  },
+  "GMT20221024-143501_Recording_1278x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Angle properties and angles of polygons"
+  },
+  "GMT20221024-143638_Recording_1724x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Polygons: angle properties"
+  },
+  "GMT20221024-163406_Recording_1920x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity 1: charge and voltage"
+  },
+  "GMT20221025-111751_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: formatted output"
+  },
+  "GMT20221025-122439_Recording_1270x1030.mp4": {
+   "code": "0620",
+   "chapter": "6",
+   "topic": "Reversible reactions and equilibria revision 3"
+  },
+  "GMT20221025-132430_Recording_1270x1030.mp4": {
+   "code": "0610",
+   "chapter": "20",
+   "topic": "Human influences on the environment 2: food production"
+  },
+  "GMT20221025-142539_Recording_1270x1030.mp4": {
+   "code": "0610",
+   "chapter": "17",
+   "topic": "Inheritance practice 1"
+  },
+  "GMT20221025-161645_Recording_1590x1030.mp4": {
+   "code": "0620",
+   "chapter": "4",
+   "topic": "Electrochemistry revision 1"
+  },
+  "GMT20221026-112443_Recording_1614x1030.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: loops (for, range)"
+  },
+  "GMT20221026-115044_Recording_1294x1030.mp4": {
+   "code": "0500",
+   "chapter": "R",
+   "topic": "First Language English: Paper 1 comprehension"
+  },
+  "GMT20221026-122936_Recording_1294x1030.mp4": {
+   "code": "0625",
+   "chapter": "6",
+   "topic": "Space physics"
+  },
+  "GMT20221026-133701_Recording_1294x1030.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations 3"
+  },
+  "GMT20221026-142536_Recording_1294x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Email writing"
+  },
+  "GMT20221026-161312_Recording_1278x1030.mp4": {
+   "code": "0417",
+   "chapter": "2",
+   "topic": "Input and output devices 3"
+  },
+  "GMT20221027-111752_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: test 4 (loops and conditions)"
+  },
+  "GMT20221027-122549_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Metals 1"
+  },
+  "GMT20221027-123428_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "8",
+   "topic": "The Periodic Table: groups 1 and 7"
+  },
+  "GMT20221027-124153_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "8",
+   "topic": "The Periodic Table 1: elements and groups"
+  },
+  "GMT20221027-132721_Recording_1362x1030.mp4": {
+   "code": "0417",
+   "chapter": "20",
+   "topic": "Spreadsheets: formulas and functions"
+  },
+  "GMT20221027-142737_Recording_1294x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Angle properties and circle theorems revision 3"
+  },
+  "GMT20221027-163137_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "4",
+   "topic": "Electrochemistry 2: electrolysis"
+  },
+  "GMT20221028-122324_Recording_1278x1030.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations 4: enlargement and combined transformations"
+  },
+  "GMT20221028-132504_Recording_1278x1030.mp4": {
+   "code": "0610",
+   "chapter": "20",
+   "topic": "Human influences on the environment 3: global warming and catalytic converters"
+  },
+  "GMT20221028-142853_Recording_1280x1030.mp4": {
+   "code": "0610",
+   "chapter": "17",
+   "topic": "Inheritance: pedigree diagrams and sex linkage"
+  },
+  "GMT20221030-143340_Recording_1614x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Review writing"
+  },
+  "GMT20221030-162654_Recording_1294x1030.mp4": {
+   "code": "0417",
+   "chapter": "2",
+   "topic": "Input and output devices revision 4"
+  },
+  "GMT20221031-114315_Recording_1294x1030.mp4": {
+   "code": "0500",
+   "chapter": "R",
+   "topic": "First Language English: writer's effect, Paper 1"
+  },
+  "GMT20221031-122903_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "6",
+   "topic": "Space physics: Earth, Moon, rotation and revolution"
+  },
+  "GMT20221031-134252_Recording_1606x1030.mp4": {
+   "code": "0417",
+   "chapter": "21",
+   "topic": "Website authoring practice"
+  },
+  "GMT20221031-143444_Recording_1614x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Test: polygons, angle properties and circle theorems"
+  },
+  "GMT20221031-152853_Recording_1294x1030.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Test discussion: polygons and circle theorems"
+  },
+  "GMT20221031-163006_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity: current, charge and fields"
+  },
+  "GMT20221101-122658_Recording_1296x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Metals revision 1"
+  },
+  "GMT20221101-133140_Recording_1294x1030.mp4": {
+   "code": "0610",
+   "chapter": "20",
+   "topic": "Human influences on the environment 4: pollution and conservation"
+  },
+  "GMT20221101-142921_Recording_1294x1030.mp4": {
+   "code": "0610",
+   "chapter": "18",
+   "topic": "Variation and natural selection revision 1"
+  },
+  "GMT20221101-160811_Recording_1318x1030.mp4": {
+   "code": "0620",
+   "chapter": "4",
+   "topic": "Electrochemistry revision 3"
+  },
+  "GMT20221102-111543_Recording_1920x1030.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: data and game revision"
+  },
+  "GMT20221102-114331_Recording_1428x1030.mp4": {
+   "code": "0500",
+   "chapter": "R",
+   "topic": "First Language English: reading techniques",
+   "check": true
+  },
+  "GMT20221102-123826_Recording_1920x1080.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics test 1"
+  },
+  "GMT20221102-132159_Recording_1294x1030.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations practice 1"
+  },
+  "GMT20221102-143915_Recording_1294x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Review writing revision"
+  },
+  "GMT20221102-161206_Recording_1316x1030.mp4": {
+   "code": "0417",
+   "chapter": "11",
+   "topic": "File management 1"
+  },
+  "GMT20221103-122734_Recording_1302x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Metals revision 2: alloys"
+  },
+  "GMT20221103-144528_Recording_1920x1080.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Metals test 1"
+  },
+  "GMT20221103-162855_Recording_1920x1030.mp4": {
+   "code": "0580",
+   "chapter": "5",
+   "topic": "Mensuration 1: area and volume"
+  },
+  "GMT20221104-124416_Recording_1920x1080.mp4": {
+   "code": "0580",
+   "chapter": "X",
+   "topic": "Test: statistics and transformations"
+  },
+  "GMT20221104-133334_Recording_1920x1030.mp4": {
+   "code": "0610",
+   "chapter": "20",
+   "topic": "Human influences on the environment 5: deforestation and ecosystems"
+  },
+  "GMT20221104-143516_Recording_1920x1080.mp4": {
+   "code": "0610",
+   "chapter": "17",
+   "topic": "Inheritance test"
+  },
+  "GMT20221104-162833_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity revision 4"
+  },
+  "GMT20221106-142608_Recording_1278x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Review writing"
+  },
+  "GMT20221106-160806_Recording_1574x1030.mp4": {
+   "code": "0417",
+   "chapter": "12",
+   "topic": "Images 1"
+  },
+  "GMT20221107-111259_Recording_1920x1080.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: ping pong game 1"
+  },
+  "GMT20221107-121743_Recording_1584x1030.mp4": {
+   "code": "0625",
+   "chapter": "6",
+   "topic": "Space physics: orbital velocity and radius"
+  },
+  "GMT20221107-133047_Recording_1294x1030.mp4": {
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases 1"
+  },
+  "GMT20221107-142245_Recording_1724x1030.mp4": {
+   "code": "0580",
+   "chapter": "5",
+   "topic": "Mensuration 2: SI units, capacity and mass"
+  },
+  "GMT20221107-160631_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity revision 5"
+  },
+  "GMT20221108-122550_Recording_1828x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Reactivity of metals revision 1"
+  },
+  "GMT20221108-133104_Recording_1540x1030.mp4": {
+   "code": "0610",
+   "chapter": "9",
+   "topic": "Transport in animals 1"
+  },
+  "GMT20221108-142635_Recording_1426x1030.mp4": {
+   "code": "0610",
+   "chapter": "7",
+   "topic": "Human nutrition 1"
+  },
+  "GMT20221108-161246_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "4",
+   "topic": "Electrochemistry 4: electroplating and refining"
+  },
+  "GMT20221109-114232_Recording_1356x1030.mp4": {
+   "code": "0500",
+   "chapter": "R",
+   "topic": "Writer's effect practice 1"
+  },
+  "GMT20221109-122000_Recording_1920x1030.mp4": {
+   "code": "0625",
+   "chapter": "6",
+   "topic": "Space physics: life cycle of stars"
+  },
+  "GMT20221109-133708_Recording_1294x1030.mp4": {
+   "code": "0580",
+   "chapter": "1",
+   "topic": "Sets 1"
+  },
+  "GMT20221109-133847_Recording_1294x1030.mp4": {
+   "code": "0580",
+   "chapter": "1",
+   "topic": "Sets 1: union, intersection and subsets"
+  },
+  "GMT20221109-143217_Recording_1920x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Example candidate responses 1: review writing"
+  },
+  "GMT20221109-170551_Recording_1614x1030.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units: introduction to AS Level physics"
+  },
+  "GMT20221109-171214_Recording_1920x1030.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units 1"
+  },
+  "GMT20221110-123025_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Reactivity of metals revision 2"
+  },
+  "GMT20221110-132210_Recording_1278x1030.mp4": {
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases: primary keys"
+  },
+  "GMT20221110-132436_Recording_1920x1030.mp4": {
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases 2"
+  },
+  "GMT20221110-143757_Recording_1724x1030.mp4": {
+   "code": "0580",
+   "chapter": "5",
+   "topic": "Mensuration 3: practice"
+  },
+  "GMT20221110-145058_Recording_1724x1030.mp4": {
+   "code": "0580",
+   "chapter": "5",
+   "topic": "Mensuration 3: practice"
+  },
+  "GMT20221110-161205_Recording_1486x1030.mp4": {
+   "code": "0620",
+   "chapter": "7",
+   "topic": "Acids and bases 1"
+  },
+  "GMT20221111-121820_Recording_1920x1030.mp4": {
+   "code": "0580",
+   "chapter": "1",
+   "topic": "Sets 2: practice 1"
+  },
+  "GMT20221111-132444_Recording_1614x1030.mp4": {
+   "code": "0610",
+   "chapter": "8",
+   "topic": "Transport in plants 2"
+  },
+  "GMT20221111-142706_Recording_1516x1030.mp4": {
+   "code": "0610",
+   "chapter": "7",
+   "topic": "Human nutrition 2: balanced diet"
+  },
+  "GMT20221111-162901_Recording_1310x1030.mp4": {
+   "code": "0620",
+   "chapter": "7",
+   "topic": "Acids and bases 2"
+  },
+  "GMT20221112-133837_Recording_1582x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Magnetism full revision 1"
+  },
+  "GMT20221112-164143_Recording_1294x1030.mp4": {
+   "code": "0417",
+   "chapter": "X",
+   "topic": "ICT revision: chapters 1 to 3"
+  },
+  "GMT20221113-142702_Recording_1294x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Example candidate responses 2: review writing"
+  },
+  "GMT20221114-122632_Recording_1920x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Magnetism full revision 2"
+  },
+  "GMT20221114-133440_Recording_1920x1080.mp4": {
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases 3: reports and queries"
+  },
+  "GMT20221114-142933_Recording_1724x1030.mp4": {
+   "code": "0580",
+   "chapter": "X",
+   "topic": "Maths practice session"
+  },
+  "GMT20221114-160847_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "7",
+   "topic": "Acids and bases 3"
+  },
+  "GMT20221115-122251_Recording_1622x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Extraction of metals revision 1"
+  },
+  "GMT20221115-133153_Recording_1576x1030.mp4": {
+   "code": "0610",
+   "chapter": "8",
+   "topic": "Transport in plants 3",
+   "check": true
+  },
+  "GMT20221115-143336_Recording_1294x1030.mp4": {
+   "code": "0610",
+   "chapter": "14",
+   "topic": "Homeostasis 1"
+  },
+  "GMT20221115-153321_Recording_1294x1030.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units 2: base and derived units"
+  },
+  "GMT20221115-163925_Recording_1724x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity revision: series and parallel circuits"
+  },
+  "GMT20221116-122304_Recording_1294x1030.mp4": {
+   "code": "0625",
+   "chapter": "6",
+   "topic": "Space physics practice 1"
+  },
+  "GMT20221116-125059_Recording_1294x1030.mp4": {
+   "code": "0625",
+   "chapter": "3",
+   "topic": "Sound waves 1"
+  },
+  "GMT20221116-133013_Recording_1614x1030.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Factorisation 1"
+  },
+  "GMT20221116-143327_Recording_1294x1030.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Forces and pressure 1"
+  },
+  "GMT20221116-160856_Recording_1724x1030.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units: scalars and vectors"
+  },
+  "GMT20221117-130243_Recording_1294x1030.mp4": {
+   "code": "0620",
+   "chapter": "9",
+   "topic": "Extraction of metals: practice on iron and aluminium"
+  },
+  "GMT20221117-134926_Recording_1920x1080.mp4": {
+   "code": "0625",
+   "chapter": "3",
+   "topic": "Physics exam revision: light waves and critical angle"
+  },
+  "GMT20221117-143326_Recording_1724x1030.mp4": {
+   "code": "0580",
+   "chapter": "5",
+   "topic": "Mensuration 4"
+  },
+  "GMT20221117-162559_Recording_1278x1030.mp4": {
+   "code": "0620",
+   "chapter": "7",
+   "topic": "Acids and bases",
+   "check": true
+  },
+  "GMT20221117-162710_Recording_1278x1030.mp4": {
+   "code": "0620",
+   "chapter": "7",
+   "topic": "Acids and bases 4: ammonium salts and oxides"
+  },
+  "GMT20221118-123612_Recording_1724x1030.mp4": {
+   "code": "0606",
+   "chapter": "O",
+   "topic": "Differentiation full revision 1 (Additional Mathematics, outside the syllabuses on file)"
+  },
+  "GMT20221118-132323_Recording_1724x1030.mp4": {
+   "code": "0610",
+   "chapter": "9",
+   "topic": "Transport in animals 1"
+  },
+  "GMT20221118-142703_Recording_1576x1030.mp4": {
+   "code": "0610",
+   "chapter": "14",
+   "topic": "Homeostasis revision 2"
+  },
+  "GMT20221118-153459_Recording_1724x1030.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units practice 1: errors and uncertainties"
+  },
+  "GMT20221118-162542_Recording_1306x1030.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Forces and pressure 2"
+  },
+  "GMT20221119-131002_Recording_1920x1030.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Units and measurements 1"
+  },
+  "GMT20221120-144245_Recording_1294x1030.mp4": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Types of sentences 1"
+  },
+  "GMT20221120-152638_Recording_1294x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity practice 1"
+  },
+  "GMT20221120-163220_Recording_1294x1030.mp4": {
+   "code": "0417",
+   "chapter": "X",
+   "topic": "ICT exam practice: s22 paper 12"
+  },
+  "Shahid Akhtar's Personal Meeting Room_10.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Vectors revision: resultant forces",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_2.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Circle theorem rules: practice 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_20.mp4": {
+   "code": "0620",
+   "chapter": "3",
+   "topic": "Chemical formulae and ionic equations 1: revision"
+  },
+  "Shahid Akhtar's Personal Meeting Room_21.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_22.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Quadratics 3: doubts"
+  },
+  "Shahid Akhtar's Personal Meeting Room_23.mp4": {
+   "code": "9709",
+   "chapter": "1",
+   "topic": "Pure Mathematics 1: discriminants and inequalities"
+  },
+  "Shahid Akhtar's Personal Meeting Room_24.mp4": {
+   "code": "0610",
+   "chapter": "21",
+   "topic": "Biotechnology 3: genetically modified organisms"
+  },
+  "Shahid Akhtar's Personal Meeting Room_25.mp4": {
+   "code": "0510",
+   "chapter": "L",
+   "topic": "Listening practice 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_26.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations 4: enlargement"
+  },
+  "Shahid Akhtar's Personal Meeting Room_27.mp4": {
+   "code": "0580",
+   "chapter": "X",
+   "topic": "Maths revision 1: first five chapters"
+  },
+  "Shahid Akhtar's Personal Meeting Room_28.mp4": {
+   "code": "0620",
+   "chapter": "3",
+   "topic": "Stoichiometry revision 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_29.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics 2: radioactivity",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_3.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units practice 2",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_30.mp4": {
+   "code": "0610",
+   "chapter": "1",
+   "topic": "Characteristics and classification of living organisms: exam revision 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_31.mp4": {
+   "code": "9709",
+   "chapter": "1",
+   "topic": "Pure Mathematics 1: quadratics 4 and the discriminant"
+  },
+  "Shahid Akhtar's Personal Meeting Room_32.mp4": {
+   "code": "0620",
+   "chapter": "3",
+   "topic": "Stoichiometry revision 1",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_28.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_33.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics 2: radioactivity",
+   "check": true,
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_29.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_34.mp4": {
+   "code": "0610",
+   "chapter": "1",
+   "topic": "Characteristics and classification of living organisms: exam revision 1",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_30.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_35.mp4": {
+   "code": "9709",
+   "chapter": "1",
+   "topic": "Pure Mathematics 1: quadratics 4 and the discriminant",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_31.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_36.mp4": {
+   "code": "0610",
+   "chapter": "1",
+   "topic": "Characteristics and classification of living organisms 2"
+  },
+  "Shahid Akhtar's Personal Meeting Room_37.mp4": {
+   "code": "9702",
+   "chapter": "8",
+   "topic": "Superposition: interference and Young's double slit"
+  },
+  "Shahid Akhtar's Personal Meeting Room_38.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics 4: half-life and background radiation"
+  },
+  "Shahid Akhtar's Personal Meeting Room_39.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations 5"
+  },
+  "Shahid Akhtar's Personal Meeting Room_4.mp4": {
+   "code": "0625",
+   "chapter": "X",
+   "topic": "Chapters 1 and 2: exam practice",
+   "private": "a feedback meeting with students"
+  },
+  "Shahid Akhtar's Personal Meeting Room_40.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations 6: rotation"
+  },
+  "Shahid Akhtar's Personal Meeting Room_41.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Functions: test revision 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_42.mp4": {
+   "code": "0620",
+   "chapter": "3",
+   "topic": "Stoichiometry revision 2: empirical and molecular formulae"
+  },
+  "Shahid Akhtar's Personal Meeting Room_43.mp4": {
+   "code": "0510",
+   "chapter": "L",
+   "topic": "Listening: May/June 2022 paper 42"
+  },
+  "Shahid Akhtar's Personal Meeting Room_44.mp4": {
+   "code": "9709",
+   "chapter": "5",
+   "topic": "Probability and Statistics 1: presentation of data"
+  },
+  "Shahid Akhtar's Personal Meeting Room_45.mp4": {
+   "code": "0580",
+   "chapter": "X",
+   "topic": "Exam revision: chapters 6 to 9"
+  },
+  "Shahid Akhtar's Personal Meeting Room_47.mp4": {
+   "code": "0610",
+   "chapter": "21",
+   "topic": "Biotechnology: exam practice"
+  },
+  "Shahid Akhtar's Personal Meeting Room_48.mp4": {
+   "code": "0417",
+   "chapter": "20",
+   "topic": "Spreadsheets revision 2"
+  },
+  "Shahid Akhtar's Personal Meeting Room_49.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Measurements and units: exam revision 2"
+  },
+  "Shahid Akhtar's Personal Meeting Room_5.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Angle properties 1: parallel lines"
+  },
+  "Shahid Akhtar's Personal Meeting Room_50.mp4": {
+   "code": "9702",
+   "chapter": "8",
+   "topic": "Superposition 2"
+  },
+  "Shahid Akhtar's Personal Meeting Room_51.mp4": {
+   "code": "0510",
+   "chapter": "X",
+   "topic": "Test"
+  },
+  "Shahid Akhtar's Personal Meeting Room_52.mp4": {
+   "code": "0580",
+   "chapter": "7",
+   "topic": "Transformations practice 1: discussion"
+  },
+  "Shahid Akhtar's Personal Meeting Room_53.mp4": {
+   "code": "9709",
+   "chapter": "1",
+   "topic": "Pure Mathematics 1: functions 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_54.mp4": {
+   "code": "0620",
+   "chapter": "3",
+   "topic": "Stoichiometry: limiting and excess reagents"
+  },
+  "Shahid Akhtar's Personal Meeting Room_55.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics 5: fission and fusion"
+  },
+  "Shahid Akhtar's Personal Meeting Room_57.mp4": {
+   "code": "0610",
+   "chapter": "2",
+   "topic": "Organisation of the organism: exam revision 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_58.mp4": {
+   "code": "9709",
+   "chapter": "1",
+   "topic": "Pure Mathematics 1: quadratics 5"
+  },
+  "Shahid Akhtar's Personal Meeting Room_59.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Forces and motion: exam revision 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_6.mp4": {
+   "code": "0417",
+   "chapter": "19",
+   "topic": "Presentations: revision"
+  },
+  "Shahid Akhtar's Personal Meeting Room_60.mp4": {
+   "code": "0610",
+   "chapter": "2",
+   "topic": "Organisation of the organism 1: plant and animal cell structures"
+  },
+  "Shahid Akhtar's Personal Meeting Room_61.mp4": {
+   "code": "0417",
+   "chapter": "20",
+   "topic": "Spreadsheets 3: lookup functions"
+  },
+  "Shahid Akhtar's Personal Meeting Room_62.mp4": {
+   "code": "9702",
+   "chapter": "9",
+   "topic": "Electricity 1: current"
+  },
+  "Shahid Akhtar's Personal Meeting Room_63.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Forces and motion 1: revision"
+  },
+  "Shahid Akhtar's Personal Meeting Room_64.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Graphs in practical situations"
+  },
+  "Shahid Akhtar's Personal Meeting Room_65.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Functions: quadratic functions"
+  },
+  "Shahid Akhtar's Personal Meeting Room_66.mp4": {
+   "code": "0620",
+   "chapter": "3",
+   "topic": "Stoichiometry practice 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_67.mp4": {
+   "code": "0580",
+   "chapter": "1",
+   "topic": "Money and finance 1: revision"
+  },
+  "Shahid Akhtar's Personal Meeting Room_68.mp4": {
+   "code": "0610",
+   "chapter": "2",
+   "topic": "Organisation of the organism: practice 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_69.mp4": {
+   "code": "0610",
+   "chapter": "3",
+   "topic": "Movement into and out of cells 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_7.mp4": {
+   "code": "0580",
+   "chapter": "4",
+   "topic": "Circle theorem rules: practice 1",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_2.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_70.mp4": {
+   "code": "9709",
+   "chapter": "5",
+   "topic": "Representation of data: practice"
+  },
+  "Shahid Akhtar's Personal Meeting Room_71.mp4": {
+   "code": "9709",
+   "chapter": "5",
+   "topic": "Probability and Statistics 1: representation of data"
+  },
+  "Shahid Akhtar's Personal Meeting Room_73.mp4": {
+   "code": "9709",
+   "chapter": "1",
+   "topic": "Pure Mathematics 1: functions 2, composite functions"
+  },
+  "Shahid Akhtar's Personal Meeting Room_74.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Vectors revision: resultant forces",
+   "check": true,
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_10.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_75.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Vectors revision: resultant forces",
+   "check": true,
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_10.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_76.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Graphs of functions: practice 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_77.mp4": {
+   "code": "0580",
+   "chapter": "1",
+   "topic": "Money and finances 1: profit and loss"
+  },
+  "Shahid Akhtar's Personal Meeting Room_78.mp4": {
+   "code": "0620",
+   "chapter": "4",
+   "topic": "Electrochemistry 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_79.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Forces and motion: momentum"
+  },
+  "Shahid Akhtar's Personal Meeting Room_8.mp4": {
+   "code": "9702",
+   "chapter": "1",
+   "topic": "Physical quantities and units practice 2",
+   "check": true,
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_3.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_80.mp4": {
+   "private": "casual conversation"
+  },
+  "Shahid Akhtar's Personal Meeting Room_81.mp4": {
+   "code": "0610",
+   "chapter": "3",
+   "topic": "Movement into and out of cells: exam revision 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_82.mp4": {
+   "code": "9702",
+   "chapter": "9",
+   "topic": "Electricity 2: current, potential difference, resistance and power"
+  },
+  "Shahid Akhtar's Personal Meeting Room_84.mp4": {
+   "code": "0610",
+   "chapter": "3",
+   "topic": "Movement into and out of cells 2"
+  },
+  "Shahid Akhtar's Personal Meeting Room_85.mp4": {
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_83.mp4",
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases: sorting and searching data",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_86.mp4": {
+   "code": "0620",
+   "chapter": "?",
+   "topic": "Chemistry revision 1 (chapter not stated)",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_87.mp4": {
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_83.mp4",
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases: sorting and searching data",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_88.mp4": {
+   "code": "9702",
+   "chapter": "9",
+   "topic": "Electricity 2: current, potential difference, resistance and power",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_82.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_89.mp4": {
+   "code": "0620",
+   "chapter": "6",
+   "topic": "Rates of reaction: practice 2"
+  },
+  "Shahid Akhtar's Personal Meeting Room_9.mp4": {
+   "code": "0625",
+   "chapter": "X",
+   "topic": "Chapters 1 and 2: exam practice",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_4.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_90.mp4": {
+   "private": "one-to-one English conversation"
+  },
+  "Shahid Akhtar's Personal Meeting Room_91.mp4": {
+   "code": "0625",
+   "chapter": "1",
+   "topic": "Forces and pressure 1: revision"
+  },
+  "Shahid Akhtar's Personal Meeting Room_92.mp4": {
+   "code": "0580",
+   "chapter": "2",
+   "topic": "Functions 1: composite and inverse functions"
+  },
+  "Shahid Akhtar's Personal Meeting Room_93.mp4": {
+   "code": "9702",
+   "chapter": "9",
+   "topic": "Electricity 3: resistivity and power"
+  },
+  "Shahid Akhtar's Personal Meeting Room_94.mp4": {
+   "code": "0620",
+   "chapter": "4",
+   "topic": "Electrochemistry revision 2: electrolysis of brine"
+  },
+  "Shahid Akhtar's Personal Meeting Room_95.mp4": {
+   "code": "9702",
+   "chapter": "9",
+   "topic": "Electricity 3: resistivity and power",
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_93.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_96.mp4": {
+   "code": "0510",
+   "chapter": "S",
+   "topic": "Speaking practice 1"
+  },
+  "Shahid Akhtar's Personal Meeting Room_97.mp4": {
+   "code": "0620",
+   "chapter": "?",
+   "topic": "Chemistry revision 1 (chapter not stated)",
+   "check": true,
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_86.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_98.mp4": {
+   "code": "0620",
+   "chapter": "?",
+   "topic": "Chemistry revision 1 (chapter not stated)",
+   "check": true,
+   "duplicateOf": "Shahid Akhtar's Personal Meeting Room_86.mp4"
+  },
+  "Shahid Akhtar's Personal Meeting Room_99.mp4": {
+   "code": "9709",
+   "chapter": "5",
+   "topic": "Representation of data 3"
+  },
+  "zoom_recording_1 (1).mp4": {
+   "code": "9709",
+   "chapter": "5",
+   "topic": "Probability and Statistics 1: representation of data"
+  },
+  "zoom_recording_1.mp4": {
+   "code": "9709",
+   "chapter": "5",
+   "topic": "Probability and Statistics 1: representation of data",
+   "duplicateOf": "zoom_recording_1 (1).mp4"
+  },
+  "GMT20221028-161139_Recording_1278x1030.mp4": {
+   "code": "0625",
+   "chapter": "4",
+   "topic": "Electricity: current and resistance"
+  },
+  "GMT20221101-112230_Recording_1920x1030.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: revision correction on lists"
+  },
+  "GMT20221110-110951_Recording_1920x1030.mp4": {
+   "code": "0478",
+   "chapter": "8",
+   "topic": "Python: importing libraries (math, random)"
+  },
+  "GMT20221117-154451_Recording_1598x1030.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics: exam revision",
+   "check": true
+  },
+  "Shahid Akhtar's Personal Meeting Room_11.mp4": {
+   "private": "a feedback meeting with students"
+  },
+  "Shahid Akhtar's Personal Meeting Room_56.mp4": {
+   "code": "0625",
+   "chapter": "5",
+   "topic": "Nuclear physics: practice 1, deflection of beta particles"
+  },
+  "Shahid Akhtar's Personal Meeting Room_83.mp4": {
+   "code": "0417",
+   "chapter": "18",
+   "topic": "Databases: sorting and searching data",
+   "check": true
+  },
+  "1jzojATMKnvXF7zny2Q2uDOViB8Bkj4_L": {
+   "code": "9700",
+   "chapter": "1",
+   "topic": "Cell structure: lesson 1"
+  },
+  "1jmtiDOnkc_z9ZqNrIG1m4PjO8zib1rrW": {
+   "code": "0510",
+   "chapter": "W",
+   "topic": "Article writing"
+  },
+  "1iBPonnVtfRT2IOGisVuU1FHiC08d2_tx": {
+   "code": "0452",
+   "chapter": "4",
+   "topic": "Suspense accounts"
+  },
+  "1KMAlQE0iay_dGR73FhIw1U1Qh0hUBNi4": {
+   "code": "0452",
+   "chapter": "7",
+   "topic": "Accounting concepts"
+  },
+  "1yvyc8qeGQlpPVjMrXfe1uUxK2kdQMjDa": {
+   "private": "an accent and resume training session for another client"
+  },
+  "1kVEmdvT2MLc8UJTZsGIPEwoIn7zCGgEi": {
+   "private": "a school and parent discussion"
+  },
+  "1QXWXxHSrDZk_GSV55qxkA7bn4D6s-apI": {
+   "code": "0452",
+   "chapter": "2",
+   "topic": "The cash book"
+  },
+  "1fwSch7YKqtxKTnkuOXIpVoEtMqFmaf_A": {
+   "code": "0452",
+   "chapter": "5",
+   "topic": "Preparation of financial statements: income statement and financial position"
+  },
+  "1Jp1O97_Itlmd4249zggmOXUVNcb0BTN3": {
+   "code": "0452",
+   "chapter": "5",
+   "topic": "Preparation of financial statements: income statement and financial position",
+   "duplicateOf": "1fwSch7YKqtxKTnkuOXIpVoEtMqFmaf_A"
+  },
+  "1kHUka-eZVq_GTrX4p8qxXL24VsyDn5yR": {
+   "code": "0452",
+   "chapter": "5",
+   "topic": "Preparation of financial statements: income statement and financial position",
+   "duplicateOf": "1fwSch7YKqtxKTnkuOXIpVoEtMqFmaf_A"
+  },
+  "1OduRJkwI5sYMVc3u9Gw7loR-1iZlZ8EE": {
+   "code": "0452",
+   "chapter": "2",
+   "topic": "Books of original entry and double entry: introduction"
+  },
+  "1Y11VJhF3LoKRWuW-N5QsuEDmXHH-ZCnj": {
+   "code": "9708",
+   "chapter": "7",
+   "topic": "Costs: average and marginal cost curves, economies of scale"
+  },
+  "1iGkEl2Zo1sC1dOCYSgbV-PrBiBrHzklM": {
+   "code": "9708",
+   "chapter": "7",
+   "topic": "Market structures, costs and revenues"
+  },
+  "1RrmLSnO3oUx9jV3BqpPq8EvWlo0P6xXJ": {
+   "code": "0452",
+   "chapter": "2",
+   "topic": "Journal, ledger and trial balance test"
+  },
+  "1Ra9UuPQZxokGcDTXEN3dKJOXgBVXuyk_": {
+   "code": "0452",
+   "chapter": "2",
+   "topic": "Double entry practice",
+   "check": true
+  },
+  "11HSw8s3ga-WSJiBl6nLQrBqVjH20iLOu": {
+   "code": "0452",
+   "chapter": "5",
+   "topic": "Income statement"
+  },
+  "1Q3IUXroOAxWYDFvetJmBFCpyRzEPoNZp": {
+   "code": "0452",
+   "chapter": "6",
+   "topic": "Ratios revision"
+  },
+  "1tVTumvsyuWh5RN-1heaEIgPfLuSgOKHQ": {
+   "code": "0452",
+   "chapter": "2",
+   "topic": "Recording cash discounts in the books"
+  },
+  "1AUE-8gehcSbpicJYJJEYqUbh2JlWFA7S": {
+   "code": "9700",
+   "chapter": "X",
+   "topic": "Paper 3 practical: reducing sugar, question 1"
+  },
+  "1jWt_fLZJJNYgThxO26wCuO8skSSoJX8Q": {
+   "code": "0452",
+   "chapter": "5",
+   "topic": "Financial statements: total assets and current items",
+   "check": true
+  },
+  "1ZpqmJk4VB11__RJ7r6eR0KQ89SMfRRu_": {
+   "private": "a scheduling chat"
+  },
+  "1HZ2V4OkRXVctz8uru0SUJ_I456pVT0y_": {
+   "private": "an interview, not a class"
+  },
+  "1kqaGTUpWrc-AsYrKKnfLyR_Xr9gfaRw4": {
+   "code": "0625",
+   "chapter": "X",
+   "topic": "June summer test"
+  },
+  "1mKmPIkUxMl3ArxHceFYgLzWOW1gD1Q21": {
+   "code": "0625",
+   "chapter": "X",
+   "topic": "June summer test"
+  },
+  "1c-j0u4tVSKsoJ_jD_uXhhC894Edu4fPf": {
+   "private": "a logo clip, not a class"
+  },
+  "1E_hUSPxG0KbDerygjwsjckpLzN33dgzx": {
+   "private": "a marketing clip, not a class"
+  },
+  "1fe0enEigfEgZp2tAVEC06rz2PS3hs759": {
+   "private": "a staff meeting, not a class"
+  }
+ }
+}

@@ -13,7 +13,7 @@ import recording_syllabus as rs
 
 CID, CSEC, RT = (os.environ[k] for k in ("GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_OAUTH_REFRESH_TOKEN"))
 COLS = [("Status", None), ("Location", "location"), ("File path", "filePath"), ("Local copies (C/D/E)", "localPaths"), ("Current name", "currentName"), ("Original name", "originalName"), ("Proposed file name", "proposedName"), ("YouTube title", "youtubeTitle"), ("YouTube description", "youtubeDescription"),
-        ("Level", "level"), ("Subject", "subject"), ("Subject code", "subjectCode"), ("Component", "component"), ("Chapter code", "chapter"), ("Chapter title", "chapterTitle"), ("Chapter match", "chapterConfidence"), ("Other chapter options", "chapterAlternatives"), ("Topic", "topic"),
+        ("Level", "level"), ("Subject", "subject"), ("Subject code", "subjectCode"), ("Component", "component"), ("Chapter code", "chapter"), ("Chapter title", "chapterTitle"), ("Chapter source", "chapterConfidence"), ("Other chapter options", "chapterAlternatives"), ("Topic", "topic"),
         ("Session type", "sessionType"), ("Session no.", "sessionNumber"), ("Date", "date"), ("Zoom time (UTC)", "zoomTimeUTC"), ("Batch", "batch"), ("Recording no.", "recordingNumber"), ("Instructor", "instructor"),
         ("Duration (min)", "durationMin"), ("Size (MB)", "sizeMB"), ("Category", "category"), ("Upload", "upload"), ("YouTube id", "youtubeId"), ("YouTube privacy", "youtubePrivacy"),
         ("Needs review", "needsReview"), ("Intro (spoken)", "introText"), ("Drive id", "driveId")]
@@ -46,22 +46,26 @@ def status(r):
 
 def coverage(rows):
     """One line per syllabus chapter of every subject that has recordings: how many recordings cover it, how many minutes, and Covered / Weak / Missing.
-    A recording counts as covering a chapter when its chapter match is high or medium; low matches are listed as Weak (check them). Zoom exports are counted apart because their
-    chapter comes from the first 2 minutes of speech."""
+    A recording counts as covering a chapter when a person assigned the chapter (docs/recording-chapter-assignments.json); ones the person marked uncertain are listed as Weak (check).
+    Zoom exports are counted apart because their chapter comes from reading the first 2 minutes of speech."""
     classes = [r for r in rows if r["category"] == "class" and r["upload"] and r.get("chapter") not in (None, "X") and r.get("subjectCode")]
     codes = []
     for r in classes:
         if r["subjectCode"] not in codes:
             codes.append(r["subjectCode"])
-    head = ["Subject", "Level", "Code", "Component", "Chapter", "Chapter title", "Recordings (named)", "Recordings (Zoom, from intro)", "Weak matches", "Minutes", "Status", "Dates"]
+    head = ["Subject", "Level", "Code", "Component", "Chapter", "Chapter title", "Recordings (named)", "Recordings (Zoom, read from intro)", "Marked uncertain", "Minutes", "Status", "Dates"]
     out = [head]
     for code in sorted(codes):
-        chapters = [c for c in rs.load()["chapters"] if c["code"] == code]
+        seen, chapters = set(), []
+        for c in rs.load()["chapters"]:  # the syllabus data repeats some chapters (Core and Extended) and has stray rows of binary digits (Computer Science 0478): list each real chapter once
+            if c["code"] != code or re.fullmatch(r"[01 ]+", c["title"]) or (c["component"], c["chapter"]) in seen:
+                continue
+            seen.add((c["component"], c["chapter"])); chapters.append(c)
         key = lambda c: (c["component"], int(re.match(r"\d+", c["chapter"]).group()) if re.match(r"\d+", c["chapter"]) else 0, c["chapter"])
         for c in sorted(chapters, key=key):
             mine = [r for r in classes if r["subjectCode"] == code and r["chapter"] == c["chapter"]]
-            good = [r for r in mine if r["chapterConfidence"] in ("high", "medium")]
-            weak = [r for r in mine if r["chapterConfidence"] == "low"]
+            good = [r for r in mine if r["chapterConfidence"] == "manual"]
+            weak = [r for r in mine if r["chapterConfidence"] == "manual, check"]
             named = [r for r in good if r["location"] != "Local (Zoom)"]; zoom = [r for r in good if r["location"] == "Local (Zoom)"]
             dates = sorted(r["date"] for r in good if r["date"])
             out.append([c["subject"], c["level"], code, c["component"], c["chapter"], c["title"], len(named), len(zoom), len(weak), round(sum(r["durationMin"] or 0 for r in good)),

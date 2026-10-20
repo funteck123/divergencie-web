@@ -70,9 +70,9 @@ def folder_path(fid):
 # 0510 English as a Second Language (speaking endorsement 0511), 0417 ICT, 0452 Accounting, 0455 Economics, 0478 Computer Science; AS and A Level 9708 Economics, 9700 Biology, 9618 Computer Science.
 SUBJECTS = {"maths": ("Mathematics", "0580"), "mathematics": ("Mathematics", "0580"), "physics": ("Physics", "0625"), "chemistry": ("Chemistry", "0620"), "biology": ("Biology", "0610"),
             "english sl": ("English as a Second Language", "0510"), "english": ("English as a Second Language", "0510"), "ict": ("ICT", "0417"), "accounting": ("Accounting", "0452"),
-            "economics": ("Economics", "0455"), "computer science": ("Computer Science", "0478"), "cs": ("Computer Science", "0478")}
+            "economics": ("Economics", "0455"), "computer science": ("Computer Science", "0478"), "cs": ("Computer Science", "0478"), "sociology": ("Sociology", "0495")}
 CODE_SUBJECT = {"0580": "Mathematics", "0625": "Physics", "0620": "Chemistry", "0610": "Biology", "0510": "English as a Second Language", "0417": "ICT", "0452": "Accounting",
-                "0455": "Economics", "0478": "Computer Science", "9708": "Economics", "9700": "Biology", "9618": "Computer Science", "9709": "Mathematics", "9702": "Physics", "9701": "Chemistry"}
+                "0455": "Economics", "0478": "Computer Science", "0495": "Sociology", "9708": "Economics", "9700": "Biology", "9618": "Computer Science", "9709": "Mathematics", "9702": "Physics", "9701": "Chemistry"}
 AS_CODES = {"Economics": "9708", "Biology": "9700", "Computer Science": "9618"}
 LEVELS = r"(?P<level>iGCSE|IGCSE|AS Level|AS|A Level|SAT|Qudrat|Quadrat)"
 NAME = re.compile(r"^(?P<head>.+?)\s*-\s*(?P<date>\d{8})\s+(?P<batch>B[\w,]+)(?:\s*-\s*Recording\s*(?P<rec>\d+))?(?:\s*-\s*(?P<room>.+))?$", re.I)
@@ -218,49 +218,52 @@ LEVEL_LABEL = {"IGCSE": "IGCSE", "AS Level": "AS Level", "A Level": "A Level", "
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
 
 
-def subject_from_text(text):
-    """When the syllabus match finds nothing, the subject can still be read from words like "python" or "chemistry" in the intro. Returns a subject name or None."""
-    low = (text or "").lower()
-    hits = [(len(re.findall(rx, low)), sub) for sub, rx in rs.SUBJECT_WORDS.items() if re.search(rx, low)]
-    return max(hits)[1] if hits else None
+ASSIGNMENTS = "docs/recording-chapter-assignments.json"
+SUBJECT_NAMES = {"0606": ("Additional Mathematics", "IGCSE")}  # subjects without a syllabus in the Syllabus Viewer's data
 
 
 def enrich(rows):
-    """Chapter, component and YouTube title for every class row (TKT-0358). A chapter comes from the syllabus (recording_syllabus.match): from the topic for named
-    recordings, from the spoken intro for Zoom exports. Revision, test and past-paper sessions with no matching chapter are labelled "Exam practice (mixed)"."""
+    """Chapter, component and YouTube title for every class row (TKT-0358). The chapter is NOT guessed: it is read from docs/recording-chapter-assignments.json, which a person
+    wrote by reading each topic or spoken intro. "files" holds one entry per file (Zoom file name or Drive id); "topics" maps a named recording's exact
+    "subject code|topic" to a chapter. A recording with no entry stays without a chapter and is flagged for review."""
+    A = json.load(open(ASSIGNMENTS)) if os.path.exists(ASSIGNMENTS) else {"files": {}, "topics": {}}
     for r in rows:
         r.update({"chapterTitle": None, "chapterConfidence": None, "chapterAlternatives": None, "youtubeTitle": None, "youtubeDescription": None})
         if r["category"] != "class" or not r["upload"]:
             continue
         if r["level"] in ("SAT", "Qudrat"):
             r["component"] = "Qudrat/SAT (no CAIE syllabus)"; continue
-        from_intro = r["location"] == "Local (Zoom)" or not r["topic"]
-        text = (r["introText"] or "")[:700] if from_intro else r["topic"]
-        level = "IGCSE" if r["level"] == "IGCSE" else ("A Level" if r["level"] in ("AS Level", "A Level", "AS/A Level") else rs.level_hint(text))
-        if not level and from_intro:
-            level = "IGCSE"; r["needsReview"].append("level assumed IGCSE: the intro does not say")  # most classes are IGCSE; A Level syllabus text would otherwise win on length
-        m = rs.match(text, code=r["subjectCode"], subject=None if r["subjectCode"] else r["subject"], level=level) if text else None
-        generic = bool(rs.GENERIC.search(r["topic"] or "")) or r["sessionType"] in ("past paper practice", "quiz", "revision", "crash course")
-        if m and (m["confidence"] != "low" or not generic):
-            r["subject"] = r["subject"] or m["subject"]; r["subjectCode"] = r["subjectCode"] or m["code"]; r["level"] = r["level"] or m["level"]
-            r["component"] = m["component"]; r["chapter"] = m["chapter"]; r["chapterTitle"] = m["chapterTitle"]
-            r["chapterConfidence"] = m["confidence"]; r["chapterAlternatives"] = "; ".join(m["alternatives"])
-            if m["confidence"] == "low":
-                r["needsReview"].append("chapter is a weak match: check it")
-            if from_intro:
-                r["source"]["chapter"] = "syllabus match on the spoken intro"
-                if m["confidence"] != "high":
-                    r["needsReview"].append("subject and chapter come from the intro: check them")
-            else:
-                r["source"]["chapter"] = "syllabus match on the topic"
-        elif generic:
-            r["component"] = r["component"] or ("IGCSE" if r["subjectCode"] and r["subjectCode"][0] == "0" else None)
-            r["chapter"], r["chapterTitle"], r["chapterConfidence"] = "X", "Exam practice (mixed chapters)", "n/a"
+        e = A["files"].get(r["driveId"] or "") or A["files"].get(os.path.basename(r["filePath"] or ""))
+        if e and e.get("private"):
+            r["category"], r["upload"] = "private", False
+            r["needsReview"].append("not a class: " + e["private"]); continue
+        if not e:
+            e = A["topics"].get(f"{r['subjectCode']}|{(r['topic'] or '').lower()}")
+        if e and e.get("duplicateOf"):
+            r["duplicateOf"] = e["duplicateOf"]; r["needsReview"].append("same recording as " + e["duplicateOf"]); r["proposedName"] = None
+        if not e or not e.get("code"):
+            r["needsReview"].append("no chapter assigned yet: read the topic or the intro and add it to " + ASSIGNMENTS); continue
+        code, number = e["code"], e["chapter"]
+        info = rs.subject_info(code) or SUBJECT_NAMES.get(code)
+        if info:
+            r["subject"], r["level"] = info[0], info[1]
+        r["subjectCode"] = code
+        if e.get("topic"):
+            r["topic"] = e["topic"]
+        ch = rs.chapter(code, number)
+        if number in rs.SPECIAL:
+            r["chapter"], r["chapterTitle"] = number, rs.SPECIAL[number]
+            r["component"] = "IGCSE" if code[0] == "0" else None
+        elif ch:
+            r["component"], r["chapter"], r["chapterTitle"] = ch["component"], number, ch["title"]
         else:
-            sub = r["subject"] or (subject_from_text(text) if from_intro else None)
-            if sub and not r["subject"]:
-                r["subject"] = sub; r["needsReview"].append("subject guessed from words in the intro")
-            r["needsReview"].append("no syllabus chapter found: assign by hand")
+            r["needsReview"].append(f"chapter {number} is not in the syllabus data for {code}")
+        r["chapterConfidence"] = "manual, check" if e.get("check") else "manual"
+        r["source"]["chapter"] = "assigned by hand from the topic" if not r["location"] == "Local (Zoom)" else "assigned by hand from the spoken intro"
+        if e.get("check"):
+            r["needsReview"].append("chapter assigned by hand but marked uncertain")
+        if number == "?":
+            r["needsReview"].append("subject known, chapter not stated in the intro")
         r["youtubeTitle"], r["youtubeDescription"] = youtube_text(r)
 
 
