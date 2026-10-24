@@ -10,7 +10,7 @@ import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/ui2/queries/client";
 import type { GuideRecord, UserRecord } from "@/ui2/queries/types";
-import { occurrencesText, weekly, type EnrolledService } from "./portalLogic";
+import { occurrencesText, showUserFeature, weekly, type EnrolledService } from "./portalLogic";
 import "@/ui2/features/accounts/accounts.css";
 import "./portal.css";
 
@@ -106,7 +106,7 @@ export function ResourcesCard({ services, user, showExternalTools = false }: { s
   return (
     <Card title="Resources">
       <div className="u2-checks">
-        {USER_FEATURES.filter((f) => t[f.toggleKey]).map((f) => {
+        {USER_FEATURES.filter((f) => showUserFeature(f, t, user as unknown as Record<string, unknown>)).map((f) => {
           const ext = (user[f.linkField] as string | undefined) || "";
           return <Link key={f.slug} className="u2-pill" href={`/v2/resources/${f.slug}${ext ? `?${new URLSearchParams({ link: ext })}` : ""}`}>{f.label}</Link>;
         })}

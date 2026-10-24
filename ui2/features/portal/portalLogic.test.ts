@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { enrolledServices, inRange, myAttendance, occurrencesText, stripeLink, visibleBills, weekly } from "./portalLogic";
+import { enrolledServices, inRange, myAttendance, occurrencesText, showUserFeature, stripeLink, visibleBills, weekly } from "./portalLogic";
 import type { BillRecord, ServiceRecord } from "@/ui2/queries/types";
 
 const svc: ServiceRecord = {
@@ -73,5 +73,26 @@ describe("enrolledServices with a bad reply", () => {
     expect(enrolledServices([{ EnrolmentID: "E1", UserID: "U", ServiceID: "S9" }], null)).toEqual([]);
     expect(visibleBills(null)).toEqual([]);
     expect(visibleBills({} as never)).toEqual([]);
+  });
+});
+
+describe("showUserFeature (TKT-0371)", () => {
+  const timesheet = { slug: "timesheet", toggleKey: "timesheet", linkField: "TimesheetURL" };
+  const tracker = { slug: "progress-tracker", toggleKey: "progressTracker", linkField: "ProgressTrackerURL" };
+  const off = { timesheet: false, progressTracker: false };
+  it("shows whatever Management has switched on", () => {
+    expect(showUserFeature(timesheet, { timesheet: true }, {})).toBe(true);
+    expect(showUserFeature(tracker, { progressTracker: true }, {})).toBe(true);
+  });
+  it("shows the Timesheet to anyone with their own timesheet link, even when it is switched off for everyone", () => {
+    expect(showUserFeature(timesheet, off, { TimesheetURL: "https://docs.google.com/spreadsheets/d/x/edit" })).toBe(true);
+  });
+  it("hides the Timesheet when it is off and the person has no link", () => {
+    expect(showUserFeature(timesheet, off, {})).toBe(false);
+    expect(showUserFeature(timesheet, off, { TimesheetURL: "" })).toBe(false);
+    expect(showUserFeature(timesheet, off, { TimesheetURL: "   " })).toBe(false);
+  });
+  it("does not widen any other button: the Progress Tracker still follows the switch", () => {
+    expect(showUserFeature(tracker, off, { ProgressTrackerURL: "https://example.com/t" })).toBe(false);
   });
 });

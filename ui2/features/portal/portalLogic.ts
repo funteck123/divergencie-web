@@ -102,3 +102,14 @@ export function weekly(services: readonly EnrolledService[]) {
   for (const list of byDay.values()) list.sort((a, b) => (a.Time as string).localeCompare(b.Time as string));
   return { byDay, unscheduled, hasAny: DAY_ORDER.some((d) => (byDay.get(d) ?? []).length > 0) };
 }
+
+/**
+ * Does a person's own resource button (Timesheet, Progress Tracker) show on their portal? Management can switch each one off for everyone
+ * (the global resource toggles). The Timesheet is the exception: anyone who has their own timesheet link (a student, a teacher) always gets
+ * the button, because a link that exists but cannot be reached from the portal is the bug (TKT-0371).
+ */
+export function showUserFeature(feature: { slug: string; toggleKey: string; linkField: string }, toggles: Record<string, boolean>, user: Record<string, unknown>): boolean {
+  if (toggles[feature.toggleKey]) return true;
+  const link = user[feature.linkField];
+  return feature.slug === "timesheet" && typeof link === "string" && link.trim() !== "";
+}
