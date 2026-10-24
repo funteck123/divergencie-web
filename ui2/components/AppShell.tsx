@@ -10,8 +10,10 @@ import { useMediaQuery } from "@/ui2/lib/useMediaQuery";
 import { apiFetch } from "@/ui2/queries/client";
 import { Button } from "./Button";
 import { useInstallApp } from "./InstallApp";
+import { MyTicketsSheet } from "./MyTickets";
 import { ReportIssueDialog } from "./ReportIssue";
 import { RowMenu, type RowMenuItem } from "./RowMenu";
+import { ScreenshotFab } from "./ScreenshotFab";
 import type { SessionUser } from "./RequireUser";
 import styles from "./AppShell.module.css";
 
@@ -41,6 +43,17 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
   const [leaving, setLeaving] = useState(false);
   const [stopping, setStopping] = useState(false);
   const [reporting, setReporting] = useState(false);
+  const [reportKey, setReportKey] = useState(0); // a new key per opening: the report dialog starts clean every time
+  const [reportShot, setReportShot] = useState<string | null>(null);
+  const [reportMeta, setReportMeta] = useState<Record<string, unknown> | undefined>(undefined);
+  const [myTickets, setMyTickets] = useState(false);
+  /** Open the report dialog, empty (from a button) or ready with a screenshot and the details taken when the screenshot button was pressed. */
+  function openReport(shot: string | null = null, meta?: Record<string, unknown>) {
+    setReportShot(shot);
+    setReportMeta(meta);
+    setReportKey((k) => k + 1);
+    setReporting(true);
+  }
 
   async function backToClassic() {
     setLeaving(true);
@@ -71,7 +84,8 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
   };
 
   const menu: RowMenuItem[] = [
-    { label: "Report an Issue", onSelect: () => setReporting(true) },
+    { label: "Report an Issue", onSelect: () => openReport() },
+    { label: "My tickets", onSelect: () => setMyTickets(true) },
     ...(install.available ? [{ label: "Install app", onSelect: () => void install.run() }] : []),
     { label: leaving ? "Opening classic…" : "Classic UI", onSelect: () => void backToClassic() },
     { label: "Sign out", onSelect: signOut },
@@ -105,15 +119,18 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
           {phone ? (
             <>
               {/* One tap, not two (TKT-0329): reporting a problem must not hide inside the menu. */}
-              <Button variant="ghost" size="sm" onDark onClick={() => setReporting(true)}>
+              <Button variant="ghost" size="sm" onDark onClick={() => openReport()}>
                 Report issue
               </Button>
               <RowMenu label="Menu" trigger="Menu ▾" items={menu.filter((i) => i.label !== "Report an Issue")} />
             </>
           ) : (
             <>
-              <Button variant="ghost" size="sm" onDark onClick={() => setReporting(true)}>
+              <Button variant="ghost" size="sm" onDark onClick={() => openReport()}>
                 Report an Issue
+              </Button>
+              <Button variant="ghost" size="sm" onDark onClick={() => setMyTickets(true)}>
+                My tickets
               </Button>
               {install.available && (
                 <Button variant="ghost" size="sm" onDark onClick={() => void install.run()}>
@@ -145,7 +162,9 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
       <main id="u2-main" className={styles.main} style={{ ["--u2-sticky-top" as string]: tabs ? "calc(var(--u2-bar-height) + 53px)" : "var(--u2-bar-height)" }}>
         {children}
       </main>
-      <ReportIssueDialog open={reporting} onOpenChange={setReporting} />
+      <ReportIssueDialog key={reportKey} open={reporting} onOpenChange={setReporting} shot={reportShot} meta={reportMeta} />
+      <MyTicketsSheet open={myTickets} onOpenChange={setMyTickets} />
+      <ScreenshotFab onCapture={(shot, meta) => openReport(shot, meta)} />
       {install.help}
     </>
   );

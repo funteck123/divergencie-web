@@ -47,6 +47,7 @@
     "date-fns": "4.4.0",
     "firebase-admin": "^13.0.2",
     "framer-motion": "^12.38.0",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^1.14.0",
     "next": "16.2.10",
     "nuqs": "2.10.1",

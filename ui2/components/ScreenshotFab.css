@@ -1,0 +1,15 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* Quiet on purpose: faint until the pointer or keyboard is on it. The solver's own bottom bar sits at the bottom edge on a phone, so the button lifts above it there. */
+  .u2-shotfab {
+    position: fixed; left: var(--u2-space-2); bottom: var(--u2-space-2); z-index: var(--u2-z-bar);
+    display: grid; place-items: center; width: 28px; height: 28px; padding: 0;
+    color: var(--u2-color-brand); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius-round);
+    opacity: 0.3; cursor: pointer; transition: opacity 150ms;
+  }
+  .u2-shotfab:hover, .u2-shotfab:focus-visible { opacity: 1; }
+  .u2-shotfab:focus-visible { outline: 2px solid var(--u2-color-focus); outline-offset: 2px; }
+  .u2-shotfab[aria-busy="true"] { opacity: 1; cursor: progress; }
+  @media (max-width: 639px) { .u2-shotfab { bottom: calc(var(--u2-space-8) + var(--u2-space-12)); } }
+  @media (prefers-reduced-motion: reduce) { .u2-shotfab { transition: none; } }
+}

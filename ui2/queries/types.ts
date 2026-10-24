@@ -159,11 +159,38 @@ export interface TicketNote {
   At: string;
   Text: string;
 }
+/** A reply on a ticket as Management stores it: who wrote it (By), whether Management or the sender (ByType), and the text. */
+export interface TicketReply {
+  At: string;
+  By: string;
+  ByType: "Management" | "Sender";
+  Text: string;
+}
+/** What the browser and the server recorded about the screen a ticket was raised on (Management only). */
+export interface TicketMeta {
+  client?: { page?: string; title?: string; viewport?: string; screen?: string; dpr?: number; scrollY?: number; lang?: string; tz?: string; theme?: string; ui?: string; net?: string; online?: boolean; touch?: boolean; capturedAt?: string };
+  server?: { userAgent?: string; build?: string; receivedAt?: string };
+}
+/** One of the signed-in person's own tickets, as the sender sees it: no internal notes, no device details, no user IDs. */
+export interface MyTicket {
+  TicketID: string;
+  Message: string;
+  AttachmentURL: string;
+  HasImage: boolean;
+  CreatedAt: string;
+  ClosedAt: string;
+  CloseMessage: string;
+  OnHold: boolean;
+  Replies: { At: string; From: "You" | "Support"; Text: string }[];
+}
 export interface TicketRecord {
   TicketID: string;
   SenderUserID: string;
   Message: string;
   AttachmentURL?: string;
+  HasImage?: boolean;
+  Meta?: TicketMeta;
+  Replies?: TicketReply[];
   CreatedAt: string;
   ClosedAt?: string;
   CloseMessage?: string;

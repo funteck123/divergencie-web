@@ -1,0 +1,5 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-report__pic { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-2); }
+  .u2-report__preview { display: block; width: 100%; max-height: 200px; object-fit: contain; object-position: left top; background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+}

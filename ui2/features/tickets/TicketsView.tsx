@@ -9,8 +9,9 @@ import { Button, LinkButton } from "@/ui2/components/Button";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { CheckField, Field, TextArea } from "@/ui2/components/Field";
 import { Sheet } from "@/ui2/components/Sheet";
-import { usePatchTicket, useTickets, useUptimeCheck } from "@/ui2/queries/tickets";
-import type { TicketRecord } from "@/ui2/queries/types";
+import { TicketPicture } from "@/ui2/components/TicketPicture";
+import { usePatchTicket, useReplyTicket, useTickets, useUptimeCheck } from "@/ui2/queries/tickets";
+import type { TicketMeta, TicketRecord } from "@/ui2/queries/types";
 import { useUsers } from "@/ui2/queries/users";
 import "@/ui2/features/accounts/accounts.css";
 import "@/ui2/features/billing/billing.css";
@@ -151,10 +152,23 @@ function ThreadSheet({ ticketId, label, onClose }: { ticketId: string | null; la
 
 function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }) {
   const patch = usePatchTicket();
+  const reply = useReplyTicket();
   const [mode, setMode] = useState<"" | "edit" | "close" | "hold">("");
   const [draft, setDraft] = useState("");
   const [note, setNote] = useState("");
+  const [replyText, setReplyText] = useState("");
   const [error, setError] = useState("");
+
+  async function sendReply() {
+    setError("");
+    try {
+      await reply.mutateAsync({ ticketId: t.TicketID, reply: replyText });
+      setReplyText("");
+      toast.success("Reply sent. The sender can read it under My tickets.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not send the reply.");
+    }
+  }
 
   async function run(action: Parameters<typeof patch.mutateAsync>[0]["action"], extra: Record<string, unknown> | undefined, done: string) {
     setError("");
@@ -187,8 +201,24 @@ function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }
         <p className="u2-prewrap">{t.Message}</p>
       )}
 
+      {t.HasImage && <TicketPicture ticketId={t.TicketID} label="Show screenshot" />}
+      {t.Meta && <ScreenDetails meta={t.Meta} />}
+
+      {Array.isArray(t.Replies) && t.Replies.length > 0 && (
+        <div className="u2-rows">
+          <span className="u2-muted">Conversation (the sender sees this)</span>
+          {t.Replies.map((r, i) => (
+            <div key={i} className="u2-box u2-box--inner u2-prewrap">
+              <span className="u2-muted">{r.ByType === "Management" ? `Support · ${label(r.By)}` : label(r.By)} · {formatDateTime(r.At) as string}</span>
+              <span>{r.Text}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {Array.isArray(t.Notes) && t.Notes.length > 0 && (
         <div className="u2-rows">
+          <span className="u2-muted">Internal notes (hidden from the sender)</span>
           {t.Notes.map((n, i) => (
             <div key={i} className="u2-box u2-box--inner u2-prewrap">
               <span className="u2-muted">{label(n.By)} · {formatDateTime(n.At) as string}</span>
@@ -251,6 +281,15 @@ function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }
         )}
       </div>
 
+      <Field label={`Reply to ${label(t.SenderUserID)}`} hint="The sender reads this under My tickets.">
+        <TextArea rows={3} value={replyText} onChange={(e) => setReplyText(e.target.value)} />
+      </Field>
+      <div className="u2-form__actions">
+        <Button variant="primary" disabled={!replyText.trim()} disabledReason="Write the reply first." loading={reply.isPending} onClick={() => void sendReply()}>
+          Send reply
+        </Button>
+      </div>
+
       <Field label="Add a note" hint="Internal. Never shown to the sender.">
         <TextArea rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
       </Field>
@@ -260,6 +299,37 @@ function Thread({ t, label }: { t: TicketRecord; label: (id: string) => string }
         </Button>
       </div>
     </div>
+  );
+}
+
+/** What the browser and the server recorded when the ticket was raised: the page, the screen, the browser and the build. Reported by the browser, so a hint and not proof. */
+function ScreenDetails({ meta }: { meta: TicketMeta }) {
+  const c = meta.client ?? {};
+  const sv = meta.server ?? {};
+  const rows: [string, string | undefined][] = [
+    ["Page", c.page],
+    ["Window", c.viewport ? `${c.viewport}${c.dpr ? ` at ${c.dpr}x` : ""}${c.screen ? `, screen ${c.screen}` : ""}` : undefined],
+    ["Theme and UI", [c.theme, c.ui && `${c.ui} UI`].filter(Boolean).join(", ") || undefined],
+    ["Language and time zone", [c.lang, c.tz].filter(Boolean).join(", ") || undefined],
+    ["Connection", [c.net, c.online === false ? "offline" : undefined, c.touch ? "touch screen" : undefined].filter(Boolean).join(", ") || undefined],
+    ["Browser", sv.userAgent],
+    ["Version of the app", sv.build],
+    ["Taken at", c.capturedAt ? (formatDateTime(c.capturedAt) as string) : undefined],
+  ];
+  const shown = rows.filter((r): r is [string, string] => !!r[1]);
+  if (!shown.length) return null;
+  return (
+    <details className="u2-box u2-box--inner">
+      <summary>Screen details</summary>
+      <dl className="u2-ticketmeta">
+        {shown.map(([k, v]) => (
+          <div key={k}>
+            <dt className="u2-muted">{k}</dt>
+            <dd className="u2-prewrap">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
   );
 }
 

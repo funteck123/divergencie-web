@@ -8,5 +8,6 @@ export const keys = {
   paychecks: ["paychecks"] as const,
   schedule: ["schedule"] as const,
   tickets: ["tickets"] as const,
+  myTickets: ["tickets", "mine"] as const,
   auditLog: (limit: number, offset: number) => ["auditlog", limit, offset] as const,
 };

@@ -1,0 +1,6 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-ticketpic { display: block; max-width: 100%; }
+  .u2-ticketpic img { display: block; width: 100%; max-height: 420px; object-fit: contain; object-position: left top; background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-ticketpic__ask { display: inline-flex; align-items: center; gap: var(--u2-space-2); }
+}

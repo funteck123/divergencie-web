@@ -37,6 +37,9 @@
   .u2-grid3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: var(--u2-space-3); }
   .u2-box { display: grid; align-content: start; gap: var(--u2-space-3); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
   .u2-box--inner { background: var(--u2-color-bg-subtle); }
+  .u2-ticketmeta { display: grid; gap: var(--u2-space-2); margin: var(--u2-space-2) 0 0; }
+  .u2-ticketmeta div { display: grid; gap: var(--u2-space-1); }
+  .u2-ticketmeta dd { margin: 0; overflow-wrap: anywhere; }
   .u2-danger-text { color: var(--u2-color-error); }
   /* from ui2/components/Field.css */
   .u2-check { display: inline-flex; align-items: center; gap: var(--u2-space-2); font-size: var(--u2-text-md); }

@@ -1,0 +1,16 @@
+/* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  .u2-mytickets__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--u2-space-2); }
+  .u2-mytickets__row {
+    display: grid; gap: var(--u2-space-1); width: 100%; padding: var(--u2-space-3); text-align: left; cursor: pointer;
+    color: var(--u2-color-text); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius);
+  }
+  .u2-mytickets__row:hover { background: var(--u2-color-selected); }
+  .u2-mytickets__row:focus-visible { outline: 2px solid var(--u2-color-focus); outline-offset: 2px; }
+  .u2-mytickets__top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--u2-space-2); }
+  .u2-mytickets__line { font-weight: var(--u2-weight-medium); overflow-wrap: anywhere; }
+  .u2-mytickets__msg { display: grid; gap: var(--u2-space-1); padding: var(--u2-space-3); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-mytickets__msg p { margin: 0; overflow-wrap: anywhere; }
+  .u2-mytickets__msg--you { background: var(--u2-color-bg-subtle); }
+  .u2-mytickets__msg--support { background: var(--u2-color-info-bg); border-color: var(--u2-color-info); }
+}
