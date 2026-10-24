@@ -95,3 +95,16 @@ export function togo(c: Completion): string {
   const left = c.total - c.solved;
   return left === 0 ? "All solved" : `${left} to go`;
 }
+
+/** One plain sentence on where the scores are heading: the last five Tests, oldest to newest. Fewer than two Tests: say there is nothing to compare yet. */
+export function trendNote(attempts: readonly AttemptRow[]): string {
+  const tests = attempts.filter(scored).sort((a, b) => (a.submitted_at ?? "").localeCompare(b.submitted_at ?? "")).slice(-5);
+  if (tests.length === 0) return "No Tests yet.";
+  if (tests.length === 1) return "One Test so far. Take another to see a trend.";
+  const first = pct(tests[0] as AttemptRow);
+  const last = pct(tests[tests.length - 1] as AttemptRow);
+  const diff = Math.round(last - first);
+  if (diff >= 3) return `Up ${diff} points over your last ${tests.length} Tests.`;
+  if (diff <= -3) return `Down ${-diff} points over your last ${tests.length} Tests.`;
+  return `Steady over your last ${tests.length} Tests, at about ${Math.round(last)}%.`;
+}

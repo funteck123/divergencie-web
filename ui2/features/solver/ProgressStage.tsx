@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/ui2/components/Badge";
 import { Button } from "@/ui2/components/Button";
 import { Skeleton } from "@/ui2/components/Skeleton";
+import { Sheet } from "@/ui2/components/Sheet";
 import { Combobox } from "@/ui2/components/Combobox";
 import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { Field } from "@/ui2/components/Field";
@@ -12,16 +13,17 @@ import { ApiError } from "@/ui2/queries/client";
 import { getQuestionImage, getQuestionResponses, loadProgress } from "@/ui2/queries/solver";
 import { BarChart, LineChart, type Series } from "./Charts";
 import { Feedback } from "./Feedback";
+import { SOLID_AT, completionFor, togo, trendNote, type Completion } from "./progressLogic";
 import { attemptMatches, chapterLabel, historyRows, naturalQuestionSort, pctOf, seriesByAccount, type HistoryRow } from "./solverLogic";
-import type { AttemptRow, Leaderboard, RankEntry } from "./solverTypes";
+import type { AttemptRow, Leaderboard, Library, RankEntry, YearlyLibrary } from "./solverTypes";
 import "./solver.css";
 
-type Tab = "progress" | "history" | "mistakes" | "leaderboard";
-const TABS: { id: Tab; label: string }[] = [{ id: "progress", label: "Progress" }, { id: "history", label: "History" }, { id: "mistakes", label: "Mistakes" }, { id: "leaderboard", label: "Leaderboard" }];
+type Tab = "progress" | "completion" | "history" | "mistakes" | "leaderboard";
+const TABS: { id: Tab; label: string }[] = [{ id: "progress", label: "Score trend" }, { id: "completion", label: "Completion" }, { id: "history", label: "My attempts" }, { id: "mistakes", label: "Mistakes" }, { id: "leaderboard", label: "Leaderboard" }];
 const opts = (list: readonly string[], label?: (s: string) => string) => list.map((v) => ({ value: v, label: label ? label(v) : v }));
 
-/** Four tabs: score over time (own line bold, others faint), every attempt with its saved answers, mistakes per chapter, and the leaderboards. A summary strip sits on top. */
-export function ProgressStage({ account, titles, names, onBack }: { account: string; titles: Record<string, string>; names: Record<string, string>; onBack: () => void }) {
+/** Five tabs: score trend (own line bold, others faint), completion per subject, every attempt with its saved answers, mistakes per chapter, and the leaderboards. A summary strip sits on top. */
+export function ProgressStage({ account, titles, names, library, yearly, onBack }: { account: string; titles: Record<string, string>; names: Record<string, string>; library: Library; yearly: YearlyLibrary; onBack: () => void }) {
   const q = useQuery({ queryKey: ["solver-progress", account] as const, queryFn: () => loadProgress(account) });
   const [tab, setTab] = useState<Tab>("progress");
   const [subject, setSubject] = useState("");
@@ -66,15 +68,59 @@ export function ProgressStage({ account, titles, names, onBack }: { account: str
       </div>
 
       {(tab === "progress" || tab === "history") && (
-        <div className="u2-grid2">
+        <div className="u2-filters">
           <Field label="Subject"><Combobox value={subject} onChange={(v) => { setSubject(v); setChapter(""); }} placeholder="All subjects" options={opts(subjects)} /></Field>
           <Field label="Chapter"><Combobox value={chapter} onChange={setChapter} placeholder="All chapters" disabled={!subject} options={opts(chapters, (c) => label(subject, c))} /></Field>
         </div>
       )}
-      {tab === "progress" && <LineChart series={lines} emptyText="No attempts recorded yet. Take a Test-mode quiz from the library to start tracking." />}
+      {tab === "progress" && (
+        <>
+          <p className="u2-trend" role="status">{trendNote(scoped)}</p>
+          <LineChart series={lines} passMark={SOLID_AT} emptyText="No attempts recorded yet. Take a Test-mode quiz from the library to start tracking." />
+        </>
+      )}
+      {tab === "completion" && <CompletionTab rows={completionFor(library, yearly, mine)} />}
       {tab === "history" && <History rows={historyRows(scoped, label)} account={account} attempts={scoped} titleOf={titleOf} />}
       {tab === "mistakes" && <Mistakes chart={data?.mistakeChart ?? {}} subject={mistakeSubject} setSubject={setMistakeSubject} label={label} />}
       {tab === "leaderboard" && data && <Board lb={data.leaderboard} account={account} titles={titles} attempts={data.all} names={names} />}
+    </div>
+  );
+}
+
+/** One card per subject: worksheets, then yearly papers, each as a bar (solved in full colour, tried but not yet solved lighter) with how far there is to go. */
+function CompletionTab({ rows }: { rows: Completion[] }) {
+  if (rows.length === 0) return <p className="u2-muted">No papers in the library yet.</p>;
+  const subjects = [...new Set(rows.map((r) => r.subject))];
+  const pctw = (n: number, t: number) => `${t ? (n / t) * 100 : 0}%`;
+  return (
+    <div className="u2-rows">
+      <p className="u2-muted">A paper counts as solved once you score {SOLID_AT}% or more on it in Test mode. Tried means you opened it in any mode.</p>
+      {subjects.map((subject) => (
+        <section key={subject} className="u2-done" aria-label={subject}>
+          <h3>{subject}</h3>
+          {rows.filter((r) => r.subject === subject).map((r) => {
+            const word = r.kind === "topical" ? "Worksheets" : "Yearly papers";
+            const left = togo(r);
+            return (
+              <div key={r.kind} className="u2-done__row">
+                <div className="u2-done__head">
+                  <strong>{word}</strong>
+                  <span>{r.solved} of {r.total} solved</span>
+                  <Badge kind={left === "All solved" ? "success" : "neutral"}>{left}</Badge>
+                </div>
+                <div className="u2-done__bar" role="img" aria-label={`${word}: ${r.solved} solved, ${r.tried - r.solved} tried but not solved, ${r.total - r.tried} not tried, of ${r.total}`}>
+                  <span className="u2-done__solved" style={{ width: pctw(r.solved, r.total) }} />
+                  <span className="u2-done__tried" style={{ width: pctw(r.tried - r.solved, r.total) }} />
+                </div>
+                <p className="u2-muted u2-done__note">
+                  {r.tried} tried, {r.total - r.tried} not tried yet.
+                  {r.questionsAsked > 0 && ` ${r.questionsRight} of ${r.questionsAsked} questions right on your best Test of each paper (${Math.round((r.questionsRight / r.questionsAsked) * 100)}%).`}
+                </p>
+              </div>
+            );
+          })}
+        </section>
+      ))}
     </div>
   );
 }
@@ -89,13 +135,15 @@ function History({ rows, account, attempts, titleOf }: { rows: HistoryRow[]; acc
     { id: "pct", header: "%", width: 56, numeric: true, cell: (r) => r.percent },
     { id: "time", header: "Time", width: 60, numeric: true, cell: (r) => r.time },
     { id: "when", header: "When", width: 150, cell: (r) => r.when },
-    { id: "view", header: "Answers", width: 80, cell: (r) => (r.canView ? <Button size="sm" variant="ghost" aria-expanded={open === r.id} onClick={() => setOpen(open === r.id ? null : (r.id as string))}>{open === r.id ? "Hide" : "View"}</Button> : "—") },
+    { id: "view", header: "Answers", width: 80, cell: (r) => (r.canView ? <Button size="sm" variant="ghost" aria-haspopup="dialog" onClick={() => setOpen(r.id as string)}>View</Button> : "—") },
   ];
   const openRow = rows.find((r) => r.id === open);
   return (
     <>
       <DataTable caption="Attempt history" rows={rows} columns={cols} rowKey={(r) => `${r.id ?? r.paperId}-${r.when}`} emptyText="No attempts yet." />
-      {openRow && <Answers account={account} attemptId={open as string} paperId={openRow.paperId} count={attempts.length} />}
+      <Sheet wide open={!!openRow} onOpenChange={(o) => { if (!o) setOpen(null); }} title={openRow ? titleOf(openRow.paperId) : "Answers"} subtitle={openRow ? `${openRow.mode}, ${openRow.score} (${openRow.percent}), ${openRow.when}` : undefined}>
+        {openRow && <Answers account={account} attemptId={open as string} paperId={openRow.paperId} count={attempts.length} />}
+      </Sheet>
     </>
   );
 }

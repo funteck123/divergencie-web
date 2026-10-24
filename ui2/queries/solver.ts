@@ -94,6 +94,8 @@ export async function loadProgress(account: string) {
   ]);
   return { mine: mine.attempts ?? [], all: all.attempts ?? [], leaderboard: lb, mistakeChart: chart.chart };
 }
+/** Only the account's own attempts: enough to mark papers in the picker as tried, practised or solved. */
+export const loadMyAttempts = (account: string) => apiFetch<{ attempts?: AttemptRow[] }>(`/api/mcq/progress?account=${encodeURIComponent(account)}`).then((r) => r.attempts ?? []);
 export const getQuestionResponses = (account: string, attemptId: string) => apiFetch<{ responses?: QuestionResponse[] }>(`/api/mcq/question-responses?account=${encodeURIComponent(account)}&attemptId=${encodeURIComponent(attemptId)}`);
 export const getQuestionImage = (paperId: string, questionNumber: string, kind: "qp" | "ms") => apiFetch<{ image: string }>(`/api/mcq/question-image?paperId=${encodeURIComponent(paperId)}&questionNumber=${encodeURIComponent(questionNumber)}&kind=${kind}`);
 

@@ -54,7 +54,7 @@ def main():
         s.goto("/v2/question-solver")
         # progress and the answers panel
         s.page.get_by_role("button", name=re.compile("progress", re.I)).click()
-        s.page.get_by_role("tab", name="History").click()
+        s.page.get_by_role("tab", name="My attempts").click()
         s.page.get_by_role("button", name="View").click()
         s.page.get_by_role("list", name="Your answers").wait_for()
         out["edge_title_progress"] = [s.page.evaluate(edge, "main h1"), s.page.evaluate(edge, ".u2-solver")]

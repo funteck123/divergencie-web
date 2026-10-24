@@ -8,6 +8,10 @@
   .u2-chart__other { fill: none; stroke: var(--u2-color-text-muted); stroke-width: 1.5; opacity: 0.3; }
   .u2-chart__dot { fill: var(--u2-color-accent); stroke: var(--u2-color-brand); stroke-width: 2; cursor: pointer; }
   .u2-chart__dot:focus { outline: none; stroke-width: 4; }
+  .u2-chart__area { fill: var(--u2-color-brand); opacity: 0.1; stroke: none; }
+  .u2-chart__pass { stroke: var(--u2-color-success); stroke-width: 1.5; stroke-dasharray: 6 5; }
+  .u2-chart__latest { fill: var(--u2-color-text); font-size: var(--u2-text-sm); font-weight: var(--u2-weight-bold); }
+  .u2-chart__dot--best { fill: var(--u2-color-accent); stroke: var(--u2-color-brand); stroke-width: 3; }
   .u2-chart__bar { fill: var(--u2-color-coral); }
   .u2-chart__tipbg { fill: var(--u2-color-brand); }
   .u2-chart__tiptext { fill: var(--u2-color-on-brand); font-size: var(--u2-text-xs); }
@@ -15,6 +19,7 @@
   .u2-chart__key { display: inline-block; width: 18px; height: 4px; border-radius: var(--u2-radius); margin-right: 6px; vertical-align: middle; }
   .u2-chart__key--mine { background: var(--u2-color-brand); height: 5px; }
   .u2-chart__key--other { background: var(--u2-color-text-muted); opacity: 0.4; }
+  .u2-chart__key--best { height: 10px; width: 10px; border-radius: var(--u2-radius-round); background: var(--u2-color-accent); border: 2px solid var(--u2-color-brand); }
 }
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   /* One content column for every stage, left-aligned with the page title (a centered column left the title and the content on different edges). */
@@ -89,4 +94,21 @@
     .u2-ans__row > :nth-child(3) { grid-column: 2; }
     .u2-ans__row > .u2-push { grid-column: 1 / -1; margin-left: 0; }
   }
+}
+
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* Filters sit side by side at a modest width, instead of two full-width boxes. */
+  .u2-filters { display: flex; flex-wrap: wrap; gap: var(--u2-space-3); }
+  .u2-filters > .u2-field { flex: 0 1 240px; min-width: 160px; }
+  .u2-trend { margin: 0; font-weight: var(--u2-weight-semibold); }
+  .u2-done { display: grid; gap: var(--u2-space-3); padding: var(--u2-space-4); background: var(--u2-color-surface); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); }
+  .u2-done h3 { margin: 0; }
+  .u2-done__row { display: grid; gap: var(--u2-space-2); }
+  .u2-done__head { display: flex; align-items: center; gap: var(--u2-space-3); flex-wrap: wrap; }
+  .u2-done__head > span { color: var(--u2-color-text-muted); font-size: var(--u2-text-sm); }
+  .u2-done__head > :last-child { margin-left: auto; }
+  .u2-done__bar { display: flex; height: 12px; background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); overflow: hidden; }
+  .u2-done__solved { background: var(--u2-color-success); }
+  .u2-done__tried { background: var(--u2-color-info-bg); }
+  .u2-done__note { margin: 0; font-size: var(--u2-text-sm); }
 }

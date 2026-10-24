@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { completionFor, isGoodPick, pickHint, statusIndex, statusLabel, statusOf, togo } from "./progressLogic";
+import { completionFor, isGoodPick, pickHint, statusIndex, statusLabel, statusOf, togo, trendNote } from "./progressLogic";
 import type { AttemptRow, Library, YearlyLibrary } from "./solverTypes";
 
 const at = (paper_id: string, over: Partial<AttemptRow> = {}): AttemptRow => ({ account_id: "A", subject: "IGCSE Physics", chapter: "1", paper_id, mode: "test", score: 8, total_questions: 10, time_taken_seconds: 60, submitted_at: "2026-10-01T00:00:00Z", ...over });
@@ -42,4 +42,15 @@ describe("completion", () => {
     expect(completionFor(lib, {}, [])[0]).toMatchObject({ tried: 0, solved: 0, questionsAsked: 0 });
   });
   it("attempts on papers no longer in the library are ignored", () => expect(completionFor(lib, {}, [at("gone", { score: 10 })])[0]).toMatchObject({ tried: 0 }));
+});
+
+describe("trend note", () => {
+  const day = (n: number, score: number) => at("p", { score, submitted_at: `2026-10-${String(n).padStart(2, "0")}T00:00:00Z` });
+  it("says what it can with 0 or 1 Tests", () => { expect(trendNote([])).toBe("No Tests yet."); expect(trendNote([day(1, 5), at("q", { mode: "practice", score: null })])).toMatch(/One Test so far/); });
+  it("up, down and steady, from the last five Tests in date order", () => {
+    expect(trendNote([day(3, 8), day(1, 5), day(2, 6)])).toBe("Up 30 points over your last 3 Tests.");
+    expect(trendNote([day(1, 9), day(2, 7)])).toBe("Down 20 points over your last 2 Tests.");
+    expect(trendNote([day(1, 7), day(2, 7), day(3, 7)])).toBe("Steady over your last 3 Tests, at about 70%.");
+    expect(trendNote([day(1, 1), day(2, 8), day(3, 8), day(4, 8), day(5, 8), day(6, 8)])).toBe("Steady over your last 5 Tests, at about 80%."); // the first Test is older than the window
+  });
 });

@@ -1,16 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/ui2/components/Button";
 import type { SessionUser } from "@/ui2/components/RequireUser";
-import { digitizeUpload, fetchAndDigitize, getMistakes, getPaper, gradeStructured, loadLibraryBundle, loadStructured, postAttempt, postMistakes, yearlyDigitizeMcq } from "@/ui2/queries/solver";
+import { digitizeUpload, fetchAndDigitize, getMistakes, getPaper, gradeStructured, loadLibraryBundle, loadMyAttempts, loadStructured, postAttempt, postMistakes, yearlyDigitizeMcq } from "@/ui2/queries/solver";
 import { LibraryStage, type PickedPaper } from "./LibraryStage";
 import { ProgressStage } from "./ProgressStage";
 import { QuizStage, type GradingStatus } from "./QuizStage";
 import { ResultsStage, type Results } from "./ResultsStage";
 import { UploadStage } from "./UploadStage";
 import { initialQuiz, quizReducer } from "./quizMachine";
+import { statusIndex } from "./progressLogic";
 import { AUTOSAVE_KEY, chapterNames, gradeMcq, isFullMarks, mistakeResults, naturalQuestionSort, resumable, scoreStructured, titleIndex, type AutosaveRecord } from "./solverLogic";
 import type { AttemptMeta, GradeResult, McqQuestion, StructuredItem, YearlyPaper } from "./solverTypes";
 import "./solver.css";
@@ -34,6 +35,16 @@ export function SolverView({ user }: { user: SessionUser }) {
   const account = user.UserID;
   const bundleQ = useQuery({ queryKey: ["solver-library"] as const, queryFn: () => loadLibraryBundle(true) });
   const bundle = bundleQ.data;
+  const qc = useQueryClient();
+  const mineQ = useQuery({ queryKey: ["solver-mine", account] as const, queryFn: () => loadMyAttempts(account), enabled: !!account });
+  const statuses = useMemo(() => statusIndex(mineQ.data ?? []), [mineQ.data]);
+  /** Every saved attempt also refreshes the picker's markers and the progress screen. */
+  const saveAttempt: typeof postAttempt = async (a) => {
+    const id = await postAttempt(a);
+    void qc.invalidateQueries({ queryKey: ["solver-mine"] });
+    void qc.invalidateQueries({ queryKey: ["solver-progress"] });
+    return id;
+  };
   const titles = useMemo(() => (bundle ? titleIndex(bundle.library, bundle.yearly, bundle.titles) : {}), [bundle]);
   const names = useMemo(() => (bundle ? chapterNames(bundle.library, bundle.titles, bundle.subjectsById) : {}), [bundle]);
 
@@ -220,7 +231,7 @@ export function SolverView({ user }: { user: SessionUser }) {
       } else if (paper.meta && g.attemptedGradable > 0) {
         setSaveStatus("Saving your score…");
         try {
-          const attemptId = await postAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "test", score: g.correct, totalQuestions: g.attemptedGradable, timeTakenSeconds: quiz.elapsed });
+          const attemptId = await saveAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "test", score: g.correct, totalQuestions: g.attemptedGradable, timeTakenSeconds: quiz.elapsed });
           await postMistakes({ accountId: account, accountName: user.Name, subject: paper.meta.subject, chapter: paper.meta.chapter, paperId: paper.meta.paperId, results: mistakeResults(g.results), attemptId });
           setSaveStatus("Score saved to your progress history.");
         } catch (e) {
@@ -251,7 +262,7 @@ export function SolverView({ user }: { user: SessionUser }) {
     if (paper.meta && gradable.length > 0) {
       setSaveStatus("Saving your score…");
       try {
-        const attemptId = await postAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "test", score: correct, totalQuestions: gradable.length, timeTakenSeconds: quiz.elapsed });
+        const attemptId = await saveAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "test", score: correct, totalQuestions: gradable.length, timeTakenSeconds: quiz.elapsed });
         const items = gradable.map((g) => ({ questionNumber: g.questionNumber, verdict: isFullMarks(g) ? "correct" : "incorrect", studentAnswer: g.studentAnswerVerbatim, marksAwarded: g.marksAwarded, marksAvailable: g.marksAvailable, remark: g.remark, lineFeedback: g.lineFeedback, markBreakdown: g.markBreakdown, styleChecklist: g.styleChecklist, fullMarkAnswer: g.fullMarkAnswer, lowConfidence: g.lowConfidence }));
         await postMistakes({ accountId: account, accountName: user.Name, subject: paper.meta.subject, chapter: paper.meta.chapter, paperId: paper.meta.paperId, results: mistakeResults(items), attemptId });
         setSaveStatus("Score saved to your progress history.");
@@ -264,14 +275,14 @@ export function SolverView({ user }: { user: SessionUser }) {
   async function finishPractice() {
     if (paper?.meta) {
       setSubmitting(true);
-      try { await postAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "practice", totalQuestions: quiz.kind === "mcq" ? mcq.length : structured.length, timeTakenSeconds: quiz.elapsed }); } catch { /* practice history is best effort */ }
+      try { await saveAttempt({ accountId: account, accountName: user.Name, meta: paper.meta, mode: "practice", totalQuestions: quiz.kind === "mcq" ? mcq.length : structured.length, timeTakenSeconds: quiz.elapsed }); } catch { /* practice history is best effort */ }
       setSubmitting(false);
     }
     reset();
   }
 
   // ---- screens --------------------------------------------------------------------------------------------------
-  if (stage === "progress") return <ProgressStage account={account} titles={titles} names={names} onBack={() => setStage("library")} />;
+  if (stage === "progress") return <ProgressStage account={account} titles={titles} names={names} library={bundle?.library ?? {}} yearly={bundle?.yearly ?? {}} onBack={() => setStage("library")} />;
   if (stage === "upload") return <UploadStage busy={busy} error={error} onDigitize={(qp, ms) => void openUpload(qp, ms)} onBack={() => setStage("library")} />;
   if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={reset} backLabel="Back to library" pdfLinks={paper?.pdf} />;
   if (stage === "mode" && paper) {
@@ -309,7 +320,7 @@ export function SolverView({ user }: { user: SessionUser }) {
   return (
     <LibraryStage
       bundle={bundle} loading={bundleQ.isPending} error={bundleQ.error ? `Couldn't load the library (${bundleQ.error.message}).` : error}
-      canMistakes busy={busy} status={status}
+      canMistakes busy={busy} status={status} statuses={statuses}
       onPick={(p) => void openPaper(p)} onMistakes={(b, s, c) => void startMistakes(b, s, c)}
       onUpload={() => { setError(""); setStage("upload"); }} onProgress={() => setStage("progress")}
     />

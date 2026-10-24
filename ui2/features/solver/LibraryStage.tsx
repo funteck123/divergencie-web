@@ -8,6 +8,7 @@ import { Field } from "@/ui2/components/Field";
 import type { LibraryBundle } from "@/ui2/queries/solver";
 import { yearlyPdfUrl } from "@/ui2/queries/solver";
 import { boardsOf, chapterKey, chapterOf, componentsOf, fetchButtonLabel, isReadingComponent, isStructuredComponent, paperTypes, sessionsOf, subjectOffersBothTypes, subjectsOf, topicalChapters, yearlyPaperLabel, yearsOf, type PaperType } from "./solverLogic";
+import { NEW_PAPER, isGoodPick, pickHint, statusLabel, type PaperStatus } from "./progressLogic";
 import type { AttemptMeta, TopicalPaper, YearlyPaper } from "./solverTypes";
 import "./solver.css";
 
@@ -22,13 +23,15 @@ const opt = (v: string): ComboOption => ({ value: v, label: v });
  * Pick board, subject, component, paper type, (year and session for yearly papers) and paper, all in one column, with the
  * button that loads the paper pinned to the bottom of the screen on a phone. Reading-only components open a PDF instead.
  */
-export function LibraryStage({ bundle, loading, error, canMistakes, busy, status, onPick, onMistakes, onUpload, onProgress }: {
+export function LibraryStage({ bundle, loading, error, canMistakes, busy, status, statuses, onPick, onMistakes, onUpload, onProgress }: {
   bundle: LibraryBundle | undefined;
   loading: boolean;
   error: string;
   canMistakes: boolean;
   busy: boolean;
   status: string;
+  /** paperId to what the student has done on it. A paper missing here has not been tried. */
+  statuses: Record<string, PaperStatus>;
   onPick: (p: PickedPaper, component: string) => void;
   onMistakes: (board: string, subject: string, component: string) => void;
   onUpload: () => void;
@@ -66,17 +69,23 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
   const se = sessions.includes(session) ? session : (sessions[0] ?? "");
 
   const chapters = type === "topical" ? topicalChapters(topical) : [];
+  const solvedIn = (key: string) => topical.filter((p) => (chapterOf(p.title) ?? OTHER_CHAPTER) === key && !isGoodPick(stateOf(p.qpId))).length;
   const chap = chapters.some((c) => c.key === chapterPick) ? chapterPick : "";
+  const stateOf = (id: string) => statuses[id] ?? NEW_PAPER;
+  const tag = (id: string) => ` · ${statusLabel(stateOf(id))}`;
   const paperOptions: ComboOption[] =
     type === "topical"
-      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (chapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}` }))
+      ? topical.map((p, i) => ({ p, i })).filter(({ p }) => !chap || (chapterOf(p.title) ?? OTHER_CHAPTER) === chap).map(({ p, i }) => ({ value: String(i), label: `${p.title}${p.msId ? "" : " (no mark scheme found)"}${tag(p.qpId)}` }))
       : reading
         ? yearlyPapers.map((p) => ({ value: p.paperId, label: p.title }))
-        : yearlyPapers.filter((p) => p.year === Number(y) && p.session === se).map((p) => ({ value: p.paperId, label: yearlyPaperLabel(p) }));
+        : yearlyPapers.filter((p) => p.year === Number(y) && p.session === se).map((p) => ({ value: p.paperId, label: `${yearlyPaperLabel(p)}${tag(p.paperId)}` }));
   const pk = paperOptions.some((o) => o.value === paperKey) ? paperKey : (paperOptions[0]?.value ?? "");
   const topicalPaper = type === "topical" ? topical[Number(pk)] : undefined;
   const missingMs = type === "topical" && !!topicalPaper && !topicalPaper.msId;
   const structured = isStructuredComponent(bundle?.meta ?? {}, b, s, c);
+  const picked = stateOf(type === "topical" ? (topicalPaper?.qpId ?? "") : pk);
+  const hintWord = pickHint(picked);
+  const pickNote = !pk || reading ? undefined : `${statusLabel(picked)}${picked.tests ? `, ${picked.tests} ${picked.tests === 1 ? "test" : "tests"}` : ""}${hintWord ? `. ${hintWord[0]?.toUpperCase()}${hintWord.slice(1)}.` : "."}`;
   const disabled = busy || !pk || missingMs;
 
   function go() {
@@ -118,11 +127,11 @@ export function LibraryStage({ bundle, loading, error, canMistakes, busy, status
       )}
       {type === "topical" && chapters.length > 1 && (
         <Field label="Chapter" hint={`${chapters.length} chapters. Leave on All chapters to see every worksheet.`}>
-          <Combobox value={chap} onChange={(v) => { setChapterPick(v); setPaperKey(""); }} placeholder="All chapters" options={chapters.map((c) => ({ value: c.key, label: `${c.label} (${c.count})` }))} />
+          <Combobox value={chap} onChange={(v) => { setChapterPick(v); setPaperKey(""); }} placeholder="All chapters" options={chapters.map((c) => ({ value: c.key, label: `${c.label} (${solvedIn(c.key)} of ${c.count} solved)` }))} />
         </Field>
       )}
       {paperOptions.length === 0 && <p className="u2-muted" role="status">{type === "topical" ? "No topical worksheets for this paper yet. Switch Paper Type to Yearly past papers." : "No yearly past papers for this paper yet."}</p>}
-      <Field label="Paper" hint={missingMs ? "No matching mark scheme was found in the library for this paper. It can't be auto-graded." : undefined}>
+      <Field label="Paper" hint={missingMs ? "No matching mark scheme was found in the library for this paper. It can't be auto-graded." : pickNote}>
         <Combobox value={pk} onChange={setPaperKey} options={paperOptions} />
       </Field>
       {status && <p className="u2-muted" role="status">{status}</p>}

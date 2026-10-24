@@ -30,6 +30,9 @@ def main():
         s.goto("/v2/question-solver")
         s.page.get_by_role("button", name=re.compile("Digitize|Fetch|Load|Start", re.I)).first.wait_for(timeout=60000)
         out["picker"] = s.page.get_by_text("Choose a paper from the library").count()
+        # TKT-0369: a paper the student has already aced says so in the picker
+        out["paper_marker_full_marks"] = s.page.get_by_text("Full marks").count()
+        assert out["paper_marker_full_marks"] >= 1, "the picker does not mark the paper with full marks"
         # the first paper request drops (a flaky connection): the page retries and the paper still opens
         drops = {"n": 0}
         def drop_once(route):
@@ -61,10 +64,25 @@ def main():
         posts = [(p, b) for m, p, b in s.calls if m == "POST" and "/api/mcq/attempts" in p or m == "POST" and "/api/mcq/mistakes" in p]
         out["posts"] = [(p, {k: v for k, v in (b or {}).items() if k in ("mode", "score", "totalQuestions", "paperId", "attemptId")}) for p, b in posts]
         s.page.get_by_role("button", name=re.compile("progress", re.I)).click()
-        s.page.get_by_role("tab", name="History").click()
+        # TKT-0368: the score trend says where the scores are heading and draws the line that counts as solved
+        out["trend_note"] = s.page.get_by_role("status").filter(has_text="Test").first.inner_text()
+        out["pass_line"] = s.page.locator(".u2-chart__pass").count()
+        assert out["pass_line"] == 1 and "Test" in out["trend_note"], (out["pass_line"], out["trend_note"])
+        # TKT-0366: completion per subject, with how far there is to go
+        s.page.get_by_role("tab", name="Completion").click()
+        out["completion_bar"] = s.page.get_by_role("img", name=re.compile("Worksheets: 1 solved")).count()
+        out["completion_all_solved"] = s.page.get_by_text("All solved").count()
+        assert out["completion_bar"] == 1 and out["completion_all_solved"] >= 1, (out["completion_bar"], out["completion_all_solved"])
+        # TKT-0364 and TKT-0365: the attempts tab, and the answers open in a panel beside the list, not at the bottom of the page
+        s.page.get_by_role("tab", name="My attempts").click()
         out["history_rows"] = s.page.get_by_role("row").count()
         s.page.get_by_role("button", name="View").click()
-        s.page.get_by_role("list", name="Your answers").wait_for()
+        sheet = s.page.get_by_role("dialog")
+        sheet.get_by_role("list", name="Your answers").wait_for()
+        out["answers_in_panel"] = sheet.count() == 1 and sheet.get_by_role("heading", name="1 Motion Q").count() == 1
+        assert out["answers_in_panel"], "the answers did not open in a panel titled with the paper"
+        s.page.keyboard.press("Escape")
+        sheet.wait_for(state="detached")
         s.page.get_by_role("tab", name="Mistakes").click()
         out["bars"] = s.page.get_by_text("Mistakes per chapter").count() or s.page.locator("svg").count()
         s.page.get_by_role("tab", name="Leaderboard").click()
