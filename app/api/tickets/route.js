@@ -2,29 +2,86 @@ import { NextResponse } from "next/server";
 import { readDB, writeDB, nextId } from "@/lib/db";
 import { requireSession, requireManagement } from "@/lib/authz";
 import { logAudit } from "@/lib/logging";
+import { parseImage, compressImage, saveTicketImage, ticketImageUrl } from "@/lib/ticketImage";
+import { sanitizeMeta, serverMeta } from "@/lib/ticketMeta";
+import { canOpen, senderView, ticketsFor, MAX_REPLY, MAX_REPLIES } from "@/lib/ticketView";
 
 // Generic issue-reporting ticket — any authenticated account (any UserType,
 // including Trial/Interview) can raise one; only Management can close it.
 // Sender info is never freeform — it's always the session's own userId, not
 // something the client can spoof.
+// Everyone can read their own tickets and the replies on them. Management reads all
+// of them, plus the internal notes and device details that are never sent to the
+// person who raised the ticket (lib/ticketView.js is the one place that decides this).
 
-// Management-only: full list, for the admin Tickets tab.
+// GET /api/tickets                 -> Management: every ticket as stored. Anyone else: their own tickets, newest first, in sender view.
+// GET /api/tickets?image=TKT-0001  -> { url }, a link to that ticket's picture that works for 5 minutes. Management, or the sender of that ticket.
 export async function GET(req) {
-  const { error } = requireManagement(req);
+  const { session, error } = requireSession(req);
   if (error) return error;
 
   const db = await readDB();
-  return NextResponse.json({ tickets: db.tickets || [] });
+  const tickets = db.tickets || [];
+
+  const imageId = new URL(req.url).searchParams.get("image");
+  if (imageId) {
+    const ticket = tickets.find((t) => t.TicketID === imageId);
+    if (!ticket || !canOpen(session, ticket) || !ticket.HasImage) {
+      return NextResponse.json({ error: "No picture for that ticket." }, { status: 404 });
+    }
+    const url = await ticketImageUrl(ticket.TicketID);
+    if (!url) return NextResponse.json({ error: "The picture could not be opened." }, { status: 502 });
+    return NextResponse.json({ url });
+  }
+
+  return NextResponse.json({ tickets: ticketsFor(session, tickets) });
 }
 
-// body: { message, attachmentUrl? }
+// body (new ticket): { message, attachmentUrl?, image?, meta? }
+//   image: a data URL (JPEG, PNG or WebP), shrunk and saved as a small JPEG. A picture that cannot be read refuses the whole request, a picture that cannot be
+//   stored does not lose the ticket (the answer says imageSaved: false). meta: what the browser knows about the screen the ticket was raised on (lib/ticketMeta.js).
+// body (reply):      { ticketId, reply }  -- the sender or Management adds a reply that both can read. The sender cannot reply to a closed ticket.
 export async function POST(req) {
   const { session, error } = requireSession(req);
   if (error) return error;
 
-  const { message, attachmentUrl } = await req.json();
+  const body = await req.json();
+
+  if (body.ticketId !== undefined) {
+    const text = String(body.reply || "").trim();
+    if (!text) return NextResponse.json({ error: "reply is required." }, { status: 400 });
+    if (text.length > MAX_REPLY) return NextResponse.json({ error: `reply must be ${MAX_REPLY} characters or fewer.` }, { status: 400 });
+    const db = await readDB();
+    const ticket = (db.tickets || []).find((t) => t.TicketID === body.ticketId);
+    if (!ticket || !canOpen(session, ticket)) return NextResponse.json({ error: "Ticket not found." }, { status: 404 });
+    const isManagement = session.userType === "Management";
+    if (ticket.ClosedAt && !isManagement) {
+      return NextResponse.json({ error: "This ticket is closed. Please raise a new one." }, { status: 409 });
+    }
+    ticket.Replies = Array.isArray(ticket.Replies) ? ticket.Replies : [];
+    if (ticket.Replies.length >= MAX_REPLIES) return NextResponse.json({ error: "This ticket has too many replies. Please raise a new one." }, { status: 409 });
+    ticket.Replies.push({ At: new Date().toISOString(), By: session.userId, ByType: isManagement ? "Management" : "Sender", Text: text });
+    await writeDB(db, ["tickets"]);
+    if (isManagement) {
+      await logAudit({ actorUserId: session.userId, action: "reply", entityType: "Ticket", entityId: ticket.TicketID, summary: `Replied to ticket ${ticket.TicketID}` });
+    }
+    return NextResponse.json({ ticket: isManagement ? ticket : senderView(ticket) });
+  }
+
+  const { message, attachmentUrl, image, meta } = body;
   if (!message || !message.trim()) {
     return NextResponse.json({ error: "message is required." }, { status: 400 });
+  }
+
+  let jpeg = null;
+  if (image) {
+    const raw = parseImage(image);
+    if (!raw) return NextResponse.json({ error: "Picture not accepted (JPG, PNG or WebP, up to 6 MB)." }, { status: 400 });
+    try {
+      jpeg = await compressImage(raw);
+    } catch {
+      return NextResponse.json({ error: "Picture could not be read." }, { status: 400 });
+    }
   }
 
   const db = await readDB();
@@ -34,6 +91,9 @@ export async function POST(req) {
     SenderUserType: session.userType,
     Message: message.trim(),
     AttachmentURL: (attachmentUrl || "").trim(),
+    HasImage: false,
+    Meta: { client: sanitizeMeta(meta), server: serverMeta(req) },
+    Replies: [],
     CreatedAt: new Date().toISOString(),
     ClosedAt: "",
     ClosedBy: "",
@@ -45,11 +105,14 @@ export async function POST(req) {
     OnHold: false,
     OnHoldReason: "",
   };
+  // The picture is stored before the record is written so the flag is true or false for a reason; a failure here never loses the ticket.
+  const imageSaved = jpeg ? await saveTicketImage(ticket.TicketID, jpeg) : undefined;
+  ticket.HasImage = imageSaved === true;
   db.tickets = db.tickets || [];
   db.tickets.push(ticket);
   await writeDB(db, ["tickets"]);
 
-  return NextResponse.json({ ticket });
+  return NextResponse.json({ ticket: session.userType === "Management" ? ticket : senderView(ticket), ...(jpeg ? { imageSaved } : {}) });
 }
 
 // body: { ticketId, action?: "close" | "reopen" | "edit" | "hold" | "unhold", message?, attachmentUrl?, closeMessage?, holdReason? }
