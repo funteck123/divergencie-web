@@ -2,6 +2,7 @@
 
 import { Button } from "@/ui2/components/Button";
 import { Feedback } from "./Feedback";
+import { PaperPdfLinks, type PaperPdfLinksValue } from "./PaperPdfLinks";
 import { isFullMarks, type McqResult } from "./solverLogic";
 import type { GradeResult } from "./solverTypes";
 import "./solver.css";
@@ -11,7 +12,7 @@ export type Results =
   | { kind: "structured"; graded: GradeResult[]; correct: number; gradable: number };
 
 /** The banner with the score, then one compact row per question. A question counts only when it is right (MCQ) or has full marks (written). */
-export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress, onBack, backLabel }: { results: Results; saveStatus: string; canOpenProgress: boolean; onProgress: () => void; onBack: () => void; backLabel: string }) {
+export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress, onBack, backLabel, pdfLinks }: { pdfLinks?: PaperPdfLinksValue | null; results: Results; saveStatus: string; canOpenProgress: boolean; onProgress: () => void; onBack: () => void; backLabel: string }) {
   const empty = results.kind === "structured" && results.gradable === 0;
   return (
     <div className="u2-solver">
@@ -19,6 +20,7 @@ export function ResultsStage({ results, saveStatus, canOpenProgress, onProgress,
         <span>Score</span>
         <span className="u2-banner__big">{empty ? "No questions attempted" : `${results.correct} / ${results.gradable}`}</span>
       </div>
+      <PaperPdfLinks links={pdfLinks} showMs />
       {results.kind === "structured" && <p className="u2-muted">A question only counts as correct if it scored full marks. The score on each one shows how close a partial answer got.</p>}
       <div className="u2-review" aria-label="Review">
         {results.kind === "mcq"

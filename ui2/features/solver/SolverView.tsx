@@ -273,7 +273,7 @@ export function SolverView({ user }: { user: SessionUser }) {
   // ---- screens --------------------------------------------------------------------------------------------------
   if (stage === "progress") return <ProgressStage account={account} titles={titles} names={names} onBack={() => setStage("library")} />;
   if (stage === "upload") return <UploadStage busy={busy} error={error} onDigitize={(qp, ms) => void openUpload(qp, ms)} onBack={() => setStage("library")} />;
-  if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={reset} backLabel="Back to library" />;
+  if (stage === "results" && results) return <ResultsStage results={results} saveStatus={saveStatus} canOpenProgress={!!paper?.meta && quiz.mode === "test"} onProgress={() => setStage("progress")} onBack={reset} backLabel="Back to library" pdfLinks={paper?.pdf} />;
   if (stage === "mode" && paper) {
     const count = quiz.kind === "mcq" ? mcq.length : structured.length;
     return (

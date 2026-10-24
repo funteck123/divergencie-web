@@ -40,6 +40,12 @@ def main():
         s.page.get_by_role("button", name=re.compile("Digitize|Fetch|Load|Start", re.I)).first.click()
         s.page.get_by_role("button", name="Test Mode").click()
         out["retried_after_drop"] = drops["n"]
+        # TKT-0361: the "Show if I'm right" switch is hidden. TKT-0370: the question paper can be downloaded in a test, the mark scheme cannot (it would give the answers away)
+        s.page.locator(".u2-allq__item").first.wait_for()
+        out["no_instant_check_switch"] = s.page.get_by_text("Show if I'm right").count() == 0
+        out["test_pdfs"] = [s.page.get_by_role("link", name="Download QP PDF").count(), s.page.get_by_role("link", name="Download MS PDF").count()]
+        assert out["no_instant_check_switch"], "the Show if I'm right switch is still visible"
+        assert out["test_pdfs"] == [1, 0], f"test mode PDF buttons should be [QP, no MS], got {out['test_pdfs']}"
         # a mobile keyboard resize must not close anything: pick answers by radio
         for q in ("1", "2", "3"):
             s.page.get_by_role("radiogroup", name=f"Answer for question {q}").locator("label", has_text="A").click()
@@ -48,6 +54,8 @@ def main():
         s.page.get_by_role("button", name="Submit quiz").click()
         s.page.get_by_role("status").filter(has_text="Score").first.wait_for()
         out["score"] = s.page.locator(".u2-banner__big").inner_text()
+        out["results_pdfs"] = [s.page.get_by_role("link", name="Download QP PDF").count(), s.page.get_by_role("link", name="Download MS PDF").count()]
+        assert out["results_pdfs"] == [1, 1], f"results should offer both PDFs, got {out['results_pdfs']}"
         s.page.get_by_text("Score saved to your progress history.").wait_for()
         out["autosave_cleared"] = s.page.evaluate("() => !localStorage.getItem('mcqTestAutosave.v1')")
         posts = [(p, b) for m, p, b in s.calls if m == "POST" and "/api/mcq/attempts" in p or m == "POST" and "/api/mcq/mistakes" in p]
@@ -91,6 +99,8 @@ def main():
         s.page.get_by_role("button", name=go).first.click()
         s.page.get_by_role("button", name="Practice Mode").click()
         s.page.get_by_role("tab", name="Answer").first.click()
+        out["practice_pdfs"] = [s.page.get_by_role("link", name="Download QP PDF").count(), s.page.get_by_role("link", name="Download MS PDF").count()]
+        assert out["practice_pdfs"] == [1, 1], f"practice should offer both PDFs, got {out['practice_pdfs']}"
         s.page.get_by_text("Correct answer:").first.wait_for(); out["practice_answer"] = s.page.get_by_text("Correct answer:").count()
         s.page.get_by_role("button", name="Pause").click(); s.page.get_by_role("button", name="Resume").click()
         s.page.get_by_role("button", name="Done practicing").click()

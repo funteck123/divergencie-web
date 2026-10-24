@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, LinkButton } from "@/ui2/components/Button";
 import { CheckField, TextArea } from "@/ui2/components/Field";
-import { pdfUrl, yearlyAudioUrl, yearlyPdfUrl } from "@/ui2/queries/solver";
+import { yearlyAudioUrl } from "@/ui2/queries/solver";
+import { PaperPdfLinks } from "./PaperPdfLinks";
 import { formatTimer } from "./solverLogic";
 import { needsCancelConfirm, unansweredQuestions, type QuizAction, type QuizState } from "./quizMachine";
 import type { McqQuestion, StructuredItem, YearlyPaper } from "./solverTypes";
@@ -145,19 +146,16 @@ export function QuizStage(p: QuizStageProps) {
 
       {/* Not part of the fixed bar: on a phone the bar must stay small, or it covers the last question. */}
       <div className="u2-qopts">
+        {/* TKT-0361: the "Show if I'm right after each question" switch is hidden for now. The code stays here; the quiz machine still supports it.
         {s.kind === "mcq" && s.mode !== "practice" && (
           <CheckField label="Show if I'm right after each question" checked={s.instantCheck} onChange={(on) => dispatch({ type: "instantCheck", on })} />
         )}
+        */}
         <div className="u2-seg" role="group" aria-label="Question layout">
           <button type="button" className="u2-seg__btn" aria-pressed={page} data-on={page} onClick={() => chooseLayout(true)}>All on one page</button>
           <button type="button" className="u2-seg__btn" aria-pressed={!page} data-on={!page} onClick={() => chooseLayout(false)}>One at a time</button>
         </div>
-        {p.pdfLinks && !p.pdfLinks.qpId.startsWith("upload") && practice && (
-          <span className="u2-rowactions">
-            <LinkButton href={p.pdfLinks.yearlyId ? yearlyPdfUrl(p.pdfLinks.yearlyId, "qp") : pdfUrl(p.pdfLinks.qpId, `${p.pdfLinks.title} QP`)}>📄 View QP PDF</LinkButton>
-            {p.pdfLinks.msId && <LinkButton href={p.pdfLinks.yearlyId ? yearlyPdfUrl(p.pdfLinks.yearlyId, "ms") : pdfUrl(p.pdfLinks.msId, `${p.pdfLinks.title} MS`)}>📄 View MS PDF</LinkButton>}
-          </span>
-        )}
+        <PaperPdfLinks links={p.pdfLinks} showMs={practice} />
       </div>
 
       {page ? (
