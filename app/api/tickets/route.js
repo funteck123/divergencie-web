@@ -15,6 +15,7 @@ import { canOpen, senderView, ticketsFor, MAX_REPLY, MAX_REPLIES } from "@/lib/t
 // person who raised the ticket (lib/ticketView.js is the one place that decides this).
 
 // GET /api/tickets                 -> Management: every ticket as stored. Anyone else: their own tickets, newest first, in sender view.
+// GET /api/tickets?mine=1          -> only the tickets this person raised, in sender view, whatever their role (the "My tickets" screen).
 // GET /api/tickets?image=TKT-0001  -> { url }, a link to that ticket's picture that works for 5 minutes. Management, or the sender of that ticket.
 export async function GET(req) {
   const { session, error } = requireSession(req);
@@ -23,7 +24,8 @@ export async function GET(req) {
   const db = await readDB();
   const tickets = db.tickets || [];
 
-  const imageId = new URL(req.url).searchParams.get("image");
+  const params = new URL(req.url).searchParams;
+  const imageId = params.get("image");
   if (imageId) {
     const ticket = tickets.find((t) => t.TicketID === imageId);
     if (!ticket || !canOpen(session, ticket) || !ticket.HasImage) {
@@ -34,7 +36,7 @@ export async function GET(req) {
     return NextResponse.json({ url });
   }
 
-  return NextResponse.json({ tickets: ticketsFor(session, tickets) });
+  return NextResponse.json({ tickets: ticketsFor(session, tickets, { mine: params.get("mine") === "1" }) });
 }
 
 // body (new ticket): { message, attachmentUrl?, image?, meta? }
