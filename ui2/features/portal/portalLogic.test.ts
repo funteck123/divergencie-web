@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { enrolledServices, inRange, myAttendance, occurrencesText, showUserFeature, stripeLink, visibleBills, weekly } from "./portalLogic";
+import { enrolledServices, inRange, myAttendance, occurrencesText, sessionGroups, showUserFeature, stripeLink, visibleBills, weekly } from "./portalLogic";
 import type { BillRecord, ServiceRecord } from "@/ui2/queries/types";
 
 const svc: ServiceRecord = {
@@ -95,4 +95,22 @@ describe("showUserFeature (TKT-0371)", () => {
   it("does not widen any other button: the Progress Tracker still follows the switch", () => {
     expect(showUserFeature(tracker, off, { ProgressTrackerURL: "https://example.com/t" })).toBe(false);
   });
+});
+
+describe("session groups (TKT-0359)", () => {
+  const occ = (Day: string, Time: string, Facilitator?: string, Duration: number | string = 1) => ({ Day, Time, Duration, Facilitator });
+  it("shows the teacher once for sessions that share one", () => {
+    const g = sessionGroups({ _myOccurrences: [occ("Sunday", "20:30", "Mohammad Shahid Akhtar"), occ("Saturday", "20:30", "Mohammad Shahid Akhtar")] });
+    expect(g).toEqual([{ facilitator: "Mohammad Shahid Akhtar", sessions: [{ when: "Sunday 20:30", hours: "1h" }, { when: "Saturday 20:30", hours: "1h" }] }]);
+  });
+  it("keeps one group per teacher, in the order they first appear", () => {
+    const g = sessionGroups({ _myOccurrences: [occ("Monday", "17:30", "Dr Harem"), occ("Tuesday", "18:30", "Mr Akhtar"), occ("Friday", "17:30", "Dr Harem", 2)] });
+    expect(g.map((x) => x.facilitator)).toEqual(["Dr Harem", "Mr Akhtar"]);
+    expect(g[0]?.sessions).toEqual([{ when: "Monday 17:30", hours: "1h" }, { when: "Friday 17:30", hours: "2h" }]);
+  });
+  it("sessions with no teacher form one group with an empty name; ones without a day or time are left out", () => {
+    const g = sessionGroups({ _myOccurrences: [occ("Monday", "17:30"), { Duration: 1, Time: "10:00" }, { Day: "Tuesday", Duration: 1 }, occ("Wednesday", "09:00", "  ")] });
+    expect(g).toEqual([{ facilitator: "", sessions: [{ when: "Monday 17:30", hours: "1h" }, { when: "Wednesday 09:00", hours: "1h" }] }]);
+  });
+  it("no sessions: no groups, and the text form still says not scheduled", () => expect(sessionGroups({ _myOccurrences: [] })).toEqual([]));
 });

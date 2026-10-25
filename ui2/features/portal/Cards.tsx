@@ -10,6 +10,7 @@ import { DataTable, type Column } from "@/ui2/components/DataTable";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/ui2/queries/client";
 import type { GuideRecord, UserRecord } from "@/ui2/queries/types";
+import { Sessions } from "./Sessions";
 import { occurrencesText, showUserFeature, weekly, type EnrolledService } from "./portalLogic";
 import "@/ui2/features/accounts/accounts.css";
 import "./portal.css";
@@ -71,7 +72,7 @@ export function EnrollmentsCard({ services }: { services: readonly EnrolledServi
     ...(services.some((s) => s._myBatch) ? [{ id: "batch", header: "Batch", width: 90, sortValue: (s: EnrolledService) => s._myBatch, cell: (s: EnrolledService) => s._myBatch || "—" }] : []),
     { id: "type", header: "Type", width: 100, cell: (s) => s.Type },
     { id: "rate", header: "Rate", width: 130, cell: (s) => formatRate(s._myRate) as string },
-    { id: "occ", header: "Occurrences", tip: (s) => occurrencesText(s), cell: (s) => <span className="u2-muted">{occurrencesText(s)}</span> },
+    { id: "occ", header: "Occurrences", width: 300, tip: (s) => occurrencesText(s), cell: (s) => <Sessions service={s} /> },
   ];
   return (
     <Card title="My Enrollments">

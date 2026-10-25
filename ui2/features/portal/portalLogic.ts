@@ -42,6 +42,27 @@ export function occurrencesText(s: EnrolledService): string {
   return scheduled.length ? scheduled.map((o) => `${o.Day} ${o.Time} (${o.Duration}h)${o.Facilitator ? ` · ${o.Facilitator}` : ""}`).join(", ") : "Not scheduled yet";
 }
 
+export interface SessionGroup {
+  /** The teacher for these sessions, or "" when none is set. */
+  facilitator: string;
+  sessions: { when: string; hours: string }[];
+}
+
+/**
+ * The weekly sessions of a service grouped by teacher, in the order given, so a teacher's name appears once instead of after every
+ * session (TKT-0359). A session needs a day and a time; one without either is left out, like in occurrencesText.
+ */
+export function sessionGroups(s: Pick<EnrolledService, "_myOccurrences">): SessionGroup[] {
+  const groups: SessionGroup[] = [];
+  for (const o of s._myOccurrences) {
+    if (!o.Day || !o.Time) continue;
+    const who = (o.Facilitator ?? "").trim();
+    const group = groups.find((g) => g.facilitator === who) ?? (groups.push({ facilitator: who, sessions: [] }), groups[groups.length - 1] as SessionGroup);
+    group.sessions.push({ when: `${o.Day} ${o.Time}`, hours: `${o.Duration}h` });
+  }
+  return groups;
+}
+
 export type Range = "upcoming" | "last7" | "last30" | "all";
 
 /** The session list's date range. "upcoming" is today onward, "last N" looks back and stops at today. */

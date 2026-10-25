@@ -9,3 +9,13 @@
   .u2-filegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--u2-space-3); }
   .u2-filecard { display: grid; justify-items: center; gap: var(--u2-space-2); padding: var(--u2-space-3); background: var(--u2-color-bg-subtle); border-radius: var(--u2-radius); text-align: center; font-size: var(--u2-text-sm); color: var(--u2-color-text); text-decoration: none; }
   .u2-filecard:hover { background: var(--u2-color-selected); }}
+
+:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
+  /* The table clips every cell to one line; this cell wraps and the row grows to fit it. */
+  .u2-sessions { display: grid; gap: var(--u2-space-2); padding: var(--u2-space-2) 0; white-space: normal; }
+  .u2-sessions__group { display: grid; gap: var(--u2-space-1); }
+  .u2-sessions__list { display: flex; flex-wrap: wrap; gap: var(--u2-space-1); margin: 0; padding: 0; list-style: none; }
+  .u2-sessions__chip { display: inline-flex; align-items: center; gap: var(--u2-space-2); padding: 2px var(--u2-space-2); background: var(--u2-color-bg-subtle); border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); color: var(--u2-color-text); font-size: var(--u2-text-xs); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .u2-sessions__hours { color: var(--u2-color-text-muted); }
+  .u2-sessions__who { color: var(--u2-color-text-muted); font-size: var(--u2-text-xs); overflow-wrap: anywhere; }
+}
