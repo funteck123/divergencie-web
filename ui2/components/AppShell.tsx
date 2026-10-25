@@ -93,9 +93,12 @@ export function AppShell({ user, tabs, children }: { user: SessionUser; tabs?: r
 
   return (
     <>
-      <a className="u2-skip" href="#u2-main">
-        Skip to content
-      </a>
+      {/* Not while impersonating (TKT-0360): focused, it sits on top of the amber banner and hides its message. Everyone else keeps it. */}
+      {!impersonator && (
+        <a className="u2-skip" href="#u2-main">
+          Skip to content
+        </a>
+      )}
       {impersonator && (
         <div className={styles.imp} role="status">
           <span>
