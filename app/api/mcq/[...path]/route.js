@@ -122,7 +122,7 @@ export async function GET(req, { params }) {
   // corrupt binary PDF bytes trying to round-trip them through JSON.parse.
   // TKT-0251: "yearly-pdf" (a real yearly Examiner Report, served straight
   // from the local archive) needs the exact same binary passthrough.
-  if (subPath === "pdf" || subPath === "yearly-pdf") {
+  if (subPath === "pdf" || subPath === "yearly-pdf" || subPath === "solved-pdf") {
     if (!upstream.ok) {
       const errBody = await upstream.json().catch(() => ({ error: `Upstream returned ${upstream.status}.` }));
       return NextResponse.json(errBody, { status: upstream.status });

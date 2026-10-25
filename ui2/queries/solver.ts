@@ -1,5 +1,5 @@
 import { apiFetch } from "./client";
-import type { AttemptMeta, AttemptRow, DigitizeResult, GradeResult, Leaderboard, Library, QuestionResponse, SubjectMeta, YearlyLibrary } from "@/ui2/features/solver/solverTypes";
+import type { AttemptMeta, AttemptRow, DigitizeResult, GradeResult, Leaderboard, Library, QuestionResponse, SolvedLibrary, SubjectMeta, YearlyLibrary } from "@/ui2/features/solver/solverTypes";
 
 interface TitlesReply { titles?: Record<string, string>; subjects?: Record<string, string> }
 
@@ -7,19 +7,22 @@ interface TitlesReply { titles?: Record<string, string>; subjects?: Record<strin
 export interface LibraryBundle {
   library: Library;
   yearly: YearlyLibrary;
+  /** Solved practical papers (TKT-0379); empty when the service has none. */
+  solved: SolvedLibrary;
   meta: SubjectMeta;
   titles: Record<string, string>;
   subjectsById: Record<string, string>;
 }
 
 export async function loadLibraryBundle(hasAccount: boolean): Promise<LibraryBundle> {
-  const [library, meta, titles, yearly] = await Promise.all([
+  const [library, meta, titles, yearly, solved] = await Promise.all([
     apiFetch<Library>("/api/mcq/library"),
     apiFetch<SubjectMeta>("/api/mcq/subject-meta").catch(() => ({}) as SubjectMeta),
     hasAccount ? apiFetch<TitlesReply>("/api/mcq/paper-titles").catch((): TitlesReply => ({})) : Promise.resolve<TitlesReply>({}),
     apiFetch<YearlyLibrary>("/api/mcq/yearly-library").catch(() => ({}) as YearlyLibrary),
+    apiFetch<SolvedLibrary>("/api/mcq/solved-library").catch(() => ({}) as SolvedLibrary), // an older service has no solved library: the picker just has no Solved choice
   ]);
-  return { library, yearly, meta, titles: titles.titles ?? {}, subjectsById: titles.subjects ?? {} };
+  return { library, yearly, solved, meta, titles: titles.titles ?? {}, subjectsById: titles.subjects ?? {} };
 }
 
 export const fetchAndDigitize = (qpId: string, msId: string) => apiFetch<DigitizeResult>("/api/mcq/fetch-and-digitize", { method: "POST", body: { qpId, msId }, retry: true });
@@ -100,5 +103,6 @@ export const getQuestionResponses = (account: string, attemptId: string) => apiF
 export const getQuestionImage = (paperId: string, questionNumber: string, kind: "qp" | "ms") => apiFetch<{ image: string }>(`/api/mcq/question-image?paperId=${encodeURIComponent(paperId)}&questionNumber=${encodeURIComponent(questionNumber)}&kind=${kind}`);
 
 export const pdfUrl = (fileId: string, filename: string) => `/api/mcq/pdf?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`;
+export const solvedPdfUrl = (solvedId: string) => `/api/mcq/solved-pdf?id=${encodeURIComponent(solvedId)}`;
 export const yearlyPdfUrl = (paperId: string, kind?: "qp" | "ms") => `/api/mcq/yearly-pdf?paperId=${encodeURIComponent(paperId)}${kind ? `&kind=${kind}` : ""}`;
 export const yearlyAudioUrl = (paperId: string) => `/api/mcq/yearly-audio?paperId=${encodeURIComponent(paperId)}`;

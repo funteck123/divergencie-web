@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { AUTOSAVE_MAX_AGE_MS, subjectOffersBothTypes, topicalChapters, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, paperTypes, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
-import type { AttemptRow, Library, McqQuestion, YearlyLibrary } from "./solverTypes";
+import { AUTOSAVE_MAX_AGE_MS, paperTypeChoices, subjectHasTypes, topicalChapters, yearlyPaperName, chapterKey, chapterLabel, chapterNameOf, chapterNames, chapterOf, comparePapers, componentsOf, fetchButtonLabel, formatTimer, gradeMcq, historyRows, isFullMarks, isReadingComponent, isStructuredComponent, mistakeResults, naturalQuestionSort, pctOf, resumable, scoreStructured, seriesByAccount, titleIndex, type AutosaveRecord } from "./solverLogic";
+import type { AttemptRow, Library, McqQuestion, SolvedLibrary, YearlyLibrary } from "./solverTypes";
 
 describe("titles", () => {
   it("chapter number from the two title styles", () => { expect(chapterOf("Ch3 Atoms (MCQ) Worksheet 2")).toBe("3"); expect(chapterOf("2.1-structure-_ial")).toBe("2.1"); expect(chapterOf("Mock")).toBeNull(); });
@@ -29,10 +29,22 @@ describe("picker", () => {
   const lib: Library = { B: { S: { P1: [{ qpId: "q", title: "t" }], Empty: [] } } };
   const yearly: YearlyLibrary = { B: { S: { P1: [{ paperId: "y1", year: 2024, session: "May", variant: "11", title: "Y" }], "Examiner Report": [{ paperId: "e", year: 2024, session: "May", title: "E" }] } } };
   it("components: with worksheets first, then yearly only, empty ones dropped", () => expect(componentsOf(lib, yearly, "B", "S")).toEqual(["P1", "Examiner Report"]));
-  it("paper type row only when both kinds exist", () => {
-    expect(paperTypes([1], [1]).show).toBe(true);
-    expect(paperTypes([], [1])).toMatchObject({ show: false, value: "yearly" });
-    expect(paperTypes([1], [])).toMatchObject({ show: false, value: "topical" });
+  it("paper type row only when the subject has more than one kind, starting on a kind the component has", () => {
+    const both = { topical: true, yearly: true, solved: false }, none = { topical: false, yearly: false, solved: false };
+    expect(paperTypeChoices({ topical: 1, yearly: 1, solved: 0 }, both)).toMatchObject({ show: true, value: "topical", options: ["topical", "yearly"] });
+    expect(paperTypeChoices({ topical: 0, yearly: 1, solved: 0 }, both)).toMatchObject({ show: true, value: "yearly" });
+    expect(paperTypeChoices({ topical: 1, yearly: 0, solved: 0 }, { topical: true, yearly: false, solved: false })).toMatchObject({ show: false, value: "topical" });
+    expect(paperTypeChoices({ topical: 0, yearly: 0, solved: 0 }, none)).toMatchObject({ show: false, options: ["topical"] });
+  });
+  it("a component with no topical worksheets opens on its solved papers (TKT-0379)", () => {
+    const all = { topical: true, yearly: true, solved: true };
+    expect(paperTypeChoices({ topical: 0, yearly: 0, solved: 3 }, all)).toMatchObject({ show: true, value: "solved", options: ["topical", "yearly", "solved"] });
+    expect(paperTypeChoices({ topical: 0, yearly: 2, solved: 3 }, all).value).toBe("yearly");
+    expect(paperTypeChoices({ topical: 0, yearly: 0, solved: 0 }, all).value).toBe("topical"); // nothing here: the first kind, and the empty note says what else exists
+  });
+  it("components also list those that only have solved papers, last", () => {
+    const solved: SolvedLibrary = { B: { S: { "Practical": [{ solvedId: "s", title: "T", kind: "Guide", pages: 3 }], P1: [{ solvedId: "p", title: "T", kind: "Guide", pages: 3 }] } } };
+    expect(componentsOf(lib, yearly, "B", "S", solved)).toEqual(["P1", "Examiner Report", "Practical"]);
   });
   it("structured means not the subject's MCQ component", () => { expect(isStructuredComponent({ B: { S: { mcqComponent: "P1" } } }, "B", "S", "P2")).toBe(true); expect(isStructuredComponent({ B: { S: { mcqComponent: "P1" } } }, "B", "S", "P1")).toBe(false); expect(isStructuredComponent({}, "B", "S", "P1")).toBe(false); });
   it("reading components and button label", () => { expect(isReadingComponent("ZNotes: Physics")).toBe(true); expect(isReadingComponent("P1")).toBe(false); expect(fetchButtonLabel("Examiner Report")).toBe("View examiner report"); expect(fetchButtonLabel("P1")).toBe("Fetch this paper and start"); });
@@ -102,12 +114,12 @@ describe("picker helpers (TKT-0336, TKT-0337)", () => {
   it("sorts chapter 10 after chapter 9", () => {
     expect(topicalChapters([{ qpId: "x", title: "Ch10 A (P1) Worksheet 1" }, { qpId: "y", title: "Ch9 B (P1) Worksheet 1" }]).map((c) => c.key)).toEqual(["9", "10"]);
   });
-  it("offers the paper type choice when a subject has both kinds anywhere", () => {
+  it("offers the paper type choice when a subject has more than one kind anywhere", () => {
     const lib = { B: { S: { "Paper 1": [{ qpId: "1", title: "t" }], "Paper 2": [] } } };
     const yearly = { B: { S: { "Paper 2": [{ paperId: "p", year: 2020, session: "s", title: "t" }] } } };
-    expect(subjectOffersBothTypes(lib, yearly, "B", "S")).toBe(true);
-    expect(subjectOffersBothTypes(lib, {}, "B", "S")).toBe(false);
-    expect(subjectOffersBothTypes({}, yearly, "B", "S")).toBe(false);
+    expect(subjectHasTypes(lib, yearly, {}, "B", "S")).toEqual({ topical: true, yearly: true, solved: false });
+    expect(subjectHasTypes(lib, {}, {}, "B", "S")).toEqual({ topical: true, yearly: false, solved: false });
+    expect(subjectHasTypes({}, yearly, { B: { S: { X: [{ solvedId: "s", title: "T", kind: "Guide", pages: 1 }] } } }, "B", "S")).toEqual({ topical: false, yearly: true, solved: true });
   });
 });
 

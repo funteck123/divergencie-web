@@ -1445,6 +1445,50 @@ function loadDatabase() {
   }
 }
 
+// TKT-0379: SOLVED practical papers (worked solutions, compiled mark schemes, practical booklets, examiner comments) -- a third kind of paper
+// next to topical worksheets and yearly past papers. scripts/ops/build_solved_library.py writes the manifest; the paths in it never leave this
+// server: the browser sees ids only, and /api/solved-pdf serves a file by id.
+const SOLVED_LIBRARY_PATH = path.join(REPO_ROOT, "data", "mcq-digitizer", "solved-library", "solved-library.json");
+let solvedLibraryCache = null;
+let solvedLibraryCacheMtime = 0;
+function loadSolvedLibrary() {
+  try {
+    const stat = fs.statSync(SOLVED_LIBRARY_PATH);
+    if (solvedLibraryCache && stat.mtimeMs === solvedLibraryCacheMtime) return solvedLibraryCache;
+    solvedLibraryCache = JSON.parse(fs.readFileSync(SOLVED_LIBRARY_PATH, "utf8"));
+    solvedLibraryCacheMtime = stat.mtimeMs;
+    return solvedLibraryCache;
+  } catch {
+    return null;
+  }
+}
+// The picker's view: board > subject > component > [{ solvedId, title, kind, pages }], without any file path. Items whose file has gone are left out.
+function publicSolvedLibrary() {
+  const full = loadSolvedLibrary();
+  const out = {};
+  for (const [board, subjects] of Object.entries(full || {})) {
+    for (const [subject, components] of Object.entries(subjects)) {
+      for (const [component, items] of Object.entries(components)) {
+        const kept = items.filter((i) => i.path && fs.existsSync(i.path)).map(({ solvedId, title, kind, pages }) => ({ solvedId, title, kind, pages }));
+        if (kept.length === 0) continue;
+        ((out[board] ||= {})[subject] ||= {})[component] = kept;
+      }
+    }
+  }
+  return out;
+}
+function findSolvedItemById(id) {
+  for (const subjects of Object.values(loadSolvedLibrary() || {})) {
+    for (const components of Object.values(subjects)) {
+      for (const items of Object.values(components)) {
+        const hit = items.find((i) => i.solvedId === id);
+        if (hit) return hit;
+      }
+    }
+  }
+  return null;
+}
+
 let yearlyLibraryCache = null;
 let yearlyLibraryCacheMtime = 0;
 function loadYearlyLibrary() {
@@ -1841,6 +1885,38 @@ const server = http.createServer(async (req, res) => {
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // TKT-0379: the solved practical papers. An empty object (not an error) when no manifest exists, so the picker simply has no Solved option.
+  if (req.method === "GET" && req.url === "/api/solved-library") {
+    try {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(publicSolvedLibrary()));
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // One solved document, streamed inline (some are 40 MB). The path comes only from the manifest entry for the id, never from the request.
+  if (req.method === "GET" && req.url.startsWith("/api/solved-pdf")) {
+    try {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const item = findSolvedItemById(url.searchParams.get("id") || "");
+      if (!item || !item.path || !fs.existsSync(item.path)) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Unknown solved document." }));
+        return;
+      }
+      const safeName = String(item.title).replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150);
+      res.writeHead(200, { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="${safeName}.pdf"`, "Content-Length": fs.statSync(item.path).size });
+      fs.createReadStream(item.path).on("error", () => res.destroy()).pipe(res);
+    } catch (e) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Failed to read the solved document." }));
     }
     return;
   }

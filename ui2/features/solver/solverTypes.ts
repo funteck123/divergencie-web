@@ -2,6 +2,9 @@ export interface TopicalPaper { qpId: string; msId?: string; title: string }
 export interface YearlyPaper { paperId: string; year: number; session: string; variant?: string; title: string; component?: string; audioPath?: string }
 export type Library = Record<string, Record<string, Record<string, TopicalPaper[]>>>;
 export type YearlyLibrary = Record<string, Record<string, Record<string, YearlyPaper[]>>>;
+/** A solved practical document (worked solutions, compiled mark schemes, practical booklets, examiner comments). It opens as a PDF; there is no quiz. */
+export interface SolvedItem { solvedId: string; title: string; kind: string; pages: number }
+export type SolvedLibrary = Record<string, Record<string, Record<string, SolvedItem[]>>>;
 export type SubjectMeta = Record<string, Record<string, { mcqComponent?: string }>>;
 
 export interface McqQuestion { questionNumber: string; image: string; optionLetters: string[]; correctAnswer?: string | null; _origin?: { paperId: string; subject: string; chapter: string | null } }

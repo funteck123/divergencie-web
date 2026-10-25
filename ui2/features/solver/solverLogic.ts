@@ -1,4 +1,4 @@
-import type { AttemptMeta, AttemptRow, GradeResult, Library, McqQuestion, SubjectMeta, TopicalPaper, YearlyLibrary, YearlyPaper } from "./solverTypes";
+import type { AttemptMeta, AttemptRow, GradeResult, Library, McqQuestion, SolvedLibrary, SubjectMeta, TopicalPaper, YearlyLibrary, YearlyPaper } from "./solverTypes";
 
 // ---- chapter and title parsing (ported from the classic Question Solver) --------------------------------
 
@@ -60,30 +60,34 @@ export const isStructuredComponent = (meta: SubjectMeta, board: string, subject:
   const entry = meta[board]?.[subject];
   return !!entry && component !== entry.mcqComponent;
 };
-export const boardsOf = (lib: Library, yearly: YearlyLibrary) => [...new Set([...Object.keys(lib), ...Object.keys(yearly)])];
-export const subjectsOf = (lib: Library, yearly: YearlyLibrary, board: string) => [...new Set([...Object.keys(lib[board] ?? {}), ...Object.keys(yearly[board] ?? {})])];
-/** Components with at least one worksheet first, then components that only have yearly papers. */
-export function componentsOf(lib: Library, yearly: YearlyLibrary, board: string, subject: string): string[] {
+export const boardsOf = (lib: Library, yearly: YearlyLibrary, solved: SolvedLibrary = {}) => [...new Set([...Object.keys(lib), ...Object.keys(yearly), ...Object.keys(solved)])];
+export const subjectsOf = (lib: Library, yearly: YearlyLibrary, board: string, solved: SolvedLibrary = {}) => [...new Set([...Object.keys(lib[board] ?? {}), ...Object.keys(yearly[board] ?? {}), ...Object.keys(solved[board] ?? {})])];
+/** Components with at least one worksheet first, then components that only have yearly papers, then components that only have solved papers. */
+export function componentsOf(lib: Library, yearly: YearlyLibrary, board: string, subject: string, solved: SolvedLibrary = {}): string[] {
   const topical = lib[board]?.[subject] ?? {};
   const nonEmpty = Object.keys(topical).filter((c) => (topical[c] ?? []).length > 0);
   const yearlyOnly = Object.keys(yearly[board]?.[subject] ?? {}).filter((c) => !nonEmpty.includes(c));
-  return [...nonEmpty, ...yearlyOnly];
+  const solvedOnly = Object.keys(solved[board]?.[subject] ?? {}).filter((c) => !nonEmpty.includes(c) && !yearlyOnly.includes(c));
+  return [...nonEmpty, ...yearlyOnly, ...solvedOnly];
 }
-export type PaperType = "topical" | "yearly";
-/** Which Paper Type choices the picker offers for a component, and the one to start on. */
-export function paperTypes(topical: readonly unknown[], yearly: readonly unknown[]): { show: boolean; value: PaperType; options: PaperType[] } {
-  if (yearly.length === 0) return { show: false, value: "topical", options: ["topical"] };
-  if (topical.length === 0) return { show: false, value: "yearly", options: ["yearly"] };
-  return { show: true, value: "topical", options: ["topical", "yearly"] };
-}
+export type PaperType = "topical" | "yearly" | "solved";
+export const PAPER_TYPES: readonly PaperType[] = ["topical", "yearly", "solved"];
+export const PAPER_TYPE_LABEL: Record<PaperType, string> = { topical: "Topical worksheets", yearly: "Yearly past papers", solved: "Solved practical papers" };
+export type TypeCounts = Record<PaperType, number>;
 /**
- * Should the Paper Type dropdown (Topical worksheets or Yearly past papers) be shown? Yes whenever the subject has both kinds
- * of paper somewhere, even if the chosen component has only one: the student then sees why the other list is empty and can
- * switch, instead of the choice being missing (TKT-0337).
+ * Which Paper Type choices the picker offers, and the one to start on. The choice is shown whenever the subject has more than one kind of paper
+ * somewhere, even when this component has only one: the student then sees why a list is empty and can switch (TKT-0337). The picker starts on the
+ * first kind this component actually has, so a component without topical worksheets opens on its yearly or solved papers (TKT-0379).
  */
-export function subjectOffersBothTypes(lib: Library, yearly: YearlyLibrary, board: string, subject: string): boolean {
+export function paperTypeChoices(here: TypeCounts, subjectHas: Record<PaperType, boolean>): { show: boolean; options: PaperType[]; value: PaperType } {
+  const options = PAPER_TYPES.filter((t) => subjectHas[t]);
+  if (options.length === 0) return { show: false, options: ["topical"], value: "topical" };
+  return { show: options.length > 1, options: [...options], value: options.find((t) => here[t] > 0) ?? (options[0] as PaperType) };
+}
+/** Which kinds of paper the subject has anywhere, in any component. */
+export function subjectHasTypes(lib: Library, yearly: YearlyLibrary, solved: SolvedLibrary, board: string, subject: string): Record<PaperType, boolean> {
   const has = (o: Record<string, readonly unknown[]> | undefined) => Object.values(o ?? {}).some((l) => l.length > 0);
-  return has(lib[board]?.[subject]) && has(yearly[board]?.[subject]);
+  return { topical: has(lib[board]?.[subject]), yearly: has(yearly[board]?.[subject]), solved: has(solved[board]?.[subject]) };
 }
 /** The chapters of a component's topical worksheets in chapter order, each with how many worksheets it has (TKT-0336). */
 export function topicalChapters(papers: readonly TopicalPaper[]): { key: string; label: string; count: number }[] {
