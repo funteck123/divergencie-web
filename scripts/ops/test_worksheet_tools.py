@@ -82,6 +82,21 @@ class ReadQuestionMarks(unittest.TestCase):
         r = rqm.read_worksheet(worksheet(self.tmp, [3, 0, 4], total=12), self.tmp, manual={("QP1", "2"): 5})
         self.assertEqual(r["status"], "accepted")
 
+    def test_marks_file_replaces_ocr_and_stored_marks(self):
+        ws = worksheet(self.tmp, [3, 5, 4], stored=[3, 9, 0])  # the paper says 3, 5, 4; the stored 9 is wrong
+        r = rqm.read_worksheet(ws, self.tmp, given={"1": [3], "2": [5], "3": [4]})
+        self.assertEqual(r["status"], "accepted", r["why"])
+        self.assertEqual([v["marks"] for v in r["questions"].values()], [3, 5, 4])
+        self.assertTrue(all(v.get("given") for v in r["questions"].values()))
+
+    def test_marks_file_brackets_are_summed_per_question(self):
+        r = rqm.read_worksheet(worksheet(self.tmp, [3, 5, 4]), self.tmp, given={"1": [1, 2], "2": [5], "3": [4]})
+        self.assertEqual(r["status"], "accepted"); self.assertEqual(r["questions"]["1"]["marks"], 3)
+
+    def test_marks_file_still_needs_the_cover_total(self):
+        r = rqm.read_worksheet(worksheet(self.tmp, [3, 5, 4]), self.tmp, given={"1": [3], "2": [6], "3": [4]})
+        self.assertEqual(r["status"], "left alone"); self.assertIn("13", r["why"])
+
     def test_manual_mark_still_needs_the_cover_total(self):
         r = rqm.read_worksheet(worksheet(self.tmp, [3, 0, 4], total=12), self.tmp, manual={("QP1", "2"): 9})
         self.assertEqual(r["status"], "left alone")
