@@ -67,6 +67,8 @@ def read_worksheet(entry, pdf_dir):
     out = {"qpId": entry["qpId"], "msId": entry["msId"], "title": entry["title"], "cover": total, "questions": qs}
     if not missing:
         return {**out, "status": "nothing to do", "why": "every question already has marks"}
+    if [a["questionNumber"] for a in entry["answers"]] != [q["questionNumber"] for q in entry["questions"]]:
+        return {**out, "status": "left alone", "why": "scheme picture numbers do not match the questions one to one, in order (check with make_pair_images.py, fix with relabel_schemes_by_position.py)"}
     noscheme = [n for n, r in qs.items() if r.get("noScheme")]
     if noscheme:
         return {**out, "status": "left alone", "why": f"no mark scheme picture for question(s) {', '.join(noscheme)}"}
