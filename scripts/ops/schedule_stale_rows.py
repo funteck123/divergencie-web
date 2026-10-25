@@ -2,7 +2,8 @@
 """Remove stale schedule rows that make one slot show two sessions (TKT-0373).
 
 An occurrence (a weekly slot of a batch) can change its day or time. The rows made for its old slot stay behind, so a week shows the real
-session and a stale copy of it on the same slot. A row is STALE when its weekday or time no longer matches its occurrence's current Day and Time.
+session and a stale copy of it on the same slot. A row is STALE when its weekday or time no longer matches its occurrence's current Day and Time. A second rule (2026-10-26) also takes an upcoming
+row on the old weekday when the same week already has a real row of that occurrence on the new weekday.
 Only stale rows that sit in a slot with another session are considered, and a row that any attendance record, reschedule request, invoice or
 paycheck mentions is never touched.
 
@@ -62,6 +63,26 @@ def plan():
             stale += old
         else:
             keep_note.append((slot, [r["ScheduleID"] for r in rows], "cannot tell which row is the real one" if len(current) != 1 else ""))
+    # Second rule (found 2026-10-26): an UPCOMING row on the old weekday with a real row of the same occurrence on the new weekday in the same
+    # Monday-to-Sunday week. It shares no date or time with the real row, so the slot rule above cannot see it, but the week shows the class twice.
+    today = datetime.date.today().isoformat()
+    def weekday(d): return datetime.date.fromisoformat(d).strftime("%A")
+    def week(d): x = datetime.date.fromisoformat(d); return (x - datetime.timedelta(days=x.weekday())).isoformat()
+    have = {r["ScheduleID"] for r in stale}
+    by_occ = collections.defaultdict(list)
+    for s in sched:
+        if s.get("OccuranceID"):
+            by_occ[s["OccuranceID"]].append(s)
+    for r in sched:
+        occ = r.get("OccuranceID")
+        if not occ or r["Date"] <= today or r.get("RescheduledDate") or r["ScheduleID"] in have or occ not in cfg:
+            continue
+        day, time = cfg[occ]
+        if weekday(r["Date"]) == day:
+            continue
+        real = [x for x in by_occ[occ] if x is not r and week(x["Date"]) == week(r["Date"]) and weekday(x["Date"]) == day and not x.get("RescheduledDate")]
+        if real:
+            stale.append(r); have.add(r["ScheduleID"])
     return stale, keep_note
 
 
