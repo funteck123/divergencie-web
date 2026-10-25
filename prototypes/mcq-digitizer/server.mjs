@@ -1912,8 +1912,10 @@ const server = http.createServer(async (req, res) => {
         return;
       }
       const safeName = String(item.title).replace(/[^A-Za-z0-9 ._-]/g, "_").slice(0, 150);
-      res.writeHead(200, { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="${safeName}.pdf"`, "Content-Length": fs.statSync(item.path).size });
-      fs.createReadStream(item.path).on("error", () => res.destroy()).pipe(res);
+      // Read the file whole and send it in one go, exactly like /api/yearly-pdf: a streamed reply of the same file got a 502 from the Cloudflare tunnel.
+      const buf = fs.readFileSync(item.path);
+      res.writeHead(200, { "Content-Type": "application/pdf", "Content-Disposition": `inline; filename="${safeName}.pdf"`, "Content-Length": buf.length });
+      res.end(buf);
     } catch (e) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: "Failed to read the solved document." }));
