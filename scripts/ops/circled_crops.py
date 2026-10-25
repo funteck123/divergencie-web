@@ -15,6 +15,9 @@ import fitz
 import numpy as np
 from PIL import Image, ImageDraw
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from read_circled_letters import question_number  # noqa: E402
+
 DPI = 100
 STRIP_PAD = 30        # pixels above and below the circle
 SHEET_WIDTH = 900
@@ -36,12 +39,14 @@ def circle_box(rgb):
 
 
 def question_pages(doc):
-    """{question number: [page index, ...]} from the "Question N" label on each page."""
+    """{question number: [page index, ...]} from the "Question N" label on a picture page, or from how a text page starts ("6 Hydrogen and..." or "6.")."""
     out = {}
     for i, pg in enumerate(doc):
-        m = re.search(r"Question\s+(\d+)", pg.get_text())
-        if m:
-            out.setdefault(m.group(1), []).append(i)
+        text = pg.get_text()
+        m = re.search(r"Question\s+(\d+)", text)
+        qn = m.group(1) if m else question_number(text)
+        if qn:
+            out.setdefault(qn, []).append(i)
     return out
 
 
