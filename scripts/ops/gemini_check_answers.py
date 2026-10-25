@@ -25,6 +25,12 @@ def page_png(doc, qn):
         label = re.search(r"Question\s+(\d+)", text)  # picture pages are labelled "Question N", text pages start with the number
         if (label.group(1) if label else question_number(text)) == qn:
             return pg.get_pixmap(dpi=90, alpha=False).tobytes("png")
+    # Two questions can share a page (Biology worksheets), and only the first is the page's own: look for the number at the start of any line
+    for pg in doc:
+        text = pg.get_text()
+        # the number and its text on one line: a page-number footer followed by "Model answers..." must not match
+        if re.search(rf"(?m)^[ \t]*{qn}\.?[ \t]+[A-Z][a-z]", text) and re.search(r"(?m)^\s*A\s*$|^\s*A\s+\S", text):
+            return pg.get_pixmap(dpi=90, alpha=False).tobytes("png")
     return None
 
 

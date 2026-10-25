@@ -19,7 +19,8 @@ SCALE = 72.0 / DPI
 
 def question_number(text):
     """The question a page belongs to, from how the page starts. A page can start with its own page number ("7" then "12 Ammonia..."), so a lone number followed by a numbered line is skipped."""
-    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    # Save My Exams pages may open with their footer ("For more awesome resources...", the page number, "Model answers are copyright..."): not the question
+    lines = [l.strip() for l in text.split("\n") if l.strip() and not l.strip().startswith(("For more awesome resources", "Model answers are copyright"))]
     if not lines or lines[0].startswith("DivergenCIE"):
         return None
     first = re.match(r"^(\d+)\.?(\s|$)", lines[0])
