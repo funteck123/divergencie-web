@@ -93,7 +93,8 @@ def cut(entry, starts):
         end = starts[i + 1] if i + 1 < len(starts) else None
         png = e.render_question_image(doc, s["page"], s["y0"], end["page"] if end else doc.page_count - 1, end["y0"] if end else None)
         path = os.path.join(folder, f"a{s['number']}.png")
-        open(path, "wb").write(png)
+        with open(path, "wb") as fh:
+            fh.write(png)
         rec = {"questionNumber": s["number"], "imagePath": os.path.relpath(path, ROOT), "marks": marks.get(s["number"], 0)}
         rec.update(extra.get(s["number"], {}))
         out.append(rec)
