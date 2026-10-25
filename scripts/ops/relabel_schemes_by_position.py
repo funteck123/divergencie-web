@@ -7,7 +7,7 @@ as questions. Backs up database.json first; nothing else changes.
 
   python3 scripts/ops/relabel_schemes_by_position.py <database.json> --only <qpId> [<qpId> ...]
 """
-import argparse, json, shutil, sys, time
+import argparse, json, os, shutil, sys, time
 
 ap = argparse.ArgumentParser(); ap.add_argument("db"); ap.add_argument("--only", nargs="+", required=True)
 a = ap.parse_args()
@@ -22,4 +22,6 @@ for q in a.only:
     for ans, ques in zip(p["answers"], p["questions"]):
         ans["questionNumber"] = ques["questionNumber"]
     print(q, before, "->", [x["questionNumber"] for x in p["answers"]])
-json.dump(db, open(a.db, "w"), ensure_ascii=False)
+tmp = a.db + ".tmp"  # write whole, then rename: the solver reloads this file when it changes and must never read half of it
+json.dump(db, open(tmp, "w"), ensure_ascii=False)
+os.replace(tmp, a.db)

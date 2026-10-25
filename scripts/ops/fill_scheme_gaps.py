@@ -130,7 +130,9 @@ def main():
         shutil.copytree(os.path.join(LIB, "images", q), os.path.join(bdir, "images", q))
         by[q]["answers"] = cut(by[q], plans[q]["starts"])
         print("filled", q, [x["questionNumber"] for x in by[q]["answers"]])
-    json.dump(db, open(dbp, "w"), ensure_ascii=False)
+    tmp = dbp + ".tmp"  # write whole, then rename: the solver reloads this file when it changes and must never read half of it
+    json.dump(db, open(tmp, "w"), ensure_ascii=False)
+    os.replace(tmp, dbp)
     print("backup:", bdir)
 
 

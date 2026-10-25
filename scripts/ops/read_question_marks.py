@@ -124,7 +124,9 @@ def main():
                 continue
             if a.reread or not int(ans.get("marks") or 0):
                 ans["marks"] = rec["marks"]; ans["marksSource"] = "paper-brackets-checked-against-cover"; changed += 1
-    json.dump(db, open(a.db, "w"), ensure_ascii=False)
+    tmp = a.db + ".tmp"  # write whole, then rename: the solver reloads this file when it changes and must never read half of it
+    json.dump(db, open(tmp, "w"), ensure_ascii=False)
+    os.replace(tmp, a.db)
     print(f"wrote marks for {changed} questions in {len(accepted)} worksheets")
 
 
