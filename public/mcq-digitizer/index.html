@@ -194,6 +194,7 @@
           <select id="pickPaperType">
             <option value="topical">Topical worksheets</option>
             <option value="yearly">Yearly past papers</option>
+            <option value="solved">Solved practical papers</option>
           </select>
         </div>
         <div id="pickYearRow" style="display:none;">
@@ -829,6 +830,8 @@ let library = null;
 // comment for why). {} (not null) so a lookup on a subject/component with
 // no yearly data just finds nothing, never throws.
 let yearlyLibrary = {};
+// TKT-0379: solved practical papers (worked solutions, compiled mark schemes), same board->subject->component->[items] shape. Each item is one PDF to read, never a quiz.
+let solvedLibrary = {};
 let paperTitleById = {}; // qpId -> readable title, built once loadLibrary() resolves
 // board -> subject -> mcqComponent name (or null if the subject has no
 // real MCQ paper at all, e.g. Mathematics) -- from GET /api/mcq/subject-meta,
@@ -962,7 +965,7 @@ async function loadLibrary() {
   const statusEl = document.getElementById("libraryStatus");
   const errorEl = document.getElementById("libraryError");
   try {
-    const [res, metaRes, titlesRes, yearlyRes] = await Promise.all([
+    const [res, metaRes, titlesRes, yearlyRes, solvedRes] = await Promise.all([
       fetch("/api/mcq/library"),
       fetch("/api/mcq/subject-meta"),
       // TKT-0244: an always-available (not enrollment-filtered) title map,
@@ -975,10 +978,13 @@ async function loadLibrary() {
       // restarted with the new endpoint, still mid-rollout) must not break
       // the whole picker, same "nice to have" tolerance as subject-meta.
       fetch("/api/mcq/yearly-library").catch(() => null),
+      // TKT-0379: same tolerance as the yearly library: a missing endpoint just means no Solved option.
+      fetch("/api/mcq/solved-library").catch(() => null),
     ]);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     yearlyLibrary = (yearlyRes && yearlyRes.ok) ? await yearlyRes.json().catch(() => ({})) : {};
+    solvedLibrary = (solvedRes && solvedRes.ok) ? await solvedRes.json().catch(() => ({})) : {};
     // subject-meta is a nice-to-have (only decides which UI a component
     // gets) -- a failure here shouldn't block the whole library from
     // loading, every component just falls back to the existing MCQ flow
@@ -1044,13 +1050,16 @@ async function loadLibrary() {
 function fillSelect(select, items) {
   select.innerHTML = items.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
 }
+function fillSelectLabeled(select, pairs) {
+  select.innerHTML = pairs.map(([v, text]) => `<option value="${escapeHtml(v)}">${escapeHtml(text)}</option>`).join("");
+}
 
 // TKT-0253: same union-with-yearly-only pattern populateComponents
 // already used for English's yearly-only components -- a board/subject
 // can now be ZNotes-only (e.g. "A Levels" has no topical worksheets at
 // all for some subjects, only ZNotes), and needs to stay selectable.
 function populateBoards() {
-  const boards = new Set([...Object.keys(library), ...Object.keys(yearlyLibrary)]);
+  const boards = new Set([...Object.keys(library), ...Object.keys(yearlyLibrary), ...Object.keys(solvedLibrary)]);
   fillSelect(document.getElementById("pickBoard"), [...boards]);
   populateSubjects();
 }
@@ -1059,6 +1068,7 @@ function populateSubjects() {
   const subjects = new Set([
     ...Object.keys(library[board] || {}),
     ...Object.keys(yearlyLibrary[board] || {}),
+    ...Object.keys(solvedLibrary[board] || {}),
   ]);
   fillSelect(document.getElementById("pickSubject"), [...subjects]);
   populateComponents();
@@ -1084,7 +1094,9 @@ function populateComponents() {
   // hides the topical option for a component with no topical papers.
   const yearlyComponents = Object.keys((yearlyLibrary[board] || {})[subject] || {});
   const yearlyOnly = yearlyComponents.filter((c) => !nonEmpty.includes(c));
-  fillSelect(document.getElementById("pickComponent"), [...nonEmpty, ...yearlyOnly]);
+  // TKT-0379: a component with only solved papers (Physics and Chemistry practical papers) stays selectable too, listed last.
+  const solvedOnly = Object.keys((solvedLibrary[board] || {})[subject] || {}).filter((c) => !nonEmpty.includes(c) && !yearlyOnly.includes(c));
+  fillSelect(document.getElementById("pickComponent"), [...nonEmpty, ...yearlyOnly, ...solvedOnly]);
   onComponentOrTypeChange();
 }
 
@@ -1105,31 +1117,30 @@ function currentTopicalPapers() {
   const component = document.getElementById("pickComponent").value;
   return (((library[board] || {})[subject] || {})[component] || []);
 }
+function currentSolvedItems() {
+  const board = document.getElementById("pickBoard").value;
+  const subject = document.getElementById("pickSubject").value;
+  const component = document.getElementById("pickComponent").value;
+  return (((solvedLibrary[board] || {})[subject] || {})[component] || []);
+}
 function onComponentOrTypeChange() {
   const yearlyPapers = currentYearlyPapers();
   const topicalPapers = currentTopicalPapers();
+  const solvedItems = currentSolvedItems();
   const typeRow = document.getElementById("pickPaperTypeRow");
   const typeSelect = document.getElementById("pickPaperType");
-  const topicalOption = typeSelect.querySelector('option[value="topical"]');
   const component = document.getElementById("pickComponent").value;
-  if (yearlyPapers.length === 0) {
-    // No yearly data at all for this component -- topical only, same as
-    // before TKT-0251 ever existed.
-    typeRow.style.display = "none";
-    typeSelect.value = "topical";
-    topicalOption.hidden = false;
-  } else if (topicalPapers.length === 0) {
-    // TKT-0251: a yearly-ONLY component (e.g. English's real Paper 2/4)
-    // has no topical counterpart to toggle to at all -- force yearly and
-    // hide the row entirely rather than showing a toggle with a dead
-    // "Topical worksheets" option that would always yield an empty list.
-    typeRow.style.display = "none";
-    typeSelect.value = "yearly";
-    topicalOption.hidden = true;
-  } else {
-    typeRow.style.display = "block";
-    topicalOption.hidden = false;
-  }
+  // TKT-0251/TKT-0379: a component can offer any of three kinds. With none (an empty component) or exactly one, the Paper Type row is hidden
+  // and the value is forced to that kind (topical when there is none, like before TKT-0251). With two or more the row shows only the kinds
+  // this component really has, so no option leads to an empty list.
+  const have = { topical: topicalPapers.length > 0, yearly: yearlyPapers.length > 0, solved: solvedItems.length > 0 };
+  const kinds = ["topical", "yearly", "solved"].filter((k) => have[k]);
+  // The options are rebuilt rather than hidden: the searchable dropdown (TKT-0309) lists every real <option>, hidden or not.
+  const typeLabel = { topical: "Topical worksheets", yearly: "Yearly past papers", solved: "Solved practical papers" };
+  const chosen = have[typeSelect.value] ? typeSelect.value : (kinds[0] || "topical");
+  fillSelectLabeled(typeSelect, (kinds.length ? kinds : ["topical"]).map((k) => [k, typeLabel[k]]));
+  typeSelect.value = chosen;
+  typeRow.style.display = kinds.length > 1 ? "block" : "none";
   if (typeSelect.value === "yearly" && yearlyPapers.length > 0 && (component.startsWith("ZNotes: ") || component.startsWith("Sample Response: "))) {
     // TKT-0253: ZNotes has no year/session/variant at all -- one static
     // document per component, unlike Examiner Report (which still has a
@@ -1141,6 +1152,9 @@ function onComponentOrTypeChange() {
   } else if (typeSelect.value === "yearly" && yearlyPapers.length > 0) {
     document.getElementById("pickYearRow").style.display = "block";
     populateYearlyYears();
+  } else if (typeSelect.value === "solved" && solvedItems.length > 0) {
+    document.getElementById("pickYearRow").style.display = "none";
+    populateSolvedPapers();
   } else {
     document.getElementById("pickYearRow").style.display = "none";
     populatePapers();
@@ -1149,7 +1163,8 @@ function onComponentOrTypeChange() {
   // quiz -- relabel the button so a student doesn't expect a graded
   // attempt to follow.
   document.getElementById("fetchAndDigitizeBtn").textContent =
-    component === "Examiner Report" ? "View examiner report"
+    typeSelect.value === "solved" ? "Open solved paper"
+    : component === "Examiner Report" ? "View examiner report"
     : component.startsWith("ZNotes: ") ? "View notes"
     : component.startsWith("Sample Response: ") ? "View sample responses"
     : "Fetch this paper and start";
@@ -1193,6 +1208,17 @@ function populateZNotesPaper() {
   document.getElementById("fetchAndDigitizeBtn").disabled = papers.length === 0;
   document.getElementById("mistakesModeBtn").style.display = "none"; // TKT-0251/TKT-0253: mistakes-mode data doesn't cover yearly papers or ZNotes
 }
+// TKT-0379: solved practical papers are documents to read (worked solutions, compiled mark schemes, examiner comments): one entry per PDF, no
+// quiz, no score, no mistakes mode. The id the server gives is opaque, so the PDF is asked for by id, never by path.
+function populateSolvedPapers() {
+  const items = currentSolvedItems();
+  const paperSelect = document.getElementById("pickPaper");
+  paperSelect.innerHTML = items.map((i) => `<option value="${escapeHtml(i.solvedId)}">${escapeHtml(i.title)} · ${escapeHtml(i.kind)} · ${escapeHtml(String(i.pages))} pages</option>`).join("");
+  document.getElementById("pickPaperNote").textContent = "Opens as a PDF in a new tab. Solved papers are not marked or tracked.";
+  document.getElementById("fetchAndDigitizeBtn").disabled = items.length === 0;
+  document.getElementById("mistakesModeBtn").style.display = "none";
+  document.getElementById("mistakesStatus").style.display = "none";
+}
 function populatePapers() {
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
@@ -1209,6 +1235,7 @@ function populatePapers() {
 }
 function updatePaperNote() {
   if (document.getElementById("pickPaperType").value === "yearly") return; // yearly papers always have a real ms -- nothing to note
+  if (document.getElementById("pickPaperType").value === "solved") return; // TKT-0379: a document to read, the note populateSolvedPapers set stays
   const board = document.getElementById("pickBoard").value;
   const subject = document.getElementById("pickSubject").value;
   const component = document.getElementById("pickComponent").value;
@@ -1239,6 +1266,13 @@ document.getElementById("fetchAndDigitizeBtn").addEventListener("click", async (
   const subject = document.getElementById("pickSubject").value;
   const component = document.getElementById("pickComponent").value;
   const isYearly = document.getElementById("pickPaperType").value === "yearly";
+
+  // TKT-0379: a solved paper only opens its PDF in a new tab, like the Examiner Report below: no quiz, no score.
+  if (document.getElementById("pickPaperType").value === "solved") {
+    const solvedId = document.getElementById("pickPaper").value;
+    if (solvedId) window.open(`/api/mcq/solved-pdf?id=${encodeURIComponent(solvedId)}`, "_blank");
+    return;
+  }
 
   if (isYearly) {
     const paperId = document.getElementById("pickPaper").value;
