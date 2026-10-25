@@ -9,6 +9,7 @@ and accepts a worksheet ONLY when the marks add up to the "Maximum Marks" on its
 One sum over many numbers matching an independent number is hard to get right by accident. Otherwise the worksheet is left alone and the reason is listed.
 
   python3 scripts/ops/read_question_marks.py <database.json> <pdf dir> --title "<starts with>" [--component "..."] [--out result.json]   read only
+  ... --reread   for worksheets whose stored marks do not add up to the cover: read every question again (backed up like any apply)
   ... --set <qpId>:<question>=<marks>   a mark read by eye where OCR found none (still checked against the cover total)
   python3 scripts/ops/read_question_marks.py <database.json> <pdf dir> --component "Paper 3: Pure Mathematics 3" --apply --only <qpId> [<qpId> ...]
         backs up <database.json> first, then writes the marks of exactly the named, accepted worksheets (nothing else changes).
@@ -45,7 +46,7 @@ def cover_total(pdf_path):
     return int(m.group(1)) if m else None
 
 
-def read_worksheet(entry, pdf_dir, manual=None):
+def read_worksheet(entry, pdf_dir, manual=None, reread=False):
     """{"status": "accepted"|"left alone"|"nothing to do", "why", "cover", "questions": {n: {"stored", "read": [brackets], "marks"}}}"""
     total = cover_total(os.path.join(pdf_dir, entry["qpId"] + ".pdf"))
     qs, missing = {}, 0
@@ -57,7 +58,7 @@ def read_worksheet(entry, pdf_dir, manual=None):
             qs[n] = {"stored": 0, "read": [], "marks": 0, "noScheme": True}
             missing += 1
             continue
-        stored = int(a.get("marks") or 0)
+        stored = 0 if reread else int(a.get("marks") or 0)  # --reread: the stored marks are not trusted, every question is read again
         rec = {"stored": stored, "read": [], "marks": stored}
         if not stored:
             missing += 1
@@ -90,6 +91,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("db"); ap.add_argument("pdfdir"); ap.add_argument("--title"); ap.add_argument("--component"); ap.add_argument("--out")
     ap.add_argument("--set", nargs="+", default=[], help="qpId:question=marks, a [N] a person read off the picture that OCR missed; the cover-total rule still applies")
+    ap.add_argument("--reread", action="store_true", help="ignore stored marks and read every question; the worksheet is still accepted only when the total equals the cover")
     ap.add_argument("--apply", action="store_true"); ap.add_argument("--only", nargs="+", default=[])
     a = ap.parse_args()
     db = json.load(open(a.db))
@@ -97,7 +99,7 @@ def main():
     manual = {(k.split(":")[0], k.split(":")[1].split("=")[0]): int(k.split("=")[1]) for k in a.set}
     results = []
     for p in picked:
-        r = read_worksheet(p, a.pdfdir, manual)
+        r = read_worksheet(p, a.pdfdir, manual, a.reread)
         results.append(r)
         got = sum(v["marks"] for v in r["questions"].values())
         print(f"{r['status']:13s} {p['title'][:66]:66s} marks {got}/{r['cover']} {r['why']}", flush=True)
@@ -120,7 +122,7 @@ def main():
             rec = r["questions"].get(ans["questionNumber"])
             if rec is None:
                 continue
-            if not int(ans.get("marks") or 0):
+            if a.reread or not int(ans.get("marks") or 0):
                 ans["marks"] = rec["marks"]; ans["marksSource"] = "paper-brackets-checked-against-cover"; changed += 1
     json.dump(db, open(a.db, "w"), ensure_ascii=False)
     print(f"wrote marks for {changed} questions in {len(accepted)} worksheets")

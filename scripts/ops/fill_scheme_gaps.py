@@ -24,6 +24,7 @@ import extract_mcq as e
 LIB = os.path.join(ROOT, "data", "mcq-digitizer", "structured-library")
 MARK_CODE = re.compile(r"\b(?:[MAB]\d|SC\d|DM\d|DB\d|FT)\b|\bB\d\b|\d\s*marks?\b", re.IGNORECASE)
 MARGIN = 10  # points either side of the usual heading margin
+WIDE = 22  # a two-digit number sits further right than a one-digit one, and a long heading line starts "11       (a)"
 
 
 def pos(s):
@@ -51,8 +52,13 @@ def plan_worksheet(entry):
     xs = [l["x0"] for s in base for l in ordered if l["page"] == s["page"] and l["y0"] == s["y0"] and l["text"].strip().startswith(s["number"])]
     if not xs:
         return {"status": "left alone", "why": "cannot measure the heading margin"}
-    margin_x = statistics.median(xs)
-    starts, found = {s["number"]: s for s in base}, []
+    near = [x for x in xs if x < 100]  # a "heading" the parser took from a table cell (x0 140 to 200) must not pull the margin out of place
+    margin_x = statistics.median(near or xs)
+    def in_window(x0, n):
+        return (margin_x - MARGIN) <= x0 <= margin_x + MARGIN + (WIDE if len(n) == 2 else 0)
+    x_of = {(l["page"], l["y0"]): l["x0"] for l in ordered if re.match(r"^\d{1,2}(\s|$)", l["text"].strip())}
+    # a parser heading outside that window is noise: drop it, and look for the real heading of that number like for any missing one
+    starts, found = {s["number"]: s for s in base if in_window(x_of.get((s["page"], s["y0"]), margin_x), s["number"])}, []
     for n in want:
         if n in starts:
             continue
@@ -60,7 +66,7 @@ def plan_worksheet(entry):
         after = [pos(s) for k, s in starts.items() if int(k) > int(n)]
         lo, hi = (max(before) if before else (0, 0)), (min(after) if after else (10 ** 6, 0))
         pat = re.compile(rf"^{n}(\s+\S|$)")
-        hits = [l for l in ordered if l["page"] > 0 and abs(l["x0"] - margin_x) <= MARGIN and pat.match(l["text"].strip()) and lo < (l["page"], l["y0"]) < hi]
+        hits = [l for l in ordered if l["page"] > 0 and in_window(l["x0"], n) and pat.match(l["text"].strip()) and lo < (l["page"], l["y0"]) < hi]
         if not hits:
             return {"status": "left alone", "why": f"no heading line found for question {n} between its neighbours"}
         starts[n] = {"number": n, "page": hits[0]["page"], "y0": hits[0]["y0"]}
