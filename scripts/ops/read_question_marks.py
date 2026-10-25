@@ -9,6 +9,7 @@ and accepts a worksheet ONLY when the marks add up to the "Maximum Marks" on its
 One sum over many numbers matching an independent number is hard to get right by accident. Otherwise the worksheet is left alone and the reason is listed.
 
   python3 scripts/ops/read_question_marks.py <database.json> <pdf dir> --title "<starts with>" [--component "..."] [--out result.json]   read only
+  ... --set <qpId>:<question>=<marks>   a mark read by eye where OCR found none (still checked against the cover total)
   python3 scripts/ops/read_question_marks.py <database.json> <pdf dir> --component "Paper 3: Pure Mathematics 3" --apply --only <qpId> [<qpId> ...]
         backs up <database.json> first, then writes the marks of exactly the named, accepted worksheets (nothing else changes).
 """
@@ -44,7 +45,7 @@ def cover_total(pdf_path):
     return int(m.group(1)) if m else None
 
 
-def read_worksheet(entry, pdf_dir):
+def read_worksheet(entry, pdf_dir, manual=None):
     """{"status": "accepted"|"left alone"|"nothing to do", "why", "cover", "questions": {n: {"stored", "read": [brackets], "marks"}}}"""
     total = cover_total(os.path.join(pdf_dir, entry["qpId"] + ".pdf"))
     qs, missing = {}, 0
@@ -62,6 +63,8 @@ def read_worksheet(entry, pdf_dir):
             missing += 1
             if os.path.exists(q["imagePath"]):
                 rec["read"] = read_brackets(q["imagePath"])
+                if not rec["read"] and manual and (entry["qpId"], n) in manual:
+                    rec["read"] = [manual[(entry["qpId"], n)]]  # a person read this [N] off the picture
                 rec["marks"] = sum(rec["read"])
         qs[n] = rec
     out = {"qpId": entry["qpId"], "msId": entry["msId"], "title": entry["title"], "cover": total, "questions": qs}
@@ -86,13 +89,15 @@ def read_worksheet(entry, pdf_dir):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("db"); ap.add_argument("pdfdir"); ap.add_argument("--title"); ap.add_argument("--component"); ap.add_argument("--out")
+    ap.add_argument("--set", nargs="+", default=[], help="qpId:question=marks, a [N] a person read off the picture that OCR missed; the cover-total rule still applies")
     ap.add_argument("--apply", action="store_true"); ap.add_argument("--only", nargs="+", default=[])
     a = ap.parse_args()
     db = json.load(open(a.db))
     picked = [p for p in db if (not a.title or p["title"].startswith(a.title)) and (not a.component or p.get("component") == a.component) and (not a.only or p["qpId"] in a.only)]
+    manual = {(k.split(":")[0], k.split(":")[1].split("=")[0]): int(k.split("=")[1]) for k in a.set}
     results = []
     for p in picked:
-        r = read_worksheet(p, a.pdfdir)
+        r = read_worksheet(p, a.pdfdir, manual)
         results.append(r)
         got = sum(v["marks"] for v in r["questions"].values())
         print(f"{r['status']:13s} {p['title'][:66]:66s} marks {got}/{r['cover']} {r['why']}", flush=True)
