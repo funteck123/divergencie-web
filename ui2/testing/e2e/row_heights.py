@@ -13,16 +13,20 @@ SEL = "button, a[class*=btn], [role=tab], [role=combobox], select, input:not([ty
 JS = """([SEL, dialogOnly]) => {
   const root = dialogOnly ? document.querySelector('[role=dialog]') : document.body;
   if (!root) return [];
-  const vis = (e) => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && !e.closest('[data-radix-popper-content-wrapper], .u2-skip, [aria-hidden=true]'); };
+  // a control that its own container clips away completely (inside a scroller or an overflow:hidden box, outside its visible area) is not on screen, so it is in no row
+  const clipped = (e, r) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflow + getComputedStyle(p).overflowX + getComputedStyle(p).overflowY; if (!/(hidden|auto|scroll|clip)/.test(o)) continue; const b = p.getBoundingClientRect(); if (r.bottom <= b.top || r.top >= b.bottom || r.right <= b.left || r.left >= b.right) return true; } return false; };
+  const vis = (e) => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && !e.closest('[data-radix-popper-content-wrapper], .u2-skip, [aria-hidden=true]') && !clipped(e, r); };
   const filled = (e) => { const cs = getComputedStyle(e); return cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(cs.borderTopWidth) > 0 || e.matches('input, select, textarea, [role=combobox]'); };
   let els = [...root.querySelectorAll(SEL)].filter(vis).filter((e) => !e.matches('.u2-shotfab, .u2-badge') && filled(e));
   els = els.filter((e) => !els.some((o) => o !== e && o.contains(e)));
   const sx = scrollX, sy = scrollY;
-  const items = els.map((e) => { const r = e.getBoundingClientRect(); return { e, t: r.top + sy, b: r.bottom + sy, l: r.left + sx, r: r.right + sx, h: r.height }; }).sort((a, b) => a.t - b.t || a.l - b.l);
+  // controls in a fixed or sticky layer (the header, a floating panel) are a row of their own: after a scroll they share a position with page content without sharing a row
+  const layerOf = (e) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { const pos = getComputedStyle(p).position; if (pos === 'fixed' || pos === 'sticky') return p; } return null; };
+  const items = els.map((e) => { const r = e.getBoundingClientRect(); return { e, layer: layerOf(e), t: r.top + sy, b: r.bottom + sy, l: r.left + sx, r: r.right + sx, h: r.height }; }).sort((a, b) => a.t - b.t || a.l - b.l);
   const rows = [];
   for (const it of items) {
-    const row = rows.find((r) => { const ov = Math.min(r.b, it.b) - Math.max(r.t, it.t); return ov >= 0.5 * Math.min(r.b - r.t, it.h) && r.items.every((o) => it.l >= o.r - 1 || it.r <= o.l + 1); });
-    if (row) { row.items.push(it); row.t = Math.min(row.t, it.t); row.b = Math.max(row.b, it.b); } else rows.push({ t: it.t, b: it.b, items: [it] });
+    const row = rows.find((r) => r.layer === it.layer && (() => { const ov = Math.min(r.b, it.b) - Math.max(r.t, it.t); return ov >= 0.5 * Math.min(r.b - r.t, it.h) && r.items.every((o) => it.l >= o.r - 1 || it.r <= o.l + 1); })());
+    if (row) { row.items.push(it); row.t = Math.min(row.t, it.t); row.b = Math.max(row.b, it.b); } else rows.push({ layer: it.layer, t: it.t, b: it.b, items: [it] });
   }
   return rows.filter((r) => r.items.length > 1).map((r) => r.items.map((i) => [Math.round(i.h * 10) / 10, (i.e.textContent || i.e.getAttribute('aria-label') || i.e.getAttribute('placeholder') || i.e.tagName).trim().slice(0, 14)]))
     .filter((r) => Math.max(...r.map((x) => x[0])) - Math.min(...r.map((x) => x[0])) > 1)
@@ -31,6 +35,9 @@ JS = """([SEL, dialogOnly]) => {
 OPENERS = re.compile(r"^(new|add|create|edit|enrol|enroll|import|invite|reschedule|report|decide|offer|open|convert|reject|approve|send task|mark as|\+ new|\d\d:\d\d|✎)", re.I)
 bad = []
 seen = {"pages": 0, "forms": 0, "rows": 0}  # coverage: a pass that measured nothing proves nothing
+
+
+COUNT = "(SEL) => [...document.querySelectorAll(SEL)].filter((e) => e.getBoundingClientRect().width > 4).length"
 
 
 def measure(s, label, dialog_only=False):
@@ -57,12 +64,29 @@ def sweep(s, path, label=None):
             continue
         seen_names.add(key)
         try:
+            before = s.page.evaluate(COUNT, SEL)
             b.click(timeout=3000); s.page.wait_for_timeout(500)
             if s.page.locator("[role=dialog]").count(): measure(s, f"{label} > {name}", dialog_only=True)
+            elif s.page.evaluate(COUNT, SEL) > before + 1: measure(s, f"{label} > {name} (inline form)")   # an editor that opens in the page, not in a dialog
         except Exception:
             pass
         s.page.keyboard.press("Escape"); s.page.wait_for_timeout(250)
         if s.page.locator("[role=dialog]").count(): s.goto(path); s.page.wait_for_timeout(600); btns = s.page.locator("header button, main button")
+
+    row_click(s, path, label)
+
+
+def row_click(s, path, label):
+    """The first table row: on several pages it opens the detail sheet."""
+    try:
+        row = s.page.locator("main tbody tr").first
+        if not row.count(): return
+        s.goto(path); s.page.wait_for_timeout(700)
+        s.page.locator("main tbody tr").first.locator("td").nth(1).click(timeout=3000); s.page.wait_for_timeout(600)
+        if s.page.locator("[role=dialog]").count(): measure(s, f"{label} > row click", dialog_only=True)
+    except Exception:
+        pass
+    s.page.keyboard.press("Escape"); s.page.wait_for_timeout(250)
 
 
 def main():
@@ -85,7 +109,7 @@ def main():
                 s.on(r"^/api/", P.handler_for(user, kind)); sweep(s, path, f"{path}@{width}")
     print(f"measured {seen['pages']} pages and {seen['forms']} forms (dialogs and sheets) at 1280 and 390 px")
     print("rows with different control heights:", len(bad))
-    if seen["forms"] < 30: print("TOO FEW FORMS OPENED: the openers were not found, the check is not covering the forms"); bad.append(("coverage", "forms"))
+    if seen["forms"] < 40: print("TOO FEW FORMS OPENED: the openers were not found, the check is not covering the forms"); bad.append(("coverage", "forms"))
     sys.exit(1 if bad else 0)
 
 
