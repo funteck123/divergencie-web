@@ -1,4 +1,4 @@
-// Fails when the new UI (ui2, app/v2) uses a raw colour, font size or corner radius instead of a design token.
+// Fails when the new UI (ui2, app/v2) uses a raw colour, font size, control height or corner radius instead of a design token.
 //   node scripts/lint-design.mjs        (also run by npm test through lint-design.test.mjs)
 // Allowed: tokens.css and palette.mjs (where tokens are defined), tests, and the files in ALLOW_FILES.
 // A single line can opt out with the comment  design-lint: allow  (use for data colours, with a reason).
@@ -20,6 +20,8 @@ const RULES = [
   { name: "raw colour", re: /#[0-9a-fA-F]{3,8}\b|rgba?\(\s*\d/g },
   // [ \t]* then a lookahead that refuses a space: stops the regex backtracking over the space to "find" a violation in var(...)
   { name: "raw font size", re: /font-size:[ \t]*(?![ \t]|var\()[0-9.]+(?:px|rem|em)|fontSize:[ \t]*["']?[0-9.]+(?:px|rem|em)?["']?/g },
+  // control-sized heights (24 to 44 px) come from --u2-control-h, --u2-control-h-sm, --u2-chip-h or --u2-tab-height, so items in one row cannot drift apart (TKT-0382)
+  { name: "raw control height", re: /(?:min-)?height:[ \t]*(?:2[4-9]|3[0-9]|4[0-4])px|(?:min)?[hH]eight:[ \t]*["']?(?:2[4-9]|3[0-9]|4[0-4])["']?[,} ]/g },
   { name: "raw corner radius", re: /border-radius:[ \t]*(?![ \t]|var\(|0[;} ]|0$|inherit)[^;}\n]+|borderRadius:[ \t]*["']?(?!var\()[0-9.]+/g },
 ];
 
@@ -54,5 +56,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.error("Use a token from ui2/styles/palette.mjs (add one there if it is genuinely new).");
     process.exit(1);
   }
-  console.log("design lint: OK (no raw colours, font sizes or radii outside the tokens)");
+  console.log("design lint: OK (no raw colours, font sizes, control heights or radii outside the tokens)");
 }

@@ -9,7 +9,7 @@
   .u2-dialog__title { font-size: var(--u2-text-xl); font-weight: var(--u2-weight-bold); margin: 0; }
   .u2-dialog__body { color: var(--u2-color-text); line-height: var(--u2-leading-body, 1.5); }
   .u2-dialog__field { display: grid; gap: var(--u2-space-1); }
-  .u2-dialog__field input { height: 36px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-bg); }
+  .u2-dialog__field input { height: var(--u2-control-h); padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-bg); }
   .u2-dialog__error { margin: 0; color: var(--u2-color-error); }
   .u2-dialog__actions { display: flex; justify-content: flex-end; gap: var(--u2-space-2); }
 }

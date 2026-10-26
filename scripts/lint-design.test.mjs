@@ -13,5 +13,11 @@ test("accepts tokens, zero radius and an explicit opt-out", () => {
   assert.deepEqual(findViolations("x.css", ".a { color: var(--u2-color-text); font-size: var(--u2-text-sm); border-radius: var(--u2-radius-sm); border-radius: 0; }"), []);
   assert.deepEqual(findViolations("x.ts", 'const c = "#6b7280"; // design-lint: allow'), []);
 });
+test("catches a raw control height in CSS and in inline styles, accepts the tokens", () => {
+  assert.deepEqual(findViolations("x.css", ".a { height: 36px; }\n.b { min-height: 28px; }").map((x) => x.rule), ["raw control height", "raw control height"]);
+  assert.equal(findViolations("x.tsx", "<div style={{ height: 36, minHeight: 30 }} />").length, 1);
+  assert.deepEqual(findViolations("x.css", ".a { height: var(--u2-control-h); min-height: var(--u2-chip-h); } .b { height: 120px; } .c { max-height: 400px; }"), []);
+  assert.deepEqual(findViolations("x.css", ".a { height: 36px; } /* design-lint: allow */"), []);
+});
 test("ignores a colour inside a comment block", () => assert.deepEqual(findViolations("x.css", "/* was #fff */ .a { color: var(--u2-color-text); }"), []));
 test("the new UI is clean right now", () => assert.deepEqual(lintAll(), []));

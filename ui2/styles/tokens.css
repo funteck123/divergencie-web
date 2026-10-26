@@ -70,6 +70,9 @@
   --u2-bar-height: 56px;
   --u2-tab-height: 40px;
   --u2-row-height: 34px;
+  --u2-control-h: 36px;
+  --u2-control-h-sm: 28px;
+  --u2-chip-h: 32px;
   --u2-touch-target: 44px;
   --u2-motion-fast: 150ms;
   --u2-motion-base: 200ms;

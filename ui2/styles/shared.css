@@ -5,7 +5,7 @@
   .u2-accounts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--u2-space-3); }
   .u2-seg { display: flex; gap: var(--u2-space-1); overflow-x: auto; scrollbar-width: none; }
   .u2-seg__btn {
-    display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-shrink: 0; height: 36px; padding: 0 var(--u2-space-3);
+    display: inline-flex; align-items: center; gap: var(--u2-space-2); flex-shrink: 0; height: var(--u2-control-h); padding: 0 var(--u2-space-3);
     border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-text);
     font-weight: var(--u2-weight-medium); cursor: pointer;
   }
@@ -13,7 +13,7 @@
   .u2-seg__btn[data-on="true"] { background: var(--u2-color-brand); border-color: var(--u2-color-brand); color: var(--u2-color-on-brand); }
   .u2-toolbar__new { margin-left: auto; }
   .u2-toolbar { display: flex; align-items: center; gap: var(--u2-space-3); flex-wrap: wrap; }
-  .u2-search { height: 36px; min-width: 260px; flex: 0 1 360px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-bg); }
+  .u2-search { height: var(--u2-control-h); min-width: 260px; flex: 0 1 360px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-bg); }
   .u2-mono { font-variant-numeric: tabular-nums; letter-spacing: 0; }
   .u2-strong { font-weight: var(--u2-weight-semibold); }
   .u2-mark { color: var(--u2-color-brand); }
@@ -57,7 +57,7 @@
   .u2-split--top { align-items: start; } /* a main panel beside a short side panel: each keeps its own height */
   @media (max-width: 767px) { .u2-split { grid-template-columns: minmax(0, 1fr); } } /* side-by-side boxes stack on a phone */
   /* from ui2/features/portal/portal.css */
-  .u2-pill { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-brand); font-weight: var(--u2-weight-semibold); text-decoration: none; }
+  .u2-pill { display: inline-flex; align-items: center; min-height: var(--u2-chip-h); padding: 0 var(--u2-space-3); border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius); background: var(--u2-color-surface); color: var(--u2-color-brand); font-weight: var(--u2-weight-semibold); text-decoration: none; }
   .u2-pill:hover { background: var(--u2-color-selected); }
   /* from ui2/features/schedule/schedule.css */
   .u2-imagebox { position: relative; width: 100%; height: 700px; border: 1px solid var(--u2-color-border); border-radius: var(--u2-radius); background: var(--u2-color-surface); }

@@ -129,6 +129,10 @@ export const TOKENS = {
   "bar-height": "56px",
   "tab-height": "40px",
   "row-height": "34px",
+  // one height per kind of control, so items in one row can never drift apart (TKT-0382): use these, never a literal
+  "control-h": "36px",
+  "control-h-sm": "28px",
+  "chip-h": "32px",
   "touch-target": "44px",
   // motion (Mockup Guide v2 section 9)
   "motion-fast": "150ms",

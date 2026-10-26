@@ -1,10 +1,11 @@
 /* Specificity lift: see DESIGN_RULES.md ("CSS specificity lift"). */
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-iconbtn {
-    display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px; /* the same height as a small button, so they line up in one row */
+    display: inline-grid; place-items: center; min-width: 28px; height: var(--u2-control-h); padding: 0 4px; /* the normal control height, so it lines up with the buttons beside it in a sheet footer or a toolbar (TKT-0382) */
     border: 1px solid var(--u2-color-border-strong); border-radius: var(--u2-radius);
     background: var(--u2-color-surface); color: var(--u2-color-brand); font-size: var(--u2-text-sm); line-height: 1;
   }
+  .u2-table .u2-iconbtn, .u2-cards .u2-iconbtn { height: var(--u2-control-h-sm); } /* inside a table row or a card the small size, like the small buttons around it; .u2-rowactions is only a layout group and also holds the normal buttons of a sheet footer */
   .u2-iconbtn:hover:not([aria-disabled="true"]) { background: var(--u2-color-selected); }
   .u2-iconbtn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
   .u2-menu {

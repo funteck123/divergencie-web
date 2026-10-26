@@ -3,14 +3,14 @@
    class selectors, so every selector here is prefixed with six :not(#\#) (each counts as an id). */
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--u2-space-2);
-  min-height: 36px; padding: 0 var(--u2-space-4);
+  min-height: var(--u2-control-h); padding: 0 var(--u2-space-4);
   border: 1px solid transparent; border-radius: var(--u2-radius);
   font-size: var(--u2-text-md); font-weight: var(--u2-weight-semibold); line-height: 1; white-space: nowrap;
   transition: background-color var(--u2-motion-fast) var(--u2-ease-out), border-color var(--u2-motion-fast) var(--u2-ease-out),
     box-shadow var(--u2-motion-fast) var(--u2-ease-out), transform var(--u2-motion-fast) var(--u2-ease-out);
   position: relative;
 }
-:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .sm { min-height: 36px; padding: 0 var(--u2-space-3); font-size: var(--u2-text-sm); }
+:global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .sm { min-height: var(--u2-control-h); padding: 0 var(--u2-space-3); font-size: var(--u2-text-sm); }
 @media (pointer: coarse) { :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .btn { min-height: var(--u2-touch-target); } :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .iconOnly { min-width: var(--u2-touch-target); } }
 
 :global(:not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#)) .primary { background: var(--u2-color-accent); color: var(--u2-color-on-accent); }
