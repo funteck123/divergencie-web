@@ -42,6 +42,8 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
   const [month, setMonth] = useState(today.getMonth());
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [dayOpen, setDayOpen] = useState<string | null>(null);
+  // A session opened from a day cell shows its panel in a dialog: the cell is a small box that clips anything taller or wider than itself (TKT-0383).
+  const [panelId, setPanelId] = useState<string | null>(null);
 
   const byDate = useMemo(() => {
     const m = new Map<string, ScheduleItem[]>();
@@ -50,6 +52,23 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
     return m;
   }, [scheduleItems]);
   const occ = useMemo(() => occurrenceNumbers(scheduleItems), [scheduleItems]);
+  const panelItem = panelId ? scheduleItems.find((x) => x.ScheduleID === panelId) : undefined;
+
+  /** What a session shows when opened: the full attendance panel, or the quick log form. */
+  function panelBody(s: ScheduleItem) {
+    return renderExpanded ? (
+      renderExpanded(s.ScheduleID, s)
+    ) : (
+      <MiniAttendanceForm
+        defaultHrs={s.Duration}
+        onSubmit={async (status, hrs) => {
+          await onLogAttendance?.(s.ScheduleID, status, hrs);
+          setExpandedId(null);
+          setPanelId(null);
+        }}
+      />
+    );
+  }
 
   function chip(s: ScheduleItem, truncate: boolean) {
     const att = attendanceFor(attendanceItems, s.ScheduleID);
@@ -70,27 +89,20 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
           disabled={!clickable}
           title={`${fullLabel} — ${groups.join(" + ")}`}
           aria-label={fullLabel}
-          aria-expanded={clickable ? expandedId === s.ScheduleID : undefined}
+          aria-expanded={clickable && !truncate ? expandedId === s.ScheduleID : undefined}
+          aria-haspopup={clickable && truncate ? "dialog" : undefined}
           onClick={(e) => {
             e.stopPropagation();
-            if (clickable) setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID);
+            if (!clickable) return;
+            if (truncate) setPanelId(panelId === s.ScheduleID ? null : s.ScheduleID); // in a day cell: a dialog
+            else setExpandedId(expandedId === s.ScheduleID ? null : s.ScheduleID); // already inside the day dialog, which scrolls: inline
           }}
         >
           {label}
         </button>
-        {expandedId === s.ScheduleID && clickable && (
+        {!truncate && expandedId === s.ScheduleID && clickable && (
           <div className="u2-chip__panel" onClick={(e) => e.stopPropagation()}>
-            {renderExpanded ? (
-              renderExpanded(s.ScheduleID, s)
-            ) : (
-              <MiniAttendanceForm
-                defaultHrs={s.Duration}
-                onSubmit={async (status, hrs) => {
-                  await onLogAttendance?.(s.ScheduleID, status, hrs);
-                  setExpandedId(null);
-                }}
-              />
-            )}
+            {panelBody(s)}
           </div>
         )}
       </div>
@@ -103,6 +115,7 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
   const todayStr = fmt(today.getFullYear(), today.getMonth(), today.getDate());
   const go = (delta: number) => {
     setExpandedId(null);
+    setPanelId(null);
     const d = new Date(year, month + delta, 1);
     setYear(d.getFullYear());
     setMonth(d.getMonth());
@@ -113,7 +126,7 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
       <div className="u2-cal__nav">
         <span className="u2-rowactions">
           <Button size="sm" variant="ghost" aria-label="Previous month" onClick={() => go(-1)}>‹</Button>
-          <Button size="sm" variant="ghost" onClick={() => { setExpandedId(null); setYear(today.getFullYear()); setMonth(today.getMonth()); }}>Today</Button>
+          <Button size="sm" variant="ghost" onClick={() => { setExpandedId(null); setPanelId(null); setYear(today.getFullYear()); setMonth(today.getMonth()); }}>Today</Button>
           <Button size="sm" variant="ghost" aria-label="Next month" onClick={() => go(1)}>›</Button>
         </span>
         <h3 className="u2-cal__title" aria-live="polite">{MONTH_LABELS[month]} {year}</h3>
@@ -152,6 +165,25 @@ export function ScheduleCalendar({ scheduleItems, attendanceItems, onLogAttendan
           );
         })}
       </div>
+
+      <Dialog.Root open={!!panelItem} onOpenChange={(o) => !o && setPanelId(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="u2-portal u2-dialog__overlay" />
+          <Dialog.Content className="u2-portal u2-dialog" aria-describedby={undefined} style={{ maxHeight: "80vh", overflowY: "auto" }}>
+            {panelItem && (
+              <>
+                <Dialog.Title className="u2-dialog__title">{panelItem.ServiceName} · {panelItem.Date} · {panelItem.Time}</Dialog.Title>
+                {panelBody(panelItem)}
+                <div className="u2-dialog__actions">
+                  <Dialog.Close asChild>
+                    <Button variant="ghost">Close</Button>
+                  </Dialog.Close>
+                </div>
+              </>
+            )}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
 
       <Dialog.Root open={!!dayOpen} onOpenChange={(o) => !o && setDayOpen(null)}>
         <Dialog.Portal>
