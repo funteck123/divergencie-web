@@ -2,9 +2,10 @@
 :not(#\#):not(#\#):not(#\#):not(#\#):not(#\#):not(#\#) {
   .u2-badge {
     display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
-    padding: 1px var(--u2-space-2); border-radius: var(--u2-radius);
+    min-height: var(--u2-control-h); padding: 1px var(--u2-space-2); border-radius: var(--u2-radius); /* the same height as the controls it sits beside (TKT-0382) */
     font-size: var(--u2-text-xs); font-weight: var(--u2-weight-semibold); line-height: 1.5;
   }
+  .u2-table .u2-badge, .u2-cards .u2-badge { min-height: var(--u2-control-h-sm); } /* in a table row or a card: the small size, like the small buttons beside it */
   .u2-badge__dot { width: 7px; height: 7px; border-radius: var(--u2-radius-round); background: currentColor; }
   .u2-badge--neutral { background: var(--u2-color-selected); color: var(--u2-color-text); }
   .u2-badge--info { background: var(--u2-color-info-bg); color: var(--u2-color-info-text); }

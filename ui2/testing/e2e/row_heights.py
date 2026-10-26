@@ -1,7 +1,7 @@
 """Global row-height rule (TKT-0382): controls that sit in one visual row have one height, wherever they are in the DOM.
 Every control (button, icon button, tab, select, combobox, input, search, segmented control, chip, pill, tag) is placed in a row by vertical overlap, whatever its parent;
 a row whose controls differ by more than 1 px fails. It runs on every admin page, on the four portals, at desktop and phone width, and inside every form that opens
-from a New, Add, Create, Edit, Enrol, Import or Invite button (dialogs and sheets). Not controls, so not measured: status badges (indicators, smaller on purpose),
+from a New, Add, Create, Edit, Enrol, Import or Invite button (dialogs and sheets). Status badges are measured too (the owner decided on 2026-10-27 that they match the buttons beside them). Not measured:
 the screenshot helper, and plain text buttons with no border or fill. The heights themselves come from --u2-control-h, --u2-control-h-sm and --u2-chip-h (scripts/lint-design.mjs
 refuses a raw control height), so a failure here is a layout cause (a stretching grid, a wrong size prop), not a number to patch on one page."""
 import os, re, sys
@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
 import accounts_journey as A, services_journey as SV, schedule_journey as SJ, billing_journey as B, portals_journey as P, pipeline_journey as PJ
 
-SEL = "button, a[class*=btn], [role=tab], [role=combobox], select, input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]), .u2-chip, .u2-pill, .u2-tag, .u2-seg, .u2-search, .u2-iconbtn, .u2-linkicon, .u2-combo__trigger, .u2-lead, .u2-toolbar__new"
+SEL = "button, a[class*=btn], [role=tab], [role=combobox], select, input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]), .u2-chip, .u2-pill, .u2-tag, .u2-seg, .u2-search, .u2-iconbtn, .u2-linkicon, .u2-combo__trigger, .u2-lead, .u2-toolbar__new, .u2-badge"
 JS = """([SEL, dialogOnly]) => {
   const root = dialogOnly ? document.querySelector('[role=dialog]') : document.body;
   if (!root) return [];
@@ -17,7 +17,7 @@ JS = """([SEL, dialogOnly]) => {
   const clipped = (e, r) => { for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) { const o = getComputedStyle(p).overflow + getComputedStyle(p).overflowX + getComputedStyle(p).overflowY; if (!/(hidden|auto|scroll|clip)/.test(o)) continue; const b = p.getBoundingClientRect(); if (r.bottom <= b.top || r.top >= b.bottom || r.right <= b.left || r.left >= b.right) return true; } return false; };
   const vis = (e) => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width > 4 && r.height > 4 && cs.visibility !== 'hidden' && cs.display !== 'none' && !e.closest('[data-radix-popper-content-wrapper], .u2-skip, [aria-hidden=true]') && !clipped(e, r); };
   const filled = (e) => { const cs = getComputedStyle(e); return cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(cs.borderTopWidth) > 0 || e.matches('input, select, textarea, [role=combobox]'); };
-  let els = [...root.querySelectorAll(SEL)].filter(vis).filter((e) => !e.matches('.u2-shotfab, .u2-badge') && filled(e));
+  let els = [...root.querySelectorAll(SEL)].filter(vis).filter((e) => !e.matches('.u2-shotfab') && filled(e));
   els = els.filter((e) => !els.some((o) => o !== e && o.contains(e)));
   const sx = scrollX, sy = scrollY;
   // controls in a fixed or sticky layer (the header, a floating panel) are a row of their own: after a scroll they share a position with page content without sharing a row
