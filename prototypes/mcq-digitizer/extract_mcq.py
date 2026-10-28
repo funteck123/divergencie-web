@@ -1712,6 +1712,11 @@ def drawing_block_bottom(page, y_low, y_high):
     return bottom
 
 
+# Points above the heading's own text where a question's crop starts. 4 is the long-standing value; a tall fraction or superscript that rises above its
+# heading line needs more (TKT-0349: a few pictures lost the top of their first line), so a repair can raise it for one re-cut.
+CROP_TOP_PAD = 4
+
+
 def render_question_image(doc, page_start, y_start, page_end, y_end):
     """Crops the question's stem+options exactly as printed. Almost
     always one page; when a question's own content spans a page break,
@@ -1741,7 +1746,7 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
         # page's own bounds once clipped -- confirmed real ("Invalid
         # bandwriter header dimensions" crash) even on a same-page span.
         # Clamp both edges to this page's actual height.
-        top = max(0, min(y_start - 4, page.rect.height))
+        top = max(0, min(y_start - CROP_TOP_PAD, page.rect.height))
         bottom = (y_end - 4) if y_end is not None else page.rect.height
         bottom = max(0, min(bottom, page.rect.height))
         rect = fitz.Rect(0, top, page.rect.width, max(bottom, top + 10, 10))
@@ -1752,7 +1757,7 @@ def render_question_image(doc, page_start, y_start, page_end, y_end):
         if first_page.rotation != 0:
             images.append(first_page.get_pixmap(matrix=fitz.Matrix(2, 2)).tobytes("png"))
         else:
-            top1 = max(0, min(y_start - 4, first_page.rect.height))
+            top1 = max(0, min(y_start - CROP_TOP_PAD, first_page.rect.height))
             rect1 = fitz.Rect(0, top1, first_page.rect.width, first_page.rect.height)
             images.append(first_page.get_pixmap(clip=rect1, matrix=fitz.Matrix(2, 2)).tobytes("png"))
         for mid in range(page_start + 1, page_end):
