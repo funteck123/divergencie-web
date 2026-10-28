@@ -8,7 +8,6 @@ vi.mock("./db", () => ({
     db.scheduleItems.push(...rows);
   },
 }));
-// @ts-expect-error scheduleGen.js is plain JavaScript
 import { ensureScheduleGenerated } from "./scheduleGen";
 
 // "Today" is Monday 2026-10-26. A weekly class whose slot is now Sunday 20:30 (it used to be Saturday).

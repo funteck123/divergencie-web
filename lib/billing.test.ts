@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-// @ts-expect-error billing.js is plain JavaScript
 import { ATTENDED_STATUSES, computeHoursAndAmount } from "./billing";
 
 // One student, one service, three one-hour sessions in October 2026. attendance: what was logged for each session.
@@ -10,7 +9,8 @@ function hours(attendance: { id: string; status?: string; hours: number }[], opt
     scheduleItems: ["S1", "S2", "S3"].map((id, i) => ({ ScheduleID: id, ServiceID: "SVC-1", Date: `2026-10-0${i + 1}`, Duration: 1 })),
     attendanceItems: attendance.map((a) => ({ AttendanceID: `A-${a.id}`, UserID: "STU-1", ScheduleItemID: a.id, ...(a.status ? { Status: a.status } : {}), LoggedDuration: a.hours })),
   };
-  return computeHoursAndAmount(db, { userId: "STU-1", serviceId: "SVC-1", year: 2026, month: 10, ...opts }).attendedHours as number;
+  // the tests leave out the optional batch filter, which the function accepts missing
+  return computeHoursAndAmount(db, { userId: "STU-1", serviceId: "SVC-1", year: 2026, month: 10, ...opts } as Parameters<typeof computeHoursAndAmount>[1]).attendedHours as number;
 }
 
 describe("attended hours (TKT-0374)", () => {
