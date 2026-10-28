@@ -38,30 +38,18 @@ function AdmissionsForm() {
     setError(null);
 
     try {
-      const res = await fetch("/api/admissions", {
+      // TKT-0261: this form used to post to /api/admissions, which does not exist (404), so every submission failed. It now uses the public lead
+      // endpoint that the contact form uses: it saves the lead and emails the team. The referral code travels in the notes.
+      const notes = [form.message, refCode ? `Referral code: ${refCode}` : ""].filter(Boolean).join("\n");
+      const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, referralCode: refCode || undefined }),
+        body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, whatsapp: form.phone, country: form.country, notes, source: "Web Admissions Form" }),
       });
 
       if (!res.ok) {
-        const d = await res.json();
+        const d = await res.json().catch(() => ({}));
         throw new Error(d.error ?? "Submission failed");
-      }
-
-      // Mark referral click as enquiry if ref code
-      if (refCode) {
-        const ref = await fetch(`/api/referrals?code=${encodeURIComponent(refCode)}`);
-        if (ref.ok) {
-          const { referral } = await ref.json();
-          if (referral) {
-            await fetch("/api/referrals", {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ referralId: referral.id, convertedToEnquiry: true }),
-            });
-          }
-        }
       }
 
       setSubmitted(true);
@@ -78,7 +66,7 @@ function AdmissionsForm() {
         <CheckCircle2 size={32} className="text-emerald-600" />
       </div>
       <h2 className="text-2xl font-black text-[var(--navy)] dark:text-white uppercase tracking-tight mb-3">Application Received!</h2>
-      <p className="text-[var(--text-muted)] text-sm">Our team will contact you within 24 hours. Check your inbox for a confirmation email.</p>
+      <p className="text-[var(--text-muted)] text-sm">Our team will contact you within 24 hours.</p>
     </div>
   );
 
