@@ -25,7 +25,9 @@ export async function POST(req) {
   // The same person submitting again within 30 days adds a line to their lead; no second record, no second email.
   const dup = findDuplicate(db.leads, { email: f.email, whatsapp: f.whatsapp });
   if (dup) {
-    dup.Notes = [dup.Notes, `--- Submitted again ${now.slice(0, 10)} ---`, leadNotes(f)].filter(Boolean).join("\n");
+    // the repeat may carry a different name, email or WhatsApp number than the first one: keep them in the text
+    const who = [f.name !== dup.Name && `name ${f.name}`, f.email !== String(dup.Email).toLowerCase() && `email ${f.email}`, f.whatsapp && f.whatsapp !== dup.WhatsAppNumber && `WhatsApp ${f.whatsapp}`].filter(Boolean).join(", ");
+    dup.Notes = [dup.Notes, `--- Submitted again ${now.slice(0, 10)}${who ? ` (${who})` : ""} ---`, leadNotes(f)].filter(Boolean).join("\n");
     await writeDB(db, ["leads"]);
     return NextResponse.json({ lead: { LeadID: dup.LeadID }, duplicate: true });   // nothing of the earlier lead is shown to the submitter
   }
