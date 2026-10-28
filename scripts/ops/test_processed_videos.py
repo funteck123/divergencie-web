@@ -40,6 +40,16 @@ class MergeTest(unittest.TestCase):
         self.assertIn("Chapter 7: Waves.", a["processedYouTubeDescription"]); self.assertIn("Duration: 6 min.", a["processedYouTubeDescription"])
         self.assertEqual(js[0]["readyToPost"], "yes")
 
+    def test_title_and_chapter_follow_the_whiteboard(self):
+        rows = [row("a.mp4", topic="Old topic")]
+        led = {"a.mp4": self.entry(lesson="Waves Practice 2", chapterNo=7, chapterName="Waves", boardStart="9702 Waves Practice 2 - 24022023 B6",
+                                    boardMid="9702 Waves Practice 2 - 24022023 B6", boardEnd="Other board", boardChanges="yes")}
+        out, _ = self.run_merge(rows, led)
+        self.assertEqual(out[0]["processedYouTubeTitle"], "A Level Physics 9702 | Ch 7 Waves | Waves Practice 2")
+        self.assertIn("Chapter 7: Waves.", out[0]["processedYouTubeDescription"]); self.assertIn("Lesson: Waves Practice 2.", out[0]["processedYouTubeDescription"])
+        self.assertEqual((out[0]["boardTitleEnd"], out[0]["boardTitleChanges"]), ("Other board", "yes"))
+        self.assertIn("Old topic", out[0]["processingNote"])      # the difference from the dataset topic is recorded
+
     def test_link_only_when_uploaded_and_wrong_duplicate_flag_cleared(self):
         rows = [row("a.mp4", youtubeId="XYZ", duplicateOf="/old/other.mp4")]
         out, _ = self.run_merge(rows, {"a.mp4": self.entry(notDuplicate="different bytes")})

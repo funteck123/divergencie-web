@@ -4,7 +4,8 @@
 The ledger (data/youtube/processed_ledger.json, one entry per source file name) says where the post-ready copy of each recording is and what was done to it.
 This adds these columns to data/youtube/video_dataset.csv and .json, and fills them only for rows the ledger knows (other rows keep empty cells):
   processedVideoPath, processingNote, processedWidth, processedHeight, processedDurationMin, processedSizeMB, processedMd5, processedAt,
-  recordedDate, batchFromBoard, readyToPost (yes / no / hold), holdReason, youtubeLink, processedYouTubeDescription
+  recordedDate, batchFromBoard, readyToPost (yes / no / hold), holdReason, youtubeLink, processedYouTubeDescription,
+  boardTitleStart / Mid / End (the whiteboard title read at the start, middle and end), boardTitleChanges, processedYouTubeTitle (follows the whiteboard)
 A ledger entry with notDuplicate (a text saying why) clears an older, wrong duplicateOf flag on that row.
 A copy of a file that is already processed (same bytes) points at the same processed path, has duplicateOf set and readyToPost "no".
 Nothing is uploaded: youtubeLink stays empty until the row has a youtubeId. Run it again after rebuilding the dataset with build_video_dataset.py.
@@ -14,7 +15,8 @@ Nothing is uploaded: youtubeLink stays empty until the row has a youtubeId. Run 
 import csv, json, os, re, sys, time
 
 NEW = ["processedVideoPath", "processingNote", "processedWidth", "processedHeight", "processedDurationMin", "processedSizeMB", "processedMd5", "processedAt",
-       "recordedDate", "batchFromBoard", "readyToPost", "holdReason", "youtubeLink", "processedYouTubeDescription"]
+       "recordedDate", "batchFromBoard", "readyToPost", "holdReason", "youtubeLink", "processedYouTubeDescription",
+       "boardTitleStart", "boardTitleMid", "boardTitleEnd", "boardTitleChanges", "processedYouTubeTitle"]
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
@@ -23,13 +25,27 @@ def long_date(iso):
     return f"{int(d)} {MONTHS[int(m) - 1]} {y}"
 
 
-def description(row, entry, duration):
+def chapter_of(row, entry):
+    """(number, name): the ledger's own chapter (read from the whiteboard) wins over the dataset's hand-made one."""
+    if entry.get("chapterName"): return entry.get("chapterNo"), entry["chapterName"]
     ch = re.search(r"\| Ch (\d+) ", row.get("youtubeTitle", ""))
+    return (int(ch.group(1)) if ch else None), row.get("chapterTitle", "")
+
+
+def title(row, entry):
+    no, name = chapter_of(row, entry)
+    code = row.get("subjectCode") or "9702"
+    lesson = entry.get("lesson") or row.get("topic", "")
+    return f"{row['level']} {row['subject']} {code} | " + (f"Ch {no} {name} | " if name else "") + lesson
+
+
+def description(row, entry, duration):
+    no, name = chapter_of(row, entry)
     code = row.get("subjectCode") or "9702"
     parts = [f"DivergenCIE class recording. {row['level']} {row['subject']} ({code})."]
     if row.get("component"): parts.append(f"Component: {row['component']}.")
-    if row.get("chapterTitle"): parts.append(f"Chapter {ch.group(1) + ': ' if ch else ''}{row['chapterTitle']}.")
-    if row.get("topic"): parts.append(f"Lesson: {row['topic']}.")
+    if name: parts.append(f"Chapter {str(no) + ': ' if no else ''}{name}.")
+    if entry.get("lesson") or row.get("topic"): parts.append(f"Lesson: {entry.get('lesson') or row['topic']}.")
     if entry.get("date"): parts.append(f"Recorded: {long_date(entry['date'])}.")
     if entry.get("batch"): parts.append(f"Batch {entry['batch']}.")
     if row.get("instructor"): parts.append(f"Taught by {row['instructor']}.")
@@ -65,6 +81,10 @@ def main():
         r["processedAt"] = time.strftime("%Y-%m-%d")
         r["youtubeLink"] = f"https://www.youtube.com/watch?v={r['youtubeId']}" if r.get("youtubeId") else ""
         r["processedYouTubeDescription"] = description(r, src, float(src["durationMin"]))
+        r["processedYouTubeTitle"] = title(r, src)
+        r["boardTitleStart"], r["boardTitleMid"], r["boardTitleEnd"], r["boardTitleChanges"] = (src.get(k, "") for k in ("boardStart", "boardMid", "boardEnd", "boardChanges"))
+        if src.get("lesson") and src["lesson"] != r.get("topic") and not e.get("duplicateOf"):
+            r["processingNote"] += f" Title follows the whiteboard ({src['lesson']}); the dataset topic was '{r.get('topic', '')}'."
         touched += 1
     with open(ds + ".csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields); w.writeheader(); w.writerows(rows)
