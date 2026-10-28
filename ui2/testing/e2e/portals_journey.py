@@ -1,3 +1,4 @@
+from urllib.parse import urlparse
 import re, sys, os, datetime
 sys.path.insert(0, os.path.dirname(__file__))
 from harness import Session
@@ -107,7 +108,7 @@ def shell(s):
     assert o["skip_link_impersonating"] == 0, "the skip link must not be shown while impersonating"
     o["banner"] = s.page.get_by_text(re.compile("Viewing as")).count()
     s.page.get_by_role("button", name="Stop impersonating").click(); s.page.wait_for_url("**/dashboard/management**", timeout=30000)
-    o["back_to"] = s.page.url.split("divergencie")[-1] if False else s.page.url.split(":3111")[1]
+    o["back_to"] = urlparse(s.page.url).path + ("?" + urlparse(s.page.url).query if urlparse(s.page.url).query else "")
     return o
 
 def resource(s):
