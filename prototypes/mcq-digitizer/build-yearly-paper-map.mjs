@@ -86,6 +86,27 @@ const CS9618_COMPONENT_BY_DIGIT = {
   "4": "Paper 4: Practical Programming (A Level)",
 };
 
+// TKT-0304: the legacy syllabus 9608 (2015 to 2021 papers, read from the printed cover title of a real paper of each digit). Papers 1 to 3 have the
+// same names as 9618, so they share its components in the picker; Paper 4 is a different paper ("Further Problem-solving and Programming Skills").
+const CS9608_COMPONENT_BY_DIGIT = {
+  "1": "Paper 1: Theory Fundamentals (AS Level)",
+  "2": "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)",
+  "3": "Paper 3: Advanced Theory (A Level)",
+  "4": "Paper 4: Further Problem-solving and Programming Skills (A Level)",
+};
+// TKT-0304: 9608 pairs that failed the automatic checks (2026-10-29, all 155 pairs run through extract_mcq.parse_structured): the question paper
+// splits into a different number of questions than the mark scheme, or its marks do not add up to the printed paper total (75), or a question has
+// no marks. They would show broken pictures, so they stay out until the splitter handles them (127 of 155 pairs pass every check).
+const CS9608_EXCLUDED = new Set(["9608_s15_41", "9608_s15_42", "9608_s15_43", "9608_s16_21", "9608_s16_22", "9608_s16_41", "9608_s16_42", "9608_s16_43", "9608_s17_42", "9608_s18_22", "9608_s18_23", "9608_s19_23", "9608_s19_42", "9608_s21_21", "9608_s21_22", "9608_s21_23", "9608_w15_12", "9608_w15_32", "9608_w15_41", "9608_w15_43", "9608_w16_21", "9608_w16_22", "9608_w16_23", "9608_w16_42", "9608_w18_42", "9608_w19_12", "9608_w20_41", "9608_w20_43"]);
+
+// TKT-0304: A Level English Language 9093 (2014 to 2020), names read from the printed cover title of a real 2018 paper of each digit.
+const ENGLISH9093_COMPONENT_BY_DIGIT = {
+  "1": "Paper 1: Passages (AS Level)",
+  "2": "Paper 2: Writing (AS Level)",
+  "3": "Paper 3: Text Analysis (A Level)",
+  "4": "Paper 4: Language Topics (A Level)",
+};
+
 // A Level Physics/Chemistry/Biology share the same 5-paper structure. Names
 // match the topical library's own A Level component keys exactly (confirmed
 // via a live GET /api/library), so the topical/yearly toggle finds them.
@@ -161,6 +182,15 @@ const SUBJECTS = [
     roots: ["A Levels/Chemistry/Past Papers"],
   },
   {
+    // Legacy Computer Science syllabus (TKT-0304): 155 qp/ms pairs. The title says 9608 so a student can tell it from a 9618 paper in the same list.
+    board: "A Levels", code: "9608", subject: "Computer Science", componentByDigit: CS9608_COMPONENT_BY_DIGIT, titleNote: " (syllabus 9608)",
+    roots: ["A Levels/Computer Science/Past Papers"],
+  },
+  {
+    board: "A Levels", code: "9093", subject: "English Language", componentByDigit: ENGLISH9093_COMPONENT_BY_DIGIT,
+    roots: ["A Levels/English Lang"],
+  },
+  {
     board: "A Levels", code: "9709", subject: "Mathematics", componentByDigit: maths9709Component,
     roots: ["A Levels/Maths/9709 Past Papers 01-22 Yearly"],
   },
@@ -215,6 +245,7 @@ function crawlSubject(subjectDef) {
     if (!m) continue;
     const [, code, session, yy, kind, paperDigit, variantDigit] = m;
     if (code !== subjectDef.code) continue; // a stray file from a different subject's code left in a shared folder
+    if (code === "9608" && CS9608_EXCLUDED.has(`${code}_${session}${yy}_${paperDigit}${variantDigit}`)) continue;
     const key = `${session}${yy}|${paperDigit}${variantDigit}`;
     if (!byKey.has(key)) byKey.set(key, { session, yy, paperDigit, variantDigit });
     const entry = byKey.get(key);
@@ -246,7 +277,7 @@ function crawlSubject(subjectDef) {
       // paper back up for digitizing, without exposing a raw filesystem
       // path to the browser.
       paperId: `${subjectDef.code}_${entry.session}${entry.yy}_${variant}`,
-      title: `CAIE ${board} ${subjectDef.subject} ${sessionLabel(entry.session)} ${year} Paper ${variant}`,
+      title: `CAIE ${board} ${subjectDef.subject} ${sessionLabel(entry.session)} ${year} Paper ${variant}${subjectDef.titleNote || ""}`,
       qpPath: entry.qpPath,
       msPath: entry.msPath,
     });
@@ -647,7 +678,8 @@ for (const subjectDef of SUBJECTS) {
     result[board][subjectDef.subject][p.component].push(p);
   }
   if (reports.length > 0) {
-    result[board][subjectDef.subject]["Examiner Report"] = reports;
+    // two registry entries can share one subject (9618 and the legacy 9608 are both "Computer Science"): add to the list, never replace it
+    result[board][subjectDef.subject]["Examiner Report"] = (result[board][subjectDef.subject]["Examiner Report"] || []).concat(reports);
   }
   console.log(`${subjectDef.subject}: ${papers.length} real qp+ms pairs found, ${reports.length} examiner reports found`);
 }

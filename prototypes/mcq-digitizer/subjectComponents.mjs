@@ -169,6 +169,7 @@ export const SUBJECT_COMPONENTS = {
       "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)",
       "Paper 3: Advanced Theory (A Level)",
       "Paper 4: Practical Programming (A Level)",
+      "Paper 4: Further Problem-solving and Programming Skills (A Level)",
     ],
   },
   "A Levels|English General Paper": {

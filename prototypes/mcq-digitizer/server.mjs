@@ -199,6 +199,9 @@ const YEARLY_READY_COMPONENTS = new Set([
   "Paper 2: Fundamental Problem-solving and Programming Skills (AS Level)",
   "Paper 3: Advanced Theory (A Level)",
   "Paper 4: Practical Programming (A Level)",
+  // TKT-0304: legacy Computer Science 9608 shares Papers 1 to 3 with 9618 (same names) and adds this Paper 4. 127 of its 155 pairs pass every
+  // automatic check (cover, total marks, same question numbers on both sides); the other 28 are excluded in build-yearly-paper-map.mjs.
+  "Paper 4: Further Problem-solving and Programming Skills (A Level)",
   // A Level Physics (9702), Chemistry (9701), Biology (9700) real yearly
   // papers. Verified 2026-09-30 by digitizing sampled real qp/ms pairs
   // across 2009-2026 for each subject: Paper 1 MCQ 40/40 questions with
