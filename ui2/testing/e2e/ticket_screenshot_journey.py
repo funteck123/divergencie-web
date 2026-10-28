@@ -129,7 +129,7 @@ def main():
         out["admin_details"] = panel.get_by_text("/v2/question-solver?paper=3").is_visible() and panel.get_by_text("abc1234").is_visible()
         panel.get_by_label(re.compile("^Reply to")).fill("Thanks, fixed now")
         panel.get_by_role("button", name="Send reply").click()
-        s.page.get_by_text(re.compile("Reply sent")).wait_for()
+        s.page.get_by_text(re.compile("Reply sent")).first.wait_for()   # two toasts can be on screen at once
         replies = [b for m, p, b in s.calls if m == "POST" and p == "/api/tickets" and b.get("reply")]
         out["admin_reply_posted"] = [(b["ticketId"], b["reply"]) for b in replies]
         out["errors"] = s.errors[:3]
