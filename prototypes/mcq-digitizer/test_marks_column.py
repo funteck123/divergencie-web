@@ -1,6 +1,6 @@
 """Run: python3 -m unittest test_marks_column   (from prototypes/mcq-digitizer)"""
 import unittest
-from extract_mcq import marks_column_total, marks_without_subtotal, printed_total_mark
+from extract_mcq import marks_column_total, marks_without_subtotal, printed_total_mark, max_marks_total
 
 L = lambda text, page, y0, x0, bold=False: {"text": text, "page": page, "y0": y0, "x0": x0, "bold": bold}
 HEADER = [L("Question", 0, 70, 120), L("Answer", 0, 70, 400), L("Marks", 0, 70, 790)]
@@ -41,6 +41,12 @@ class PrintedTotal(unittest.TestCase):
         self.assertEqual(printed_total_mark("[Total: 5]\n[ total  20 marks ]"), 20)
     def test_none_when_absent(self):
         self.assertIsNone(printed_total_mark("[1] [2]"))
+
+class MaxMarks(unittest.TestCase):
+    def test_limitations_and_improvements_columns(self):
+        self.assertEqual(max_marks_total("(f)\n(i) Limitations (4 max.)\n(ii) Improvements (4 max.)"), 8)
+    def test_a_bracket_is_not_a_cap_and_none_is_zero(self):
+        self.assertEqual(max_marks_total("[4] marks (max)"), 0)
 
 class CentredHeader(unittest.TestCase):
     def test_plain_marks_left_of_a_centred_header_still_count(self):

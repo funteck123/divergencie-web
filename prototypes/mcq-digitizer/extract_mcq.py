@@ -2919,6 +2919,12 @@ def marks_from_text(text):
     return max(total, printed[-1]) if printed and printed[-1] > total else total
 
 
+def max_marks_total(text):
+    """Marks printed as a cap instead of a bracket: 2015 and later Physics Paper 3 planning tables head their two columns "Limitations (4 max.)" and
+    "Improvements (4 max.)", worth 4 + 4 marks with no [N] anywhere."""
+    return sum(int(m) for m in re.findall(r"\((\d+)\s*max\.?\)", text or "", re.IGNORECASE))
+
+
 def printed_total_mark(text):
     """The question's own printed "[Total: N]", or None. marks_from_text lets a bracket sum that is larger than this win (right for 9701_s14_53, where a mark
     sits in a graph the text layer cannot read); some Physics schemes (2009 to 2012) instead add a row bracket too many, and then the printed total is the truth."""
@@ -3046,9 +3052,17 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
     doc.close()
     if column_marks and blocks and sum(b["marks"] for b in blocks) != column_marks:
         # Every reading below is kept only when the whole paper then adds up to the printed total. Otherwise the marks stay as they were.
-        readers = (lambda b: b["marks"], lambda b: printed_total_mark(b["text"]) or b["marks"], lambda b: marks_without_subtotal(b["text"]) or b["marks"])
+        def tolerant(r):
+            """The block's text with the start and end moved up 4 pt, so a [N] printed on the heading's own row (a fraction of a point above the heading's top)
+            stays with its own question instead of being left out of it."""
+            return extract_block_text(lines, r[0], r[1] - 4, r[2], None if r[3] is None else r[3] - 4)
+        readers = (lambda b, r: b["marks"],
+                   lambda b, r: printed_total_mark(b["text"]) or b["marks"],
+                   lambda b, r: marks_without_subtotal(b["text"]) or b["marks"],
+                   lambda b, r: marks_from_text(tolerant(r)),
+                   lambda b, r: marks_from_text(tolerant(r)) + max_marks_total(b["text"]))
         for reader in readers:
-            base = [reader(b) for b in blocks]
+            base = [reader(b, r) for b, r in zip(blocks, ranges)]
             for bold in (None, False, True):
                 cols = [m or marks_column_total(lines, *r, bold=bold) for m, r in zip(base, ranges)]
                 if sum(cols) == column_marks:
