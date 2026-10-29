@@ -42,6 +42,20 @@ class PrintedTotal(unittest.TestCase):
     def test_none_when_absent(self):
         self.assertIsNone(printed_total_mark("[1] [2]"))
 
+class MaxCells(unittest.TestCase):
+    ROWS = HEADER + [L("5", 0, 100, 800, bold=True), L("4 max", 0, 130, 790, bold=True)]
+    def test_a_max_cell_is_ignored_by_default(self):
+        self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None), 5)
+    def test_count_max_reads_it_as_its_number(self):
+        self.assertEqual(marks_column_total(self.ROWS, 0, 90, 0, None, count_max=True), 9)
+    def test_older_chemistry_cap_cells_with_a_second_number_are_still_ignored(self):
+        self.assertEqual(marks_column_total(HEADER + [L("4 max 3", 0, 100, 800, bold=True)], 0, 90, 0, None, count_max=True), 0)
+
+class SingularHeader(unittest.TestCase):
+    def test_a_column_headed_mark_counts(self):
+        lines = [L("Mark", 0, 70, 752), L("1", 0, 100, 785, bold=True), L("5", 0, 130, 785, bold=True)]
+        self.assertEqual(marks_column_total(lines, 0, 90, 0, None), 6)
+
 class TotalRows(unittest.TestCase):
     ROWS = HEADER + [L("1", 0, 100, 790, bold=True), L("5", 0, 130, 790, bold=True), L("Total:", 0, 200, 700, bold=True), L("6", 0, 200, 790, bold=True)]
     def test_the_total_row_is_counted_unless_skipped(self):

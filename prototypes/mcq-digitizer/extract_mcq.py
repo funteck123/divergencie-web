@@ -2941,14 +2941,15 @@ def marks_without_subtotal(text):
     return total // 2 if total and total % 2 == 0 and total // 2 in vals else None
 
 
-def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, skip_total_rows=False):
+def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, skip_total_rows=False, count_max=False):
     """Marks of one mark scheme block read from a Question | Answer | Marks TABLE whose marks are a bare number in the last column
     (Chemistry and Biology 9701 and 9700 Paper 3, TKT-0301 defect 1), with no [N] brackets anywhere. A page's Marks column is found from its
     own "Marks" header cell (whose text is centred in a wide cell, so plain per-point marks can sit up to 60 pt left of it); only a lone 1 to 2 digit number there or right of it counts, so a numbered rubric list in the answer column never does.
     `bold` tells the two layouts apart: older Chemistry schemes print a mark against every point AND a bold running subtotal per sub-question, so
     summing every digit counts twice (None = every digit, False = only the plain digits, True = only the bold ones). `skip_total_rows` leaves out the number on
-    a row labelled "Total" (2017 and later Physics tables print "Total: 20" under each question, which is the sum of the rows above it). Returns 0 when the block's pages have no such header."""
-    header_x = {l["page"]: l["x0"] for l in lines if l["text"].strip().lower() == "marks"}
+    a row labelled "Total" (2017 and later Physics tables print "Total: 20" under each question, which is the sum of the rows above it). `count_max` also reads a
+    cell such as "4 max" as 4 (2018 and later Physics planning tables). Returns 0 when the block's pages have no such header."""
+    header_x = {l["page"]: l["x0"] for l in lines if l["text"].strip().lower() in ("marks", "mark")}   # 2017 Physics schemes head the column "Mark"
     if not header_x:
         return 0
     total = 0
@@ -2960,8 +2961,9 @@ def marks_column_total(lines, page_start, y_start, page_end, y_end, bold=None, s
         if any(p == l["page"] and abs(y - l["y0"]) < 4 for p, y in total_rows):
             continue
         hx = header_x.get(l["page"])
-        if hx is not None and re.fullmatch(r"\d{1,2}", l["text"].strip()) and l["x0"] >= hx - 60 and (bold is None or bool(l.get("bold")) == bold):
-            total += int(l["text"].strip())
+        cell = re.fullmatch(r"(\d{1,2})(?:\s*max\.?)?" if count_max else r"(\d{1,2})", l["text"].strip(), re.IGNORECASE)
+        if hx is not None and cell and l["x0"] >= hx - 60 and (bold is None or bool(l.get("bold")) == bold):
+            total += int(cell.group(1))
     return total
 
 
@@ -3065,16 +3067,20 @@ def parse_structured(pdf_path, subject=None, component=None, only_numbers=None, 
                    lambda b, r: marks_without_subtotal(b["text"]) or b["marks"],
                    lambda b, r: marks_from_text(tolerant(r)),
                    lambda b, r: marks_from_text(tolerant(r)) + max_marks_total(b["text"]))
-        for reader in readers:
-            base = [reader(b, r) for b, r in zip(blocks, ranges)]
-            for skip, bold in ((False, None), (False, False), (False, True), (True, None), (True, False), (True, True)):
-                cols = [m or marks_column_total(lines, *r, bold=bold, skip_total_rows=skip) for m, r in zip(base, ranges)]
-                if sum(cols) == column_marks:
-                    for b, c in zip(blocks, cols): b["marks"] = c
-                    break
-            else:
-                continue
-            break
+        def accept(attempts):
+            for reader in readers:
+                base = [reader(b, r) for b, r in zip(blocks, ranges)]
+                for skip, bold, cm, tol in attempts:
+                    rs = [(r[0], r[1] - 4, r[2], None if r[3] is None else r[3] - 4) for r in ranges] if tol else ranges
+                    cols = [m or marks_column_total(lines, *r, bold=bold, skip_total_rows=skip, count_max=cm) for m, r in zip(base, rs)]
+                    if sum(cols) == column_marks:
+                        for b, c in zip(blocks, cols): b["marks"] = c
+                        return True
+            return False
+        # Three rounds, each only when every earlier one failed, so a paper already read correctly keeps that reading: the original attempts; then a "N max"
+        # cell counted as N; then ranges moved up 4 pt (a mark printed on its heading's own row sits a hair above the heading).
+        combos = [(skip, bold) for skip in (False, True) for bold in (None, False, True)]
+        _ = accept([(sk, bo, False, False) for sk, bo in combos]) or accept([(sk, bo, True, False) for sk, bo in combos]) or accept([(sk, bo, cm, True) for cm in (False, True) for sk, bo in combos])
     return blocks
 
 
